@@ -2,33 +2,39 @@
 /**
  * 11-pixel-diff-states.mjs ★ QUALITY-CRITICAL
  *
- * Captures Playwright screenshots for every story of a `mud-*` component
- * (light + dark) and diffs them against Figma references using **Pixelmatch
- * (Mapbox)** — the same library the existing `scripts/visual-diff.mjs` uses
- * and the same algorithm under the MCP `image-compare` server. This matches
- * the user's explicit quality preference (Playwright's built-in compare was
- * rejected in plan question Q2).
+ * Captures Playwright screenshots of a `mud-*` component and diffs them against
+ * Figma references using **Pixelmatch (Mapbox)** — the same library under the
+ * MCP `image-compare` server. The diff and canvas alignment live in
+ * `lib/image-diff.mjs`, invoked through `scripts/visual-diff.mjs`.
  *
- * Required inputs:
- *   - <componentName>                    — mud-X
- *   - --figma-dir <path>                 — folder containing one `<state>.png`
- *                                          per story name (kebab-cased)
+ * Two modes:
  *
- * Output:
- *   { states: [{ name, light: { diffPercent, status, diffImagePath },
- *                dark:  { diffPercent, status, diffImagePath } }] }
+ *   Manifest mode (preferred) — `src/components/<name>/test/<name>.figma.json`
+ *     exists (or `--manifest` is given). One capture per manifest state, each
+ *     tied to a Figma node, rendered with the state's fixture, theme, clock and
+ *     interaction. References: `<refs-dir>/<state>.png`, exported by
+ *     `scripts/audit/figma-refs.mjs`.
+ *
+ *   Story mode (legacy) — no manifest. One capture per story export, light and,
+ *     when a `<story>-dark.png` reference exists, dark. References are named
+ *     after the story export (kebab-cased) in `--figma-dir`.
+ *
+ * Captures are taken at `--scale` (default: manifest `figma.scale`, else 2) so
+ * they match Figma's 2× PNG export, and include the element's own shadow
+ * bleed, which Figma adds to exported render bounds. A canvas size mismatch
+ * is reported as its own finding in CSS px — it is often the real drift
+ * (an extra footer, a missing border) behind a high diff percentage.
  *
  * Thresholds (mirrors scripts/visual-diff.mjs):
  *   < 0.5%   PASS
  *   < 2.0%   WARNING (marked `requires-ai-review`)
  *   >= 2.0%  FAIL
  *
- * Replaces AI work in:
- *   - `.claude/agents/pixel-perfect-verifier.md` Step 4-6
- *
  * Usage:
  *   yarn sp.dev.watch
- *   node scripts/audit/11-pixel-diff-states.mjs mud-button --figma-dir ./figma-refs/mud-button --json
+ *   node scripts/audit/figma-refs.mjs mud-date-picker          # export references once
+ *   node scripts/audit/11-pixel-diff-states.mjs mud-date-picker --json
+ *   node scripts/audit/11-pixel-diff-states.mjs mud-button --figma-dir ./figma-refs/mud-button --json   # story mode
  */
 import { fileURLToPath } from 'node:url';
 import { existsSync, mkdirSync } from 'node:fs';
@@ -40,21 +46,33 @@ import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
 import { DEFAULT_PORT, isStorybookReachable, storyUrl } from './lib/storybook-helpers.mjs';
-import { withPage, setTheme, PLAYWRIGHT_INSTALL_HINT } from './lib/browser-context.mjs';
+import { launchBrowser, setTheme, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HINT } from './lib/browser-context.mjs';
+import { describeSizeMismatch } from './lib/image-diff.mjs';
+import {
+  defaultRefsDir,
+  loadManifest,
+  manifestPathFor,
+  referenceFileName,
+  resolveState,
+} from './lib/figma-manifest.mjs';
+import { captureState, openState, pageBackground } from './lib/state-page.mjs';
 import { analyzeStoriesFile } from './05-story-exports.mjs';
 
 const TOOL = 'pixel-diff-states';
 
 const USAGE = defaultUsage(
   '11-pixel-diff-states',
-  'Capture screenshots of every story (light + dark) and diff against Figma references via Pixelmatch.',
+  'Capture component states and diff them against Figma references via Pixelmatch.',
   [
     '',
     'Extra options:',
-    '  --port <N>          Storybook port (default: 6007)',
-    '  --figma-dir <dir>   Folder containing one <state>.png per story (kebab-cased)',
-    '  --skip-dark         Skip the dark-mode pass',
-    '  --out-dir <dir>     Where to save captured PNGs + diff images (default: .audit-screenshots/mud-X/)',
+    '  --port <N>            Storybook port (default: 6007)',
+    '  --manifest <file>     Figma state manifest (default: src/components/<name>/test/<name>.figma.json)',
+    '  --figma-dir <dir>     Reference PNGs (manifest mode default: .audit-figma/<name>/; required in story mode)',
+    '  --scale <N>           Device scale factor for captures (default: manifest figma.scale, else 2)',
+    '  --align <mode>        top-left | center — canvas alignment for size mismatches (default: top-left)',
+    '  --skip-dark           Story mode: skip the dark-mode pass',
+    '  --out-dir <dir>       Where to save captured PNGs + diff images (default: .audit-screenshots/<name>/)',
     '  --pass-threshold <%>  Percent diff that still counts as PASS (default: 0.5)',
     '  --warn-threshold <%>  Above this is FAIL (default: 2.0)',
   ],
@@ -62,6 +80,7 @@ const USAGE = defaultUsage(
 
 const DEFAULT_PASS = 0.5;
 const DEFAULT_WARN = 2.0;
+const DEFAULT_SCALE = 2;
 
 // ─── Thresholds + status (pure, exported for tests) ───────────────────────
 
@@ -83,13 +102,19 @@ export function kebabCase(s) {
 }
 
 /**
- * Find the Figma reference PNG for a story name + theme. Looks for, in order:
- *   <state>-<theme>.png   (e.g. default-dark.png)
- *   <state>.png           (theme-agnostic)
+ * Story mode: find the Figma reference PNG for a story name + theme.
+ *   light → `<state>-light.png`, then `<state>.png`
+ *   dark  → `<state>-dark.png` only
+ *
+ * A dark capture is never compared with a light reference: that produced a
+ * guaranteed FAIL for every story that had no dark design.
  */
 export function pickReferencePath(figmaDir, storyName, theme) {
   const kebab = kebabCase(storyName);
-  const candidates = [join(figmaDir, `${kebab}-${theme}.png`), join(figmaDir, `${kebab}.png`)];
+  const candidates =
+    theme === 'dark'
+      ? [join(figmaDir, `${kebab}-dark.png`)]
+      : [join(figmaDir, `${kebab}-light.png`), join(figmaDir, `${kebab}.png`)];
   for (const p of candidates) {
     if (existsSync(p)) return p;
   }
@@ -104,7 +129,10 @@ async function main() {
     usage: USAGE,
     extra: {
       'port': { type: 'string', default: String(DEFAULT_PORT) },
+      'manifest': { type: 'string' },
       'figma-dir': { type: 'string' },
+      'scale': { type: 'string' },
+      'align': { type: 'string', default: 'top-left' },
       'skip-dark': { type: 'boolean', default: false },
       'out-dir': { type: 'string' },
       'pass-threshold': { type: 'string', default: String(DEFAULT_PASS) },
@@ -116,19 +144,9 @@ async function main() {
   const baseUrl = `http://localhost:${port}`;
   const passThreshold = Number(args.extras['pass-threshold']);
   const warnThreshold = Number(args.extras['warn-threshold']);
-  const skipDark = args.extras['skip-dark'];
-  const figmaDir = args.extras['figma-dir'] ? resolve(args.extras['figma-dir']) : null;
 
-  if (!figmaDir) {
-    process.stderr.write(`${TOOL}: --figma-dir is required.\n${USAGE}\n`);
-    process.exit(EXIT_INTERNAL);
-  }
-  if (!existsSync(figmaDir)) {
-    process.stderr.write(`${TOOL}: figma reference dir not found: ${figmaDir}\n`);
-    process.exit(EXIT_INTERNAL);
-  }
   if (!(await isStorybookReachable({ port }))) {
-    process.stderr.write(`${TOOL}: Storybook not reachable on port ${port}.\n`);
+    process.stderr.write(`${TOOL}: Storybook not reachable on port ${port}. Start it with \`yarn sp.dev.watch\`.\n`);
     process.exit(EXIT_INTERNAL);
   }
 
@@ -145,22 +163,30 @@ async function main() {
     process.exit(EXIT_INTERNAL);
   }
 
-  let perComponent;
+  let browserHandle;
+  let failure;
+  const perComponent = [];
   try {
-    perComponent = await Promise.all(
-      targets.map(t =>
-        analyzeComponent(t, {
+    browserHandle = await launchBrowser();
+    for (const target of targets) {
+      perComponent.push(
+        await analyzeComponent(target, {
+          browser: browserHandle.browser,
           baseUrl,
-          figmaDir,
-          outDir: args.extras['out-dir'] ?? join(REPO_ROOT, '.audit-screenshots', t.name ?? 'unknown'),
+          args,
           passThreshold,
           warnThreshold,
-          skipDark,
         }),
-      ),
-    );
+      );
+    }
   } catch (err) {
-    process.stderr.write(`${TOOL}: ${err.message}\n`);
+    failure = err;
+  } finally {
+    // Close before any exit so no headless Chromium outlives the script.
+    await browserHandle?.close();
+  }
+  if (failure) {
+    process.stderr.write(`${TOOL}: ${failure.message}\n`);
     process.exit(EXIT_INTERNAL);
   }
 
@@ -179,6 +205,10 @@ async function main() {
   });
 
   if (!args.all && !args.changed && perComponent.length === 1) {
+    result.meta.mode = perComponent[0].mode;
+    result.meta.scale = perComponent[0].scale;
+    result.meta.manifest = perComponent[0].manifest;
+    result.meta.refsDir = perComponent[0].refsDir;
     result.meta.states = perComponent[0].states;
   }
 
@@ -200,8 +230,156 @@ export async function analyzeComponent(target, opts) {
       componentName: target.name ?? null,
     };
   }
+
+  const manifestPath = opts.args.extras.manifest ? resolve(opts.args.extras.manifest) : manifestPathFor(target.name);
+  if (opts.args.extras.manifest || existsSync(manifestPath)) {
+    return analyzeManifest(target, manifestPath, opts);
+  }
+  return analyzeStories(target, opts);
+}
+
+// ─── Manifest mode ────────────────────────────────────────────────────────
+
+async function analyzeManifest(target, manifestPath, opts) {
+  const { args, browser, baseUrl, passThreshold, warnThreshold } = opts;
+  const { manifest, errors } = loadManifest(manifestPath);
+  const manifestRel = relativeToRepo(manifestPath);
+  if (!manifest || errors.length) {
+    return {
+      mode: 'manifest',
+      manifest: manifestRel,
+      findings: errors.map(message =>
+        finding({ severity: 'error', code: 'PIXEL-MANIFEST-INVALID', file: manifestRel, message }),
+      ),
+      states: [],
+      componentName: target.name,
+    };
+  }
+
+  const scale = Number(args.extras.scale ?? manifest.figma?.scale ?? DEFAULT_SCALE);
+  const refsDir = args.extras['figma-dir'] ? resolve(args.extras['figma-dir']) : defaultRefsDir(target.name);
+  const outDir = args.extras['out-dir'] ?? join(REPO_ROOT, '.audit-screenshots', target.name);
+  mkdirSync(outDir, { recursive: true });
+
+  const states = [];
+  const findings = [];
+  for (const raw of manifest.states) {
+    const state = resolveState(manifest, raw, target.name);
+    // `pixel: false` states (and states without a node) are style-parity only.
+    if (!state.pixel) continue;
+    const referencePath = join(refsDir, referenceFileName(state));
+    const screenshotPath = join(outDir, `${state.name}.png`);
+    const diffPath = join(outDir, `${state.name}.diff.png`);
+    const entry = { theme: state.theme, node: state.node };
+
+    let session;
+    try {
+      session = await openState(browser, state, { baseUrl, scale });
+      await captureState(session.page, state.capture, screenshotPath);
+      entry.background = await pageBackground(session.page);
+    } catch (err) {
+      Object.assign(entry, { status: 'UNKNOWN', diffPercent: null, requiresReview: true, error: err.message });
+      findings.push(
+        finding({
+          severity: 'error',
+          code: 'PIXEL-CAPTURE-FAILED',
+          file: manifestRel,
+          message: `${state.name}: ${err.message}`,
+        }),
+      );
+      states.push(themedState(state, entry));
+      continue;
+    } finally {
+      await session?.release();
+    }
+    entry.screenshotPath = screenshotPath;
+
+    if (!existsSync(referencePath)) {
+      Object.assign(entry, {
+        status: 'UNKNOWN',
+        diffPercent: null,
+        requiresReview: true,
+        error: `no Figma reference ${relativeToRepo(referencePath)}`,
+      });
+      // Error, not info: a manifest state names a Figma node, so a missing
+      // reference means nothing was verified. References are git-ignored, so
+      // a fresh checkout would otherwise report a green "pixel diff" that
+      // compared zero states.
+      findings.push(
+        finding({
+          severity: 'error',
+          code: 'PIXEL-NO-REFERENCE',
+          message: `${state.name}: no Figma reference at ${relativeToRepo(referencePath)} — state not verified.`,
+          fix: `node scripts/audit/figma-refs.mjs ${target.name}`,
+        }),
+      );
+      states.push(themedState(state, entry));
+      continue;
+    }
+
+    Object.assign(
+      entry,
+      compare({
+        referencePath,
+        screenshotPath,
+        diffPath,
+        align: args.extras.align,
+        background: entry.background,
+        passThreshold,
+        warnThreshold,
+      }),
+    );
+    findings.push(...findingsFor(`${state.name}${state.node ? ` (Figma ${state.node})` : ''}`, entry, scale, opts));
+    states.push(themedState(state, entry));
+  }
+
+  return {
+    mode: 'manifest',
+    scale,
+    manifest: manifestRel,
+    refsDir: relativeToRepo(refsDir),
+    findings,
+    states,
+    componentName: target.name,
+  };
+}
+
+/** Keep the `{ name, storyId, light, dark }` shape consumers already read. */
+function themedState(state, entry) {
+  return {
+    name: state.name,
+    node: state.node,
+    storyId: state.story,
+    light: state.theme === 'light' ? { theme: 'light', ...entry } : null,
+    dark: state.theme === 'dark' ? { theme: 'dark', ...entry } : null,
+  };
+}
+
+// ─── Story mode (legacy) ──────────────────────────────────────────────────
+
+async function analyzeStories(target, opts) {
+  const { args, browser, baseUrl, passThreshold, warnThreshold } = opts;
+  const figmaDir = args.extras['figma-dir'] ? resolve(args.extras['figma-dir']) : null;
+  if (!figmaDir || !existsSync(figmaDir)) {
+    return {
+      mode: 'stories',
+      findings: [
+        finding({
+          severity: 'warning',
+          code: 'PIXEL-NO-REFERENCES',
+          message: figmaDir
+            ? `figma reference dir not found: ${figmaDir}`
+            : `No manifest at ${relativeToRepo(manifestPathFor(target.name))} and no --figma-dir.`,
+          fix: 'Create the manifest (see .claude/skills/pixel-perfect/SKILL.md), then run scripts/audit/figma-refs.mjs.',
+        }),
+      ],
+      states: [],
+      componentName: target.name,
+    };
+  }
   if (!target.exists?.stories) {
     return {
+      mode: 'stories',
       findings: [
         finding({
           severity: 'warning',
@@ -215,7 +393,9 @@ export async function analyzeComponent(target, opts) {
     };
   }
 
-  mkdirSync(opts.outDir, { recursive: true });
+  const scale = Number(args.extras.scale ?? DEFAULT_SCALE);
+  const outDir = args.extras['out-dir'] ?? join(REPO_ROOT, '.audit-screenshots', target.name);
+  mkdirSync(outDir, { recursive: true });
 
   const { stories } = analyzeStoriesFile(target.paths.stories, target.name);
   const states = [];
@@ -223,152 +403,158 @@ export async function analyzeComponent(target, opts) {
 
   for (const story of stories) {
     if (!story.storyId) continue;
-    const url = storyUrl({ storyId: story.storyId, baseUrl: opts.baseUrl });
-    const light = await captureAndDiff({
-      url,
-      theme: 'light',
-      story,
-      componentName: target.name,
-      outDir: opts.outDir,
-      figmaDir: opts.figmaDir,
-      passThreshold: opts.passThreshold,
-      warnThreshold: opts.warnThreshold,
-    });
-    const dark = opts.skipDark
-      ? null
-      : await captureAndDiff({
-          url,
-          theme: 'dark',
-          story,
-          componentName: target.name,
-          outDir: opts.outDir,
-          figmaDir: opts.figmaDir,
-          passThreshold: opts.passThreshold,
-          warnThreshold: opts.warnThreshold,
-        });
+    const url = storyUrl({ storyId: story.storyId, baseUrl });
+    const themes = ['light'];
+    if (!args.extras['skip-dark'] && pickReferencePath(figmaDir, story.name, 'dark')) themes.push('dark');
 
-    states.push({ name: story.name, storyId: story.storyId, light, dark });
+    const result = { name: story.name, storyId: story.storyId, light: null, dark: null };
+    for (const theme of themes) {
+      const referencePath = pickReferencePath(figmaDir, story.name, theme);
+      const screenshotPath = join(outDir, `${kebabCase(story.name)}-${theme}.png`);
+      const diffPath = join(outDir, `${kebabCase(story.name)}-${theme}.diff.png`);
+      const background = await captureStory({
+        browser,
+        url,
+        theme,
+        scale,
+        componentName: target.name,
+        outputPath: screenshotPath,
+      });
 
-    for (const themed of [light, dark].filter(Boolean)) {
-      if (themed.status === 'FAIL') {
-        findings.push(
-          finding({
-            severity: 'error',
-            code: 'PIXEL-DIFF-FAIL',
-            file: themed.diffImagePath ? relativeToRepo(themed.diffImagePath) : null,
-            message: `${story.name} [${themed.theme}]: ${themed.diffPercent}% diff exceeds ${opts.warnThreshold}% fail threshold.`,
-            fix: 'Inspect the diff image; adjust CSS or token mapping. If the design intentionally drifted from Figma, update the reference PNG.',
-          }),
-        );
-      } else if (themed.status === 'WARNING') {
-        findings.push(
-          finding({
-            severity: 'warning',
-            code: 'PIXEL-DIFF-WARNING',
-            file: themed.diffImagePath ? relativeToRepo(themed.diffImagePath) : null,
-            message: `${story.name} [${themed.theme}]: ${themed.diffPercent}% diff is borderline (requires AI review).`,
-          }),
-        );
-      } else if (themed.status === 'UNKNOWN' && themed.error) {
+      if (!referencePath) {
+        result[theme] = {
+          theme,
+          diffPercent: null,
+          status: 'UNKNOWN',
+          requiresReview: true,
+          error: `no Figma reference (${kebabCase(story.name)}.png) found in ${figmaDir}`,
+          screenshotPath,
+          diffImagePath: null,
+        };
         findings.push(
           finding({
             severity: 'info',
             code: 'PIXEL-DIFF-SKIPPED',
-            message: `${story.name} [${themed.theme}]: ${themed.error}`,
+            message: `${story.name} [${theme}]: ${result[theme].error}`,
           }),
         );
+        continue;
       }
+      result[theme] = {
+        theme,
+        screenshotPath,
+        background,
+        ...compare({
+          referencePath,
+          screenshotPath,
+          diffPath,
+          align: args.extras.align,
+          background,
+          passThreshold,
+          warnThreshold,
+        }),
+      };
+      findings.push(...findingsFor(`${story.name} [${theme}]`, result[theme], scale, opts));
     }
+    states.push(result);
   }
 
-  return { findings, states, componentName: target.name };
+  return { mode: 'stories', scale, refsDir: relativeToRepo(figmaDir), findings, states, componentName: target.name };
 }
 
-async function captureAndDiff({ url, theme, story, componentName, outDir, figmaDir, passThreshold, warnThreshold }) {
-  const referencePath = pickReferencePath(figmaDir, story.name, theme);
-  const screenshotPath = join(outDir, `${kebabCase(story.name)}-${theme}.png`);
-  const diffPath = join(outDir, `${kebabCase(story.name)}-${theme}.diff.png`);
-
-  if (!referencePath) {
-    // Capture screenshot anyway so it can be used as a future baseline.
-    await captureScreenshot({ url, theme, outputPath: screenshotPath, componentName });
-    return {
-      theme,
-      diffPercent: null,
-      status: 'UNKNOWN',
-      requiresReview: true,
-      error: `no Figma reference (${kebabCase(story.name)}.png or ${kebabCase(story.name)}-${theme}.png) found in ${figmaDir}`,
-      screenshotPath,
-      diffImagePath: null,
-    };
+/** Capture one story; returns the page background the diff should flatten onto. */
+async function captureStory({ browser, url, theme, scale, componentName, outputPath }) {
+  const context = await browser.newContext({ deviceScaleFactor: scale });
+  try {
+    const page = await context.newPage();
+    page.setDefaultTimeout(15000);
+    await page.goto(url, { waitUntil: 'load' });
+    await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+    await page.evaluate(() => document.fonts.ready.then(() => true));
+    if (theme === 'dark') await setTheme(page, 'dark');
+    await page.waitForTimeout(250);
+    // Crop to the component element so Storybook chrome doesn't bleed into the diff.
+    const locator = page.locator(componentName).first();
+    if ((await locator.count().catch(() => 0)) > 0) {
+      await captureState(page, { selector: componentName, bleed: 'auto' }, outputPath);
+    } else {
+      await page.screenshot({ path: outputPath, fullPage: false, animations: 'disabled', caret: 'hide' });
+    }
+    return await pageBackground(page);
+  } finally {
+    await context.close();
   }
+}
 
-  await captureScreenshot({ url, theme, outputPath: screenshotPath, componentName });
+// ─── Shared ───────────────────────────────────────────────────────────────
 
+function compare({ referencePath, screenshotPath, diffPath, align, background, passThreshold, warnThreshold }) {
   const diff = runVisualDiff({
     figmaPath: referencePath,
     browserPath: screenshotPath,
     outputPath: diffPath,
+    align,
+    background,
   });
-
   if (!diff.ok) {
     return {
-      theme,
       diffPercent: null,
       status: 'UNKNOWN',
       requiresReview: true,
       error: diff.error,
-      screenshotPath,
       diffImagePath: null,
+      referencePath,
     };
   }
-
   const cls = classifyDiff(diff.diffPercent, { passThreshold, warnThreshold });
   return {
-    theme,
     diffPercent: diff.diffPercent,
     diffPixels: diff.diffPixels,
     status: cls.status,
     requiresReview: cls.requiresReview,
-    screenshotPath,
+    sizeMismatch: diff.sizeMismatch ?? null,
     diffImagePath: diffPath,
     referencePath,
   };
 }
 
-async function captureScreenshot({ url, theme, outputPath, componentName }) {
-  await withPage({
-    url,
-    waitUntil: 'load',
-    action: async page => {
-      // Wait for the component to hydrate before screenshotting; otherwise the
-      // captured PNG can show un-styled content.
-      if (componentName) {
-        await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
-      }
-      await page.waitForTimeout(250);
-      if (theme === 'dark') {
-        await setTheme(page, 'dark');
-        await page.waitForTimeout(250);
-      }
-      // Crop to the component element so Storybook chrome (toolbar, docs page)
-      // and tooling overlays (Agentation MCP) don't bleed into the diff.
-      // Fall back to viewport-cropped capture if no host is locatable.
-      let captured = false;
-      if (componentName) {
-        const locator = page.locator(componentName).first();
-        if ((await locator.count().catch(() => 0)) > 0) {
-          await locator.screenshot({ path: outputPath }).catch(async () => {
-            await page.screenshot({ path: outputPath, fullPage: false });
-          });
-          captured = true;
-        }
-      }
-      if (!captured) {
-        await page.screenshot({ path: outputPath, fullPage: false });
-      }
-    },
-  });
+function findingsFor(label, themed, scale, opts) {
+  const out = [];
+  const file = themed.diffImagePath ? relativeToRepo(themed.diffImagePath) : null;
+  if (themed.sizeMismatch) {
+    out.push(
+      finding({
+        severity: 'warning',
+        code: 'PIXEL-SIZE-MISMATCH',
+        file,
+        message: `${label}: ${describeSizeMismatch(themed.sizeMismatch, scale)}.`,
+        fix: 'A size difference usually means an extra or missing element, border or spacing — compare the structure before tuning colours.',
+      }),
+    );
+  }
+  if (themed.status === 'FAIL') {
+    out.push(
+      finding({
+        severity: 'error',
+        code: 'PIXEL-DIFF-FAIL',
+        file,
+        message: `${label}: ${themed.diffPercent}% diff exceeds ${opts.warnThreshold}% fail threshold.`,
+        fix: 'Inspect the diff image; run 15-style-parity for exact values; adjust CSS or token mapping. If the design intentionally drifted from Figma, re-export the reference.',
+      }),
+    );
+  } else if (themed.status === 'WARNING') {
+    out.push(
+      finding({
+        severity: 'warning',
+        code: 'PIXEL-DIFF-WARNING',
+        file,
+        message: `${label}: ${themed.diffPercent}% diff is borderline (requires AI review).`,
+      }),
+    );
+  } else if (themed.status === 'UNKNOWN' && themed.error) {
+    out.push(finding({ severity: 'info', code: 'PIXEL-DIFF-SKIPPED', message: `${label}: ${themed.error}` }));
+  }
+  return out;
 }
 
 /**
@@ -376,13 +562,25 @@ async function captureScreenshot({ url, theme, outputPath, componentName }) {
  * Pixelmatch invocation in ONE place (single source of truth for the diff
  * algorithm + thresholds).
  *
- * Returns { ok, diffPixels?, diffPercent?, status?, error? }.
+ * Returns { ok, diffPixels?, diffPercent?, status?, sizeMismatch?, error? }.
  */
-function runVisualDiff({ figmaPath, browserPath, outputPath }) {
+function runVisualDiff({ figmaPath, browserPath, outputPath, align = 'top-left', background = '#ffffff' }) {
   const script = join(REPO_ROOT, 'scripts', 'visual-diff.mjs');
   const res = spawnSync(
     process.execPath,
-    [script, '--figma', figmaPath, '--browser', browserPath, '--output', outputPath],
+    [
+      script,
+      '--figma',
+      figmaPath,
+      '--browser',
+      browserPath,
+      '--output',
+      outputPath,
+      '--align',
+      align,
+      '--background',
+      background,
+    ],
     { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 },
   );
   if (res.status !== 0 && res.status !== 1) {
@@ -405,7 +603,7 @@ async function resolveTargets(args) {
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
-    if (err.message === PLAYWRIGHT_INSTALL_HINT) {
+    if (err.message === PLAYWRIGHT_INSTALL_HINT || err.message === PLAYWRIGHT_BROWSER_HINT) {
       process.stderr.write(`${TOOL}: ${err.message}\n`);
     } else {
       process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);
@@ -414,4 +612,4 @@ if (isDirectRun) {
   });
 }
 
-export { TOOL, DEFAULT_PASS, DEFAULT_WARN };
+export { TOOL, DEFAULT_PASS, DEFAULT_WARN, DEFAULT_SCALE };

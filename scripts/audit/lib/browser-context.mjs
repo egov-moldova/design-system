@@ -18,6 +18,19 @@
 export const PLAYWRIGHT_INSTALL_HINT =
   'Playwright is not installed. Run `yarn add -D playwright` (downloads ~50 MB) before using browser audit scripts.';
 
+/**
+ * The `playwright` package is a devDependency, but its browser binary is a
+ * separate per-machine download. Without it every launch throws a long banner
+ * ("Executable doesn't exist at …"); this is the one-line version.
+ */
+export const PLAYWRIGHT_BROWSER_HINT =
+  'Playwright browser is not installed on this machine. Run `npx playwright install chromium-headless-shell` (~95 MB, once per Playwright version).';
+
+/** True when a launch error means the browser binary has not been downloaded. */
+export function isMissingBrowserError(err) {
+  return /Executable doesn't exist|playwright install/i.test(String(err?.message ?? err));
+}
+
 let _cachedModule = null;
 
 /**
@@ -48,7 +61,13 @@ export async function loadPlaywright() {
  */
 export async function launchBrowser({ headless = true, devtools = false } = {}) {
   const playwright = await loadPlaywright();
-  const browser = await playwright.chromium.launch({ headless, devtools });
+  let browser;
+  try {
+    browser = await playwright.chromium.launch({ headless, devtools });
+  } catch (err) {
+    if (isMissingBrowserError(err)) throw new Error(PLAYWRIGHT_BROWSER_HINT);
+    throw err;
+  }
   return {
     browser,
     async close() {

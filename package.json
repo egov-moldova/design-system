@@ -115,6 +115,8 @@
     "audit:a11y-tree": "node scripts/audit/09-a11y-tree.mjs",
     "audit:contrast-pairs": "node scripts/audit/10-contrast-pairs.mjs",
     "audit:pixel-diff": "node scripts/audit/11-pixel-diff-states.mjs",
+    "audit:style-parity": "node scripts/audit/15-style-parity.mjs",
+    "audit:figma-refs": "node scripts/audit/figma-refs.mjs",
     "audit:console-errors": "node scripts/audit/12-console-errors.mjs",
     "audit:all": "node scripts/audit/run-all.mjs",
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",

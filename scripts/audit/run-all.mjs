@@ -20,8 +20,11 @@
  *     08-bundle-size           (reads dist/mud/*)
  *     13-token-diff            (component mode requires tokens-tokenhaus.json)
  *
- *   Wave C — defer to Sprint 3:
- *     09-a11y-tree, 10-contrast-pairs, 11-pixel-diff-states, 12-console-errors
+ *   Wave C (browser; needs Storybook + Playwright):
+ *     09-a11y-tree, 10-contrast-pairs, 11-pixel-diff-states, 12-console-errors,
+ *     15-style-parity
+ *   11 runs when the component has a Figma state manifest or --figma-dir is
+ *   given; 15 runs only for a single component that has a manifest.
  *
  * Why this exists:
  *   AI agents call ONE script (this) instead of 10+ commands. Saves tokens
@@ -37,10 +40,11 @@ import { spawn } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL } from './lib/exit-codes.mjs';
 import { SCHEMA_VERSION, flushStdout } from './lib/json-output.mjs';
+import { manifestPathFor } from './lib/figma-manifest.mjs';
 
 const TOOL = 'run-all';
 
@@ -60,12 +64,13 @@ Options:
   --out <file>        Write the combined JSON envelope to a file
   --skip <ids>        Comma-separated list of script ids to skip (e.g. 06,08)
   --only <ids>        Comma-separated list — only run these scripts
-  --no-browser        Skip Wave C (browser scripts: 09, 10, 11, 12). Equivalent to
-                      --skip 09,10,11,12. Used by CI before Playwright is installed.
+  --no-browser        Skip Wave C (browser scripts: 09, 10, 11, 12, 15). Equivalent to
+                      --skip 09,10,11,12,15. Used by CI before Playwright is installed.
   --ci                Skip Wave C AND set meta.ciDetected: true in the envelope.
                       Also auto-enabled when process.env.CI is set. Layer 2 (MCP)
                       checks in the audit-component skill are NOT executed in CI.
-  --figma-dir <dir>   Forwarded to 11-pixel-diff-states (required to run that script)
+  --figma-dir <dir>   Forwarded to 11-pixel-diff-states (story mode; not needed when the
+                      component has src/components/<name>/test/<name>.figma.json)
   --no-color          Disable ANSI colors
   --help, -h          Show this help
 
@@ -76,7 +81,8 @@ Script ids:
   Wave B (depends on existing build artifacts):
     06 test-coverage, 08 bundle-size, 13 token-diff
   Wave C (browser; needs Storybook + Playwright):
-    09 a11y-tree, 10 contrast-pairs, 11 pixel-diff-states, 12 console-errors`;
+    09 a11y-tree, 10 contrast-pairs, 11 pixel-diff-states, 12 console-errors,
+    15 style-parity`;
 
 const AUDIT_SCRIPTS = [
   {
@@ -154,6 +160,14 @@ const AUDIT_SCRIPTS = [
     wave: 'C',
     file: '12-console-errors.mjs',
     name: 'console-errors',
+    perComponent: true,
+    requiresBuild: 'browser',
+  },
+  {
+    id: '15',
+    wave: 'C',
+    file: '15-style-parity.mjs',
+    name: 'style-parity',
     perComponent: true,
     requiresBuild: 'browser',
   },
@@ -276,16 +290,20 @@ async function main() {
   process.exit(combined.ok ? 0 : 1);
 }
 
-function selectScripts(args) {
+export function selectScripts(args) {
   let scripts = AUDIT_SCRIPTS.slice();
   if (args.only.size > 0) scripts = scripts.filter(s => args.only.has(s.id));
   if (args.skip.size > 0) scripts = scripts.filter(s => !args.skip.has(s.id));
   // CI and --no-browser both skip Wave C (the browser-driven scripts). CI
   // additionally signals the SKILL to skip Layer 2 (see meta.layer2Required).
   if (args.noBrowser || args.ci) scripts = scripts.filter(s => s.wave !== 'C');
-  // 11-pixel-diff requires --figma-dir; silently drop it if not provided so
-  // run-all stays useful in environments where the reference set isn't synced.
-  if (!args.figmaDir) scripts = scripts.filter(s => s.id !== '11');
+  // 11 and 15 compare against Figma: they need a component's state manifest
+  // (15 always; 11 unless --figma-dir supplies story-mode references). Drop
+  // them silently otherwise so run-all stays useful for every component.
+  const name = args.component ? normalizeComponentName(args.component) : null;
+  const hasManifest = Boolean(name) && existsSync(manifestPathFor(name));
+  if (!args.figmaDir && !hasManifest) scripts = scripts.filter(s => s.id !== '11');
+  if (!hasManifest) scripts = scripts.filter(s => s.id !== '15');
   return scripts;
 }
 
