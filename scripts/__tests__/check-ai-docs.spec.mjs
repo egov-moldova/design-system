@@ -334,3 +334,36 @@ describe('import rule', () => {
     assert.deepEqual(checkAiDocs({ root }), []);
   });
 });
+
+describe('yarn-script rule', () => {
+  const scriptPkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      scripts: { 'lint': 'eslint .', 'tokens.lint': 'node x.mjs' },
+    });
+
+  it('flags a yarn command naming no script, in a code span and in a fenced block', () => {
+    const root = makeFixture({
+      'package.json': scriptPkg(),
+      '_agents/detail.md': 'Run `yarn lint.tokens` first.\n\n```bash\nyarn tokens.lint\nyarn generate\n```\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [
+        ['_agents/detail.md', 1, 'yarn-script'],
+        ['_agents/detail.md', 5, 'yarn-script'],
+      ],
+    );
+  });
+
+  it('passes real scripts, yarn built-ins and binaries, and prose outside code', () => {
+    const root = makeFixture({
+      'package.json': scriptPkg(),
+      'node_modules/.bin/vitest': '',
+      '_agents/detail.md':
+        'Run `yarn lint`, `yarn install`, `yarn npm audit` or `yarn vitest run`. Plain yarn anything prose.\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

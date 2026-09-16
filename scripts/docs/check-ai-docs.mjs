@@ -21,6 +21,7 @@
  *                     does not exist and is not git-ignored.
  *   agent-slash    — a `.claude/agents/<name>` subagent written as `/<name>`,
  *                     a slash command that does not exist.
+ *   yarn-script    — `yarn <name>` in code naming no script, built-in or binary.
  *   import         — a `CLAUDE.md` `@path` import that does not resolve.
  *   agent-catalog  — a `.claude/agents/<name>.md` with no table row in
  *                     `.claude/agents/README.md`.
@@ -366,6 +367,82 @@ function checkAgentSlash(relPath, lines, pattern) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: yarn-script
+// ---------------------------------------------------------------------------
+
+// `yarn <name>` inside a code span or at the start of a fenced line must name a
+// script of the root or a workspace package.json, a Yarn built-in, or a binary
+// Yarn can run. Prose outside code is not read: it is not a command.
+const YARN_BUILTINS = new Set([
+  'add',
+  'bin',
+  'cache',
+  'config',
+  'constraints',
+  'dedupe',
+  'dlx',
+  'exec',
+  'explain',
+  'info',
+  'init',
+  'install',
+  'link',
+  'node',
+  'npm',
+  'pack',
+  'patch',
+  'patch-commit',
+  'plugin',
+  'rebuild',
+  'remove',
+  'run',
+  'search',
+  'set',
+  'stage',
+  'unlink',
+  'up',
+  'upgrade-interactive',
+  'version',
+  'why',
+  'workspace',
+  'workspaces',
+]);
+
+function knownYarnNames(root, pkg) {
+  const names = new Set([...Object.keys(pkg.scripts ?? {}), ...YARN_BUILTINS]);
+  for (const ws of Array.isArray(pkg.workspaces) ? pkg.workspaces : []) {
+    try {
+      const wsPkg = JSON.parse(fs.readFileSync(path.join(root, ws, 'package.json'), 'utf8'));
+      for (const n of Object.keys(wsPkg.scripts ?? {})) names.add(n);
+    } catch {
+      // a glob or a missing workspace contributes no names
+    }
+  }
+  try {
+    for (const bin of fs.readdirSync(path.join(root, 'node_modules', '.bin'))) names.add(bin);
+  } catch {
+    // no install: binaries cannot be told apart, so only scripts and built-ins count
+  }
+  return names;
+}
+
+function checkYarnScripts(relPath, lines, known) {
+  const hits = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    const re = inFence ? /^\s*yarn\s+([a-z][\w:.-]*)/g : /`yarn\s+([a-z][\w:.-]*)[^`]*`/g;
+    for (const m of line.matchAll(re)) {
+      if (!known.has(m[1])) hits.push(makeHit(relPath, i + 1, 'yarn-script', `\`yarn ${m[1]}\` names no script`));
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: import
 // ---------------------------------------------------------------------------
 
@@ -591,6 +668,7 @@ export function checkAiDocs({ root }) {
   const realPackageName = pkg.name;
   const sdMajor = dependencyMajor(pkg, 'style-dictionary');
   const agentSlash = agentSlashPattern(root);
+  const yarnNames = knownYarnNames(root, pkg);
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -618,6 +696,7 @@ export function checkAiDocs({ root }) {
     if (needsDocScope) hits.push(...checkLinks(relPath, absPath, lines, root));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkPaths(relPath, lines, root));
     if (path.basename(relPath) === 'CLAUDE.md') hits.push(...checkImports(relPath, absPath, lines));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkYarnScripts(relPath, lines, yarnNames));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
