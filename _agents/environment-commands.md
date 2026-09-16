@@ -178,7 +178,7 @@ yarn test.dev                                                     # Run all test
 
 # Utilities
 yarn generate                  # Stencil component generator scaffolding
-yarn svg:icons                 # format.icons, then rebuild icons.manifest.json
+yarn svg:icons                 # format.icons, then rebuild icons.manifest.json and icon-names.ts
 yarn format.icons              # both passes below, over src/components/mud-icon/assets/**
 yarn svg:remove-size           # drop the root width/height (CSS sizes the inlined svg)
 yarn svg:remove-fill           # drop hardcoded paint, keeping currentColor and none
