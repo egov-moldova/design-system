@@ -290,7 +290,8 @@ describe('agent-catalog rule', () => {
       'package.json': pkgJson(),
       '.claude/agents/new-component.md': 'x',
       '.claude/agents/test-writer.md': 'x',
-      '.claude/agents/README.md': '| Agent | Purpose |\n| --- | --- |\n| `new-component` | builds |\n\nNote: `test-writer` runs after.\n',
+      '.claude/agents/README.md':
+        '| Agent | Purpose |\n| --- | --- |\n| `new-component` | builds |\n\nNote: `test-writer` runs after.\n',
     });
     assert.deepEqual(
       checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
