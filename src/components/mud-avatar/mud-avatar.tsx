@@ -1,5 +1,6 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { AvatarSize, AvatarType } from './mud-avatar.types';
 import { ICON_SIZE_FOR, deriveInitials } from './mud-avatar.utils';
 
@@ -71,7 +72,7 @@ export class MudAvatar {
    * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
    * @default 'person'
    */
-  @Prop() iconName: string = 'person';
+  @Prop() iconName: IconName = 'person';
 
   /**
    * Accessible label override. When set, becomes the host's `aria-label` and

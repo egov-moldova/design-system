@@ -1,5 +1,6 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from './mud-search-input.types';
 import type {
   SearchInputChangeDetail,
@@ -134,7 +135,7 @@ export class MudSearchInput {
    * Override by providing an element to the `icon-start` slot.
    * @default 'search'
    */
-  @Prop({ attribute: 'icon-name' }) iconName: string = 'search';
+  @Prop({ attribute: 'icon-name' }) iconName: IconName = 'search';
 
   /**
    * Accessible label for the trailing clear button. Defaults to Romanian

@@ -1,5 +1,6 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Method, Prop } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { MenuItemLeading, MenuItemSelectDetail, MenuType } from './mud-menu.types';
 
 /**
@@ -26,7 +27,7 @@ export class MudMenuItem {
   @Prop({ reflect: true }) leading: MenuItemLeading = 'none';
 
   /** Icon name to render when `leading="icon"`. */
-  @Prop() icon?: string;
+  @Prop() icon?: IconName;
 
   /** Whether the item is selected (selection menus) or checked (checkbox/radio leading). */
   @Prop({ reflect: true, mutable: true }) selected = false;

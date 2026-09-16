@@ -54,7 +54,7 @@
       "background": {
         "hover": { "$value": "{color.background.danger.secondary}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
     "background": {
       "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },

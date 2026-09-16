@@ -31,6 +31,9 @@ export type {
   ServiceButtonType,
 } from './components/mud-service-button/mud-service-button.types';
 
+export { ICON_NAMES, isIconName } from './components/mud-icon/mud-icon.types';
+export type { IconName } from './components/mud-icon/mud-icon.types';
+
 export { MudToast } from './components/mud-toast/mud-toast';
 export { TOAST_VARIANTS } from './components/mud-toast/mud-toast.types';
 export type { ToastVariant } from './components/mud-toast/mud-toast.types';

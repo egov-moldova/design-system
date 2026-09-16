@@ -121,7 +121,7 @@
         "placeholder": { "$value": "{color.text.base.tertiary}", "$type": "color" },
         "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
     "submitButton": {
       "size": {

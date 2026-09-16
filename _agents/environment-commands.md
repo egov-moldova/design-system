@@ -4,7 +4,7 @@
 
 Environment awareness checks and all build/dev commands. **Read before starting dev server or running builds.**
 
-> **Wireit**: All build scripts use [google/wireit](https://github.com/google/wireit) for declarative dependency graphs, automatic parallelism, and incremental caching. When you run a command like `yarn build`, wireit automatically runs its dependencies (`tokens.build`, `tokens.build.prod`, `wca.custom-elements`) in parallel first, then runs the stencil build. Unchanged inputs are skipped via caching — repeated `yarn tokens.build` calls return in ~0.1s if nothing changed. Services (`dev`, `dx:stencil`, `dx:storybook`, `tokens.watch`) use `service: true` for long-running processes.
+> **Wireit**: All build scripts use [google/wireit](https://github.com/google/wireit) for declarative dependency graphs, automatic parallelism, and incremental caching. When you run a command like `yarn build`, wireit automatically runs its dependencies (`tokens.build`, `tokens.build.prod`) in parallel first, then runs the stencil build. Unchanged inputs are skipped via caching — repeated `yarn tokens.build` calls return in ~0.1s if nothing changed. Services (`dev`, `dx:stencil`, `dx:storybook`, `tokens.watch`) use `service: true` for long-running processes.
 
 ---
 
@@ -79,7 +79,7 @@ yarn sp.dev.watch handles all three in watch mode. Only run it once.
 | `.css` / `.tsx` (NO watch) | `yarn dx:stencil:once` | ~20s | Single Stencil build without docs |
 | `.stories.ts` only | *(nothing — Storybook HMR)* | ~1s | Vite hot-reloads instantly |
 | `.tokens.json` + `.css` | `yarn tokens.build` → wait for watch | ~7s | Tokens first, watch handles CSS |
-| New component (all files) | `yarn tokens.build` + `yarn wca.custom-elements` | ~10s | Watch handles Stencil; WCA updates metadata |
+| New component (all files) | `yarn tokens.build` | ~10s | Watch handles Stencil and rewrites the Storybook manifest |
 
 **Why safe**: Token CSS files are standalone (`dist/mud/tokens/*.css`) loaded at runtime via `<link>`. Components use `var(--name)` — no inline values. Stories processed by Vite independently.
 
@@ -178,7 +178,6 @@ yarn test.dev                                                     # Run all test
 
 # Utilities
 yarn generate                  # Stencil component generator scaffolding
-yarn wca.custom-elements       # Generate custom-elements.json for Storybook
 yarn svg:icons                 # format.icons, then rebuild icons.manifest.json
 yarn format.icons              # both passes below, over src/components/mud-icon/assets/**
 yarn svg:remove-size           # drop the root width/height (CSS sizes the inlined svg)

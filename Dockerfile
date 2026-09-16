@@ -9,6 +9,8 @@ WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY web-components/package.json ./web-components/
 COPY react/package.json ./react/
+# yarn.lock resolves patched packages from these files, so the install fails without them
+COPY .yarn/patches ./.yarn/patches
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner
@@ -27,12 +29,12 @@ ENV STORYBOOK_DISABLE_TELEMETRY=1
 ENV NODE_ENV=production
 
 # Build the application with explicit timeout and error handling
-# yarn build runs tokens.build.prod + wca.custom-elements in parallel (Stencil + dist tokens)
+# yarn build runs tokens.build.prod, then Stencil (dist + .storybook/custom-elements.json)
 # yarn tokens.build runs afterwards to write tokens/generated/*.css for Storybook preview-head.html
 # PERF: BuildKit cache mount for Stencil cache — only changed components recompile
 RUN --mount=type=cache,target=/app/.stencil \
     set -e && \
-    echo "[1/2] Building Stencil components + tokens + custom-elements (parallel)..." && \
+    echo "[1/2] Building Stencil components + tokens + custom-elements manifest..." && \
     timeout 600 yarn build || (echo "Build timed out or failed" && exit 1) && \
     echo "[2/2] Building token CSS for Storybook preview..." && \
     yarn tokens.build && \

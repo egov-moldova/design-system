@@ -61,9 +61,24 @@
     },
     "qr": {
       "size": { "$value": "128px", "$type": "dimension" },
-      "_comment": "QR background + module color must be theme-locked (light surface, dark modules) for reliable scanning by phone cameras — even when the surrounding receipt is in dark mode. We anchor to palette primitives intentionally so semantic theme overrides cannot invert them.",
-      "background": { "$value": "{palette.white.1000}", "$type": "color" },
-      "moduleColor": { "$value": "{palette.black.1000}", "$type": "color" },
+      "background": {
+        "$value": "{palette.white.1000}",
+        "$type": "color",
+        "$extensions": {
+          "md.egov.mud": {
+            "tierPurityException": "QR codes stay theme-locked (light surface, dark modules) so phone cameras can scan them in dark mode too; semantic tokens would follow the theme and invert them."
+          }
+        }
+      },
+      "moduleColor": {
+        "$value": "{palette.black.1000}",
+        "$type": "color",
+        "$extensions": {
+          "md.egov.mud": {
+            "tierPurityException": "QR codes stay theme-locked (light surface, dark modules) so phone cameras can scan them in dark mode too; semantic tokens would follow the theme and invert them."
+          }
+        }
+      },
       "padding": { "$value": "{spacing.12}", "$type": "dimension" },
       "borderColor": { "$value": "{color.border.base.tertiary}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },

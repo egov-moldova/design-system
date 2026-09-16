@@ -1,5 +1,6 @@
-import { Config } from '@stencil/core';
-import { OutputTarget } from '@stencil/core/internal';
+// `Config` from `/internal` rather than the `@stencil/core` re-export (`StencilConfig`):
+// only the internal interface declares `buildDocs`, which the compiler reads at runtime.
+import { Config, OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
 import { reactOutputTarget as react } from '@stencil/react-output-target';
 
@@ -37,6 +38,14 @@ const outputTargets: OutputTarget[] = [
         ],
   },
 ];
+
+// Storybook builds every API table from this manifest (`.storybook/preview.js`).
+// It is written by Stencil from the same decorators and `@part` tags as `readme.md`,
+// so the tables and the readmes cannot disagree (issue #18).
+outputTargets.push({
+  type: 'docs-custom-elements-manifest',
+  file: '.storybook/custom-elements.json',
+});
 
 // PERF: The base build only needs 'dist' (lazy). www output is unused —
 // skip it entirely. docs-readme only on --docs.
@@ -109,6 +118,12 @@ export const config: Config = {
   // module graph stays valid between rebuilds (fewer modules need invalidating).
   hashFileNames: !isWatchMode,
   outputTargets,
+  // Docs output targets only run when this is true, and Stencil defaults it to false
+  // under `--dev`. Forced on so the watch build behind `yarn dev` keeps the Storybook
+  // manifest current. `docs-readme` is still added only under `--docs`, so dev builds
+  // write no readme files. Measured on a one-shot `stencil build --dev` (3 runs each):
+  // 7.27 s without the manifest target, 7.19 s with it; watch rebuilds were not timed.
+  buildDocs: true,
   // Testing is now handled by Vitest via @stencil/vitest.
   // See vitest.config.ts + vitest-setup.ts.
   extras: {

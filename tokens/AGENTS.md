@@ -162,7 +162,7 @@ yarn sync:tokens:apply                                            # real run
 ## Critical Rules (Always Active)
 
 1. **3-Tier Hierarchy**: Component CSS → semantic tokens → palette tokens. Never skip tiers.
-2. **No palette in component tokens**: `{palette.*}` references forbidden in `tokens/core/components/*.tokens.json`. Use `{color.*}` semantic references.
+2. **No palette in component tokens**: `{palette.*}` references forbidden in `tokens/core/components/*.tokens.json`. Use `{color.*}` semantic references. Deliberate, reasoned exceptions only: see `_agents/semantic-tokens.md`.
 3. **camelCase in JSON**: Compound properties like `fontSize`, `borderRadius`, `padding-inline`. Style Dictionary converts to kebab-case CSS vars.
 4. **No "components" wrapper**: Component name at JSON root — `{ "button": {} }` not `{ "components": { "button": {} } }`.
 5. **Always use references**: Component tokens must reference core tokens (`{color.neutral.text.default}`) — never raw hex/px values.

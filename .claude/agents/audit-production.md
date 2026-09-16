@@ -279,14 +279,26 @@ No `aria-*` on non-interactive elements unless they have `role`.
 
 ### 3.3 Color Contrast (SC 1.4.3 + 1.4.11) — both modes
 
-Covered by Fast Path script `10-contrast-pairs.mjs` which captures computed
-fg/bg/border for every interactive element in both themes and applies the
-WCAG 2.1 AA thresholds (4.5:1 normal, 3:1 large/UI, disabled exempt).
+Covered by Fast Path script `10-contrast-pairs.mjs` which measures computed
+text color against the composited background for every interactive element in
+both themes (`borderColor` is collected but never evaluated) and applies the
+WCAG 2.1 AA thresholds (4.5:1 normal, 3:1 large/UI). Disabled elements are
+exempt from the contrast threshold, but not from `*-UNREADABLE`, which is a
+tool limit reported as a warning. The script measures text contrast; it does
+not check SC 1.4.11 non-text contrast (a control's boundary against its
+surroundings), so that part of this section is still judged by hand.
 
-Cross-reference with `yarn audit:contrast` (token-level). Both must exit 0;
-any runtime FAIL that token-level didn't catch indicates the component CSS
-picked the wrong token (fix the component); any token-level FAIL that
-runtime didn't catch indicates a token mapping issue (fix the token).
+Cross-reference with `yarn audit:contrast` (token-level), knowing the two can
+legitimately disagree: the runtime script composites a translucent background
+over the layers behind it and the token audit does not, so a translucent tint
+can pass one and fail the other with neither being wrong. When they disagree,
+find which layer is translucent before attributing the failure.
+
+Do not fix a contrast failure by editing a token value. `tokens/core/` and
+`tokens/core.dark/` are exported from Figma — the design source of truth — and
+`yarn sync:tokens:apply` overwrites them. Report a failing token value as a
+design observation, with the measured colors and the token names; only a
+component referencing the wrong semantic token for its role is a code fix.
 
 For one-off spot checks at a specific selector, the legacy MCP path still
 works:

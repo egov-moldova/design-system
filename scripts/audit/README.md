@@ -245,7 +245,13 @@ before using browser audit scripts.
 
 Smoke tests for Wave C exercise only pure helpers (color math, classification,
 URL building) and pass without Playwright. The actual browser flow is verified
-manually once a dev installs the dep.
+manually once a dev installs the dep — with one exception:
+`scripts/__tests__/audit/10-contrast-pairs.browser.spec.mjs` drives a real
+Chromium over a hand-built shadow tree in a `data:` URL, so it needs neither
+Storybook nor the build output. It skips, with the launch error as its reason,
+only when a browser cannot START on the machine; once one has started, every
+failure fails the test — including one thrown by the code under test inside
+`page.evaluate`, which is the regression it exists to catch.
 
 ## Pixel-diff — Pixelmatch direct, NOT Playwright's compare
 
@@ -300,6 +306,10 @@ audit findings yet. Flip to `false` after a sprint of clean runs.
    shape stays uniform.
 5. Add a smoke test under `scripts/__tests__/audit/<NN>-<name>.spec.mjs` —
    the glob `"scripts/__tests__/**/*.spec.mjs"` picks it up automatically.
+   When a behavior lives inside `page.evaluate` and no pure helper can reach
+   it, export the inner browser-driving function too and test it against a
+   `data:` URL fixture — `10-contrast-pairs.mjs` exports `measureSamples` for
+   exactly that.
 6. Register the script in `AUDIT_SCRIPTS` inside `run-all.mjs` (set `wave`,
    `requiresBuild`, etc.).
 7. Add an `audit:<short-name>` entry to `package.json` scripts.

@@ -217,7 +217,7 @@ describe('mud-breadcrumb', () => {
   describe('iconStart (Figma "w/ leading-icon")', () => {
     it('renders <mud-icon> when the item has iconStart', async () => {
       const items: BreadcrumbItem[] = [
-        { label: 'Acasă', href: '/', iconStart: 'home-small' },
+        { label: 'Acasă', href: '/', iconStart: 'home-line' },
         { label: 'Detalii', active: true },
       ];
       const { root } = await render(<mud-breadcrumb items={items}></mud-breadcrumb>);
@@ -225,7 +225,7 @@ describe('mud-breadcrumb', () => {
       expect(icon).toBeTruthy();
       expect(icon?.tagName.toLowerCase()).toBe('mud-icon');
       // Name prop set on the mud-icon instance
-      expect(icon?.name).toBe('home-small');
+      expect(icon?.name).toBe('home-line');
     });
   });
 
@@ -613,7 +613,7 @@ describe('mud-breadcrumb-item', () => {
   it('renders the icon-start slot in shadow DOM', async () => {
     const { root } = await render(
       <mud-breadcrumb-item href="/a">
-        <mud-icon slot="icon-start" name="home-small"></mud-icon>
+        <mud-icon slot="icon-start" name="home-line"></mud-icon>
         Acasă
       </mud-breadcrumb-item>,
     );

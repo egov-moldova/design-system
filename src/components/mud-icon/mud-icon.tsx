@@ -2,13 +2,13 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import defaultManifest from './assets/icons.manifest.json';
 import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
-import type { IconManifest, IconSize } from './mud-icon.types';
+import { isIconName, type IconManifest, type IconName, type IconSize } from './mud-icon.types';
 
 /**
  * Icon — renders an inline SVG fetched on-demand from per-size asset files.
  *
  * Names follow the Material Symbols convention: append `-filled` to the base name
- * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+ * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
  *
  * When the exact `size`/`name` combination is missing from the manifest, the
  * provider falls back to the closest larger size (preferred) and then to the
@@ -24,10 +24,9 @@ import type { IconManifest, IconSize } from './mud-icon.types';
 })
 export class MudIcon {
   /**
-   * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
-   * @default 'check'
+   * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
    */
-  @Prop() name: string = 'check';
+  @Prop() name!: IconName;
 
   /**
    * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
@@ -72,7 +71,7 @@ export class MudIcon {
   };
 
   @Watch('name')
-  async onNameChange(newVal: string, oldVal: string): Promise<void> {
+  async onNameChange(newVal: IconName, oldVal: IconName): Promise<void> {
     if (newVal === oldVal) return;
     await this.loadSvg();
   }
@@ -108,7 +107,10 @@ export class MudIcon {
     const requestedName = this.name;
     const requestedSize = this.size;
     const manifest = defaultManifest as IconManifest;
-    if (!manifest[requestedName]) {
+    // `isIconName`, not `manifest[name]` / `name in manifest`: a runtime string such as
+    // "constructor" resolves through Object.prototype and reached `entry.sizes.includes`
+    // as undefined, throwing inside componentWillLoad (test/mud-icon.spec.tsx).
+    if (!isIconName(requestedName)) {
       console.warn(`[mud-icon] Icon not found: name="${requestedName}" size=${requestedSize}`);
       this.svgCacheKey = '';
       this.svgElement = null;
@@ -149,7 +151,7 @@ export class MudIcon {
   }
 
   private get isKnownName(): boolean {
-    return this.name in defaultManifest;
+    return isIconName(this.name);
   }
 
   render() {

@@ -21,7 +21,7 @@ src/components.d.ts                                           merge=ours linguis
 src/components/*/readme.md                                    merge=ours linguist-generated=true
 src/hidden/*/readme.md                                        merge=ours linguist-generated=true
 
-# Web Components analyzer output (wca.custom-elements wireit target)
+# Custom Elements Manifest for Storybook (Stencil docs-custom-elements-manifest output target)
 .storybook/custom-elements.json                               merge=ours linguist-generated=true
 
 # Style Dictionary token build outputs (tokens.build wireit target)

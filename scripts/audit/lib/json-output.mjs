@@ -66,6 +66,27 @@ function summarize(findings) {
  * @param {boolean} [opts.noColor] — disable ANSI colors
  */
 export async function emit(result, opts = {}) {
+  await writeResult(result, opts);
+  await flushStdout();
+}
+
+/**
+ * Resolve once everything queued on stdout has been handed to the OS.
+ *
+ * On a pipe, `process.stdout.write` is asynchronous, and every audit script
+ * calls `process.exit()` right after `await emit(...)`. Exiting drops whatever
+ * the kernel pipe buffer had not yet accepted, so an envelope larger than that
+ * buffer arrived cut off at exactly 65536 bytes, with exit 0 — and `run-all.mjs`,
+ * which reads each script's `--json` through a pipe, then failed to parse it.
+ * An empty write's callback fires only after every earlier write has flushed.
+ * Baseline: `node scripts/audit/10-contrast-pairs.mjs mud-date-picker --json | wc -c`
+ * -> 65536 before this, while `--out` wrote the full 75560-byte envelope.
+ */
+export function flushStdout() {
+  return new Promise(resolve => process.stdout.write('', resolve));
+}
+
+async function writeResult(result, opts) {
   if (opts.out) {
     await fs.mkdir(path.dirname(path.resolve(opts.out)), { recursive: true });
     await fs.writeFile(opts.out, JSON.stringify(result, null, 2), 'utf8');
