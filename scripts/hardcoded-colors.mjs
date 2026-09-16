@@ -163,7 +163,7 @@ const RE_HEX = () => /(?<![a-zA-Z0-9_/-])#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-f
 // opens the file's first comment and carries a reason after ` -- `, so a prose mention further down
 // cannot switch the check off and every exemption states why it exists.
 const DISABLE_FILE_DIRECTIVE = 'hardcoded-colors-disable-file';
-const RE_DISABLE_FILE = new RegExp(`^\\s*\\*?\\s*${DISABLE_FILE_DIRECTIVE}\\b(?:\\s+--\\s+(\\S[\\s\\S]*?))?\\s*$`);
+const RE_DISABLE_FILE = new RegExp(`^[\\s*]*${DISABLE_FILE_DIRECTIVE}\\b(?:\\s+--\\s+(\\S[\\s\\S]*?))?\\s*$`);
 
 // Functional color notations — no whitespace before ( to avoid matching prose like "color (description)"
 const RE_FUNCTIONAL = () => /\b(rgba?|hsla?|oklch|oklab|lab|lch|hwb|color)\(/gi;
@@ -375,6 +375,9 @@ function tsCommentRanges(content, filePath) {
   // Comments are trivia of the next token, so walk tokens (`}`, `else`, `,` included), not just nodes.
   const visit = node => {
     if (ts.isJsxText(node)) return void jsxText.push(node);
+    // JSDoc nodes live inside a comment: scanning trivia at their tags would read `// note` in
+    // `/** @see Foo // note */ code` as a line comment and hide the code after it.
+    if (node.kind >= ts.SyntaxKind.FirstJSDocNode && node.kind <= ts.SyntaxKind.LastJSDocNode) return;
     const children = node.getChildren(sourceFile);
     if (children.length === 0) {
       add(ts.getLeadingCommentRanges(content, node.pos));

@@ -76,6 +76,22 @@ describe('hardcoded-colors — TS/TSX comments', () => {
     assert.deepEqual(issues, []);
   });
 
+  it('does not let `//` inside a one-line JSDoc hide the code after it', () => {
+    const { issues } = lint({
+      'a.ts': [
+        "/** @deprecated // note */ export const d = '#444444';",
+        "/** @see Foo // note */ export const b = '#222222';",
+        "const t = {\n  /** @param x // y */ primary: '#345678',\n};",
+        '',
+      ].join('\n'),
+    });
+    assert.deepEqual(issues, [
+      { file: 'a.ts', line: 1, value: '#444444' },
+      { file: 'a.ts', line: 2, value: '#222222' },
+      { file: 'a.ts', line: 4, value: '#345678' },
+    ]);
+  });
+
   it('parses .jsx as JSX, so `//` in JSX text stays text', () => {
     const { issues } = lint({ 'a.jsx': "const v = <p>a // b {'#123456'}</p>;\n" }, ['--ext', 'jsx']);
     assert.deepEqual(issues, [{ file: 'a.jsx', line: 1, value: '#123456' }]);
@@ -129,6 +145,13 @@ describe('hardcoded-colors — file-level exemption', () => {
       'a.ts': "/** Unlike hardcoded-colors-disable-file -- this is prose. */\nconst c = '#444444';\n",
     });
     assert.deepEqual(issues, [{ file: 'a.ts', line: 2, value: '#444444' }]);
+  });
+
+  it('honours the directive in a multi-line JSDoc block', () => {
+    const { issues } = lint({
+      'a.ts': "/**\n * hardcoded-colors-disable-file -- fixed artwork\n */\nconst c = '#555555';\n",
+    });
+    assert.deepEqual(issues, []);
   });
 
   it('rejects the directive anywhere but the first comment of the file', () => {

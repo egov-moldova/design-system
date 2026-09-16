@@ -45,13 +45,17 @@ describe('tokens-lint — key naming', () => {
   });
 
   it('rejects a key that starts with an uppercase letter or mixes kebab-case with camelCase, suggesting camelCase', () => {
-    const root = tokenRoot({ header: { 'MegaMenu': leaf, 'option-fontFamily': leaf, 'a_b c': leaf } });
+    const root = tokenRoot({
+      header: { 'MegaMenu': leaf, 'option-fontFamily': leaf, 'a_b c': leaf, 'size_1_5': leaf, '2_xl': leaf },
+    });
     const { status, report } = lint(root);
     const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
     assert.deepEqual(suggestions, {
       'error:MegaMenu': 'megaMenu',
       'error:option-fontFamily': 'optionFontFamily',
       'warning:a_b c': 'aBC',
+      'warning:size_1_5': 'size-1-5',
+      'warning:2_xl': '2-xl',
     });
     assert.equal(status, 1);
   });

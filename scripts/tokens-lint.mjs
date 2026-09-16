@@ -119,8 +119,11 @@ function toKebab(key) {
 }
 
 // Suggestions follow the documented camelCase convention: `option-fontFamily` → `optionFontFamily`.
+// Dashes before digits stay (`1-5` is a half step, as in sizes.tokens.json), and a key that starts
+// with a digit cannot be lowerCamelCase, so it keeps its kebab-case form.
 function toCamel(key) {
-  return toKebab(key).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+  const kebab = toKebab(key);
+  return /^[0-9]/.test(kebab) ? kebab : kebab.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 }
 
 function reasonFor(key) {
