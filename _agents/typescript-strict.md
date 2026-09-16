@@ -110,6 +110,8 @@ const tag = this.host.firstElementChild?.tagName?.toLowerCase();
 
 Use `type` keyword for type-only imports/exports.
 
+Imports are enforced: `yarn lint` fails on a value import used only as a type (`@typescript-eslint/consistent-type-imports`, autofixable with `eslint --fix`). `export type` stays a convention.
+
 ```typescript
 // ✅ CORRECT
 import type { Meta, StoryObj } from '@storybook/web-components-vite';

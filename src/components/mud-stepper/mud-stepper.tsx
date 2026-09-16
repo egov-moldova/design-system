@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 
 import type { IconName } from '../mud-icon/mud-icon.types';
 import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';

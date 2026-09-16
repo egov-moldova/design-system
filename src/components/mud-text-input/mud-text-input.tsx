@@ -1,4 +1,5 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';

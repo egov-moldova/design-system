@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, h } from '@stencil/core';
 
 import type { IconName } from '../mud-icon/mud-icon.types';
 

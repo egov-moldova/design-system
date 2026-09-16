@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { TABS_SIZES } from './mud-tabs.types';
 import type { TabDescriptor, TabsChangeDetail, TabsSize } from './mud-tabs.types';

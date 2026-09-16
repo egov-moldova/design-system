@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
 import type {

@@ -1,4 +1,5 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import type { IconName } from '../mud-icon/mud-icon.types';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from './mud-search-input.types';

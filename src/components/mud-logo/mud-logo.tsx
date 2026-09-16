@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { fetchLogoSvg, resolveLogoAssetUrl } from './mud-logo.providers';
 import { LOGO_NAMES, type LogoName } from './mud-logo.types';

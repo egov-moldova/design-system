@@ -1,16 +1,5 @@
-import {
-  AttachInternals,
-  Component,
-  Element,
-  Event,
-  EventEmitter,
-  Host,
-  Listen,
-  Prop,
-  State,
-  Watch,
-  h,
-} from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import {
   DATE_INPUT_BREAKPOINTS,
