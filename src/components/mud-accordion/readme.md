@@ -33,9 +33,9 @@ Consumers may either:
 
 ## Events
 
-| Event       | Description                            | Type                                  |
-| ----------- | -------------------------------------- | ------------------------------------- |
-| `mudChange` | Emitted whenever the open set changes. | `CustomEvent<{ openIds: string[]; }>` |
+| Event       | Description                                                                                                                | Type                                  |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `mudChange` | Emitted whenever the open set changes. `detail.openIds` lists every item currently open (single entry in `mode="single"`). | `CustomEvent<{ openIds: string[]; }>` |
 
 
 ## Slots

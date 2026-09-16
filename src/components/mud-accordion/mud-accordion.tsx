@@ -24,9 +24,6 @@ import type {
  * @element mud-accordion
  *
  * @slot - One or more `<mud-accordion-item>` elements.
- *
- * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
- *                     item currently open (single entry in `mode="single"`).
  */
 @Component({
   tag: 'mud-accordion',
@@ -89,7 +86,8 @@ export class MudAccordion {
   @Element() host!: HTMLMudAccordionElement;
 
   /**
-   * Emitted whenever the open set changes.
+   * Emitted whenever the open set changes. `detail.openIds` lists every item currently
+   * open (single entry in `mode="single"`).
    */
   @Event({ eventName: 'mudChange', bubbles: true, composed: true })
   mudChange!: EventEmitter<AccordionChangeDetail>;

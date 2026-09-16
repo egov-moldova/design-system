@@ -20,7 +20,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 | Format | Prettier | `^3.9.6` (+ `@prettier/plugin-oxc`) |
 | Build orchestration | Wireit | `^0.14.13` |
 | Storybook templates | Lit | `^3.3.2` (Storybook only — not in components) |
-| Custom elements manifest | `web-component-analyzer` | `^2.0.0` |
+| Custom elements manifest | `@stencil/core` (`docs-custom-elements-manifest` output target) | `~4.43.5` |
 | Visual diffing | `pixelmatch` + `pngjs` + Playwright | `^7.1.0` / `^7.0.0` / `^1.63.0` |
 | Commits | `@commitlint/config-conventional` + Husky | `^21.0.1` / `^9.1.7` |
 
@@ -33,7 +33,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 Status quo — the current 3-tier pipeline (palette → semantic → component) in `tokens/core` + `tokens/core.dark` works and is the source of truth. DTCG `$value`/`$type` format keeps the export portable to Figma Variables / Tokenhaus. Build-time CSS custom properties = zero runtime token resolution cost.
 
 ### Wireit for build orchestration
-Declarative dependency graphs + automatic parallelism + content-hashed caching across `tokens.build`, `wca.custom-elements`, `build`, `lint`, `test`. Makes `yarn dev` reliably reproducible across machines and CI.
+Declarative dependency graphs + automatic parallelism + content-hashed caching across `tokens.build`, `build`, `lint`, `test`. Makes `yarn dev` reliably reproducible across machines and CI.
 
 ### Yarn 4 + workspaces
 Two workspaces: `web-components/` for the vanilla adapter and `react/` for the React wrappers. Pinned via `packageManager` field in `package.json` so every contributor / agent / CI run uses the same version.

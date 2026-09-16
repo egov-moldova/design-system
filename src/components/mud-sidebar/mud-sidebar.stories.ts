@@ -526,6 +526,7 @@ const docsSourceAllItemFeatures = /*html*/ `<!-- Icon + label (active — swaps 
 const meta: Meta<SidebarArgs> = {
   title: 'Organisms/Sidebar',
   component: 'mud-sidebar',
+  subcomponents: { 'mud-sidebar-group': 'mud-sidebar-group', 'mud-sidebar-item': 'mud-sidebar-item' },
   argTypes: {
     collapsed: {
       control: 'boolean',

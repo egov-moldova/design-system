@@ -61,6 +61,7 @@ const defaultTabs: TabDescriptor[] = [
 const meta: Meta<StoryArgs> = {
   title: 'Molecules/Tabs',
   component: 'mud-tabs',
+  subcomponents: { 'mud-tab': 'mud-tab' },
   argTypes: {
     size: {
       control: 'select',

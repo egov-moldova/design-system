@@ -106,8 +106,6 @@ export namespace Components {
      *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
      * @element mud-accordion
-     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
-     *              item currently open (single entry in `mode="single"`).
      */
     interface MudAccordion {
         /**
@@ -185,10 +183,6 @@ export namespace Components {
      * a real control with native `disabled` placed directly in the slot, and
      * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
-     * @csspart header - The button that toggles open/closed.
-     * @csspart panel - The region revealed when open.
-     * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
-     * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
      */
     interface MudAccordionItem {
         /**
@@ -3701,8 +3695,6 @@ declare global {
      *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
      * @element mud-accordion
-     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
-     *              item currently open (single entry in `mode="single"`).
      */
     interface HTMLMudAccordionElement extends Components.MudAccordion, HTMLStencilElement {
         addEventListener<K extends keyof HTMLMudAccordionElementEventMap>(type: K, listener: (this: HTMLMudAccordionElement, ev: MudAccordionCustomEvent<HTMLMudAccordionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3767,10 +3759,6 @@ declare global {
      * a real control with native `disabled` placed directly in the slot, and
      * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
-     * @csspart header - The button that toggles open/closed.
-     * @csspart panel - The region revealed when open.
-     * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
-     * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
      */
     interface HTMLMudAccordionItemElement extends Components.MudAccordionItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLMudAccordionItemElementEventMap>(type: K, listener: (this: HTMLMudAccordionItemElement, ev: MudAccordionItemCustomEvent<HTMLMudAccordionItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -5362,8 +5350,6 @@ declare namespace LocalJSX {
      *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
      * @element mud-accordion
-     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
-     *              item currently open (single entry in `mode="single"`).
      */
     interface MudAccordion {
         /**
@@ -5394,7 +5380,7 @@ declare namespace LocalJSX {
          */
         "mode"?: AccordionMode;
         /**
-          * Emitted whenever the open set changes.
+          * Emitted whenever the open set changes. `detail.openIds` lists every item currently open (single entry in `mode="single"`).
          */
         "onMudChange"?: (event: MudAccordionCustomEvent<AccordionChangeDetail>) => void;
         /**
@@ -5445,10 +5431,6 @@ declare namespace LocalJSX {
      * a real control with native `disabled` placed directly in the slot, and
      * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
-     * @csspart header - The button that toggles open/closed.
-     * @csspart panel - The region revealed when open.
-     * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
-     * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
      */
     interface MudAccordionItem {
         /**
@@ -9975,8 +9957,6 @@ declare module "@stencil/core" {
              *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
              *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
              * @element mud-accordion
-             * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
-             *              item currently open (single entry in `mode="single"`).
              */
             "mud-accordion": LocalJSX.IntrinsicElements["mud-accordion"] & JSXBase.HTMLAttributes<HTMLMudAccordionElement>;
             /**
@@ -10021,10 +10001,6 @@ declare module "@stencil/core" {
              * a real control with native `disabled` placed directly in the slot, and
              * server-side enforcement for anything security- or state-sensitive.
              * @element mud-accordion-item
-             * @csspart header - The button that toggles open/closed.
-             * @csspart panel - The region revealed when open.
-             * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
-             * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
              */
             "mud-accordion-item": LocalJSX.IntrinsicElements["mud-accordion-item"] & JSXBase.HTMLAttributes<HTMLMudAccordionItemElement>;
             /**
