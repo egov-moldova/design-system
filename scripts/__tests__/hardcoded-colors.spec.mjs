@@ -14,12 +14,13 @@ afterEach(() => {
 });
 
 /** Writes `files` into a fresh root, runs the linter over it, and returns its JSON report. */
-function lint(files) {
+function lint(files, extraArgs = []) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'hardcoded-colors-'));
   tempDirs.push(root);
   for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(root, name), content);
   const out = path.join(root, 'report.json');
-  const run = spawnSync(process.execPath, [SCRIPT, '--root', root, '--out', out, '--no-color'], { encoding: 'utf8' });
+  const args = [SCRIPT, '--root', root, '--out', out, '--no-color', ...extraArgs];
+  const run = spawnSync(process.execPath, args, { encoding: 'utf8' });
   const report = JSON.parse(fs.readFileSync(out, 'utf8'));
   return {
     status: run.status,
@@ -44,9 +45,42 @@ describe('hardcoded-colors — hex detection', () => {
     assert.deepEqual(issues, []);
     assert.equal(status, 0);
   });
+
+  it('does not read a fragment after a URL path as a colour', () => {
+    const { issues } = lint({ 'a.ts': "const href = 'https://gov.md/#fab';\nconst add = '/#add';\n" });
+    assert.deepEqual(issues, []);
+  });
 });
 
 describe('hardcoded-colors — TS/TSX comments', () => {
+  it('ignores comments that close a block, precede `else` or end an object literal', () => {
+    const { issues } = lint({
+      'a.ts': [
+        'function f() {',
+        '  run();',
+        '  // legacy #fff',
+        '}',
+        'if (x) {',
+        '  y();',
+        '}',
+        '// was #000',
+        'else {',
+        '}',
+        'const o = {',
+        '  a: 1,',
+        '  // old #abc',
+        '};',
+        '',
+      ].join('\n'),
+    });
+    assert.deepEqual(issues, []);
+  });
+
+  it('parses .jsx as JSX, so `//` in JSX text stays text', () => {
+    const { issues } = lint({ 'a.jsx': "const v = <p>a // b {'#123456'}</p>;\n" }, ['--ext', 'jsx']);
+    assert.deepEqual(issues, [{ file: 'a.jsx', line: 1, value: '#123456' }]);
+  });
+
   it('ignores hex colours inside block and JSDoc comments', () => {
     const { issues } = lint({
       'a.tsx': '/**\n * `:visited` flips to `#aa18ce`.\n */\nconst x = 1; /* was #fff */\n// legacy #000\n',
@@ -82,6 +116,29 @@ describe('hardcoded-colors — file-level exemption', () => {
     assert.deepEqual(issues, [
       { file: 'flags.ts', line: 1, value: 'hardcoded-colors-disable-file' },
       { file: 'flags.ts', line: 2, value: '#cc092f' },
+    ]);
+  });
+
+  it('accepts a reason that starts with markdown emphasis', () => {
+    const { issues } = lint({ 'a.ts': "// hardcoded-colors-disable-file -- *not* themeable\nconst c = '#555555';\n" });
+    assert.deepEqual(issues, []);
+  });
+
+  it('does not let a comment that merely mentions the directive exempt the file', () => {
+    const { issues } = lint({
+      'a.ts': "/** Unlike hardcoded-colors-disable-file -- this is prose. */\nconst c = '#444444';\n",
+    });
+    assert.deepEqual(issues, [{ file: 'a.ts', line: 2, value: '#444444' }]);
+  });
+
+  it('rejects the directive anywhere but the first comment of the file', () => {
+    const { status, issues } = lint({
+      'a.ts': "// header\nconst c = '#555555';\n// hardcoded-colors-disable-file -- too late\n",
+    });
+    assert.equal(status, 1);
+    assert.deepEqual(issues, [
+      { file: 'a.ts', line: 2, value: '#555555' },
+      { file: 'a.ts', line: 3, value: 'hardcoded-colors-disable-file' },
     ]);
   });
 

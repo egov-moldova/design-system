@@ -6,6 +6,10 @@
  * Detects hex colors, rgb/rgba/hsl/hsla functions, modern color functions, and named
  * CSS colors (CSS/SCSS only). Reports file:line:col links like tokens-lint.
  *
+ * Fixed artwork whose colours are not themeable (flags, illustrations) opts out as a whole file by
+ * opening it with this comment (`/* ... *\/` in stylesheets):
+ *   // hardcoded-colors-disable-file -- <why these colours cannot be tokens>
+ *
  * Usage:
  *   node scripts/hardcoded-colors.mjs
  *   node scripts/hardcoded-colors.mjs --root src --out reports/hardcoded-colors.json
@@ -151,13 +155,15 @@ function isAllowed(value) {
 // The negative lookbehind avoids matching inside CSS custom property names (`--my-bg-#abc` never happens,
 // but just to be safe we also skip if preceded by a word char or dash).
 // The lookahead rejects any identifier character, not only hex digits: URL fragments such as
-// `#accesibilitate` and `#a11y` otherwise match their leading `#acce` / `#a11`.
-const RE_HEX = () => /(?<![a-zA-Z0-9_-])#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![\w-])/g;
+// `#accesibilitate` and `#a11y` otherwise match their leading `#acce` / `#a11`. A `/` before the `#`
+// is a URL path (`https://gov.md/#fab`), never a colour.
+const RE_HEX = () => /(?<![a-zA-Z0-9_/-])#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![\w-])/g;
 
-// File-level exemption for colours that are not themeable (e.g. national flags). Only honoured inside a
-// comment, and only with a reason after ` -- `, so every exemption states why it exists.
+// File-level exemption for colours that are not themeable (e.g. national flags). Honoured only when it
+// opens the file's first comment and carries a reason after ` -- `, so a prose mention further down
+// cannot switch the check off and every exemption states why it exists.
 const DISABLE_FILE_DIRECTIVE = 'hardcoded-colors-disable-file';
-const RE_DISABLE_FILE = new RegExp(`${DISABLE_FILE_DIRECTIVE}\\b(?:\\s+--\\s+([^*\\n]*[^*\\s]))?`);
+const RE_DISABLE_FILE = new RegExp(`^\\s*\\*?\\s*${DISABLE_FILE_DIRECTIVE}\\b(?:\\s+--\\s+(\\S[\\s\\S]*?))?\\s*$`);
 
 // Functional color notations — no whitespace before ( to avoid matching prose like "color (description)"
 const RE_FUNCTIONAL = () => /\b(rgba?|hsla?|oklch|oklab|lab|lch|hwb|color)\(/gi;
@@ -360,24 +366,38 @@ function lineContext(lineText, matchIndex, matchLength, radius = 30) {
  * strings, template literals and JSX text is never mistaken for a comment.
  */
 function tsCommentRanges(content, filePath) {
-  const kind = filePath.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
-  const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true, kind);
+  const ext = getExt(filePath);
+  const kind = { tsx: ts.ScriptKind.TSX, jsx: ts.ScriptKind.JSX, js: ts.ScriptKind.JS }[ext] ?? ts.ScriptKind.TS;
+  const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, false, kind);
   const ranges = new Map();
+  const jsxText = [];
   const add = found => found?.forEach(r => ranges.set(r.pos, r.end));
-  const visit = (node, parent) => {
-    // JSX text is raw text: scanning its trivia would read `// see notes` as a comment.
-    const inJsxChildren = parent && (ts.isJsxElement(parent) || ts.isJsxFragment(parent));
-    if (!ts.isJsxText(node)) add(ts.getLeadingCommentRanges(content, node.pos));
-    if (!inJsxChildren) add(ts.getTrailingCommentRanges(content, node.end));
-    ts.forEachChild(node, child => visit(child, node));
+  // Comments are trivia of the next token, so walk tokens (`}`, `else`, `,` included), not just nodes.
+  const visit = node => {
+    if (ts.isJsxText(node)) return void jsxText.push(node);
+    const children = node.getChildren(sourceFile);
+    if (children.length === 0) {
+      add(ts.getLeadingCommentRanges(content, node.pos));
+      add(ts.getTrailingCommentRanges(content, node.end));
+    }
+    children.forEach(visit);
   };
-  visit(sourceFile, null);
-  add(ts.getLeadingCommentRanges(content, sourceFile.endOfFileToken.pos));
-  return [...ranges].map(([pos, end]) => ({ pos, end }));
+  visit(sourceFile);
+  // JSX text is raw text: trivia scanned next to it would read `a // b` as a comment.
+  const inJsxText = pos => jsxText.some(t => pos >= t.pos && pos < t.end);
+  return [...ranges]
+    .filter(([pos]) => !inJsxText(pos))
+    .map(([pos, end]) => ({ pos, end }))
+    .sort((a, b) => a.pos - b.pos);
 }
 
+// Block comments only: in SCSS/LESS the directive must also be written as `/* ... */`.
 function cssCommentRanges(content) {
   return [...content.matchAll(/\/\*[\s\S]*?\*\//g)].map(m => ({ pos: m.index, end: m.index + m[0].length }));
+}
+
+function commentBody(content, { pos, end }) {
+  return content.startsWith('//', pos) ? content.slice(pos + 2, end) : content.slice(pos + 2, end - 2);
 }
 
 // ─── File processing ───────────────────────────────────────────────────────────
@@ -398,6 +418,9 @@ async function processFile(filePath) {
 
   const ext = getExt(filePath);
   const isCss = CSS_EXTS.has(ext);
+  // No colour candidate anywhere → nothing to report, and no reason to pay for a TypeScript parse.
+  if (!isCss && !RE_HEX().test(content) && !RE_FUNCTIONAL().test(content)) return;
+
   const rawLines = content.split(/\r\n|\n/);
   const comments = isCss ? cssCommentRanges(content) : tsCommentRanges(content, filePath);
 
@@ -406,11 +429,11 @@ async function processFile(filePath) {
     return { lineNum: before.length, matchIndex: before[before.length - 1].length };
   }
 
-  for (const { pos, end } of comments) {
-    const directive = content.slice(pos, end).match(RE_DISABLE_FILE);
+  for (const [index, comment] of comments.entries()) {
+    const directive = commentBody(content, comment).match(RE_DISABLE_FILE);
     if (!directive) continue;
-    if (directive[1]) return; // exempted, with its reason recorded next to the colours
-    const { lineNum, matchIndex } = lineColOf(pos + directive.index);
+    if (index === 0 && directive[1]) return; // exempted, with its reason recorded next to the colours
+    const { lineNum, matchIndex } = lineColOf(comment.pos);
     const col = matchIndex + 1;
     results.push({
       file: filePath,
@@ -418,7 +441,10 @@ async function processFile(filePath) {
       col,
       type: 'directive',
       value: DISABLE_FILE_DIRECTIVE,
-      context: `${DISABLE_FILE_DIRECTIVE} needs a reason: \`${DISABLE_FILE_DIRECTIVE} -- <why>\``,
+      context:
+        index === 0
+          ? `${DISABLE_FILE_DIRECTIVE} needs a reason: \`${DISABLE_FILE_DIRECTIVE} -- <why>\``
+          : `${DISABLE_FILE_DIRECTIVE} must be the file's first comment`,
       severity: 'error',
       link: makeClickablePath(filePath, lineNum, col),
       vscodeLink: INCLUDE_VSCODE_LINK ? makeVscodeUri(filePath, lineNum, col) : null,
