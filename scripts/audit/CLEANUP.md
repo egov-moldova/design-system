@@ -66,7 +66,7 @@ testing). Delete fallbacks that only existed because the scripts didn't.
 
 | Path | What to revisit | When |
 |------|---|---|
-| [`AGENTS.md`](../../AGENTS.md) (root) | Add a short "Audit suite" pointer under `Automation — Slash Commands & Subagents` (currently only mentions slash commands / subagents / skills, not the `scripts/audit/` orchestrator) | When (1) gate passes |
+| [`CLAUDE.md`](../../CLAUDE.md) (root) | Add a short "Audit suite" pointer under `Automation — Slash Commands & Subagents` (currently only mentions slash commands / subagents / skills, not the `scripts/audit/` orchestrator) | When (1) gate passes |
 | [`src/components/AGENTS.md`](../../src/components/AGENTS.md) | If it references the legacy grep gates anywhere, update to point at `node scripts/audit/02-stencil-antipatterns.mjs` | When (1) gate passes |
 | [`.claude/commands/README.md`](../../.claude/commands/README.md) | Document that `/pre-pr-check` now delegates to `scripts/audit/run-all.mjs` under the hood | When (1) gate passes |
 | [`.claude/agents/README.md`](../../.claude/agents/README.md) | Same for `integration-checker`, `a11y-verifier`, `pixel-perfect-verifier`, `audit-production` | When (1) gate passes |

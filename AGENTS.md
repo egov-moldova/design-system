@@ -4,8 +4,6 @@
 
 **Tech Stack**: StencilJS, TypeScript, Storybook (`@storybook/web-components-vite`, Vite / Rolldown + Oxc, port **6007**), Style Dictionary (DTCG `$value`/`$type`), Vitest with `@stencil/vitest`'s Vite plugin (`yarn test` → `vitest run --project spec`), Wireit (script orchestration + caching), Yarn, Node. Versions: see `STACK.md`.
 
-**MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Chrome DevTools (`mcp__chrome-devtools__*` — perf/network/memory/Lighthouse), Figma (`mcp__figma__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
-
 **This file is the single source of truth.** Claude Code loads it through `CLAUDE.md` (which imports it); other agents read it directly. It overrides all skill files. Scoped subfiles in `src/components/AGENTS.md` and `tokens/AGENTS.md` extend (never contradict) this file.
 
 **Modular documentation**: Detailed rules live in `_agents/*.md` subfiles. This file serves as the index — load subfiles on-demand based on what you're doing.
@@ -14,7 +12,7 @@
 
 ## Figma-First Rule
 
-**STOP** if the user requests a new component or visual change without a Figma link. Ask for the URL + node ID and wait. Exception: user explicitly says there's no design (utility components, internal tooling) — dispatch the `custom-component` agent.
+**STOP** if the user requests a new component or visual change without a Figma link. Ask for the URL + node ID and wait. Exception: user explicitly says there's no design (utility components, internal tooling) — build it as a custom component from the stated requirements (Claude Code: the `custom-component` agent, see `CLAUDE.md`).
 
 ---
 
@@ -25,7 +23,7 @@
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
 | `_agents/workflow-rules.md` | Auto-proceed/stop conditions, deferred summary, human oversight gates | **At conversation start** before any component work (Claude Code loads it through `CLAUDE.md`; other agents read it first) |
-| `_agents/skills-and-workflows.md` | Skill invocation table, slash commands, parallelization rules | **When starting any component task** |
+| `_agents/skills-and-workflows.md` | Skill invocation table, slash commands, parallelization rules | **When starting any component task** (Claude Code) |
 | `_agents/planning.md` | When a written plan is required, where it lives, required sections | **Before any non-trivial work** — a public-contract change, more than one component, or more than one viable approach |
 
 ### Project-Level Docs
@@ -42,7 +40,7 @@
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/mcp-tools.md` | All MCP tools reference, correct prefixes, tool name corrections | **When calling any MCP tool** (Figma, Playwright) |
+| `_agents/mcp-tools.md` | All MCP tools reference, correct prefixes, tool name corrections | **When calling any MCP tool** (Figma, Playwright) (Claude Code) |
 | `_agents/reuse-architecture.md` | Reuse-first protocol, decision matrix, architecture decision tree | **Before creating any component** |
 | `_agents/figma-extraction.md` | Figma extraction Steps A–A.1.5, behavior exploration, state discovery | **When extracting designs from Figma** |
 | `_agents/pre-implementation.md` | Component inventory, build order, approval gate, token-CSS validation | **After Figma extraction, before coding** |
@@ -61,7 +59,7 @@
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/pixel-perfect-qa.md` | Pixel-perfect rules (tolerances, states); procedure in the `pixel-perfect` skill | **During QA phase — MANDATORY for every component** |
+| `_agents/pixel-perfect-qa.md` | Pixel-perfect rules (tolerances, states); procedure in the `pixel-perfect` skill | **During QA phase — MANDATORY for every component** (the procedure is a Claude Code skill) |
 | `_agents/verification-git.md` | 4-phase verification checklist, troubleshooting, git & PR workflow | **Before claiming work complete or creating PR** |
 | `_agents/continuous-improvement.md` | Workflow refinement, improvement analysis | **When encountering repeated issues or proposing doc changes** |
 
@@ -78,15 +76,9 @@ Each scoped file has its own `_agents/` subfiles — see those indexes for topic
 
 ---
 
-## Automation — Slash Commands & Subagents
+## Assistant-Specific Automation
 
-The repo ships ready-to-use slash commands and subagents for routine workflows. See [`.claude/commands/README.md`](.claude/commands/README.md) and [`.claude/agents/README.md`](.claude/agents/README.md) for full quick-references and decision guide.
-
-| Type | Examples | Use when |
-|---|---|---|
-| **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt` (mode-routed: new / redesign / modify / fix / tokens) | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
-| **Subagent** ([.claude/agents/](.claude/agents/)) | `new-component`, `custom-component`, `audit-production`, `refactor-component` | Multi-phase pipelines with separate context window. Invoke via Task tool or auto-trigger. |
-| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `pixel-perfect`, `token-creation`, `figma-illustration-import`, plus `superpowers:systematic-debugging` and `superpowers:verification-before-completion` from the globally-installed [`superpowers`](.claude/skills/LOCAL-SETUP.md) plugin | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`pixel-perfect`** verifies a component against Figma: a per-component state manifest, exact computed-style parity (`15-style-parity`) and screenshot diffs (`11-pixel-diff-states`). **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
+Claude Code commands, subagents, skills and MCP servers are described in `CLAUDE.md`; this file stays tool-agnostic.
 
 ---
 
