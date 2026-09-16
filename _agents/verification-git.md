@@ -70,7 +70,7 @@ Phased verification gates, common troubleshooting, change-scope and docs-audienc
 | Story missing from sidebar | Wrong `title` or extension | Verify `title: 'Atoms/CorButton'`, file ends `.stories.ts` |
 | Token CSS var has no effect | Token not built or wrong name | `yarn tokens.build`, check `--var-name` in `dist/mud/tokens/*.css` |
 | `::slotted(*)` not applying | Content not direct child | Ensure slotted element is direct child of `<mud-*>` |
-| Figma extraction returns empty | Wrong node ID or deeply nested | Try parent node ID, verify with `figma_get_screenshot` first |
+| Figma extraction returns empty | Wrong node ID or deeply nested | Try parent node ID, verify with `mcp__figma__get_screenshot` first |
 | Console error: element not defined | Component not built | `yarn build`, verify `@Component({ tag })` |
 | Hot-reload not working | Watch mode not running | Ensure `yarn sp.dev.watch` is active |
 | `:host([attr])` not matching | Prop not reflected | Add `@Prop({ reflect: true })` |

@@ -15,8 +15,8 @@ Skill invocation rules and available workflows. **Read when starting any compone
 | --- | --- | --- |
 | `optimize-prompt` | **On explicit user request only** — when user invokes `/optimize-prompt` or asks to structure/improve/optimize a prompt. Do NOT invoke automatically on normal tasks. Compiles raw requests into AGE-aware specs: routes on archetype (atom-visual / atom-interactive / form-associated / molecule / molecule-interactive / organism / layout), applies canonical defaults, runs 12-pattern contradiction detector + reuse scan, validates against codebase snapshot. Modes: `new`, `redesign`, `modify`, `fix`, `tokens`. Replaces the former `/optimize-prompt-new-component` command. | Active skill |
 | `token-creation` | Creating new component tokens, unfamiliar token structure or naming | Active skill |
-| `systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | Active skill |
-| `verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | Active skill |
+| `superpowers:systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | From the globally-installed `superpowers` plugin — see [`.claude/skills/LOCAL-SETUP.md`](../.claude/skills/LOCAL-SETUP.md) |
+| `superpowers:verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | From the globally-installed `superpowers` plugin — see [`.claude/skills/LOCAL-SETUP.md`](../.claude/skills/LOCAL-SETUP.md) |
 | `figma-illustration-import` | Custom multi-layer illustration — check `src/components/mud-illustration-*/` first | Active skill |
 | `pixel-perfect` | Verifying a `mud-*` component against Figma — after a build or fix, before a PR, or when asked whether it matches a Figma link | Active skill |
 | `accessibility-compliance` | **MANDATORY** reference for every `mud-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |

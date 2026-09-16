@@ -2,8 +2,8 @@
 # AGE Design System — Git attributes for auto-generated files
 # =============================================================================
 #
-# Why: parallel agent worktrees (Cline Kanban + .claude orchestrators) each
-# rebuild and regenerate the tracked files below independently per branch.
+# Why: parallel agent worktrees each rebuild and regenerate the tracked files
+# below independently per branch.
 # Without `merge=ours`, every PR merge would produce conflict markers even
 # though the canonical resolution is deterministic — just re-run `yarn build`.
 #
@@ -30,9 +30,9 @@ src/hidden/*/readme.md                                        merge=ours linguis
 tokens/generated/**                                           merge=ours linguist-generated=true
 
 # =============================================================================
-# Cross-platform line endings — Windows + Unix worktrees coexist on this repo
-# (.claude/kanban/worktree-init.{ps1,sh} spin up both). LF for shell scripts,
-# CRLF for PowerShell. Everything else: auto-detect, normalize to LF in repo.
+# Cross-platform line endings — Windows + Unix contributors coexist on this
+# repo. LF for shell scripts, CRLF for PowerShell. Everything else:
+# auto-detect, normalize to LF in repo.
 # =============================================================================
 * text=auto eol=lf
 *.ps1 text eol=crlf

@@ -288,7 +288,7 @@ Before claiming complete:
 5. `yarn tokens.audit` — zero missing token references
 6. `mcp__playwright__browser_console_messages({ level: "error" })` — zero runtime errors
 7. Pixel-perfect diff vs Figma — under 0.5%
-8. Invoke `verification-before-completion` skill — confirms commands ran AND output was read
+8. Invoke `superpowers:verification-before-completion` skill — confirms commands ran AND output was read
 
 Pre-PR: run [`/pre-pr-check`](../.claude/commands/pre-pr-check.md). Pre-merge: run [`audit-production`](../.claude/agents/audit-production.md) subagent.
 

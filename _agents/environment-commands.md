@@ -25,6 +25,16 @@ lsof -i :6007
 - **Output shows LISTENING** → Storybook is already running. Use it. Do NOT start another.
 - **No output** → Start: `yarn sp.dev.watch` (non-blocking, wait ~10s for ready)
 
+To kill a stuck process on port 6007 instead:
+
+```bash
+# Windows (PowerShell)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 6007).OwningProcess
+
+# macOS / Linux (Unix)
+kill -9 $(lsof -ti:6007)
+```
+
 ### Check Browser Session
 
 1. Try `browser_snapshot()` — if it returns content, a session exists. Reuse it.

@@ -1,6 +1,6 @@
 ---
 name: redesign-component
-description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for Cline Kanban + worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
+description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, Skill
 model: opus
 ---
@@ -14,7 +14,7 @@ Redesign an existing `mud-*` component to align with the new MUD Design System u
 - `refactor-component` aligns existing code to *current* patterns (no visual change expected)
 - `redesign-component` aligns existing code to *Figma's new design* (visual change expected)
 - This agent **dispatches `parallel-aux-tasks`** after Core build for verifiers + writers in parallel
-- Optimized for Cline Kanban: assumes one worktree per component; explicit branch convention `redesign/mud-<name>`
+- Optimized for parallel worktrees: assumes one worktree per component; explicit branch convention `redesign/mud-<name>`
 
 ## Inputs
 
@@ -27,7 +27,7 @@ Optional:
 
 - `--write-mode=parallel-write` (default) | `--write-mode=read-only`
 - `--fast` — auto-proceed through plan checkpoints (atoms only; never for organisms)
-- `--worktree-aware` — if set, the agent assumes it's running inside a pre-created worktree (Cline Kanban scenario) and skips environment setup that touches the parent repo
+- `--worktree-aware` — if set, the agent assumes it's running inside a pre-created worktree and skips environment setup that touches the parent repo
 
 ## Step 0 — Worktree + Environment
 
@@ -237,7 +237,7 @@ Re-screenshot only the changed states (pixel-perfect re-verify on the deltas).
 
 ## Step 8 — Final Verification
 
-Invoke `verification-before-completion` skill. Run in parallel:
+Invoke `superpowers:verification-before-completion` skill. Run in parallel:
 
 ```bash
 yarn lint
@@ -305,13 +305,12 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 ## Return to Main Agent
 
-If running inside Cline Kanban worktree:
+If running inside a pre-created worktree (`--worktree-aware`):
 
 1. Stage changes: `git add <files modified by this redesign>` (explicit paths — never `git add -A`/`git add .`, no hook filters out generated files for you)
 2. Commit: `git commit -m "redesign(mud-<name>): align to MUD Design System"`
 3. Push: `git push -u origin redesign/mud-<name>`
-4. Open PR (see `.claude/kanban/pr-template.md`)
-5. Update the Kanban card with PR link + summary
+4. Open PR
 
 Otherwise, present the report and wait for user instruction on commit/PR.
 

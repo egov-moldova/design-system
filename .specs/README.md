@@ -18,7 +18,3 @@ For **actionable, runtime guidance** (file structures, commands, anti-patterns, 
 - `AGENTS.md` + `_agents/*.md` answer **"how do I do this right now"** — concrete commands, anti-patterns, decision matrices, workflows.
 
 If they ever conflict, `AGENTS.md` is authoritative — `.specs/` should be updated to align. The single source of truth for runtime behavior is `AGENTS.md`.
-
-## Archive
-
-[`_archive/`](_archive/) holds deprecated specs (e.g., `AI-ORCHESTRATION-GUIDE.md`) kept for historical context only.

@@ -167,12 +167,3 @@ yarn sync:tokens:apply                                            # real run
 4. **No "components" wrapper**: Component name at JSON root — `{ "button": {} }` not `{ "components": { "button": {} } }`.
 5. **Always use references**: Component tokens must reference core tokens (`{color.neutral.text.default}`) — never raw hex/px values.
 
----
-
-## Skill Corrections (Token-Specific)
-
-| Skill Says | Correct |
-| ---------- | ------- |
-| `space.tokens.json` | `spacing.tokens.json` |
-| `npm run tokens:build` | `yarn tokens.build` |
-| `tokens/generated/*.css` | `dist/mud/tokens/*.css` |

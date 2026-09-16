@@ -73,5 +73,5 @@ Every interactive component must implement **all applicable states**.
 - **Keyboard**: All interactive reachable via Tab, activatable via Enter/Space, dismissible via Escape
 - **Focus**: Visible `:focus-visible` ring on keyboard nav, no ring on mouse click
 - **Disabled**: `pointer-events: none` on container, `cursor: not-allowed` on host, reduced opacity via token
-- **Events**: `@Event()` with `cor` prefix (`mudInputChange`, `mudSelectChange`)
+- **Events**: `@Event()` with `mud` prefix (`mudInputChange`, `mudSelectChange`)
 - **Controlled**: Props drive state, events notify parent — no internal mutation of `@Prop()` values

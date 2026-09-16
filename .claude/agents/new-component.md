@@ -214,7 +214,7 @@ If any check fails → fix before continuing to verification.
 
 ## Step 9: Verification
 
-Invoke `verification-before-completion` skill — must run commands AND read output before claiming complete.
+Invoke `superpowers:verification-before-completion` skill — must run commands AND read output before claiming complete.
 
 ```bash
 yarn lint

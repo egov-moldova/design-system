@@ -161,7 +161,7 @@ Main orchestrator:
 
 ## Verification
 
-Before claiming the parallel phase complete, the orchestrator runs `verification-before-completion` and confirms:
+Before claiming the parallel phase complete, the orchestrator runs `superpowers:verification-before-completion` and confirms:
 
 - ✅ Every subagent returned a report (no crashes, no timeouts).
 - ✅ All `critical` findings have been addressed (fix applied + re-verified).
@@ -171,7 +171,7 @@ Before claiming the parallel phase complete, the orchestrator runs `verification
 
 ## Generated-file safety in parallel worktrees
 
-When N worktrees (3-5 per Cline Kanban session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
+When N parallel worktrees (3-5 per session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
 
 These paths are governed by:
 

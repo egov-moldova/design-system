@@ -6,7 +6,7 @@ description: Full pre-PR validation pipeline with parallel waves — lint, test,
 
 Run the full pre-PR validation pipeline on the current branch using **parallel waves** where commands are independent. Report pass/fail summary. Do NOT auto-fix.
 
-Invoke the `verification-before-completion` skill before presenting the final report — must confirm all commands ran AND output was read.
+Invoke the `superpowers:verification-before-completion` skill before presenting the final report — must confirm all commands ran AND output was read.
 
 ## Execution Model
 
@@ -207,7 +207,7 @@ From the `git log --oneline -10` output captured in Wave 1, verify:
 
 ## Final Report
 
-Invoke `verification-before-completion` skill, then present:
+Invoke `superpowers:verification-before-completion` skill, then present:
 
 ```text
 ## Pre-PR Check Report

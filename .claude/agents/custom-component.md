@@ -163,7 +163,7 @@ mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-m
 
 ## Step 9: Verification
 
-Invoke `verification-before-completion` skill.
+Invoke `superpowers:verification-before-completion` skill.
 
 ```bash
 yarn lint

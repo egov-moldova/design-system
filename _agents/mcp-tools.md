@@ -92,21 +92,21 @@ memory_open_nodes({ names: [...] })
 
 ---
 
-## Figma Remote MCP (`figma_*`)
+## Figma Remote MCP (`mcp__figma__*`)
 
 > **Access.** The remote server needs OAuth — run `/mcp` in an interactive session. Until then every `mcp__figma__*` call fails. For pixel-perfect work there are two other routes: a Framelink Figma MCP server (`mcp__figma-mcp__get_figma_data`, `mcp__figma-mcp__download_figma_images`) if one is configured for your user, or `FIGMA_TOKEN` for `scripts/audit/figma-refs.mjs`. See the `pixel-perfect` skill, step 0.
 
 ```text
-figma_get_design_context({ nodeId: "123:456", forceCode: true })
-figma_get_screenshot({ nodeId: "123:456" })
-figma_get_metadata({ nodeId: "123:456" })
-figma_get_variable_defs({ nodeId: "123:456" })
-figma_generate_diagram({ mermaidSyntax: "...", name: "..." })
-figma_create_new_file({ fileName: "...", planKey: "...", editorType: "design" })
-figma_add_code_connect_map({ nodeId: "...", fileKey: "...", source: "...", componentName: "...", label: "React" })
+mcp__figma__get_design_context({ nodeId: "123:456", forceCode: true })
+mcp__figma__get_screenshot({ nodeId: "123:456" })
+mcp__figma__get_metadata({ nodeId: "123:456" })
+mcp__figma__get_variable_defs({ nodeId: "123:456" })
+mcp__figma__generate_diagram({ mermaidSyntax: "...", name: "..." })
+mcp__figma__create_new_file({ fileName: "...", planKey: "...", editorType: "design" })
+mcp__figma__add_code_connect_map({ nodeId: "...", fileKey: "...", source: "...", componentName: "...", label: "React" })
 ```
 
-### Component Behavior via `figma_get_metadata`
+### Component Behavior via `mcp__figma__get_metadata`
 
 Use **BEFORE** visual extraction to identify:
 
@@ -118,12 +118,12 @@ Use **BEFORE** visual extraction to identify:
 
 **Instance workflow**:
 ```javascript
-const metadata = figma_get_metadata({ nodeId: "123:456" });
+const metadata = mcp__figma__get_metadata({ nodeId: "123:456" });
 // If INSTANCE → navigate to main component
-const mainMetadata = figma_get_metadata({ nodeId: metadata.mainComponent.id });
+const mainMetadata = mcp__figma__get_metadata({ nodeId: metadata.mainComponent.id });
 // Extract from BOTH
-figma_get_design_context({ nodeId: "123:456", forceCode: true });
-figma_get_design_context({ nodeId: mainMetadata.id, forceCode: true });
+mcp__figma__get_design_context({ nodeId: "123:456", forceCode: true });
+mcp__figma__get_design_context({ nodeId: mainMetadata.id, forceCode: true });
 ```
 
 ---
@@ -325,18 +325,6 @@ browser_evaluate({
   }`
 })
 ```
-
----
-
-## Skill File Tool Name Corrections
-
-| Skill Says | Claude Code Tool |
-| --- | --- |
-| `figma_get_metadata({ node_id })` | `mcp__figma__get_metadata` |
-| `figma_get_design_context({ node_id })` | `mcp__figma__get_design_context` |
-| `browser_*` | `mcp__playwright__browser_*` |
-| `cdt_*` / `chrome_devtools_*` / `performance_*` / `lighthouse_*` | `mcp__chrome-devtools__*` |
-| `compare_*` | `mcp__image-compare__*` |
 
 ---
 

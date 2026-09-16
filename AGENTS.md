@@ -75,7 +75,7 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 |---|---|---|
 | **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt` (mode-routed: new / redesign / modify / fix / tokens) | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
 | **Subagent** ([.claude/agents/](.claude/agents/)) | `new-component`, `custom-component`, `audit-production`, `refactor-component` | Multi-phase pipelines with separate context window. Invoke via Task tool or auto-trigger. |
-| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `pixel-perfect`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`pixel-perfect`** verifies a component against Figma: a per-component state manifest, exact computed-style parity (`15-style-parity`) and screenshot diffs (`11-pixel-diff-states`). **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
+| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `pixel-perfect`, `token-creation`, `figma-illustration-import`, plus `superpowers:systematic-debugging` and `superpowers:verification-before-completion` from the globally-installed [`superpowers`](.claude/skills/LOCAL-SETUP.md) plugin | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`pixel-perfect`** verifies a component against Figma: a per-component state manifest, exact computed-style parity (`15-style-parity`) and screenshot diffs (`11-pixel-diff-states`). **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
 
 ---
 
@@ -145,13 +145,13 @@ See `_agents/environment-commands.md` for the full decision matrix and all comma
 
 ## Merge driver for auto-generated files
 
-The repo runs **parallel agent worktrees** (Cline Kanban + `.claude` orchestrators) where 3–5 components are built/redesigned simultaneously. Each worktree runs `yarn sp.build`, which regenerates the same tracked files. Without coordination, PR merges would conflict on every parallel branch.
+The repo runs **parallel agent worktrees** where 3–5 components are built/redesigned simultaneously. Each worktree runs `yarn sp.build`, which regenerates the same tracked files. Without coordination, PR merges would conflict on every parallel branch.
 
 ### How conflicts are prevented
 
 | Layer | File | Role |
 | --- | --- | --- |
-| Filesystem isolation | `.claude/kanban/worktree-init.{ps1,sh}` | Each agent runs in its own git worktree — no in-flight write collisions |
+| Filesystem isolation | `git worktree` | Each agent runs in its own git worktree — no in-flight write collisions |
 | Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Cross-branch merges silently keep current branch — no conflict markers |
 | Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (`src/components.d.ts`, component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
 | Merge hint | `.husky/post-merge` | Prints a `yarn build` reminder when a merge touched a generated file |

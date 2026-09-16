@@ -16,13 +16,13 @@
 |------|---------------|--------------|
 | `_agents/form-associated.md` | Stencil doc checks, `formAssociated: true` pattern, ElementInternals API | **When building form elements** (input, select, textarea, checkbox, radio) |
 | `_agents/slot-patterns.md` | Slot validation guards, shared constants, no-boolean-props rule, CSS `:empty` vs slot detection | **When designing slot APIs or validating slotted elements** |
-| `_agents/component-structure.md` | File layout per component, TSX class member order, `@Watch` rule, stenciljs skill corrections | **When scaffolding a new component** |
+| `_agents/component-structure.md` | File layout per component, TSX class member order, `@Watch` rule, common Stencil mistake corrections | **When scaffolding a new component** |
 
 ### Styling & Stories
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/css-architecture.md` | Pattern A (slotted `::slotted(*)`), Pattern B (internal DOM), key CSS rules, stencil-atomic corrections | **When writing component CSS** |
+| `_agents/css-architecture.md` | Pattern A (slotted `::slotted(*)`), Pattern B (internal DOM), key CSS rules, common CSS/slot mistake corrections | **When writing component CSS** |
 | `_agents/storybook-stories.md` | CSF3 format, shared render functions, grid comparison stories, docs generator, storybook corrections | **When writing `.stories.ts` files** |
 
 ### Composition & Testing

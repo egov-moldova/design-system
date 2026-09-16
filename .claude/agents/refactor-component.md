@@ -166,7 +166,7 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 
 ## Step 7: Final Verification
 
-Invoke `verification-before-completion` skill.
+Invoke `superpowers:verification-before-completion` skill.
 
 ```bash
 yarn lint

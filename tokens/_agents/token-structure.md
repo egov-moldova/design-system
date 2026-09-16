@@ -148,7 +148,7 @@ yarn tokens.watch              # Watch and rebuild on change
 
 ## Skill Corrections (Token-Specific)
 
-| Skill Says | Correct |
+| Model assumes | Correct |
 | --- | --- |
 | `space.tokens.json` | `spacing.tokens.json` |
 | `npm run tokens:build` | `yarn tokens.build` |

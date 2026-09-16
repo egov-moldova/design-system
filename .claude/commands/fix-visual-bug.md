@@ -9,7 +9,7 @@ Fix a visual bug in component `$ARGUMENTS`. Trace root cause through token → C
 
 ## Step 0: Invoke Systematic Debugging Skill
 
-Invoke the `systematic-debugging` skill **before touching any code**. Enforces 4-phase root-cause discipline — no fixes without root cause.
+Invoke the `superpowers:systematic-debugging` skill **before touching any code**. Enforces 4-phase root-cause discipline — no fixes without root cause.
 
 ## Step 0.5: Classify the Problem
 
@@ -154,7 +154,7 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 
 ## Step 7: Verification
 
-Invoke `verification-before-completion` skill, then:
+Invoke `superpowers:verification-before-completion` skill, then:
 
 ```bash
 yarn lint
