@@ -1,8 +1,8 @@
 # AGENTS.md — Corlab Design System AI Engineering Guide
 
-**Project**: `@egovmd/mud` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
+**Project**: `@egov-moldova/mud` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
 
-**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 5.x (DTCG `$value`/`$type`), Vitest 4.x with `@stencil/vitest`'s Vite plugin (`yarn test` → `vitest run --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=24.
+**Tech Stack**: StencilJS, TypeScript, Storybook (`@storybook/web-components-vite`, Vite / Rolldown + Oxc, port **6007**), Style Dictionary (DTCG `$value`/`$type`), Vitest with `@stencil/vitest`'s Vite plugin (`yarn test` → `vitest run --project spec`), Wireit (script orchestration + caching), Yarn, Node. Versions: see `STACK.md`.
 
 **MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Chrome DevTools (`mcp__chrome-devtools__*` — perf/network/memory/Lighthouse), Figma (`mcp__figma__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
 
@@ -81,18 +81,18 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 
 ## Critical Rules (Always Active)
 
-1. **Figma-First**: No component work without a Figma link (unless explicitly waived)
+1. **Figma-First**: No component work without a Figma link (unless explicitly waived). Full rule: `_agents/workflow-rules.md`.
 2. **Token-First**: Design tokens are the single source of truth — never hardcode values in CSS
 3. **Reuse-First**: Check existing components before creating new ones
 4. **Pixel-Perfect**: Every component MUST pass visual comparison against Figma — all states, all properties
 5. **3-Tier Token Hierarchy**: Component CSS → component/semantic tokens (`--color-{type}-{role}-{variant}`) → palette primitives (`--palette-{family}-{shade}`). Never reference palette primitives directly from component CSS. See `tokens/AGENTS.md` for the Figma Foundations naming map.
-6. **TypeScript Strict**: All decorator properties use `!`, all maps use `Record<>`, all optional chains use `??`
+6. **TypeScript Strict**: All decorator properties use `!`, all maps use `Record<>`, all optional chains use `??`. Full rules: `_agents/typescript-strict.md`.
 7. **Build Order**: Tokens → component CSS/TSX → stories (always bottom-up: atoms → molecules → organisms)
 8. **No Boolean Slot Props**: Use CSS `:empty` or slot detection — never boolean props to control slot visibility
 9. **Shadow DOM Dual Selectors**: If a slot has default content, style BOTH `::slotted()` and direct child
 10. **Minimal Builds**: Use `yarn tokens.build` (~5s) or Stencil watch (~2-5s) during dev; full `yarn build` only for final QA
 11. **Change Scope**: A PR touches only files the task required. `yarn format` is repo-wide (`prettier --write .`) — harmless while the repo is Prettier-clean, but if it rewrites files your task never touched, that drift ships as its own `style:` PR, never mixed into yours. Check `git diff --stat main...HEAD` before opening a PR. See `_agents/verification-git.md`.
-12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egovmd/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
+12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egov-moldova/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
 
 ---
 
@@ -113,8 +113,8 @@ yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-
 
 # Build (production / final verification)
 yarn build                     # Full production build with tokens, custom-elements, and docs
-yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
-yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
+yarn build.web                 # Build @egov-moldova/mud-web-components vanilla adapter
+yarn demo.web                  # Serve the @egov-moldova/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn validate.package          # Publish gate: every declared entrypoint present, no dev build, no leaked paths, packers agree
 yarn sp.docker                 # Docker-optimized Storybook build

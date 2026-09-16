@@ -2,7 +2,7 @@
 
 Tracking the sequential build of every input variant from the
 Unified Design System of the Republic of Moldova (Figma file
-`doJ7tDY0PlQ0PqMgbpFVIC`) into `@egovmd/mud`.
+`doJ7tDY0PlQ0PqMgbpFVIC`) into `@egov-moldova/mud`.
 
 All work lands on branch `docs/bootstrap-engineering-design-context`
 and updates PR https://github.com/corlab-org/age-design/pull/5.

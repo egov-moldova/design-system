@@ -1,4 +1,4 @@
-# TESTING.md — `@egovmd/mud`
+# TESTING.md — `@egov-moldova/mud`
 
 ## What we test
 

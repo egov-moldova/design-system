@@ -1,10 +1,10 @@
-# Claude Code Slash Commands — `@egovmd/mud`
+# Claude Code Slash Commands — `@egov-moldova/mud`
 
 Slash commands for linear, single-pass workflows. Invoke with `/command-name [arguments]` in the Claude Code prompt.
 
 For complex multi-phase workflows (Figma → code → QA pipelines, full production audits, refactors), use the subagents in [`.claude/agents/`](../agents/README.md) instead.
 
-> **Figma-First Rule**: Never start `/new-component` or `/modify-component` without a Figma link. Ask for it first.
+> **Figma-First Rule**: see `AGENTS.md` rule 1 / `_agents/workflow-rules.md`. Never start `/new-component` or `/modify-component` without a Figma link.
 
 ---
 

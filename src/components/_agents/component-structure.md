@@ -73,11 +73,7 @@ watchValue(newValue: string) {
 
 ## TypeScript Strict Mode
 
-**Canonical rules in `_agents/typescript-strict.md` (root).** Key reminders:
-
-- All `@Element()` / `@Event()` / `@AttachInternals()` → use `!` assertion
-- Object maps → `Record<string, T>` annotation
-- Optional chaining → always `?? ''` or `?? fallback`
+Decorator properties use `!`, object maps use `Record<>`, optional chains use `??`. Full rules: `_agents/typescript-strict.md` (root, canonical).
 
 ---
 

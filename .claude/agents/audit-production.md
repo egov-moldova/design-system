@@ -62,7 +62,8 @@ reading it, only the JUDGMENT-heavy phases remain for AI:
 - **Phase 10** — synthesizing the Stencil compliance findings under a separate header
 
 The legacy per-phase Bash + Read instructions below remain valid as a fallback
-when the orchestrator is unavailable (CI without Node 22+, etc.).
+when the orchestrator is unavailable (CI without a Node version meeting
+`package.json` `engines.node`, etc.).
 
 ## Parallel Execution Model (recommended)
 

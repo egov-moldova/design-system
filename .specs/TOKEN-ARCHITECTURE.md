@@ -1,8 +1,8 @@
-# Token Architecture — `@egovmd/mud`
+# Token Architecture — `@egov-moldova/mud`
 
 ## 1. Purpose
 
-Design tokens are the **single source of truth** for visual properties in `@egovmd/mud`. This document describes the 3-tier hierarchy, the DTCG file format, the Figma-aligned naming convention, the Style Dictionary build pipeline, and the Tokenhaus sync workflow.
+Design tokens are the **single source of truth** for visual properties in `@egov-moldova/mud`. This document describes the 3-tier hierarchy, the DTCG file format, the Figma-aligned naming convention, the Style Dictionary build pipeline, and the Tokenhaus sync workflow.
 
 For day-to-day token authoring rules (anti-patterns, validation, build commands), see [`tokens/AGENTS.md`](../tokens/AGENTS.md) and its `_agents/*.md` subfiles.
 

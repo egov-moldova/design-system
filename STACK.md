@@ -1,6 +1,7 @@
-# STACK.md — `@egovmd/mud`
+# STACK.md — `@egov-moldova/mud`
 
 The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as the rationale layer: what we picked, why, and what we explicitly reject.
+Versions below are copied from `package.json`; when they disagree, `package.json` wins and this table is fixed in the same PR.
 
 ## Choices
 
@@ -20,7 +21,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 | Format | Prettier | `^3.9.6` (+ `@prettier/plugin-oxc`) |
 | Build orchestration | Wireit | `^0.14.13` |
 | Storybook templates | Lit | `^3.3.2` (Storybook only — not in components) |
-| Custom elements manifest | `@stencil/core` (`docs-custom-elements-manifest` output target) | `~4.43.5` |
+| Custom elements manifest | `@stencil/core` (`docs-custom-elements-manifest` output target) | `~4.45.0` |
 | Visual diffing | `pixelmatch` + `pngjs` + Playwright | `^7.1.0` / `^7.0.0` / `^1.63.0` |
 | Commits | `@commitlint/config-conventional` + Husky | `^21.0.1` / `^9.1.7` |
 
@@ -29,7 +30,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 ### Stencil over React / Vue / Angular / Lit / vanilla Web Components
 `mud-*` ship as framework-agnostic standard Custom Elements. Stencil compiles to vanilla web components, so the same build serves React, Vue, Angular, and plain HTML consumers. JSX + TS decorators (`@Prop` / `@State` / `@Event` / `@Listen` / `@Method` / `@Watch`) give us a familiar DX without forcing a runtime framework on integrators. Form-associated custom elements (`mud-text-input`, `mud-checkbox`) work out of the box.
 
-### Style Dictionary 5.x for tokens
+### Style Dictionary for tokens
 Status quo — the current 3-tier pipeline (palette → semantic → component) in `tokens/core` + `tokens/core.dark` works and is the source of truth. DTCG `$value`/`$type` format keeps the export portable to Figma Variables / Tokenhaus. Build-time CSS custom properties = zero runtime token resolution cost.
 
 ### Wireit for build orchestration

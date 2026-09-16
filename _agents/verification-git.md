@@ -169,7 +169,7 @@ consumer wade through build steps they will never run.
 
 | File | Reader | Contains |
 |------|--------|----------|
-| `README.md` | Institutions/companies **consuming** `@egovmd/mud` | What the library is, install from the registry, import, framework usage, component overview, versioning/upgrade, links |
+| `README.md` | Institutions/companies **consuming** `@egov-moldova/mud` | What the library is, install from the registry, import, framework usage, component overview, versioning/upgrade, links |
 | `CONTRIBUTING.md` | Developers **working on** the library | Clone + `yarn install`, local builds (`yarn build`, `yarn tokens.build`), dev loop, Storybook, demo servers, tests, token workflow, commit conventions, publishing |
 
 **Never add to README**: "Install Dependencies", "Build Stencil Components",
