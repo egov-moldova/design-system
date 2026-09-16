@@ -1,7 +1,7 @@
 ---
 name: redesign-component
 description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for Cline Kanban + worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, Skill
 model: opus
 ---
 
@@ -301,13 +301,13 @@ mcp__playwright__browser_console_messages({ level: "error" })
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts (critical for parallel worktrees), and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`) — they are committed together with the source change that regenerates them; no hook unstages them. `.storybook/custom-elements.json` and `tokens/generated/**` are git-ignored, so they never need staging. The `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts (critical for parallel worktrees), `.husky/pre-push` fails the push if a rebuilt generated file differs from the committed copy, and CI's `Tokens validation` job re-runs the same check on PR. If that CI step ("Verify generated files are committed") or the pre-push hook fails, run `yarn build` locally and commit the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
 
 ## Return to Main Agent
 
 If running inside Cline Kanban worktree:
 
-1. Stage changes: `git add -A` (only files modified by this redesign)
+1. Stage changes: `git add <files modified by this redesign>` (explicit paths — never `git add -A`/`git add .`, no hook filters out generated files for you)
 2. Commit: `git commit -m "redesign(mud-<name>): align to MUD Design System"`
 3. Push: `git push -u origin redesign/mud-<name>`
 4. Open PR (see `.claude/kanban/pr-template.md`)

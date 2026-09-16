@@ -4,7 +4,7 @@
 
 **Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 5.x (DTCG `$value`/`$type`), Vitest 4.x with `@stencil/vitest`'s Vite plugin (`yarn test` → `vitest run --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=24.
 
-**MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Chrome DevTools (`mcp__chrome-devtools__*` — perf/network/memory/Lighthouse), Figma (`mcp__figma__*`), Context7 (`mcp__context7__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
+**MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Chrome DevTools (`mcp__chrome-devtools__*` — perf/network/memory/Lighthouse), Figma (`mcp__figma__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
 
 **This file is the single source of truth.** Claude Code loads it through `CLAUDE.md` (which imports it); other agents read it directly. It overrides all skill files. Scoped subfiles in `src/components/AGENTS.md` and `tokens/AGENTS.md` extend (never contradict) this file.
 
@@ -31,7 +31,7 @@
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/mcp-tools.md` | All MCP tools reference, correct prefixes, tool name corrections | **When calling any MCP tool** (Figma, Playwright, Context7) |
+| `_agents/mcp-tools.md` | All MCP tools reference, correct prefixes, tool name corrections | **When calling any MCP tool** (Figma, Playwright) |
 | `_agents/reuse-architecture.md` | Reuse-first protocol, decision matrix, architecture decision tree | **Before creating any component** |
 | `_agents/figma-extraction.md` | Figma extraction Steps A–A.1.5, behavior exploration, state discovery | **When extracting designs from Figma** |
 | `_agents/pre-implementation.md` | Component inventory, build order, approval gate, token-CSS validation | **After Figma extraction, before coding** |
@@ -152,13 +152,16 @@ The repo runs **parallel agent worktrees** (Cline Kanban + `.claude` orchestrato
 | Layer | File | Role |
 | --- | --- | --- |
 | Filesystem isolation | `.claude/kanban/worktree-init.{ps1,sh}` | Each agent runs in its own git worktree — no in-flight write collisions |
-| Built-in merge strategy | `.gitattributes` (`merge=ours`) | Cross-branch merges silently keep current branch — no conflict markers |
-| Pre-commit safety net | `.husky/pre-commit` (`GENERATED_PATTERNS`) | Auto-unstages generated files so `git add -A` is harmless |
-| Canonical regeneration | `.github/workflows/ci.yml` (`Validate (PR)`) | Rebuilds + `git diff --exit-code` proves committed snapshot is current |
+| Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Cross-branch merges silently keep current branch — no conflict markers |
+| Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (`src/components.d.ts`, component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
+| Merge hint | `.husky/post-merge` | Prints a `yarn build` reminder when a merge touched a generated file |
+| Canonical regeneration | `.github/workflows/ci.yml` (`Tokens validation` job) | Rebuilds and fails when a tracked generated file differs from the build — the same check as `.husky/pre-push`, but not skippable |
+
+No hook unstages or force-removes these files: they are committed in the same commit as the source change that regenerates them, staged explicitly (`git add <paths>`), never via a broad `git add -A`/`git add .`.
 
 ### Setup (runs automatically)
 
-`yarn install` invokes `scripts/git/setup-merge-drivers.mjs` via the `prepare` script. It installs a `post-merge` git hook that hints to rebuild when a merge touches generated files. The hook is installed into the **shared** git hooks dir (`git rev-parse --git-common-dir`), so it applies to every linked worktree of one clone automatically.
+`yarn install` invokes the `postinstall` script (`husky && node scripts/git/setup-merge-drivers.mjs`) — Yarn never runs a root `prepare` script on `yarn install`, so `postinstall` is the only activation point. `setup-merge-drivers.mjs` registers `merge.ours.driver` (`git config merge.ours.driver true`), since `merge=ours` is not a git built-in.
 
 ### Manual setup (only if you ran `yarn install --skip-scripts`)
 
@@ -176,7 +179,7 @@ git check-attr merge -- src/components.d.ts
 ### What contributors and agents must NEVER do
 
 - Hand-edit `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, `tokens/generated/**`.
-- Force-stage these files with `git add -A`. The pre-commit hook auto-unstages them — but if you bypass it (`--no-verify`), you can introduce stale snapshots.
+- Stage these files with a broad `git add -A`/`git add .`. Stage explicit paths so a stray local change to a generated file is never swept into an unrelated commit — no hook unstages it for you, and `.husky/pre-push` only catches a stale copy at push time (skippable with `--no-verify`).
 - Resolve a merge conflict in any of these by hand-editing. Run `yarn build` instead.
 
 ### Why `merge=ours` (and not a custom regenerate driver)

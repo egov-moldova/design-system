@@ -1,7 +1,7 @@
 ---
 name: audit-production
 description: Full production-readiness audit (code quality, Stencil compliance, tokens, accessibility, performance, security, tests, stories, documentation, git hygiene). Use before graduating a component to production, before final pre-merge gate, or when comprehensive validation is needed. Delegates structural/decorator checks to the `audit-component` skill and Stencil rules to `stencil-compliance`. Accepts `--e2e` flag for E2E test audit (default: unit-only). Returns categorized PASS/FAIL/WARN report.
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__image-compare__compare_images, Skill
+tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__image-compare__compare_images, Skill
 model: opus
 ---
 

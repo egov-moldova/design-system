@@ -66,7 +66,7 @@ What do you need to do?
 - **Storybook port**: 6007 (never 6006).
 - **Token-first change order**: tokens JSON → `yarn tokens.build` → CSS → TSX → stories.
 - **Targeted builds during iteration**: `yarn tokens.build` (~5s) for token-only; Stencil watch (~2–5s) for `.tsx/.css`; Storybook HMR for `.stories.ts`. Use `yarn build` only for final verification.
-- **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__context7__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md).
+- **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md).
 - **No auto-fix**: audit commands report findings; they do not modify code without explicit approval.
 
 ## See Also

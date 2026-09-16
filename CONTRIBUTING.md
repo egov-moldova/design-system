@@ -235,7 +235,7 @@ fix(tokens): correct dark-mode contrast for mud-badge
 docs(contributing): clarify token sync workflow
 ```
 
-Husky hooks run automatically after `yarn install` (via the `prepare` script) — no manual setup needed.
+Husky hooks run automatically after `yarn install` (via the `postinstall` script — Yarn 4 does not run a root `prepare` script on install) — no manual setup needed. Bypass once with `git commit --no-verify` / `git push --no-verify`, or `HUSKY=0` for a whole shell.
 
 ---
 

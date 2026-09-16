@@ -46,7 +46,7 @@ Most subagents include human-approval gates between phases. The subagent will re
 - **Token-first change order**: tokens JSON → `yarn tokens.build` → CSS → TSX → stories
 - **Pixel-perfect QA**: screenshot via `mcp__playwright__browser_take_screenshot`, diff via `mcp__image-compare__compare_images` (threshold: < 0.5% PASS, 0.5–2% WARNING, > 2% FAIL)
 - **Skills invoked**: `systematic-debugging`, `token-creation`, `verification-before-completion`, `figma-illustration-import`
-- **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__context7__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md)
+- **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md)
 
 ## See Also
 

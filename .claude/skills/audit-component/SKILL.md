@@ -696,7 +696,7 @@ Always **INFO** in the matrix; never blocks. AI adds these based on what it obse
 
 Cross-reference Wave 1 grep results.
 
-**Security** — reject from [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md):
+**Security** — reject from [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md):
 
 - Inline styles in TSX (CSP violation)
 - `innerHTML` assignment without sanitization (XSS)
@@ -874,4 +874,4 @@ When invoked headlessly, the skill returns the Final Report string. The orchestr
 - [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA companion
 - [`token-creation/SKILL.md`](../token-creation/SKILL.md) — token-tier rules
 - [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific component patterns
-- [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md) — project anti-pattern list
+- [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) — project anti-pattern list

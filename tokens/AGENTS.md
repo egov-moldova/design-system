@@ -2,7 +2,7 @@
 
 **Scope**: `tokens/**` — Design token creation, naming conventions, semantic hierarchy, and Style Dictionary build pipeline.
 
-**Parent**: See root `AGENTS.md` for global rules. See `_agents/pre-implementation.md` for token-CSS variable validation.
+**Parent**: See root `AGENTS.md` for global rules. See `../_agents/pre-implementation.md` for token-CSS variable validation.
 
 **Modular documentation**: Detailed rules live in `_agents/*.md` subfiles. Load on-demand based on what you're doing.
 
@@ -148,7 +148,7 @@ node scripts/sync-tokens-from-tokenhaus.mjs --apply --dry-run     # preview dele
 yarn sync:tokens:apply                                            # real run
 ```
 
-`tokens/core/effects.tokens.json` (drop-shadow.100..500) must be authored manually before the clean break — otherwise the shadow palette is lost. See `.claude/plans/analizeaza-structura-la-fisierul-breezy-tower.md` PR C.
+`tokens/core/effects.tokens.json` (drop-shadow.100..500) must be authored manually before the clean break — otherwise the shadow palette is lost.
 
 ### Flag reference
 

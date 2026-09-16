@@ -1,7 +1,7 @@
 ---
 name: custom-component
 description: Create a new Stencil web component from user-described requirements when no Figma design exists. Clarifies dimensions, colors, states, and behavior before building. Use for utility/internal components.
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, Skill
 model: sonnet
 ---
 
@@ -52,12 +52,7 @@ Identify component type:
 - Data display (table, list, card)
 - Layout (grid, container, section)
 
-Read relevant Stencil docs via Context7:
-
-```text
-mcp__context7__resolve-library-id({ libraryName: "stenciljs" })
-mcp__context7__get-library-docs({ context7CompatibleLibraryID: "...", topic: "<specific question>" })
-```
+Check current library documentation for the relevant Stencil topic.
 
 Topics to query as needed:
 
@@ -184,7 +179,7 @@ yarn sp.build
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`) — they are committed together with the source change that regenerates them; no hook unstages them. `.storybook/custom-elements.json` and `tokens/generated/**` are git-ignored, so they never need staging. The `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, `.husky/pre-push` fails the push if a rebuilt generated file differs from the committed copy, and CI's `Tokens validation` job re-runs the same check on PR. If that CI step ("Verify generated files are committed") or the pre-push hook fails, run `yarn build` locally and commit the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
 
 ## Return to Main Agent
 

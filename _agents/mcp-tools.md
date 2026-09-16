@@ -14,7 +14,6 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 | **playwright** | `browser_*` | `mcp__playwright__browser_*` | `mcp__playwright__browser_navigate`, `mcp__playwright__browser_snapshot` |
 | **chrome-devtools** | `cdt_*` | `mcp__chrome-devtools__*` | `mcp__chrome-devtools__performance_start_trace`, `mcp__chrome-devtools__lighthouse_audit` |
 | **figma** | `figma_*` | `mcp__figma__*` | `mcp__figma__get_design_context`, `mcp__figma__get_screenshot` |
-| **context7** | `ctx7_*` | `mcp__context7__*` | `mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs` |
 | **image-compare** | `compare_*` | `mcp__image-compare__*` | `mcp__image-compare__compare_images` |
 | **agentation** | `agent_*` | `mcp__agentation__*` | `mcp__agentation__get_pending` |
 
@@ -126,23 +125,6 @@ const mainMetadata = figma_get_metadata({ nodeId: metadata.mainComponent.id });
 figma_get_design_context({ nodeId: "123:456", forceCode: true });
 figma_get_design_context({ nodeId: mainMetadata.id, forceCode: true });
 ```
-
----
-
-## Context7 MCP (`ctx7_*`)
-
-```text
-ctx7_resolve-library-id({ libraryName: "stenciljs", query: "..." })
-ctx7_query-docs({ libraryId: "...", query: "..." })
-```
-
-| Library | Typical ID | Use Case |
-| --- | --- | --- |
-| StencilJS | `/AydenRain/stencil-site` | Component APIs, decorators, form association |
-| Style Dictionary | `/amzn/style-dictionary` | Token transforms, formats, config |
-| Storybook | `/storybookjs/storybook` | CSF3 format, addons, argTypes |
-
-Always call `resolve-library-id` first, then `query-docs`.
 
 ---
 

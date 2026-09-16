@@ -36,15 +36,16 @@
 
 ## Cross-References to Root `_agents/`
 
-These topics have their **canonical location** in the root `_agents/` folder:
+These topics have their **canonical location** in the root `_agents/` folder
+(paths below are relative to this file):
 
 | Topic | Canonical File | Summary |
 |-------|---------------|---------|
-| TypeScript strict mode (7 rules) | `_agents/typescript-strict.md` | `!` assertions, `Record<>`, `?? ''`, `import type` |
-| Shadow DOM dual selectors | `_agents/shadow-dom-patterns.md` | `::slotted()` + direct child for slot defaults |
-| Anti-patterns (25 rules) | `_agents/anti-patterns.md` | All forbidden patterns |
-| Pixel-perfect QA | `_agents/pixel-perfect-qa.md` + `pixel-perfect` skill | Figma state manifest (`test/<name>.figma.json`), style parity, screenshot diff |
-| Token-CSS validation | `_agents/pre-implementation.md` | camelCase → kebab-case verification |
+| TypeScript strict mode (7 rules) | `../../_agents/typescript-strict.md` | `!` assertions, `Record<>`, `?? ''`, `import type` |
+| Shadow DOM dual selectors | `../../_agents/shadow-dom-patterns.md` | `::slotted()` + direct child for slot defaults |
+| Anti-patterns (25 rules) | `../../_agents/anti-patterns.md` | All forbidden patterns |
+| Pixel-perfect QA | `../../_agents/pixel-perfect-qa.md` + `pixel-perfect` skill | Figma state manifest (`test/<name>.figma.json`), style parity, screenshot diff |
+| Token-CSS validation | `../../_agents/pre-implementation.md` | camelCase → kebab-case verification |
 
 ---
 
