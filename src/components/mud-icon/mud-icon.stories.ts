@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import manifest from './assets/icons.manifest.json';
-import { ICON_NAMES, ICON_SIZES, isIconName } from './mud-icon.types';
-import type { IconName, IconSize } from './mud-icon.types';
+import { ICON_NAMES, ICON_SIZES, ICON_VARIANTS } from './mud-icon.types';
+import type { IconManifest, IconName, IconSize, IconVariant } from './mud-icon.types';
 
 type IconArgs = {
   name: IconName;
+  variant: IconVariant;
   size: IconSize;
   color: string;
   interactive: boolean;
@@ -13,9 +14,10 @@ type IconArgs = {
   ariaLabel?: string;
 };
 
-const FILLED_PAIRS = ICON_NAMES.filter(n => n.endsWith('-filled') && isIconName(n.slice(0, -'-filled'.length))).map(
-  filled => ({ outlined: filled.slice(0, -'-filled'.length), filled }),
-);
+const ICONS = manifest as IconManifest;
+const hasVariant = (name: IconName, variant: IconVariant) => ICONS[name].variants.includes(variant);
+const BOTH_VARIANTS = ICON_NAMES.filter(name => hasVariant(name, 'outlined') && hasVariant(name, 'filled'));
+const FILLED_ONLY = ICON_NAMES.filter(name => !hasVariant(name, 'outlined'));
 
 const cellLabelStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center; font-family: monospace;';
@@ -29,12 +31,18 @@ const meta: Meta<IconArgs> = {
     name: {
       control: 'select',
       options: ICON_NAMES,
-      description: 'Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.',
+      description: 'Icon identifier (kebab-case), one of `ICON_NAMES` — generated from the assets folder.',
+    },
+    variant: {
+      control: 'inline-radio',
+      options: ICON_VARIANTS,
+      description: 'Icon style. Falls back to the drawing that exists when the icon has only one.',
+      table: { defaultValue: { summary: 'outlined' } },
     },
     size: {
       control: 'select',
       options: ICON_SIZES,
-      description: 'Pixel size (12, 16, 20, 24). Matches Figma Foundations.',
+      description: 'Pixel size (16, 20, 24, 32). Matches Figma Foundations.',
       table: { defaultValue: { summary: '16' } },
     },
     color: {
@@ -65,6 +73,7 @@ type Story = StoryObj<IconArgs>;
 const renderIcon = (args: IconArgs) => /*html*/ `
   <mud-icon
     name="${args.name}"
+    variant="${args.variant}"
     size="${args.size}"
     color="${args.color}"
     ${args.interactive ? 'interactive' : ''}
@@ -77,6 +86,7 @@ export const Default: Story = {
   render: renderIcon,
   args: {
     name: 'checkmark-large',
+    variant: 'outlined',
     size: 24,
     color: 'icon-base-secondary',
     interactive: false,
@@ -89,6 +99,7 @@ export const Default: Story = {
         transform: (_code: string, { args }: { args: IconArgs }) => {
           const attrs = [
             `name="${args.name}"`,
+            `variant="${args.variant}"`,
             `size="${args.size}"`,
             `color="${args.color}"`,
             args.interactive ? 'interactive' : '',
@@ -104,8 +115,7 @@ export const Default: Story = {
   },
 };
 
-const allSizesName =
-  ICON_NAMES.find(n => (manifest as Record<string, { sizes: number[] }>)[n].sizes.length === 4) ?? 'checkmark-large';
+const allSizesName: IconName = 'checkmark-large';
 
 export const AllSizes: Story = {
   name: 'All Sizes',
@@ -121,8 +131,7 @@ export const AllSizes: Story = {
         ).join('')}
       </div>
       <p style="${cellLabelStyle}; padding: 0 var(--spacing-24);">
-        Showing <code>${allSizesName}</code> at each available size. When a size is missing
-        the provider falls back to the closest larger SVG (preferred) or smaller.
+        One drawing per style covers every size — <code>size</code> sets the rendered box.
       </p>
     `;
   },
@@ -136,30 +145,30 @@ export const AllSizes: Story = {
   },
 };
 
-const OUTLINED_VS_FILLED_SAMPLE = FILLED_PAIRS.slice(0, 10);
+const OUTLINED_VS_FILLED_SAMPLE = BOTH_VARIANTS.slice(0, 10);
 
 export const OutlinedVsFilled: Story = {
   name: 'Outlined vs Filled',
   render: () => {
-    if (!FILLED_PAIRS.length) {
-      return `<p>No icons have both outlined and filled variants.</p>`;
+    if (!BOTH_VARIANTS.length) {
+      return `<p>No icons are drawn in both styles.</p>`;
     }
     return /*html*/ `
-      <div style="display: grid; grid-template-columns: 120px repeat(2, 1fr); gap: var(--spacing-16); padding: var(--spacing-24); place-items: center;">
+      <div style="display: grid; grid-template-columns: 160px repeat(2, 1fr); gap: var(--spacing-16); padding: var(--spacing-24); place-items: center;">
         <div></div>
         <div style="${cellLabelStyle}">outlined</div>
         <div style="${cellLabelStyle}">filled</div>
         ${OUTLINED_VS_FILLED_SAMPLE.map(
-          ({ outlined, filled }) => /*html*/ `
-              <code style="${cellLabelStyle}; text-align: start;">${outlined}</code>
-              <mud-icon name="${outlined}" size="24"></mud-icon>
-              <mud-icon name="${filled}" size="24"></mud-icon>
+          name => /*html*/ `
+              <code style="${cellLabelStyle}; text-align: start;">${name}</code>
+              <mud-icon name="${name}" variant="outlined" size="24"></mud-icon>
+              <mud-icon name="${name}" variant="filled" size="24"></mud-icon>
             `,
         ).join('')}
       </div>
       <p style="${cellLabelStyle}; padding: 0 var(--spacing-24);">
-        Append <code>-filled</code> to the base name to select the filled variant.
-        Showing first ${OUTLINED_VS_FILLED_SAMPLE.length} of ${FILLED_PAIRS.length} pairs.
+        The same <code>name</code> under both styles.
+        Showing first ${OUTLINED_VS_FILLED_SAMPLE.length} of ${BOTH_VARIANTS.length} icons drawn in both.
       </p>
     `;
   },
@@ -168,8 +177,8 @@ export const OutlinedVsFilled: Story = {
     docs: {
       source: {
         code: OUTLINED_VS_FILLED_SAMPLE.map(
-          ({ outlined, filled }) =>
-            `<mud-icon name="${outlined}" size="24"></mud-icon>\n<mud-icon name="${filled}" size="24"></mud-icon>`,
+          name =>
+            `<mud-icon name="${name}" variant="outlined" size="24"></mud-icon>\n<mud-icon name="${name}" variant="filled" size="24"></mud-icon>`,
         ).join('\n\n'),
       },
     },
@@ -179,15 +188,13 @@ export const OutlinedVsFilled: Story = {
 export const Gallery: Story = {
   render: () => {
     const rows = ICON_NAMES.map(name => {
-      const entry = (manifest as Record<string, { sizes: number[] }>)[name];
-      const cells = ICON_SIZES.map(size => {
-        if (entry.sizes.includes(size)) {
-          return /*html*/ `<td style="text-align: center; padding: var(--spacing-8);">
-            <mud-icon name="${name}" size="${size}"></mud-icon>
-          </td>`;
-        }
-        return /*html*/ `<td style="text-align: center; padding: var(--spacing-8); color: var(--color-text-base-tertiary); font-size: var(--font-size-12);">—</td>`;
-      }).join('');
+      const cells = ICON_VARIANTS.map(variant =>
+        hasVariant(name, variant)
+          ? /*html*/ `<td style="text-align: center; padding: var(--spacing-8);">
+            <mud-icon name="${name}" variant="${variant}" size="24"></mud-icon>
+          </td>`
+          : /*html*/ `<td style="text-align: center; padding: var(--spacing-8); color: var(--color-text-base-tertiary); font-size: var(--font-size-12);">—</td>`,
+      ).join('');
       return /*html*/ `<tr>
         <td style="padding: var(--spacing-8) var(--spacing-12); font-family: monospace; font-size: var(--font-size-12);">${name}</td>
         ${cells}
@@ -196,13 +203,13 @@ export const Gallery: Story = {
     return /*html*/ `
       <div style="padding: var(--spacing-24); overflow: auto;">
         <p style="${cellLabelStyle}; text-align: left; margin-bottom: var(--spacing-12);">
-          ${ICON_NAMES.length} icons across ${ICON_SIZES.join(' / ')} px. Em-dash = no optimized SVG at that size.
+          ${ICON_NAMES.length} icons in ${ICON_VARIANTS.join(' / ')}. Em-dash = not drawn in that style.
         </p>
         <table style="border-collapse: collapse; width: 100%;">
           <thead>
             <tr>
               <th style="text-align: left; padding: var(--spacing-8) var(--spacing-12); ${cellLabelStyle}">name</th>
-              ${ICON_SIZES.map(s => /*html*/ `<th style="${cellLabelStyle}">${s}px</th>`).join('')}
+              ${ICON_VARIANTS.map(variant => /*html*/ `<th style="${cellLabelStyle}">${variant}</th>`).join('')}
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -214,54 +221,49 @@ export const Gallery: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        // Full coverage matrix — show the rendering pattern for one icon at every
-        // available size. The page itself renders all 195 names × 4 sizes; the
+        // The page renders every name in every style it is drawn in; the
         // snippet only documents the markup shape.
         code: ICON_NAMES.slice(0, 3)
-          .flatMap(name => {
-            const sizes = (manifest as Record<string, { sizes: number[] }>)[name].sizes;
-            return sizes.map(size => `<mud-icon name="${name}" size="${size}"></mud-icon>`);
-          })
-          .concat([`<!-- …${ICON_NAMES.length - 3} more icons at their available sizes -->`])
+          .flatMap(name =>
+            ICON_VARIANTS.filter(variant => hasVariant(name, variant)).map(
+              variant => `<mud-icon name="${name}" variant="${variant}" size="24"></mud-icon>`,
+            ),
+          )
+          .concat([`<!-- …${ICON_NAMES.length - 3} more icons -->`])
           .join('\n'),
       },
     },
   },
 };
 
-const fallbackName =
-  ICON_NAMES.find(n => {
-    const sizes = (manifest as Record<string, { sizes: number[] }>)[n].sizes;
-    return sizes.length > 0 && sizes.length < 4;
-  }) ?? ICON_NAMES[0];
+const fallbackName: IconName = FILLED_ONLY[0] ?? ICON_NAMES[0];
 
-export const FallbackBehavior: Story = {
-  name: 'Fallback Behavior',
-  render: () => {
-    const availableSizes = (manifest as Record<string, { sizes: number[] }>)[fallbackName].sizes;
-    return /*html*/ `
+export const VariantFallback: Story = {
+  name: 'Variant Fallback',
+  render: () => /*html*/ `
       <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24);">
         <p style="${cellLabelStyle}; text-align: left;">
-          <code>${fallbackName}</code> has optimized SVGs at: <strong>${availableSizes.join(', ')}px</strong>.
-          Requesting unavailable sizes triggers the fallback (prefer larger size, else largest smaller).
+          <code>${fallbackName}</code> is drawn in <strong>${ICONS[fallbackName].variants.join(', ')}</strong> only.
+          Requesting the missing style renders the available one and logs a <code>console.warn</code>.
         </p>
         <div style="display: flex; gap: var(--spacing-24);">
-          ${ICON_SIZES.map(
-            size => /*html*/ `
+          ${ICON_VARIANTS.map(
+            variant => /*html*/ `
             <div style="${gridCellStyle}">
-              <mud-icon name="${fallbackName}" size="${size}"></mud-icon>
-              <span style="${cellLabelStyle}">requested ${size}px${availableSizes.includes(size) ? '' : ' (fallback)'}</span>
+              <mud-icon name="${fallbackName}" variant="${variant}" size="24"></mud-icon>
+              <span style="${cellLabelStyle}">requested ${variant}${hasVariant(fallbackName, variant) ? '' : ' (fallback)'}</span>
             </div>`,
           ).join('')}
         </div>
       </div>
-    `;
-  },
+    `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: ICON_SIZES.map(size => `<mud-icon name="${fallbackName}" size="${size}"></mud-icon>`).join('\n'),
+        code: ICON_VARIANTS.map(
+          variant => `<mud-icon name="${fallbackName}" variant="${variant}" size="24"></mud-icon>`,
+        ).join('\n'),
       },
     },
   },

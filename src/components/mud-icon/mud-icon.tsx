@@ -2,17 +2,16 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import defaultManifest from './assets/icons.manifest.json';
 import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
-import { isIconName, type IconManifest, type IconName, type IconSize } from './mud-icon.types';
+import { isIconName, type IconManifest, type IconName, type IconSize, type IconVariant } from './mud-icon.types';
 
 /**
- * Icon — renders an inline SVG fetched on-demand from per-size asset files.
+ * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
  *
- * Names follow the Material Symbols convention: append `-filled` to the base name
- * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
+ * One drawing per style covers every size: `variant` selects the style
+ * directory (`outlined` / `filled`) and `size` sets the rendered box.
  *
- * When the exact `size`/`name` combination is missing from the manifest, the
- * provider falls back to the closest larger size (preferred) and then to the
- * largest smaller size before giving up.
+ * Not every icon is drawn in both styles. When the requested `variant` is
+ * missing, the available one is rendered and a warning is logged.
  *
  * @element mud-icon
  */
@@ -24,12 +23,18 @@ import { isIconName, type IconManifest, type IconName, type IconSize } from './m
 })
 export class MudIcon {
   /**
-   * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
+   * Icon identifier (kebab-case), one of `ICON_NAMES`.
    */
   @Prop() name!: IconName;
 
   /**
-   * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
+   * Icon style. Falls back to the drawing that exists when the icon has only one.
+   * @default 'outlined'
+   */
+  @Prop({ reflect: true }) variant: IconVariant = 'outlined';
+
+  /**
+   * Pixel size, aligned with Figma Foundations: 16 / 20 / 24 / 32.
    * @default 16
    */
   @Prop({ reflect: true }) size: IconSize = 16;
@@ -76,8 +81,8 @@ export class MudIcon {
     await this.loadSvg();
   }
 
-  @Watch('size')
-  async onSizeChange(newVal: IconSize, oldVal: IconSize): Promise<void> {
+  @Watch('variant')
+  async onVariantChange(newVal: IconVariant, oldVal: IconVariant): Promise<void> {
     if (newVal === oldVal) return;
     await this.loadSvg();
   }
@@ -105,42 +110,47 @@ export class MudIcon {
 
   private async loadSvg(): Promise<void> {
     const requestedName = this.name;
-    const requestedSize = this.size;
+    const requestedVariant = this.variant;
     const manifest = defaultManifest as IconManifest;
     // `isIconName`, not `manifest[name]` / `name in manifest`: a runtime string such as
-    // "constructor" resolves through Object.prototype and reached `entry.sizes.includes`
+    // "constructor" resolves through Object.prototype and reached `entry.variants.includes`
     // as undefined, throwing inside componentWillLoad (test/mud-icon.spec.tsx).
     if (!isIconName(requestedName)) {
-      console.warn(`[mud-icon] Icon not found: name="${requestedName}" size=${requestedSize}`);
+      console.warn(`[mud-icon] Icon not found: name="${requestedName}"`);
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
     }
 
-    const result = resolveIconAsset(requestedName, requestedSize, manifest);
+    const result = resolveIconAsset(requestedName, requestedVariant, manifest);
     if (!result) {
       // Reached this branch even though the manifest entry exists. In
-      // production this can only happen if `entry.sizes` is empty AND no
-      // fallback (larger / smaller) is available — extremely unlikely given
-      // the manifest schema. In vitest browser-mode it's the common case: the
-      // entry exists, but `getAssetPath` cannot construct a URL outside the
-      // lazy-bundle host. Falling through silently — the host still renders
-      // as aria-hidden (see render()), no per-render console noise.
+      // production this can only happen if `entry.variants` is empty, which the
+      // generated manifest never emits. In vitest browser-mode it's the common
+      // case: the entry exists, but `getAssetPath` cannot construct a URL
+      // outside the lazy-bundle host. Falling through silently — the host still
+      // renders as aria-hidden (see render()), no per-render console noise.
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
     }
 
-    const cacheKey = `${requestedName}|${result.resolvedSize}`;
+    if (result.resolvedVariant !== requestedVariant) {
+      console.warn(
+        `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${result.resolvedVariant}".`,
+      );
+    }
+
+    const cacheKey = `${requestedName}|${result.resolvedVariant}`;
     if (this.svgCacheKey === cacheKey) return;
 
     const element = await fetchIconSvg(result.url);
 
     // Guard: props changed during the async fetch — discard stale result
-    if (this.name !== requestedName || this.size !== requestedSize) return;
+    if (this.name !== requestedName || this.variant !== requestedVariant) return;
 
     if (!element) {
-      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" size=${result.resolvedSize}`);
+      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${result.resolvedVariant}`);
       this.svgCacheKey = '';
       this.svgElement = null;
       return;

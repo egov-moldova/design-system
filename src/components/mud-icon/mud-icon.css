@@ -5,9 +5,6 @@
   vertical-align: middle;
 }
 
-:host([size='12']) {
-  --icon-size: var(--spacing-12);
-}
 :host([size='16']) {
   --icon-size: var(--spacing-16);
 }
@@ -16,6 +13,9 @@
 }
 :host([size='24']) {
   --icon-size: var(--spacing-24);
+}
+:host([size='32']) {
+  --icon-size: var(--spacing-32);
 }
 
 .svg-icon {

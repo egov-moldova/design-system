@@ -1,9 +1,13 @@
 export { ICON_NAMES, isIconName, type IconName } from './icon-names';
 
-export const ICON_SIZES = [12, 16, 20, 24] as const;
+export const ICON_SIZES = [16, 20, 24, 32] as const;
 
 export type IconSize = (typeof ICON_SIZES)[number];
 
-export type IconManifestEntry = { sizes: readonly IconSize[] };
+export const ICON_VARIANTS = ['outlined', 'filled'] as const;
+
+export type IconVariant = (typeof ICON_VARIANTS)[number];
+
+export type IconManifestEntry = { variants: readonly IconVariant[] };
 
 export type IconManifest = Record<string, IconManifestEntry>;

@@ -12,6 +12,7 @@ import type { StepperStep } from '../../mud-stepper/mud-stepper.types';
 import type { TabDescriptor } from '../../mud-tabs/mud-tabs.types';
 import manifest from '../assets/icons.manifest.json';
 import { ICON_NAMES, type IconName, isIconName } from '../icon-names';
+import type { IconVariant } from '../mud-icon.types';
 
 const COMPONENTS_ROOT = path.resolve(import.meta.dirname, '../..');
 
@@ -32,7 +33,7 @@ describe('icon names', () => {
   });
 
   it('narrows only manifest names', () => {
-    expect(isIconName('circle-info-filled')).toBe(true);
+    expect(isIconName('circle-info')).toBe(true);
     expect(isIconName('check')).toBe(false);
     expect(isIconName('')).toBe(false);
     expect(isIconName(undefined)).toBe(false);
@@ -43,7 +44,7 @@ describe('icon names', () => {
       const source = readFileSync(file, 'utf8');
       return [
         ...source.matchAll(
-          /<mud-[a-z-]+\b[^>]*?\s(?:icon-name|icon|icon-active|icon-start)="([^"$]+)"|<mud-icon\b[^>]*?\sname="([^"$]+)"/g,
+          /<mud-[a-z-]+\b[^>]*?\s(?:icon-name|icon|icon-start)="([^"$]+)"|<mud-icon\b[^>]*?\sname="([^"$]+)"/g,
         ),
       ]
         .map(match => match[1] ?? match[2])
@@ -59,6 +60,7 @@ describe('icon names', () => {
     // removed, which a `@ts-expect-error` line would silently absorb.
     type Optional = IconName | undefined;
     expectTypeOf<Components.MudIcon['name']>().toEqualTypeOf<IconName>();
+    expectTypeOf<Components.MudIcon['variant']>().toEqualTypeOf<IconVariant>();
     expectTypeOf<Components.MudToast['iconName']>().toEqualTypeOf<Optional>();
     expectTypeOf<Components.MudBanner['iconName']>().toEqualTypeOf<Optional>();
     expectTypeOf<Components.MudInfoBox['iconName']>().toEqualTypeOf<Optional>();
@@ -68,7 +70,6 @@ describe('icon names', () => {
     expectTypeOf<Components.MudSearchInput['iconName']>().toEqualTypeOf<IconName>();
     expectTypeOf<Components.MudMenuItem['icon']>().toEqualTypeOf<Optional>();
     expectTypeOf<Components.MudSidebarItem['icon']>().toEqualTypeOf<Optional>();
-    expectTypeOf<Components.MudSidebarItem['iconActive']>().toEqualTypeOf<Optional>();
     expectTypeOf<StepperStep['iconName']>().toEqualTypeOf<Optional>();
     expectTypeOf<TabDescriptor['iconName']>().toEqualTypeOf<Optional>();
     expectTypeOf<SegmentedControlSegment['iconName']>().toEqualTypeOf<Optional>();

@@ -2,11 +2,11 @@ import { getAssetPath } from '@stencil/core';
 
 import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
 import defaultManifest from './assets/icons.manifest.json';
-import { ICON_SIZES, type IconManifest, type IconSize } from './mud-icon.types';
+import { ICON_VARIANTS, type IconManifest, type IconVariant } from './mud-icon.types';
 
 type ResolveResult = {
   url: string;
-  resolvedSize: IconSize;
+  resolvedVariant: IconVariant;
 };
 
 // Stencil's `getAssetPath` throws `TypeError: Failed to construct 'URL'` when
@@ -26,36 +26,28 @@ function tryAssetPath(relativePath: string): string | null {
 
 export function resolveIconAsset(
   name: string,
-  size: IconSize,
+  variant: IconVariant,
   manifest: IconManifest = defaultManifest as IconManifest,
 ): ResolveResult | undefined {
   const entry = manifest[name];
   if (!entry) return undefined;
 
-  const sizes = entry.sizes as readonly IconSize[];
+  const variants = entry.variants as readonly IconVariant[];
 
-  const pick = (resolved: IconSize): ResolveResult | undefined => {
+  const pick = (resolved: IconVariant): ResolveResult | undefined => {
     const url = tryAssetPath(`./assets/${resolved}/${name}.svg`);
-    return url ? { url, resolvedSize: resolved } : undefined;
+    return url ? { url, resolvedVariant: resolved } : undefined;
   };
 
-  if (sizes.includes(size)) {
-    return pick(size);
+  if (variants.includes(variant)) {
+    return pick(variant);
   }
 
-  // Prefer a larger size (scaling down stays sharp).
-  const larger = ICON_SIZES.filter(s => s > size && sizes.includes(s)).sort((a, b) => a - b);
-  if (larger.length) {
-    return pick(larger[0]);
-  }
-
-  // Fall back to the largest available smaller size.
-  const smaller = ICON_SIZES.filter(s => s < size && sizes.includes(s)).sort((a, b) => b - a);
-  if (smaller.length) {
-    return pick(smaller[0]);
-  }
-
-  return undefined;
+  // Not every icon is drawn in both styles (`facebook` is filled-only, most
+  // glyphs are outlined-only). Rendering the other style beats rendering
+  // nothing; `mud-icon` warns when this branch is taken.
+  const fallback = ICON_VARIANTS.find(candidate => variants.includes(candidate));
+  return fallback ? pick(fallback) : undefined;
 }
 
 const svgCache = new Map<string, Promise<Element | null>>();
