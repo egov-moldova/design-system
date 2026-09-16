@@ -390,3 +390,32 @@ describe('doc-orphan rule', () => {
     assert.deepEqual(checkAiDocs({ root }), []);
   });
 });
+
+describe('agent-catalog columns', () => {
+  it('flags a Model or Can write cell that disagrees with the agent frontmatter', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/verifier.md': '---\nname: verifier\ntools: Read, Grep\nmodel: sonnet\n---\n',
+      '.claude/agents/writer.md': '---\nname: writer\ntools: Read, Write, Edit\nmodel: opus\n---\n',
+      '.claude/agents/README.md':
+        '| Subagent | Purpose | Model | Can write |\n|---|---|---|---|\n| `verifier` | checks | sonnet | Yes |\n| `writer` | builds | sonnet | Yes |\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [
+        ['.claude/agents/README.md', 3, 'agent-catalog'],
+        ['.claude/agents/README.md', 4, 'agent-catalog'],
+      ],
+    );
+  });
+
+  it('passes cells that match the frontmatter', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/verifier.md': '---\nname: verifier\ntools: Read, Grep\nmodel: sonnet\n---\n',
+      '.claude/agents/README.md':
+        '| Subagent | Purpose | Model | Can write |\n|---|---|---|---|\n| `verifier` | checks | sonnet | No |\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

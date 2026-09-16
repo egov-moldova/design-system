@@ -490,9 +490,27 @@ function checkImports(relPath, absPath, lines) {
 // Rule: agent-catalog
 // ---------------------------------------------------------------------------
 
-// The catalog is a copy of the directory listing, so it drifts unless checked:
-// every agent needs a table row whose first cell is its backticked name. A
-// prose mention elsewhere in the README does not count as listing it.
+// The catalog is a copy of the directory listing and of each agent's frontmatter,
+// so it drifts unless checked: every agent needs a table row whose first cell is
+// its backticked name (a prose mention does not count), and a `Model` or
+// `Can write` column must agree with the agent's `model:` and `tools:` lines.
+function splitRow(line) {
+  return line
+    .trim()
+    .replace(/^\||\|$/g, '')
+    .split('|')
+    .map(c => c.trim());
+}
+
+function agentFrontmatter(root, name) {
+  const text = fs.readFileSync(path.join(root, '.claude/agents', `${name}.md`), 'utf8');
+  const model = text.match(/^model:\s*(\S+)/m)?.[1] ?? null;
+  const tools = text.match(/^tools:\s*(.*)$/m)?.[1];
+  // Omitting `tools` grants every tool, writes included.
+  const canWrite = tools === undefined ? true : /\b(Write|Edit|MultiEdit|NotebookEdit)\b/.test(tools);
+  return { model, canWrite };
+}
+
 function checkAgentCatalog(root) {
   const readme = '.claude/agents/README.md';
   let text;
@@ -501,9 +519,38 @@ function checkAgentCatalog(root) {
   } catch {
     return [];
   }
-  return listNames(root, '.claude/agents')
+  const names = listNames(root, '.claude/agents');
+  const hits = names
     .filter(name => !new RegExp(`^\\|\\s*\`${escapeRegExp(name)}\`\\s*\\|`, 'm').test(text))
     .map(name => makeHit(readme, 1, 'agent-catalog', `agent \`${name}\` is not listed in the catalog table`));
+
+  let modelCol = -1;
+  let writeCol = -1;
+  text.split('\n').forEach((line, i) => {
+    if (!line.trim().startsWith('|')) {
+      modelCol = -1;
+      writeCol = -1;
+      return;
+    }
+    const cells = splitRow(line);
+    if (cells.some(c => /^model$/i.test(c)) || cells.some(c => /^can write$/i.test(c))) {
+      modelCol = cells.findIndex(c => /^model$/i.test(c));
+      writeCol = cells.findIndex(c => /^can write$/i.test(c));
+      return;
+    }
+    const name = cells[0]?.match(/^`([^`]+)`$/)?.[1];
+    if (!name || !names.includes(name)) return;
+    const fm = agentFrontmatter(root, name);
+    const problems = [];
+    if (modelCol >= 0 && fm.model && cells[modelCol]?.toLowerCase() !== fm.model.toLowerCase()) {
+      problems.push(`Model says ${cells[modelCol]}, frontmatter says ${fm.model}`);
+    }
+    if (writeCol >= 0 && /^(yes|no)$/i.test(cells[writeCol] ?? '') && /^yes$/i.test(cells[writeCol]) !== fm.canWrite) {
+      problems.push(`Can write says ${cells[writeCol]}, tools ${fm.canWrite ? 'grant' : 'do not grant'} Write/Edit`);
+    }
+    for (const p of problems) hits.push(makeHit(readme, i + 1, 'agent-catalog', `\`${name}\`: ${p}`));
+  });
+  return hits;
 }
 
 // ---------------------------------------------------------------------------
