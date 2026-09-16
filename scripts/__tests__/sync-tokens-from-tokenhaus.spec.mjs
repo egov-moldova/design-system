@@ -419,19 +419,48 @@ describe('main', () => {
 
 // ── Staging output ────────────────────────────────────────────────────────────
 
-describe('default staging output', () => {
-  // The staging folder is regenerated from tokens-tokenhaus.json on every run, so a
-  // committed copy only drifts from the script that writes it (issue #72).
-  it('is gitignored and holds no tracked files', () => {
-    const { outputBase } = parseCliOptions(['node', 'sync-tokens-from-tokenhaus.mjs']);
-    const relativeBase = path.relative(PROJECT_ROOT, outputBase);
-    const probeFile = path.join(relativeBase, 'core', 'color.tokens.json');
+// Why the staging output must stay untracked: issue #72.
+describe('staging output', () => {
+  function git(args) {
+    const run = spawnSync('git', args, { cwd: PROJECT_ROOT, encoding: 'utf8' });
+    assert.equal(run.status, 0, `git ${args.join(' ')} failed: ${run.error?.message ?? run.stderr}`);
+    return run.stdout;
+  }
 
-    const tracked = spawnSync('git', ['ls-files', '--', relativeBase], { cwd: PROJECT_ROOT, encoding: 'utf8' });
-    assert.equal(tracked.status, 0, tracked.stderr);
-    assert.equal(tracked.stdout, '', `${relativeBase}/ must not contain tracked files`);
+  function stagingBases() {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const syncArgv = packageJson.scripts['sync:tokens'].split(/\s+/);
+    assert.match(syncArgv[1], /sync-tokens-from-tokenhaus\.mjs$/);
 
-    const ignored = spawnSync('git', ['check-ignore', '--quiet', '--no-index', '--', probeFile], { cwd: PROJECT_ROOT });
-    assert.equal(ignored.status, 0, `${probeFile} must be matched by .gitignore`);
+    const defaultBase = parseCliOptions(['node', 'sync-tokens-from-tokenhaus.mjs']).outputBase;
+    const syncBase = parseCliOptions(syncArgv).outputBase;
+    return [...new Set([defaultBase, syncBase])].map(base => path.relative(PROJECT_ROOT, base));
+  }
+
+  it('holds no tracked files under the default or `yarn sync:tokens` output base', () => {
+    for (const base of stagingBases()) {
+      assert.equal(git(['ls-files', '--', base]), '', `${base}/ must not contain tracked files`);
+    }
+  });
+
+  it('is ignored by a committed .gitignore rule, not by a local or global exclude', () => {
+    for (const base of stagingBases()) {
+      for (const file of [path.join('core', 'color.tokens.json'), path.join('core.dark', 'color.tokens.json')]) {
+        const probeFile = path.join(base, file);
+        const run = spawnSync('git', ['check-ignore', '--verbose', '--no-index', '--', probeFile], {
+          cwd: PROJECT_ROOT,
+          encoding: 'utf8',
+        });
+        assert.equal(run.status, 0, `${probeFile} must be ignored: ${run.error?.message ?? run.stderr}`);
+
+        // Output: <source>:<line>:<pattern>\t<path>
+        const [source, , pattern] = run.stdout.split('\t')[0].split(':');
+        assert.ok(!pattern.startsWith('!'), `${probeFile} is re-included by ${source}`);
+        // Excludes outside the work tree (a global excludesFile, a linked worktree's shared
+        // info/exclude) are reported by absolute path, which `git ls-files` refuses.
+        const committedRule = !path.isAbsolute(source) && git(['ls-files', '--', source]) !== '';
+        assert.ok(committedRule, `${probeFile} is ignored only by ${source}, not by a committed .gitignore`);
+      }
+    }
   });
 });
