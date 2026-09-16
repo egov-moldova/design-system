@@ -283,3 +283,27 @@ describe('agent-slash rule', () => {
     assert.deepEqual(checkAiDocs({ root }), []);
   });
 });
+
+describe('agent-catalog rule', () => {
+  it('flags an agent missing from the catalog table, even when prose mentions it', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/new-component.md': 'x',
+      '.claude/agents/test-writer.md': 'x',
+      '.claude/agents/README.md': '| Agent | Purpose |\n| --- | --- |\n| `new-component` | builds |\n\nNote: `test-writer` runs after.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['.claude/agents/README.md', 1, 'agent-catalog']],
+    );
+  });
+
+  it('passes when every agent has a table row', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/new-component.md': 'x',
+      '.claude/agents/README.md': '| Agent | Purpose |\n| --- | --- |\n| `new-component` | builds |\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

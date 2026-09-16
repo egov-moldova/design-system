@@ -21,6 +21,8 @@
  *                     does not exist and is not git-ignored.
  *   agent-slash    — a `.claude/agents/<name>` subagent written as `/<name>`,
  *                     a slash command that does not exist.
+ *   agent-catalog  — a `.claude/agents/<name>.md` with no table row in
+ *                     `.claude/agents/README.md`.
  *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
@@ -363,6 +365,26 @@ function checkAgentSlash(relPath, lines, pattern) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: agent-catalog
+// ---------------------------------------------------------------------------
+
+// The catalog is a copy of the directory listing, so it drifts unless checked:
+// every agent needs a table row whose first cell is its backticked name. A
+// prose mention elsewhere in the README does not count as listing it.
+function checkAgentCatalog(root) {
+  const readme = '.claude/agents/README.md';
+  let text;
+  try {
+    text = fs.readFileSync(path.join(root, readme), 'utf8');
+  } catch {
+    return [];
+  }
+  return listNames(root, '.claude/agents')
+    .filter(name => !new RegExp(`^\\|\\s*\`${escapeRegExp(name)}\`\\s*\\|`, 'm').test(text))
+    .map(name => makeHit(readme, 1, 'agent-catalog', `agent \`${name}\` is not listed in the catalog table`));
+}
+
+// ---------------------------------------------------------------------------
 // Rule: node-version
 // ---------------------------------------------------------------------------
 
@@ -577,6 +599,7 @@ export function checkAiDocs({ root }) {
     if (needsSettingsPath) hits.push(...checkSettingsPath(relPath, lines));
   }
 
+  hits.push(...checkAgentCatalog(root));
   hits.sort((a, b) => (a.file === b.file ? a.line - b.line : a.file.localeCompare(b.file)));
   return hits;
 }
