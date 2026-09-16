@@ -2,12 +2,14 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { INLINE_MESSAGE_SIZES, INLINE_MESSAGE_VARIANTS } from './mud-inline-message.types';
 import type { InlineMessageSize, InlineMessageVariant } from './mud-inline-message.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type InlineMessageArgs = {
   variant: InlineMessageVariant;
   size: InlineMessageSize;
   hideIcon: boolean;
-  iconName: string;
+  iconName: IconName | '';
   text: string;
 };
 
@@ -68,7 +70,12 @@ messages use \`mud-toast\` / \`mud-banner\`.
       description: 'Suppress the leading icon (the `icon-none` variation).',
       table: { defaultValue: { summary: 'false' } },
     },
-    iconName: { name: 'icon-name', control: 'text', description: 'Override the default per-variant icon.' },
+    iconName: {
+      name: 'icon-name',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon. Empty keeps the variant default.',
+    },
     text: { control: 'text', description: 'Message text (default slot).' },
   },
   args: {
@@ -211,7 +218,7 @@ const renderEdgeCases = () => /*html*/ `
     </div>
     <div style="${cellStyle}">
       <span style="${captionStyle}">custom icon override</span>
-      <mud-inline-message variant="success" icon-name="sparkles-filled">Profil verificat cu succes.</mud-inline-message>
+      <mud-inline-message variant="success" icon-name="sparkles">Profil verificat cu succes.</mud-inline-message>
     </div>
   </div>
 `;

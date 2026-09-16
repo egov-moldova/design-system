@@ -46,11 +46,9 @@ describe('mud-inline-message', () => {
   });
 
   it('honors the iconName override', async () => {
-    const { root, waitForChanges } = await render(
-      <mud-inline-message icon-name="sparkles-filled">M</mud-inline-message>,
-    );
+    const { root, waitForChanges } = await render(<mud-inline-message icon-name="sparkles">M</mud-inline-message>);
     await waitForChanges();
-    expect(root?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('sparkles-filled');
+    expect(root?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('sparkles');
   });
 
   it('suppresses the icon when hide-icon is set (icon-none)', async () => {

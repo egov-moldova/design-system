@@ -793,7 +793,13 @@ export class MudFileInput {
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+            <mud-icon
+              class="assistive-icon"
+              name="circle-error"
+              variant="filled"
+              size={20}
+              color="icon-danger-default"
+            />
             <span class="assistive-text">{errorText}</span>
           </div>
         ) : this.hasHelperMessage() ? (

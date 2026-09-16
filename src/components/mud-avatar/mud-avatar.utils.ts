@@ -1,20 +1,21 @@
 import type { AvatarSize } from './mud-avatar.types';
+import type { IconSize } from '../mud-icon/mud-icon.types';
 
 /**
  * Maps the avatar `size` rung to the icon glyph size in CSS pixels.
  *
  * The avatar slot is a circle whose diameter is the rung value
- * (24 / 32 / 40 / 48 / 72 px); the glyph inside follows the design system's
- * icon scale (12 / 16 / 20 / 24 / 32 px). `xl` is clamped to 24 because
- * `mud-icon` does not yet ship a 32-px variant — the icon visually centres
- * inside the larger circle.
+ * (24 / 32 / 40 / 48 / 72 px); the glyph inside follows `mud-icon`'s scale
+ * (16 / 20 / 24 / 32 px). `xs` asks for the smallest of those, while the
+ * rendered box stays at the avatar's own `--avatar-icon-size-xs` (12px) —
+ * `.icon` in mud-avatar.css pins it.
  */
-export const ICON_SIZE_FOR: Record<AvatarSize, 12 | 16 | 20 | 24> = {
-  xs: 12,
+export const ICON_SIZE_FOR: Record<AvatarSize, IconSize> = {
+  xs: 16,
   sm: 16,
   md: 20,
   lg: 24,
-  xl: 24,
+  xl: 32,
 };
 
 /**

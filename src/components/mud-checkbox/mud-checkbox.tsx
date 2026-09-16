@@ -103,7 +103,7 @@ export class MudCheckbox {
 
   /**
    * Plain-text error message shown below the label when `invalid` is set.
-   * Pairs with the `circle-error-filled` icon and is wired to the control via
+   * Pairs with the filled `circle-error` icon and is wired to the control via
    * `aria-describedby`. When present (and `invalid`) it replaces the supporting
    * text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
    */
@@ -357,7 +357,8 @@ export class MudCheckbox {
               <span class="error" id={this.errorId} part="error">
                 <mud-icon
                   class="error-icon"
-                  name="circle-error-filled"
+                  name="circle-error"
+                  variant="filled"
                   size={16}
                   color="icon-danger-default"
                   aria-hidden="true"

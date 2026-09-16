@@ -6,10 +6,10 @@ export type ToastVariant = (typeof TOAST_VARIANTS)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` prop is unset. */
 export const TOAST_DEFAULT_ICONS: Record<ToastVariant, IconName> = {
-  info: 'circle-info-filled',
-  warning: 'warning-filled',
-  success: 'circle-checkmark-filled',
-  error: 'circle-error-filled',
+  info: 'circle-info',
+  warning: 'warning',
+  success: 'circle-checkmark',
+  error: 'circle-error',
 };
 
 /**

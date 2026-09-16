@@ -36,7 +36,6 @@ const renderDefault = (args: SidebarArgs) => /*html*/ `
         <mud-sidebar-item
           value="overview"
           icon="group"
-          icon-active="group-filled"
           label="Overview"
           active
         ></mud-sidebar-item>
@@ -82,7 +81,7 @@ const renderDefault = (args: SidebarArgs) => /*html*/ `
 
 const docsSourceDefault = /*html*/ `<mud-sidebar aria-label="Main navigation">
   <mud-sidebar-group heading="Heading">
-    <mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" active></mud-sidebar-item>
+    <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics"></mud-sidebar-item>
     <mud-sidebar-item value="documents" icon="document" label="Documents"></mud-sidebar-item>
     <mud-sidebar-item value="search" icon="search" label="Search"></mud-sidebar-item>
@@ -104,7 +103,6 @@ const renderWithSecondaryLabels = () => /*html*/ `
         <mud-sidebar-item
           value="overview"
           icon="group"
-          icon-active="group-filled"
           label="Overview"
           secondary="Nou"
           active
@@ -147,7 +145,7 @@ const renderWithSecondaryLabels = () => /*html*/ `
 
 const docsSourceWithSecondaryLabels = /*html*/ `<mud-sidebar aria-label="Navigation with secondary labels">
   <mud-sidebar-group heading="Servicii">
-    <mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" secondary="Nou" active></mud-sidebar-item>
+    <mud-sidebar-item value="overview" icon="group" label="Overview" secondary="Nou" active></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics" secondary="Beta"></mud-sidebar-item>
     <mud-sidebar-item value="documents" icon="document" label="Documents" secondary="47"></mud-sidebar-item>
   </mud-sidebar-group>
@@ -162,7 +160,6 @@ const renderWithTagsAndBadges = () => /*html*/ `
         <mud-sidebar-item
           value="overview"
           icon="group"
-          icon-active="group-filled"
           label="Overview"
           active
         ></mud-sidebar-item>
@@ -215,7 +212,7 @@ const renderWithTagsAndBadges = () => /*html*/ `
 
 const docsSourceWithTagsAndBadges = /*html*/ `<mud-sidebar aria-label="Navigation with tags and badges">
   <mud-sidebar-group heading="Cereri">
-    <mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" active></mud-sidebar-item>
+    <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
     <mud-sidebar-item value="pending" icon="document" label="Pending" badge="1"></mud-sidebar-item>
     <mud-sidebar-item value="completed" icon="download" label="Completed" badge="12"></mud-sidebar-item>
     <mud-sidebar-item value="search" icon="search" label="Search" tag="New"></mud-sidebar-item>
@@ -232,7 +229,6 @@ const renderExpandable = () => /*html*/ `
         <mud-sidebar-item
           value="overview"
           icon="group"
-          icon-active="group-filled"
           label="Overview"
           active
         ></mud-sidebar-item>
@@ -268,7 +264,7 @@ const renderExpandable = () => /*html*/ `
 
 const docsSourceExpandable = /*html*/ `<mud-sidebar aria-label="Navigation with expandable items">
   <mud-sidebar-group heading="Heading">
-    <mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" active></mud-sidebar-item>
+    <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
     <!-- expandable + expanded = open on mount -->
     <mud-sidebar-item value="documents" icon="document" label="Documents" expandable expanded>
       <mud-sidebar-item slot="children" value="doc-list" label="All documents"></mud-sidebar-item>
@@ -292,7 +288,6 @@ const renderCollapsed = () => /*html*/ `
         <mud-sidebar-item
           value="overview"
           icon="group"
-          icon-active="group-filled"
           label="Overview"
           active
         ></mud-sidebar-item>
@@ -329,7 +324,7 @@ const renderCollapsed = () => /*html*/ `
 const docsSourceCollapsed = /*html*/ `<!-- collapsed prop shrinks the sidebar to a 68 px icon-only rail -->
 <mud-sidebar collapsed aria-label="Collapsed icon-only rail">
   <mud-sidebar-group>
-    <mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" active></mud-sidebar-item>
+    <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics"></mud-sidebar-item>
     <mud-sidebar-item value="documents" icon="document" label="Documents"></mud-sidebar-item>
     <mud-sidebar-item value="settings" icon="settings" label="Settings"></mud-sidebar-item>
@@ -353,7 +348,7 @@ const renderStates = () => /*html*/ `
     <div style="${labelStyle}">Active</div>
     <mud-sidebar aria-label="Active state" style="width: 280px;">
       <mud-sidebar-group>
-        <mud-sidebar-item value="active" icon="group" icon-active="group-filled" label="Active item" active></mud-sidebar-item>
+        <mud-sidebar-item value="active" icon="group" label="Active item" active></mud-sidebar-item>
       </mud-sidebar-group>
     </mud-sidebar>
 
@@ -395,8 +390,8 @@ const renderStates = () => /*html*/ `
 const docsSourceStates = /*html*/ `<!-- Default -->
 <mud-sidebar-item value="default" icon="group" label="Default item"></mud-sidebar-item>
 
-<!-- Active (uses icon-active filled variant) -->
-<mud-sidebar-item value="active" icon="group" icon-active="group-filled" label="Active item" active></mud-sidebar-item>
+<!-- Active (icon renders in the filled style) -->
+<mud-sidebar-item value="active" icon="group" label="Active item" active></mud-sidebar-item>
 
 <!-- Disabled -->
 <mud-sidebar-item value="disabled" icon="group" label="Disabled item" disabled></mud-sidebar-item>
@@ -424,7 +419,6 @@ const renderAllItemFeatures = () => /*html*/ `
         <mud-sidebar-item
           value="icon-label"
           icon="group"
-          icon-active="group-filled"
           label="Icon + Label (active)"
           active
         ></mud-sidebar-item>
@@ -492,8 +486,8 @@ const renderAllItemFeatures = () => /*html*/ `
   </div>
 `;
 
-const docsSourceAllItemFeatures = /*html*/ `<!-- Icon + label (active — swaps to icon-active variant) -->
-<mud-sidebar-item value="overview" icon="group" icon-active="group-filled" label="Overview" active></mud-sidebar-item>
+const docsSourceAllItemFeatures = /*html*/ `<!-- Icon + label (active — icon renders filled) -->
+<mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
 
 <!-- Icon + secondary right-aligned label -->
 <mud-sidebar-item value="analytics" icon="chart" label="Analytics" secondary="123"></mud-sidebar-item>
@@ -558,7 +552,7 @@ type Story = StoryObj<SidebarArgs>;
 
 /**
  * A full sidebar with two groups and six items in the first group.
- * The first item is active — it swaps its icon to the filled `group-filled` variant.
+ * The first item is active — it renders its icon in the filled style.
  * A divider auto-renders above the second group.
  * Use the Controls panel to toggle `collapsed` and observe the icon-only rail.
  */

@@ -8,8 +8,8 @@ export type InlineMessageSize = (typeof INLINE_MESSAGE_SIZES)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` is unset. */
 export const INLINE_MESSAGE_DEFAULT_ICONS: Record<InlineMessageVariant, IconName> = {
-  info: 'circle-info-filled',
-  warning: 'warning-filled',
-  success: 'circle-checkmark-filled',
-  error: 'circle-error-filled',
+  info: 'circle-info',
+  warning: 'warning',
+  success: 'circle-checkmark',
+  error: 'circle-error',
 };

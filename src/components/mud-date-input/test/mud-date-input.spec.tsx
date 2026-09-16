@@ -145,7 +145,7 @@ describe('mud-date-input', () => {
       expect(assistive?.classList.contains('assistive-error')).toBe(true);
       expect(assistive?.textContent).toContain('Day must be between 01 and 31');
       const icon = assistive?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-error');
     });
 
     it('error message takes priority over helper text', async () => {

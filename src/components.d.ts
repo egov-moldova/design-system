@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 import { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
-import { IconName, IconSize } from "./components/mud-icon/mud-icon.types";
+import { IconName, IconSize, IconVariant } from "./components/mud-icon/mud-icon.types";
 import { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
 import { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
@@ -52,7 +52,7 @@ import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
-export { IconName, IconSize } from "./components/mud-icon/mud-icon.types";
+export { IconName, IconSize, IconVariant } from "./components/mud-icon/mud-icon.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
 export { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
@@ -594,7 +594,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the filled `circle-error` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -1390,12 +1390,11 @@ export namespace Components {
         "platforms": readonly ServicePlatform[];
     }
     /**
-     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
-     * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
-     * When the exact `size`/`name` combination is missing from the manifest, the
-     * provider falls back to the closest larger size (preferred) and then to the
-     * largest smaller size before giving up.
+     * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+     * One drawing per style covers every size: `variant` selects the style
+     * directory (`outlined` / `filled`) and `size` sets the rendered box.
+     * Not every icon is drawn in both styles. When the requested `variant` is
+     * missing, the available one is rendered and a warning is logged.
      * @element mud-icon
      */
     interface MudIcon {
@@ -1419,14 +1418,19 @@ export namespace Components {
          */
         "interactive": boolean;
         /**
-          * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
+          * Icon identifier (kebab-case), one of `ICON_NAMES`.
          */
         "name": IconName;
         /**
-          * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
+          * Pixel size, aligned with Figma Foundations: 16 / 20 / 24 / 32.
           * @default 16
          */
         "size": IconSize;
+        /**
+          * Icon style. Falls back to the drawing that exists when the icon has only one.
+          * @default 'outlined'
+         */
+        "variant": IconVariant;
     }
     /**
      * Informational Box — an inline, in-content callout that highlights key
@@ -2831,13 +2835,9 @@ export namespace Components {
          */
         "href"?: string;
         /**
-          * Leading icon name.
+          * Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing.
          */
         "icon"?: IconName;
-        /**
-          * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
-         */
-        "iconActive"?: IconName;
         /**
           * Primary label (overridden by slotted content).
          */
@@ -3438,7 +3438,7 @@ export namespace Components {
          */
         "closeLabel": string;
         /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: IconName;
         /**
@@ -4350,12 +4350,11 @@ declare global {
         new (): HTMLMudHeaderServicesMenuElement;
     };
     /**
-     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
-     * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
-     * When the exact `size`/`name` combination is missing from the manifest, the
-     * provider falls back to the closest larger size (preferred) and then to the
-     * largest smaller size before giving up.
+     * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+     * One drawing per style covers every size: `variant` selects the style
+     * directory (`outlined` / `filled`) and `size` sets the rendered box.
+     * Not every icon is drawn in both styles. When the requested `variant` is
+     * missing, the available one is rendered and a warning is logged.
      * @element mud-icon
      */
     interface HTMLMudIconElement extends Components.MudIcon, HTMLStencilElement {
@@ -5891,7 +5890,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the filled `circle-error` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -6831,12 +6830,11 @@ declare namespace LocalJSX {
         "platforms"?: readonly ServicePlatform[];
     }
     /**
-     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
-     * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
-     * When the exact `size`/`name` combination is missing from the manifest, the
-     * provider falls back to the closest larger size (preferred) and then to the
-     * largest smaller size before giving up.
+     * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+     * One drawing per style covers every size: `variant` selects the style
+     * directory (`outlined` / `filled`) and `size` sets the rendered box.
+     * Not every icon is drawn in both styles. When the requested `variant` is
+     * missing, the available one is rendered and a warning is logged.
      * @element mud-icon
      */
     interface MudIcon {
@@ -6860,14 +6858,19 @@ declare namespace LocalJSX {
          */
         "interactive"?: boolean;
         /**
-          * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
+          * Icon identifier (kebab-case), one of `ICON_NAMES`.
          */
         "name": IconName;
         /**
-          * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
+          * Pixel size, aligned with Figma Foundations: 16 / 20 / 24 / 32.
           * @default 16
          */
         "size"?: IconSize;
+        /**
+          * Icon style. Falls back to the drawing that exists when the icon has only one.
+          * @default 'outlined'
+         */
+        "variant"?: IconVariant;
     }
     /**
      * Informational Box — an inline, in-content callout that highlights key
@@ -8484,13 +8487,9 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Leading icon name.
+          * Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing.
          */
         "icon"?: IconName;
-        /**
-          * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
-         */
-        "iconActive"?: IconName;
         /**
           * Primary label (overridden by slotted content).
          */
@@ -9179,7 +9178,7 @@ declare namespace LocalJSX {
          */
         "closeLabel"?: string;
         /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: IconName;
         /**
@@ -9539,6 +9538,7 @@ declare namespace LocalJSX {
     }
     interface MudIconAttributes {
         "name": IconName;
+        "variant": IconVariant;
         "size": IconSize;
         "color": string;
         "interactive": boolean;
@@ -9811,7 +9811,6 @@ declare namespace LocalJSX {
     interface MudSidebarItemAttributes {
         "value": string;
         "icon": IconName;
-        "iconActive": IconName;
         "label": string;
         "secondary": string;
         "tag": string;
@@ -10319,12 +10318,11 @@ declare module "@stencil/core" {
              */
             "mud-header-services-menu": LocalJSX.IntrinsicElements["mud-header-services-menu"] & JSXBase.HTMLAttributes<HTMLMudHeaderServicesMenuElement>;
             /**
-             * Icon — renders an inline SVG fetched on-demand from per-size asset files.
-             * Names follow the Material Symbols convention: append `-filled` to the base name
-             * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
-             * When the exact `size`/`name` combination is missing from the manifest, the
-             * provider falls back to the closest larger size (preferred) and then to the
-             * largest smaller size before giving up.
+             * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+             * One drawing per style covers every size: `variant` selects the style
+             * directory (`outlined` / `filled`) and `size` sets the rendered box.
+             * Not every icon is drawn in both styles. When the requested `variant` is
+             * missing, the available one is rendered and a warning is logged.
              * @element mud-icon
              */
             "mud-icon": LocalJSX.IntrinsicElements["mud-icon"] & JSXBase.HTMLAttributes<HTMLMudIconElement>;

@@ -4,13 +4,16 @@ import manifest from '../../src/components/mud-icon/assets/icons.manifest.json';
 
 <Meta title="Foundations/Iconography" />
 
-export const SIZES = [24, 20, 16, 12];
+export const PREVIEW_SIZE = 24;
 
-export const namesAt = (size, kind) =>
+// The style is a prop now, so the name alone no longer reproduces what the cell
+// shows — the 22 icons drawn in both styles would paste back as outlined.
+export const snippetFor = (name, variant) => `<mud-icon name="${name}" variant="${variant}"></mud-icon>`;
+
+export const namesIn = variant =>
   Object.entries(manifest)
-    .filter(([, entry]) => entry.sizes.includes(size))
+    .filter(([, entry]) => entry.variants.includes(variant))
     .map(([name]) => name)
-    .filter(name => (kind === 'filled' ? name.endsWith('-filled') : !name.endsWith('-filled')))
     .sort();
 
 export const headerWrap = {
@@ -85,7 +88,7 @@ export const copiedToast = {
   boxShadow: 'var(--drop-shadow-300)',
 };
 
-export const handleCopy = (name, ev) => {
+export const handleCopy = (snippet, ev) => {
   const cellEl = ev.currentTarget;
   const tip = cellEl.querySelector('[data-role="copied-tip"]');
   const reveal = () => {
@@ -98,12 +101,12 @@ export const handleCopy = (name, ev) => {
   };
   if (navigator.clipboard?.writeText) {
     navigator.clipboard
-      .writeText(name)
+      .writeText(snippet)
       .then(reveal)
       .catch(() => {
         // Fallback for environments where async clipboard is blocked.
         const ta = document.createElement('textarea');
-        ta.value = name;
+        ta.value = snippet;
         ta.style.position = 'fixed';
         ta.style.opacity = '0';
         document.body.appendChild(ta);
@@ -141,31 +144,32 @@ export const label = {
   wordBreak: 'break-word',
 };
 
-export const SizeSection = ({ size, names }) =>
+export const VariantSection = ({ variant, names }) =>
   names.length ? (
     <section>
       <div style={headerWrap}>
-        <p style={headerTitle}>Size</p>
-        <span style={headerBadge}>{size}px</span>
+        <p style={headerTitle}>Style</p>
+        <span style={headerBadge}>{variant}</span>
+        <span style={headerBadge}>{names.length} icons</span>
       </div>
       <div style={grid}>
         {names.map(name => (
           <div
             key={name}
             style={cell}
-            title={`Click to copy "${name}"`}
+            title={`Click to copy the ${variant} <mud-icon> tag for "${name}"`}
             role="button"
             tabIndex={0}
-            onClick={ev => handleCopy(name, ev)}
+            onClick={ev => handleCopy(snippetFor(name, variant), ev)}
             onKeyDown={ev => {
               if (ev.key === 'Enter' || ev.key === ' ') {
                 ev.preventDefault();
-                handleCopy(name, ev);
+                handleCopy(snippetFor(name, variant), ev);
               }
             }}
           >
             <div style={iconWell}>
-              <mud-icon name={name} size={size}></mud-icon>
+              <mud-icon name={name} variant={variant} size={PREVIEW_SIZE}></mud-icon>
             </div>
             <code style={label}>{name}</code>
             <span data-role="copied-tip" style={copiedToast}>
@@ -181,18 +185,12 @@ export const SizeSection = ({ size, names }) =>
 
 These icons are designed to enhance visual communication, improve user experience, and maintain consistency across different interfaces and platforms. Click any icon to copy its name.
 
+Every icon is one drawing per style, scaled through the `size` prop (16 / 20 / 24 / 32).
+
 ## Outlined
 
-<div>
-  {SIZES.map(size => (
-    <SizeSection key={`out-${size}`} size={size} names={namesAt(size, 'outlined')} />
-  ))}
-</div>
+<VariantSection variant="outlined" names={namesIn('outlined')} />
 
 ## Filled
 
-<div>
-  {SIZES.map(size => (
-    <SizeSection key={`fil-${size}`} size={size} names={namesAt(size, 'filled')} />
-  ))}
-</div>
+<VariantSection variant="filled" names={namesIn('filled')} />

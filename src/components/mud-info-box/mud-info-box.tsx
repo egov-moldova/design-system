@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { IconName } from '../mud-icon/mud-icon.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import { INFO_BOX_DEFAULT_ICONS } from './mud-info-box.types';
 import type { InfoBoxEmphasis, InfoBoxVariant } from './mud-info-box.types';
 
@@ -149,7 +149,11 @@ export class MudInfoBox {
           {!this.hideIcon ? (
             <span class="icon" aria-hidden="true">
               <slot name="icon-start">
-                <mud-icon name={iconName} size={20} />
+                <mud-icon
+                  name={iconName}
+                  variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
+                  size={20}
+                />
               </slot>
             </span>
           ) : null}
