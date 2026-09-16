@@ -73,11 +73,15 @@ What you get back per envelope:
   `bg` and `ratio` are `null` with `error: 'unmeasurable'` when some layer used
   a color spelling the parser cannot read — reported as
   `CONTRAST-BACKDROP-UNREADABLE`, a different defect from a failing ratio.
-  Two paint mechanisms are outside the model and will NOT show up in `bgStack`:
-  a `background-image` (a gradient ancestor computes `backgroundColor` to a
-  transparent value, so the walk passes straight through it) and an ancestor
-  `opacity`. Where a component paints either behind its text, judge that pair by
-  eye rather than by its `ratio`.
+  `bgStack` is the FLATTENED-ancestor chain, so anything that paints behind the
+  element WITHOUT being one of its ancestors is outside the model and will not
+  appear there: a `background-image` (a gradient ancestor computes
+  `backgroundColor` to a transparent value, so the walk passes straight through
+  it), an ancestor `opacity`, and anything out of flow — a `position: fixed`
+  overlay such as `mud-modal` or `mud-toast` paints over whatever is beneath it
+  on screen, which its DOM ancestors do not describe, as do transformed
+  subtrees and overlapping siblings. Where a component's text sits on any of
+  those, judge that pair by eye rather than by its `ratio`.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data

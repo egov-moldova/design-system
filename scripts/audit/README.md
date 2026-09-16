@@ -307,8 +307,7 @@ audit findings yet. Flip to `false` after a sprint of clean runs.
    When a behavior lives inside `page.evaluate` and no pure helper can reach
    it, export the inner browser-driving function too and test it against a
    `data:` URL fixture — `10-contrast-pairs.mjs` exports `measureSamples` for
-   exactly that, the one place these scripts export more than
-   `analyzeComponent`.
+   exactly that.
 6. Register the script in `AUDIT_SCRIPTS` inside `run-all.mjs` (set `wave`,
    `requiresBuild`, etc.).
 7. Add an `audit:<short-name>` entry to `package.json` scripts.

@@ -49,6 +49,14 @@ describe('10-contrast-pairs: parseColor', () => {
     assert.ok(Math.abs(mixed.a - 0.4) < 0.001);
   });
 
+  it('clamps an out-of-gamut channel to a real one', () => {
+    // color-mix() in a wide-gamut space can serialize srgb components outside
+    // 0..1; unclamped they drive the ratio past WCAG's 21:1 ceiling, which
+    // passes every threshold.
+    assert.deepEqual(parseColor('color(srgb 1.2 1.2 1.2)'), { r: 255, g: 255, b: 255, a: 1 });
+    assert.equal(contrastRatio('color(srgb 1.2 1.2 1.2)', 'rgb(0, 0, 0)'), 21);
+  });
+
   it('refuses a color spelling it cannot convert, rather than guessing', () => {
     // display-p3 needs a gamut matrix and oklch a full conversion; returning
     // null is what routes them to the unmeasurable path instead of a number.
@@ -182,6 +190,19 @@ describe('10-contrast-pairs: resolveBackground', () => {
     assert.equal(formatColor(bg), 'rgb(18, 18, 18)');
   });
 
+  it('holds the fallback to the same bar as a layer', () => {
+    // Substituting white for an unreadable canvas, or promoting a transparent
+    // one to opaque black, would invert every verdict in a run rather than
+    // one row — and do it with no unmeasurable signal.
+    assert.equal(resolveBackground(['rgba(0, 0, 0, 0)'], { fallback: 'oklch(0.2 0 0)' }), null);
+    assert.equal(resolveBackground(['rgba(0, 0, 0, 0)'], { fallback: 'rgba(0, 0, 0, 0)' }), null);
+  });
+
+  it('does not consult the fallback when a layer already paints', () => {
+    const bg = resolveBackground(['rgb(0, 0, 0)'], { fallback: 'not a canvas' });
+    assert.equal(formatColor(bg), 'rgb(0, 0, 0)');
+  });
+
   it('reports an unreadable layer instead of dropping it', () => {
     // Dropping it would score the element against the layer BEHIND the one
     // that could not be read, and report a confident wrong ratio for it.
@@ -281,6 +302,24 @@ describe('10-contrast-pairs: buildPair', () => {
     assert.equal(pair.ratio, null);
     assert.equal(pair.error, 'unmeasurable');
     assert.equal(pair.pass, false);
+  });
+
+  it('separates an unreadable foreground from an unreadable backdrop', () => {
+    // Both land on `unmeasurable`, but they send the reader to different
+    // layers, so `bg` — not the error — is what tells them apart.
+    const pair = buildPair({
+      tag: 'mud-toast',
+      fg: 'oklab(0.54 0.096 -0.093)',
+      bg: 'rgb(255, 255, 255)',
+      bgStack: ['rgb(255, 255, 255)'],
+      canvas: 'rgb(255, 255, 255)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'light',
+    });
+    assert.equal(pair.bg, 'rgb(255, 255, 255)');
+    assert.equal(pair.ratio, null);
+    assert.equal(pair.error, 'unmeasurable');
   });
 
   it('measures a transparent element on a dark canvas against that canvas', () => {

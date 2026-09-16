@@ -61,8 +61,18 @@ const USAGE = defaultUsage(
 // ─── WCAG 2.1 contrast math (pure, exported for tests) ────────────────────
 
 /**
- * Parse `rgb(r, g, b)` / `rgba(r, g, b, a)` / `#rrggbb` / `#rgb` into
- * { r, g, b, a } with channels 0..255 and alpha 0..1.
+ * Clamp to a real 0..255 channel. `color-mix()` in a wide-gamut interpolation
+ * space can serialize srgb components outside 0..1, and an unclamped 1.2 lands
+ * as 306 — which drives `relativeLuminance` above 1.0 and yields ratios past
+ * WCAG's 21:1 ceiling, i.e. a comfortable pass for any threshold.
+ */
+function channel(value) {
+  return Math.min(255, Math.max(0, Math.round(Number(value))));
+}
+
+/**
+ * Parse `rgb(r, g, b)` / `rgba(r, g, b, a)` / `color(srgb r g b / a)` /
+ * `#rrggbb` / `#rgb` into { r, g, b, a } with channels 0..255 and alpha 0..1.
  */
 export function parseColor(input) {
   if (!input || typeof input !== 'string') return null;
@@ -100,12 +110,7 @@ export function parseColor(input) {
     if (rgb[4] !== undefined) {
       alpha = rgb[4].endsWith('%') ? Number(rgb[4].slice(0, -1)) / 100 : Number(rgb[4]);
     }
-    return {
-      r: Math.round(Number(rgb[1])),
-      g: Math.round(Number(rgb[2])),
-      b: Math.round(Number(rgb[3])),
-      a: alpha,
-    };
+    return { r: channel(rgb[1]), g: channel(rgb[2]), b: channel(rgb[3]), a: alpha };
   }
 
   // `color(srgb r g b / a)` with 0..1 channels. Chromium serializes every
@@ -120,9 +125,9 @@ export function parseColor(input) {
       alpha = srgb[4].endsWith('%') ? Number(srgb[4].slice(0, -1)) / 100 : Number(srgb[4]);
     }
     return {
-      r: Math.round(Number(srgb[1]) * 255),
-      g: Math.round(Number(srgb[2]) * 255),
-      b: Math.round(Number(srgb[3]) * 255),
+      r: channel(Number(srgb[1]) * 255),
+      g: channel(Number(srgb[2]) * 255),
+      b: channel(Number(srgb[3]) * 255),
       a: alpha,
     };
   }
@@ -195,9 +200,18 @@ export function resolveBackground(layers, { fallback = DEFAULT_CANVAS } = {}) {
     // An unreadable layer further out therefore cannot make this unmeasurable.
     if (color.a >= 1) break;
   }
-  const canvas = parseColor(fallback) ?? parseColor(DEFAULT_CANVAS);
-  let out = { ...canvas, a: 1 };
-  for (let i = stack.length - 1; i >= 0; i -= 1) {
+  // The fallback gets the same treatment as a layer, not a substitution: an
+  // unreadable canvas silently replaced by white, or a transparent one
+  // promoted to opaque black, is the "confident number for a surface nobody
+  // resolved" this function exists to refuse — and it would invert every
+  // verdict in a run rather than one row.
+  if (stack.length === 0 || stack[stack.length - 1].a < 1) {
+    const canvas = parseColor(fallback);
+    if (!canvas || canvas.a < 1) return null;
+    stack.push(canvas);
+  }
+  let out = stack[stack.length - 1];
+  for (let i = stack.length - 2; i >= 0; i -= 1) {
     out = compositeOver(stack[i], out);
   }
   return out;
@@ -350,18 +364,39 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
   const findings = [];
   for (const p of pairs) {
     if (p.pass || p.exempt) continue;
+    // `source` names the element the colors were actually read off, which for
+    // a host pair is a shadow child, not the host the `tag` names. Without it
+    // the reader greps the host's CSS for a background it does not declare.
+    const where = `${p.theme} <${p.tag}> [${p.kind}] (${p.source})`;
     // An unresolved backdrop is a DIFFERENT defect from a failing ratio: some
     // layer behind the element used a color spelling the parser cannot read,
     // so there is no ratio to judge. Reporting it as a contrast failure would
     // send the reader to the token mapping, which is not where the cause is.
-    if (p.error === 'unmeasurable') {
+    // Keyed on `bg`, not on the error: `unmeasurable` also fires when the
+    // FOREGROUND is the unreadable color and the backdrop resolved fine.
+    if (p.bg === null) {
+      // Only up to the layer that could not be read — the ones past it were
+      // never consumed, so naming them points at surfaces that are innocent.
+      const read = p.bgStack.slice(0, p.bgStack.findIndex(layer => !parseColor(layer)) + 1);
       findings.push(
         finding({
           severity: 'error',
           code: 'CONTRAST-BACKDROP-UNREADABLE',
           file: relativeToRepo(target.paths.tsx),
-          message: `${p.theme} <${p.tag}> [${p.kind}]: background unresolved. fg=${p.fg} layers=[${p.bgStack.join(' | ')}].`,
+          message: `${where}: background unresolved. fg=${p.fg} layers=[${read.join(' | ')}].`,
           fix: 'Teach parseColor the unreadable color spelling, or paint the surface in one it already reads.',
+        }),
+      );
+      continue;
+    }
+    if (p.error === 'unmeasurable') {
+      findings.push(
+        finding({
+          severity: 'error',
+          code: 'CONTRAST-FOREGROUND-UNREADABLE',
+          file: relativeToRepo(target.paths.tsx),
+          message: `${where}: foreground unresolved. fg=${p.fg} bg=${p.bg}.`,
+          fix: 'Teach parseColor the unreadable color spelling, or set the text color in one it already reads.',
         }),
       );
       continue;
@@ -371,7 +406,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
         severity: 'error',
         code: 'CONTRAST-BELOW-THRESHOLD',
         file: relativeToRepo(target.paths.tsx),
-        message: `${p.theme} <${p.tag}> [${p.kind}]: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
+        message: `${where}: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
         fix: 'Adjust the token mapping so foreground and background pass WCAG 2.1 AA.',
       }),
     );
@@ -394,7 +429,9 @@ export function buildPair(sample) {
   const bgStack = sample.bgStack ?? [sample.bg];
   const resolved = resolveBackground(bgStack, { fallback: sample.canvas ?? DEFAULT_CANVAS });
   const bg = resolved ? formatColor(resolved) : null;
-  const ratio = contrastRatio(sample.fg, bg);
+  // The parsed object, not the formatted string: round-tripping it back
+  // through `parseColor` is a second chance to lose what was already resolved.
+  const ratio = contrastRatio(sample.fg, resolved);
   const cls = classifyContrast(ratio, sample.kind, { disabled: sample.disabled });
   return {
     ...sample,
@@ -458,12 +495,22 @@ export async function measureSamples(url, componentName, theme) {
           }
 
           // Picks which element the fg/bg pair is READ OFF; it never decides
-          // the contrast math, which `resolveBackground` owns. The alpha
-          // component is the last one in every serialization getComputedStyle
-          // produces — `rgba(r, g, b, 0)`, `color(srgb r g b / 0)` — so one
-          // trailing-zero test covers the spellings a channel-by-channel
-          // regex would miss.
-          const isTransparent = s => /[,/]\s*0(\.0+)?\s*\)$/.test(s) || s === 'transparent';
+          // the contrast math, which `resolveBackground` owns.
+          //
+          // A test for "ends in zero" is NOT the same as "has a zero alpha":
+          // `rgb(255, 87, 0)` and `rgb(0, 0, 0)` are fully opaque and end in
+          // one. Reading them as transparent makes `findRenderedPair` find no
+          // painted surface and drop the element from the audit entirely — a
+          // silent false negative in a WCAG gate, which is worse than the
+          // false positive this file exists to fix. So the alpha has to be
+          // matched where it actually lives: the FOURTH component of `rgba()`,
+          // or the one after the slash in `color()`. `rgb()` carries none.
+          // Baseline: `node -e "console.log(/^rgba?\(.*,\s*0\s*\)$/.test('rgb(255, 87, 0)'))"`
+          // -> true, the form this replaces.
+          const isTransparent = s =>
+            s === 'transparent' ||
+            /^rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*0(\.0+)?\s*\)$/.test(s) ||
+            /\/\s*0(\.0+)?\s*\)$/.test(s);
 
           // The background the UA paints when nothing in the chain paints one.
           // `Canvas` is the CSS system color for exactly that surface and it

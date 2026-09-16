@@ -103,8 +103,7 @@ const asUrl = html => `data:text/html;charset=utf-8,${encodeURIComponent(html)}`
  * `launch()` probe: a probe only proves the browser starts, so a page that
  * launches but cannot navigate (a sandboxed CI box, a `data:` URL refused by
  * policy, the goto timeout under load) rejected the unguarded call and errored
- * the file — on exactly the machine the skip exists to protect. It also halves
- * the browsers a run starts.
+ * the file — on exactly the machine the skip exists to protect.
  */
 async function collectSamples(url) {
   try {
@@ -114,19 +113,30 @@ async function collectSamples(url) {
   }
 }
 
-/**
- * Key each pair by tag + foreground, refusing a collision rather than letting
- * the later sample overwrite the earlier one and vanish from every assertion.
- */
+/** Key each pair by tag + foreground; uniqueness is asserted by its own test. */
 function byTagAndForeground(samples) {
-  const pairs = {};
-  for (const sample of samples) {
-    const key = `${sample.tag}|${sample.fg}`;
-    assert.equal(pairs[key], undefined, `two fixture samples share the key ${key}`);
-    pairs[key] = buildPair(sample);
-  }
-  return pairs;
+  return Object.fromEntries(samples.map(sample => [`${sample.tag}|${sample.fg}`, buildPair(sample)]));
 }
+
+// A host whose own background is opaque and ends in a zero channel. Reading
+// "ends in 0" as "alpha 0" made `findRenderedPair` see no painted surface and
+// drop the element from the audit — a silent false negative in a WCAG gate.
+const OPAQUE_HOST_FIXTURE = `<!doctype html>
+<html>
+<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
+<body>
+  <mud-fixture class="hydrated">label</mud-fixture>
+  <script>
+    class MudFixture extends HTMLElement {
+      connectedCallback() {
+        this.style.cssText = 'display: block; background-color: rgb(255, 87, 0); color: rgb(255, 255, 255);';
+        this.attachShadow({ mode: 'open' }).innerHTML = '<slot></slot>';
+      }
+    }
+    customElements.define('mud-fixture', MudFixture);
+  </script>
+</body>
+</html>`;
 
 describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
   const run = await collectSamples(asUrl(FIXTURE));
@@ -139,6 +149,20 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     // Three shadow buttons plus the host, whose pair `findRenderedPair` reads
     // off `.tint`. A changed count means the walk is visiting a different set.
     assert.equal(samples.length, 4);
+  });
+
+  it('addresses every sample by a unique key', { skip }, () => {
+    // Otherwise a later sample overwrites an earlier one, the lookups below
+    // still succeed, and they quietly describe a different element.
+    assert.equal(Object.keys(pairs).length, samples.length);
+  });
+
+  it('keeps an opaque host whose background ends in a zero channel', { skip }, async () => {
+    const opaque = (await measureSamples(asUrl(OPAQUE_HOST_FIXTURE), 'mud-fixture', 'light')).map(buildPair);
+    assert.equal(opaque.length, 1, 'the opaque host was dropped from the audit');
+    assert.equal(opaque[0].bg, 'rgb(255, 87, 0)');
+    assert.equal(opaque[0].ratio, 3.17);
+    assert.equal(opaque[0].pass, false);
   });
 
   it('resolves a transparent element to the canvas behind its shadow host', { skip }, () => {
@@ -183,6 +207,9 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     const transparent = samples.filter(s => s.bgStack.some(layer => layer === 'rgba(0, 0, 0, 0)'));
     assert.ok(transparent.length >= 3, 'fixture no longer exercises a transparent layer');
     for (const pair of Object.values(pairs)) {
+      // `assert.doesNotMatch` throws a bare TypeError on null, which names
+      // neither the element nor the defect — so check resolution first.
+      assert.ok(pair.bg, `${pair.tag} left its background unresolved`);
       assert.doesNotMatch(pair.bg, /rgba\(/, `${pair.tag} reported a transparent background`);
     }
   });
@@ -202,8 +229,11 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     const [pair] = (await measureSamples(asUrl(DARK_CANVAS_FIXTURE), 'mud-fixture', 'dark')).map(buildPair);
     assert.ok(pair, 'expected a sample from the dark-canvas fixture');
     assert.equal(pair.theme, 'dark');
-    assert.equal(pair.canvas, 'rgb(18, 18, 18)');
-    assert.equal(pair.bg, 'rgb(18, 18, 18)');
+    // The dark canvas value is a UA stylesheet constant, not a spec one, so
+    // the assertion is on the relationship: the probe tracked `color-scheme`,
+    // and the fold landed on what it reported.
+    assert.notEqual(pair.canvas, 'rgb(255, 255, 255)');
+    assert.equal(pair.bg, pair.canvas);
     assert.equal(pair.pass, true);
   });
 });
