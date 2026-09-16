@@ -98,7 +98,7 @@ Additional docs worth knowing about:
 4. **For vanilla-adapter changes**, verify against the demo — see [Vanilla adapter](#vanilla-adapter-web-components) below.
 5. **Lint and typecheck before committing**:
    ```bash
-   yarn lint        # ESLint (src/**/*.{ts,tsx}) + Stylelint (src/**/*.css)
+   yarn lint        # ESLint (src/**/*.{ts,tsx}) + Stylelint (src/**/*.css) + Prettier check (whole repo)
    yarn typecheck    # tsc --noEmit
    yarn format       # auto-fix lint + Prettier
    ```
@@ -157,7 +157,7 @@ web-components/
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
-| `yarn lint` | ESLint + Stylelint (no fixes) |
+| `yarn lint` | ESLint + Stylelint (wireit-cached) + Prettier check over the whole repo (always runs, Prettier's own content cache); no fixes |
 | `yarn format` | ESLint `--fix` + Prettier `--write` |
 | `yarn typecheck` | `tsc --noEmit` |
 | `yarn test` | Full unit test suite — `vitest run --project spec`, wireit-cached; compiles components from source and builds no `dist/` |

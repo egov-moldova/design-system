@@ -71,6 +71,7 @@
     "lint": "wireit",
     "lint.js": "wireit",
     "lint.css": "wireit",
+    "lint.format": "wireit",
     "lint.css.fix": "stylelint \"src/**/*.css\" --fix --allow-empty-input",
     "lint.colors": "node scripts/hardcoded-colors.mjs",
     "sp.build": "wireit",
@@ -336,7 +337,7 @@
       ]
     },
     "lint.js": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0 && prettier --check .",
+      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -350,43 +351,25 @@
       ]
     },
     "format.fix": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/**/*.css",
-        "eslint.config.mjs",
-        ".prettierrc.json",
-        ".prettierignore"
-      ],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write . --cache --cache-strategy content"
+    },
+    "lint.format": {
+      "command": "prettier --check . --cache --cache-strategy content"
     },
     "check": {
       "command": "yarn check.verify",
       "dependencies": [
         "format.fix"
-      ],
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
       ]
     },
     "check.ci": {
-      "command": "yarn check.verify",
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "yarn check.verify"
     },
     "lint": {
       "dependencies": [
         "lint.js",
-        "lint.css"
+        "lint.css",
+        "lint.format"
       ]
     },
     "check.verify": {
@@ -456,6 +439,7 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "*.ts",
         "tsconfig.json"
       ],
       "output": [],

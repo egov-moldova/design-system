@@ -132,7 +132,7 @@ yarn dx:stencil:once           # Single Stencil dev build without docs (~20s)
 yarn test                      # Vitest spec project via `vitest run --project spec` (wireit-cached; builds nothing)
 yarn test.dev                  # `vitest --project spec --run` — compiles components from source; does not build dist
 yarn test.watch                # `vitest --project spec --watch`
-yarn lint                      # ESLint + Prettier check (cached)
+yarn lint                      # ESLint + Stylelint (cached) + Prettier check (always runs)
 yarn format                    # Auto-fix code style
 
 # Utilities

@@ -174,7 +174,7 @@ yarn tokens.audit              # Debug missing token references
 yarn test                      # Vitest spec suite via the stderr wrapper (builds nothing)
 yarn test.dev                  # Same suite, no wireit cache layer (accepts args for specific components)
 yarn test.watch                # Test in watch mode
-yarn lint                      # ESLint (TS/TSX) + Prettier + Stylelint CSS check
+yarn lint                      # ESLint (TS/TSX) + Stylelint CSS (cached) + Prettier check (always runs)
 yarn lint.css                  # Stylelint CSS-only lint (src/**/*.css)
 yarn lint.css.fix              # Auto-fix CSS issues via Stylelint
 yarn format                    # Auto-fix TS/TSX + Prettier
