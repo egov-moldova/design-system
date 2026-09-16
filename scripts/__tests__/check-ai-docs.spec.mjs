@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
-import { checkAiDocs } from '../docs/check-ai-docs.mjs';
+import { checkAiDocs, STALE_SCOPE } from '../docs/check-ai-docs.mjs';
 
 const SCRIPT = fileURLToPath(new URL('../docs/check-ai-docs.mjs', import.meta.url));
 
@@ -82,10 +82,10 @@ describe('node-version rule', () => {
 });
 
 describe('package-name rule', () => {
-  it('flags a stale @egovmd/ reference outside CHANGELOG.md and .claude/plans/', () => {
+  it('flags the retired scope outside CHANGELOG.md and .claude/plans/', () => {
     const root = makeFixture({
       'package.json': pkgJson(),
-      'NOTES.md': 'Install with `@egovmd/mud`.\n',
+      'NOTES.md': `Install with \`${STALE_SCOPE}mud\`.\n`,
     });
     const hits = checkAiDocs({ root });
     assert.deepEqual(
@@ -94,11 +94,11 @@ describe('package-name rule', () => {
     );
   });
 
-  it('passes @egovmd/ inside CHANGELOG.md and .claude/plans/', () => {
+  it('passes the retired scope inside CHANGELOG.md and .claude/plans/', () => {
     const root = makeFixture({
       'package.json': pkgJson(),
-      'CHANGELOG.md': 'Renamed from @egovmd/mud to @acme/widgets.\n',
-      '.claude/plans/x.md': 'The old name was @egovmd/mud.\n',
+      'CHANGELOG.md': `Renamed from ${STALE_SCOPE}mud to @acme/widgets.\n`,
+      '.claude/plans/x.md': `The old name was ${STALE_SCOPE}mud.\n`,
     });
     assert.deepEqual(checkAiDocs({ root }), []);
   });
@@ -127,7 +127,7 @@ describe('a fully clean fixture', () => {
       'tokens/AGENTS.md': 'x',
       'README.md': 'Node.js `>=24.0.0 <25.0.0`\n',
       '.claude/settings.json': '{}\n',
-      'CHANGELOG.md': 'Renamed from @egovmd/mud.\n',
+      'CHANGELOG.md': `Renamed from ${STALE_SCOPE}mud.\n`,
     });
     assert.deepEqual(checkAiDocs({ root }), []);
   });

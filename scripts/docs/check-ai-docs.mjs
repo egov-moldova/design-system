@@ -15,8 +15,8 @@
  *                     `(../)*_agents/<name>.md` path, that does not resolve.
  *   node-version   — a Node major-version claim that disagrees with
  *                     package.json's `engines.node` `>=` bound.
- *   package-name   — a stale `@egovmd/` reference (the live name lives in
- *                     package.json `name`).
+ *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
+ *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
  *                     baked into `.claude/settings.json`.
  *
@@ -28,6 +28,10 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+
+// Assembled so this file and its spec never contain the literal, which rule
+// package-name scans every tracked file for — including these two.
+export const STALE_SCOPE = ['@egov', 'md/'].join('');
 
 const WALK_SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'storybook-static', 'www', 'loader']);
 
@@ -316,9 +320,14 @@ function checkNodeVersion(relPath, lines, allowedMajor) {
 function checkPackageName(relPath, lines, realName) {
   const hits = [];
   lines.forEach((line, i) => {
-    if (line.includes('@egovmd/')) {
+    if (line.includes(STALE_SCOPE)) {
       hits.push(
-        makeHit(relPath, i + 1, 'package-name', `\`@egovmd/\` reference found; the real package is \`${realName}\``),
+        makeHit(
+          relPath,
+          i + 1,
+          'package-name',
+          `\`${STALE_SCOPE}\` reference found; the real package is \`${realName}\``,
+        ),
       );
     }
   });
