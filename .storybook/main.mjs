@@ -10,16 +10,22 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 // In order of appearance in the UI (toolbar, addons panel, then docs)
 //
-// `@storybook/addon-vitest@10.4.0` is intentionally omitted: its "Run component
-// tests" UI panel calls the deprecated `vitest.init()` API and re-optimizes
-// Vite's deps mid-session, which crashes `dx:storybook` and tears down the
-// whole `yarn dev` graph. Tests remain runnable from the CLI:
-//   yarn test                  — spec (mock-doc, fast, 1485 assertions)
-//   yarn test.storybook        — storybook one-shot (CI / pre-commit gate)
+// `@storybook/addon-vitest` (dev only) adds the "Component tests" panel. It was
+// omitted on 10.4.0, where "Run tests" crashed `dx:storybook` while Vite
+// re-optimized deps mid-session. On 10.6.0 the panel still logs the deprecated
+// `vitest.init()` warning and still re-optimizes, but the server survives and
+// the panel runs the same tests as `yarn test.storybook`. CLI equivalents:
+//   yarn test                  — spec (mock-doc); the only test lane CI runs
+//   yarn test.storybook        — storybook one-shot (local; not run by CI)
 //   yarn test.storybook.watch  — storybook watch mode (manual second terminal)
 // The `storybookTest` plugin is imported directly in `vitest.config.mts`, so
-// removing the UI addon does not affect CLI test execution.
-const devAddons = ['@storybook/addon-docs', '@whitespace/storybook-addon-html', '@storybook/addon-a11y'];
+// the panel is optional for CLI test execution.
+const devAddons = [
+  '@storybook/addon-docs',
+  '@whitespace/storybook-addon-html',
+  '@storybook/addon-a11y',
+  '@storybook/addon-vitest',
+];
 
 const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
@@ -147,8 +153,18 @@ export default {
     // Both dirs are gitignored so Vite's chokidar won't see changes — we use Node
     // fs.watch and send a full-reload via Vite's WebSocket.
     config.plugins = config.plugins || [];
+    const timers = {};
+    const watchers = [];
     config.plugins.push({
       name: 'stencil-hot-reload',
+      // Close on `closeBundle`, which Vite runs from every environment's plugin
+      // container on both server close and restart. `httpServer` 'close' is not
+      // enough: in middleware mode `server.httpServer` is null, so that listener was
+      // never attached and the recursive watchers kept the process alive.
+      closeBundle() {
+        watchers.splice(0).forEach(w => w.close());
+        Object.values(timers).forEach(clearTimeout);
+      },
       configureServer(server) {
         const projectRoot = path.resolve(__dirname, '..');
 
@@ -174,8 +190,6 @@ export default {
         // Watch both gitignored dirs with separate debounce per dir.
         // Token-only changes skip module invalidation (tokens are <link> tags).
         // Component changes invalidate only dist/mud modules.
-        const timers = {};
-        const watchers = [];
 
         function onTokenChange(filename) {
           clearTimeout(timers.tokens);
@@ -210,6 +224,11 @@ export default {
           'dist/mud': onComponentChange,
         };
 
+        // The Vitest lane loads this config too, but its browser server runs with
+        // `watch: null` and compiles components from source, so reloads have no
+        // consumer there.
+        if (process.env.VITEST) return;
+
         for (const [dir, handler] of Object.entries(watchMap)) {
           try {
             const w = fs.watch(path.resolve(projectRoot, dir), { recursive: true }, (_event, filename) => {
@@ -220,8 +239,6 @@ export default {
             console.warn(`[stencil-hot-reload] Could not watch ${dir}:`, e.message);
           }
         }
-
-        server.httpServer?.on('close', () => watchers.forEach(w => w.close()));
       },
     });
 

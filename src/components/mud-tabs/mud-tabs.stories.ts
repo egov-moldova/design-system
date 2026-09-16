@@ -257,7 +257,10 @@ const focusTabHtml = (id: string, selectedValue: string, focusValue: string, ari
   <script>
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
-        var tab = document.getElementById('${id}').querySelector('mud-tab[value="${focusValue}"]');
+        // The story may already be unmounted when these frames run (test runners
+        // mount the next story first), so the host can be gone.
+        var host = document.getElementById('${id}');
+        var tab = host && host.querySelector('mud-tab[value="${focusValue}"]');
         if (tab) tab.focus();
       });
     });

@@ -55,11 +55,12 @@ pattern.
 
 ## Slots
 
-| Slot           | Description                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------------- |
-| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown. |
-| `"icon-start"` | Leading `mud-icon` rendered inside the control row.                                                     |
-| `"label"`      | Rich label content, replaces the `label` prop when present.                                             |
+| Slot           | Description                                                                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|                | (default) Direct `<option>` children, used as the option list when the `options` prop is unset or empty. Not rendered directly: each option's `value`, text and `disabled` are read when children are added or removed. Options inside `<optgroup>` and the `selected` attribute are ignored; set `value` on the host instead. |
+| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.                                                                                                                                                                                                                        |
+| `"icon-start"` | Leading `mud-icon` rendered inside the control row.                                                                                                                                                                                                                                                                            |
+| `"label"`      | Rich label content, replaces the `label` prop when present.                                                                                                                                                                                                                                                                    |
 
 
 ## Shadow Parts

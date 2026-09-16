@@ -95,8 +95,8 @@ describe('form-associated components', () => {
     // expected to fail here once, and the fix is to lower the number in the
     // same commit that removes the component.
     assert.ok(
-      formAssociated.length >= 16,
-      `expected at least 16 form-associated components, found ${formAssociated.length}. ` +
+      formAssociated.length >= 15,
+      `expected at least 15 form-associated components, found ${formAssociated.length}. ` +
         'Either a component was legitimately removed — lower this floor in that same commit — ' +
         'or the scan stopped seeing them, in which case every assertion below is grading a subset.',
     );

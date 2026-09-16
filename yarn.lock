@@ -1078,7 +1078,7 @@ __metadata:
     "@vitest/browser-playwright": "npm:^4.1.11"
     "@vitest/coverage-v8": "npm:^4.1.11"
     "@whitespace/storybook-addon-html": "npm:^9.0.0"
-    agent-browser: "npm:latest"
+    agent-browser: "npm:^0.26.0"
     agentation: "npm:^3.0.2"
     commander: "npm:^14.0.3"
     cross-env: "npm:^10.1.0"
@@ -3535,7 +3535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-browser@npm:latest":
+"agent-browser@npm:^0.26.0":
   version: 0.26.0
   resolution: "agent-browser@npm:0.26.0"
   bin:
