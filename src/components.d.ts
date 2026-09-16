@@ -809,6 +809,16 @@ export namespace Components {
          */
         "clearable": boolean;
         /**
+          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
+          * @default 'Introduceți o dată validă'
+         */
+        "dateErrorText": string;
+        /**
+          * Message shown when a complete day segment is outside 01–31.
+          * @default 'Ziua trebuie să fie între 01 și 31'
+         */
+        "dayErrorText": string;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -844,13 +854,28 @@ export namespace Components {
          */
         "min"?: string;
         /**
+          * Message shown when a complete month segment is outside 01–12.
+          * @default 'Luna trebuie să fie între 01 și 12'
+         */
+        "monthErrorText": string;
+        /**
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
         /**
+          * Accessible name of the calendar dialog.
+          * @default 'Selectează data'
+         */
+        "pickerLabel": string;
+        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
+        /**
+          * Message shown when a complete date is outside `min` / `max`.
+          * @default 'Data este în afara intervalului permis'
+         */
+        "rangeErrorText": string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -876,6 +901,11 @@ export namespace Components {
           * @default 'default'
          */
         "variant": DateInputVariant;
+        /**
+          * Message shown when a complete year is outside the allowed years.
+          * @default 'Introduceți un an valid'
+         */
+        "yearErrorText": string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -3006,7 +3036,7 @@ export namespace Components {
      * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `mud-tag`, `mud-button`, or any custom content per cell.
-     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
@@ -5060,7 +5090,7 @@ declare global {
      * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `mud-tag`, `mud-button`, or any custom content per cell.
-     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
@@ -6120,6 +6150,16 @@ declare namespace LocalJSX {
          */
         "clearable"?: boolean;
         /**
+          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
+          * @default 'Introduceți o dată validă'
+         */
+        "dateErrorText"?: string;
+        /**
+          * Message shown when a complete day segment is outside 01–31.
+          * @default 'Ziua trebuie să fie între 01 și 31'
+         */
+        "dayErrorText"?: string;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -6159,6 +6199,11 @@ declare namespace LocalJSX {
          */
         "min"?: string;
         /**
+          * Message shown when a complete month segment is outside 01–12.
+          * @default 'Luna trebuie să fie între 01 și 12'
+         */
+        "monthErrorText"?: string;
+        /**
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
@@ -6183,9 +6228,19 @@ declare namespace LocalJSX {
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
+          * Accessible name of the calendar dialog.
+          * @default 'Selectează data'
+         */
+        "pickerLabel"?: string;
+        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
+        /**
+          * Message shown when a complete date is outside `min` / `max`.
+          * @default 'Data este în afara intervalului permis'
+         */
+        "rangeErrorText"?: string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -6211,6 +6266,11 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: DateInputVariant;
+        /**
+          * Message shown when a complete year is outside the allowed years.
+          * @default 'Introduceți un an valid'
+         */
+        "yearErrorText"?: string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -8661,7 +8721,7 @@ declare namespace LocalJSX {
      * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `mud-tag`, `mud-button`, or any custom content per cell.
-     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
@@ -9381,6 +9441,12 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "clearable": boolean;
         "clearLabel": string;
+        "pickerLabel": string;
+        "dayErrorText": string;
+        "monthErrorText": string;
+        "yearErrorText": string;
+        "dateErrorText": string;
+        "rangeErrorText": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;
@@ -9907,7 +9973,7 @@ declare namespace LocalJSX {
         "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
-        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf<"name", MudIcon["name"], MudIconAttributes["name"]>;
+        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf3<"name", MudIcon["name"], MudIconAttributes["name"]>;
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
@@ -10623,7 +10689,7 @@ declare module "@stencil/core" {
              * for the selection column, `mud-icon` for sort chevrons. Status badges and
              * row actions are projected via named slots so consumers can drop in
              * `mud-tag`, `mud-button`, or any custom content per cell.
-             * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+             * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
              * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
              * table-cell `649:4296`). The table structure itself is preserved; consumers
              * who need a card-stack layout on narrow screens should wrap their own

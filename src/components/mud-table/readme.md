@@ -17,7 +17,7 @@ for the selection column, `mud-icon` for sort chevrons. Status badges and
 row actions are projected via named slots so consumers can drop in
 `mud-tag`, `mud-button`, or any custom content per cell.
 
-At ≤640 px container width the inline padding shrinks from 24 → 16 to
+At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
 match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
 table-cell `649:4296`). The table structure itself is preserved; consumers
 who need a card-stack layout on narrow screens should wrap their own

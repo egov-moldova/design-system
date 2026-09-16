@@ -1,0 +1,1185 @@
+{
+  "$comment": "Figma state manifest for mud-table — values copied from the Table documentation page (650:3686) and the table-header (4930:14358 / 647:3531), table-row (4928:11857) and table-cell (649:4296) component sets. Header Type Subtle / Strong / White maps to header-style default / inverted / white. Cell text is Figma mock data (\"Title\" / \"Value\").",
+  "component": "mud-table",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "molecules-table--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-table",
+      "bleed": 0
+    }
+  },
+  "states": [
+    {
+      "name": "desktop",
+      "node": "4946:22725",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"white\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            },
+            {
+              "key": "c6",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table",
+          "styles": {
+            "boxWidth": "860px"
+          }
+        },
+        {
+          "target": "mud-table .row--header",
+          "node": "4930:14402",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table thead th:nth-child(1)",
+          "node": "787:36552",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "20px",
+            "color": "#121212",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1) td:nth-child(1)",
+          "node": "649:4297",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "color": "#383838",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1)",
+          "node": "4930:13108",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2)",
+          "node": "4930:13960",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2) td:nth-child(1)",
+          "node": "4930:13960",
+          "styles": {
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Zebra=True cells keep the 0.5px bottom stroke (EL-5d078633)."
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "node": "4946:22913",
+      "html": "<div style=\"width:560px\"><mud-table header-style=\"white\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            },
+            {
+              "key": "c6",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table",
+          "node": "4946:22913",
+          "styles": {
+            "boxWidth": "560px"
+          },
+          "note": "Mobile padding follows the viewport (≤640px), so this state renders at a 640px viewport; the 560px Figma frame scrolls sideways there."
+        },
+        {
+          "target": "mud-table thead th:nth-child(1)",
+          "node": "787:36563",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "20px",
+            "color": "#121212",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1) td:nth-child(1)",
+          "node": "649:4302",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "color": "#383838",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        }
+      ],
+      "viewport": {
+        "width": 640,
+        "height": 900
+      }
+    },
+    {
+      "name": "header-subtle",
+      "node": "4946:23281",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"default\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            },
+            {
+              "key": "c6",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table .row--header",
+          "node": "647:3532",
+          "styles": {
+            "backgroundColor": "#F1F1F1"
+          }
+        },
+        {
+          "target": "mud-table thead th:nth-child(1)",
+          "node": "647:3532",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "20px",
+            "color": "#121212",
+            "borderBottomWidth": "0px",
+            "boxShadow": "none"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1)",
+          "node": "4930:13108",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2)",
+          "node": "4930:13960",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2) td:nth-child(1)",
+          "node": "4930:13960",
+          "styles": {
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Zebra=True cells keep the 0.5px bottom stroke (EL-5d078633)."
+        }
+      ]
+    },
+    {
+      "name": "header-strong",
+      "node": "4946:23288",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"inverted\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            },
+            {
+              "key": "c6",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table .row--header",
+          "node": "647:3542",
+          "styles": {
+            "backgroundColor": "#1E1E1E"
+          }
+        },
+        {
+          "target": "mud-table thead th:nth-child(1)",
+          "node": "647:3542",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "20px",
+            "color": "#FFFFFF",
+            "borderBottomWidth": "0px",
+            "boxShadow": "none"
+          }
+        }
+      ]
+    },
+    {
+      "name": "header-white",
+      "node": "4946:23845",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"white\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            },
+            {
+              "key": "c6",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value",
+              "c6": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table .row--header",
+          "node": "787:36552",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table thead th:nth-child(1)",
+          "node": "787:36552",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "20px",
+            "color": "#121212",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        }
+      ]
+    },
+    {
+      "name": "icon-none",
+      "node": "4946:24093",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"default\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table .sort-icon",
+          "node": "4930:14383",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "name": "trailing-icon",
+      "node": "4946:24431",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"default\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title",
+              "sortable": true
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title",
+              "sortable": true
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table thead th:nth-child(2) .th-inner",
+          "node": "647:3534",
+          "styles": {
+            "columnGap": "6px"
+          }
+        },
+        {
+          "target": "mud-table thead th:nth-child(2) .sort-icon",
+          "node": "648:3137",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px",
+            "color": "#121212"
+          },
+          "note": "16/chevron-grabber (5523:9833); exported SVG path fill is #121212. Figma has no active / inactive sort colour."
+        },
+        {
+          "target": "mud-table thead th:nth-child(1) .sort-icon",
+          "node": "4930:14384",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "name": "row-default",
+      "node": "4946:24641",
+      "html": "<div style=\"width:547px\"><mud-table header-style=\"inverted\" row-style=\"divided\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table tbody tr:nth-child(2)",
+          "node": "4930:13052",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1) td:nth-child(1)",
+          "node": "649:4297",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "color": "#383838",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Figma 0.5px bottom stroke (inside) → inset box-shadow; Chromium rounds a 0.5px border up to 1px."
+        }
+      ]
+    },
+    {
+      "name": "row-zebra",
+      "node": "4946:24799",
+      "html": "<div style=\"width:860px\"><mud-table header-style=\"inverted\" row-style=\"zebra\"></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            },
+            {
+              "key": "c4",
+              "label": "Title"
+            },
+            {
+              "key": "c5",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value",
+              "c4": "Value",
+              "c5": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table tbody tr:nth-child(1)",
+          "node": "4930:13052",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2)",
+          "node": "4930:13954",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          }
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(2) td:nth-child(1)",
+          "node": "4930:13954",
+          "styles": {
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9"
+          },
+          "note": "Zebra=True cells keep the 0.5px bottom stroke (EL-5d078633)."
+        }
+      ]
+    },
+    {
+      "name": "cell-checkbox",
+      "node": "4946:25107",
+      "pixel": false,
+      "html": "<div style=\"width:860px\"><mud-table selectable></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table tbody tr:nth-child(1) td.td--selection",
+          "node": "4936:19447",
+          "styles": {
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "boxHeight": "48px",
+            "borderBottomWidth": "0px",
+            "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9",
+            "boxWidth": "68px"
+          },
+          "note": "Cell Container padding 0 24, checkbox 20x20 (649:4344) → column 24 + 20 + 24."
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1) td.td--selection mud-checkbox .box",
+          "node": "649:4344",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "borderTopLeftRadius": "6px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cell-checkbox-mobile",
+      "node": "649:4333",
+      "pixel": false,
+      "viewport": {
+        "width": 400,
+        "height": 900
+      },
+      "html": "<div style=\"width:360px\"><mud-table selectable></mud-table></div>",
+      "props": {
+        "mud-table": {
+          "columns": [
+            {
+              "key": "c1",
+              "label": "Title"
+            },
+            {
+              "key": "c2",
+              "label": "Title"
+            },
+            {
+              "key": "c3",
+              "label": "Title"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r2",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r3",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r4",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            },
+            {
+              "id": "r5",
+              "c1": "Value",
+              "c2": "Value",
+              "c3": "Value"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-table tbody tr:nth-child(1) td.td--selection",
+          "node": "4936:19718",
+          "styles": {
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "boxWidth": "52px",
+            "boxHeight": "48px"
+          },
+          "note": "Cell container padding 0 16, checkbox Small 20x20 (649:4347) → column 16 + 20 + 16."
+        },
+        {
+          "target": "mud-table tbody tr:nth-child(1) td.td--selection mud-checkbox .box",
+          "node": "649:4347",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "borderTopLeftRadius": "6px"
+          }
+        }
+      ]
+    }
+  ]
+}
