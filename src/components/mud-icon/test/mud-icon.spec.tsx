@@ -1,5 +1,7 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 import { setAssetPath } from '@stencil/core';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
@@ -454,5 +456,48 @@ describe('icons.manifest.json (public icon names)', () => {
 
   it('no longer exposes the misspelled "calender" names', () => {
     expect(ICON_NAMES.filter(n => n.includes('calender'))).toEqual([]);
+  });
+});
+
+describe('icon asset shape (what `yarn svg:icons` normalizes to)', () => {
+  const ASSETS_ROOT = path.resolve(__dirname, '../assets');
+  const SIZES = [12, 16, 20, 24];
+
+  const files = SIZES.flatMap(size => {
+    const dir = path.join(ASSETS_ROOT, String(size));
+    return fs
+      .readdirSync(dir)
+      .filter(name => name.endsWith('.svg'))
+      .map(name => ({ rel: `${size}/${name}`, source: fs.readFileSync(path.join(dir, name), 'utf8') }));
+  });
+
+  // Guards against a vacuous scan: a moved assets directory would make every
+  // assertion below pass over an empty list.
+  it('reads the whole icon set', () => {
+    expect(files.length).toBe(Object.values(manifest as IconManifest).reduce((n, e) => n + e.sizes.length, 0));
+  });
+
+  // `mud-icon` inlines the SVG into its shadow root, where `mud-icon.css`'s
+  // `color: var(--icon-color, currentColor)` cascades into it. Paint that is not
+  // `currentColor` or `none` wins over that cascade, so the icon stops answering
+  // to the `color` prop — silently, and only in the themes that differ.
+  it('carries no paint other than currentColor or none', () => {
+    const offenders = files
+      .filter(({ source }) =>
+        [...source.matchAll(/\s(?:fill|stroke)="([^"]*)"/g)].some(
+          ([, value]) => value !== 'currentColor' && value !== 'none',
+        ),
+      )
+      .map(({ rel }) => rel);
+    expect(offenders).toEqual([]);
+  });
+
+  // The host element carries the size and the CSS stretches the svg to it, so a
+  // root `width`/`height` is dead weight that contradicts the rendered size.
+  it('carries no intrinsic size on the root element', () => {
+    const offenders = files
+      .filter(({ source }) => /<svg[^>]*\s(?:width|height)=/.test(source.slice(0, source.indexOf('>') + 1)))
+      .map(({ rel }) => rel);
+    expect(offenders).toEqual([]);
   });
 });

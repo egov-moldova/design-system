@@ -260,7 +260,7 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 
 - **Sizes** match the 8pt scale; default 20px (matches md button label).
 - **Color** inherits via `currentColor`; never carries hardcoded fill.
-- **Source** is the curated local SVG library (`src/assets/images/icons`), pre-processed by `yarn svg:icons` to strip size and fill.
+- **Source** is the curated local SVG library (`src/components/mud-icon/assets/{12,16,20,24}/`), normalized by `yarn svg:icons`, which strips the root `width`/`height` and any hardcoded paint — keeping `fill="currentColor"`, which is what the bullet above inherits through — and then regenerates `icons.manifest.json`.
 
 ### Logo (`mud-logo`)
 

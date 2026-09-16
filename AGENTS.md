@@ -136,7 +136,7 @@ yarn format                    # Auto-fix code style
 # Utilities
 yarn generate                  # Stencil component generator scaffolding
 yarn tokens.audit              # Debug missing token references
-yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
+yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json and icon-names.ts
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.
