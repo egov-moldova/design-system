@@ -62,8 +62,41 @@ What you get back per envelope:
   `outlineWidth`, `outlineStyle`, `outlineColor`); same shape under `dark`
   unless `--skip-dark` was passed.
 - **10 (contrast-pairs)** → `meta.pairs[]` with
-  `{ tag, theme, fg, bg, ratio, threshold, pass, exempt }` for every
-  interactive element.
+  `{ tag, theme, fg, bg, bgOwn, bgStack, canvas, error, ratio, threshold, pass,
+  exempt }` for every interactive element. `bg` is the COMPOSITED background —
+  the layers behind the element, walked across shadow boundaries up to the story
+  canvas — and is what the ratio is computed against. `bgOwn` is the element's
+  own `backgroundColor`, often `rgba(0, 0, 0, 0)`; `bgStack` is the layer stack
+  `bg` was folded from; `canvas` is the surface the fold lands on when no layer
+  paints anything. All three are for debugging a surprising ratio, never for
+  judging contrast.
+  `ratio` is `null` with `error: 'unmeasurable'` when a color spelling the
+  parser cannot read reached the measurement. Which layer it was decides the
+  code, and `bg` is what tells them apart: `bg === null` means the BACKDROP is
+  unresolved (`CONTRAST-BACKDROP-UNREADABLE`), while a non-null `bg` with a
+  null `ratio` means the FOREGROUND is (`CONTRAST-FOREGROUND-UNREADABLE`).
+  Both are tool defects, not contrast defects — they point at a color spelling,
+  never at the token mapping — and neither is exempted by `disabled`.
+  A `background-image` (gradient or image) on the element, or on an ancestor
+  NEARER than the first opaque background color, is recorded in `bgStack` as
+  `'background-image'` and the row comes back unresolved — `bg: null`,
+  `CONTRAST-BACKDROP-UNREADABLE` — because it cannot be folded to one color. One
+  behind an opaque layer is correctly ignored, since nothing behind an opaque
+  layer shows. It is a refusal to guess, not a contrast failure, and it also
+  fires for a small decorative image (a chevron) over an otherwise opaque fill:
+  judge that pair by eye.
+  `bgStack` is the FLATTENED-ancestor chain of background COLORS, so these
+  paint mechanisms are not in the model and DO yield a ratio, which may be
+  wrong: `opacity` — on the element itself or on an ancestor — and anything out
+  of flow — a `position: fixed` overlay such as `mud-modal` or `mud-toast`
+  paints over whatever is beneath it on screen, which its DOM ancestors do not
+  describe, as do transformed subtrees, overlapping siblings and pseudo-element
+  fills. Where a component's text sits on any of those, do not trust its
+  `ratio`; judge it by eye.
+  Which element a pair is READ OFF is heuristic: an element with no text of its
+  own — a checkbox box, a switch track, a separator rule, a visually hidden
+  native `<input>` — can produce a row pairing an inherited `color` with a fill.
+  Such a row describes no glyphs and is not a contrast finding.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data
@@ -84,12 +117,24 @@ This is where the agent's value lands. For each script finding, decide:
 
 **Contrast judgment** (script reports raw ratios + pass/fail per WCAG threshold):
 
-- For every `pass: false` non-`exempt` pair: what's the remediation? Adjust
-  the token mapping (preferred), add a new semantic token, or document a
-  design exception?
-- Cross-reference with `yarn audit:contrast` — does a runtime FAIL line up
-  with a token-level FAIL? If yes → token issue (fix `tokens/core/`).
-  If runtime FAILs but tokens PASS → component CSS picked the wrong token.
+- Only `CONTRAST-BELOW-THRESHOLD` is a contrast finding. A row with
+  `error: 'unmeasurable'` (`CONTRAST-BACKDROP-UNREADABLE`,
+  `CONTRAST-FOREGROUND-UNREADABLE`) also has `pass: false`, but it is a tool
+  limit: judge that pair by eye and never propose a color change for it. A row
+  read off a surface with no text of its own is not a finding either (Step 1).
+- For a genuine `CONTRAST-BELOW-THRESHOLD`, decide which layer owns the colors.
+  `tokens/core/` and `tokens/core.dark/` are exported from Figma, the design
+  source of truth, and `yarn sync:tokens:apply` overwrites them — so a token
+  VALUE is never the fix here: report the pair, with both measured colors and
+  the token names they resolve through, as a design observation. Only a
+  component that references the wrong semantic token for its role is a code
+  defect to report as such.
+- Cross-reference with `yarn audit:contrast` knowing the two can legitimately
+  disagree: script 10 composites a translucent background over what is behind
+  it and the token audit does not, so a translucent tint can pass one and fail
+  the other with neither being wrong. A disagreement is a prompt to look at
+  which layer is translucent, not proof that a token or a component is at
+  fault.
 
 **Keyboard / focus** (script captures outline styles, NOT tab traversal):
 
