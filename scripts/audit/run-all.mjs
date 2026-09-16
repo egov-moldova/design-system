@@ -40,7 +40,7 @@ import { parseArgs } from 'node:util';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL } from './lib/exit-codes.mjs';
-import { SCHEMA_VERSION } from './lib/json-output.mjs';
+import { SCHEMA_VERSION, flushStdout } from './lib/json-output.mjs';
 
 const TOOL = 'run-all';
 
@@ -431,6 +431,13 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
 }
 
 async function emit(combined, args) {
+  await writeCombined(combined, args);
+  // The combined envelope aggregates every script's, so it is the likeliest to
+  // outgrow the pipe buffer; see `flushStdout` for what exiting early drops.
+  await flushStdout();
+}
+
+async function writeCombined(combined, args) {
   if (args.out) {
     mkdirSync(dirname(args.out), { recursive: true });
     writeFileSync(args.out, JSON.stringify(combined, null, 2), 'utf8');

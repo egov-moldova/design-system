@@ -18,7 +18,6 @@ import {
   formatColor,
   resolveBackground,
   DEFAULT_CANVAS,
-  exactContrastRatio,
   findingsFromPairs,
 } from '../../audit/10-contrast-pairs.mjs';
 
@@ -367,6 +366,33 @@ describe('10-contrast-pairs: parseColor number grammar', () => {
   });
 });
 
+describe('10-contrast-pairs: alpha and background lists', () => {
+  it('clamps a negative alpha instead of compositing a negative color', () => {
+    // An unclamped `rgba(255, 255, 255, -1)` folded to rgb(-255, -255, -255)
+    // and a ratio of -9.71.
+    assert.equal(parseColor('rgba(255, 255, 255, -1)').a, 0);
+    assert.equal(parseColor('rgba(0, 0, 0, 2)').a, 1);
+  });
+
+  it('keeps a contrast failure pointed away from editing tokens', () => {
+    const pair = {
+      theme: 'light',
+      tag: 'mud-x',
+      kind: 'normal',
+      source: 'shadow',
+      fg: 'rgb(0, 0, 0)',
+      pass: false,
+      bg: 'rgb(0, 0, 0)',
+      ratio: 1,
+      threshold: 4.5,
+      error: null,
+    };
+    const [f] = findingsFromPairs([pair], 'src/x.tsx');
+    assert.match(f.fix, /do not edit it here/);
+    assert.doesNotMatch(f.fix, /Adjust the token mapping/);
+  });
+});
+
 describe('10-contrast-pairs: threshold is compared on the exact ratio', () => {
   const pairOn = fg =>
     buildPair({
@@ -382,7 +408,7 @@ describe('10-contrast-pairs: threshold is compared on the exact ratio', () => {
 
   it('fails a pair just under the threshold that rounds up to it', () => {
     // 4.4957:1 rounds to 4.5 at two decimals and used to pass a 4.5:1 check.
-    assert.ok(exactContrastRatio('rgb(100, 123, 125)', 'rgb(255, 255, 255)') < 4.5);
+    assert.ok(contrastRatio('rgb(100, 123, 125)', 'rgb(255, 255, 255)') < 4.5);
     const pair = pairOn('rgb(100, 123, 125)');
     assert.equal(pair.pass, false);
     // Truncated for display, so the reported number never reads as meeting it.
@@ -421,9 +447,10 @@ describe('10-contrast-pairs: findingsFromPairs', () => {
     assert.deepEqual(codes([pair]), [['CONTRAST-BELOW-THRESHOLD', 'error']]);
   });
 
-  it('warns, and does not block, on an unreadable backdrop — a tool limit', () => {
-    // No token or CSS change makes a gradient foldable; an error here would be
-    // a permanent CI block nothing short of deleting the design could clear.
+  it('warns, and does not block, on an unreadable color spelling', () => {
+    // A parser gap is fixable in this script, but not by the component: an
+    // error here would block every run on something no token or CSS change
+    // clears, which is how a check gets switched off.
     const pair = {
       ...base,
       pass: false,
@@ -460,6 +487,8 @@ describe('10-contrast-pairs: findingsFromPairs', () => {
     const [f] = findingsFromPairs([pair], 'src/x.tsx');
     assert.match(f.message, /canvas: rgba\(0, 0, 0, 0\)/);
     assert.doesNotMatch(f.message, /layers=\[\]/);
+    // Every layer parsed, so there is no spelling to teach.
+    assert.doesNotMatch(f.fix, /Teach parseColor/);
   });
 
   it('names only the layers read, and tells the truth about an image', () => {
@@ -474,5 +503,8 @@ describe('10-contrast-pairs: findingsFromPairs', () => {
     const [f] = findingsFromPairs([pair], 'src/x.tsx');
     assert.match(f.message, /layers=\[rgba\(0, 0, 0, 0\) \| background-image\]/);
     assert.match(f.fix, /cannot be folded/);
+    // An image can never be read, so this is the case where blocking would be
+    // permanent — the one the warning severity exists for.
+    assert.equal(f.severity, 'warning');
   });
 });

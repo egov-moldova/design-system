@@ -279,8 +279,9 @@ No `aria-*` on non-interactive elements unless they have `role`.
 
 ### 3.3 Color Contrast (SC 1.4.3 + 1.4.11) — both modes
 
-Covered by Fast Path script `10-contrast-pairs.mjs` which captures computed
-fg/bg/border for every interactive element in both themes and applies the
+Covered by Fast Path script `10-contrast-pairs.mjs` which measures computed
+text color against the composited background for every interactive element in
+both themes (`borderColor` is collected but never evaluated) and applies the
 WCAG 2.1 AA thresholds (4.5:1 normal, 3:1 large/UI). Disabled elements are
 exempt from the contrast threshold, but not from `*-UNREADABLE`, which is a
 tool limit reported as a warning. The script measures text contrast; it does

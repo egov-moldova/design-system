@@ -248,8 +248,10 @@ URL building) and pass without Playwright. The actual browser flow is verified
 manually once a dev installs the dep — with one exception:
 `scripts/__tests__/audit/10-contrast-pairs.browser.spec.mjs` drives a real
 Chromium over a hand-built shadow tree in a `data:` URL, so it needs neither
-Storybook nor the build output, and it skips with a reason (rather than
-failing) when the browser cannot produce samples.
+Storybook nor the build output. It skips, with the launch error as its reason,
+only when a browser cannot START on the machine; once one has started, every
+failure fails the test — including one thrown by the code under test inside
+`page.evaluate`, which is the regression it exists to catch.
 
 ## Pixel-diff — Pixelmatch direct, NOT Playwright's compare
 

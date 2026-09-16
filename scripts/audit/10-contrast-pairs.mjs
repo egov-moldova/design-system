@@ -29,8 +29,12 @@
  * Thresholds (WCAG 2.1 AA):
  *   - normal text:    4.5:1
  *   - large text:     3:1  (≥18pt or ≥14pt bold)
- *   - UI components:  3:1  (icons, borders, focus rings)
+ *   - UI components:  3:1  (applied to `hr`, `img` and `svg` elements)
  *   - disabled:       exempt (per SC 1.4.3)
+ *
+ * NOT checked: SC 1.4.11 non-text contrast. `borderColor` is collected on each
+ * sample but never evaluated, so a control's boundary and a focus ring against
+ * their surroundings are still judged by hand.
  *
  * Usage:
  *   yarn sp.dev.watch
@@ -83,10 +87,25 @@ function channel(value) {
  * path as `contrast NaN:1`.
  */
 const NUM = String.raw`[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?`;
+const RGB_PATTERN = new RegExp(
+  `^rgba?\\(\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*(?:[,/]\\s*(${NUM}%?)\\s*)?\\)$`,
+  'i',
+);
+const SRGB_PATTERN = new RegExp(
+  `^color\\(\\s*srgb\\s+(${NUM})\\s+(${NUM})\\s+(${NUM})\\s*(?:\\/\\s*(${NUM}%?)\\s*)?\\)$`,
+  'i',
+);
 
+/**
+ * Alpha, clamped to [0, 1] as CSS clamps it. The number grammar accepts a sign
+ * so that channels can be negative, and an unclamped `rgba(255, 255, 255, -1)`
+ * composited to `rgb(-255, -255, -255)` and a ratio of -9.71. NaN passes through
+ * untouched, for `finiteColor` to refuse.
+ */
 function alphaOf(token) {
   if (token === undefined) return 1;
-  return token.endsWith('%') ? Number(token.slice(0, -1)) / 100 : Number(token);
+  const value = token.endsWith('%') ? Number(token.slice(0, -1)) / 100 : Number(token);
+  return Number.isNaN(value) ? value : Math.min(1, Math.max(0, value));
 }
 
 /** A color only if every component is a real number; otherwise unreadable. */
@@ -128,9 +147,7 @@ export function parseColor(input) {
     };
   }
 
-  const rgb = s.match(
-    new RegExp(`^rgba?\\(\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*(?:[,/]\\s*(${NUM}%?)\\s*)?\\)$`, 'i'),
-  );
+  const rgb = s.match(RGB_PATTERN);
   if (rgb) {
     return finiteColor(channel(rgb[1]), channel(rgb[2]), channel(rgb[3]), alphaOf(rgb[4]));
   }
@@ -140,9 +157,7 @@ export function parseColor(input) {
   // this branch those layers are unreadable at runtime.
   // Baseline: `grep -rlc 'color-mix(in srgb' src/components/*/[a-z]*.css` -> 3
   // files (mud-banner, mud-date-input, mud-toast) on 2026-09-16.
-  const srgb = s.match(
-    new RegExp(`^color\\(\\s*srgb\\s+(${NUM})\\s+(${NUM})\\s+(${NUM})\\s*(?:\\/\\s*(${NUM}%?)\\s*)?\\)$`, 'i'),
-  );
+  const srgb = s.match(SRGB_PATTERN);
   if (srgb) {
     return finiteColor(
       channel(Number(srgb[1]) * 255),
@@ -243,26 +258,20 @@ export function resolveBackground(layers, { fallback = DEFAULT_CANVAS } = {}) {
 }
 
 /**
- * Compute the WCAG 2.1 contrast ratio between a foreground color (which may be
- * transparent) and a background. The foreground is composited over the
- * background to handle alpha, matching the WCAG algorithm and what
- * scripts/audit-token-contrast.mjs does.
+ * The WCAG 2.1 contrast ratio between a foreground color (which may be
+ * transparent) and a background; the foreground is composited over the
+ * background to handle alpha.
  *
- * Returns a number (typically 1.0..21.0) rounded to two decimals, or null if
- * either color was unparseable.
+ * The ratio is UNROUNDED. Rounding belongs to display, never to the value a
+ * threshold is compared against: `rgb(100, 123, 125)` on white is 4.4957:1,
+ * which rounds to 4.5 and would pass a 4.5:1 check it does not meet. This is
+ * the one place every caller reads the ratio from, so it is where the guard
+ * lives — a caller cannot reintroduce the false PASS by forgetting to use an
+ * exact variant.
+ *
+ * Returns null if either color was unparseable.
  */
 export function contrastRatio(fgInput, bgInput) {
-  const exact = exactContrastRatio(fgInput, bgInput);
-  return exact === null ? null : Number(exact.toFixed(2));
-}
-
-/**
- * The unrounded ratio. A threshold must be compared against THIS, never the
- * two-decimal display value: `rgb(100, 123, 125)` on white is 4.4957:1, which
- * rounds to 4.5 and would pass a 4.5:1 threshold it does not meet — a false
- * PASS on exactly the pairs a gate exists to catch.
- */
-export function exactContrastRatio(fgInput, bgInput) {
   const fgRaw = typeof fgInput === 'string' ? parseColor(fgInput) : fgInput;
   const bgRaw = typeof bgInput === 'string' ? parseColor(bgInput) : bgInput;
   if (!fgRaw || !bgRaw) return null;
@@ -349,11 +358,22 @@ async function main() {
   }
 
   const findings = perComponent.flatMap(c => c.findings);
+  // An unreadable pair is a warning, so a component whose every pair is
+  // unreadable exits 0 having checked nothing. These counts make that visible
+  // in the envelope instead of reading as a clean pass.
+  const judged = perComponent.flatMap(c => c.pairs ?? []).filter(p => !p.exempt);
+  const pairsUnmeasurable = judged.filter(p => p.error === 'unmeasurable').length;
   const result = buildResult({
     tool: TOOL,
     target: args.all ? 'all' : args.changed ? 'changed' : targets[0].name,
     findings,
-    meta: { durationMs: Date.now() - t0, componentsScanned: targets.length, baseUrl },
+    meta: {
+      durationMs: Date.now() - t0,
+      componentsScanned: targets.length,
+      baseUrl,
+      pairsMeasured: judged.length - pairsUnmeasurable,
+      pairsUnmeasurable,
+    },
   });
 
   if (!args.all && !args.changed && perComponent.length === 1) {
@@ -444,9 +464,13 @@ export function findingsFromPairs(pairs, file) {
           message: `${where}: background unresolved. fg=${p.fg} layers=[${read.join(' | ')}].`,
           // An image cannot be taught to `parseColor`; telling the reader to
           // try is how a check gets switched off instead of read.
+          // Three causes, three different readers' actions — and only one of
+          // them is a spelling `parseColor` could learn.
           fix: read.includes('background-image')
             ? 'A background-image paints behind this text and cannot be folded to one color; judge this pair by eye.'
-            : 'Teach parseColor the unreadable color spelling, or judge this pair by eye.',
+            : stopped === -1
+              ? 'Nothing up to <html> paints an opaque background and the page canvas is not usable; judge this pair by eye.'
+              : 'Teach parseColor the unreadable color spelling, or judge this pair by eye.',
         }),
       );
       continue;
@@ -469,7 +493,9 @@ export function findingsFromPairs(pairs, file) {
         code: 'CONTRAST-BELOW-THRESHOLD',
         file,
         message: `${where}: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
-        fix: 'Adjust the token mapping so foreground and background pass WCAG 2.1 AA.',
+        // Token values are exported from Figma and `yarn sync:tokens:apply`
+        // overwrites them, so a token edit is never the fix a finding offers.
+        fix: 'Check the component references the semantic token meant for this role; if it does, report the token value to design — do not edit it here.',
       }),
     );
   }
@@ -492,7 +518,7 @@ export function buildPair(sample) {
   const bg = formatColor(resolved);
   // The parsed object, not the formatted string: round-tripping it back
   // through `parseColor` is a second chance to lose what was already resolved.
-  const exact = exactContrastRatio(sample.fg, resolved);
+  const exact = contrastRatio(sample.fg, resolved);
   const cls = classifyContrast(exact, sample.kind, { disabled: sample.disabled });
   return {
     ...sample,
@@ -646,7 +672,9 @@ export async function measureSamples(url, componentName, theme) {
               // folded (it needs geometry and stop interpolation), so the
               // honest answer is that this backdrop is unresolved: push a
               // marker `parseColor` refuses and let the fold report it.
-              layers.push(style.backgroundImage === 'none' ? style.backgroundColor : 'background-image');
+              layers.push(
+                /^none(\s*,\s*none)*$/.test(style.backgroundImage) ? style.backgroundColor : 'background-image',
+              );
 
               const parent = node.assignedSlot ?? node.parentElement;
               if (parent) {

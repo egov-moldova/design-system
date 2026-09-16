@@ -24,7 +24,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { buildPair, measureSamples } from '../../audit/10-contrast-pairs.mjs';
-import { PLAYWRIGHT_INSTALL_HINT } from '../../audit/lib/browser-context.mjs';
+import { launchBrowser } from '../../audit/lib/browser-context.mjs';
 
 // The canvas is BLACK on purpose. With a white one, dropping the walk entirely
 // still produced the right answer through `resolveBackground`'s canvas
@@ -98,43 +98,30 @@ const DARK_CANVAS_FIXTURE = `<!doctype html>
 const asUrl = html => `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
 
 /**
- * True only for an environment that cannot run a browser at all: Playwright
- * not installed, or its Chromium binary not downloaded.
+ * Whether a browser can start here at all — the ONLY condition that skips.
  *
- * Everything else must FAIL, not skip. The code under test runs inside
- * `page.evaluate`, so a TypeError in the backdrop walk rejects `measureSamples`
- * exactly as a missing browser does — and treating every rejection as "browser
- * unavailable" turned the regression this file exists to catch into a green,
- * fully skipped run.
- * Baseline: `grep -rhoE "Executable doesn't exist at" node_modules/playwright-core/lib --include='*.js' | head -1`
- * -> the launch error Playwright raises when the binary is missing.
+ * The environment and the code under test are separated by what fails, not by
+ * the wording of an error: if `launchBrowser` throws, this machine has no usable
+ * Chromium (not installed, binary not downloaded, missing system libraries, a
+ * sandbox refusing to spawn it) and the suite skips. Once a browser has started,
+ * every later failure is the code's — the walk runs inside `page.evaluate`, so a
+ * TypeError there rejects exactly as a missing browser would, and treating every
+ * rejection as "no browser" turned the regression this file exists to catch into
+ * a green, fully skipped run.
  */
-function browserUnavailable(err) {
-  const message = String(err?.message ?? err);
-  return message === PLAYWRIGHT_INSTALL_HINT || message.includes("Executable doesn't exist");
-}
-
-/** Samples, or `{ ok: false, reason }` when no browser can run here. */
-async function collectSamples(url, theme = 'light') {
+async function browserCanLaunch() {
   try {
-    return { ok: true, samples: await measureSamples(url, 'mud-fixture', theme) };
+    const { close } = await launchBrowser();
+    await close();
+    return { ok: true };
   } catch (err) {
-    if (!browserUnavailable(err)) throw err;
     return { ok: false, reason: `browser unavailable — ${err.message}` };
   }
 }
 
-/**
- * Samples from a further fixture, or a skip decided by the test itself — the
- * suite-level `skip` was computed from the first fixture only.
- */
-async function samplesOrSkip(t, url, theme = 'light') {
-  const run = await collectSamples(url, theme);
-  if (!run.ok) {
-    t.skip(run.reason);
-    return null;
-  }
-  return run.samples.map(buildPair);
+/** Pairs for a fixture. Called only after `browserCanLaunch` succeeded. */
+async function pairsFor(url, theme = 'light') {
+  return (await measureSamples(url, 'mud-fixture', theme)).map(buildPair);
 }
 
 /** Key each pair by tag + foreground; uniqueness is asserted by its own test. */
@@ -228,11 +215,11 @@ const GRADIENT_FIXTURE = `<!doctype html>
 </html>`;
 
 describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
-  const run = await collectSamples(asUrl(FIXTURE));
-  const skip = run.ok ? false : run.reason;
+  const browser = await browserCanLaunch();
+  const skip = browser.ok ? false : browser.reason;
 
-  const samples = run.samples ?? [];
-  const pairs = run.ok ? byTagAndForeground(samples) : {};
+  const samples = browser.ok ? await measureSamples(asUrl(FIXTURE), 'mud-fixture', 'light') : [];
+  const pairs = byTagAndForeground(samples);
 
   it('collects one sample per painted surface', { skip }, () => {
     // Three shadow buttons plus the host, whose pair `findRenderedPair` reads
@@ -246,9 +233,8 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.equal(Object.keys(pairs).length, samples.length);
   });
 
-  it('keeps an opaque host whose background ends in a zero channel', { skip }, async t => {
-    const opaque = await samplesOrSkip(t, asUrl(OPAQUE_HOST_FIXTURE));
-    if (!opaque) return;
+  it('keeps an opaque host whose background ends in a zero channel', { skip }, async () => {
+    const opaque = await pairsFor(asUrl(OPAQUE_HOST_FIXTURE));
     assert.equal(opaque.length, 1, 'the opaque host was dropped from the audit');
     assert.equal(opaque[0].bg, 'rgb(255, 87, 0)');
     assert.equal(opaque[0].ratio, 3.17);
@@ -304,21 +290,19 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     }
   });
 
-  it('reaches a surface the element only paints on through its slot', { skip }, async t => {
+  it('reaches a surface the element only paints on through its slot', { skip }, async () => {
     // The flattened-tree hop: the slotted button's `parentElement` is the host
     // in the LIGHT DOM, which paints nothing — walking it lands on the black
     // body. Only `assignedSlot` reaches `.panel`, which is what paints here.
-    const slotted = await samplesOrSkip(t, asUrl(SLOTTED_FIXTURE));
-    if (!slotted) return;
+    const slotted = await pairsFor(asUrl(SLOTTED_FIXTURE));
     const pair = slotted.find(s => s.origin === 'light');
     assert.ok(pair, 'expected a sample for the slotted button');
     assert.equal(pair.bgOwn, 'rgba(0, 0, 0, 0)');
     assert.equal(pair.bg, 'rgb(0, 88, 210)');
   });
 
-  it('refuses to see through a gradient it cannot fold', { skip }, async t => {
-    const gradient = await samplesOrSkip(t, asUrl(GRADIENT_FIXTURE));
-    if (!gradient) return;
+  it('refuses to see through a gradient it cannot fold', { skip }, async () => {
+    const gradient = await pairsFor(asUrl(GRADIENT_FIXTURE));
     const pair = gradient.find(s => s.tag === 'button');
     assert.ok(pair, 'expected a sample for the button on the gradient');
     // Reading `backgroundColor` alone would fold this to the white page and
@@ -329,9 +313,8 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.ok(pair.bgStack.includes('background-image'));
   });
 
-  it('reads a host pair off the surface that paints its slotted label', { skip }, async t => {
-    const slottedLabel = await samplesOrSkip(t, asUrl(SLOTTED_LABEL_FIXTURE));
-    if (!slottedLabel) return;
+  it('reads a host pair off the surface that paints its slotted label', { skip }, async () => {
+    const slottedLabel = await pairsFor(asUrl(SLOTTED_LABEL_FIXTURE));
     const host = slottedLabel.find(s => s.tag === 'mud-fixture');
     assert.ok(host, 'expected a host sample');
     assert.equal(host.source, 'shadow:button.btn');
@@ -340,17 +323,15 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.equal(host.ratio, 6.31);
   });
 
-  it('reads a host pair off an svg surface without throwing', { skip }, async t => {
-    const svg = await samplesOrSkip(t, asUrl(SVG_SURFACE_FIXTURE));
-    if (!svg) return;
+  it('reads a host pair off an svg surface without throwing', { skip }, async () => {
+    const svg = await pairsFor(asUrl(SVG_SURFACE_FIXTURE));
     const host = svg.find(s => s.tag === 'mud-fixture');
     assert.ok(host, 'expected a host sample read off the svg');
     assert.equal(host.source, 'shadow:svg.icon');
   });
 
-  it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async t => {
-    const dark = await samplesOrSkip(t, asUrl(DARK_CANVAS_FIXTURE), 'dark');
-    if (!dark) return;
+  it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async () => {
+    const dark = await pairsFor(asUrl(DARK_CANVAS_FIXTURE), 'dark');
     const [pair] = dark;
     assert.ok(pair, 'expected a sample from the dark-canvas fixture');
     assert.equal(pair.theme, 'dark');
