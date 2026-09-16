@@ -215,3 +215,47 @@ describe('sd-version rule', () => {
     assert.deepEqual(checkAiDocs({ root }), []);
   });
 });
+
+describe('path rule', () => {
+  it('flags a backticked repo path that does not exist', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/detail.md': 'See `src/components/index.ts` and `scripts/real.mjs`.\n',
+      'scripts/real.mjs': '',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['_agents/detail.md', 1, 'path']],
+    );
+  });
+
+  it('resolves skill shorthand and relative paths, and skips placeholders, link text and fences', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/skills/stencil-compliance/references/decorators.md': 'x',
+      '.claude/skills/audit-component/SKILL.md': [
+        'Read `stencil-compliance/references/decorators.md`.',
+        'Sibling `../audit-component/SKILL.md`.',
+        'Template `src/components/mud-x/test/mud-x.figma.json` and `tokens/core/<category>.tokens.json`.',
+        '```',
+        '`src/missing/in-fence.ts`',
+        '```',
+      ].join('\n'),
+      'src/components/AGENTS.md':
+        '[`stencil-compliance/references/decorators.md`](../../.claude/skills/stencil-compliance/references/decorators.md)\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+
+  it('does not resolve skill shorthand for a doc outside .claude', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/skills/other-skill/references/notes.md': 'x',
+      '_agents/detail.md': 'See `other-skill/references/notes.md`.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['_agents/detail.md', 1, 'path']],
+    );
+  });
+});

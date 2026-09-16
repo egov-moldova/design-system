@@ -17,6 +17,8 @@
  *                     package.json's `engines.node` `>=` bound.
  *   sd-version     — a Style Dictionary major-version claim that disagrees
  *                     with the `style-dictionary` dependency's major.
+ *   path           — a backticked repo path (`dir/file.ext`) in doc scope that
+ *                     does not exist and is not git-ignored.
  *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
@@ -26,7 +28,7 @@
  * unreadable or malformed package.json).
  */
 
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -253,6 +255,67 @@ function checkLinks(relPath, absPath, lines, root) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: path
+// ---------------------------------------------------------------------------
+
+const REPO_PATH_BACKTICK =
+  /`((?:\.\.?\/)*[A-Za-z0-9_.@-]+(?:\/[A-Za-z0-9_.@-]+)+\.(?:md|mjs|cjs|js|ts|tsx|mts|json|css|ya?ml|sh|ps1))`/g;
+// Template names in docs: `mud-x`, `component-name`, `$ARGUMENTS`, `<category>`, globs.
+const PATH_PLACEHOLDER = /mud-x\b|component-name|[$<>{}*]/;
+
+function gitIgnored(root, relPaths) {
+  if (relPaths.length === 0 || !isGitRepo(root)) return new Set();
+  const run = spawnSync('git', ['-C', root, 'check-ignore', '--stdin'], {
+    input: relPaths.join('\n'),
+    encoding: 'utf8',
+  });
+  return new Set(
+    String(run.stdout ?? '')
+      .split('\n')
+      .filter(Boolean),
+  );
+}
+
+function checkPaths(relPath, lines, root) {
+  const dir = path.posix.dirname(relPath);
+  const unresolved = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    if (inFence) return;
+    for (const m of line.matchAll(REPO_PATH_BACKTICK)) {
+      const p = m[1];
+      if (PATH_PLACEHOLDER.test(p) || AGENTS_BACKTICK_RE.test(p)) continue;
+      // The whole text of a Markdown link: its target is graded by the `link` rule instead.
+      const end = m.index + m[0].length;
+      if (line[m.index - 1] === '[' && line.startsWith('](', end)) continue;
+      const relative = /^\.\.?\//.test(p);
+      // Skill-relative shorthand (`stencil-compliance/references/x.md`) is a convention
+      // inside `.claude/` only; elsewhere it would let a path resolve by coincidence.
+      const candidates = relative
+        ? [path.posix.normalize(path.posix.join(dir, p))]
+        : [
+            p,
+            path.posix.join(dir, p),
+            ...(relPath.startsWith('.claude/') ? [path.posix.join('.claude/skills', p)] : []),
+          ];
+      if (candidates.some(c => fs.existsSync(path.join(root, c)))) continue;
+      unresolved.push({ line: i + 1, p, primary: candidates[0] });
+    }
+  });
+  const ignored = gitIgnored(
+    root,
+    unresolved.map(u => u.primary),
+  );
+  return unresolved
+    .filter(u => !ignored.has(u.primary))
+    .map(u => makeHit(relPath, u.line, 'path', `backticked path does not exist: ${u.p}`));
+}
+
+// ---------------------------------------------------------------------------
 // Rule: node-version
 // ---------------------------------------------------------------------------
 
@@ -458,6 +521,7 @@ export function checkAiDocs({ root }) {
     const lines = fs.readFileSync(absPath, 'utf8').split('\n');
 
     if (needsDocScope) hits.push(...checkLinks(relPath, absPath, lines, root));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkPaths(relPath, lines, root));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
