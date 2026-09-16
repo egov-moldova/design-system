@@ -11,7 +11,7 @@
  * know whether it's graduated to production.
  *
  * Replaces AI work in:
- *   - `.claude/skills/audit-component/SKILL.md` Wave 2.1
+ *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.1
  *   - `.claude/agents/audit-production.md` Phase 1.1
  *
  * Usage:

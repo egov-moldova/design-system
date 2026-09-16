@@ -205,7 +205,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
   }
 
   // docs.source contract checks — lessons captured from the mud-logo audit
-  // (2026-05): see .claude/skills/audit-component/SKILL.md story-coverage list.
+  // (2026-05): see .claude/skills/audit-component/references/wave-2-static-analysis.md §2.9 story-coverage list.
   findings.push(...checkDocsSource(sourceFile, fileRel));
 
   return { findings, stories, coverage, title, componentName };

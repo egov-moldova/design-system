@@ -202,8 +202,8 @@ reports/
 │                                       fallback sections removed per table 1)
 ├── commands/                         (slimmed: pre-pr-check — Wave 1 fallback grep
 │                                       gates removed)
-├── skills/audit-component/SKILL.md   (slimmed: Wave 1 grep list + 2.1 file tree
-│                                       + 2.4 lifecycle audit replaced with script refs)
+├── skills/audit-component/           (slimmed: Wave 1 grep list + references/wave-2-static-analysis.md
+│                                       §2.1 file tree + §2.4 lifecycle audit replaced with script refs)
 └── (everything else unchanged)
 
 .github/workflows/ci.yml              (audit:all + regression-check now hard gates)

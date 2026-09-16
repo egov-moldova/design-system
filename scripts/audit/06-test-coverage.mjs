@@ -16,7 +16,7 @@
  *
  * Replaces AI work in:
  *   - `.claude/agents/audit-production.md` Phase 5a (unit tests + coverage parse)
- *   - `.claude/skills/audit-component/SKILL.md` Wave 2.10.1 (coverage report)
+ *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.10.1 (coverage report)
  *
  * Why default is read-only (no auto-run):
  *   Running the full test suite takes 30-60s. Audit orchestrator callers want
