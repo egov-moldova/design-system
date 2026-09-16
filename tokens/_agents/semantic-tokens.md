@@ -56,7 +56,19 @@ Component token files (`tokens/core/components/*.tokens.json`) **MUST NEVER** re
 
 **Why**: Palette tokens are primitives. Component tokens must use semantic tokens for theming and dark mode.
 
-**Validation**: Before committing, search for `{palette.` in token files — replace with semantic equivalent.
+**Validation**: `yarn tokens.validate` reports every `{palette.*}` reference in component tokens as `tier-purity`.
+
+**No semantic token fits?** First look outside the Tokenhaus-generated files: `tokens/core/focusRing.tokens.json` is authored by hand and holds the field focus halos (`{focusRing.color.halo.brand|danger|warning|positive}`), because Figma ships them as effects, not variables. Add a new semantic token there rather than in `color.tokens.json`, which `sync:tokens:apply` regenerates.
+
+**Deliberate exception** — a colour that must NOT follow the theme (a QR code must stay dark-on-light to scan). Keep the palette reference and record why on the token itself; `tokens.validate` accepts it only with a non-empty reason and warns if the marker outlives the palette reference:
+
+```json
+"background": {
+  "$value": "{palette.white.1000}",
+  "$type": "color",
+  "$extensions": { "md.egov.mud": { "tierPurityException": "QR codes stay theme-locked so cameras can scan them in dark mode." } }
+}
+```
 
 ---
 

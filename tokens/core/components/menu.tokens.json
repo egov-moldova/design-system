@@ -147,7 +147,7 @@
     },
     "focusRing": {
       "color": {
-        "$value": "{palette.blue-sky.500}",
+        "$value": "{color.background.brand.focus-ring}",
         "$type": "color",
         "$comment": "Figma 'Focus Ring/Small: Inner' = inner shadow blue-sky/500 (#3379db), spread 2. Reconcile vs focusRing.tokens.json in CSS."
       },

@@ -150,8 +150,8 @@
       "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
     },
     "focusRing": {
-      "default": { "$value": "{palette.blue-sky.200}", "$type": "color" },
-      "invalid": { "$value": "{palette.red.200}", "$type": "color" }
+      "default": { "$value": "{focusRing.color.halo.brand}", "$type": "color" },
+      "invalid": { "$value": "{focusRing.color.halo.danger}", "$type": "color" }
     }
   }
 }

@@ -164,7 +164,7 @@
     },
     "focusRing": {
       "color": {
-        "$value": "{palette.blue-sky.500}",
+        "$value": "{color.background.brand.focus-ring}",
         "$type": "color",
         "$comment": "Inset keyboard focus ring, matching the project focus treatment; reconcile in pixel QA against the hidden Figma Focus state."
       },
