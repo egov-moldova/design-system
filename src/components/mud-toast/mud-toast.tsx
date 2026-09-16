@@ -34,8 +34,8 @@ import type { ToastVariant } from './mud-toast.types';
  *                    suppresses both the `iconName` prop and the per-variant
  *                    default icon.
  * @slot actions - Optional inline action group (typically `mud-button` or
- *                 `mud-link`). Aligned to the trailing edge before the close
- *                 button when present.
+ *                 `mud-link`). Renders as its own line below the heading/body
+ *                 stack (Figma `toast` `w/ heading: link` variant).
  */
 @Component({
   tag: 'mud-toast',
