@@ -328,7 +328,7 @@ describe('import rule', () => {
       'tokens/AGENTS.md': '# Tokens\n',
       'tokens/CLAUDE.md': '@AGENTS.md\n',
       '_agents/workflow-rules.md': '# Rules\n',
-      'AGENTS.md': '# Agents\n',
+      'AGENTS.md': '# Agents\n\nSee `_agents/workflow-rules.md`.\n',
       'CLAUDE.md': '@AGENTS.md\n@_agents/workflow-rules.md\n',
     });
     assert.deepEqual(checkAiDocs({ root }), []);
@@ -363,6 +363,29 @@ describe('yarn-script rule', () => {
       'node_modules/.bin/vitest': '',
       '_agents/detail.md':
         'Run `yarn lint`, `yarn install`, `yarn npm audit` or `yarn vitest run`. Plain yarn anything prose.\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});
+
+describe('doc-orphan rule', () => {
+  it('flags an _agents file its sibling AGENTS.md never names', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'src/components/AGENTS.md': '| `_agents/listed.md` | x |\n',
+      'src/components/_agents/listed.md': '# Listed\n',
+      'src/components/_agents/unlisted.md': '# Unlisted\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['src/components/_agents/unlisted.md', 1, 'doc-orphan']],
+    );
+  });
+
+  it('passes when there is no sibling AGENTS.md to index it', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'docs/_agents/free.md': '# Free\n',
     });
     assert.deepEqual(checkAiDocs({ root }), []);
   });

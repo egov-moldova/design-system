@@ -22,6 +22,7 @@
  *   agent-slash    — a `.claude/agents/<name>` subagent written as `/<name>`,
  *                     a slash command that does not exist.
  *   yarn-script    — `yarn <name>` in code naming no script, built-in or binary.
+ *   doc-orphan     — an `_agents/<file>.md` its sibling AGENTS.md never names.
  *   import         — a `CLAUDE.md` `@path` import that does not resolve.
  *   agent-catalog  — a `.claude/agents/<name>.md` with no table row in
  *                     `.claude/agents/README.md`.
@@ -443,6 +444,25 @@ function checkYarnScripts(relPath, lines, known) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: doc-orphan
+// ---------------------------------------------------------------------------
+
+// An `_agents/` detail file is reached only through the index beside it, so a
+// file that index never names is guidance no agent will load.
+function checkDocOrphan(relPath, root) {
+  const m = relPath.match(/^(?:(.*)\/)?_agents\/([^/]+\.md)$/);
+  if (!m) return [];
+  const indexRel = m[1] ? `${m[1]}/AGENTS.md` : 'AGENTS.md';
+  let index;
+  try {
+    index = fs.readFileSync(path.join(root, indexRel), 'utf8');
+  } catch {
+    return [];
+  }
+  return index.includes(m[2]) ? [] : [makeHit(relPath, 1, 'doc-orphan', `not indexed in ${indexRel}`)];
+}
+
+// ---------------------------------------------------------------------------
 // Rule: import
 // ---------------------------------------------------------------------------
 
@@ -697,6 +717,7 @@ export function checkAiDocs({ root }) {
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkPaths(relPath, lines, root));
     if (path.basename(relPath) === 'CLAUDE.md') hits.push(...checkImports(relPath, absPath, lines));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkYarnScripts(relPath, lines, yarnNames));
+    if (needsDocScope) hits.push(...checkDocOrphan(relPath, root));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
