@@ -223,4 +223,4 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 | `yarn audit:contrast` exits non-zero | New FAIL pairs outside ACCEPTED_EXCEPTIONS | `contrast-regression` + listed pairs |
 | Script exits with `playwright not installed` | dep missing | `playwright-missing` + fall back to MCP path |
 | Snapshot empty (script returns `interactive: []`) | Story failed to render or selectors too narrow | `story-render-failure` |
-| Storybook a11y addon panel missing | Storybook config issue | `a11y-addon-missing` + recommend fixing `.storybook/main.ts` |
+| Storybook a11y addon panel missing | Storybook config issue | `a11y-addon-missing` + recommend fixing `.storybook/main.mjs` |

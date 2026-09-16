@@ -203,7 +203,7 @@ Dispatch in a SINGLE message with multiple parallel tool calls.
 ### Reference Reads (parallel — for cross-comparison)
 
 - `src/components/mud-button/mud-button.tsx`
-- `src/components/mud-input/mud-input.tsx`
+- `src/components/mud-text-input/mud-text-input.tsx`
 
 ### Anti-Pattern detection
 
@@ -280,7 +280,7 @@ error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
 Cross-reference [`stencil-compliance/references/decorators.md`](../stencil-compliance/references/decorators.md):
 
 - All `@Element()` properties use `!` assertion: `@Element() host!: HTMLCorXElement;`
-- All `@Event()` properties use `!` assertion: `@Event() corChange!: EventEmitter<T>;`
+- All `@Event()` properties use `!` assertion: `@Event() mudChange!: EventEmitter<T>;`
 - All `@AttachInternals()` use `!` assertion
 - Element type uses generated `HTMLCorXElement` (not bare `HTMLElement`)
 - Object maps have explicit `Record<string, T>` annotations
@@ -357,7 +357,7 @@ Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "--<bareName>-" |
 grep "--<bareName>-" dist/mud/tokens/core.tokens.css | head -n 20
 ```
 
-For deeper token validation delegate to `/token-validator` agent.
+For deeper token validation delegate to the `token-validator` agent.
 
 ### 2.7 CSS Architecture Pattern Audit
 

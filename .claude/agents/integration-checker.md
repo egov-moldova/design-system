@@ -1,6 +1,6 @@
 ---
 name: integration-checker
-description: Read-only integration checker for a `mud-*` component. Greps the repo for usage sites, verifies exports in `src/index.ts` and `src/components/index.ts`, confirms types exposed via `.types.ts`, and identifies callsites that may need updates if the component's API or visual is changing. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only integration checker for a `mud-*` component. Greps the repo for usage sites, verifies exports in `src/index.ts`, confirms types exposed via `.types.ts`, and identifies callsites that may need updates if the component's API or visual is changing. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---

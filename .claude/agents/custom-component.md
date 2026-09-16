@@ -99,7 +99,7 @@ Create `tokens/core/components/<name>.tokens.json`:
 4. Token references: NEVER use `{palette.*}`. Always use semantic `{color.*}`:
    - PASS: `{ "$value": "{color.neutral.text.weak}", "$type": "color" }`
    - FAIL: `{ "$value": "{palette.ui.gray.9}" }`
-5. DTCG format: `$value` / `$type` (Style Dictionary v4)
+5. DTCG format: `$value` / `$type` (Style Dictionary 5)
 6. Build: `yarn tokens.build`
 
 Validation checklist before Step 6:

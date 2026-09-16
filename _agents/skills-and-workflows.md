@@ -38,18 +38,18 @@ Skill invocation rules and available workflows. **Read when starting any compone
 - `/optimize-prompt` — Compile a raw request into an AGE-aware spec for downstream agents. Auto-routes by archetype + mode (`new` | `redesign` | `modify` | `fix` | `tokens`). See [`.claude/skills/optimize-prompt/SKILL.md`](../.claude/skills/optimize-prompt/SKILL.md).
 
 **Creation**:
-- `/new-component` — Create component from Figma (`--fast` for auto-proceed)
-- `/custom-component` — Create from user requirements (no Figma)
+- the `new-component` agent — Create component from Figma (`--fast` for auto-proceed)
+- the `custom-component` agent — Create from user requirements (no Figma)
 
 **Modification**:
 - `/modify-component` — Add variant, prop, state, refactor
 - `/fix-visual-bug` — Diagnose visual bugs, trace root cause
-- `/refactor-component` — Align to AGENTS.md patterns
+- the `refactor-component` agent — Align to AGENTS.md patterns
 
 **Audit**:
 - `/audit-component` — Component health check
 - `/audit-accessibility` — Deep a11y audit
-- `/audit-production` — Comprehensive pre-production gate
+- the `audit-production` agent — Comprehensive pre-production gate
 
 **Tokens**: `/update-tokens` — Token-only changes
 

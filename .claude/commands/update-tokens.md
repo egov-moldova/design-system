@@ -69,7 +69,7 @@ Follow rules from `tokens/AGENTS.md`:
 5. **Token references**: NEVER use `{palette.*}`. Always use semantic `{color.*}`:
    - PASS: `{ "$value": "{color.neutral.text.weak}", "$type": "color" }`
    - FAIL: `{ "$value": "{palette.ui.gray.9}" }`
-6. **DTCG format**: use `$value` and `$type` (Style Dictionary v4)
+6. **DTCG format**: use `$value` and `$type` (Style Dictionary 5)
 
 ### Pre-Commit Validation Checklist
 

@@ -46,7 +46,7 @@ Component tokens extend the scheme with an element layer: `{component}.{element}
 
 ## Token File Format (DTCG)
 
-All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format with `$value` and `$type` keys. Style Dictionary v4.4+ is configured with `usesDtcg: true` in all platform configs.
+All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format with `$value` and `$type` keys. Style Dictionary 5 is configured with `usesDtcg: true` in all platform configs.
 
 ```json
 {
@@ -73,7 +73,7 @@ All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format
 - Always `$value` and `$type` (DTCG-prefixed) — never legacy `value`/`type`
 - Dimensions are strings with explicit unit (`"12px"`, `"0px"`, `"9999px"`) — never bare numbers
 - References use `{path.to.token}` syntax pointing at another `$value`
-- `attributes.category` field is obsolete — SD v4 derives CTI from the token path
+- `attributes.category` field is obsolete — Style Dictionary 5 derives CTI from the token path
 - `fontWeight` values are numeric (`400`, `600`) — never strings
 
 For legacy → DTCG bulk migration, see `scripts/convert-tokens-to-dtcg.mjs`.

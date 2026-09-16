@@ -4,7 +4,7 @@ Slash commands for linear, single-pass workflows. Invoke with `/command-name [ar
 
 For complex multi-phase workflows (Figma → code → QA pipelines, full production audits, refactors), use the subagents in [`.claude/agents/`](../agents/README.md) instead.
 
-> **Figma-First Rule**: see `AGENTS.md` rule 1 / `_agents/workflow-rules.md`. Never start `/new-component` or `/modify-component` without a Figma link.
+> **Figma-First Rule**: see `AGENTS.md` rule 1 / `_agents/workflow-rules.md`. Never start the `new-component` agent or `/modify-component` without a Figma link.
 
 ---
 
@@ -19,7 +19,7 @@ For complex multi-phase workflows (Figma → code → QA pipelines, full product
 | `/migrate-component` | Graduate a WIP component from `src/hidden/` to `src/components/` | Component is ready to ship | Medium |
 | `/modify-component` | Add a variant, prop, size, or state to an existing component | Planned enhancement to existing component | Medium |
 | `/pre-pr-check` | Full pre-PR validation — lint, test, build, console, git hygiene | Before opening a pull request | Low |
-| `/optimize-prompt` | Compile a raw request into an AGE-aware spec. Auto-routes by archetype + mode (`new` / `redesign` / `modify` / `fix` / `tokens`). Replaces former `/optimize-prompt-new-component`. | Before `/new-component`, `/redesign-component`, `/modify-component`, `/fix-visual-bug`, or `/update-tokens` on a vague request | Medium |
+| `/optimize-prompt` | Compile a raw request into an AGE-aware spec. Auto-routes by archetype + mode (`new` / `redesign` / `modify` / `fix` / `tokens`). Replaces former `/optimize-prompt-new-component`. | Before the `new-component` agent, the `redesign-component` agent, `/modify-component`, `/fix-visual-bug`, or `/update-tokens` on a vague request | Medium |
 
 For broader pipelines (new components from Figma, full production gate, refactoring loops) → see [`.claude/agents/`](../agents/README.md).
 

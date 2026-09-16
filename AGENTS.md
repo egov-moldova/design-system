@@ -14,7 +14,7 @@
 
 ## Figma-First Rule
 
-**STOP** if the user requests a new component or visual change without a Figma link. Ask for the URL + node ID and wait. Exception: user explicitly says there's no design (utility components, internal tooling) — use `/custom-component` workflow.
+**STOP** if the user requests a new component or visual change without a Figma link. Ask for the URL + node ID and wait. Exception: user explicitly says there's no design (utility components, internal tooling) — dispatch the `custom-component` agent.
 
 ---
 
