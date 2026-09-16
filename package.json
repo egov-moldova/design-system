@@ -84,7 +84,8 @@
     "test.watch": "vitest --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
-    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "test:scripts": "wireit",
+    "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
     "check": "wireit",
     "check.ci": "wireit",
@@ -393,13 +394,24 @@
       "dependencies": [
         "typecheck",
         "lint",
-        "test"
+        "test",
+        "test:scripts",
+        "docs:check"
       ],
       "files": [],
       "output": [],
       "packageLocks": [
         "yarn.lock"
       ]
+    },
+    "test:scripts": {
+      "command": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "docs:check": {
+      "command": "node scripts/docs/check-ai-docs.mjs"
     },
     "lint.css": {
       "command": "stylelint \"src/**/*.css\" --allow-empty-input",

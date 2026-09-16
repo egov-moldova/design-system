@@ -21,6 +21,9 @@ jobs:
       - name: Run lint
         run: yarn lint
 
+      - name: Check AI docs against the repo
+        run: yarn docs:check
+
   typecheck:
     name: Typecheck
     timeout-minutes: 10
