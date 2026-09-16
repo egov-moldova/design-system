@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Scan src/components/mud-icon/assets/{12,16,20,24}/*.svg and emit:
- *   - icons.manifest.json — public surface (API name → sizes available)
+ * Scan src/components/mud-icon/assets/{outlined,filled}/*.svg and emit:
+ *   - icons.manifest.json — public surface (API name → styles available)
  *   - ../icon-names.ts    — the same names as a literal tuple + `IconName` union,
  *                           so props typed `IconName` reject unknown names at
  *                           compile time. Literal TS (not `keyof typeof` the JSON)
@@ -10,14 +10,14 @@
  * `--check` writes nothing and exits 1 when either file differs from what this
  * scan would emit (run by src/components/mud-icon/test/icon-names.spec.ts).
  *
- * SVGs are served as individual static assets (lazy-loaded on demand).
+ * SVGs are served as individual static assets (lazy-loaded on demand). One
+ * drawing per style covers every size — `mud-icon` scales it through `size`.
  *
- * Naming normalization:
- *   Figma sometimes uses `-fill` and sometimes `-filled` for filled variants.
- *   We expose only the `-filled` convention (Material Symbols style). When a
- *   `-fill` file would collide with an existing `-filled` file at the same size,
- *   we keep BOTH using their original Figma names and emit a warning so the
- *   designer can resolve the duplicate upstream.
+ * Naming:
+ *   The style lives in the directory, never in the filename. A file whose name
+ *   still carries a `-filled` / `-fill` / `-solid` suffix is a leftover of the
+ *   per-size layout and fails the run rather than producing `car-filled` inside
+ *   assets/filled/.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -29,8 +29,9 @@ const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 const MANIFEST_JSON = path.join(ASSETS_ROOT, 'icons.manifest.json');
 const ICON_NAMES_TS = path.join(ASSETS_ROOT, '..', 'icon-names.ts');
 
-const SIZES = [12, 16, 20, 24];
+const VARIANTS = ['outlined', 'filled'];
 const SAFE_ICON_NAME = /^[a-z][a-z0-9-]*$/;
+const STYLE_SUFFIX = /-(filled|fill|solid)$/;
 /** `--check`: compare the would-be outputs with the files on disk, write nothing. */
 const CHECK_ONLY = process.argv.includes('--check');
 
@@ -55,64 +56,46 @@ function renderIconNamesModule(names) {
   ].join('\n');
 }
 
-function toApiName(figmaName) {
-  // -fill (alone, not -filled) -> -filled. Also -solid -> -filled.
-  if (figmaName.endsWith('-fill')) return figmaName.slice(0, -'-fill'.length) + '-filled';
-  if (figmaName.endsWith('-solid')) return figmaName.slice(0, -'-solid'.length) + '-filled';
-  return figmaName;
-}
-
 async function main() {
-  // Map<apiName, Map<size, figmaName>>
+  /** @type {Map<string, Set<string>>} API name → styles it is drawn in */
   const collected = new Map();
-  const collisions = [];
+  const suffixed = [];
 
-  for (const size of SIZES) {
-    const dir = path.join(ASSETS_ROOT, String(size));
+  for (const variant of VARIANTS) {
+    const dir = path.join(ASSETS_ROOT, variant);
     let files;
     try {
       files = await fs.readdir(dir);
     } catch (err) {
-      if (err.code === 'ENOENT') continue;
+      if (err.code === 'ENOENT') {
+        throw new Error(`[icons] missing asset directory: ${path.relative(PROJECT_ROOT, dir)}`);
+      }
       throw err;
     }
+
     for (const file of files) {
       if (!file.endsWith('.svg')) continue;
-      const figmaName = file.replace(/\.svg$/, '');
-      const apiName = toApiName(figmaName);
-      const sizeMap = collected.get(apiName) ?? new Map();
-
-      if (sizeMap.has(size)) {
-        const existingName = sizeMap.get(size);
-        collisions.push({ apiName, size, keeping: existingName, dropped: figmaName });
-        // Keep the entry that matches the API name verbatim. Otherwise keep first.
-        if (existingName === apiName) continue;
-        if (figmaName === apiName) {
-          sizeMap.set(size, figmaName);
-          collected.set(apiName, sizeMap);
-        }
+      const name = file.replace(/\.svg$/, '');
+      if (STYLE_SUFFIX.test(name)) {
+        suffixed.push(`${variant}/${file}`);
         continue;
       }
-
-      sizeMap.set(size, figmaName);
-      collected.set(apiName, sizeMap);
+      const variants = collected.get(name) ?? new Set();
+      variants.add(variant);
+      collected.set(name, variants);
     }
   }
 
-  if (collisions.length) {
-    console.warn(`[icons] ${collisions.length} naming collision(s) — both Figma names map to the same API name:`);
-    for (const c of collisions) {
-      console.warn(`  - "${c.apiName}" @ ${c.size}px: keeping "${c.keeping}", dropping "${c.dropped}"`);
-    }
+  if (suffixed.length) {
+    throw new Error(`[icons] style suffix in a filename — the directory carries the style now: ${suffixed.join(', ')}`);
   }
 
-  // Build manifest
-  const manifest = {};
   const sortedNames = [...collected.keys()].sort();
-  for (const apiName of sortedNames) {
-    const sizeMap = collected.get(apiName);
-    const sizes = [...sizeMap.keys()].sort((a, b) => a - b);
-    manifest[apiName] = { sizes };
+  if (!sortedNames.length) throw new Error('[icons] no SVG assets found');
+
+  const manifest = {};
+  for (const name of sortedNames) {
+    manifest[name] = { variants: VARIANTS.filter(variant => collected.get(name).has(variant)) };
   }
 
   // Names are interpolated into TypeScript source, so a filename outside this
@@ -145,16 +128,14 @@ async function main() {
     await fs.writeFile(file, content, 'utf8');
   }
 
-  // Summary
-  const total = Object.keys(manifest).length;
-  const perSize = SIZES.reduce((acc, s) => {
-    acc[s] = Object.values(manifest).filter(m => m.sizes.includes(s)).length;
+  const perVariant = VARIANTS.reduce((acc, variant) => {
+    acc[variant] = sortedNames.filter(name => collected.get(name).has(variant)).length;
     return acc;
   }, {});
 
-  console.log(`[icons] Manifest built — ${total} icons:`);
-  for (const s of SIZES) {
-    console.log(`  ${s}px: ${perSize[s]} icons`);
+  console.log(`[icons] Manifest built — ${sortedNames.length} icons:`);
+  for (const variant of VARIANTS) {
+    console.log(`  ${variant}: ${perVariant[variant]} icons`);
   }
   console.log(`[icons] Wrote ${path.relative(PROJECT_ROOT, MANIFEST_JSON)}`);
   console.log(`[icons] Wrote ${path.relative(PROJECT_ROOT, ICON_NAMES_TS)}`);
