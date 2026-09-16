@@ -6,10 +6,14 @@
  * background / border colors of every interactive element, and reports the
  * WCAG 2.1 AA contrast ratio for each foreground-vs-background pair.
  *
- * The WCAG algorithm matches `scripts/audit-token-contrast.mjs` exactly
- * (relative luminance, alpha compositing, ratio formula). The difference is
- * the data source: this script reads runtime computed colors from the live
- * component, not from the token files.
+ * The WCAG formula — relative luminance and the ratio — is the one
+ * `scripts/audit-token-contrast.mjs` uses, but the two no longer agree on
+ * everything around it: this script composites a translucent background over
+ * the layers behind it, clamps out-of-gamut channels, and reads
+ * `color(srgb …)`, and the token audit does none of that. A translucent tint
+ * can therefore pass one and fail the other; cross-reference them knowing that.
+ * The other difference is the data source: this script reads runtime computed
+ * colors from the live component, not from the token files.
  *
  * The background of a pair is the COMPOSITED one: an element that paints no
  * background of its own is scored against the layers behind it, walked across
@@ -157,9 +161,14 @@ export function compositeOver(fg, bg) {
   };
 }
 
-/** Serialize a parsed color back to the `rgb(r, g, b)` spelling of getComputedStyle. */
-export function formatColor({ r, g, b }) {
-  return `rgb(${r}, ${g}, ${b})`;
+/**
+ * Serialize a parsed color back to the `rgb(r, g, b)` spelling of
+ * getComputedStyle. `null` in, `null` out: `resolveBackground` returns null by
+ * contract, and destructuring it would throw a TypeError naming neither the
+ * element nor the defect.
+ */
+export function formatColor(color) {
+  return color ? `rgb(${color.r}, ${color.g}, ${color.b})` : null;
 }
 
 /** The background the UA paints when no element in the chain paints one. */
@@ -368,9 +377,11 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
   const findings = [];
   for (const p of pairs) {
     if (p.pass || p.exempt) continue;
-    // `source` names the element the colors were actually read off, which for
-    // a host pair is a shadow child, not the host the `tag` names. Without it
-    // the reader greps the host's CSS for a background it does not declare.
+    // For a host pair `source` names the shadow child the colors were read off,
+    // not the host the `tag` names — without it the reader greps the host's CSS
+    // for a background it does not declare. For any other element it is only
+    // the tree it sits in (`light` or `shadow`), which narrows the search but
+    // does not identify which of several matching elements it was.
     const where = `${p.theme} <${p.tag}> [${p.kind}] (${p.source})`;
     // An unresolved backdrop is a DIFFERENT defect from a failing ratio: some
     // layer behind the element used a color spelling the parser cannot read,
@@ -392,7 +403,11 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
           code: 'CONTRAST-BACKDROP-UNREADABLE',
           file: relativeToRepo(target.paths.tsx),
           message: `${where}: background unresolved. fg=${p.fg} layers=[${read.join(' | ')}].`,
-          fix: 'Teach parseColor the unreadable color spelling, or paint the surface in one it already reads.',
+          // An image cannot be taught to `parseColor`; telling the reader to
+          // try is how a check gets switched off instead of read.
+          fix: read.includes('background-image')
+            ? 'A background-image paints behind this text and cannot be folded to one color; judge this pair by eye.'
+            : 'Teach parseColor the unreadable color spelling, or paint the surface in one it already reads.',
         }),
       );
       continue;
@@ -566,13 +581,13 @@ export async function measureSamples(url, componentName, theme) {
           //     has no `parentElement`, but it still paints on the host's
           //     ancestors.
           //
-          // Known boundary, not modelled: a `background-image` (gradient) and
-          // an ancestor `opacity` both paint a surface this stack cannot see —
-          // a gradient ancestor computes `backgroundColor` to a transparent
-          // value and the walk passes straight through it. Documented for the
-          // consumer in `.claude/agents/a11y-verifier.md`; compositing a
-          // gradient needs geometry and stop interpolation, an unbounded job
-          // for an audit script.
+          // Known boundary: a `background-image` is not folded — compositing it
+          // needs geometry and stop interpolation, an unbounded job for an audit
+          // script — so the walk records a marker for it and the row is reported
+          // unresolved rather than scored (see below). An ancestor `opacity`, and
+          // anything out of flow, is not seen at all and still yields a ratio.
+          // Both are documented for the consumer in
+          // `.claude/agents/a11y-verifier.md`.
           const collectBackgroundStack = el => {
             const layers = [];
             let node = el;
@@ -605,28 +620,18 @@ export async function measureSamples(url, componentName, theme) {
           // the first such element with non-transparent bg + visible text, and
           // return BOTH its fg and bg so the contrast pair comes from one
           // element (a valid WCAG measurement, not a host/inner mash-up).
-          // A contrast pair is only meaningful where glyphs are painted. A
-          // 24x24 checkbox box, a 48x28 switch track and a 1px separator rule
-          // all carry a `color` they inherited and never use, and pairing that
-          // color with their fill reports a ratio for text that does not
-          // exist — `mud-checkbox` read white-on-white, which is its checkmark
-          // color over its unchecked fill.
-          // `innerText` is the rendered text of an element's own subtree, and a
-          // shadow host's subtree is its LIGHT children — the shadow tree it
-          // actually displays is not counted. So a host that renders all its
-          // text from the shadow root reads as textless unless the shadow tree
-          // is asked directly, skipping `<style>`, whose textContent is CSS.
-          const rendersText = el => {
-            if ((el.innerText ?? el.textContent ?? '').trim().length > 0) return true;
-            const root = el.shadowRoot;
-            if (!root) return false;
-            for (const child of root.children) {
-              if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
-              if ((child.innerText ?? child.textContent ?? '').trim().length > 0) return true;
-            }
-            return false;
-          };
-
+          //
+          // Which element a pair is READ OFF is deliberately left as it was
+          // before this change: the first shadow child that paints a
+          // background, else nothing. A text-presence filter here was tried and
+          // removed. `innerText` does not see text that arrives through a
+          // `<slot>`, so it skipped the real painted surface of a slotted-label
+          // button and fell through to a host pair made of two colors that are
+          // not on screen — reporting a PASS where the label could genuinely
+          // fail — and it counted `display: none` and `opacity: 0` text as
+          // painted. Choosing the measured element well needs a visibility and
+          // slot model, which is a separate change from resolving what is
+          // painted BEHIND the element, the one this file's history is about.
           const readPair = (el, source) => {
             const s = window.getComputedStyle(el);
             return { el, fg: s.color, bg: s.backgroundColor, fontSize: s.fontSize, fontWeight: s.fontWeight, source };
@@ -639,26 +644,17 @@ export async function measureSamples(url, componentName, theme) {
             const root = el.shadowRoot ?? null;
             if (root) {
               for (const inner of root.querySelectorAll('*')) {
-                const s = window.getComputedStyle(inner);
-                if (!isTransparent(s.backgroundColor) && rendersText(inner)) {
+                if (!isTransparent(window.getComputedStyle(inner).backgroundColor)) {
                   const cls = inner.className ? '.' + inner.className.split(/\s+/).join('.') : '';
                   return readPair(inner, `shadow:${inner.tagName.toLowerCase()}${cls}`);
                 }
               }
             }
-            // Nothing in the shadow tree paints text. The host may still render
-            // its own — `mud-inline-message`, `mud-accordion`, `mud-icon` and
-            // `mud-spinner` declare no background at all, and before the
-            // backdrop walk existed their text could not be scored against
-            // anything, so the host was dropped and those components went
-            // unchecked in both themes. It is measurable now: the host's own
-            // color against the layers behind it.
-            // Baseline: `grep -Lc background src/components/mud-inline-message/mud-inline-message.css`
-            // -> the file, i.e. no background declaration in it.
-            if (rendersText(el)) return readPair(el, 'host:text');
-            // Genuinely nothing to measure: no painted text anywhere. A
-            // slotted child in light DOM, collected separately, carries the
-            // real pair if there is one.
+            // No rendered surface found (Pattern A: host transparent, shadow
+            // empty of colored elements). The slotted child in light DOM
+            // (collected as origin='light') carries the real measurement;
+            // skip the host to avoid a pair that reflects no user-visible
+            // contrast.
             return null;
           };
 

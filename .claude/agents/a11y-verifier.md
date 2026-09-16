@@ -77,15 +77,22 @@ What you get back per envelope:
   null `ratio` means the FOREGROUND is (`CONTRAST-FOREGROUND-UNREADABLE`).
   Both are tool defects, not contrast defects — they point at a color spelling,
   never at the token mapping — and neither is exempted by `disabled`.
-  `bgStack` is the FLATTENED-ancestor chain, so anything that paints behind the
-  element WITHOUT being one of its ancestors is outside the model and will not
-  appear there: a `background-image` (a gradient ancestor computes
-  `backgroundColor` to a transparent value, so the walk passes straight through
-  it), an ancestor `opacity`, and anything out of flow — a `position: fixed`
-  overlay such as `mud-modal` or `mud-toast` paints over whatever is beneath it
-  on screen, which its DOM ancestors do not describe, as do transformed
-  subtrees and overlapping siblings. Where a component's text sits on any of
-  those, judge that pair by eye rather than by its `ratio`.
+  A `background-image` (gradient or image) anywhere in the chain is recorded in
+  `bgStack` as `'background-image'` and the row comes back unresolved —
+  `bg: null`, `CONTRAST-BACKDROP-UNREADABLE` — because it cannot be folded to
+  one color. That is a refusal to guess, not a contrast failure: judge that pair
+  by eye.
+  `bgStack` is the FLATTENED-ancestor chain, so what paints behind the element
+  WITHOUT being one of its ancestors is not in the model and DOES yield a
+  ratio, which may be wrong: an ancestor `opacity`, and anything out of flow — a
+  `position: fixed` overlay such as `mud-modal` or `mud-toast` paints over
+  whatever is beneath it on screen, which its DOM ancestors do not describe, as
+  do transformed subtrees and overlapping siblings. Where a component's text
+  sits on any of those, do not trust its `ratio`; judge it by eye.
+  Which element a pair is READ OFF is heuristic: an element with no text of its
+  own — a checkbox box, a switch track, a separator rule, a visually hidden
+  native `<input>` — can produce a row pairing an inherited `color` with a fill.
+  Such a row describes no glyphs and is not a contrast finding.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data

@@ -155,6 +155,30 @@ const OPAQUE_HOST_FIXTURE = `<!doctype html>
 </body>
 </html>`;
 
+// The `mud-button` shape: a shadow `<button>` paints the fill and the label is
+// SLOTTED into it. A text-presence filter on the surface scan cannot see slotted
+// text, skipped this real surface, and fell through to a host pair of two colors
+// that are not on screen — black on white, 21:1, PASS — where the label on its
+// actual fill is what a user reads. A label that genuinely failed would have
+// reported a pass.
+const SLOTTED_LABEL_FIXTURE = `<!doctype html>
+<html>
+<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
+<body>
+  <mud-fixture class="hydrated">Click me</mud-fixture>
+  <script>
+    class MudFixture extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<style>.btn { background-color: rgb(0, 88, 210); color: rgb(255, 255, 255); border: 0; font-size: 16px; }</style>' +
+          '<button class="btn"><slot></slot></button>';
+      }
+    }
+    customElements.define('mud-fixture', MudFixture);
+  </script>
+</body>
+</html>`;
+
 // A gradient ancestor paints the surface while its `backgroundColor` still
 // computes transparent, so reading the color alone walks through an opaque
 // layer and scores the text against the page instead — a false PASS.
@@ -169,27 +193,6 @@ const GRADIENT_FIXTURE = `<!doctype html>
         this.attachShadow({ mode: 'open' }).innerHTML =
           '<div style="background-image: linear-gradient(red, blue)">' +
           '<button style="background-color: transparent; border: 0; color: rgb(255, 255, 255)">on gradient</button></div>';
-      }
-    }
-    customElements.define('mud-fixture', MudFixture);
-  </script>
-</body>
-</html>`;
-
-// Nothing anywhere declares a background — the `mud-inline-message`,
-// `mud-accordion`, `mud-icon`, `mud-spinner` shape. Before the backdrop walk
-// there was nothing to score their text against, so the host was dropped and
-// the component went unchecked in both themes.
-const UNPAINTED_HOST_FIXTURE = `<!doctype html>
-<html>
-<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
-<body>
-  <mud-fixture class="hydrated"></mud-fixture>
-  <script>
-    class MudFixture extends HTMLElement {
-      connectedCallback() {
-        this.style.color = 'rgb(200, 200, 200)';
-        this.attachShadow({ mode: 'open' }).innerHTML = '<span>unreadable message</span>';
       }
     }
     customElements.define('mud-fixture', MudFixture);
@@ -299,14 +302,15 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.ok(pair.bgStack.includes('background-image'));
   });
 
-  it('measures a host that paints no background but does render text', { skip }, async t => {
-    const unpainted = await samplesOrSkip(t, asUrl(UNPAINTED_HOST_FIXTURE));
-    if (!unpainted) return;
-    const pair = unpainted.find(s => s.tag === 'mud-fixture');
-    assert.ok(pair, 'the unpainted host was dropped from the audit');
-    assert.equal(pair.bgOwn, 'rgba(0, 0, 0, 0)');
-    assert.equal(pair.bg, 'rgb(255, 255, 255)');
-    assert.equal(pair.pass, false, 'rgb(200, 200, 200) on white is 1.61:1');
+  it('reads a host pair off the surface that paints its slotted label', { skip }, async t => {
+    const slottedLabel = await samplesOrSkip(t, asUrl(SLOTTED_LABEL_FIXTURE));
+    if (!slottedLabel) return;
+    const host = slottedLabel.find(s => s.tag === 'mud-fixture');
+    assert.ok(host, 'expected a host sample');
+    assert.equal(host.source, 'shadow:button.btn');
+    assert.equal(host.fg, 'rgb(255, 255, 255)');
+    assert.equal(host.bg, 'rgb(0, 88, 210)');
+    assert.equal(host.ratio, 6.31);
   });
 
   it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async t => {
