@@ -225,9 +225,7 @@ export function checkForbiddenPaths(files, kind) {
             file,
             message: `${rule.message} (${kind})`,
             fix:
-              kind === 'staged'
-                ? 'Run `git reset HEAD <file>` to unstage, and stage explicit paths only.'
-                : undefined,
+              kind === 'staged' ? 'Run `git reset HEAD <file>` to unstage, and stage explicit paths only.' : undefined,
           }),
         );
         break;
