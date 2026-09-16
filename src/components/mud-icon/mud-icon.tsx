@@ -2,7 +2,15 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import defaultManifest from './assets/icons.manifest.json';
 import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
-import { isIconName, type IconManifest, type IconName, type IconSize, type IconVariant } from './mud-icon.types';
+import {
+  ICON_VARIANTS,
+  isIconName,
+  isIconVariant,
+  type IconManifest,
+  type IconName,
+  type IconSize,
+  type IconVariant,
+} from './mud-icon.types';
 
 /**
  * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
@@ -110,7 +118,14 @@ export class MudIcon {
 
   private async loadSvg(): Promise<void> {
     const requestedName = this.name;
-    const requestedVariant = this.variant;
+    // An attribute value is whatever the HTML said. Naming a bad `variant` here
+    // keeps the fallback warning below about the ASSET SET, not about a typo.
+    const requestedVariant = isIconVariant(this.variant) ? this.variant : 'outlined';
+    if (!isIconVariant(this.variant)) {
+      console.warn(
+        `[mud-icon] Unknown variant="${this.variant}" — rendering "outlined". Expected ${ICON_VARIANTS.join(' or ')}.`,
+      );
+    }
     const manifest = defaultManifest as IconManifest;
     // `isIconName`, not `manifest[name]` / `name in manifest`: a runtime string such as
     // "constructor" resolves through Object.prototype and reached `entry.variants.includes`

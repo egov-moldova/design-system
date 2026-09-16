@@ -1,7 +1,6 @@
-import defaultManifest from './assets/icons.manifest.json';
 import type { IconName } from './icon-names';
 
-export { ICON_NAMES, isIconName, type IconName } from './icon-names';
+export { FILLED_ICON_NAMES, hasIconVariant, ICON_NAMES, isIconName, type IconName } from './icon-names';
 
 export const ICON_SIZES = [16, 20, 24, 32] as const;
 
@@ -21,12 +20,7 @@ export type IconManifestEntry = { variants: readonly IconVariant[] };
  */
 export type IconManifest = Partial<Record<IconName, IconManifestEntry>>;
 
-/**
- * Whether an icon is drawn in a given style. 142 of the 174 icons are outlined
- * only, so a caller that wants "filled where one exists" asks here instead of
- * requesting a drawing `mud-icon` would have to warn about.
- */
-export function hasIconVariant(name: IconName | undefined, variant: IconVariant): boolean {
-  if (!name) return false;
-  return (defaultManifest as IconManifest)[name]?.variants.includes(variant) ?? false;
+/** Runtime guard for a `variant` that arrives untyped (HTML attribute, JSON data). */
+export function isIconVariant(value: unknown): value is IconVariant {
+  return typeof value === 'string' && (ICON_VARIANTS as readonly string[]).includes(value);
 }

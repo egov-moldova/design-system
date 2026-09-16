@@ -315,13 +315,21 @@ describe('mud-sidebar-item', () => {
 
     it('keeps an outlined-only icon outlined when active, without warning', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      // `search` is one of the 142 icons drawn in outlined only — asking mud-icon
-      // for its filled drawing would warn on every activation.
-      const { root } = await render(<mud-sidebar-item icon="search" active label="Search" />);
-      const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('variant')).toBe('outlined');
-      expect(warn).not.toHaveBeenCalled();
-      warn.mockRestore();
+      try {
+        // `search` has no filled drawing, so asking mud-icon for one would warn
+        // on every activation. Baseline: `node -e "const
+        // n=require('./src/components/mud-icon/icon-names.ts')"` is not runnable on a
+        // .ts module — read FILLED_ICON_NAMES in that generated file instead; `search`
+        // is absent from it.
+        const { root, waitForChanges } = await render(<mud-sidebar-item icon="search" active label="Search" />);
+        // The warning would come from the child's own load, which has not run yet.
+        await waitForChanges();
+        const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
+        expect(icon?.getAttribute('variant')).toBe('outlined');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
     });
 
     it('renders the outlined style when active=false', async () => {

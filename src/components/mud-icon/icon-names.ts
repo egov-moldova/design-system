@@ -180,9 +180,71 @@ export const ICON_NAMES = [
 /** Every icon name `mud-icon` can render. */
 export type IconName = (typeof ICON_NAMES)[number];
 
+/** The subset drawn in the filled style. */
+export const FILLED_ICON_NAMES = [
+  'business',
+  'calendar',
+  'calendar-remove',
+  'chevron-bottom',
+  'circle-checkmark',
+  'circle-error',
+  'circle-info',
+  'delete',
+  'document',
+  'document-info',
+  'envelope',
+  'facebook',
+  'flash',
+  'flash-off',
+  'group',
+  'home-line',
+  'id-card',
+  'instagram',
+  'linkedin',
+  'map-pin',
+  'page-download',
+  'page-upload',
+  'phone',
+  'receipt-check',
+  'sidebar',
+  'sparkles',
+  'time',
+  'unlocked',
+  'user-account',
+  'wallet',
+  'warning',
+  'youtube',
+] as const;
+
+/** Drawn in the filled style ONLY — these have no outlined drawing. */
+export const FILLED_ONLY_ICON_NAMES = [
+  'circle-checkmark',
+  'document-info',
+  'facebook',
+  'flash',
+  'flash-off',
+  'instagram',
+  'linkedin',
+  'sparkles',
+  'unlocked',
+  'youtube',
+] as const;
+
 const ICON_NAME_SET: ReadonlySet<string> = new Set(ICON_NAMES);
+const FILLED_NAME_SET: ReadonlySet<string> = new Set(FILLED_ICON_NAMES);
+const FILLED_ONLY_NAME_SET: ReadonlySet<string> = new Set(FILLED_ONLY_ICON_NAMES);
 
 /** Runtime guard for names that arrive untyped (HTML attributes, JSON data). */
 export function isIconName(value: unknown): value is IconName {
   return typeof value === 'string' && ICON_NAME_SET.has(value);
+}
+
+/**
+ * Whether an icon is drawn in a given style. Answers from these two sets rather
+ * than from the manifest, so a caller does not pull the whole registry into its
+ * bundle — and so a name like `constructor` cannot reach a prototype member.
+ */
+export function hasIconVariant(name: unknown, variant: 'outlined' | 'filled'): boolean {
+  if (!isIconName(name)) return false;
+  return variant === 'filled' ? FILLED_NAME_SET.has(name) : !FILLED_ONLY_NAME_SET.has(name);
 }

@@ -462,22 +462,44 @@ describe('resolveIconAsset (provider URL builder)', () => {
 });
 
 describe('hasIconVariant', () => {
-  it('answers from the manifest for a name drawn in both styles', () => {
-    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
-    expect(hasIconVariant(name, 'outlined')).toBe(true);
-    expect(hasIconVariant(name, 'filled')).toBe(true);
+  // Named icons, not values derived from the same data the function reads —
+  // otherwise the assertion restates the source instead of checking it.
+  it('is true for both styles of an icon drawn in both', () => {
+    expect(hasIconVariant('calendar', 'outlined')).toBe(true);
+    expect(hasIconVariant('calendar', 'filled')).toBe(true);
   });
 
   it('is false for the style an icon is not drawn in', () => {
-    if (!FILLED_ONLY_NAME) return;
-    expect(hasIconVariant(FILLED_ONLY_NAME, 'outlined')).toBe(false);
-    expect(hasIconVariant(FILLED_ONLY_NAME, 'filled')).toBe(true);
+    expect(hasIconVariant('facebook', 'outlined')).toBe(false);
+    expect(hasIconVariant('facebook', 'filled')).toBe(true);
+    expect(hasIconVariant('search', 'filled')).toBe(false);
+    expect(hasIconVariant('search', 'outlined')).toBe(true);
+  });
+
+  it('agrees with the manifest for every name and style', () => {
+    const disagreements = ICON_NAMES.flatMap(name =>
+      ICON_VARIANTS.filter(
+        variant => hasIconVariant(name, variant) !== (REAL_MANIFEST[name]?.variants.includes(variant) ?? false),
+      ).map(variant => `${name}/${variant}`),
+    );
+    expect(disagreements).toEqual([]);
   });
 
   it('is false for an absent name instead of throwing', () => {
     expect(hasIconVariant(undefined, 'filled')).toBe(false);
-    expect(hasIconVariant('this-icon-does-not-exist' as IconName, 'filled')).toBe(false);
+    expect(hasIconVariant('this-icon-does-not-exist', 'filled')).toBe(false);
   });
+
+  // `manifest['constructor']` resolves through Object.prototype to a truthy
+  // function, so an unguarded lookup read `.variants` off it and threw inside
+  // five components' render(). Same hazard as mud-icon's own isIconName guard.
+  it.each(['constructor', 'toString', 'valueOf', '__proto__', 'hasOwnProperty'])(
+    'is false for the Object.prototype member "%s"',
+    member => {
+      expect(hasIconVariant(member, 'filled')).toBe(false);
+      expect(hasIconVariant(member, 'outlined')).toBe(false);
+    },
+  );
 });
 
 describe('icons.manifest.json (public icon names)', () => {
@@ -534,6 +556,20 @@ describe('icon asset shape (what `yarn svg:icons` normalizes to)', () => {
       .filter(({ source }) => /<svg[^>]*\s(?:width|height)=/.test(source.slice(0, source.indexOf('>') + 1)))
       .map(({ rel }) => rel);
     expect(offenders).toEqual([]);
+  });
+
+  // Both styles of one icon stretch to the same host box, so a 24-grid drawing
+  // beside a 16-grid one makes the glyph resize when `variant` toggles.
+  it('draws both styles of an icon on the same grid', () => {
+    const viewBoxOf = (rel: string) => {
+      const source = files.find(f => f.rel === rel)?.source ?? '';
+      return source.slice(0, source.indexOf('>') + 1).match(/viewBox="0 0 (\d+(?:\.\d+)?) /)?.[1] ?? null;
+    };
+    const mismatched = ICON_NAMES.filter(name => {
+      if (!hasIconVariant(name, 'outlined') || !hasIconVariant(name, 'filled')) return false;
+      return viewBoxOf(`outlined/${name}.svg`) !== viewBoxOf(`filled/${name}.svg`);
+    });
+    expect(mismatched).toEqual([]);
   });
 
   // Every drawing must scale from its viewBox alone — `size` is the only thing

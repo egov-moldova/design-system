@@ -32,11 +32,13 @@ export type {
 } from './components/mud-service-button/mud-service-button.types';
 
 export {
+  FILLED_ICON_NAMES,
   hasIconVariant,
   ICON_NAMES,
   ICON_SIZES,
   ICON_VARIANTS,
   isIconName,
+  isIconVariant,
 } from './components/mud-icon/mud-icon.types';
 export type { IconName, IconSize, IconVariant } from './components/mud-icon/mud-icon.types';
 
