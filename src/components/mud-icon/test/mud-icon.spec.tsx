@@ -6,11 +6,19 @@ import path from 'node:path';
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
 import { clearIconSvgCache, fetchIconSvg, resolveIconAsset } from '../mud-icon.providers';
-import { ICON_NAMES, ICON_VARIANTS, type IconManifest, type IconName } from '../mud-icon.types';
+import {
+  hasIconVariant,
+  ICON_NAMES,
+  ICON_VARIANTS,
+  type IconManifest,
+  type IconName,
+  type IconVariant,
+} from '../mud-icon.types';
 
 const REAL_MANIFEST = manifest as IconManifest;
-const NAME_IN_BOTH_VARIANTS = ICON_NAMES.find(n => REAL_MANIFEST[n].variants.length === 2);
-const FILLED_ONLY_NAME = ICON_NAMES.find(n => !REAL_MANIFEST[n].variants.includes('outlined'));
+const variantsOf = (name: IconName): readonly IconVariant[] => REAL_MANIFEST[name]?.variants ?? [];
+const NAME_IN_BOTH_VARIANTS = ICON_NAMES.find(n => variantsOf(n).length === 2);
+const FILLED_ONLY_NAME = ICON_NAMES.find(n => !variantsOf(n).includes('outlined'));
 
 function makeFetchMock() {
   return vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
@@ -406,6 +414,8 @@ describe('resolveIconAsset (provider URL builder)', () => {
     setAssetPath('http://localhost/');
   });
 
+  // Real names: the manifest type is keyed by IconName, so a made-up key no
+  // longer type-checks — which is the point of keying it.
   const manifest: IconManifest = {
     sun: { variants: ['outlined', 'filled'] },
     moon: { variants: ['filled'] },
@@ -424,13 +434,13 @@ describe('resolveIconAsset (provider URL builder)', () => {
   });
 
   it('returns undefined for unknown names', () => {
-    const r = resolveIconAsset('unknown', 'outlined', manifest);
+    const r = resolveIconAsset('car', 'outlined', manifest);
     expect(r).toBeUndefined();
   });
 
   it('returns undefined when the entry lists no style', () => {
-    const empty: IconManifest = { ghost: { variants: [] } };
-    const r = resolveIconAsset('ghost', 'outlined', empty);
+    const empty: IconManifest = { stamp: { variants: [] } };
+    const r = resolveIconAsset('stamp', 'outlined', empty);
     expect(r).toBeUndefined();
   });
 
@@ -448,6 +458,25 @@ describe('resolveIconAsset (provider URL builder)', () => {
     const r = resolveIconAsset(FILLED_ONLY_NAME, 'outlined');
     expect(r?.resolvedVariant).toBe('filled');
     expect(r?.url).toContain(`/filled/${FILLED_ONLY_NAME}.svg`);
+  });
+});
+
+describe('hasIconVariant', () => {
+  it('answers from the manifest for a name drawn in both styles', () => {
+    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
+    expect(hasIconVariant(name, 'outlined')).toBe(true);
+    expect(hasIconVariant(name, 'filled')).toBe(true);
+  });
+
+  it('is false for the style an icon is not drawn in', () => {
+    if (!FILLED_ONLY_NAME) return;
+    expect(hasIconVariant(FILLED_ONLY_NAME, 'outlined')).toBe(false);
+    expect(hasIconVariant(FILLED_ONLY_NAME, 'filled')).toBe(true);
+  });
+
+  it('is false for an absent name instead of throwing', () => {
+    expect(hasIconVariant(undefined, 'filled')).toBe(false);
+    expect(hasIconVariant('this-icon-does-not-exist' as IconName, 'filled')).toBe(false);
   });
 });
 
@@ -480,7 +509,7 @@ describe('icon asset shape (what `yarn svg:icons` normalizes to)', () => {
   // Guards against a vacuous scan: a moved assets directory would make every
   // assertion below pass over an empty list.
   it('reads the whole icon set', () => {
-    expect(files.length).toBe(Object.values(REAL_MANIFEST).reduce((n, e) => n + e.variants.length, 0));
+    expect(files.length).toBe(Object.values(REAL_MANIFEST).reduce((n, e) => n + (e?.variants.length ?? 0), 0));
   });
 
   // `mud-icon` inlines the SVG into its shadow root, where `mud-icon.css`'s

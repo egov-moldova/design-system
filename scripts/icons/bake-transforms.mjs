@@ -20,6 +20,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { optimize } from 'svgo';
+import { assertLegacySizeLayout } from './legacy-size-layout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
@@ -133,6 +134,7 @@ async function processFile(filePath, nominal) {
 }
 
 async function main() {
+  assertLegacySizeLayout(ASSETS_ROOT, SIZES);
   const target = process.argv[2];
   if (target) {
     // Single-file test mode

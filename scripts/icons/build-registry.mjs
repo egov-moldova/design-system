@@ -90,6 +90,20 @@ async function main() {
     throw new Error(`[icons] style suffix in a filename — the directory carries the style now: ${suffixed.join(', ')}`);
   }
 
+  // The producers in this folder still write `assets/<size>/`. Nothing else
+  // would notice: this scan reads only the two style directories, so a re-run of
+  // the Figma download would recreate the old layout beside the new one and
+  // `--check` would stay green over it.
+  const unexpected = (await fs.readdir(ASSETS_ROOT, { withFileTypes: true }))
+    .filter(entry => entry.isDirectory() && !VARIANTS.includes(entry.name))
+    .map(entry => entry.name);
+  if (unexpected.length) {
+    throw new Error(
+      `[icons] unexpected directory under assets/: ${unexpected.join(', ')} — the style directories ` +
+        `(${VARIANTS.join(', ')}) are the whole layout now.`,
+    );
+  }
+
   const sortedNames = [...collected.keys()].sort();
   if (!sortedNames.length) throw new Error('[icons] no SVG assets found');
 
@@ -132,6 +146,22 @@ async function main() {
     acc[variant] = sortedNames.filter(name => collected.get(name).has(variant)).length;
     return acc;
   }, {});
+
+  const offGrid = [];
+  for (const variant of VARIANTS) {
+    for (const name of sortedNames) {
+      if (!collected.get(name).has(variant)) continue;
+      const head = (await fs.readFile(path.join(ASSETS_ROOT, variant, `${name}.svg`), 'utf8')).slice(0, 400);
+      const viewBox = head.match(/viewBox="0 0 (\d+(?:\.\d+)?) /);
+      if (viewBox && viewBox[1] !== '24') offGrid.push(`${variant}/${name} (${viewBox[1]})`);
+    }
+  }
+  if (offGrid.length) {
+    // Not a refusal: these render, they just carry a different stroke weight
+    // when scaled to the same box as a 24-grid drawing. Redrawing them is a
+    // design call, so this names them rather than deciding for the designer.
+    console.warn(`[icons] ${offGrid.length} drawing(s) not on the 24 grid: ${offGrid.join(', ')}`);
+  }
 
   console.log(`[icons] Manifest built — ${sortedNames.length} icons:`);
   for (const variant of VARIANTS) {

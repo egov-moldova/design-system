@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { IconName } from '../mud-icon/mud-icon.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import { BANNER_ASSERTIVE_VARIANTS, BANNER_DEFAULT_ICONS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
 
@@ -160,7 +160,11 @@ export class MudBanner {
         <div class="content">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-              <mud-icon name={iconName} variant="filled" size={24} />
+              <mud-icon
+                name={iconName}
+                variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
+                size={24}
+              />
             </slot>
           </span>
 

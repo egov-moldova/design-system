@@ -2805,7 +2805,7 @@ export namespace Components {
          */
         "href"?: string;
         /**
-          * Leading icon name. Rendered filled while the item is active, outlined otherwise.
+          * Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing.
          */
         "icon"?: IconName;
         /**
@@ -8427,7 +8427,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Leading icon name. Rendered filled while the item is active, outlined otherwise.
+          * Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing.
          */
         "icon"?: IconName;
         /**

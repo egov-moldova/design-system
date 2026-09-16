@@ -15,7 +15,7 @@ type IconArgs = {
 };
 
 const ICONS = manifest as IconManifest;
-const hasVariant = (name: IconName, variant: IconVariant) => ICONS[name].variants.includes(variant);
+const hasVariant = (name: IconName, variant: IconVariant) => ICONS[name]?.variants.includes(variant) ?? false;
 const BOTH_VARIANTS = ICON_NAMES.filter(name => hasVariant(name, 'outlined') && hasVariant(name, 'filled'));
 const FILLED_ONLY = ICON_NAMES.filter(name => !hasVariant(name, 'outlined'));
 
@@ -243,7 +243,7 @@ export const VariantFallback: Story = {
   render: () => /*html*/ `
       <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24);">
         <p style="${cellLabelStyle}; text-align: left;">
-          <code>${fallbackName}</code> is drawn in <strong>${ICONS[fallbackName].variants.join(', ')}</strong> only.
+          <code>${fallbackName}</code> is drawn in <strong>${ICONS[fallbackName]?.variants.join(', ')}</strong> only.
           Requesting the missing style renders the available one and logs a <code>console.warn</code>.
         </p>
         <div style="display: flex; gap: var(--spacing-24);">

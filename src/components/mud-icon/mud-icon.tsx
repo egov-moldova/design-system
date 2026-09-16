@@ -135,14 +135,17 @@ export class MudIcon {
       return;
     }
 
+    const cacheKey = `${requestedName}|${result.resolvedVariant}`;
+    if (this.svgCacheKey === cacheKey) return;
+
+    // Below the cache guard: toggling `variant` on a single-style icon resolves
+    // to the same drawing every time, and warning above this line repeated the
+    // message on every toggle without a fetch behind it.
     if (result.resolvedVariant !== requestedVariant) {
       console.warn(
         `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${result.resolvedVariant}".`,
       );
     }
-
-    const cacheKey = `${requestedName}|${result.resolvedVariant}`;
-    if (this.svgCacheKey === cacheKey) return;
 
     const element = await fetchIconSvg(result.url);
 

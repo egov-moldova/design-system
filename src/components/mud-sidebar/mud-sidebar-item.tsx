@@ -1,6 +1,6 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@stencil/core';
 
-import type { IconName } from '../mud-icon/mud-icon.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
 
 /**
@@ -23,7 +23,7 @@ export class MudSidebarItem {
   /** Value reported when the item is activated. */
   @Prop({ reflect: true }) value?: string;
 
-  /** Leading icon name. Rendered filled while the item is active, outlined otherwise. */
+  /** Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing. */
   @Prop() icon?: IconName;
 
   /** Primary label (overridden by slotted content). */
@@ -87,7 +87,7 @@ export class MudSidebarItem {
         <mud-icon
           class="icon"
           name={this.icon}
-          variant={this.active ? 'filled' : 'outlined'}
+          variant={this.active && hasIconVariant(this.icon, 'filled') ? 'filled' : 'outlined'}
           size={20}
           aria-hidden="true"
         ></mud-icon>

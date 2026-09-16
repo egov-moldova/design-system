@@ -8,8 +8,8 @@
  * mechanism, not leftover paint. A plain `removeAttrs` on `(fill|stroke)`
  * strips it and every icon renders black, ignoring `--icon-color` and the
  * `color` prop.
- * Baseline: `grep -l currentColor src/components/mud-icon/assets/24/*.svg | wc -l`
- * -> 182 of 182.
+ * Baseline: `grep -rl currentColor src/components/mud-icon/assets/outlined | wc -l`
+ * -> 164 of 164.
  *
  * The rest of the keep-list is every value whose removal CHANGES the drawing
  * rather than letting it inherit: `none` and `transparent` suppress the default

@@ -313,6 +313,17 @@ describe('mud-sidebar-item', () => {
       expect(icon?.getAttribute('variant')).toBe('filled');
     });
 
+    it('keeps an outlined-only icon outlined when active, without warning', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      // `search` is one of the 142 icons drawn in outlined only — asking mud-icon
+      // for its filled drawing would warn on every activation.
+      const { root } = await render(<mud-sidebar-item icon="search" active label="Search" />);
+      const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
+      expect(icon?.getAttribute('variant')).toBe('outlined');
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
     it('renders the outlined style when active=false', async () => {
       const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');

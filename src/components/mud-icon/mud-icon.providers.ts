@@ -2,7 +2,7 @@ import { getAssetPath } from '@stencil/core';
 
 import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
 import defaultManifest from './assets/icons.manifest.json';
-import { ICON_VARIANTS, type IconManifest, type IconVariant } from './mud-icon.types';
+import { ICON_VARIANTS, type IconManifest, type IconName, type IconVariant } from './mud-icon.types';
 
 type ResolveResult = {
   url: string;
@@ -25,14 +25,14 @@ function tryAssetPath(relativePath: string): string | null {
 }
 
 export function resolveIconAsset(
-  name: string,
+  name: IconName,
   variant: IconVariant,
   manifest: IconManifest = defaultManifest as IconManifest,
 ): ResolveResult | undefined {
   const entry = manifest[name];
   if (!entry) return undefined;
 
-  const variants = entry.variants as readonly IconVariant[];
+  const variants = entry.variants;
 
   const pick = (resolved: IconVariant): ResolveResult | undefined => {
     const url = tryAssetPath(`./assets/${resolved}/${name}.svg`);

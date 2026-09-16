@@ -6,6 +6,10 @@ import manifest from '../../src/components/mud-icon/assets/icons.manifest.json';
 
 export const PREVIEW_SIZE = 24;
 
+// The style is a prop now, so the name alone no longer reproduces what the cell
+// shows — the 22 icons drawn in both styles would paste back as outlined.
+export const snippetFor = (name, variant) => `<mud-icon name="${name}" variant="${variant}"></mud-icon>`;
+
 export const namesIn = variant =>
   Object.entries(manifest)
     .filter(([, entry]) => entry.variants.includes(variant))
@@ -84,7 +88,7 @@ export const copiedToast = {
   boxShadow: 'var(--drop-shadow-300)',
 };
 
-export const handleCopy = (name, ev) => {
+export const handleCopy = (snippet, ev) => {
   const cellEl = ev.currentTarget;
   const tip = cellEl.querySelector('[data-role="copied-tip"]');
   const reveal = () => {
@@ -97,12 +101,12 @@ export const handleCopy = (name, ev) => {
   };
   if (navigator.clipboard?.writeText) {
     navigator.clipboard
-      .writeText(name)
+      .writeText(snippet)
       .then(reveal)
       .catch(() => {
         // Fallback for environments where async clipboard is blocked.
         const ta = document.createElement('textarea');
-        ta.value = name;
+        ta.value = snippet;
         ta.style.position = 'fixed';
         ta.style.opacity = '0';
         document.body.appendChild(ta);
@@ -153,14 +157,14 @@ export const VariantSection = ({ variant, names }) =>
           <div
             key={name}
             style={cell}
-            title={`Click to copy "${name}"`}
+            title={`Click to copy the ${variant} <mud-icon> tag for "${name}"`}
             role="button"
             tabIndex={0}
-            onClick={ev => handleCopy(name, ev)}
+            onClick={ev => handleCopy(snippetFor(name, variant), ev)}
             onKeyDown={ev => {
               if (ev.key === 'Enter' || ev.key === ' ') {
                 ev.preventDefault();
-                handleCopy(name, ev);
+                handleCopy(snippetFor(name, variant), ev);
               }
             }}
           >

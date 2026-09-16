@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { IconName } from '../mud-icon/mud-icon.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
 
@@ -170,7 +170,11 @@ export class MudToast {
         <div class="main">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-              <mud-icon name={iconName} variant="filled" size={24} />
+              <mud-icon
+                name={iconName}
+                variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
+                size={24}
+              />
             </slot>
           </span>
 

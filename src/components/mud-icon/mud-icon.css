@@ -1,5 +1,10 @@
 :host {
   display: inline-flex;
+  /* Fallback, not decoration: a `size` outside ICON_SIZES matches no rule below,
+     and an unset --icon-size collapses the host to `auto` — the icon disappears
+     with nothing in the console. Degrade to the prop's own default instead. */
+  --icon-size: var(--spacing-16);
+
   width: var(--icon-size);
   height: var(--icon-size);
   vertical-align: middle;
