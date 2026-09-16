@@ -4,8 +4,8 @@
  *
  * Scans source files for hardcoded color values that should use design tokens instead.
  * Detects hex colors, rgb/rgba/hsl/hsla functions, modern color functions, and named
- * CSS colors (CSS/SCSS only), and palette primitives referenced from stylesheets
- * outside `legacy/` (`var(--palette-*)` — components use semantic tokens). Reports
+ * CSS colors (CSS/SCSS only), and palette primitives referenced from component
+ * stylesheets under `components/` (`var(--palette-*)` — components use semantic tokens). Reports
  * file:line:col links like tokens-lint.
  *
  * Fixed artwork whose colours are not themeable (flags, illustrations) opts out as a whole file by
@@ -546,8 +546,11 @@ async function processFile(filePath) {
     }
 
     // AGENTS.md rule 5: component CSS references component/semantic tokens, never palette
-    // primitives. `legacy/` predates the rule and is excluded from the build.
-    if (isCss && !filePath.split(path.sep).includes('legacy')) {
+    // primitives. Only stylesheets under a `components/` directory are component CSS: a
+    // token stylesheet may define semantic tokens from palette ones, and `legacy/` predates
+    // the rule.
+    const segments = filePath.split(path.sep);
+    if (isCss && segments.includes('components') && !segments.includes('legacy')) {
       const re = RE_PALETTE_VAR();
       let m;
       while ((m = re.exec(line)) !== null) {

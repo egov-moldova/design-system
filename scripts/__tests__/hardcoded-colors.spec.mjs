@@ -176,15 +176,16 @@ describe('hardcoded-colors — file-level exemption', () => {
 
 describe('palette primitives in component CSS', () => {
   it('flags var(--palette-*) in a stylesheet', () => {
-    const { status, issues } = lint({ 'button.css': ':host { color: var(--palette-blue-500); }\n' });
+    const { status, issues } = lint({ 'components/button.css': ':host { color: var(--palette-blue-500); }\n' });
     assert.equal(status, 1);
     assert.deepEqual(issues, [{ file: 'button.css', line: 1, value: '--palette-blue-500' }]);
   });
 
-  it('passes semantic tokens, comments and legacy stylesheets', () => {
+  it('passes semantic tokens, comments, token stylesheets and legacy stylesheets', () => {
     const { status, issues } = lint({
-      'button.css': ':host { color: var(--color-text-primary); } /* var(--palette-blue-500) */\n',
-      'legacy/old.css': ':host { color: var(--palette-blue-500); }\n',
+      'components/button.css': ':host { color: var(--color-text-primary); } /* var(--palette-blue-500) */\n',
+      'global/tokens.css': ':root { --color-text-primary: var(--palette-blue-500); }\n',
+      'components/legacy/old.css': ':host { color: var(--palette-blue-500); }\n',
     });
     assert.equal(status, 0);
     assert.deepEqual(issues, []);
