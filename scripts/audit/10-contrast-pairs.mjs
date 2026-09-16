@@ -107,6 +107,30 @@ export function parseColor(input) {
       a: alpha,
     };
   }
+
+  // `color(srgb r g b / a)` with 0..1 channels. Chromium serializes every
+  // `color-mix(in srgb, …)` this way, and the repo ships several — so without
+  // this branch those layers are unreadable at runtime.
+  // Baseline: `grep -rlc 'color-mix(in srgb' src/components/*/[a-z]*.css` -> 3
+  // files (mud-banner, mud-date-input, mud-toast) on 2026-09-16.
+  const srgb = s.match(/^color\(\s*srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s*(?:\/\s*([0-9.]+%?)\s*)?\)$/i);
+  if (srgb) {
+    let alpha = 1;
+    if (srgb[4] !== undefined) {
+      alpha = srgb[4].endsWith('%') ? Number(srgb[4].slice(0, -1)) / 100 : Number(srgb[4]);
+    }
+    return {
+      r: Math.round(Number(srgb[1]) * 255),
+      g: Math.round(Number(srgb[2]) * 255),
+      b: Math.round(Number(srgb[3]) * 255),
+      a: alpha,
+    };
+  }
+
+  // Everything else — `color(display-p3 …)`, `oklch(…)`, a gradient keyword —
+  // is UNREADABLE, not absent. Returning null is what lets `resolveBackground`
+  // report an unresolved backdrop instead of quietly scoring the element
+  // against the layer behind the one it could not read.
   return null;
 }
 
@@ -148,15 +172,29 @@ export const DEFAULT_CANVAS = 'rgb(255, 255, 255)';
  * end of the array back to the front, and a partially transparent layer is
  * composited over what is behind it rather than used as-is.
  *
- * `fallback` is the story canvas — the page reads it from the `Canvas` system
- * color, which resolves per `color-scheme`, so a dark story falls back to the
- * dark canvas and not to white.
+ * `fallback` is the story canvas, which the page reads from the `Canvas` system
+ * color. It is reached only when no layer up to `<html>` paints anything.
  *
- * Always returns an opaque color, which is what keeps `contrastRatio`'s
- * "clamp a transparent background to opaque" branch off the runtime path.
+ * This is the ONLY place alpha is decided. The walk collects every layer up to
+ * the root and makes no judgment about which of them is opaque, so a color
+ * spelling `parseColor` does not know can no longer make the walk stop early —
+ * or vanish from the fold and leave a confident wrong number in its place.
+ *
+ * Returns an opaque color, or `null` when a layer it had to read was
+ * unreadable. `null` travels to `classifyContrast` as `unmeasurable`, which is
+ * the tool's one way of saying "I could not measure this" — the alternative is
+ * a plausible two-decimal ratio for a surface nobody resolved.
  */
 export function resolveBackground(layers, { fallback = DEFAULT_CANVAS } = {}) {
-  const stack = (Array.isArray(layers) ? layers : [layers]).map(parseColor).filter(Boolean);
+  const stack = [];
+  for (const layer of Array.isArray(layers) ? layers : [layers]) {
+    const color = parseColor(layer);
+    if (!color) return null;
+    stack.push(color);
+    // Nothing behind an opaque layer is visible, so nothing behind it is read.
+    // An unreadable layer further out therefore cannot make this unmeasurable.
+    if (color.a >= 1) break;
+  }
   const canvas = parseColor(fallback) ?? parseColor(DEFAULT_CANVAS);
   let out = { ...canvas, a: 1 };
   for (let i = stack.length - 1; i >= 0; i -= 1) {
@@ -311,17 +349,32 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
 
   const findings = [];
   for (const p of pairs) {
-    if (!p.pass && !p.exempt) {
+    if (p.pass || p.exempt) continue;
+    // An unresolved backdrop is a DIFFERENT defect from a failing ratio: some
+    // layer behind the element used a color spelling the parser cannot read,
+    // so there is no ratio to judge. Reporting it as a contrast failure would
+    // send the reader to the token mapping, which is not where the cause is.
+    if (p.error === 'unmeasurable') {
       findings.push(
         finding({
           severity: 'error',
-          code: 'CONTRAST-BELOW-THRESHOLD',
+          code: 'CONTRAST-BACKDROP-UNREADABLE',
           file: relativeToRepo(target.paths.tsx),
-          message: `${p.theme} <${p.tag}> [${p.kind}]: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
-          fix: 'Adjust the token mapping so foreground and background pass WCAG 2.1 AA.',
+          message: `${p.theme} <${p.tag}> [${p.kind}]: background unresolved. fg=${p.fg} layers=[${p.bgStack.join(' | ')}].`,
+          fix: 'Teach parseColor the unreadable color spelling, or paint the surface in one it already reads.',
         }),
       );
+      continue;
     }
+    findings.push(
+      finding({
+        severity: 'error',
+        code: 'CONTRAST-BELOW-THRESHOLD',
+        file: relativeToRepo(target.paths.tsx),
+        message: `${p.theme} <${p.tag}> [${p.kind}]: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
+        fix: 'Adjust the token mapping so foreground and background pass WCAG 2.1 AA.',
+      }),
+    );
   }
 
   return { findings, pairs, componentName: target.name };
@@ -339,7 +392,8 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
  */
 export function buildPair(sample) {
   const bgStack = sample.bgStack ?? [sample.bg];
-  const bg = formatColor(resolveBackground(bgStack, { fallback: sample.canvas ?? DEFAULT_CANVAS }));
+  const resolved = resolveBackground(bgStack, { fallback: sample.canvas ?? DEFAULT_CANVAS });
+  const bg = resolved ? formatColor(resolved) : null;
   const ratio = contrastRatio(sample.fg, bg);
   const cls = classifyContrast(ratio, sample.kind, { disabled: sample.disabled });
   return {
@@ -347,6 +401,7 @@ export function buildPair(sample) {
     bg,
     bgOwn: sample.bg,
     bgStack,
+    error: cls.error ?? null,
     ratio: cls.ratio,
     threshold: cls.threshold,
     pass: cls.pass,
@@ -402,39 +457,73 @@ export async function measureSamples(url, componentName, theme) {
             }
           }
 
-          const isTransparent = s => /^rgba?\(.*,\s*0\s*\)$/.test(s) || s === 'transparent';
-          // getComputedStyle returns `rgb(...)` whenever the alpha is 1 and
-          // `rgba(..., a)` otherwise, so the spelling alone settles opacity.
-          const isOpaque = s => /^rgb\(/.test(s);
+          // Picks which element the fg/bg pair is READ OFF; it never decides
+          // the contrast math, which `resolveBackground` owns. The alpha
+          // component is the last one in every serialization getComputedStyle
+          // produces — `rgba(r, g, b, 0)`, `color(srgb r g b / 0)` — so one
+          // trailing-zero test covers the spellings a channel-by-channel
+          // regex would miss.
+          const isTransparent = s => /[,/]\s*0(\.0+)?\s*\)$/.test(s) || s === 'transparent';
 
           // The background the UA paints when nothing in the chain paints one.
           // `Canvas` is the CSS system color for exactly that surface and it
-          // resolves per `color-scheme`, so the dark pass gets the dark canvas
-          // instead of an assumed white. Read from a detached-from-layout probe
-          // so measuring the page cannot move it.
+          // tracks the document's `color-scheme`. THIS REPO DECLARES NONE, so
+          // it reads white in both passes and the dark story is saved instead
+          // by `.storybook/storybook-overrides.css`'s `html[data-theme='dark']
+          // body` rule, which paints an opaque surface the walk stops at long
+          // before the fallback. Do not read the dark fallback as live cover.
+          // Baseline: `grep -rn "color-scheme" src/ .storybook/` -> 0 hits on
+          // 2026-09-16; `setTheme` sets `data-theme` (lib/browser-context.mjs).
+          // Read from a probe kept out of layout so measuring cannot move it.
           const canvasProbe = document.createElement('div');
           canvasProbe.style.cssText = 'display: none; background-color: Canvas;';
           document.documentElement.appendChild(canvasProbe);
           const canvas = window.getComputedStyle(canvasProbe).backgroundColor;
           canvasProbe.remove();
 
-          // Every background layer painted behind `el`, nearest first, stopping
-          // at the first opaque one. An element with no background of its own
-          // paints on what is behind it, so the element's own `backgroundColor`
-          // is only the first layer, never the answer (issue #49).
+          // Every background layer painted behind `el`, nearest first, all the
+          // way to the root. An element with no background of its own paints on
+          // what is behind it, so the element's own `backgroundColor` is only
+          // the first layer, never the answer (issue #49).
           //
-          // Crossing shadow boundaries via `getRootNode().host` is what the
-          // host-only walk was missing: an element inside a shadow root has no
-          // `parentElement` at the root, but it still paints on the host's
-          // ancestors. `resolveBackground` composites the returned stack.
+          // This walk deliberately makes NO judgment about which layer is
+          // opaque. A string test here could not read `color(srgb …)` — what
+          // Chromium serializes every `color-mix(in srgb, …)` to — and would
+          // walk past a surface that fully covers the ones behind it.
+          // `resolveBackground` decides where the stack ends, because
+          // `parseColor` is the one place that knows what a color spelling is
+          // worth; a layer it cannot read becomes an unresolved backdrop there
+          // rather than vanishing here.
+          //
+          // The walk follows the FLATTENED tree, which is what the browser
+          // paints, not the DOM tree. Two hops the DOM tree does not give:
+          //   - `assignedSlot` — slotted light-DOM content paints where its
+          //     slot sits, so a consumer's element slotted into a shadow tree
+          //     paints on that tree's surfaces. `mud-cookie-banner` and
+          //     `mud-modal` both paint their background on a shadow `.container`
+          //     with the slots inside it and nothing on `:host`, so a
+          //     `parentElement` walk leaves that container out and scores the
+          //     slotted element against the page canvas — the same false
+          //     failure as #49, one level in.
+          //     Baseline: `grep -n 'background' src/components/mud-cookie-banner/mud-cookie-banner.css | head -3`
+          //     -> `.container` carries `--cookie-banner-container-background`.
+          //   - `getRootNode().host` — an element at the top of a shadow root
+          //     has no `parentElement`, but it still paints on the host's
+          //     ancestors.
+          //
+          // Known boundary, not modelled: a `background-image` (gradient) and
+          // an ancestor `opacity` both paint a surface this stack cannot see —
+          // a gradient ancestor computes `backgroundColor` to a transparent
+          // value and the walk passes straight through it. Documented for the
+          // consumer in `.claude/agents/a11y-verifier.md`; compositing a
+          // gradient needs geometry and stop interpolation, an unbounded job
+          // for an audit script.
           const collectBackgroundStack = el => {
             const layers = [];
             let node = el;
             while (node && node.nodeType === 1) {
-              const color = window.getComputedStyle(node).backgroundColor;
-              layers.push(color);
-              if (isOpaque(color)) return layers;
-              const parent = node.parentElement;
+              layers.push(window.getComputedStyle(node).backgroundColor);
+              const parent = node.assignedSlot ?? node.parentElement;
               if (parent) {
                 node = parent;
                 continue;

@@ -62,13 +62,22 @@ What you get back per envelope:
   `outlineWidth`, `outlineStyle`, `outlineColor`); same shape under `dark`
   unless `--skip-dark` was passed.
 - **10 (contrast-pairs)** → `meta.pairs[]` with
-  `{ tag, theme, fg, bg, bgOwn, bgStack, ratio, threshold, pass, exempt }` for
-  every interactive element. `bg` is the COMPOSITED background — the layers
-  behind the element, walked across shadow boundaries up to the story canvas —
-  and is what the ratio is computed against. `bgOwn` is the element's own
-  `backgroundColor`, often `rgba(0, 0, 0, 0)`, and `bgStack` is the layer stack
-  `bg` was folded from; both are for debugging a surprising ratio, never for
+  `{ tag, theme, fg, bg, bgOwn, bgStack, canvas, error, ratio, threshold, pass,
+  exempt }` for every interactive element. `bg` is the COMPOSITED background —
+  the layers behind the element, walked across shadow boundaries up to the story
+  canvas — and is what the ratio is computed against. `bgOwn` is the element's
+  own `backgroundColor`, often `rgba(0, 0, 0, 0)`; `bgStack` is the layer stack
+  `bg` was folded from; `canvas` is the surface the fold lands on when no layer
+  paints anything. All three are for debugging a surprising ratio, never for
   judging contrast.
+  `bg` and `ratio` are `null` with `error: 'unmeasurable'` when some layer used
+  a color spelling the parser cannot read — reported as
+  `CONTRAST-BACKDROP-UNREADABLE`, a different defect from a failing ratio.
+  Two paint mechanisms are outside the model and will NOT show up in `bgStack`:
+  a `background-image` (a gradient ancestor computes `backgroundColor` to a
+  transparent value, so the walk passes straight through it) and an ancestor
+  `opacity`. Where a component paints either behind its text, judge that pair by
+  eye rather than by its `ratio`.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data

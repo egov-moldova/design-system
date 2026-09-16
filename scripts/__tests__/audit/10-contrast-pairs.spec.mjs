@@ -42,6 +42,20 @@ describe('10-contrast-pairs: parseColor', () => {
     assert.deepEqual(parseColor('rgba(0, 0, 0, 0.5)'), { r: 0, g: 0, b: 0, a: 0.5 });
   });
 
+  it('parses the color(srgb …) spelling Chromium gives a color-mix()', () => {
+    assert.deepEqual(parseColor('color(srgb 0 0 0)'), { r: 0, g: 0, b: 0, a: 1 });
+    const mixed = parseColor('color(srgb 0 0.345098 0.823529 / 0.4)');
+    assert.deepEqual({ r: mixed.r, g: mixed.g, b: mixed.b }, { r: 0, g: 88, b: 210 });
+    assert.ok(Math.abs(mixed.a - 0.4) < 0.001);
+  });
+
+  it('refuses a color spelling it cannot convert, rather than guessing', () => {
+    // display-p3 needs a gamut matrix and oklch a full conversion; returning
+    // null is what routes them to the unmeasurable path instead of a number.
+    assert.equal(parseColor('color(display-p3 0.2 0.4 0.6)'), null);
+    assert.equal(parseColor('oklch(0.7 0.1 250)'), null);
+  });
+
   it('treats "transparent" as fully transparent black', () => {
     assert.deepEqual(parseColor('transparent'), { r: 0, g: 0, b: 0, a: 0 });
   });
@@ -168,8 +182,16 @@ describe('10-contrast-pairs: resolveBackground', () => {
     assert.equal(formatColor(bg), 'rgb(18, 18, 18)');
   });
 
-  it('ignores unparseable layers rather than throwing', () => {
-    const bg = resolveBackground(['not a color', 'rgb(255, 255, 255)']);
+  it('reports an unreadable layer instead of dropping it', () => {
+    // Dropping it would score the element against the layer BEHIND the one
+    // that could not be read, and report a confident wrong ratio for it.
+    assert.equal(resolveBackground(['oklch(0.7 0.1 250)', 'rgb(255, 255, 255)']), null);
+    assert.equal(resolveBackground(['not a color']), null);
+  });
+
+  it('ignores an unreadable layer hidden behind an opaque one', () => {
+    // Nothing behind an opaque layer is visible, so nothing behind it is read.
+    const bg = resolveBackground(['rgb(255, 255, 255)', 'color(display-p3 0.2 0.4 0.6)']);
     assert.equal(formatColor(bg), 'rgb(255, 255, 255)');
   });
 
@@ -242,6 +264,23 @@ describe('10-contrast-pairs: buildPair', () => {
     assert.equal(pair.bg, 'rgb(255, 255, 255)');
     assert.equal(pair.pass, false);
     assert.ok(pair.ratio < 4.5, `expected a failing ratio, got ${pair.ratio}`);
+  });
+
+  it('reports unmeasurable rather than a ratio when a layer is unreadable', () => {
+    const pair = buildPair({
+      tag: 'mud-banner',
+      fg: 'rgb(0, 0, 0)',
+      bg: 'rgba(0, 0, 0, 0)',
+      bgStack: ['rgba(0, 0, 0, 0)', 'oklch(0.7 0.1 250)', 'rgb(255, 255, 255)'],
+      canvas: 'rgb(255, 255, 255)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'light',
+    });
+    assert.equal(pair.bg, null);
+    assert.equal(pair.ratio, null);
+    assert.equal(pair.error, 'unmeasurable');
+    assert.equal(pair.pass, false);
   });
 
   it('measures a transparent element on a dark canvas against that canvas', () => {
