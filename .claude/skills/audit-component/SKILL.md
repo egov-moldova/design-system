@@ -497,15 +497,17 @@ Inspect the summary row for `src/components/<componentName>/<componentName>.tsx`
 
 Default: skip and emit `INFO: E2E audit disabled (use --e2e to enable)`.
 
-When `--e2e` flag set:
-- Read `test/<componentName>.e2e.ts` (loaded from Wave 1)
-- Uses `newE2EPage({ html: '<mud-x ...></mud-x>' })`
-- Smoke test: hydration class present (`page.find('mud-x.hydrated')`)
-- Prop reflection: attributes verified via `page.find('mud-x').getAttribute('variant')`
-- Event spies: `page.spyOnEvent('corChange')` with await for emission
-- Focus/blur: `page.evaluate(() => document.querySelector('mud-x')?.focus())`
-- Shadow DOM access: `page.find('mud-x >>> .target')` combinator
-- Form-associated: form submission produces correct FormData
+`vitest.config.mts` has no project for `test/<componentName>.e2e.ts` files — see
+`src/components/_agents/e2e-testing.md`. When `--e2e` flag set, drive the live
+Storybook story through the Playwright MCP instead, using that file's shadow-DOM
+patterns:
+- Navigate to `http://localhost:6007/iframe.html?id=atoms-mud-<name>--default`
+- Hydration: `page.evaluate()` reads the `.hydrated` class on the host element
+- Prop reflection: `host.evaluate((el) => el.variant)` / `toHaveAttribute(...)` against a re-rendered story arg
+- `mud*` custom events: `el.addEventListener('mudChange', ...)` inside `page.evaluate()`, read back after the interaction — never a spy
+- Focus/blur: `page.evaluate(() => host.shadowRoot?.querySelector('input')?.focus())`
+- Shadow DOM access: `page.locator('mud-x input')` (Playwright pierces shadow roots)
+- Form-associated: read `FormData` entries via `page.evaluate()`
 
 Cross-reference `src/components/_agents/e2e-testing.md`.
 

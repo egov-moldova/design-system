@@ -404,21 +404,19 @@ node scripts/check-test-stderr.mjs --project spec src/components/mud-[name]/test
 
 If `--e2e` flag is NOT set: emit `INFO: E2E audit skipped (use --e2e to enable)` and continue.
 
-When `--e2e` set, check `test/mud-[name].e2e.ts`:
+`vitest.config.mts` has no project for `test/mud-[name].e2e.ts` files (see
+[`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)).
+When `--e2e` set, drive the live Storybook story through the Playwright MCP instead:
 
-1. `newE2EPage` setup
-2. Hydration: component gets `.hydrated` class
-3. Shadow DOM access: `page.find('mud-x >>> .target')` combinator
-4. Event spies: `page.spyOnEvent('corChange')`
-5. Focus/blur: `page.evaluate()` to trigger native focus
-6. Form-associated: form submission produces correct FormData
-7. Cross-reference [`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)
+1. Navigate to the story's `iframe.html?id=...` URL
+2. Hydration: `page.evaluate()` reads the `.hydrated` class on the host element
+3. Prop reflection: props/attributes reflect a re-rendered story arg
+4. `mud*` custom events: captured via `addEventListener` inside `page.evaluate()`, not a spy
+5. Shadow DOM access: `page.locator('mud-x input')` (Playwright pierces shadow roots)
+6. Focus/blur: `page.evaluate()` against `shadowRoot.querySelector(...)`
+7. Form-associated: form submission produces correct FormData via `page.evaluate()`
 
-```bash
-yarn test --e2e --findRelatedTests src/components/mud-[name]/test/mud-[name].e2e.ts
-```
-
-**Pass criteria**: all E2E pass; no flakes.
+**Pass criteria**: all checks pass; no flakes.
 
 ### 5c. Visual Regression
 
