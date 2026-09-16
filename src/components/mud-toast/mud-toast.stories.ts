@@ -2,12 +2,14 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { TOAST_VARIANTS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type ToastArgs = {
   variant: ToastVariant;
   closable: boolean;
   titleText: string;
-  iconName: string;
+  iconName: IconName | '';
   body: string;
   closeLabel: string;
 };
@@ -72,8 +74,9 @@ the consumer is responsible for animating out and removing the element.
     },
     iconName: {
       name: 'icon-name',
-      control: 'text',
-      description: 'Override the default per-variant icon (mud-icon name).',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon (mud-icon name). Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot text content.' },
     closeLabel: {

@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { INFO_BOX_EMPHASES, INFO_BOX_VARIANTS } from './mud-info-box.types';
 import type { InfoBoxEmphasis, InfoBoxVariant } from './mud-info-box.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type InfoBoxArgs = {
   variant: InfoBoxVariant;
@@ -9,7 +11,7 @@ type InfoBoxArgs = {
   closable: boolean;
   hideIcon: boolean;
   titleText: string;
-  iconName: string;
+  iconName: IconName | '';
   body: string;
   closeLabel: string;
 };
@@ -82,7 +84,12 @@ transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
       table: { defaultValue: { summary: 'false' } },
     },
     titleText: { name: 'title-text', control: 'text', description: 'Optional bold heading above the body.' },
-    iconName: { name: 'icon-name', control: 'text', description: 'Override the default per-variant icon.' },
+    iconName: {
+      name: 'icon-name',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon. Empty keeps the variant default.',
+    },
     body: { control: 'text', description: 'Default-slot body content.' },
     closeLabel: {
       name: 'close-label',
