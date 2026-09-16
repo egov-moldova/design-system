@@ -8,10 +8,13 @@
  * (generated, dist, node_modules, .git) and files like style-dictionary*.config.json
  * and package.json (build/config files, not token data).
  *
- * Naming rule (.specs/TOKEN-ARCHITECTURE.md §4, tokens/_agents/naming-conventions.md):
- * compound keys are camelCase (`optionFontFamily`); kebab-case keys (`base-inverse`, as
- * generated from Figma) are accepted too. Errors: a key that starts uppercase or mixes the
- * two (`option-fontFamily`). Warnings: underscores, dots, spaces.
+ * Naming rule: compound keys are camelCase (`optionFontFamily`), per .specs/TOKEN-ARCHITECTURE.md
+ * §4 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase or mixes
+ * kebab-case with camelCase (`option-fontFamily`). Warnings: underscores, dots, spaces.
+ * All-lowercase kebab-case keys are NOT flagged, although TOKEN-ARCHITECTURE.md §11 lists them as
+ * an anti-pattern: the files the Tokenhaus sync generates from Figma use them (`base-inverse`,
+ * `blue-sky`), and flagging those would report keys the next sync writes back. This linter never
+ * flagged them before either.
  *
  * Usage:
  *   node scripts/tokens-lint.mjs
@@ -113,6 +116,11 @@ function toKebab(key) {
   s = s.replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
   s = s.replace(/colour/g, 'color');
   return s;
+}
+
+// Suggestions follow the documented camelCase convention: `option-fontFamily` → `optionFontFamily`.
+function toCamel(key) {
+  return toKebab(key).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
 }
 
 function reasonFor(key) {
@@ -254,7 +262,7 @@ function checkKey(key, keyPath, filePath, position) {
       file: filePath,
       jsonPath: keyPath.join('.'),
       key,
-      suggestion: toKebab(key),
+      suggestion: toCamel(key),
       reason: reasonFor(key),
       severity,
       position: position || null,

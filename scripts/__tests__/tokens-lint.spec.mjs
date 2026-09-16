@@ -33,18 +33,26 @@ const leaf = { $value: '{spacing.4}', $type: 'dimension' };
 
 describe('tokens-lint — key naming', () => {
   it('accepts camelCase compound keys, as .specs/TOKEN-ARCHITECTURE.md §4 prescribes', () => {
-    const root = tokenRoot({
-      header: { megaMenu: { 'optionFontFamily': leaf, 'iconColor': leaf, 'trail-sites': leaf } },
-    });
+    const root = tokenRoot({ header: { megaMenu: { optionFontFamily: leaf, iconColor: leaf } } });
     const { status, keys } = lint(root);
     assert.deepEqual(keys, []);
     assert.equal(status, 0);
   });
 
-  it('rejects a key that starts with an uppercase letter or mixes kebab-case with camelCase', () => {
-    const root = tokenRoot({ header: { 'MegaMenu': leaf, 'option-fontFamily': leaf } });
-    const { status, keys } = lint(root);
-    assert.deepEqual(keys.sort(), ['error:header.MegaMenu', 'error:header.option-fontFamily']);
+  it('keeps accepting the all-lowercase kebab-case keys the Tokenhaus sync generates', () => {
+    const { keys } = lint(tokenRoot({ color: { text: { 'base-inverse': { 'on-color': leaf } } } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('rejects a key that starts with an uppercase letter or mixes kebab-case with camelCase, suggesting camelCase', () => {
+    const root = tokenRoot({ header: { 'MegaMenu': leaf, 'option-fontFamily': leaf, 'a_b c': leaf } });
+    const { status, report } = lint(root);
+    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
+    assert.deepEqual(suggestions, {
+      'error:MegaMenu': 'megaMenu',
+      'error:option-fontFamily': 'optionFontFamily',
+      'warning:a_b c': 'aBC',
+    });
     assert.equal(status, 1);
   });
 
@@ -69,5 +77,23 @@ describe('tokens-lint — roots', () => {
     assert.deepEqual(keys, ['error:header.Bad']);
     assert.equal(report.filesScanned, 2);
     assert.equal(status, 1);
+  });
+
+  it('scans tokens/core under the working directory when no --root is given', () => {
+    const project = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-lint-cwd-'));
+    tempDirs.push(project);
+    fs.mkdirSync(path.join(project, 'tokens', 'core'), { recursive: true });
+    fs.writeFileSync(path.join(project, 'tokens', 'core', 'x.tokens.json'), JSON.stringify({ Bad: leaf }));
+    const run = spawnSync(process.execPath, [SCRIPT, '--out', 'report.json', '--no-color'], {
+      cwd: project,
+      encoding: 'utf8',
+    });
+    const report = JSON.parse(fs.readFileSync(path.join(project, 'report.json'), 'utf8'));
+    assert.equal(report.scannedRoot, 'tokens/core');
+    assert.deepEqual(
+      report.issues.map(i => i.jsonPath),
+      ['Bad'],
+    );
+    assert.equal(run.status, 1);
   });
 });
