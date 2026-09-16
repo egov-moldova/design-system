@@ -137,7 +137,7 @@ yarn format                    # Auto-fix code style
 yarn generate                  # Stencil component generator scaffolding
 yarn tokens.audit              # Debug missing token references
 yarn wca.custom-elements       # Generate custom-elements.json for Storybook
-yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
+yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.

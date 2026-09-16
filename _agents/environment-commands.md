@@ -179,10 +179,10 @@ yarn test.dev                                                     # Run all test
 # Utilities
 yarn generate                  # Stencil component generator scaffolding
 yarn wca.custom-elements       # Generate custom-elements.json for Storybook
-yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
-yarn svg:remove-size           # Remove size attributes from SVGs
-yarn svg:remove-fill           # Remove fill attributes from SVGs
-yarn format.icons              # Format SVG icons with SVGO
+yarn svg:icons                 # format.icons, then rebuild icons.manifest.json
+yarn format.icons              # both passes below, over src/components/mud-icon/assets/**
+yarn svg:remove-size           # drop the root width/height (CSS sizes the inlined svg)
+yarn svg:remove-fill           # drop hardcoded paint, keeping currentColor and none
 
 # Storybook URLs (port 6007)
 # Story iframe: http://localhost:6007/iframe.html?id={path}--{story}&viewMode=story
