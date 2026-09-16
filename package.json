@@ -424,6 +424,11 @@
     },
     "test": {
       "command": "node scripts/check-test-stderr.mjs --project spec",
+      "env": {
+        "SKIP_STDERR_CHECK": {
+          "external": true
+        }
+      },
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -461,6 +466,12 @@
         "wca.custom-elements"
       ],
       "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static && node scripts/cleanup-storybook-fonts.mjs",
+      "env": {
+        "STORYBOOK_BASE_PATH": {
+          "external": true,
+          "default": "/"
+        }
+      },
       "files": [
         ".storybook/**/*",
         "scripts/cleanup-storybook-fonts.mjs",
