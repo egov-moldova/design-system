@@ -136,7 +136,7 @@ no consumer only drifts. Regenerate on demand if the tool that produced it is us
 ## Decisions taken (2026-09-16, danzubco)
 
 Execution branch: `fix/issue-53-ai-docs-alignment`, based on `upstream/main` (`ace1c0f`) with
-PR #81 and PR #80 merged in, and this plan's two commits cherry-picked from
+PR #80 and then PR #81 merged in (the order they are expected to land), and this plan's two commits cherry-picked from
 `docs/ai-docs-alignment`. It replaces `docs/ai-docs-alignment` as the branch every phase lands on.
 
 Facts re-measured on that base before deciding, which change what D1 has to do:
