@@ -60,16 +60,18 @@ function readmeSection(readme, heading) {
 // `### \`name(...)\`` headings of the Methods section.
 function documentedNames(section, heading) {
   if (heading === 'Methods') return [...section.matchAll(/^### `([A-Za-z0-9_]+)\(/gm)].map(m => m[1]);
-  return section
-    .split('\n')
-    .filter(line => line.startsWith('|'))
-    .slice(2)
-    .map(line =>
-      line
-        .split('|')[1]
-        .trim()
-        .replace(/^`"?|"?`$/g, ''),
-    );
+  return (
+    section
+      .split('\n')
+      .filter(line => line.startsWith('|'))
+      .slice(2)
+      // The first cell is the backticked name, optionally followed by a marker such
+      // as `name` _(required)_ for a required prop.
+      .map(line => {
+        const cell = line.split('|')[1].trim();
+        return cell.match(/^`"?([^`"]+)"?`/)?.[1] ?? cell;
+      })
+  );
 }
 
 describe('.storybook/custom-elements.json', () => {

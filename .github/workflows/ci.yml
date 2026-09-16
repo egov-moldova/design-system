@@ -55,7 +55,12 @@ jobs:
       - name: Validate tokens
         run: yarn tokens.validate
 
-      - name: Run token script tests
+      # scripts/__tests__/storybook-manifest.spec.mjs checks the Custom Elements
+      # Manifest the Stencil build writes to .storybook/custom-elements.json.
+      - name: Build components
+        run: yarn build
+
+      - name: Run script tests
         run: yarn test:scripts
 
   test:
