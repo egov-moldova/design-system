@@ -105,12 +105,29 @@ const asUrl = html => `data:text/html;charset=utf-8,${encodeURIComponent(html)}`
  * policy, the goto timeout under load) rejected the unguarded call and errored
  * the file — on exactly the machine the skip exists to protect.
  */
-async function collectSamples(url) {
+async function collectSamples(url, theme = 'light') {
   try {
-    return { ok: true, samples: await measureSamples(url, 'mud-fixture', 'light') };
+    return { ok: true, samples: await measureSamples(url, 'mud-fixture', theme) };
   } catch (err) {
     return { ok: false, reason: `browser unavailable — ${err.message}` };
   }
+}
+
+/**
+ * Samples from a second fixture, or a skip.
+ *
+ * `skip` is computed once, from the first fixture's run, so a later navigation
+ * that fails — a goto timeout under load, a sandboxed box refusing another
+ * context — would error the file rather than skip it, on exactly the machine
+ * the guard exists for. `t.skip()` moves that decision to the test itself.
+ */
+async function samplesOrSkip(t, url, theme = 'light') {
+  const run = await collectSamples(url, theme);
+  if (!run.ok) {
+    t.skip(run.reason);
+    return null;
+  }
+  return run.samples.map(buildPair);
 }
 
 /** Key each pair by tag + foreground; uniqueness is asserted by its own test. */
@@ -138,6 +155,48 @@ const OPAQUE_HOST_FIXTURE = `<!doctype html>
 </body>
 </html>`;
 
+// A gradient ancestor paints the surface while its `backgroundColor` still
+// computes transparent, so reading the color alone walks through an opaque
+// layer and scores the text against the page instead — a false PASS.
+const GRADIENT_FIXTURE = `<!doctype html>
+<html>
+<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
+<body>
+  <mud-fixture class="hydrated"></mud-fixture>
+  <script>
+    class MudFixture extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<div style="background-image: linear-gradient(red, blue)">' +
+          '<button style="background-color: transparent; border: 0; color: rgb(255, 255, 255)">on gradient</button></div>';
+      }
+    }
+    customElements.define('mud-fixture', MudFixture);
+  </script>
+</body>
+</html>`;
+
+// Nothing anywhere declares a background — the `mud-inline-message`,
+// `mud-accordion`, `mud-icon`, `mud-spinner` shape. Before the backdrop walk
+// there was nothing to score their text against, so the host was dropped and
+// the component went unchecked in both themes.
+const UNPAINTED_HOST_FIXTURE = `<!doctype html>
+<html>
+<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
+<body>
+  <mud-fixture class="hydrated"></mud-fixture>
+  <script>
+    class MudFixture extends HTMLElement {
+      connectedCallback() {
+        this.style.color = 'rgb(200, 200, 200)';
+        this.attachShadow({ mode: 'open' }).innerHTML = '<span>unreadable message</span>';
+      }
+    }
+    customElements.define('mud-fixture', MudFixture);
+  </script>
+</body>
+</html>`;
+
 describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
   const run = await collectSamples(asUrl(FIXTURE));
   const skip = run.ok ? false : run.reason;
@@ -157,8 +216,9 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.equal(Object.keys(pairs).length, samples.length);
   });
 
-  it('keeps an opaque host whose background ends in a zero channel', { skip }, async () => {
-    const opaque = (await measureSamples(asUrl(OPAQUE_HOST_FIXTURE), 'mud-fixture', 'light')).map(buildPair);
+  it('keeps an opaque host whose background ends in a zero channel', { skip }, async t => {
+    const opaque = await samplesOrSkip(t, asUrl(OPAQUE_HOST_FIXTURE));
+    if (!opaque) return;
     assert.equal(opaque.length, 1, 'the opaque host was dropped from the audit');
     assert.equal(opaque[0].bg, 'rgb(255, 87, 0)');
     assert.equal(opaque[0].ratio, 3.17);
@@ -214,19 +274,45 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     }
   });
 
-  it('reaches a surface the element only paints on through its slot', { skip }, async () => {
+  it('reaches a surface the element only paints on through its slot', { skip }, async t => {
     // The flattened-tree hop: the slotted button's `parentElement` is the host
     // in the LIGHT DOM, which paints nothing — walking it lands on the black
     // body. Only `assignedSlot` reaches `.panel`, which is what paints here.
-    const slotted = await measureSamples(asUrl(SLOTTED_FIXTURE), 'mud-fixture', 'light');
-    const pair = slotted.filter(s => s.origin === 'light').map(buildPair)[0];
+    const slotted = await samplesOrSkip(t, asUrl(SLOTTED_FIXTURE));
+    if (!slotted) return;
+    const pair = slotted.find(s => s.origin === 'light');
     assert.ok(pair, 'expected a sample for the slotted button');
     assert.equal(pair.bgOwn, 'rgba(0, 0, 0, 0)');
     assert.equal(pair.bg, 'rgb(0, 88, 210)');
   });
 
-  it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async () => {
-    const [pair] = (await measureSamples(asUrl(DARK_CANVAS_FIXTURE), 'mud-fixture', 'dark')).map(buildPair);
+  it('refuses to see through a gradient it cannot fold', { skip }, async t => {
+    const gradient = await samplesOrSkip(t, asUrl(GRADIENT_FIXTURE));
+    if (!gradient) return;
+    const pair = gradient.find(s => s.tag === 'button');
+    assert.ok(pair, 'expected a sample for the button on the gradient');
+    // Reading `backgroundColor` alone would fold this to the white page and
+    // report 1:1 — a number, where the honest answer is that nobody resolved
+    // what is painted there.
+    assert.equal(pair.bg, null);
+    assert.equal(pair.error, 'unmeasurable');
+    assert.ok(pair.bgStack.includes('background-image'));
+  });
+
+  it('measures a host that paints no background but does render text', { skip }, async t => {
+    const unpainted = await samplesOrSkip(t, asUrl(UNPAINTED_HOST_FIXTURE));
+    if (!unpainted) return;
+    const pair = unpainted.find(s => s.tag === 'mud-fixture');
+    assert.ok(pair, 'the unpainted host was dropped from the audit');
+    assert.equal(pair.bgOwn, 'rgba(0, 0, 0, 0)');
+    assert.equal(pair.bg, 'rgb(255, 255, 255)');
+    assert.equal(pair.pass, false, 'rgb(200, 200, 200) on white is 1.61:1');
+  });
+
+  it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async t => {
+    const dark = await samplesOrSkip(t, asUrl(DARK_CANVAS_FIXTURE), 'dark');
+    if (!dark) return;
+    const [pair] = dark;
     assert.ok(pair, 'expected a sample from the dark-canvas fixture');
     assert.equal(pair.theme, 'dark');
     // The dark canvas value is a UA stylesheet constant, not a spec one, so

@@ -70,9 +70,13 @@ What you get back per envelope:
   `bg` was folded from; `canvas` is the surface the fold lands on when no layer
   paints anything. All three are for debugging a surprising ratio, never for
   judging contrast.
-  `bg` and `ratio` are `null` with `error: 'unmeasurable'` when some layer used
-  a color spelling the parser cannot read — reported as
-  `CONTRAST-BACKDROP-UNREADABLE`, a different defect from a failing ratio.
+  `ratio` is `null` with `error: 'unmeasurable'` when a color spelling the
+  parser cannot read reached the measurement. Which layer it was decides the
+  code, and `bg` is what tells them apart: `bg === null` means the BACKDROP is
+  unresolved (`CONTRAST-BACKDROP-UNREADABLE`), while a non-null `bg` with a
+  null `ratio` means the FOREGROUND is (`CONTRAST-FOREGROUND-UNREADABLE`).
+  Both are tool defects, not contrast defects — they point at a color spelling,
+  never at the token mapping — and neither is exempted by `disabled`.
   `bgStack` is the FLATTENED-ancestor chain, so anything that paints behind the
   element WITHOUT being one of its ancestors is outside the model and will not
   appear there: a `background-image` (a gradient ancestor computes

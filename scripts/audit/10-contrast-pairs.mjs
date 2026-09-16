@@ -118,7 +118,7 @@ export function parseColor(input) {
   // this branch those layers are unreadable at runtime.
   // Baseline: `grep -rlc 'color-mix(in srgb' src/components/*/[a-z]*.css` -> 3
   // files (mud-banner, mud-date-input, mud-toast) on 2026-09-16.
-  const srgb = s.match(/^color\(\s*srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s*(?:\/\s*([0-9.]+%?)\s*)?\)$/i);
+  const srgb = s.match(/^color\(\s*srgb\s+(-?[0-9.]+)\s+(-?[0-9.]+)\s+(-?[0-9.]+)\s*(?:\/\s*([0-9.]+%?)\s*)?\)$/i);
   if (srgb) {
     let alpha = 1;
     if (srgb[4] !== undefined) {
@@ -250,10 +250,14 @@ export function contrastRatio(fgInput, bgInput) {
  * + role). Defaults to 'normal' which is the strictest rule.
  */
 export function classifyContrast(ratio, kind = 'normal', { disabled = false } = {}) {
-  if (disabled) return { kind, ratio, threshold: null, pass: true, exempt: true };
+  // Unreadability is a TOOL defect — a color spelling the parser cannot read —
+  // not a contrast one, so SC 1.4.3's disabled exemption must not swallow it.
+  // Checked first for that reason: a disabled row is where the repo's
+  // `color-mix()` tints live, which is exactly where a parser gap would hide.
   if (ratio === null || ratio === undefined) {
     return { kind, ratio: null, threshold: null, pass: false, error: 'unmeasurable' };
   }
+  if (disabled) return { kind, ratio, threshold: null, pass: true, exempt: true };
   const threshold = kind === 'large' || kind === 'ui' ? 3 : 4.5;
   return { kind, ratio, threshold, pass: ratio >= threshold };
 }
@@ -377,7 +381,11 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
     if (p.bg === null) {
       // Only up to the layer that could not be read — the ones past it were
       // never consumed, so naming them points at surfaces that are innocent.
-      const read = p.bgStack.slice(0, p.bgStack.findIndex(layer => !parseColor(layer)) + 1);
+      // When every layer parsed, the canvas is what stopped the fold, and it
+      // has to be named: otherwise the message reads `layers=[]` and the fix
+      // line asks the reader to teach a spelling it never showed them.
+      const stopped = p.bgStack.findIndex(layer => !parseColor(layer));
+      const read = stopped === -1 ? [...p.bgStack, `canvas: ${p.canvas}`] : p.bgStack.slice(0, stopped + 1);
       findings.push(
         finding({
           severity: 'error',
@@ -569,7 +577,17 @@ export async function measureSamples(url, componentName, theme) {
             const layers = [];
             let node = el;
             while (node && node.nodeType === 1) {
-              layers.push(window.getComputedStyle(node).backgroundColor);
+              const style = window.getComputedStyle(node);
+              // A gradient or image paints the surface while `backgroundColor`
+              // still computes to a transparent value, so reading the color
+              // alone walks straight through an opaque layer and scores the
+              // element against something behind it — a confident wrong number,
+              // and in a WCAG gate a false PASS. What paints there cannot be
+              // folded (it needs geometry and stop interpolation), so the
+              // honest answer is that this backdrop is unresolved: push a
+              // marker `parseColor` refuses and let the fold report it.
+              layers.push(style.backgroundImage === 'none' ? style.backgroundColor : 'background-image');
+
               const parent = node.assignedSlot ?? node.parentElement;
               if (parent) {
                 node = parent;
@@ -587,39 +605,60 @@ export async function measureSamples(url, componentName, theme) {
           // the first such element with non-transparent bg + visible text, and
           // return BOTH its fg and bg so the contrast pair comes from one
           // element (a valid WCAG measurement, not a host/inner mash-up).
+          // A contrast pair is only meaningful where glyphs are painted. A
+          // 24x24 checkbox box, a 48x28 switch track and a 1px separator rule
+          // all carry a `color` they inherited and never use, and pairing that
+          // color with their fill reports a ratio for text that does not
+          // exist — `mud-checkbox` read white-on-white, which is its checkmark
+          // color over its unchecked fill.
+          // `innerText` is the rendered text of an element's own subtree, and a
+          // shadow host's subtree is its LIGHT children — the shadow tree it
+          // actually displays is not counted. So a host that renders all its
+          // text from the shadow root reads as textless unless the shadow tree
+          // is asked directly, skipping `<style>`, whose textContent is CSS.
+          const rendersText = el => {
+            if ((el.innerText ?? el.textContent ?? '').trim().length > 0) return true;
+            const root = el.shadowRoot;
+            if (!root) return false;
+            for (const child of root.children) {
+              if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
+              if ((child.innerText ?? child.textContent ?? '').trim().length > 0) return true;
+            }
+            return false;
+          };
+
+          const readPair = (el, source) => {
+            const s = window.getComputedStyle(el);
+            return { el, fg: s.color, bg: s.backgroundColor, fontSize: s.fontSize, fontWeight: s.fontWeight, source };
+          };
+
           const findRenderedPair = el => {
-            const own = window.getComputedStyle(el);
-            if (!isTransparent(own.backgroundColor)) {
-              return {
-                el,
-                fg: own.color,
-                bg: own.backgroundColor,
-                fontSize: own.fontSize,
-                fontWeight: own.fontWeight,
-                source: 'host',
-              };
+            if (!isTransparent(window.getComputedStyle(el).backgroundColor)) {
+              return readPair(el, 'host');
             }
             const root = el.shadowRoot ?? null;
             if (root) {
               for (const inner of root.querySelectorAll('*')) {
                 const s = window.getComputedStyle(inner);
-                if (!isTransparent(s.backgroundColor)) {
-                  return {
-                    el: inner,
-                    fg: s.color,
-                    bg: s.backgroundColor,
-                    fontSize: s.fontSize,
-                    fontWeight: s.fontWeight,
-                    source: `shadow:${inner.tagName.toLowerCase()}${inner.className ? '.' + inner.className.split(/\s+/).join('.') : ''}`,
-                  };
+                if (!isTransparent(s.backgroundColor) && rendersText(inner)) {
+                  const cls = inner.className ? '.' + inner.className.split(/\s+/).join('.') : '';
+                  return readPair(inner, `shadow:${inner.tagName.toLowerCase()}${cls}`);
                 }
               }
             }
-            // No rendered surface found (Pattern A: host transparent, shadow
-            // empty of colored elements). The slotted child in light DOM
-            // (collected as origin='light') carries the real measurement;
-            // skip the host to avoid a false "transparent vs default-text"
-            // pair that doesn't reflect any user-visible contrast.
+            // Nothing in the shadow tree paints text. The host may still render
+            // its own — `mud-inline-message`, `mud-accordion`, `mud-icon` and
+            // `mud-spinner` declare no background at all, and before the
+            // backdrop walk existed their text could not be scored against
+            // anything, so the host was dropped and those components went
+            // unchecked in both themes. It is measurable now: the host's own
+            // color against the layers behind it.
+            // Baseline: `grep -Lc background src/components/mud-inline-message/mud-inline-message.css`
+            // -> the file, i.e. no background declaration in it.
+            if (rendersText(el)) return readPair(el, 'host:text');
+            // Genuinely nothing to measure: no painted text anywhere. A
+            // slotted child in light DOM, collected separately, carries the
+            // real pair if there is one.
             return null;
           };
 

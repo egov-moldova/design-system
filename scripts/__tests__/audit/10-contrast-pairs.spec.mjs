@@ -151,6 +151,16 @@ describe('10-contrast-pairs: classifyContrast', () => {
     assert.equal(result.exempt, true);
   });
 
+  it('does not let the disabled exemption swallow an unreadable color', () => {
+    // SC 1.4.3 exempts disabled elements from a CONTRAST requirement. It does
+    // not make a color the parser cannot read measurable — and the repo's
+    // color-mix() tints live on disabled and hover rows, which is precisely
+    // where a parser gap would stay invisible.
+    const result = classifyContrast(null, 'normal', { disabled: true });
+    assert.equal(result.error, 'unmeasurable');
+    assert.equal(result.pass, false);
+  });
+
   it('unmeasurable ratio returns pass=false with error', () => {
     const result = classifyContrast(null, 'normal');
     assert.equal(result.pass, false);
