@@ -291,18 +291,9 @@ export const Validation: Story = {
   render: () =>
     wrapTriple(
       [
-        cell(
-          'DD-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>`,
-        ),
-        cell(
-          'MM-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/18/" invalid error-text="Month must be between 01 and 12"></mud-date-input>`,
-        ),
-        cell(
-          'YYYY-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/1550" invalid error-text="Enter a valid year"></mud-date-input>`,
-        ),
+        cell('DD-error', /*html*/ `<mud-date-input size="lg" label="Label" value="45"></mud-date-input>`),
+        cell('MM-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>`),
+        cell('YYYY-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>`),
       ].join(''),
     ),
   parameters: {
@@ -310,13 +301,13 @@ export const Validation: Story = {
     docs: {
       description: {
         story:
-          'Per-segment error patterns from the Figma docs page. Each variant maps a specific message to the segment that failed validation.',
+          'Built-in, real-time segment validation (Figma 489:8090): a complete day outside 01–31, a month outside 01–12, a year outside the allowed range, a date that does not exist, or one outside `min` / `max` turns the field destructive and shows a message. Override the messages with `day-error-text`, `month-error-text`, `year-error-text`, `date-error-text` and `range-error-text`; a consumer `invalid` + `error-text` still wins.',
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/18/" invalid error-text="Month must be between 01 and 12"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/1550" invalid error-text="Enter a valid year"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="45"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>',
         ].join('\n'),
       },
     },

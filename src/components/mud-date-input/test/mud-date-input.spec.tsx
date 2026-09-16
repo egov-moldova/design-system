@@ -118,7 +118,10 @@ describe('mud-date-input', () => {
       const { root } = await render(<mud-date-input label="x" required></mud-date-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179).
+      const icon = mark?.querySelector('mud-icon');
+      expect(icon?.getAttribute('name')).toBe('asterisk');
+      expect(icon?.getAttribute('size')).toBe('12');
     });
 
     it('omits the required mark when `required` is unset', async () => {
@@ -200,11 +203,33 @@ describe('mud-date-input', () => {
       await flush();
       expect(onInput).toHaveBeenCalledTimes(1);
       const detail = onInput.mock.calls[0][0].detail;
-      expect(detail.value).toBe('15');
+      // A completed, valid DD gets its separator so the caret jumps to MM (Figma 487:7841).
+      expect(detail.value).toBe('15/');
       expect(detail.isoValue).toBeNull();
-      // Caret at index 2 sits at the boundary between DD and the upcoming
-      // separator, so the segment reported is the DD it just left.
-      expect(detail.segment).toBe('DD');
+      expect(detail.error).toBeNull();
+      expect(detail.segment).toBe('MM');
+    });
+
+    it('does not re-add the separator while deleting', async () => {
+      const { root } = await render(<mud-date-input label="x" value="15/"></mud-date-input>);
+      const native = queryNative(root)!;
+      native.value = '15';
+      // mock-doc has no InputEvent constructor; the component only reads `inputType`.
+      const deletion = new Event('input', { bubbles: true });
+      Object.defineProperty(deletion, 'inputType', { value: 'deleteContentBackward' });
+      native.dispatchEvent(deletion);
+      await flush();
+      expect(native.value).toBe('15');
+    });
+
+    it('keeps the caret in an invalid segment instead of jumping past it', async () => {
+      const { root } = await render(<mud-date-input label="x"></mud-date-input>);
+      const native = queryNative(root)!;
+      native.value = '45';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      // Figma 489:8104 shows `45|/MM/YYYY` — no separator after an invalid day.
+      expect(native.value).toBe('45');
     });
 
     it('formats raw digit input by inserting separators inline', async () => {
@@ -227,7 +252,7 @@ describe('mud-date-input', () => {
       native.value = 'ab1c5';
       native.dispatchEvent(new Event('input', { bubbles: true }));
       await flush();
-      expect(native.value).toBe('15');
+      expect(native.value).toBe('15/');
     });
 
     it('emits mudChange on change (blur) with iso payload when valid', async () => {
@@ -239,7 +264,7 @@ describe('mud-date-input', () => {
       native.dispatchEvent(new Event('change', { bubbles: true }));
       await flush();
       expect(onChange).toHaveBeenCalledTimes(1);
-      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '15/04/2025', isoValue: '2025-04-15' });
+      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '15/04/2025', isoValue: '2025-04-15', error: null });
     });
 
     it('emits mudChange with isoValue=null when value is incomplete', async () => {
@@ -248,7 +273,7 @@ describe('mud-date-input', () => {
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
       await flush();
-      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '15/04/', isoValue: null });
+      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '15/04/', isoValue: null, error: null });
     });
 
     it('emits mudChange with isoValue=null when the calendar date is impossible', async () => {
@@ -353,6 +378,59 @@ describe('mud-date-input', () => {
     });
   });
 
+  describe('segment validation (Figma 489:8090)', () => {
+    it.each([
+      ['45/', 'day', 'Ziua trebuie să fie între 01 și 31'],
+      ['15/18/', 'month', 'Luna trebuie să fie între 01 și 12'],
+      ['15/04/1550', 'year', 'Introduceți un an valid'],
+      ['31/02/2025', 'date', 'Introduceți o dată validă'],
+    ])('flags %s as a %s error with its message', async (value, error, message) => {
+      const onChange = vi.fn();
+      const { root } = await render(<mud-date-input label="x" value={value} onMudChange={onChange}></mud-date-input>);
+      expect(root?.classList.contains('is-invalid')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+      expect(queryAssistive(root)?.textContent).toContain(message);
+      queryNative(root)!.dispatchEvent(new Event('change', { bubbles: true }));
+      await flush();
+      expect(onChange.mock.calls[0][0].detail.error).toBe(error);
+    });
+
+    it('flags a real date outside min / max as a range error', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" value="15/04/2025" min="2025-05-01" max="2026-12-31"></mud-date-input>,
+      );
+      expect(queryAssistive(root)?.textContent).toContain('Data este în afara intervalului permis');
+    });
+
+    it('accepts overriding the built-in message', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" value="45/" day-error-text="Day must be between 01 and 31"></mud-date-input>,
+      );
+      expect(queryAssistive(root)?.textContent).toContain('Day must be between 01 and 31');
+    });
+
+    it('lets the consumer error text win while `invalid` is set', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" value="45/" invalid error-text="Custom"></mud-date-input>,
+      );
+      expect(queryAssistive(root)?.textContent).toContain('Custom');
+    });
+
+    it('does not flag incomplete segments', async () => {
+      const { root } = await render(<mud-date-input label="x" value="4"></mud-date-input>);
+      expect(root?.classList.contains('is-invalid')).toBe(false);
+      expect(queryAssistive(root)).toBeNull();
+    });
+
+    it('clears the error once the value becomes valid', async () => {
+      const { root, waitForChanges } = await render(<mud-date-input label="x" value="45/"></mud-date-input>);
+      (root as unknown as { value: string }).value = '15/04/2025';
+      await waitForChanges();
+      expect(root?.classList.contains('is-invalid')).toBe(false);
+      expect(queryAssistive(root)).toBeNull();
+    });
+  });
+
   describe('disabled + readonly behavior', () => {
     it('passes disabled through to the native input', async () => {
       const { root } = await render(<mud-date-input label="x" disabled></mud-date-input>);
@@ -365,6 +443,15 @@ describe('mud-date-input', () => {
       const { root } = await render(<mud-date-input label="x" readonly value="15/04/2025"></mud-date-input>);
       const native = queryNative(root);
       expect(native?.readOnly).toBe(true);
+    });
+
+    it('does not open the calendar while readonly', async () => {
+      const { root } = await render(<mud-date-input label="x" readonly value="15/04/2025"></mud-date-input>);
+      const trigger = root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
+      expect(trigger?.hasAttribute('disabled')).toBe(true);
+      trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
     });
 
     it('responds to fieldset disabled via formDisabledCallback', async () => {
@@ -545,6 +632,44 @@ describe('mud-date-input', () => {
       expect(popover?.getAttribute('aria-modal')).toBe('true');
       expect(root?.shadowRoot?.querySelector('.picker-backdrop')).toBeTruthy();
       expect(root?.shadowRoot?.querySelector('mud-date-picker')?.getAttribute('breakpoint')).toBe('mobile');
+    });
+
+    it('names the calendar dialog', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="desktop"></mud-date-input>);
+      await openPicker(root);
+      expect(root?.shadowRoot?.querySelector('.picker-popover')?.getAttribute('aria-label')).toBe('Selectează data');
+    });
+
+    it('anchors the popover inside the field row, not below the assistive text', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" breakpoint="desktop" helper-text="hint"></mud-date-input>,
+      );
+      await openPicker(root);
+      expect(root?.shadowRoot?.querySelector('.control > .picker-popover')).toBeTruthy();
+    });
+
+    it('stops the inner picker mudChange so consumers get one event with the display value', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-date-input label="x" breakpoint="desktop" onMudChange={onChange}></mud-date-input>,
+      );
+      await openPicker(root);
+      const picker = root?.shadowRoot?.querySelector('mud-date-picker');
+      picker?.dispatchEvent(
+        new CustomEvent('mudChange', { detail: { value: '2025-04-15' }, bubbles: true, composed: true }),
+      );
+      await flush();
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '15/04/2025', isoValue: '2025-04-15', error: null });
+    });
+
+    it('locks page scroll while the bottom sheet is open and restores it on close', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="mobile"></mud-date-input>);
+      await openPicker(root);
+      expect(document.body.style.overflow).toBe('hidden');
+      root?.shadowRoot?.querySelector<HTMLElement>('.picker-backdrop')?.click();
+      await new Promise<void>(r => setTimeout(r, 0));
+      expect(document.body.style.overflow).toBe('');
     });
 
     it('tapping the backdrop dismisses the bottom sheet', async () => {

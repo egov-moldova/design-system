@@ -45,8 +45,11 @@
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
-        "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
-        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        "default": {
+          "$value": "{color.text.base.secondary}",
+          "$type": "color",
+          "$comment": "Per Figma date-input (184:866, 6173:4470): the label keeps this colour in the Disabled state too."
+        }
       },
       "requiredMark": {
         "size": { "$value": "{spacing.12}", "$type": "dimension" },
@@ -66,6 +69,24 @@
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
         "error": { "$value": "{color.text.danger.default}", "$type": "color" }
+      }
+    },
+    "clearButton": {
+      "size": {
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Per Figma text-input/.clear-button (142:4306): 20x20 at every input size."
+      },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "background": {
+        "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+        "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
+      },
+      "iconColor": {
+        "$value": "{color.icon.base.tertiary}",
+        "$type": "color",
+        "$comment": "Per Figma 16/cross-small inside the clear button (142:4307): #757575."
       }
     },
     "icon": {

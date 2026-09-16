@@ -1,0 +1,888 @@
+{
+  "$comment": "Figma state manifest for mud-date-input — values copied from the date-input component set (184:823), the Input: Date / Time page (470:31393: States 470:31407, Behavior 487:7779, Validation 489:8090, Assistive Text 470:31508, Edge Cases 470:31520) and text-input/.clear-button (142:4306). Icon colours come from exported SVGs. The time-input set (13810:9195) has no component in code.",
+  "component": "mud-date-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-input-date--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-date-input",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "lg-default",
+      "node": "184:824",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input",
+          "node": "184:824",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-date-input .label",
+          "node": "184:826",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-date-input .control",
+          "node": "184:828",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "184:831",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input .trailing-icon",
+          "node": "184:832",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-date-input .assistive",
+          "node": "184:833",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        },
+        {
+          "target": "mud-date-input .required-mark",
+          "node": "184:827",
+          "absent": true
+        },
+        {
+          "target": "mud-date-input .clear-button",
+          "node": "489:8995",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "name": "lg-hover",
+      "node": "184:834",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\"></mud-date-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-date-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:838",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#444444",
+            "boxShadow": "inset 0px 0px 0px 1px #444444"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-focus-empty",
+      "node": "487:7825",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:848",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "471:5984",
+          "styles": {
+            "caretColor": "#0058D2"
+          }
+        },
+        {
+          "target": "mud-date-input .ghost",
+          "node": "471:5983",
+          "absent": true,
+          "note": "Empty focus keeps the native placeholder (\"|DD/MM/YYYY\", #757575)."
+        }
+      ]
+    },
+    {
+      "name": "lg-focus-date-populated",
+      "node": "487:7841",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .native",
+          "node": "471:5984",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input .ghost-remaining",
+          "node": "471:5984",
+          "styles": {
+            "color": "#757575",
+            "textContent": "MM/YYYY"
+          }
+        }
+      ]
+    },
+    {
+      "name": "lg-focus-month-populated",
+      "node": "488:7864",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .ghost-remaining",
+          "node": "471:5984",
+          "styles": {
+            "color": "#757575",
+            "textContent": "YYYY"
+          }
+        }
+      ]
+    },
+    {
+      "name": "lg-focus-populated",
+      "node": "470:31420",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:848",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "471:5984",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input .ghost",
+          "node": "471:5983",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "name": "lg-filled",
+      "node": "184:854",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:858",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "184:861",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input .clear-button",
+          "node": "489:8995",
+          "absent": true,
+          "note": "👁️ Clear Button defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-disabled",
+      "node": "184:864",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" disabled></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label",
+          "node": "184:866",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-date-input .control",
+          "node": "184:868",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .trailing-icon",
+          "node": "184:872",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "184:871",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Placeholder DD/MM/YYYY is #B2B2B2 (184:871)."
+        }
+      ]
+    },
+    {
+      "name": "lg-mandatory",
+      "node": "470:31431",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" required></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label",
+          "node": "184:825",
+          "styles": {
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-date-input .required-mark",
+          "node": "184:827",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "#D92D20"
+          },
+          "note": "12/asterisk icon (2975:10179); exported SVG fill #D92D20. Instance node I470:31431;184:827."
+        },
+        {
+          "target": "mud-date-input .required-mark mud-icon",
+          "node": "184:827",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive",
+      "node": "184:882",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:886",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-hover",
+      "node": "184:892",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid></mud-date-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-date-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:896",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-focus-populated",
+      "node": "470:31443",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid value=\"15/04/2025\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:916",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-filled",
+      "node": "184:902",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid value=\"15/04/2025\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "184:906",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-disabled",
+      "node": "184:873",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid disabled></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label",
+          "node": "184:875",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-date-input .control",
+          "node": "184:877",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "md-default",
+      "node": "6173:4429",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label",
+          "node": "6173:4431",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4433",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "6173:4435",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input .trailing-icon",
+          "node": "6173:4436",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        }
+      ]
+    },
+    {
+      "name": "md-hover",
+      "node": "6173:4438",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\"></mud-date-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-date-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4442",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#444444",
+            "boxShadow": "inset 0px 0px 0px 1px #444444"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "md-focus",
+      "node": "6173:4447",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4451",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "md-filled",
+      "node": "6173:4459",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4463",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "md-disabled",
+      "node": "6173:4469",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\" disabled></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label",
+          "node": "6173:4470",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4473",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive",
+      "node": "6173:4485",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\" invalid></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "6173:4489",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        }
+      ]
+    },
+    {
+      "name": "helper-text",
+      "node": "470:31514",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" helper-text=\"Helper message displayed here\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .assistive",
+          "node": "470:31514",
+          "styles": {
+            "columnGap": "6px",
+            "color": "#383838",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          },
+          "note": "Instance node I470:31514;184:833."
+        },
+        {
+          "target": "mud-date-input .assistive-icon",
+          "node": "470:31514",
+          "absent": true,
+          "note": "Instance node I470:31514;184:833."
+        }
+      ]
+    },
+    {
+      "name": "error-text",
+      "node": "470:31518",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid error-text=\"Error message displayed here\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .assistive",
+          "node": "470:31518",
+          "styles": {
+            "columnGap": "4px",
+            "color": "#D92D20",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Instance node I470:31518;184:891."
+        },
+        {
+          "target": "mud-date-input .assistive-icon",
+          "node": "470:31518",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#D92D20"
+          },
+          "note": "Instance node I470:31518;184:891;132:4114."
+        }
+      ]
+    },
+    {
+      "name": "validation-dd-error",
+      "node": "489:8104",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"45\" day-error-text=\"Day must be between 01 and 31\"></mud-date-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-date-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-date-input .control",
+          "node": "489:8104",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Instance node I489:8104;184:916. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-date-input .assistive-icon",
+          "node": "184:921",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Design question: the Validation section (489:8104) uses inline-message Error / Small (16px icon, 12/16), the component set (184:912) and Assistive Text (470:31518) use Error / Medium. The component follows the set."
+        },
+        {
+          "target": "mud-date-input .assistive",
+          "node": "184:921",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "columnGap": "4px",
+            "color": "#D92D20"
+          }
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "489:8104",
+          "styles": {
+            "caretColor": "#0058D2"
+          }
+        }
+      ],
+      "pixel": false,
+      "$comment": "Pixel diff off: Figma draws this state with the Small error message (design question above), so the canvas height differs by 4px by design."
+    },
+    {
+      "name": "edge-long-label",
+      "node": "470:31526",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Moldova’s digital evolution is at the heart of seamless public service delivery\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .label-text",
+          "node": "470:31526",
+          "styles": {
+            "whiteSpace": "nowrap",
+            "textOverflow": "ellipsis",
+            "overflowX": "hidden",
+            "boxHeight": "20px"
+          },
+          "note": "The top label is truncated on the first line (470:31527). Instance node I470:31526;184:826."
+        }
+      ]
+    },
+    {
+      "name": "edge-long-assistive",
+      "node": "470:31536",
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" helper-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.\"></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .assistive-text",
+          "node": "470:31536",
+          "styles": {
+            "boxHeight": "40px"
+          },
+          "note": "Assistive text is truncated on the second line (470:31537): 2 × 20px. Instance node I470:31536;184:833;132:4103."
+        }
+      ]
+    },
+    {
+      "name": "clear-button",
+      "node": "142:4306",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\" clearable></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .clear-button",
+          "node": "142:4306",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px",
+            "color": "#757575"
+          },
+          "note": "text-input/.clear-button: 20×20 #F1F1F1 circle, 16/cross-small #757575 (exported SVG). Placed inside Content, before the trailing icon. Figma 999px and the 9999px radius token both render a full circle."
+        },
+        {
+          "target": "mud-date-input .clear-button mud-icon",
+          "node": "142:4307",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "readonly-no-picker",
+      "node": "184:854",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\" readonly></mud-date-input></div>",
+      "expect": [
+        {
+          "target": "mud-date-input .trailing-icon",
+          "node": "184:854",
+          "styles": {
+            "cursor": "not-allowed"
+          },
+          "note": "Not in Figma: a read-only field must not let the calendar change its value, so the trigger is disabled (unit test covers the click)."
+        }
+      ]
+    }
+  ]
+}

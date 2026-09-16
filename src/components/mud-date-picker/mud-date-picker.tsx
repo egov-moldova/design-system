@@ -425,7 +425,9 @@ export class MudDatePicker {
 
   @Listen('keydown')
   handleHostKeyDown(ev: KeyboardEvent) {
-    const target = ev.target as HTMLElement | null;
+    // A host listener sees `ev.target` retargeted to the host; the day cell is
+    // the first node of the composed path.
+    const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
     const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
     if (!dayCell) return;
     const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;

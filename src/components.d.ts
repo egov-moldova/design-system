@@ -809,6 +809,16 @@ export namespace Components {
          */
         "clearable": boolean;
         /**
+          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
+          * @default 'Introduceți o dată validă'
+         */
+        "dateErrorText": string;
+        /**
+          * Message shown when a complete day segment is outside 01–31.
+          * @default 'Ziua trebuie să fie între 01 și 31'
+         */
+        "dayErrorText": string;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -844,13 +854,28 @@ export namespace Components {
          */
         "min"?: string;
         /**
+          * Message shown when a complete month segment is outside 01–12.
+          * @default 'Luna trebuie să fie între 01 și 12'
+         */
+        "monthErrorText": string;
+        /**
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
         /**
+          * Accessible name of the calendar dialog.
+          * @default 'Selectează data'
+         */
+        "pickerLabel": string;
+        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
+        /**
+          * Message shown when a complete date is outside `min` / `max`.
+          * @default 'Data este în afara intervalului permis'
+         */
+        "rangeErrorText": string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -876,6 +901,11 @@ export namespace Components {
           * @default 'default'
          */
         "variant": DateInputVariant;
+        /**
+          * Message shown when a complete year is outside the allowed years.
+          * @default 'Introduceți un an valid'
+         */
+        "yearErrorText": string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -6120,6 +6150,16 @@ declare namespace LocalJSX {
          */
         "clearable"?: boolean;
         /**
+          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
+          * @default 'Introduceți o dată validă'
+         */
+        "dateErrorText"?: string;
+        /**
+          * Message shown when a complete day segment is outside 01–31.
+          * @default 'Ziua trebuie să fie între 01 și 31'
+         */
+        "dayErrorText"?: string;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -6159,6 +6199,11 @@ declare namespace LocalJSX {
          */
         "min"?: string;
         /**
+          * Message shown when a complete month segment is outside 01–12.
+          * @default 'Luna trebuie să fie între 01 și 12'
+         */
+        "monthErrorText"?: string;
+        /**
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
@@ -6183,9 +6228,19 @@ declare namespace LocalJSX {
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
+          * Accessible name of the calendar dialog.
+          * @default 'Selectează data'
+         */
+        "pickerLabel"?: string;
+        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
+        /**
+          * Message shown when a complete date is outside `min` / `max`.
+          * @default 'Data este în afara intervalului permis'
+         */
+        "rangeErrorText"?: string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -6211,6 +6266,11 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: DateInputVariant;
+        /**
+          * Message shown when a complete year is outside the allowed years.
+          * @default 'Introduceți un an valid'
+         */
+        "yearErrorText"?: string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -9381,6 +9441,12 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "clearable": boolean;
         "clearLabel": string;
+        "pickerLabel": string;
+        "dayErrorText": string;
+        "monthErrorText": string;
+        "yearErrorText": string;
+        "dateErrorText": string;
+        "rangeErrorText": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;

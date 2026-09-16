@@ -136,8 +136,10 @@ async function interact(page, { type, target }) {
 
 /**
  * Screenshot the capture target. `bleed: "auto"` grows the clip by the
- * element's own box-shadow extents — the same area Figma adds to an exported
- * node's render bounds — so a Figma PNG and the capture share one canvas.
+ * box-shadow extents of the element and everything inside it (light and
+ * shadow DOM) — the same area Figma adds to an exported node's render bounds,
+ * which include the effects of nested layers such as a focus ring on an inner
+ * control — so a Figma PNG and the capture share one canvas.
  *
  * @returns {Promise<{ path, box: {x,y,width,height}, bleed: {top,right,bottom,left} }>}
  */
@@ -150,7 +152,7 @@ export async function captureState(page, { selector, bleed = 'auto' }, outputPat
 
   let ext;
   if (bleed === 'auto') {
-    ext = shadowExtents(await locator.evaluate(el => getComputedStyle(el).boxShadow));
+    ext = await autoBleed(locator, box);
   } else {
     ext = { top: bleed, right: bleed, bottom: bleed, left: bleed };
   }
@@ -158,6 +160,33 @@ export async function captureState(page, { selector, bleed = 'auto' }, outputPat
   const clip = captureClip(box, ext, page.viewportSize());
   await page.screenshot({ path: outputPath, clip, animations: 'disabled', caret: 'hide', scale: 'device' });
   return { path: outputPath, box, bleed: ext };
+}
+
+/** Per-side bleed: how far any box-shadow inside the target paints past its box. */
+async function autoBleed(locator, box) {
+  const painted = await locator.evaluate(root => {
+    const out = [];
+    const visit = el => {
+      const shadow = getComputedStyle(el).boxShadow;
+      if (shadow && shadow !== 'none') {
+        const r = el.getBoundingClientRect();
+        out.push({ shadow, rect: { top: r.top, right: r.right, bottom: r.bottom, left: r.left } });
+      }
+      for (const child of [...(el.shadowRoot?.children ?? []), ...el.children]) visit(child);
+    };
+    visit(root);
+    return out;
+  });
+  const ext = { top: 0, right: 0, bottom: 0, left: 0 };
+  for (const { shadow, rect } of painted) {
+    const e = shadowExtents(shadow);
+    ext.top = Math.max(ext.top, e.top - (rect.top - box.y));
+    ext.left = Math.max(ext.left, e.left - (rect.left - box.x));
+    ext.right = Math.max(ext.right, e.right + (rect.right - (box.x + box.width)));
+    ext.bottom = Math.max(ext.bottom, e.bottom + (rect.bottom - (box.y + box.height)));
+  }
+  for (const k of Object.keys(ext)) ext[k] = Math.max(0, Math.ceil(ext[k] - 0.01));
+  return ext;
 }
 
 /**

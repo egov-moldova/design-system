@@ -25,6 +25,7 @@ import type {
   DateInputSegment,
   DateInputSize,
   DateInputTypingDetail,
+  DateInputValidationError,
   DateInputVariant,
 } from './mud-date-input.types';
 
@@ -32,6 +33,13 @@ let dateInputInstanceCounter = 0;
 
 /** Viewport query that flips the `auto` breakpoint into the bottom-sheet layout. */
 const MOBILE_VIEWPORT_QUERY = '(max-width: 640px)';
+
+/** Years accepted when neither `min` nor `max` narrows them. */
+const DEFAULT_MIN_YEAR = 1900;
+const DEFAULT_MAX_YEAR = 2100;
+
+/** Highest valid value of a two-digit segment. */
+const SEGMENT_MAX: Record<'DD' | 'MM', number> = { DD: 31, MM: 12 };
 
 interface SegmentSpec {
   kind: 'DD' | 'MM' | 'YYYY';
@@ -212,12 +220,31 @@ export class MudDateInput {
   /** Accessible label for the clear (×) button. */
   @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
 
+  /** Accessible name of the calendar dialog. */
+  @Prop({ attribute: 'picker-label' }) pickerLabel: string = 'Selectează data';
+
+  /** Message shown when a complete day segment is outside 01–31. */
+  @Prop({ attribute: 'day-error-text' }) dayErrorText: string = 'Ziua trebuie să fie între 01 și 31';
+
+  /** Message shown when a complete month segment is outside 01–12. */
+  @Prop({ attribute: 'month-error-text' }) monthErrorText: string = 'Luna trebuie să fie între 01 și 12';
+
+  /** Message shown when a complete year is outside the allowed years. */
+  @Prop({ attribute: 'year-error-text' }) yearErrorText: string = 'Introduceți un an valid';
+
+  /** Message shown when a complete date does not exist (e.g. `31/02/2025`). */
+  @Prop({ attribute: 'date-error-text' }) dateErrorText: string = 'Introduceți o dată validă';
+
+  /** Message shown when a complete date is outside `min` / `max`. */
+  @Prop({ attribute: 'range-error-text' }) rangeErrorText: string = 'Data este în afara intervalului permis';
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private pickerOpen: boolean = false;
   @State() private isMobileViewport: boolean = false;
+  @State() private validationError: DateInputValidationError | null = null;
 
   @Element() host!: HTMLMudDateInputElement;
 
@@ -252,6 +279,10 @@ export class MudDateInput {
   private readonly errorId = `mud-date-input-error-${this.instanceId}`;
   private initialValue: string = '';
   private mql?: MediaQueryList;
+  /** Set when the calendar opens; cleared once focus has moved into it. */
+  private focusPickerOnRender: boolean = false;
+  /** Body `overflow` before the mobile bottom sheet locked page scroll; `undefined` while unlocked. */
+  private lockedBodyOverflow?: string;
 
   private handleViewportChange = (ev: MediaQueryListEvent | MediaQueryList) => {
     this.isMobileViewport = ev.matches;
@@ -269,11 +300,23 @@ export class MudDateInput {
   disconnectedCallback() {
     this.mql?.removeEventListener('change', this.handleViewportChange);
     this.mql = undefined;
+    this.unlockPageScroll();
   }
 
   componentWillLoad() {
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
+    this.updateValidation(this.value);
+  }
+
+  componentDidRender() {
+    if (!this.focusPickerOnRender) return;
+    const picker = this.host.shadowRoot?.querySelector('mud-date-picker');
+    if (!picker) return;
+    this.focusPickerOnRender = false;
+    picker.componentOnReady?.().then(() => {
+      picker.shadowRoot?.querySelector<HTMLButtonElement>('button.day-cell[tabindex="0"]')?.focus();
+    });
   }
 
   @Watch('variant')
@@ -335,6 +378,29 @@ export class MudDateInput {
   handleValueChange(next: string) {
     const value = next ?? '';
     this.internals.setFormValue(value, value);
+    this.updateValidation(value);
+  }
+
+  @Watch('min')
+  @Watch('max')
+  @Watch('format')
+  revalidate() {
+    this.updateValidation(this.value);
+  }
+
+  /**
+   * Opening the calendar moves focus into it (dialog pattern) and, for the
+   * modal bottom sheet, locks page scroll behind the scrim.
+   */
+  @Watch('pickerOpen')
+  handlePickerOpenChange(open: boolean) {
+    if (!open) {
+      this.unlockPageScroll();
+      return;
+    }
+    if (this.resolvedBreakpoint() === 'mobile') this.lockPageScroll();
+    // The picker is not rendered yet; componentDidRender moves focus once it is.
+    this.focusPickerOnRender = true;
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -404,31 +470,56 @@ export class MudDateInput {
   private readonly togglePicker = (ev: MouseEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    if (this.isInert()) return;
+    if (this.isInert() || this.readonly) return;
     this.pickerOpen = !this.pickerOpen;
   };
 
+  private lockPageScroll() {
+    if (this.lockedBodyOverflow !== undefined || typeof document === 'undefined') return;
+    this.lockedBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+
+  private unlockPageScroll() {
+    if (this.lockedBodyOverflow === undefined || typeof document === 'undefined') return;
+    document.body.style.overflow = this.lockedBodyOverflow;
+    this.lockedBodyOverflow = undefined;
+  }
+
   private readonly handlePickerChange = (ev: CustomEvent<{ value: string | string[] }>) => {
+    // The picker's own `mudChange` is composed; stop it here so consumers only
+    // receive this component's `mudChange` with the display value.
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly) return;
     const next = ev.detail.value;
     const iso = typeof next === 'string' ? next : Array.isArray(next) ? next[0] : '';
     if (!iso) return;
     const display = this.fromIsoValue(iso);
     if (display === this.value) {
-      this.pickerOpen = false;
+      this.closePickerToField();
       return;
     }
     this.value = display;
     this.internals.setFormValue(display, display);
-    this.mudChange.emit({ value: display, isoValue: this.withinBounds(iso) ? iso : null });
-    this.pickerOpen = false;
+    this.mudChange.emit(this.changeDetail(display));
+    this.closePickerToField();
   };
+
+  /** Close the calendar and hand focus back to the field it filled. */
+  private closePickerToField() {
+    this.pickerOpen = false;
+    this.host.shadowRoot?.querySelector<HTMLInputElement>('.native')?.focus();
+  }
 
   /**
    * Re-format a raw input string into the configured pattern.
    * Strips everything that isn't a digit, then walks the segment spec and
-   * inserts the separator after each segment when the next one starts.
+   * inserts the separator after each segment when the next one starts. With
+   * `trailingSeparator`, a just-completed valid segment also gets its separator
+   * so the caret jumps to the next segment (Figma 487:7841); an invalid one
+   * keeps the caret in place so the error can be corrected (489:8104).
    */
-  private formatMasked(raw: string): string {
+  private formatMasked(raw: string, trailingSeparator: boolean = false): string {
     const spec = this.spec();
     const digits = (raw ?? '').replace(/\D/g, '').slice(
       0,
@@ -442,7 +533,13 @@ export class MudDateInput {
       if (slice.length === 0) break;
       out += slice;
       cursor += seg.length;
-      if (slice.length === seg.length && cursor < digits.length) {
+      const isLast = i === spec.segments.length - 1;
+      const complete = slice.length === seg.length;
+      if (
+        complete &&
+        !isLast &&
+        (cursor < digits.length || (trailingSeparator && this.segmentInRange(seg.kind, slice)))
+      ) {
         out += spec.separator;
       }
     }
@@ -513,9 +610,78 @@ export class MudDateInput {
     return true;
   }
 
-  private detail(value: string, segment: DateInputSegment): DateInputTypingDetail {
+  /** Day and month segments must fall in 01–31 / 01–12; the year is checked once complete. */
+  private segmentInRange(kind: SegmentSpec['kind'], digits: string): boolean {
+    if (kind === 'YYYY') return true;
+    const n = Number(digits);
+    return n >= 1 && n <= SEGMENT_MAX[kind];
+  }
+
+  private yearBounds(): [number, number] {
+    const min = /^\d{4}/.test(this.min ?? '') ? Number(this.min!.slice(0, 4)) : DEFAULT_MIN_YEAR;
+    const max = /^\d{4}/.test(this.max ?? '') ? Number(this.max!.slice(0, 4)) : DEFAULT_MAX_YEAR;
+    return [min, max];
+  }
+
+  /**
+   * Validate a (possibly partial) display value segment by segment, in the
+   * order the segments appear. Incomplete segments are not errors yet.
+   */
+  private validate(display: string): DateInputValidationError | null {
+    const spec = this.spec();
+    let cursor = 0;
+    for (const seg of spec.segments) {
+      const slice = display.slice(cursor, cursor + seg.length);
+      cursor += seg.length + 1;
+      if (slice.length < seg.length || !/^\d+$/.test(slice)) continue;
+      if (!this.segmentInRange(seg.kind, slice)) return seg.kind === 'DD' ? 'day' : 'month';
+      if (seg.kind === 'YYYY') {
+        const [minYear, maxYear] = this.yearBounds();
+        const year = Number(slice);
+        if (year < minYear || year > maxYear) return 'year';
+      }
+    }
+    if (display.length !== spec.pattern.length) return null;
+    const iso = this.toIsoValue(display);
+    if (!iso) return 'date';
+    return this.withinBounds(iso) ? null : 'range';
+  }
+
+  private updateValidation(display: string) {
+    this.validationError = display ? this.validate(display) : null;
+    const message = this.validationError ? this.validationMessage(this.validationError) : '';
+    // `setValidity` is missing in some test environments.
+    if (typeof this.internals?.setValidity !== 'function') return;
+    if (message) {
+      const anchor = this.host.shadowRoot?.querySelector<HTMLInputElement>('.native') ?? undefined;
+      this.internals.setValidity({ customError: true }, message, anchor);
+    } else {
+      this.internals.setValidity({});
+    }
+  }
+
+  private validationMessage(error: DateInputValidationError): string {
+    switch (error) {
+      case 'day':
+        return this.dayErrorText;
+      case 'month':
+        return this.monthErrorText;
+      case 'year':
+        return this.yearErrorText;
+      case 'date':
+        return this.dateErrorText;
+      case 'range':
+        return this.rangeErrorText;
+    }
+  }
+
+  private changeDetail(value: string): DateInputChangeDetail {
     const iso = this.toIsoValue(value);
-    return { value, isoValue: iso && this.withinBounds(iso) ? iso : null, segment };
+    return { value, isoValue: iso && this.withinBounds(iso) ? iso : null, error: value ? this.validate(value) : null };
+  }
+
+  private detail(value: string, segment: DateInputSegment): DateInputTypingDetail {
+    return { ...this.changeDetail(value), segment };
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -537,7 +703,9 @@ export class MudDateInput {
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     const raw = target.value;
-    const masked = this.formatMasked(raw);
+    // Deleting must be able to remove a separator, so only typing adds a trailing one.
+    const deleting = ((ev as InputEvent).inputType ?? '').startsWith('delete');
+    const masked = this.formatMasked(raw, !deleting);
     if (masked !== target.value) {
       // Re-write the field with the masked value and keep the caret at the
       // end of the typed prefix.
@@ -555,8 +723,7 @@ export class MudDateInput {
   };
 
   private handleChange = () => {
-    const iso = this.toIsoValue(this.value);
-    this.mudChange.emit({ value: this.value, isoValue: iso && this.withinBounds(iso) ? iso : null });
+    this.mudChange.emit(this.changeDetail(this.value));
   };
 
   private handleFocus = (ev: FocusEvent) => {
@@ -576,7 +743,7 @@ export class MudDateInput {
     this.value = '';
     this.internals.setFormValue('', '');
     this.mudInput.emit(this.detail('', null));
-    this.mudChange.emit({ value: '', isoValue: null });
+    this.mudChange.emit(this.changeDetail(''));
     this.mudClear.emit();
     // Return focus to the field so the user can type a fresh date immediately.
     requestAnimationFrame(() => {
@@ -611,7 +778,7 @@ export class MudDateInput {
           ev.preventDefault();
           const padded = lastSegment.padStart(expectedLength, '0');
           const next = value.slice(0, lastSegmentStart) + padded + this.spec().separator;
-          target.value = this.formatMasked(next);
+          target.value = this.formatMasked(next, true);
           this.value = target.value;
           try {
             target.setSelectionRange(target.value.length, target.value.length);
@@ -628,16 +795,32 @@ export class MudDateInput {
     return this.disabled || this.fieldsetDisabled;
   }
 
+  /** Invalid when the consumer says so or the built-in validation fails. */
+  private isInvalid(): boolean {
+    return this.invalid || (this.validationError !== null && !this.isInert());
+  }
+
   private resolvedVariant(): DateInputVariant {
-    return this.invalid ? 'destructive' : this.variant;
+    return this.isInvalid() ? 'destructive' : this.variant;
   }
 
   private hasVisibleLabel(): boolean {
     return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
   }
 
+  /**
+   * Message under the field: the consumer's `errorText` while `invalid` is
+   * set, otherwise the built-in validation message.
+   */
+  private errorMessage(): string {
+    const consumer = this.errorText?.trim();
+    if (this.invalid && consumer) return consumer;
+    if (this.validationError && !this.isInert()) return this.validationMessage(this.validationError);
+    return '';
+  }
+
   private hasErrorMessage(): boolean {
-    return this.invalid && Boolean(this.errorText && this.errorText.trim().length > 0);
+    return this.errorMessage().length > 0;
   }
 
   private hasHelperMessage(): boolean {
@@ -665,7 +848,8 @@ export class MudDateInput {
     const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
-    const errorText = this.errorText?.trim();
+    const errorText = this.errorMessage();
+    const isInvalid = this.isInvalid();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
     const placeholder = this.resolvedPlaceholder();
     const iconSize = this.size === 'lg' ? 24 : 20;
@@ -675,7 +859,7 @@ export class MudDateInput {
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
-      'is-invalid': this.invalid,
+      'is-invalid': isInvalid,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'is-populated': this.value.length > 0,
       'has-label': this.hasVisibleLabel(),
@@ -694,7 +878,7 @@ export class MudDateInput {
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
-              *
+              <mud-icon name="asterisk" size={12} />
             </span>
           ) : null}
         </label>
@@ -719,7 +903,7 @@ export class MudDateInput {
               aria-label={ariaLabelAttr}
               aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
               aria-describedby={this.describedBy()}
-              aria-invalid={this.invalid ? 'true' : null}
+              aria-invalid={isInvalid ? 'true' : null}
               aria-required={this.required ? 'true' : null}
               aria-disabled={effectivelyDisabled ? 'true' : null}
               aria-placeholder={placeholder}
@@ -755,7 +939,7 @@ export class MudDateInput {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
-              <mud-icon name="cross-small" size={iconSize} />
+              <mud-icon name="cross-small" size={16} />
             </button>
           ) : null}
 
@@ -770,43 +954,46 @@ export class MudDateInput {
                popover is actually mounted so axe's `aria-valid-attr-value` rule
                doesn't see a dangling id. */
             aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
-            disabled={effectivelyDisabled}
+            disabled={effectivelyDisabled || this.readonly}
             onClick={this.togglePicker}
           >
             <mud-icon name="calendar" size={iconSize} />
           </button>
-        </div>
 
-        {this.pickerOpen
-          ? [
-              isMobilePopover ? (
+          {/* The popover lives inside `.control` so it anchors under the field,
+              not under the helper / error text below it. */}
+          {this.pickerOpen
+            ? [
+                isMobilePopover ? (
+                  <div
+                    class="picker-backdrop"
+                    part="picker-backdrop"
+                    aria-hidden="true"
+                    onClick={() => (this.pickerOpen = false)}
+                  ></div>
+                ) : null,
                 <div
-                  class="picker-backdrop"
-                  part="picker-backdrop"
-                  aria-hidden="true"
-                  onClick={() => (this.pickerOpen = false)}
-                ></div>
-              ) : null,
-              <div
-                class={{ 'picker-popover': true, 'is-mobile': isMobilePopover }}
-                part="picker-popover"
-                role="dialog"
-                aria-modal={isMobilePopover ? 'true' : undefined}
-                id={`date-input-picker-${this.instanceId}`}
-              >
-                <mud-date-picker
-                  mode="single"
-                  breakpoint={pickerBreakpoint}
-                  header-style={isMobilePopover ? 'dropdown' : 'title'}
-                  locale="ro-RO"
-                  value={this.toIsoValue(this.value) ?? undefined}
-                  min={this.min}
-                  max={this.max}
-                  onMudChange={this.handlePickerChange}
-                ></mud-date-picker>
-              </div>,
-            ]
-          : null}
+                  class={{ 'picker-popover': true, 'is-mobile': isMobilePopover }}
+                  part="picker-popover"
+                  role="dialog"
+                  aria-label={this.pickerLabel}
+                  aria-modal={isMobilePopover ? 'true' : undefined}
+                  id={`date-input-picker-${this.instanceId}`}
+                >
+                  <mud-date-picker
+                    mode="single"
+                    breakpoint={pickerBreakpoint}
+                    header-style={isMobilePopover ? 'dropdown' : 'title'}
+                    locale="ro-RO"
+                    value={this.toIsoValue(this.value) ?? undefined}
+                    min={this.min}
+                    max={this.max}
+                    onMudChange={this.handlePickerChange}
+                  ></mud-date-picker>
+                </div>,
+              ]
+            : null}
+        </div>
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
