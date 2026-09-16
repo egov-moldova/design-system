@@ -133,6 +133,54 @@ no consumer only drifts. Regenerate on demand if the tool that produced it is us
 
 ---
 
+## Decisions taken (2026-09-16, danzubco)
+
+Execution branch: `fix/issue-53-ai-docs-alignment`, based on `upstream/main` (`ace1c0f`) with
+PR #81 and PR #80 merged in, and this plan's two commits cherry-picked from
+`docs/ai-docs-alignment`. It replaces `docs/ai-docs-alignment` as the branch every phase lands on.
+
+Facts re-measured on that base before deciding, which change what D1 has to do:
+
+- Yarn `4.12.0` does not run a root `prepare` script on `yarn install`; it runs `postinstall`
+  (probe: an empty project with both scripts, only `postinstall` wrote its file). So
+  `prepare: husky install && …` has never run for anyone who only ran `yarn install`.
+- `merge=ours` is not a built-in git merge driver (the built-ins are `text`, `binary`, `union`).
+  With `merge.ours.driver` undefined git runs an ordinary text merge and reports a conflict;
+  with `git config merge.ours.driver true` it keeps the current side. `setup-merge-drivers.sh`
+  never registers it, so the attribute has been inert on every machine.
+- Only `src/components.d.ts` and the `readme.md` files are still tracked;
+  `.storybook/custom-elements.json` and `tokens/generated/**` are git-ignored.
+- Commitlint is a dev dependency with no configuration anywhere, so a restored `commit-msg`
+  hook would reject every message. 92 of the last 100 non-merge commits on `main` are
+  Conventional already.
+- The hooks were deleted in `0d23e93` (2026-06-15), pushed to `main` without a PR, in a commit
+  whose message only describes an Azure pipeline change.
+- Local cost of the checks, uncached, Node 24: `yarn lint` 13s, `yarn typecheck` 2s,
+  `yarn test` 8s (2004 tests).
+- `@egov-moldova/mud-react` is not on npm; `package.json` `files` publishes only `dist/`,
+  `loader/` and `CHANGELOG.md`, so a `postinstall` script also runs in consumers' installs
+  without `scripts/` or Husky present.
+- `ISSUE TYPE :: KEY ::` appears in 0 of the last 36 PR titles.
+
+Re-measured baselines (replace the 2026-09-14 figures): `@egovmd/` outside `CHANGELOG.md` and
+`.claude/plans/**` 65; stale version claims 2 (`.specs/PROJECT-SPECIFICATION.md:25`,
+`_agents/cross-platform-guide.md:11`); `.husky/pre-commit` mentions 9; `/Users/` paths in
+settings 8; unresolvable `_agents/` index paths 6; `audit-production` still grants `Write, Edit`.
+
+| Decision | Taken |
+| --- | --- |
+| D1 | **Restore Husky, layered.** `pre-commit`: `yarn lint` + `yarn typecheck`. `commit-msg`: commitlint with a new `commitlint.config.mjs` extending `@commitlint/config-conventional`. `pre-push`: everything CI runs — `check.verify` (typecheck, lint, test, test:scripts, docs:check), `yarn build`, then fail if tracked generated files differ from the build. Hooks never unstage generated files: `components.d.ts` and `readme.md` are committed with the change that regenerates them. Activation moves from `prepare` to a `postinstall` that exits 0 when Husky or `.git` is absent. The setup script registers `merge.ours.driver`. CI gains the same stale-generated-files check after its component build. |
+| D2 | **superpowers is installed globally by each developer, never declared in the project.** Delete the vendored copies; references use the plugin's namespaced names; the docs state the global install. |
+| D3 | Archive `.claude/kanban/` to `.claude/plans/_archive/kanban/`. |
+| D4 | Delete `.impeccable/`. |
+| 2.3 | Remove the Context7 claims and grants. |
+| 4.1 | Delete `.claude/skills/skill-creator/`. |
+| 5.7 | Remove the `ISSUE TYPE :: KEY ::` title rule; document the practice in use. |
+| 6.3 | CI changes land in this PR, not a separate one. |
+| PR #80 × #81 | `mud-date-input.tsx:881` passes `size={12}`, which #81 removed; typecheck and build fail on the combined base. Reported on #80, not fixed here. |
+
+---
+
 ## Global constraints
 
 - **Change scope** (`AGENTS.md` rule 11): one concern per commit; no repo-wide `yarn format`
