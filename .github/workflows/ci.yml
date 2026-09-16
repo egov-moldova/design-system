@@ -33,6 +33,31 @@ jobs:
       - name: Run typecheck
         run: yarn typecheck
 
+  tokens-validate:
+    name: Tokens validation
+    needs: [lint, typecheck]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      - name: Build tokens
+        run: yarn tokens.build
+
+      - name: Lint hardcoded colors
+        run: yarn lint.colors
+
+      - name: Lint token naming
+        run: yarn tokens.lint.all
+
+      - name: Validate tokens
+        run: yarn tokens.validate
+
+      - name: Run token script tests
+        run: yarn test:scripts
+
   test:
     name: Test
     needs: [lint, typecheck]
@@ -57,7 +82,7 @@ jobs:
         uses: ./.github/actions/setup-node-deps
 
       - name: Run dependencies security audit
-        run: yarn npm audit --severity high
+        run: yarn npm audit --severity high --all --recursive
 
   build:
     name: Build
