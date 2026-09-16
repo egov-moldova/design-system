@@ -1,6 +1,6 @@
 ---
 name: token-validator
-description: Validates the 3-tier design-token hierarchy (palette → semantic → component). Runs yarn lint.tokens, yarn lint.colors, and scripts/tokens-validate.mjs, then summarizes findings, groups them by tier and severity, and proposes concrete file:line fixes. Read-only — never modifies token files.
+description: Validates the 3-tier design-token hierarchy (palette → semantic → component). Runs yarn tokens.lint, yarn lint.colors, and scripts/tokens-validate.mjs, then summarizes findings, groups them by tier and severity, and proposes concrete file:line fixes. Read-only — never modifies token files.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -30,7 +30,7 @@ This agent is read-only. It surfaces issues; it does not auto-fix.
 Run in this order, capturing exit codes and last ~50 lines of each:
 
 ```bash
-yarn lint.tokens
+yarn tokens.lint
 yarn lint.colors
 node scripts/tokens-validate.mjs --no-color --out reports/tokens-validate.json
 ```
@@ -60,7 +60,7 @@ Limit each section to the top 5 most impactful items. If a group has more, note 
 
 ### Step 4 — Cross-reference existing tooling
 
-For every finding, also note whether `yarn lint.tokens` or `yarn lint.colors` already caught it. They cover naming + hardcoded colors; the new script covers the remaining seven concerns. Findings that *only* the new script catches are the highest-value signal.
+For every finding, also note whether `yarn tokens.lint` or `yarn lint.colors` already caught it. They cover naming + hardcoded colors; the new script covers the remaining seven concerns. Findings that *only* the new script catches are the highest-value signal.
 
 ### Step 5 — Surface the WCAG / Figma angle when relevant
 

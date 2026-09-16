@@ -1,5 +1,12 @@
 # Target Size — WCAG Exceptions in `@egov-moldova/mud`
 
+## Scope
+Governs which components are below the 24×24 target size and why that is a documented,
+deliberate exception rather than a defect. **Read before flagging a small interactive
+element as an accessibility issue.**
+
+---
+
 ## What WCAG 2.1 AA Requires
 
 **WCAG 2.1 Level AA does NOT mandate a minimum target size.**

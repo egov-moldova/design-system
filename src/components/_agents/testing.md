@@ -1,5 +1,11 @@
 # Spec Testing & Coverage — Vitest + @stencil/vitest
 
+## Scope
+Governs unit/spec testing of `mud-*` components with Vitest + `@stencil/vitest`. **Read before
+writing any `*.spec.tsx`.**
+
+---
+
 **Canonical reference for unit/spec testing of `mud-*` components.** Read this before writing any `*.spec.tsx`.
 
 The project migrated from Jest + `newSpecPage` (`@stencil/core/testing`) to **Vitest + `@stencil/vitest`**. The harness, helpers, and coverage semantics differ — patterns below are mandatory.

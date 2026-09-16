@@ -30,7 +30,7 @@ Engineering posture for the Corlab Design System (Stencil web components, design
 
 - **Refactor lives in its own PR.** A bug fix changes the buggy lines and nothing else. Cleanup, renames, and structural changes go through `/refactor-component` or a standalone refactor PR. Diffs stay focused and reviewable.
 - **TODOs require an issue link.** `// TODO(#123): wire dark mode token` is acceptable. `// TODO` alone is not. The audit pipeline and code review should reject orphan TODOs.
-- **Never hand-edit generated files.** `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**` are produced by `yarn build`. `.husky/pre-push` fails the push if the rebuilt files differ from what is committed. Merge conflicts in generated files are resolved by rebuilding, not by editing markers. See `AGENTS.md § Merge driver for auto-generated files`.
+- **Never hand-edit generated files.** `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**` are produced by `yarn build`. `.husky/pre-push` fails the push if the rebuilt files differ from what is committed. Merge conflicts in generated files are resolved by rebuilding, not by editing markers. See `_agents/generated-files.md`.
 
 ## Cross-references
 

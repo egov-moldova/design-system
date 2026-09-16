@@ -1,5 +1,11 @@
 # Accessibility Testing Pattern — WCAG 2.1 AA
 
+## Scope
+Governs the three layers that validate WCAG 2.1 AA compliance of every `mud-*` component.
+**Read when writing accessibility assertions or running an accessibility audit.**
+
+---
+
 **Canonical reference:** Skill [`accessibility-compliance`](../../../.claude/skills/accessibility-compliance/SKILL.md) and Success Criteria list.
 
 This file describes the three layers used to validate accessibility of every `mud-*` component:

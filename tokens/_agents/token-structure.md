@@ -137,8 +137,7 @@ tokens/core/components/button.tokens.json    →  Style Dictionary build
 ## Build Commands
 
 ```bash
-yarn tokens.build              # All themes (core + core.dark + age)
-yarn tokens.build.core         # Core tokens only
+yarn tokens.build              # Both themes (core + core.dark) — no per-theme yarn script exists
 yarn tokens.watch              # Watch and rebuild on change
 ```
 

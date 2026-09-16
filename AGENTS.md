@@ -26,6 +26,16 @@
 |------|---------------|--------------|
 | `_agents/workflow-rules.md` | Auto-proceed/stop conditions, deferred summary, human oversight gates | **At conversation start** before any component work |
 | `_agents/skills-and-workflows.md` | Skill invocation table, slash commands, parallelization rules | **When starting any component task** |
+| `_agents/planning.md` | When a written plan is required, where it lives, required sections | **Before any non-trivial work** — a public-contract change, more than one component, or more than one viable approach |
+
+### Project-Level Docs
+
+| File | What It Covers | When to Load |
+|------|---------------|--------------|
+| `PRINCIPLES.md` | Code-shape decisions — the trade-offs behind how the codebase is structured | **When a change involves a code-shape decision** |
+| `PRODUCT.md` | Users, tone, UX trade-offs | **When a change affects user-facing behavior or copy** |
+| `STACK.md` | Versions and rejected choices | **When you need a version, or the reasoning behind a stack choice** |
+| `DESIGN.md` | Visual language | **When a change touches visual design beyond a single component's tokens** |
 
 ### Design Extraction & Planning
 
@@ -122,7 +132,6 @@ yarn sp.docker                 # Docker-optimized Storybook build
 # Build (dev — targeted per change type)
 yarn tokens.build              # Build core + dark theme tokens (~5s, cached)
 yarn tokens.build.prod         # Production tokens (core + dark, optimized)
-yarn tokens.build.age          # Build AGE theme tokens only
 yarn tokens.watch              # Watch token files and rebuild on change
 yarn dx:stencil:once           # Single Stencil dev build without docs (~20s)
 
@@ -134,7 +143,7 @@ yarn lint                      # ESLint + Prettier check (cached)
 yarn format                    # Auto-fix code style
 
 # Utilities
-yarn generate                  # Stencil component generator scaffolding
+npx stencil generate           # Stencil component generator scaffolding (not wired as a yarn script)
 yarn tokens.audit              # Debug missing token references
 yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json and icon-names.ts
 ```
@@ -145,43 +154,7 @@ See `_agents/environment-commands.md` for the full decision matrix and all comma
 
 ## Merge driver for auto-generated files
 
-The repo runs **parallel agent worktrees** where 3–5 components are built/redesigned simultaneously. Each worktree runs `yarn sp.build`, which regenerates the same tracked files. Without coordination, PR merges would conflict on every parallel branch.
-
-### How conflicts are prevented
-
-| Layer | File | Role |
-| --- | --- | --- |
-| Filesystem isolation | `git worktree` | Each agent runs in its own git worktree — no in-flight write collisions |
-| Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Cross-branch merges silently keep current branch — no conflict markers |
-| Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (`src/components.d.ts`, component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
-| Merge hint | `.husky/post-merge` | Prints a `yarn build` reminder when a merge touched a generated file |
-| Canonical regeneration | `.github/workflows/ci.yml` (`Tokens validation` job) | Rebuilds and fails when a tracked generated file differs from the build — the same check as `.husky/pre-push`, but not skippable |
-
-No hook unstages or force-removes these files: they are committed in the same commit as the source change that regenerates them, staged explicitly (`git add <paths>`), never via a broad `git add -A`/`git add .`.
-
-### Setup (runs automatically)
-
-`yarn install` invokes the `postinstall` script (`husky && node scripts/git/setup-merge-drivers.mjs`) — Yarn never runs a root `prepare` script on `yarn install`, so `postinstall` is the only activation point. `setup-merge-drivers.mjs` registers `merge.ours.driver` (`git config merge.ours.driver true`), since `merge=ours` is not a git built-in.
-
-### Manual setup (only if you ran `yarn install --skip-scripts`)
-
-```bash
-node scripts/git/setup-merge-drivers.mjs
-```
-
-### Verify the setup
-
-```bash
-git check-attr merge -- src/components.d.ts
-# expect: src/components.d.ts: merge: ours
-```
-
-### What contributors and agents must NEVER do
-
-- Hand-edit `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, `tokens/generated/**`.
-- Stage these files with a broad `git add -A`/`git add .`. Stage explicit paths so a stray local change to a generated file is never swept into an unrelated commit — no hook unstages it for you, and `.husky/pre-push` only catches a stale copy at push time (skippable with `--no-verify`).
-- Resolve a merge conflict in any of these by hand-editing. Run `yarn build` instead.
-
-### Why `merge=ours` (and not a custom regenerate driver)
-
-A custom driver that ran `yarn build` on every 3-way merge would add 60–120 s per file per merge and would fail in IDE/GUI git clients that don't load the project environment. The built-in `merge=ours` is instant; CI's `Validate (PR)` job is the single canonical regeneration point and the hard gate that prevents stale content from reaching `main`.
+`git worktree` isolation, a `merge=ours` driver, `.husky/pre-push` and CI together let several
+parallel branches regenerate `src/components.d.ts` and the component `readme.md` files without
+merge conflicts. Never hand-edit these files or stage them with `git add -A`/`git add .`. Full
+mechanism, setup and verification: `_agents/generated-files.md`.

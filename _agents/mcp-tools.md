@@ -25,7 +25,7 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 - Memory → auto-memory at `~/.claude/projects/<project>/memory/`
 - Web fetch → `WebFetch` / `WebSearch`
 
-**Security scanning** (used in `audit-production`): run Snyk via Bash (`yarn snyk:test` or `npx snyk test`) — no MCP server configured.
+**Security scanning** (used in `audit-production`): run Snyk via Bash (`npx snyk test` — not wired as a yarn script) — no MCP server configured.
 
 ---
 

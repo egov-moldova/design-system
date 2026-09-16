@@ -162,13 +162,11 @@ yarn sp.docker                 # Docker-optimized Storybook build
 # Build (dev — targeted per change type)
 yarn tokens.build              # After .tokens.json changes only (~5s)
 yarn tokens.build.prod         # Production tokens (core + dark, optimized)
-yarn tokens.build.age          # Build AGE theme tokens only
 yarn dx:stencil:once           # After .css/.tsx changes without watch (~20s)
 
 # Tokens
 yarn tokens.build              # Build all token themes (core + core.dark)
 yarn tokens.build.prod         # Production tokens (optimized)
-yarn tokens.build.age         # AGE theme tokens only
 yarn tokens.watch              # Watch token files and rebuild on change
 yarn tokens.audit              # Debug missing token references
 
@@ -187,7 +185,7 @@ yarn test.dev src/components/mud-button                           # Test all tes
 yarn test.dev                                                     # Run all tests (fast)
 
 # Utilities
-yarn generate                  # Stencil component generator scaffolding
+npx stencil generate           # Stencil component generator scaffolding (not wired as a yarn script)
 yarn svg:icons                 # format.icons, then rebuild icons.manifest.json and icon-names.ts
 yarn format.icons              # both passes below, over src/components/mud-icon/assets/**
 yarn svg:remove-size           # drop the root width/height (CSS sizes the inlined svg)

@@ -202,7 +202,7 @@ Run against the composed draft from Step 3:
 
 **V1 special case** — Build Order entries: if a `mud-X` appears in the draft AND in `## Build Order`, V1 passes. This allows specs to legitimately reference unbuilt dependencies as long as the build order is explicit.
 
-**V2 special case** — `--mode=new` defines new tokens that don't exist yet. V2 validates the **format** of the path (regex match), not its existence in `tokenInventory`. Existence checking happens at execution time via `yarn lint.tokens`.
+**V2 special case** — `--mode=new` defines new tokens that don't exist yet. V2 validates the **format** of the path (regex match), not its existence in `tokenInventory`. Existence checking happens at execution time via `yarn tokens.lint`.
 
 ---
 

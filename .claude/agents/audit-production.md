@@ -30,7 +30,7 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 | 5b — E2E Tests | `audit-component --deep --e2e` (when flag set) | (future) — Stencil E2E patterns |
 | 5c — Visual Regression | `mcp__image-compare__compare_images` | Pixel diff against Figma reference |
 | 6 — Performance | Local checks | Bundle size + runtime perf |
-| 7 — Security | `audit-component` Wave 2 grep gates + `yarn audit` | npm advisories + CSP compliance |
+| 7 — Security | `audit-component` Wave 2 grep gates + `yarn npm audit` | npm advisories + CSP compliance |
 | 8 — Documentation | Local checks | JSDoc + readme.md + Storybook docs |
 | 9 — Git Hygiene | Local checks | Conventional commits + no unrelated diff |
 | 10 — Stencil Compliance summary | Surfaces `audit-component --deep` findings under their own header | — |
@@ -57,7 +57,7 @@ reading it, only the JUDGMENT-heavy phases remain for AI:
 
 - **Phase 3.x** — interpreting ARIA correctness from the captured a11y tree
 - **Phase 3.3** — picking the right remediation when contrast fails (token re-map vs design exception)
-- **Phase 7** — security review beyond `yarn audit` (CSP nuances, sensitive data leakage)
+- **Phase 7** — security review beyond `yarn npm audit` (CSP nuances, sensitive data leakage)
 - **Phase 8.3** — Storybook docs quality review (script only verifies JSDoc presence)
 - **Phase 10** — synthesizing the Stencil compliance findings under a separate header
 
@@ -70,9 +70,9 @@ when the orchestrator is unavailable (CI without a Node version meeting
 Phases 1–2 must run sequentially (data collection precedes analysis). Phases 3–9 are LOGICALLY INDEPENDENT and SHOULD be dispatched in parallel for ~50% wall-clock reduction:
 
 - **Phase 3 (Accessibility)** — delegate to the `a11y-verifier` subagent in parallel
-- **Phase 5 (Testing)** — run `yarn test --spec` in parallel
+- **Phase 5 (Testing)** — run `yarn test` in parallel
 - **Phase 6 (Performance)** — run `yarn build` in parallel; check bundle size
-- **Phase 7 (Security)** — run `yarn audit` + grep anti-patterns in parallel
+- **Phase 7 (Security)** — run `yarn npm audit` + grep anti-patterns in parallel
 - **Phase 8 (Documentation)** — read JSDoc + README in parallel
 - **Phase 9 (Git Hygiene)** — run `git log` + `git diff --stat` in parallel with everything else
 
@@ -82,9 +82,9 @@ Dispatch pattern:
 [After Phase 2 completes, send one message with parallel tool calls:]
 
 Agent(subagent_type="a11y-verifier", prompt="componentName=mud-<name>, storyId=atoms-mud-<name>--default")
-Bash("yarn test --spec --findRelatedTests src/components/mud-<name>/test/mud-<name>.spec.tsx")
+Bash("node scripts/check-test-stderr.mjs --project spec src/components/mud-<name>/test/")
 Bash("yarn build")
-Bash("yarn audit")
+Bash("yarn npm audit")
 Bash("git log --oneline -10")
 Bash("git diff --stat main...HEAD -- src/components/mud-<name>/ tokens/core/components/")
 Read("src/components/mud-<name>/mud-<name>.tsx")  // for JSDoc inspection
@@ -395,7 +395,7 @@ Check `test/mud-[name].spec.tsx` covers:
    - `setValidity` reflects flags
 
 ```bash
-yarn test --spec --findRelatedTests src/components/mud-[name]/test/mud-[name].spec.tsx
+node scripts/check-test-stderr.mjs --project spec src/components/mud-[name]/test/
 ```
 
 **Pass criteria**: all tests pass, coverage > 80% (target — not enforced by tooling).
@@ -497,7 +497,7 @@ Component must not:
 ### 7.3 Dependencies
 
 ```bash
-yarn audit
+yarn npm audit
 ```
 
 - No known vulnerable dependencies
@@ -583,13 +583,13 @@ For component-level deep audit (interactive), invoke `/audit-component @mud-<nam
 
 ```bash
 yarn lint
-yarn test --spec
+yarn test
 yarn build
 yarn sp.build
 yarn tokens.audit
 yarn tokens.validate
 yarn audit:contrast
-yarn audit
+yarn npm audit
 ```
 
 Plus the `audit-component --deep` skill invocation in Phase 1.

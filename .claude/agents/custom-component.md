@@ -9,6 +9,10 @@ model: sonnet
 
 Create a Stencil component from user-described requirements. No Figma reference — user drives the spec.
 
+Runs on `sonnet`, one tier below `new-component`'s `opus`: there is no Figma extraction to
+interpret and no token diff against a design source to reconcile — the spec comes from the
+user directly, so the harder judgment calls `new-component` needs do not apply here.
+
 ## Step 1: Environment Check
 
 ```bash
