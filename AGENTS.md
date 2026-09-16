@@ -24,7 +24,7 @@
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/workflow-rules.md` | Auto-proceed/stop conditions, deferred summary, human oversight gates | **At conversation start** before any component work |
+| `_agents/workflow-rules.md` | Auto-proceed/stop conditions, deferred summary, human oversight gates | **At conversation start** before any component work (Claude Code loads it through `CLAUDE.md`; other agents read it first) |
 | `_agents/skills-and-workflows.md` | Skill invocation table, slash commands, parallelization rules | **When starting any component task** |
 | `_agents/planning.md` | When a written plan is required, where it lives, required sections | **Before any non-trivial work** — a public-contract change, more than one component, or more than one viable approach |
 
