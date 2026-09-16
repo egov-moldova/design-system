@@ -1,3 +1,5 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 /**
  * Lifecycle state of a single step in a stepper.
  *
@@ -39,7 +41,7 @@ export type StepperStep = {
    *   - `error`     → `exclamation`
    *   - otherwise   → the step number (1-based index).
    */
-  iconName?: string;
+  iconName?: IconName;
   /** When true, the step is rendered as non-actionable even in interactive mode. */
   disabled?: boolean;
 };

@@ -1,6 +1,7 @@
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import {
   FOOTER_DEFAULT_CONTACT,
   FOOTER_DEFAULT_PARTNERS,
@@ -25,7 +26,7 @@ import type {
 
 let footerInstanceCounter = 0;
 
-const SOCIAL_ICON_NAME: Record<FooterSocialPlatform, string> = {
+const SOCIAL_ICON_NAME: Record<FooterSocialPlatform, IconName> = {
   facebook: 'facebook-filled',
   instagram: 'instagram-filled',
   youtube: 'youtube-filled',

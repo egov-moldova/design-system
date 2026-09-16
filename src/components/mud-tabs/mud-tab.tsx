@@ -1,5 +1,7 @@
 import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, h } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 let tabInstanceCounter = 0;
 
 /**
@@ -40,7 +42,7 @@ export class MudTab {
   @Prop() label?: string;
 
   /** Optional leading icon name resolved against the `mud-icon` registry. */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /** Optional numbered badge displayed after the label. */
   @Prop() badgeCount?: number;

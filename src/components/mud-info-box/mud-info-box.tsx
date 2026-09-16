@@ -1,6 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import { INFO_BOX_DEFAULT_ICONS } from './mud-info-box.types';
 import type { InfoBoxEmphasis, InfoBoxVariant } from './mud-info-box.types';
 
@@ -75,7 +76,7 @@ export class MudInfoBox {
    * Override the default per-variant `mud-icon` name. Ignored when the
    * `icon-start` slot is populated or `hideIcon` is set.
    */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /**
    * Close-button accessible label. Defaults to the Romanian "Închide".
@@ -126,7 +127,7 @@ export class MudInfoBox {
     }
   };
 
-  private resolveIconName(): string {
+  private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
     return INFO_BOX_DEFAULT_ICONS[this.variant];
   }

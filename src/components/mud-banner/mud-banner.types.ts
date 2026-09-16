@@ -1,3 +1,5 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 export const BANNER_VARIANTS = ['info', 'warning', 'error'] as const;
 
 export type BannerVariant = (typeof BANNER_VARIANTS)[number];
@@ -7,7 +9,7 @@ export const BANNER_EMPHASES = ['subtle', 'strong'] as const;
 export type BannerEmphasis = (typeof BANNER_EMPHASES)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` is unset. */
-export const BANNER_DEFAULT_ICONS: Record<BannerVariant, string> = {
+export const BANNER_DEFAULT_ICONS: Record<BannerVariant, IconName> = {
   info: 'circle-info-filled',
   warning: 'warning-filled',
   error: 'circle-error-filled',

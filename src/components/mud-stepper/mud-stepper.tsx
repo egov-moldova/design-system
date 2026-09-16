@@ -1,5 +1,6 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';
 
 /**
@@ -169,7 +170,7 @@ export class MudStepper {
   }
 
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
-  private resolveIconName(step: StepperStep, status: StepperStepStatus): string | null {
+  private resolveIconName(step: StepperStep, status: StepperStepStatus): IconName | null {
     if (step.iconName) return step.iconName;
     // `-large` checkmark (not `-small`): the small variant is heavily padded, so
     // at 16px it under-fills the 24px indicator. Error uses the bare `exclamation`

@@ -1,6 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
 
@@ -69,7 +70,7 @@ export class MudToast {
    * `circle-info-filled` for a custom glyph). When the `icon-start` slot
    * is populated, this prop is ignored.
    */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /**
    * Forwarded to the host as `aria-label`. Use this to give the entire
@@ -139,7 +140,7 @@ export class MudToast {
     }
   };
 
-  private resolveIconName(): string {
+  private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
     return TOAST_DEFAULT_ICONS[this.variant];
   }
