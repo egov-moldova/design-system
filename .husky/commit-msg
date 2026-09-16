@@ -1,0 +1,2 @@
+# Conventional Commits, per commitlint.config.mjs.
+yarn commitlint --edit "$1"

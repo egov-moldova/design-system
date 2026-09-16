@@ -479,10 +479,11 @@ export function checkFontFaceCoverage(pkg, packedFiles, readText, readBuffer) {
  * make it the better instrument here, both measured rather than assumed:
  *
  *   1. `yarn pack --dry-run` runs NO lifecycle script — neither `prepare` nor
- *      `prepack`. `npm pack --dry-run` runs `prepare`, and a `prepare` that
- *      exits non-zero aborts the pack with that code. This package's `prepare`
- *      is `husky install && ...`, so an npm-based gate would reinstall git
- *      hooks as a side effect of a read-only validation.
+ *      `prepack`. `npm pack --dry-run` runs `prepare`, `prepack` and
+ *      `postpack`, and one that exits non-zero aborts the pack with that code.
+ *      This package's `prepack`/`postpack` rewrite package.json (`pinst`
+ *      disables and re-enables `postinstall`), so an npm-based gate would edit
+ *      a tracked file as a side effect of a read-only validation.
  *   2. On this package the two packers agree exactly. That agreement is what
  *      lets a yarn-measured list stand for an npm-published tarball, so it is
  *      not assumed here: `checkPackerAgreement` re-derives it on every run and
@@ -510,8 +511,9 @@ export function packedFileList(cwd = PROJECT_ROOT) {
  * release path actually uses (`npm publish`).
  *
  * `--ignore-scripts` is required, not cosmetic: without it `npm pack --dry-run`
- * runs this package's `prepare` (`husky install && ...`), so a read-only
- * validation would reinstall git hooks as a side effect. It also keeps the
+ * runs this package's `prepack` and `postpack` (`pinst`, which rewrites
+ * package.json), so a read-only validation would edit a tracked file as a side
+ * effect. It also keeps the
  * comparison honest — yarn runs no lifecycle script either, so both sides are
  * measured under the same conditions.
  *

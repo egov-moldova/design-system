@@ -49,7 +49,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
+    "postinstall": "husky && node scripts/git/setup-merge-drivers.mjs",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable",
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
@@ -519,6 +521,7 @@
     "lit": "^3.3.2",
     "lodash": "^4.18.1",
     "oxlint": "^1.83.0",
+    "pinst": "^3.0.0",
     "pixelmatch": "^7.1.0",
     "playwright": "^1.63.0",
     "pngjs": "^7.0.0",
