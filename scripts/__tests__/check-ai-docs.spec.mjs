@@ -259,3 +259,27 @@ describe('path rule', () => {
     );
   });
 });
+
+describe('agent-slash rule', () => {
+  it('flags a subagent written as a slash command', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/new-component.md': '---\nname: new-component\n---\n',
+      '.claude/commands/audit-component.md': 'x',
+      'AGENTS.md': 'Use `/new-component` or `/audit-component`.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['AGENTS.md', 1, 'agent-slash']],
+    );
+  });
+
+  it('passes the agent name without a slash and a path segment', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/new-component.md': 'x',
+      'AGENTS.md': 'Dispatch the `new-component` agent. See .claude/agents/new-component.md.\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

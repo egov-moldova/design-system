@@ -19,6 +19,8 @@
  *                     with the `style-dictionary` dependency's major.
  *   path           — a backticked repo path (`dir/file.ext`) in doc scope that
  *                     does not exist and is not git-ignored.
+ *   agent-slash    — a `.claude/agents/<name>` subagent written as `/<name>`,
+ *                     a slash command that does not exist.
  *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
@@ -316,6 +318,51 @@ function checkPaths(relPath, lines, root) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: agent-slash
+// ---------------------------------------------------------------------------
+
+function listNames(root, dir) {
+  try {
+    return fs
+      .readdirSync(path.join(root, dir))
+      .filter(f => f.endsWith('.md') && f !== 'README.md')
+      .map(f => f.slice(0, -3));
+  } catch {
+    return [];
+  }
+}
+
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// A subagent has no slash command in Claude Code, so `/new-component` is an
+// instruction nobody can follow. Names that are also commands are excluded.
+function agentSlashPattern(root) {
+  const commands = new Set(listNames(root, '.claude/commands'));
+  const agentOnly = listNames(root, '.claude/agents').filter(n => !commands.has(n));
+  if (agentOnly.length === 0) return null;
+  return new RegExp(`(?:^|[\\s\`(|])\\/(${agentOnly.map(escapeRegExp).join('|')})(?![\\w/.-])`, 'g');
+}
+
+function checkAgentSlash(relPath, lines, pattern) {
+  const hits = [];
+  lines.forEach((line, i) => {
+    for (const m of line.matchAll(pattern)) {
+      hits.push(
+        makeHit(
+          relPath,
+          i + 1,
+          'agent-slash',
+          `\`/${m[1]}\` is a subagent, not a slash command — write "the \`${m[1]}\` agent"`,
+        ),
+      );
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: node-version
 // ---------------------------------------------------------------------------
 
@@ -496,6 +543,7 @@ export function checkAiDocs({ root }) {
   const allowedMajor = enginesMajor(pkg);
   const realPackageName = pkg.name;
   const sdMajor = dependencyMajor(pkg, 'style-dictionary');
+  const agentSlash = agentSlashPattern(root);
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -522,6 +570,7 @@ export function checkAiDocs({ root }) {
 
     if (needsDocScope) hits.push(...checkLinks(relPath, absPath, lines, root));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkPaths(relPath, lines, root));
+    if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
