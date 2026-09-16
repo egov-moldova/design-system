@@ -40,6 +40,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { withoutGitLocation } from '../git/env.mjs';
+
 // Assembled so this file and its spec never contain the literal, which rule
 // package-name scans every tracked file for — including these two.
 export const STALE_SCOPE = ['@egov', 'md/'].join('');
@@ -91,9 +93,11 @@ function makeHit(file, line, ruleId, message) {
 
 function isGitRepo(root) {
   try {
+    // `-C root` alone loses to a GIT_DIR a git hook exports: see scripts/git/env.mjs.
     const out = execFileSync('git', ['-C', root, 'rev-parse', '--is-inside-work-tree'], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
+      env: withoutGitLocation(),
     });
     return out.trim() === 'true';
   } catch {
@@ -105,6 +109,7 @@ function gitListFiles(root) {
   const out = execFileSync('git', ['-C', root, 'ls-files', '-z'], {
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
+    env: withoutGitLocation(),
   });
   return out.split('\0').filter(Boolean);
 }
@@ -278,6 +283,7 @@ function gitIgnored(root, relPaths) {
   const run = spawnSync('git', ['-C', root, 'check-ignore', '--stdin'], {
     input: inRepo.join('\n'),
     encoding: 'utf8',
+    env: withoutGitLocation(),
   });
   if (run.status !== 0 && run.status !== 1) {
     throw new Error(`git check-ignore failed (exit ${run.status}): ${String(run.stderr).trim()}`);

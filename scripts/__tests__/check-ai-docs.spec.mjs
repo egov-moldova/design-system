@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
 import { checkAiDocs, STALE_SCOPE } from '../docs/check-ai-docs.mjs';
+import { withoutGitLocation } from '../git/env.mjs';
 
 const SCRIPT = fileURLToPath(new URL('../docs/check-ai-docs.mjs', import.meta.url));
 
@@ -451,11 +452,36 @@ describe('review fixes', () => {
       '.gitignore': 'dist/\n',
       '_agents/detail.md': 'See `../../outside/notes.md` and `dist/bundle.js`.\n',
     });
-    execFileSync('git', ['init', '-q'], { cwd: root });
-    execFileSync('git', ['add', '.'], { cwd: root });
+    execFileSync('git', ['init', '-q'], { cwd: root, env: withoutGitLocation() });
+    execFileSync('git', ['add', '.'], { cwd: root, env: withoutGitLocation() });
     assert.deepEqual(
       checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId, h.message]),
       [['_agents/detail.md', 1, 'path', 'backticked path does not exist: ../../outside/notes.md']],
     );
+  });
+
+  it('reads the --root repository even when a git hook exports GIT_DIR', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.gitignore': 'dist/\n',
+      '_agents/detail.md': 'Built into `dist/bundle.js` from `src/missing.ts`.\n',
+    });
+    execFileSync('git', ['init', '-q'], { cwd: root, env: withoutGitLocation() });
+    execFileSync('git', ['add', '.'], { cwd: root, env: withoutGitLocation() });
+    const outer = makeFixture({ 'README.md': '# outer\n' });
+    execFileSync('git', ['init', '-q'], { cwd: outer, env: withoutGitLocation() });
+
+    const saved = process.env.GIT_DIR;
+    process.env.GIT_DIR = path.join(outer, '.git');
+    try {
+      // Reading the outer repository instead lists no files, so this hit disappears.
+      assert.deepEqual(
+        checkAiDocs({ root }).map(h => [h.file, h.ruleId, h.message]),
+        [['_agents/detail.md', 'path', 'backticked path does not exist: src/missing.ts']],
+      );
+    } finally {
+      if (saved === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = saved;
+    }
   });
 });

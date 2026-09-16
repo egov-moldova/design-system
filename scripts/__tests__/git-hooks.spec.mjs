@@ -6,6 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
+import { withoutGitLocation } from '../git/env.mjs';
+
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const COMMITLINT = path.join(ROOT, 'node_modules', '.bin', 'commitlint');
 const SETUP = path.join(ROOT, 'scripts', 'git', 'setup-merge-drivers.mjs');
@@ -18,8 +20,15 @@ function commitlint(message) {
   }).status;
 }
 
+// Every git this suite starts runs with withoutGitLocation(): under `.husky/pre-push`
+// an inherited GIT_DIR would point these scratch repos at the real repository.
 function git(cwd, ...args) {
-  return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  return execFileSync('git', args, {
+    cwd,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: withoutGitLocation(),
+  });
 }
 
 /** A repo whose one `merge=ours` file diverges on two branches. */
@@ -45,6 +54,7 @@ function merge(dir) {
   return spawnSync('git', ['-c', 'rerere.enabled=false', 'merge', '--no-edit', 'other'], {
     cwd: dir,
     encoding: 'utf8',
+    env: withoutGitLocation(),
   }).status;
 }
 
@@ -66,7 +76,7 @@ describe('setup-merge-drivers: merge=ours', () => {
 
   it('keeps the current branch copy once the setup script has run', () => {
     const dir = divergedRepo();
-    execFileSync(process.execPath, [SETUP], { cwd: dir, stdio: 'ignore' });
+    execFileSync(process.execPath, [SETUP], { cwd: dir, stdio: 'ignore', env: withoutGitLocation() });
     assert.equal(git(dir, 'config', '--get', 'merge.ours.driver').trim(), 'true');
     assert.equal(merge(dir), 0);
     assert.equal(fs.readFileSync(path.join(dir, 'generated.txt'), 'utf8'), 'ours\n');
@@ -74,7 +84,46 @@ describe('setup-merge-drivers: merge=ours', () => {
 
   it('exits 0 outside a git work tree, as in the Docker install stage', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'git-hooks-nogit-'));
-    const { status } = spawnSync(process.execPath, [SETUP], { cwd: dir, encoding: 'utf8' });
+    const { status } = spawnSync(process.execPath, [SETUP], { cwd: dir, encoding: 'utf8', env: withoutGitLocation() });
     assert.equal(status, 0);
+  });
+});
+
+describe('scratch repos under a git hook', () => {
+  it('leave the repository named by an inherited GIT_DIR untouched', () => {
+    const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'git-hooks-outer-'));
+    git(outer, 'init', '-q', '-b', 'work');
+    git(
+      outer,
+      '-c',
+      'user.name=outer',
+      '-c',
+      'user.email=outer@example.com',
+      'commit',
+      '-q',
+      '--allow-empty',
+      '-m',
+      'outer',
+    );
+    const snapshot = () => [
+      git(outer, 'for-each-ref'),
+      git(outer, 'symbolic-ref', 'HEAD'),
+      git(outer, 'config', '--local', '--list'),
+    ];
+    const before = snapshot();
+
+    // `.husky/pre-push` runs this suite with GIT_DIR set, as git does for every hook.
+    const saved = process.env.GIT_DIR;
+    process.env.GIT_DIR = path.join(outer, '.git');
+    try {
+      const dir = divergedRepo();
+      execFileSync(process.execPath, [SETUP], { cwd: dir, stdio: 'ignore', env: withoutGitLocation() });
+      assert.equal(merge(dir), 0);
+    } finally {
+      if (saved === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = saved;
+    }
+
+    assert.deepEqual(snapshot(), before);
   });
 });
