@@ -4,23 +4,28 @@
  *
  * Adds line/column locations for found issues and prints a clickable "path:line:col" link.
  *
- * Scans JSON files in --root directory for naming violations. Skips directories
+ * Scans JSON files in every --root directory for naming violations. Skips directories
  * (generated, dist, node_modules, .git) and files like style-dictionary*.config.json
  * and package.json (build/config files, not token data).
+ *
+ * Naming rule (.specs/TOKEN-ARCHITECTURE.md §4, tokens/_agents/naming-conventions.md):
+ * compound keys are camelCase (`optionFontFamily`); kebab-case keys (`base-inverse`, as
+ * generated from Figma) are accepted too. Errors: a key that starts uppercase or mixes the
+ * two (`option-fontFamily`). Warnings: underscores, dots, spaces.
  *
  * Usage:
  *   node scripts/tokens-lint.mjs
  *   node scripts/tokens-lint.mjs --root tokens/core --out reports/token-naming.json
+ *   node scripts/tokens-lint.mjs --root tokens/core --root tokens/core.dark
  *   node scripts/tokens-lint.mjs --vscode   # include vscode://file/ links in report
  *   node scripts/tokens-lint.mjs --no-color
  */
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import knownCssProperties from 'known-css-properties';
 
 const argv = process.argv.slice(2);
-let ROOT = 'tokens/core';
+const ROOTS = [];
 let OUT = null;
 let ALLOW_FILE = null;
 let NO_COLOR = !!process.env.NO_COLOR || !process.stdout.isTTY;
@@ -40,7 +45,7 @@ function take(flag, i) {
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a === '--root') {
-    ROOT = take(a, ++i);
+    ROOTS.push(take(a, ++i));
   } else if (a === '--out' || a === '--output') {
     OUT = take(a, ++i);
   } else if (a === '--allow-list') {
@@ -65,6 +70,7 @@ for (let i = 0; i < argv.length; i++) {
     process.exit(0);
   }
 }
+if (ROOTS.length === 0) ROOTS.push('tokens/core');
 
 const RESET = '\x1b[0m';
 const RED = '\x1b[31m';
@@ -77,45 +83,13 @@ function colorize(text, color) {
   return `${color}${text}${RESET}`;
 }
 
-// Seed the allowed set from the full standard CSS property list (sourced
-// from `known-css-properties` in kebab-case) and convert each to camelCase.
-// Rule: any real CSS property is fine as a camelCase token key; everything
-// else (composite/component naming) must be kebab-case.
-// Vendor-prefixed entries (-webkit-, -moz-, -epub-, -ms-, -o-) are dropped
-// since tokens don't reference those.
-function kebabToCamel(s) {
-  return s.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-}
+// camelCase compound keys are the documented convention; kebab-case keys (from Figma) are accepted too.
+// A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
+const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
+const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
 
-// Multi-word CSS *value keywords* and *function names* that legitimately
-// appear as token leaf names (e.g. `font.weight.extraBold`,
-// `linearGradient.primary`). known-css-properties only covers property
-// names, so these are added separately. Single-word entries (`bold`,
-// `italic`, `block`, `url`, ...) never trigger the rule.
-const CSS_EXTRA_ALLOWED = [
-  // font-weight values
-  'extraLight',
-  'semiBold',
-  'extraBold',
-  // font-stretch values
-  'ultraCondensed',
-  'extraCondensed',
-  'semiCondensed',
-  'semiExpanded',
-  'extraExpanded',
-  'ultraExpanded',
-  // <gradient> functions
-  'linearGradient',
-  'radialGradient',
-  'conicGradient',
-  'repeatingLinearGradient',
-  'repeatingRadialGradient',
-  'repeatingConicGradient',
-];
-
-const cssProperties = knownCssProperties.all.filter(p => !p.startsWith('-')).map(kebabToCamel);
-
-const allowedSet = new Set([...cssProperties, ...CSS_EXTRA_ALLOWED]);
+// Exact keys exempted through --allow-list.
+const allowedSet = new Set();
 
 async function loadAllowList(file) {
   try {
@@ -143,7 +117,8 @@ function toKebab(key) {
 
 function reasonFor(key) {
   const reasons = [];
-  if (/[A-Z]/.test(key)) reasons.push('contains uppercase letters (camelCase)');
+  if (hasBadCase(key))
+    reasons.push('uppercase letters outside lowerCamelCase (leading capital or mixed with kebab-case)');
   if (key.includes('.')) reasons.push('contains dot character (.)');
   if (key.includes('_')) reasons.push('contains underscore (_)');
   if (key.includes(' ')) reasons.push('contains space');
@@ -261,15 +236,15 @@ function makeVscodeUri(filePath, pos) {
 }
 
 function checkKey(key, keyPath, filePath, position) {
-  const hasUpper = /[A-Z]/.test(key);
+  const badCase = hasBadCase(key);
   const hasDot = key.includes('.');
   const hasUnderscore = key.includes('_');
   const hasSpace = key.includes(' ');
-  const containsProblem = hasUpper || hasDot || hasUnderscore || hasSpace;
-  const isAllowedCss = allowedSet.has(key);
+  const containsProblem = badCase || hasDot || hasUnderscore || hasSpace;
+  const isAllowed = allowedSet.has(key);
 
-  if (containsProblem && !isAllowedCss) {
-    const severity = hasUpper ? 'error' : 'warning';
+  if (containsProblem && !isAllowed) {
+    const severity = badCase ? 'error' : 'warning';
     const link = makeClickablePath(filePath, position);
     const vscodeLink = INCLUDE_VSCODE_LINK ? makeVscodeUri(filePath, position) : null;
     results.push({
@@ -283,15 +258,15 @@ function checkKey(key, keyPath, filePath, position) {
       link,
       vscodeLink,
     });
-  } else if (containsProblem && isAllowedCss && VERBOSE) {
-    if (VERBOSE) console.log('Allowed CSS property (camelCase) at', keyPath.join('.'), 'in', filePath);
+  } else if (containsProblem && isAllowed && VERBOSE) {
+    console.log('Allow-listed key at', keyPath.join('.'), 'in', filePath);
   }
 }
 
 (async function main() {
   if (ALLOW_FILE) await loadAllowList(ALLOW_FILE);
-  console.log('Scanning:', ROOT);
-  await walk(ROOT);
+  console.log('Scanning:', ROOTS.join(', '));
+  for (const root of ROOTS) await walk(root);
 
   // walk() is now parallel, so sort for stable output.
   results.sort((a, b) => {
@@ -330,7 +305,7 @@ function checkKey(key, keyPath, filePath, position) {
   }
 
   const summary = {
-    scannedRoot: ROOT,
+    scannedRoot: ROOTS.join(', '),
     filesScanned,
     issuesFound: results.length,
     errorCount: errors,
