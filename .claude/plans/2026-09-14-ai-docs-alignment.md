@@ -701,8 +701,10 @@ a check that runs without anyone remembering it prevents the next round.
   `>=24 <25` and `@egov-moldova/mud`, sourced from `STACK.md` / `package.json`.
 - [ ] **7.4** PR description: link this plan and the report; paste Phase 0.2 before/after
   counts; list the decisions taken (D1–D4) and who took them.
-- [ ] **7.5** Move this plan and the report to `.claude/plans/_archive/` in the PR that closes
-  the last phase.
+- [ ] ~~**7.5** Move this plan and the report to `.claude/plans/_archive/` in the PR that closes
+  the last phase.~~ Dropped: `main` keeps finished dated plans in `.claude/plans/`
+  (`2026-08-26-*`, `2026-09-11-*`, `2026-09-15-*`); `_archive/` holds only the undated legacy
+  plans (decision D3), and the PR description links both files at their current paths.
 
 ---
 
