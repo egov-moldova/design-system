@@ -424,10 +424,19 @@ yarn test --e2e --findRelatedTests src/components/mud-[name]/test/mud-[name].e2e
 Skipped if `--skip-visual` flag set.
 
 
-Run pixel-perfect comparison against Figma:
+Run the `pixel-perfect` skill. With a Figma state manifest (`src/components/mud-[name]/test/mud-[name].figma.json`):
+
+```bash
+node scripts/audit/15-style-parity.mjs mud-[name] --json
+node scripts/audit/11-pixel-diff-states.mjs mud-[name] --json
+```
+
+**Pass criteria**: 0 `STYLE-MISMATCH`, 0 `STYLE-UNEXPECTED-ELEMENT`, every pixel state < 0.5% (or explained). A missing manifest is a WARN finding.
+
+Without a manifest, fall back to a single capture (story ids come from the story title — `node scripts/audit/05-story-exports.mjs mud-[name] --json`):
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-[name]--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=<story-id>" })
 mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/current.png" })
 mcp__image-compare__compare_images({
   image1_path: ".playwright-mcp/figma-ref.png",

@@ -13,7 +13,7 @@ The audit runs in three layers. Each layer has a distinct responsibility, runtim
 
 | Layer | What runs | When | Skips if |
 |---|---|---|---|
-| **L1 — Deterministic scripts** | `run-all.mjs` orchestrates scripts 01–14 in 3 parallel waves (A static · B build · C browser). Pure I/O + math; byte-identical output across runs. | local + CI | Wave C only: `--no-browser` or `--ci` or `process.env.CI` |
+| **L1 — Deterministic scripts** | `run-all.mjs` orchestrates scripts 01–15 in 3 parallel waves (A static · B build · C browser). Pure I/O + math; byte-identical output across runs. | local + CI | Wave C only: `--no-browser` or `--ci` or `process.env.CI` |
 | **L2 — AI MCP browser checks** | Mandatory BX checklist + archetype-specific CX + discretionary DX. Drives MCP Playwright (`mcp__playwright__browser_*`) to verify keyboard nav, focus traps, form validation, light/dark structural diff — things scripts cannot adapt to per-component. | local only | `--fast` OR `ciDetected` OR MCP unavailable |
 | **L3 — Cross-layer synthesis** | AI correlates L1 + L2 findings, escalates severity, emits the Check Matrix + Verdict. | local + CI | never |
 
@@ -152,10 +152,11 @@ The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
 | 08 | `08-bundle-size.mjs` | dist size + per-chunk attribution |
 | 09 | `09-a11y-tree.mjs` | DOM-derived accessibility tree (role/name/children) + interactive-element census, scoped to the audited component's subtree (host + light DOM + own shadow root) — light + dark |
 | 10 | `10-contrast-pairs.mjs` | WCAG 2.1 AA contrast on every interactive element (light + dark) |
-| 11 | `11-pixel-diff-states.mjs` | Pixelmatch diff vs Figma references for every story (light + dark) |
+| 11 | `11-pixel-diff-states.mjs` | Pixelmatch diff vs Figma references for every state of the component's Figma state manifest (story mode when there is none) |
 | 12 | `12-console-errors.mjs` | console.error / pageerror per story |
 | 13 | `13-token-diff.mjs` | DTCG diff vs Figma export |
 | 14 | `14-component-contract.mjs` | full API surface (props/events/methods/slots/formAssociated) |
+| 15 | `15-style-parity.mjs` | computed styles vs the exact values the Figma nodes specify, per manifest state; `absent` entries catch elements with no design |
 
 After consuming the envelope, **only the judgment-heavy steps remain for AI**.
 The orchestrator hands you raw findings; you still own:
@@ -752,10 +753,11 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 | 08 | Bundle size                     |  ✅    | 0 | 0 | 0 | script 08          |
 | 09 | Accessibility tree (light+dark) |  ⚠️    | 0 | 2 | 0 | script 09 + AI ARIA |
 | 10 | Contrast pairs (light+dark)     |  ❌    | 1 | 0 | 0 | script 10          |
-| 11 | Pixel diff vs Figma             |  ⏭️    | – | – | – | --figma-dir absent |
+| 11 | Pixel diff vs Figma             |  ⏭️    | – | – | – | no Figma state manifest |
 | 12 | Console errors                  |  ✅    | 0 | 0 | 0 | script 12          |
 | 13 | Token diff                      |  ✅    | 0 | 0 | 0 | script 13          |
 | 14 | Component contract              |  ✅    | 0 | 0 | 0 | script 14          |
+| 15 | Style parity vs Figma           |  ⏭️    | – | – | – | no Figma state manifest |
 | BX1 | L2: Hydration + first paint    |  ✅    | – | – | – | MCP browser_snapshot |
 | BX2 | L2: Tab order on focusables    |  ✅    | – | – | – | MCP browser_press_key |
 | BX3 | L2: Focus-visible ring         |  ✅    | – | – | – | MCP browser_evaluate |
@@ -823,7 +825,7 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 
 **Rules for the matrix**
 
-- Drive every L1 numbered row (01–14) from `findingsByTool[<name>]` — counts come from the per-script `summary` block.
+- Drive every L1 numbered row (01–15) from `findingsByTool[<name>]` — counts come from the per-script `summary` block.
 - L2 rows (BX1–BX7, CX, DX) come from the AI session record — ✅ if the MCP call succeeded and the assertion passed; ❌ if assertion failed; ⏭️ if step was attempted and aborted (with reason); ➖ if step was N/A for the archetype.
 - Status mapping for L1:
   - `❌` if `summary.errors > 0`

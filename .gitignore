@@ -23,6 +23,8 @@ node_modules/
 .stencil/
 .wireit/
 .playwright-mcp
+.audit-screenshots/
+.audit-figma/
 .remember/
 .sass-cache/
 .versions/

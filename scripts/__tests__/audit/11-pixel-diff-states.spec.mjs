@@ -2,8 +2,9 @@
  * Smoke tests for scripts/audit/11-pixel-diff-states.mjs
  *
  * Pure helpers only. The browser + Pixelmatch flow is verified by:
- *   1. The smoke test for scripts/visual-diff.mjs (existing) covers Pixelmatch.
- *   2. Browser flow is tested manually once Playwright is installed.
+ *   1. image-diff.spec.mjs — canvas preparation and Pixelmatch.
+ *   2. Running the script against Storybook with the committed
+ *      mud-date-picker manifest (needs Playwright's browser installed).
  */
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -17,6 +18,7 @@ import {
   pickReferencePath,
   DEFAULT_PASS,
   DEFAULT_WARN,
+  DEFAULT_SCALE,
 } from '../../audit/11-pixel-diff-states.mjs';
 
 const tempDirs = [];
@@ -76,6 +78,10 @@ describe('11-pixel-diff-states: classifyDiff', () => {
     assert.equal(DEFAULT_PASS, 0.5);
     assert.equal(DEFAULT_WARN, 2.0);
   });
+
+  it('captures at the 2x scale Figma exports by default', () => {
+    assert.equal(DEFAULT_SCALE, 2);
+  });
 });
 
 describe('11-pixel-diff-states: kebabCase', () => {
@@ -101,9 +107,22 @@ describe('11-pixel-diff-states: pickReferencePath', () => {
     assert.equal(pickReferencePath(dir, 'Default', 'dark'), path.join(dir, 'default-dark.png'));
   });
 
-  it('falls back to <state>.png when theme-specific not found', () => {
+  it('never compares a dark capture with a light or theme-agnostic reference', () => {
+    // Regression: dark captures used to fall back to <state>.png and FAIL for
+    // every story that had no dark design.
+    const dir = tempFigmaDir(['default.png', 'default-light.png']);
+    assert.equal(pickReferencePath(dir, 'Default', 'dark'), null);
+  });
+
+  it('light prefers <state>-light.png, then <state>.png', () => {
+    assert.equal(
+      pickReferencePath(tempFigmaDir(['default.png', 'default-light.png']), 'Default', 'light').endsWith(
+        'default-light.png',
+      ),
+      true,
+    );
     const dir = tempFigmaDir(['default.png']);
-    assert.equal(pickReferencePath(dir, 'Default', 'dark'), path.join(dir, 'default.png'));
+    assert.equal(pickReferencePath(dir, 'Default', 'light'), path.join(dir, 'default.png'));
   });
 
   it('returns null when no candidate exists', () => {

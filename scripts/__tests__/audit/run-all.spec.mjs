@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { aggregate, AUDIT_SCRIPTS } from '../../audit/run-all.mjs';
+import { aggregate, AUDIT_SCRIPTS, selectScripts } from '../../audit/run-all.mjs';
 
 describe('run-all: AUDIT_SCRIPTS registry', () => {
   it('every script has id, wave, file, name', () => {
@@ -33,13 +33,46 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
     assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'B').length, 3);
   });
 
-  it('Wave C has 4 scripts (browser-driven)', () => {
-    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'C').length, 4);
+  it('Wave C has 5 scripts (browser-driven)', () => {
+    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'C').length, 5);
   });
 
   it('every Wave C script declares requiresBuild: "browser"', () => {
     for (const s of AUDIT_SCRIPTS.filter(s => s.wave === 'C')) {
       assert.equal(s.requiresBuild, 'browser', `${s.id} should declare requiresBuild=browser`);
+    }
+  });
+});
+
+describe('run-all: selectScripts', () => {
+  const base = { only: new Set(), skip: new Set(), noBrowser: false, ci: false, figmaDir: null, component: null };
+  const ids = args => selectScripts({ ...base, ...args }).map(s => s.id);
+
+  it('drops the Figma scripts for a component without a state manifest', () => {
+    const selected = ids({ component: 'mud-button' });
+    assert.equal(selected.includes('11'), false);
+    assert.equal(selected.includes('15'), false);
+  });
+
+  it('runs both Figma scripts for a component that has a manifest', () => {
+    const selected = ids({ component: 'mud-date-picker' });
+    assert.equal(selected.includes('11'), true);
+    assert.equal(selected.includes('15'), true);
+  });
+
+  it('keeps 11 in story mode via --figma-dir, but not 15', () => {
+    const selected = ids({ component: 'mud-button', figmaDir: './refs' });
+    assert.equal(selected.includes('11'), true);
+    assert.equal(selected.includes('15'), false);
+  });
+
+  it('drops every Wave C script in CI and with --no-browser', () => {
+    for (const args of [{ ci: true }, { noBrowser: true }]) {
+      const selected = selectScripts({ ...base, component: 'mud-date-picker', ...args });
+      assert.equal(
+        selected.some(s => s.wave === 'C'),
+        false,
+      );
     }
   });
 });

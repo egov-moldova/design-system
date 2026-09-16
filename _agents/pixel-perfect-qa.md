@@ -1,200 +1,54 @@
-# Pixel-Perfect QA Loop — Steps 1–8
+# Pixel-Perfect QA
 
 ## Scope
 
-Core QA workflow: Figma vs Storybook visual comparison. **Every component MUST pass this before completion. Read during QA phase.**
+Figma vs Storybook verification. **Every component MUST pass this before completion.**
 
-## Contents
+The procedure lives in the `pixel-perfect` skill — [`.claude/skills/pixel-perfect/SKILL.md`](../.claude/skills/pixel-perfect/SKILL.md) — which Claude Code loads on demand. This file keeps the project rules the skill applies; it does not repeat the steps.
 
-- Step 1: Extract Figma Design
-- Step 1.25: agent-browser Pre-Flight (structural smoke test)
-- Step 1.5: CSS Variable Existence Check (mandatory)
-- Step 2: Capture Storybook Render
-- Step 3: Compare & Identify Differences (tolerances)
-- Step 4: Fix Discrepancies
-- Step 5: Re-test After Fix (targeted builds)
-- Step 6: Test ALL States (batch + individual + checklist)
-- Step 7: Responsive Testing (molecules/organisms)
-- Step 8: Per-Component Summary
+## The loop
 
----
+1. Preflight — Storybook on 6007, `npx playwright install chromium-headless-shell` once, a working Figma route
+2. Extract every variant and state from the Figma component set
+3. Write the Figma state manifest — `src/components/<name>/test/<name>.figma.json`
+4. Export references — `node scripts/audit/figma-refs.mjs <name>`
+5. Exact style parity — `node scripts/audit/15-style-parity.mjs <name> --json`
+6. Screenshot diff — `node scripts/audit/11-pixel-diff-states.mjs <name> --json`
+7. Fix token → CSS → TSX, re-run 5–6 (targeted rebuilds: `yarn tokens.build` ~5s, Stencil watch ~2–5s, story HMR ~1s)
+8. Report per the skill template
 
-## Step 1: Extract Figma Design
+`pixel-perfect-verifier` runs steps 1–6 read-only for orchestrators.
 
-```text
-1. figma_get_design_context({ nodeId: "...", forceCode: true })  → Exact specs
-2. figma_get_screenshot({ nodeId: "..." })                       → Reference image
-3. figma_get_variable_defs({ nodeId: "..." })                    → Token values
-```
+## Tolerances
 
-## Step 1.25: agent-browser Pre-Flight (structural smoke test)
+**Zero tolerance** — checked by `15-style-parity`: colours, border radius, spacing, dimensions, borders, shadows, opacity, typography values.
 
-**Before any Playwright/screenshot work**: confirm the component renders and has correct structure. Costs near-zero context — catches missing story exports, broken imports, or wrong element tag before spending screenshot tokens.
+**Rendering tolerance** — judged on the diff image: font kerning ±2px, line height ±1px, anti-aliasing ±0.5px.
 
-```bash
-agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-[name]--default&viewMode=story
-```
+**Pixel diff**: < 0.5% PASS · < 2% WARNING (inspect the diff image) · ≥ 2% FAIL.
 
-**Check the output tree for**:
-- Component element is present (not empty page or error)
-- Correct ARIA role (e.g. `role="button"`, `role="textbox"`, `role="combobox"`)
-- Accessible name / label rendered
-- No obvious error nodes
+Never round a Figma value and never hardcode one in CSS — trace it to a token (`AGENTS.md` rules 2 and 5).
 
-**If tree is empty or shows error** → stop. Fix the story/component before proceeding to Playwright steps.
+## States to cover
 
-**If tree looks correct** → proceed to Step 1.5.
+The manifest needs one state per Figma state the component has:
 
-> See `_agents/mcp-tools.md` § Browser Tool Decision Guide for the full agent-browser vs Playwright MCP decision matrix.
+| State | How the manifest triggers it |
+| --- | --- |
+| Default | fixture (`html`) |
+| Hover | `interaction: { "type": "hover" }` |
+| Focus | `interaction: { "type": "focus" }` — keyboard focus, matches `:focus-visible` |
+| Active / pressed | `interaction: { "type": "press" }` |
+| Open view (menu, month picker) | `interaction: [{ "type": "click" }, …]` |
+| Disabled / invalid / selected | fixture attributes |
+| Dark theme | `"theme": "dark"` with a reference exported from the dark Figma frame |
+| Breakpoints | fixture width or `viewport` |
+| Elements the design does not have | `expect: [{ "target": "…", "absent": true }]` |
 
----
+## Responsive (molecules and organisms)
 
-## Step 1.5: CSS Variable Existence Check (MANDATORY)
+Add manifest states at the Figma breakpoints (mobile 375, tablet 768, desktop 1440 unless the design says otherwise). Verify: no horizontal scroll, no overflow, proper stacking, text ≥ 14px on mobile.
 
-**Before screenshots**: Verify all CSS variables resolve. Catches token/CSS mismatches immediately.
+## Accessibility alongside fidelity
 
-```javascript
-browser_evaluate({
-  function: `() => {
-    const component = document.querySelector('mud-[name]');
-    const container = component?.shadowRoot?.querySelector('.container');
-    const s = container ? window.getComputedStyle(container) : null;
-    return { backgroundColor: s?.backgroundColor, color: s?.color, fontSize: s?.fontSize };
-  }`
-})
-```
-
-**Check**: All values are NOT `rgba(0, 0, 0, 0)`, `initial`, or `inherit` (unless intentionally transparent).
-
-If CSS variable doesn't exist:
-
-1. Check `dist/mud/tokens/core.tokens.css`
-2. Verify token in `tokens/core/components/*.tokens.json`
-3. Check naming (camelCase vs kebab-case per `_agents/pre-implementation.md`)
-4. Fix → rebuild per `_agents/environment-commands.md` → retry
-
----
-
-## Step 2: Capture Storybook Render
-
-```text
-1. Ensure Storybook on port 6007
-2. browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-[name]--default&viewMode=story" })
-3. browser_wait_for({ time: 2 })
-4. browser_take_screenshot({ type: "png", filename: ".playwright-mcp/storybook-render.png" })
-```
-
-## Step 3: Compare & Identify Differences
-
-Use `browser_evaluate` to compare computed styles:
-
-- [ ] **Dimensions**: width, height, min-height, min-width (px exact)
-- [ ] **Spacing**: padding (all sides), margin, gap (px exact)
-- [ ] **Typography**: font-family, font-size, font-weight, line-height, letter-spacing
-- [ ] **Colors**: background-color, color, border-color (hex exact)
-- [ ] **Borders**: border-width, border-style, border-radius
-- [ ] **Shadows**: box-shadow
-- [ ] **Icons**: size, color, spacing
-- [ ] **Opacity**: for disabled states
-- [ ] **Alignment**: flex alignment, text-align
-
-### Tolerances
-
-**Acceptable** (OS/browser rendering): Font kerning ±2px, line height ±1px, anti-aliasing ±0.5px
-
-**Must match exactly** (zero tolerance): Colors, border radius, spacing, dimensions, shadows, opacity
-
-Within tolerance → move on. Exceeds tolerance → fix before proceeding.
-
-## Step 4: Fix Discrepancies
-
-1. Re-extract from Figma if unclear — don't assume
-2. Identify the controlling token
-3. Check token in `tokens/core/components/`
-4. Token exists → fix value → rebuild per `_agents/environment-commands.md`
-5. Token missing → create → reference core tokens → rebuild per `_agents/environment-commands.md`
-6. CSS issue → fix `.css` with correct `var(--token-name)`
-7. **Never hardcode** — trace back to tokens
-8. **Never round** — use exact Figma values
-
-## Step 5: Re-test After Fix
-
-Use minimal rebuild per `_agents/environment-commands.md`:
-
-- Token fix → `yarn tokens.build` (~5s)
-- CSS/TSX fix → wait for Stencil watch (~2-5s)
-- Story fix → nothing (HMR ~1s)
-
-Then: refresh → screenshot → compare again → REPEAT until identical.
-
-## Step 6: Test ALL States
-
-### 6a: Batch Check — AllStatesTable Story
-
-Build grid story, screenshot entire grid, catch obvious mismatches early.
-
-### 6b: Individual State Testing
-
-| State | How to Trigger | What to Verify |
-| --- | --- | --- |
-| **Default** | Load story | Colors, spacing, typography |
-| **Hover** | `browser_hover` | Background, border, text color |
-| **Active** | `browser_click` (hold) | Darker/shifted colors |
-| **Focus** | `browser_press_key({ key: "Tab" })` | Focus ring, background |
-| **Disabled** | Set `disabled` prop | Muted colors, `cursor: not-allowed` |
-| **Invalid** | Set `invalid` prop | Error border, helper text color |
-| **Skeleton** | Set `skeleton` prop | Loading placeholder |
-| **With content** | Slot text/icons | Alignment, gap, overflow |
-| **Empty** | No slot content | Graceful empty state |
-
-### 6c: Design Fidelity Checklist
-
-- [ ] Container width matches Figma
-- [ ] Padding matches all sides
-- [ ] Font family, size, weight, line-height match
-- [ ] Background, border, text colors match
-- [ ] All interactive states verified
-- [ ] Icons render correctly with correct size/color
-- [ ] Color contrast ≥4.5:1 for text
-- [ ] Focus indicators visible
-- [ ] Touch targets ≥44×44px
-
-## Step 7: Responsive Testing (Molecules & Organisms)
-
-```text
-browser_resize({ width: 375, height: 667 })   # Mobile
-browser_resize({ width: 768, height: 1024 })   # Tablet
-browser_resize({ width: 1440, height: 900 })   # Desktop
-```
-
-Verify: no horizontal scroll, no overflow, proper stacking, text ≥14px on mobile.
-
-## Step 8: Per-Component Summary
-
-```markdown
-## mud-[name] — Implementation Complete
-- **Tokens**: [created/reused] in `tokens/core/components/[name].tokens.json`
-- **States verified**: default ✅, hover ✅, active ✅, focus ✅, disabled ✅
-- **Responsive**: ✅ 375px | ✅ 768px | ✅ 1440px (atoms: N/A)
-- **Console errors**: none
-- **Story**: `src/components/mud-[name]/mud-[name].stories.ts`
-```
-
-**Auto-proceed** (single component, zero mismatches): show inline, continue to verification.
-**Multi-component**: accumulate summaries, present all at once. **STOP and wait** per `_agents/workflow-rules.md`.
-
-### Computed Style Verification
-
-When screenshots aren't conclusive:
-
-```javascript
-browser_evaluate({
-  function: `() => {
-    const el = document.querySelector('mud-button')?.shadowRoot?.querySelector('.button')
-      || document.querySelector('mud-button');
-    const s = window.getComputedStyle(el);
-    return { bg: s.backgroundColor, color: s.color, padding: s.padding,
-             fontSize: s.fontSize, fontWeight: s.fontWeight, borderRadius: s.borderRadius };
-  }`
-})
-```
+Colour contrast ≥ 4.5:1 for text, visible focus indicators, touch targets ≥ 44×44px — see `accessibility-compliance`. When a Figma value fails WCAG 2.1 AA, report it as a design question rather than shipping either silently.

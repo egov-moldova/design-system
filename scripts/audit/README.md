@@ -41,7 +41,11 @@ scripts/audit/
 ├── lib/
 │   ├── changed-components.mjs       — git diff vs main, returns mud-* names
 │   ├── component-paths.mjs          — resolve mud-X → canonical file paths
-│   ├── browser-context.mjs          — lazy Playwright wrapper + install hint
+│   ├── browser-context.mjs          — lazy Playwright wrapper + install hints (package, browser binary)
+│   ├── figma-manifest.mjs           — Figma state manifest: schema, validation, state resolution
+│   ├── state-page.mjs               — render a manifest state (fixture, clock, theme, interactions) + capture
+│   ├── image-diff.mjs               — Pixelmatch with background flattening and canvas alignment
+│   ├── style-values.mjs             — normalise/compare CSS values (colours, lengths, shadows)
 │   ├── storybook-helpers.mjs        — port probe (TCP, no shell), URL builder
 │   ├── ts-parser.mjs                — TypeScript compiler API wrappers
 │   ├── cli-args.mjs                 — shared --json/--out/--all/--changed parsing
@@ -61,6 +65,8 @@ scripts/audit/
 ├── 10-contrast-pairs.mjs            (Wave C — Playwright + Storybook)
 ├── 11-pixel-diff-states.mjs         (Wave C — Playwright + Pixelmatch + Figma refs)
 ├── 12-console-errors.mjs            (Wave C — Playwright + Storybook)
+├── 15-style-parity.mjs              (Wave C — Playwright + Figma state manifest)
+├── figma-refs.mjs                   — export Figma reference PNGs for a manifest (REST or MCP call)
 └── run-all.mjs                      — orchestrator (parallel within wave, sequential across waves)
 
 scripts/scaffold/
@@ -160,7 +166,9 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 | `yarn audit:contract <X>`          | run 14 |
 | `yarn audit:a11y-tree <X>`         | run 09 (needs Storybook + Playwright) |
 | `yarn audit:contrast-pairs <X>`    | run 10 (needs Storybook + Playwright) |
-| `yarn audit:pixel-diff <X> --figma-dir ...` | run 11 (needs Storybook + Playwright + refs) |
+| `yarn audit:pixel-diff <X>`        | run 11 (needs Storybook + Playwright + refs; `--figma-dir` in story mode) |
+| `yarn audit:style-parity <X>`      | run 15 (needs Storybook + Playwright + Figma state manifest) |
+| `yarn audit:figma-refs <X>`        | export Figma references for the manifest (FIGMA_TOKEN, else prints the MCP call) |
 | `yarn audit:console-errors <X>`    | run 12 (needs Storybook + Playwright) |
 | `yarn audit:all <X>`               | orchestrator (all waves) |
 | `yarn audit:all:no-browser <X>`    | orchestrator without Wave C |
@@ -170,7 +178,7 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 ## Orchestrator (`run-all.mjs`)
 
 ```bash
-# All checks for one component (skips 11 if --figma-dir not provided)
+# All checks for one component (11 and 15 run when the component has a Figma state manifest)
 node scripts/audit/run-all.mjs mud-button --json
 
 # Skip browser waves (for CI without Playwright, or pre-commit speed)
@@ -262,6 +270,10 @@ preference at plan time: Playwright's built-in pixel compare has a wider
 error margin and misses subtle drift the team has historically caught with
 Pixelmatch.
 
+`scripts/visual-diff.mjs` exits 0 on PASS/WARNING, 1 on FAIL, and 2 on a usage
+error or unreadable image (that last case used to exit 1, which 11 read as a
+diff result).
+
 Thresholds (tune via `--pass-threshold` / `--warn-threshold`):
 
 | diff %        | status   | note                                     |
@@ -269,6 +281,33 @@ Thresholds (tune via `--pass-threshold` / `--warn-threshold`):
 | `< 0.5`       | PASS     | accepted (per project default)           |
 | `< 2.0`       | WARNING  | `requires-ai-review: true` — open diff   |
 | `>= 2.0`      | FAIL     | blocks merge                              |
+
+## Figma verification — manifest, style parity, pixel diff
+
+The procedure is the `pixel-perfect` skill (`.claude/skills/pixel-perfect/SKILL.md`).
+The scripts share one input: the component's **Figma state manifest**,
+`src/components/<name>/test/<name>.figma.json` — every state cites a Figma
+node, says how to render it (fixture `html`, `theme`, `clock`, `interaction`),
+and lists the exact values the node specifies (`expect`) plus elements the
+design does not have (`absent`). Schema: `lib/figma-manifest.mjs`. Example:
+`src/components/mud-date-picker/test/mud-date-picker.figma.json`.
+
+```bash
+node scripts/audit/figma-refs.mjs mud-date-picker            # .audit-figma/mud-date-picker/<state>.png
+node scripts/audit/15-style-parity.mjs mud-date-picker --json
+node scripts/audit/11-pixel-diff-states.mjs mud-date-picker --json
+```
+
+What makes the pixel percentage meaningful:
+
+| Problem | Before | Now |
+|---|---|---|
+| Figma exports at 2×, captures were 1× | canvases never matched | captures at `--scale` (default 2) |
+| Figma exports include drop-shadow bleed | capture cropped at the border box | clip grows by the element's own `box-shadow` extents |
+| Transparent Figma surround | pixelmatch 7 blends alpha against a checkerboard → whole margin red | both images flattened onto the page background |
+| Different heights padded around the centre | an extra footer shifted every pixel | top-left alignment + `PIXEL-SIZE-MISMATCH` in CSS px |
+| Dark capture vs light reference | guaranteed FAIL | dark only against `<state>-dark.png` / dark states |
+| "today", hover, focus, open views | not reachable | `clock`, `interaction` (hover, focus, press, click) |
 
 ## CI integration
 
@@ -317,7 +356,8 @@ audit findings yet. Flip to `false` after a sprint of clean runs.
 
 ## See also
 
-- `scripts/visual-diff.mjs` — Pixelmatch wrapper used by 11.
+- `scripts/visual-diff.mjs` — Pixelmatch CLI used by 11 (algorithm in `lib/image-diff.mjs`).
+- `.claude/skills/pixel-perfect/SKILL.md` — how AI authors manifests and judges 11 / 15 findings.
 - `scripts/audit-token-contrast.mjs` — token-level WCAG audit (10 is the
   component-runtime equivalent; both share the same luminance math).
 - `scripts/tokens-validate.mjs` — DTCG validation; the orchestrator does NOT
