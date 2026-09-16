@@ -190,6 +190,8 @@ describe('mud-toast', () => {
       const { root } = await render(<mud-toast variant="error">Eroare</mud-toast>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
       expect(icon?.getAttribute('name')).toBe('circle-error');
+      // The style used to ride in the name; assert it where it lives now.
+      expect(icon?.getAttribute('variant')).toBe('filled');
     });
 
     it('uses the filled circle-checkmark for the success variant', async () => {
