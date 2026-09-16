@@ -81,6 +81,13 @@
   color: var(--date-input-label-required-mark-color);
 }
 
+/* The mark (12px) sits below mud-icon's smallest `size` (16), so the icon's own
+   box is overridden here; without it the 16px icon overflows the 12px mark. */
+.required-mark mud-icon {
+  inline-size: var(--date-input-label-required-mark-size);
+  block-size: var(--date-input-label-required-mark-size);
+}
+
 :host(:not(.has-label)) .label {
   display: none;
 }

@@ -118,10 +118,11 @@ describe('mud-date-input', () => {
       const { root } = await render(<mud-date-input label="x" required></mud-date-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      // Figma draws the mark as the 12/asterisk icon (2975:10179).
+      // Figma draws the mark as the 12/asterisk icon (2975:10179). mud-icon's
+      // smallest rung is 16; the stylesheet shrinks its box to the 12px mark.
       const icon = mark?.querySelector('mud-icon');
       expect(icon?.getAttribute('name')).toBe('asterisk');
-      expect(icon?.getAttribute('size')).toBe('12');
+      expect(icon?.getAttribute('size')).toBe('16');
     });
 
     it('omits the required mark when `required` is unset', async () => {
