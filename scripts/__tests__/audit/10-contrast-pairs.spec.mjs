@@ -14,6 +14,9 @@ import {
   contrastRatio,
   classifyContrast,
   buildPair,
+  formatColor,
+  resolveBackground,
+  DEFAULT_CANVAS,
 } from '../../audit/10-contrast-pairs.mjs';
 
 describe('10-contrast-pairs: parseColor', () => {
@@ -133,6 +136,48 @@ describe('10-contrast-pairs: classifyContrast', () => {
   });
 });
 
+describe('10-contrast-pairs: resolveBackground', () => {
+  it('uses the nearest opaque layer', () => {
+    const bg = resolveBackground(['rgb(0, 88, 210)', 'rgb(255, 255, 255)']);
+    assert.deepEqual(bg, { r: 0, g: 88, b: 210, a: 1 });
+  });
+
+  it('sees through a fully transparent element to the layer behind it', () => {
+    // The issue-49 shape: <mud-tab> paints nothing, the story canvas is white.
+    const bg = resolveBackground(['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)', 'rgb(255, 255, 255)']);
+    assert.equal(formatColor(bg), 'rgb(255, 255, 255)');
+  });
+
+  it('composites a partially transparent layer over what is behind it', () => {
+    const bg = resolveBackground(['rgba(0, 0, 0, 0.5)', 'rgb(255, 255, 255)']);
+    assert.equal(formatColor(bg), 'rgb(128, 128, 128)');
+  });
+
+  it('composites every partially transparent layer, farthest first', () => {
+    const bg = resolveBackground(['rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.5)', 'rgb(255, 255, 255)']);
+    assert.equal(formatColor(bg), 'rgb(64, 64, 64)');
+  });
+
+  it('falls back to the canvas when no layer paints anything', () => {
+    assert.equal(formatColor(resolveBackground(['rgba(0, 0, 0, 0)'])), DEFAULT_CANVAS);
+    assert.equal(formatColor(resolveBackground([])), DEFAULT_CANVAS);
+  });
+
+  it('takes the dark canvas when the page reports one', () => {
+    const bg = resolveBackground(['rgba(0, 0, 0, 0)'], { fallback: 'rgb(18, 18, 18)' });
+    assert.equal(formatColor(bg), 'rgb(18, 18, 18)');
+  });
+
+  it('ignores unparseable layers rather than throwing', () => {
+    const bg = resolveBackground(['not a color', 'rgb(255, 255, 255)']);
+    assert.equal(formatColor(bg), 'rgb(255, 255, 255)');
+  });
+
+  it('accepts a single layer that is not an array', () => {
+    assert.equal(formatColor(resolveBackground('rgb(255, 255, 255)')), 'rgb(255, 255, 255)');
+  });
+});
+
 describe('10-contrast-pairs: buildPair', () => {
   it('combines sample + ratio + classification', () => {
     const sample = {
@@ -161,5 +206,56 @@ describe('10-contrast-pairs: buildPair', () => {
     });
     assert.equal(pair.pass, false);
     assert.equal(pair.threshold, 4.5);
+  });
+
+  it('scores a transparent element against the backdrop, not against transparency', () => {
+    // Issue #49: measured on molecules-tabs--default, the selected tab is
+    // rgb(0, 88, 210) on the white story canvas — 6.31:1, which passes AA.
+    // Scoring it against its own rgba(0, 0, 0, 0) reported 3.33:1 and failed.
+    const pair = buildPair({
+      tag: 'mud-tab',
+      fg: 'rgb(0, 88, 210)',
+      bg: 'rgba(0, 0, 0, 0)',
+      bgStack: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)', 'rgb(255, 255, 255)'],
+      canvas: 'rgb(255, 255, 255)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'light',
+    });
+    assert.equal(pair.bg, 'rgb(255, 255, 255)');
+    assert.equal(pair.bgOwn, 'rgba(0, 0, 0, 0)');
+    assert.equal(pair.ratio, 6.31);
+    assert.equal(pair.pass, true);
+  });
+
+  it('still fails a genuinely low-contrast pair once the backdrop is resolved', () => {
+    const pair = buildPair({
+      tag: 'mud-tab',
+      fg: 'rgb(200, 200, 200)',
+      bg: 'rgba(0, 0, 0, 0)',
+      bgStack: ['rgba(0, 0, 0, 0)', 'rgb(255, 255, 255)'],
+      canvas: 'rgb(255, 255, 255)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'light',
+    });
+    assert.equal(pair.bg, 'rgb(255, 255, 255)');
+    assert.equal(pair.pass, false);
+    assert.ok(pair.ratio < 4.5, `expected a failing ratio, got ${pair.ratio}`);
+  });
+
+  it('measures a transparent element on a dark canvas against that canvas', () => {
+    const pair = buildPair({
+      tag: 'mud-tab',
+      fg: 'rgb(241, 241, 241)',
+      bg: 'rgba(0, 0, 0, 0)',
+      bgStack: ['rgba(0, 0, 0, 0)', 'rgb(30, 30, 30)'],
+      canvas: 'rgb(18, 18, 18)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'dark',
+    });
+    assert.equal(pair.bg, 'rgb(30, 30, 30)');
+    assert.equal(pair.pass, true);
   });
 });

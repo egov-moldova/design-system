@@ -11,6 +11,13 @@
  * the data source: this script reads runtime computed colors from the live
  * component, not from the token files.
  *
+ * The background of a pair is the COMPOSITED one: an element that paints no
+ * background of its own is scored against the layers behind it, walked across
+ * shadow boundaries up to the story canvas (`collectBackgroundStack` +
+ * `resolveBackground`). Taking the element's own `backgroundColor` instead
+ * scored transparent elements against `rgba(0, 0, 0, 0)` and reported
+ * compliant components as failures (issue #49).
+ *
  * Replaces AI work in:
  *   - `.claude/agents/a11y-verifier.md` Step 6 (light + dark contrast checks)
  *   - `.claude/agents/audit-production.md` Phase 3.3 (component-runtime contrast)
@@ -119,6 +126,43 @@ export function compositeOver(fg, bg) {
     b: Math.round(fg.b * fg.a + bg.b * (1 - fg.a)),
     a: 1,
   };
+}
+
+/** Serialize a parsed color back to the `rgb(r, g, b)` spelling of getComputedStyle. */
+export function formatColor({ r, g, b }) {
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/** The background the UA paints when no element in the chain paints one. */
+export const DEFAULT_CANVAS = 'rgb(255, 255, 255)';
+
+/**
+ * Composite a stack of background layers into the single opaque color that is
+ * actually painted behind an element.
+ *
+ * `layers` is ordered nearest-first — the element's own `backgroundColor`, then
+ * each ancestor's, as `collectBackgroundStack` in `measureSamples` gathers them.
+ * An element with no background of its own paints on whatever is behind it, so
+ * scoring it against its own `rgba(0, 0, 0, 0)` measures a color no user ever
+ * sees (issue #49). Painting order is farthest-first, so the fold runs from the
+ * end of the array back to the front, and a partially transparent layer is
+ * composited over what is behind it rather than used as-is.
+ *
+ * `fallback` is the story canvas — the page reads it from the `Canvas` system
+ * color, which resolves per `color-scheme`, so a dark story falls back to the
+ * dark canvas and not to white.
+ *
+ * Always returns an opaque color, which is what keeps `contrastRatio`'s
+ * "clamp a transparent background to opaque" branch off the runtime path.
+ */
+export function resolveBackground(layers, { fallback = DEFAULT_CANVAS } = {}) {
+  const stack = (Array.isArray(layers) ? layers : [layers]).map(parseColor).filter(Boolean);
+  const canvas = parseColor(fallback) ?? parseColor(DEFAULT_CANVAS);
+  let out = { ...canvas, a: 1 };
+  for (let i = stack.length - 1; i >= 0; i -= 1) {
+    out = compositeOver(stack[i], out);
+  }
+  return out;
 }
 
 /**
@@ -286,14 +330,36 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
 /**
  * Combine a runtime color sample with the WCAG classification. Pure — exported
  * for tests.
+ *
+ * `sample.bgStack` is the backdrop the browser pass collected (nearest-first);
+ * `bg` on the returned pair is that stack composited down to one opaque color,
+ * so the reported background is the one the user sees. `bgOwn` keeps the
+ * element's own `backgroundColor` for debugging. A sample with no stack —
+ * every caller outside `measureSamples` — is treated as a one-layer stack.
  */
 export function buildPair(sample) {
-  const ratio = contrastRatio(sample.fg, sample.bg);
+  const bgStack = sample.bgStack ?? [sample.bg];
+  const bg = formatColor(resolveBackground(bgStack, { fallback: sample.canvas ?? DEFAULT_CANVAS }));
+  const ratio = contrastRatio(sample.fg, bg);
   const cls = classifyContrast(ratio, sample.kind, { disabled: sample.disabled });
-  return { ...sample, ratio: cls.ratio, threshold: cls.threshold, pass: cls.pass, exempt: !!cls.exempt };
+  return {
+    ...sample,
+    bg,
+    bgOwn: sample.bg,
+    bgStack,
+    ratio: cls.ratio,
+    threshold: cls.threshold,
+    pass: cls.pass,
+    exempt: !!cls.exempt,
+  };
 }
 
-async function measureSamples(url, componentName, theme) {
+/**
+ * Drive one page and return a raw color sample per measured element. Exported
+ * so the fixture test in `scripts/__tests__/audit/` can run the backdrop walk
+ * against a hand-built shadow tree without a Storybook.
+ */
+export async function measureSamples(url, componentName, theme) {
   return withPage({
     url,
     waitUntil: 'load',
@@ -337,6 +403,47 @@ async function measureSamples(url, componentName, theme) {
           }
 
           const isTransparent = s => /^rgba?\(.*,\s*0\s*\)$/.test(s) || s === 'transparent';
+          // getComputedStyle returns `rgb(...)` whenever the alpha is 1 and
+          // `rgba(..., a)` otherwise, so the spelling alone settles opacity.
+          const isOpaque = s => /^rgb\(/.test(s);
+
+          // The background the UA paints when nothing in the chain paints one.
+          // `Canvas` is the CSS system color for exactly that surface and it
+          // resolves per `color-scheme`, so the dark pass gets the dark canvas
+          // instead of an assumed white. Read from a detached-from-layout probe
+          // so measuring the page cannot move it.
+          const canvasProbe = document.createElement('div');
+          canvasProbe.style.cssText = 'display: none; background-color: Canvas;';
+          document.documentElement.appendChild(canvasProbe);
+          const canvas = window.getComputedStyle(canvasProbe).backgroundColor;
+          canvasProbe.remove();
+
+          // Every background layer painted behind `el`, nearest first, stopping
+          // at the first opaque one. An element with no background of its own
+          // paints on what is behind it, so the element's own `backgroundColor`
+          // is only the first layer, never the answer (issue #49).
+          //
+          // Crossing shadow boundaries via `getRootNode().host` is what the
+          // host-only walk was missing: an element inside a shadow root has no
+          // `parentElement` at the root, but it still paints on the host's
+          // ancestors. `resolveBackground` composites the returned stack.
+          const collectBackgroundStack = el => {
+            const layers = [];
+            let node = el;
+            while (node && node.nodeType === 1) {
+              const color = window.getComputedStyle(node).backgroundColor;
+              layers.push(color);
+              if (isOpaque(color)) return layers;
+              const parent = node.parentElement;
+              if (parent) {
+                node = parent;
+                continue;
+              }
+              const root = node.getRootNode();
+              node = root && root.host ? root.host : null;
+            }
+            return layers;
+          };
 
           // When the host has a transparent background (typical: `:host { display: inline-flex }`
           // with no own bg), the real visual contrast lives on a shadow-root
@@ -348,6 +455,7 @@ async function measureSamples(url, componentName, theme) {
             const own = window.getComputedStyle(el);
             if (!isTransparent(own.backgroundColor)) {
               return {
+                el,
                 fg: own.color,
                 bg: own.backgroundColor,
                 fontSize: own.fontSize,
@@ -361,6 +469,7 @@ async function measureSamples(url, componentName, theme) {
                 const s = window.getComputedStyle(inner);
                 if (!isTransparent(s.backgroundColor)) {
                   return {
+                    el: inner,
                     fg: s.color,
                     bg: s.backgroundColor,
                     fontSize: s.fontSize,
@@ -384,12 +493,15 @@ async function measureSamples(url, componentName, theme) {
             const isHost = tag === ctx.componentName;
             const isInteractive = ctx.tags.includes(tag) || ctx.roles.includes(el.getAttribute('role') || '') || isHost;
 
-            let fg, bg, borderColor, fontSize, fontWeight, source;
+            let fg, bg, bgStack, borderColor, fontSize, fontWeight, source;
             if (isHost) {
               const pair = findRenderedPair(el);
               if (!pair) return []; // Pattern A wrapper — slotted child carries the measurement.
               fg = pair.fg;
               bg = pair.bg;
+              // From the element the pair was read off, not from the host: a
+              // shadow child's backdrop starts at that child.
+              bgStack = collectBackgroundStack(pair.el);
               fontSize = parseFloat(pair.fontSize) || 16;
               fontWeight = Number(pair.fontWeight) || 400;
               borderColor = window.getComputedStyle(el).borderTopColor;
@@ -398,6 +510,7 @@ async function measureSamples(url, componentName, theme) {
               const styles = window.getComputedStyle(el);
               fg = styles.color;
               bg = styles.backgroundColor;
+              bgStack = collectBackgroundStack(el);
               borderColor = styles.borderTopColor;
               fontSize = parseFloat(styles.fontSize) || 16;
               fontWeight = Number(styles.fontWeight) || 400;
@@ -420,6 +533,8 @@ async function measureSamples(url, componentName, theme) {
               role: el.getAttribute('role') || null,
               fg,
               bg,
+              bgStack,
+              canvas,
               borderColor,
               disabled: isDisabled,
               interactive: isInteractive,

@@ -62,8 +62,13 @@ What you get back per envelope:
   `outlineWidth`, `outlineStyle`, `outlineColor`); same shape under `dark`
   unless `--skip-dark` was passed.
 - **10 (contrast-pairs)** → `meta.pairs[]` with
-  `{ tag, theme, fg, bg, ratio, threshold, pass, exempt }` for every
-  interactive element.
+  `{ tag, theme, fg, bg, bgOwn, bgStack, ratio, threshold, pass, exempt }` for
+  every interactive element. `bg` is the COMPOSITED background — the layers
+  behind the element, walked across shadow boundaries up to the story canvas —
+  and is what the ratio is computed against. `bgOwn` is the element's own
+  `backgroundColor`, often `rgba(0, 0, 0, 0)`, and `bgStack` is the layer stack
+  `bg` was folded from; both are for debugging a surprising ratio, never for
+  judging contrast.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data
