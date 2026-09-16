@@ -217,7 +217,7 @@ export const WithIcon: Story = {
         <span>informație</span>
       </mud-separator>
       <mud-separator variant="mild">
-        <mud-icon name="circle-checkmark-filled" size="16"></mud-icon>
+        <mud-icon name="circle-checkmark" variant="filled" size="16"></mud-icon>
       </mud-separator>
     </div>
   `,

@@ -160,7 +160,7 @@ export class MudBanner {
         <div class="content">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-              <mud-icon name={iconName} size={24} />
+              <mud-icon name={iconName} variant="filled" size={24} />
             </slot>
           </span>
 

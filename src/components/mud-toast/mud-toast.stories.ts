@@ -213,12 +213,12 @@ const renderEdgeCases = () => /*html*/ `
     <mud-toast variant="warning">Înălțime mărită — țineți cont de această modificare.</mud-toast>
 
     <p style="${captionStyle}">Custom icon override</p>
-    <mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+    <mud-toast variant="success" icon-name="receipt-check" closable title-text="Bon fiscal generat">
       Vezi detalii în istoricul plăților.
     </mud-toast>
   </div>
 `;
-const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check" closable title-text="Bon fiscal generat">
   Vezi detalii în istoricul plăților.
 </mud-toast>`;
 export const EdgeCases: Story = {

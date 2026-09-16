@@ -4,13 +4,12 @@ import manifest from '../../src/components/mud-icon/assets/icons.manifest.json';
 
 <Meta title="Foundations/Iconography" />
 
-export const SIZES = [24, 20, 16, 12];
+export const PREVIEW_SIZE = 24;
 
-export const namesAt = (size, kind) =>
+export const namesIn = variant =>
   Object.entries(manifest)
-    .filter(([, entry]) => entry.sizes.includes(size))
+    .filter(([, entry]) => entry.variants.includes(variant))
     .map(([name]) => name)
-    .filter(name => (kind === 'filled' ? name.endsWith('-filled') : !name.endsWith('-filled')))
     .sort();
 
 export const headerWrap = {
@@ -141,12 +140,13 @@ export const label = {
   wordBreak: 'break-word',
 };
 
-export const SizeSection = ({ size, names }) =>
+export const VariantSection = ({ variant, names }) =>
   names.length ? (
     <section>
       <div style={headerWrap}>
-        <p style={headerTitle}>Size</p>
-        <span style={headerBadge}>{size}px</span>
+        <p style={headerTitle}>Style</p>
+        <span style={headerBadge}>{variant}</span>
+        <span style={headerBadge}>{names.length} icons</span>
       </div>
       <div style={grid}>
         {names.map(name => (
@@ -165,7 +165,7 @@ export const SizeSection = ({ size, names }) =>
             }}
           >
             <div style={iconWell}>
-              <mud-icon name={name} size={size}></mud-icon>
+              <mud-icon name={name} variant={variant} size={PREVIEW_SIZE}></mud-icon>
             </div>
             <code style={label}>{name}</code>
             <span data-role="copied-tip" style={copiedToast}>
@@ -181,18 +181,12 @@ export const SizeSection = ({ size, names }) =>
 
 These icons are designed to enhance visual communication, improve user experience, and maintain consistency across different interfaces and platforms. Click any icon to copy its name.
 
+Every icon is one drawing per style, scaled through the `size` prop (16 / 20 / 24 / 32).
+
 ## Outlined
 
-<div>
-  {SIZES.map(size => (
-    <SizeSection key={`out-${size}`} size={size} names={namesAt(size, 'outlined')} />
-  ))}
-</div>
+<VariantSection variant="outlined" names={namesIn('outlined')} />
 
 ## Filled
 
-<div>
-  {SIZES.map(size => (
-    <SizeSection key={`fil-${size}`} size={size} names={namesAt(size, 'filled')} />
-  ))}
-</div>
+<VariantSection variant="filled" names={namesIn('filled')} />

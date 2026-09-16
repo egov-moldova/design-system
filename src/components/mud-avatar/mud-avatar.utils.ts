@@ -1,4 +1,5 @@
 import type { AvatarSize } from './mud-avatar.types';
+import type { IconSize } from '../mud-icon/mud-icon.types';
 
 /**
  * Maps the avatar `size` rung to the icon glyph size in CSS pixels.
@@ -9,12 +10,12 @@ import type { AvatarSize } from './mud-avatar.types';
  * `mud-icon` does not yet ship a 32-px variant — the icon visually centres
  * inside the larger circle.
  */
-export const ICON_SIZE_FOR: Record<AvatarSize, 12 | 16 | 20 | 24> = {
-  xs: 12,
+export const ICON_SIZE_FOR: Record<AvatarSize, IconSize> = {
+  xs: 16,
   sm: 16,
   md: 20,
   lg: 24,
-  xl: 24,
+  xl: 32,
 };
 
 /**

@@ -292,7 +292,7 @@ const renderWithIcon = () => /*html*/ `
       variant="with-icon"
       title-text="Sesiunea a expirat"
     >
-      <mud-icon slot="icon" name="circle-info-filled" size="48"></mud-icon>
+      <mud-icon slot="icon" name="circle-info" variant="filled" size="32"></mud-icon>
       Reconectați-vă pentru a continua. Modificările nesalvate au fost pierdute.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
         <mud-button variant="primary" shape="circular" data-modal-close>Reconectare</mud-button>

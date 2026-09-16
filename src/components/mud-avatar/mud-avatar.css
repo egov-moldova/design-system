@@ -120,6 +120,10 @@
 
 /* ---- Icon ---- */
 .icon {
+  /* The avatar's own per-size token decides the glyph box (xs is 12px, below
+     mud-icon's smallest `size`), so it must win over the host's --icon-size. */
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
   color: var(--avatar-icon-color);
   pointer-events: none;
 }

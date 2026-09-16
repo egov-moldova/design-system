@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { IconName } from '../mud-icon/mud-icon.types';
+import type { IconName, IconVariant } from '../mud-icon/mud-icon.types';
 import {
   FOOTER_DEFAULT_CONTACT,
   FOOTER_DEFAULT_PARTNERS,
@@ -26,13 +26,14 @@ import type {
 
 let footerInstanceCounter = 0;
 
-const SOCIAL_ICON_NAME: Record<FooterSocialPlatform, IconName> = {
-  facebook: 'facebook-filled',
-  instagram: 'instagram-filled',
-  youtube: 'youtube-filled',
-  linkedin: 'linkedin-filled',
-  twitter: 'tiktok',
-  tiktok: 'tiktok',
+/** Each brand mark is drawn in exactly one style — asking for the other one warns. */
+const SOCIAL_ICON: Record<FooterSocialPlatform, { name: IconName; variant: IconVariant }> = {
+  facebook: { name: 'facebook', variant: 'filled' },
+  instagram: { name: 'instagram', variant: 'filled' },
+  youtube: { name: 'youtube', variant: 'filled' },
+  linkedin: { name: 'linkedin', variant: 'filled' },
+  twitter: { name: 'tiktok', variant: 'outlined' },
+  tiktok: { name: 'tiktok', variant: 'outlined' },
 };
 
 const SOCIAL_ARIA_LABEL: Record<FooterSocialPlatform, string> = {
@@ -318,7 +319,7 @@ export class MudFooter {
         <ul class="contact-list" role="list">
           {contact.phone ? (
             <li class="contact-item">
-              <mud-icon name="phone-filled" size={20} aria-hidden="true" />
+              <mud-icon name="phone" variant="filled" size={20} aria-hidden="true" />
               <a class="contact-link" href={`tel:${contact.phone.replace(/\s+/g, '')}`}>
                 {contact.phone}
               </a>
@@ -326,7 +327,7 @@ export class MudFooter {
           ) : null}
           {contact.email ? (
             <li class="contact-item">
-              <mud-icon name="envelope-filled" size={20} aria-hidden="true" />
+              <mud-icon name="envelope" variant="filled" size={20} aria-hidden="true" />
               <a class="contact-link" href={`mailto:${contact.email}`}>
                 {contact.email}
               </a>
@@ -334,7 +335,7 @@ export class MudFooter {
           ) : null}
           {contact.address ? (
             <li class="contact-item contact-item--address">
-              <mud-icon name="map-pin-filled" size={20} aria-hidden="true" />
+              <mud-icon name="map-pin" variant="filled" size={20} aria-hidden="true" />
               <span class="contact-address">{contact.address}</span>
             </li>
           ) : null}
@@ -351,12 +352,12 @@ export class MudFooter {
         </h3>
         <ul class="social-list" role="list">
           {social.map(s => {
-            const iconName = SOCIAL_ICON_NAME[s.platform] ?? 'globe';
+            const icon = SOCIAL_ICON[s.platform] ?? { name: 'globe', variant: 'outlined' };
             const label = SOCIAL_ARIA_LABEL[s.platform] ?? s.platform;
             return (
               <li class="social-item">
                 <a class="social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={label}>
-                  <mud-icon name={iconName} size={20} aria-hidden="true" />
+                  <mud-icon name={icon.name} variant={icon.variant} size={20} aria-hidden="true" />
                 </a>
               </li>
             );

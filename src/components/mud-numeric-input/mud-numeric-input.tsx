@@ -862,7 +862,8 @@ export class MudNumericInput {
               <div class="assistive assistive-error" id={this.errorId} part="error">
                 <mud-icon
                   class="assistive-icon"
-                  name="circle-error-filled"
+                  name="circle-error"
+                  variant="filled"
                   size={iconSize}
                   color="icon-danger-default"
                 />
@@ -873,7 +874,8 @@ export class MudNumericInput {
                 {variant === 'success' ? (
                   <mud-icon
                     class="assistive-icon"
-                    name="circle-checkmark-filled"
+                    name="circle-checkmark"
+                    variant="filled"
                     size={iconSize}
                     color="icon-positive-default"
                   />

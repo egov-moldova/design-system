@@ -70,7 +70,7 @@ describe('mud-banner', () => {
   describe('icon resolution', () => {
     it('uses the per-variant default icon', async () => {
       const { root } = await render(<mud-banner variant="error">M</mud-banner>);
-      expect(queryIcon(root)?.getAttribute('name')).toBe('circle-error-filled');
+      expect(queryIcon(root)?.getAttribute('name')).toBe('circle-error');
     });
 
     it('honors the iconName override', async () => {

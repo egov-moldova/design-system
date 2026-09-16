@@ -116,7 +116,7 @@ describe('mud-text-input', () => {
       expect(assistive?.classList.contains('assistive-error')).toBe(true);
       expect(assistive?.textContent).toContain('Required');
       const icon = assistive?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-error');
     });
 
     it('error message takes priority over helper text', async () => {

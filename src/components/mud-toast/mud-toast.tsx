@@ -67,7 +67,7 @@ export class MudToast {
 
   /**
    * Override the default `mud-icon` name for the variant (e.g. swap
-   * `circle-info-filled` for a custom glyph). When the `icon-start` slot
+   * `circle-info` for a custom glyph). When the `icon-start` slot
    * is populated, this prop is ignored.
    */
   @Prop() iconName?: IconName;
@@ -170,7 +170,7 @@ export class MudToast {
         <div class="main">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-              <mud-icon name={iconName} size={24} />
+              <mud-icon name={iconName} variant="filled" size={24} />
             </slot>
           </span>
 

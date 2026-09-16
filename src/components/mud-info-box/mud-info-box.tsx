@@ -149,7 +149,7 @@ export class MudInfoBox {
           {!this.hideIcon ? (
             <span class="icon" aria-hidden="true">
               <slot name="icon-start">
-                <mud-icon name={iconName} size={20} />
+                <mud-icon name={iconName} variant="filled" size={20} />
               </slot>
             </span>
           ) : null}

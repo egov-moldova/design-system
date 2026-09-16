@@ -211,7 +211,7 @@ const renderEdgeCases = () => /*html*/ `
     </div>
     <div style="${cellStyle}">
       <span style="${captionStyle}">custom icon override</span>
-      <mud-inline-message variant="success" icon-name="sparkles-filled">Profil verificat cu succes.</mud-inline-message>
+      <mud-inline-message variant="success" icon-name="sparkles">Profil verificat cu succes.</mud-inline-message>
     </div>
   </div>
 `;

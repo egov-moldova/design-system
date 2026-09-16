@@ -23,11 +23,8 @@ export class MudSidebarItem {
   /** Value reported when the item is activated. */
   @Prop({ reflect: true }) value?: string;
 
-  /** Leading icon name. */
+  /** Leading icon name. Rendered filled while the item is active, outlined otherwise. */
   @Prop() icon?: IconName;
-
-  /** Leading icon name used while active (e.g. a filled variant). Falls back to `icon`. */
-  @Prop() iconActive?: IconName;
 
   /** Primary label (overridden by slotted content). */
   @Prop() label?: string;
@@ -85,9 +82,16 @@ export class MudSidebarItem {
   };
 
   private renderContent() {
-    const iconName = this.active && this.iconActive ? this.iconActive : this.icon;
     return [
-      iconName ? <mud-icon class="icon" name={iconName} size={20} aria-hidden="true"></mud-icon> : null,
+      this.icon ? (
+        <mud-icon
+          class="icon"
+          name={this.icon}
+          variant={this.active ? 'filled' : 'outlined'}
+          size={20}
+          aria-hidden="true"
+        ></mud-icon>
+      ) : null,
       <span class="label">
         <slot>{this.label ?? ''}</slot>
       </span>,

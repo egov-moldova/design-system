@@ -306,24 +306,18 @@ describe('mud-sidebar-item', () => {
       expect(root?.shadowRoot?.querySelector('mud-icon.icon')).toBeNull();
     });
 
-    it('uses iconActive name when active=true and iconActive is set', async () => {
-      const { root } = await render(
-        <mud-sidebar-item icon="home-line" iconActive="home-line-filled" active label="Home" />,
-      );
-      const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-line-filled');
-    });
-
-    it('falls back to icon when active=true but iconActive is not set', async () => {
+    it('renders the filled style of the same icon when active=true', async () => {
       const { root } = await render(<mud-sidebar-item icon="home-line" active label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('filled');
     });
 
-    it('uses icon (not iconActive) when active=false even if iconActive is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home-line" iconActive="home-line-filled" label="Home" />);
+    it('renders the outlined style when active=false', async () => {
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('outlined');
     });
   });
 

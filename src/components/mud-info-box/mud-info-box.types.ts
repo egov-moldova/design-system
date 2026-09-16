@@ -8,8 +8,8 @@ export type InfoBoxEmphasis = (typeof INFO_BOX_EMPHASES)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` is unset. */
 export const INFO_BOX_DEFAULT_ICONS: Record<InfoBoxVariant, IconName> = {
-  'info': 'circle-info-filled',
-  'info-moderate': 'circle-info-filled',
-  'warning': 'warning-filled',
-  'error': 'circle-error-filled',
+  'info': 'circle-info',
+  'info-moderate': 'circle-info',
+  'warning': 'warning',
+  'error': 'circle-error',
 };

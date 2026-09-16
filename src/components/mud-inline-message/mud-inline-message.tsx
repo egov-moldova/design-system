@@ -68,7 +68,7 @@ export class MudInlineMessage {
       <Host>
         {!this.hideIcon ? (
           <span class="icon" aria-hidden="true">
-            <mud-icon name={this.resolveIconName()} size={iconSize} />
+            <mud-icon name={this.resolveIconName()} variant="filled" size={iconSize} />
           </span>
         ) : null}
         <span class="text">

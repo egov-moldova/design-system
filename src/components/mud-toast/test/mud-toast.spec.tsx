@@ -181,27 +181,27 @@ describe('mud-toast', () => {
 
   describe('iconName prop', () => {
     it('forwards iconName to the default mud-icon when slot is empty', async () => {
-      const { root } = await render(<mud-toast icon-name="receipt-check-filled">Bon fiscal</mud-toast>);
+      const { root } = await render(<mud-toast icon-name="receipt-check">Bon fiscal</mud-toast>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('receipt-check-filled');
+      expect(icon?.getAttribute('name')).toBe('receipt-check');
     });
 
     it('falls back to the per-variant default icon when iconName is unset', async () => {
       const { root } = await render(<mud-toast variant="error">Eroare</mud-toast>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-error');
     });
 
-    it('uses circle-checkmark-filled for success variant', async () => {
+    it('uses the filled circle-checkmark for the success variant', async () => {
       const { root } = await render(<mud-toast variant="success">OK</mud-toast>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-checkmark-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-checkmark');
     });
 
-    it('uses warning-filled for warning variant', async () => {
+    it('uses the filled warning icon for the warning variant', async () => {
       const { root } = await render(<mud-toast variant="warning">Atenție</mud-toast>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('warning-filled');
+      expect(icon?.getAttribute('name')).toBe('warning');
     });
   });
 
