@@ -18,6 +18,7 @@ Skill invocation rules and available workflows. **Read when starting any compone
 | `systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | Active skill |
 | `verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | Active skill |
 | `figma-illustration-import` | Custom multi-layer illustration — check `src/components/mud-illustration-*/` first | Active skill |
+| `pixel-perfect` | Verifying a `mud-*` component against Figma — after a build or fix, before a PR, or when asked whether it matches a Figma link | Active skill |
 | `accessibility-compliance` | **MANDATORY** reference for every `mud-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |
 
 **Standard component workflow** (atom/molecule with known patterns): follow AGENTS.md directly — no skill invocation needed.
@@ -26,7 +27,7 @@ Skill invocation rules and available workflows. **Read when starting any compone
 1. `AGENTS.md`, `tokens/AGENTS.md` → token + slot architecture
 2. `src/components/AGENTS.md`, `src/components/_agents/*.md` → implement the component
 3. `src/components/_agents/storybook-stories.md` → stories for all variants/states
-4. `_agents/pixel-perfect-qa.md` → pixel-perfect QA against Figma
+4. `_agents/pixel-perfect-qa.md` + the `pixel-perfect` skill → pixel-perfect QA against Figma
 
 ---
 

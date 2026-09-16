@@ -68,6 +68,7 @@ npx wait-on http://localhost:6006 --timeout 3000
 | `skill-creator` | Guide for creating new skills with consistent structure | No | DO NOT PROCEED — use when a new skill creation task arises |
 | `accessibility-compliance` | WCAG 2.1 AA criteria, ARIA, keyboard, contrast (light + dark), focus management for Stencil Shadow DOM | Yes (Stencil override may be needed) | Active — required reference for all `mud-*` components. Includes SKILL.md + `references/` (aria-patterns, mobile-accessibility, wcag-guidelines). Used alongside `AGENTS.md` and `src/components/AGENTS.md`. |
 | `stencil-compliance` | Stencil 4.x best practices — decorators, lifecycle, host, JSX/styling, form-associated, reactive data, serialization. 6 reference files + top-25 anti-patterns. | No | Active — invoked by `/audit-component @mud-<name> --deep`, `audit-production` Phase 1, and Wave 1 grep gates in `/pre-pr-check`. |
+| `pixel-perfect` | Figma verification: state manifest, exact style parity (`15-style-parity`), screenshot diff (`11-pixel-diff-states`), reference export (`figma-refs`). | No | Active — procedure behind `_agents/pixel-perfect-qa.md`; loaded by the `pixel-perfect-verifier` agent. |
 | `audit-component` | 3-wave production audit per component. Flags: `--deep` (full Stencil + a11y), `--e2e`, `--fast`. | No | Active — wraps the `/audit-component` slash command logic for reuse from other agents (new-component, refactor-component, migrate-component). |
 
 ## Notes

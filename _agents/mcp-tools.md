@@ -95,6 +95,8 @@ memory_open_nodes({ names: [...] })
 
 ## Figma Remote MCP (`figma_*`)
 
+> **Access.** The remote server needs OAuth — run `/mcp` in an interactive session. Until then every `mcp__figma__*` call fails. For pixel-perfect work there are two other routes: a Framelink Figma MCP server (`mcp__figma-mcp__get_figma_data`, `mcp__figma-mcp__download_figma_images`) if one is configured for your user, or `FIGMA_TOKEN` for `scripts/audit/figma-refs.mjs`. See the `pixel-perfect` skill, step 0.
+
 ```text
 figma_get_design_context({ nodeId: "123:456", forceCode: true })
 figma_get_screenshot({ nodeId: "123:456" })

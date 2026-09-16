@@ -80,7 +80,7 @@ Feedback loop to improve AGENTS.md accuracy and prevent recurring issues. **Read
 
 **Symptom**: Visual bugs discovered only after screenshots
 **Solution**: Add validation step before visual QA
-**Target**: `_agents/pixel-perfect-qa.md` Step 1.5
+**Target**: `.claude/skills/pixel-perfect/SKILL.md` — Step 0 (preflight) or the manifest `expect` entries
 
 ### Pattern 2: Incomplete State Extraction
 

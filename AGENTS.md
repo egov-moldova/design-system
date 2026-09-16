@@ -50,7 +50,7 @@
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/pixel-perfect-qa.md` | Full pixel-perfect loop Steps 1–8 | **During QA phase — MANDATORY for every component** |
+| `_agents/pixel-perfect-qa.md` | Pixel-perfect rules (tolerances, states); procedure in the `pixel-perfect` skill | **During QA phase — MANDATORY for every component** |
 | `_agents/verification-git.md` | 4-phase verification checklist, troubleshooting, git & PR workflow | **Before claiming work complete or creating PR** |
 | `_agents/continuous-improvement.md` | Workflow refinement, improvement analysis | **When encountering repeated issues or proposing doc changes** |
 
@@ -75,7 +75,7 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 |---|---|---|
 | **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt` (mode-routed: new / redesign / modify / fix / tokens) | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
 | **Subagent** ([.claude/agents/](.claude/agents/)) | `new-component`, `custom-component`, `audit-production`, `refactor-component` | Multi-phase pipelines with separate context window. Invoke via Task tool or auto-trigger. |
-| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
+| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `pixel-perfect`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`pixel-perfect`** verifies a component against Figma: a per-component state manifest, exact computed-style parity (`15-style-parity`) and screenshot diffs (`11-pixel-diff-states`). **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
 
 ---
 
