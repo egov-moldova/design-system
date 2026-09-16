@@ -11,7 +11,6 @@ const projectRoot = path.resolve(__dirname, '..');
 
 // Hardcoded paths to delete (relative to project root)
 const pathsToDelete = [
-  '.specs/',
   '.claude/',
   '.vscode/',
   '_agents/',

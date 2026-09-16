@@ -161,7 +161,7 @@ function isNodeVersionScope(relPath) {
   if (isDocScope(relPath)) return true;
   if (!relPath.endsWith('.md')) return false;
   if (NODE_VERSION_EXTRA_BASENAMES.has(path.basename(relPath))) return true;
-  return relPath.startsWith('.specs/');
+  return false;
 }
 
 function isPackageNameScope(relPath) {

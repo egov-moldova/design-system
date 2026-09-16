@@ -8,8 +8,8 @@
  * (generated, dist, node_modules, .git) and files like style-dictionary*.config.json
  * and package.json (build/config files, not token data).
  *
- * Naming rule: compound keys are camelCase (`optionFontFamily`), per .specs/TOKEN-ARCHITECTURE.md
- * §4 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase or mixes
+ * Naming rule: compound keys are camelCase (`optionFontFamily`), per tokens/AGENTS.md Critical
+ * Rule 3 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase or mixes
  * kebab-case with camelCase (`option-fontFamily`). Warnings: underscores, dots, spaces.
  * All-lowercase kebab-case keys are NOT flagged, although TOKEN-ARCHITECTURE.md §11 lists them as
  * an anti-pattern: the files the Tokenhaus sync generates from Figma use them (`base-inverse`,
