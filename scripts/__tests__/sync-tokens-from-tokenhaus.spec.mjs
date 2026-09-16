@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -413,5 +414,95 @@ describe('main', () => {
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core.dark', 'color.tokens.json'))));
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'font.tokens.json'))));
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'sizes.tokens.json'))));
+  });
+});
+
+// ── Staging output ────────────────────────────────────────────────────────────
+
+// Why the staging output must stay untracked: issue #72.
+describe('staging output', () => {
+  function git(args) {
+    const run = spawnSync('git', args, { cwd: PROJECT_ROOT, encoding: 'utf8' });
+    assert.equal(run.status, 0, `git ${args.join(' ')} failed: ${run.error?.message ?? run.stderr}`);
+    return run.stdout;
+  }
+
+  function stagingBases() {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const syncScript = packageJson.scripts?.['sync:tokens'];
+    assert.ok(syncScript, 'package.json has no sync:tokens script');
+    const syncArgv = syncScript.split(/\s+/);
+    assert.match(syncArgv[1] ?? '', /sync-tokens-from-tokenhaus\.mjs$/, `unexpected sync:tokens shape: ${syncScript}`);
+
+    const defaultBase = parseCliOptions(['node', 'sync-tokens-from-tokenhaus.mjs']).outputBase;
+    const syncBase = parseCliOptions(syncArgv).outputBase;
+    return [...new Set([defaultBase, syncBase])].map(base => path.relative(PROJECT_ROOT, base));
+  }
+
+  it('holds no tracked files under the default or `yarn sync:tokens` output base', () => {
+    for (const base of stagingBases()) {
+      assert.equal(git(['ls-files', '--', base]), '', `${base}/ must not contain tracked files`);
+    }
+  });
+
+  // Every file the script writes, relative to its output base. Asked of the script through a
+  // dry run, so a newly generated file is probed without editing this test.
+  async function generatedFiles() {
+    const outputBase = path.join(createTempDir(), 'staging');
+    const { exitCode, report } = await main([
+      'node',
+      'sync-tokens-from-tokenhaus.mjs',
+      '--input',
+      path.join(fixturesDir, 'sample-tokenhaus.json'),
+      '--output',
+      outputBase,
+      '--dry-run',
+    ]);
+    assert.equal(exitCode, 0);
+    // A skipped extraction would silently drop its file from the probed set.
+    assert.deepEqual(report.skipped, []);
+    return report.generated.map(entry => path.relative(outputBase, entry.filePath));
+  }
+
+  it('is ignored by the repository .gitignore files alone', async () => {
+    // check-ignore runs against an empty git dir, with system and global config off and
+    // core.excludesFile pointed at an empty file, so only the work tree's .gitignore files
+    // decide: a rule in .git/info/exclude or ~/.config/git/ignore can neither pass nor fail
+    // this. The --quiet exit status also treats a negated (re-included) file as not ignored,
+    // whereas --verbose exits 0 and prints the negation.
+    const tempDir = createTempDir();
+    const gitDir = path.join(tempDir, 'git');
+    const noExcludes = path.join(tempDir, 'no-excludes');
+    fs.writeFileSync(noExcludes, '');
+    const env = { ...process.env, GIT_CONFIG_GLOBAL: os.devNull, GIT_CONFIG_NOSYSTEM: '1' };
+    const init = spawnSync('git', ['init', '--quiet', '--bare', '--template=', gitDir], { env, encoding: 'utf8' });
+    assert.equal(init.status, 0, `git init failed: ${init.error?.message ?? init.stderr}`);
+
+    const files = await generatedFiles();
+    for (const base of stagingBases()) {
+      for (const file of files) {
+        const probeFile = path.join(base, file);
+        const run = spawnSync(
+          'git',
+          [
+            `--git-dir=${gitDir}`,
+            `--work-tree=${PROJECT_ROOT}`,
+            '-c',
+            `core.excludesFile=${noExcludes}`,
+            'check-ignore',
+            '--quiet',
+            '--no-index',
+            '--',
+            probeFile,
+          ],
+          { cwd: PROJECT_ROOT, env, encoding: 'utf8' },
+        );
+        assert.equal(
+          run.status,
+          0,
+          `${probeFile} must be ignored by a .gitignore in the repository: ${run.error?.message ?? run.stderr}`,
+        );
+      }
+    }
   });
 });

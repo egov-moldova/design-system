@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
  * Converts a Tokenhaus Figma export (tokens-tokenhaus.json — 2026+ schema)
- * to Style Dictionary legacy-schema token files.
+ * to DTCG token files ($value / $type).
  *
  * Figma Plugin: https://www.figma.com/community/plugin/1578065513743190845/tokenhaus-variable-import-export-with-links
  *
  * Usage:
- *   node scripts/sync-tokens-from-tokenhaus.mjs --input <file> [-o <dir>] [--dry-run] [--report <file>] [--strict]
+ *   node scripts/sync-tokens-from-tokenhaus.mjs --input <file> [-o <dir>] [--apply] [--dry-run] [--report <file>] [--strict]
  *
- * Default output base is tokens/figma-export (staging, manual diff).
- * Pass --output tokens to clean-break overwrite tokens/core and tokens/core.dark.
+ * Default output base is tokens/figma-export: a staging area to diff against
+ * tokens/core before promoting anything. It is gitignored; `yarn test:scripts`
+ * checks that (scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs).
+ * Pass --apply to overwrite tokens/core and tokens/core.dark and delete the legacy
+ * orphan files (clean break).
  *
  * Generated files (under <output base>):
  *   core/palette.tokens.json              ← 2. Primitive Colors: Do not use directly
@@ -106,7 +109,7 @@ class CliError extends Error {
 function createProgram() {
   return new Command()
     .name('sync-tokens-from-tokenhaus')
-    .description('Convert a Tokenhaus Figma export (2026+ schema) to Style Dictionary token files')
+    .description('Convert a Tokenhaus Figma export (2026+ schema) to DTCG token files')
     .requiredOption('--input <file>', 'Path to tokens-tokenhaus.json', DEFAULT_INPUT_FILE)
     .option('-o, --output <dir>', 'Output base directory (parent of core/ and core.dark/)', DEFAULT_OUTPUT_BASE)
     .option(

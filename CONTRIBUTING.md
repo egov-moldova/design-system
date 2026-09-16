@@ -174,11 +174,12 @@ MUD uses a three-tier design token hierarchy (**palette → semantic → compone
 1. In Figma, export variables with the Tokenhaus plugin to `tokens-tokenhaus.json`.
 2. Run the sync helper:
    ```bash
+   # optional: preview what would be generated, without writing any files
+   yarn sync:tokens --dry-run
+   # write the generated files
    yarn sync:tokens
-   # or with a dry run first:
-   node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export --dry-run
    ```
-3. Review the generated output in `tokens/figma-export/` — this step never touches `tokens/core/` or `tokens/core.dark/` directly.
+3. Review the generated output in `tokens/figma-export/` (gitignored staging area) — this step never touches `tokens/core/` or `tokens/core.dark/` directly.
 4. Manually copy approved files into `tokens/core/` and `tokens/core.dark/`, then commit.
 5. Rebuild and validate:
    ```bash
