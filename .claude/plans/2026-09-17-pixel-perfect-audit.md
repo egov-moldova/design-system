@@ -114,8 +114,8 @@ Zero-tolerance, each decided by the command beside it:
 | --- | --- | --- |
 | 1 | Script suite green, new specs included | `node --test "scripts/__tests__/**/*.spec.mjs"` → exit 0 |
 | 2 | Docs checker clean with `mcp-server` active | `node scripts/docs/check-ai-docs.mjs` → exit 0, `check-ai-docs: clean` |
-| 3 | No doc or agent names the Framelink server | `grep -rn "figma-mcp" .claude _agents AGENTS.md CLAUDE.md scripts/audit` → no output |
-| 4 | Every mutation is caught | `node scripts/__tests__/audit/pixel-perfect.mutations.mjs` → exit 0, prints `caught 6/6` |
+| 3 | No doc or agent names the Framelink server | `grep -rn "figma-mcp" .claude _agents AGENTS.md CLAUDE.md scripts/audit --exclude-dir=plans` → no output (plans quote the name) |
+| 4 | Every mutation is caught | `node scripts/__tests__/audit/pixel-perfect.mutations.mjs` → exit 0, prints `caught N/N` with N = the script's `MUTATIONS.length` (8 after Dan's decisions added the masked denominator and token scope) |
 | 5 | Skill ↔ scripts parity (codes both ways, command paths exist) | covered by #1 (`scripts/__tests__/pixel-perfect-skill.spec.mjs`) |
 | 6 | Every manifest in the repo resolves identically before and after (origin/main code + file vs branch code + file) | the `row-6` block below → prints no `FAILED` line |
 | 7 | No exact-duplicate expectation block left outside `shared` in the migrated manifests | the `row-7` command below → prints `mud-date-input 0` and `mud-table 0` |
@@ -1822,6 +1822,26 @@ Task 5.1 (2026-09-17, HEAD 2566c97):
 - git diff --stat origin/main...HEAD: 31 files, all named by the plan
 ```
 
+After #91 merged, 2026-09-17 (upstream/main 7176453; the branch was rebased onto it, conflicts only in the parallel rule additions of `scripts/docs/check-ai-docs.mjs` and its spec, both sides kept):
+
+```derived id=post-rebase
+- yarn check.verify exit 0 · 830 specs, 0 fail · check-ai-docs clean including #91's stale-prefix / lookaround / stencil-version rules · mutations 8/8 · row-6 3/3
+- CI jobs outside check.verify, run locally: lint.colors 0, tokens.lint.all 0, tokens.validate 0; generated files unchanged after yarn build
+- live (Storybook 6007 from this worktree, references re-exported at Figma version 2400156505847494721): style parity and pixel status counts and every diffPercent identical to Task 0.2
+```
+
+Pre-merge gate (dan-sentinel full gate, round 1 over 7176453..a81655e): REQUEST-CHANGES — errors lens FAIL (a fully masked state passed silently), tests lens FAIL (findingsFor untested), anchored lens FAIL (skill ran --check before a manifest existed), fresh-eyes FORTIFY (bar rows 3/4 stale), /code-review xhigh 15 findings, security PASS (2 Low). 26 findings in the gate ledger. Fixed in 5e832c9, 1d64f4f, cf3c5e8, 8806d90, 20895b5; deferred with reason: a script-emitted verdict, a cap on the masked share (no measured threshold), an image-download size cap (needs a compromised Figma), `redesign-component.md:228` (pre-existing).
+
+```derived id=post-fix
+- yarn check.verify exit 0 at every fix commit · mutations 8/8 (anchor 8 moved to the CSS-referenced scope filter)
+- live: style 97/31, 272/0, 118/0 and pixel 0/0/6/0, 15/8/0/0, 0/9/0/0 with identical percents = baseline
+- figma-refs --check exit 0/0/0 (warnings no longer exit 1): missing 0/6/53, gone 0/0/0, sets 2/1/4, skipped 0/0/0, stale none
+- correction: mud-date-picker reaches 2 component sets, so its 0 missing is real coverage; the phase-2 note above that called it "no set found" was wrong
+- token attribution on mud-date-picker: 25 non-pseudo fails, 25 with arrays, 24 named, 0 foreign names
+- mask probes: day-cell mask 282240 px, 2.46% FAIL; a mask on the whole component covers 88% (529920 px, bleed and size mismatch stay compared) → 0.81% WARNING; the all-masked UNKNOWN path is proven by the visual-diff CLI spec
+- aux-write-check probe (throwaway repo): prints only the read-only leg's file in a new untracked folder, not the writer legs' stories/spec
+```
+
 ## Not verified by this plan
 
 - Tool-level Figma MCP names: the guard checks servers against `.mcp.json`, not that a tool exists on the server.
@@ -1831,4 +1851,6 @@ Task 5.1 (2026-09-17, HEAD 2566c97):
 - Token matching reads computed values: which alias the CSS actually used is not recoverable, so ties are listed.
 - CI still does not run `11`/`15`/`figma-refs --check` against components (no Storybook or token in CI); only their specs run.
 - Coverage findings (`FIGMA-STATE-MISSING`) on the three manifests are reported, not resolved — that is component work.
+- A mask that covers most, but not all, of a capture still grades the thin remainder; no cap on the masked share exists (no measured threshold to set one).
+- The report verdict is applied by the model from the scripts' findings; the scripts do not emit it.
 - The write check detects a new status line, not a second edit to a file already dirty before the dispatch; no write by the verifier has been observed, so a blocking hook was not measured against a real failure (D6).
