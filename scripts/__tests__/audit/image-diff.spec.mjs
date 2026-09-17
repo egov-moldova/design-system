@@ -15,6 +15,7 @@ import {
   DEFAULT_PASS,
   DEFAULT_WARN,
   alignOffset,
+  applyMasks,
   classifyDiff,
   describeSizeMismatch,
   diffImages,
@@ -186,5 +187,59 @@ describe('visual-diff CLI: status', () => {
     const out = JSON.parse(res.stdout);
     assert.ok(out.diffPercent > 2, `expected a FAIL-band percent, got ${out.diffPercent}`);
     assert.equal(out.status, classifyDiff(out.diffPercent).status);
+  });
+});
+
+describe('image-diff: masks', () => {
+  it('paints a rect with the background and counts each pixel once', () => {
+    const img = image(4, 4, [0, 0, 0, 255]);
+    const n = applyMasks(
+      img,
+      [
+        { x: 0, y: 0, width: 2, height: 2 },
+        { x: 1, y: 1, width: 2, height: 2 },
+      ],
+      [255, 255, 255],
+    );
+    assert.equal(n, 7);
+    assert.deepEqual(pixel(img, 1, 1), [255, 255, 255, 255]);
+    assert.deepEqual(pixel(img, 3, 3), [0, 0, 0, 255]);
+  });
+
+  it('clips rects to the canvas', () => {
+    assert.equal(applyMasks(image(2, 2, [0, 0, 0, 255]), [{ x: 1, y: 1, width: 5, height: 5 }]), 1);
+  });
+
+  it('removes a difference inside the mask from the diff and reports the masked pixels', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(10, 10, [255, 255, 255, 255], (x, y) => (x < 2 && y < 2 ? [0, 0, 0, 255] : null));
+    assert.ok(diffImages(ref, cap).diffPixels > 0);
+    const r = diffImages(ref, cap, { masks: [{ x: 0, y: 0, width: 2, height: 2 }] });
+    assert.equal(r.diffPixels, 0);
+    assert.equal(r.maskedPixels, 4);
+  });
+
+  it('computes the percent over compared pixels only, so a mask cannot dilute it', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(10, 10, [255, 255, 255, 255], (x, y) => (x >= 8 && y >= 8 ? [0, 0, 0, 255] : null));
+    const r = diffImages(ref, cap, { masks: [{ x: 0, y: 0, width: 5, height: 10 }] });
+    assert.equal(r.maskedPixels, 50);
+    assert.ok(r.diffPixels > 0);
+    assert.equal(r.diffPercent, Number(((r.diffPixels / 50) * 100).toFixed(2)));
+  });
+
+  it('reports no percent when every pixel is masked', () => {
+    const r = diffImages(image(4, 4, [0, 0, 0, 255]), image(4, 4, [255, 255, 255, 255]), {
+      masks: [{ x: 0, y: 0, width: 4, height: 4 }],
+    });
+    assert.equal(r.diffPercent, null);
+    assert.equal(classifyDiff(r.diffPercent).status, 'UNKNOWN');
+  });
+
+  it('places capture-relative rects where a centred capture sits on the canvas', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(6, 6, [255, 255, 255, 255], (x, y) => (x < 2 && y < 2 ? [0, 0, 0, 255] : null));
+    const r = diffImages(ref, cap, { align: 'center', masks: [{ x: 0, y: 0, width: 2, height: 2 }] });
+    assert.equal(r.diffPixels, 0);
   });
 });

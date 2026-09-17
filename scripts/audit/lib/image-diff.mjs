@@ -92,9 +92,15 @@ export function padImage(img, width, height, align = 'top-left', background = WH
  * @param {number} [opts.threshold=0.1]        — pixelmatch colour sensitivity (0–1, lower = stricter)
  * @param {'top-left'|'center'} [opts.align='top-left']
  * @param {number[]} [opts.background=[255,255,255]] — page background both images are flattened onto
- * @returns {{ width, height, diffPixels, totalPixels, diffPercent, sizeMismatch, diffImage }}
+ * @param {Array<{x, y, width, height}>} [opts.masks=[]] — rects in capture pixels, painted with the background on both images before the diff
+ * @returns {{ width, height, diffPixels, maskedPixels, totalPixels, diffPercent, sizeMismatch, diffImage }} —
+ *   `diffPercent` is over the unmasked pixels, and null when every pixel is masked
  */
-export function diffImages(reference, capture, { threshold = 0.1, align = 'top-left', background = WHITE } = {}) {
+export function diffImages(
+  reference,
+  capture,
+  { threshold = 0.1, align = 'top-left', background = WHITE, masks = [] } = {},
+) {
   // Validate up front: with equally sized images padImage never runs, and an
   // unknown mode would otherwise be echoed back as if it had been applied.
   alignOffset(0, 0, align);
@@ -110,6 +116,13 @@ export function diffImages(reference, capture, { threshold = 0.1, align = 'top-l
 
   const a = padImage(flattenImage(reference, background), width, height, align, background);
   const b = padImage(flattenImage(capture, background), width, height, align, background);
+  // flattenImage always allocates, so painting `a` and `b` never touches the caller's PNGs.
+  // Mask rects are relative to the capture; shift them to where it sits on the shared canvas.
+  const dx = alignOffset(width, capture.width, align);
+  const dy = alignOffset(height, capture.height, align);
+  const canvasMasks = masks.map(r => ({ ...r, x: r.x + dx, y: r.y + dy }));
+  const maskedPixels = applyMasks(a, canvasMasks, background);
+  applyMasks(b, canvasMasks, background);
   const diffImage = new PNG({ width, height });
   const diffPixels = pixelmatch(a.data, b.data, diffImage.data, width, height, {
     threshold,
@@ -119,15 +132,45 @@ export function diffImages(reference, capture, { threshold = 0.1, align = 'top-l
     diffColorAlt: [0, 255, 0],
   });
   const totalPixels = width * height;
+  // Masked pixels are identical by construction; counting them would dilute the percent.
+  const comparedPixels = totalPixels - maskedPixels;
   return {
     width,
     height,
     diffPixels,
+    maskedPixels,
     totalPixels,
-    diffPercent: Number(((diffPixels / totalPixels) * 100).toFixed(2)),
+    diffPercent: comparedPixels > 0 ? Number(((diffPixels / comparedPixels) * 100).toFixed(2)) : null,
     sizeMismatch,
     diffImage,
   };
+}
+
+/** Paint rects (image pixels) with `background`, in place. Returns distinct pixels painted inside the canvas. */
+export function applyMasks(img, rects = [], background = WHITE) {
+  const painted = new Uint8Array(img.width * img.height);
+  let count = 0;
+  for (const r of rects) {
+    const x0 = Math.max(0, Math.floor(r.x));
+    const y0 = Math.max(0, Math.floor(r.y));
+    const x1 = Math.min(img.width, Math.ceil(r.x + r.width));
+    const y1 = Math.min(img.height, Math.ceil(r.y + r.height));
+    for (let y = y0; y < y1; y++) {
+      for (let x = x0; x < x1; x++) {
+        const p = y * img.width + x;
+        const i = p * 4;
+        img.data[i] = background[0];
+        img.data[i + 1] = background[1];
+        img.data[i + 2] = background[2];
+        img.data[i + 3] = 255;
+        if (!painted[p]) {
+          painted[p] = 1;
+          count++;
+        }
+      }
+    }
+  }
+  return count;
 }
 
 /**

@@ -25,10 +25,10 @@
  * is reported as its own finding in CSS px — it is often the real drift
  * (an extra footer, a missing border) behind a high diff percentage.
  *
- * Thresholds (mirrors scripts/visual-diff.mjs):
- *   < 0.5%   PASS
- *   < 2.0%   WARNING (marked `requires-ai-review`)
- *   >= 2.0%  FAIL
+ * Thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `lib/image-diff.mjs` — PASS below
+ * the first, WARNING (marked `requires-ai-review`) below the second, FAIL at or
+ * above it. A manifest state's `mask` selectors are painted out of both images
+ * and reported as `PIXEL-MASKED`.
  *
  * Usage:
  *   yarn sp.dev.watch
@@ -73,8 +73,8 @@ const USAGE = defaultUsage(
     '  --align <mode>        top-left | center — canvas alignment for size mismatches (default: top-left)',
     '  --skip-dark           Story mode: skip the dark-mode pass',
     '  --out-dir <dir>       Where to save captured PNGs + diff images (default: .audit-screenshots/<name>/)',
-    '  --pass-threshold <%>  Percent diff that still counts as PASS (default: 0.5)',
-    '  --warn-threshold <%>  Above this is FAIL (default: 2.0)',
+    `  --pass-threshold <%>  Percent diff that still counts as PASS (default: ${DEFAULT_PASS})`,
+    `  --warn-threshold <%>  At or above this is FAIL (default: ${DEFAULT_WARN})`,
   ],
 );
 
@@ -264,7 +264,8 @@ async function analyzeManifest(target, manifestPath, opts) {
     let session;
     try {
       session = await openState(browser, state, { baseUrl, scale });
-      await captureState(session.page, state.capture, screenshotPath);
+      const shot = await captureState(session.page, { ...state.capture, mask: state.mask }, screenshotPath);
+      entry.maskRects = shot.maskRects;
       entry.background = await pageBackground(session.page);
     } catch (err) {
       Object.assign(entry, { status: 'UNKNOWN', diffPercent: null, requiresReview: true, error: err.message });
@@ -314,6 +315,7 @@ async function analyzeManifest(target, manifestPath, opts) {
         diffPath,
         align: args.extras.align,
         background: entry.background,
+        masks: entry.maskRects,
         passThreshold,
         warnThreshold,
       }),
@@ -477,13 +479,14 @@ async function captureStory({ browser, url, theme, scale, componentName, outputP
 
 // ─── Shared ───────────────────────────────────────────────────────────────
 
-function compare({ referencePath, screenshotPath, diffPath, align, background, passThreshold, warnThreshold }) {
+function compare({ referencePath, screenshotPath, diffPath, align, background, masks, passThreshold, warnThreshold }) {
   const diff = runVisualDiff({
     figmaPath: referencePath,
     browserPath: screenshotPath,
     outputPath: diffPath,
     align,
     background,
+    masks,
   });
   if (!diff.ok) {
     return {
@@ -499,6 +502,7 @@ function compare({ referencePath, screenshotPath, diffPath, align, background, p
   return {
     diffPercent: diff.diffPercent,
     diffPixels: diff.diffPixels,
+    maskedPixels: diff.maskedPixels ?? 0,
     status: cls.status,
     requiresReview: cls.requiresReview,
     sizeMismatch: diff.sizeMismatch ?? null,
@@ -509,6 +513,16 @@ function compare({ referencePath, screenshotPath, diffPath, align, background, p
 
 function findingsFor(label, themed, scale, opts) {
   const out = [];
+  const masked = themed.maskedPixels > 0 ? ` (${themed.maskedPixels} px masked)` : '';
+  if (themed.maskedPixels > 0) {
+    out.push(
+      finding({
+        severity: 'info',
+        code: 'PIXEL-MASKED',
+        message: `${label}: ${themed.maskedPixels} px masked by the manifest — not compared.`,
+      }),
+    );
+  }
   const file = themed.diffImagePath ? relativeToRepo(themed.diffImagePath) : null;
   if (themed.sizeMismatch) {
     out.push(
@@ -527,7 +541,7 @@ function findingsFor(label, themed, scale, opts) {
         severity: 'error',
         code: 'PIXEL-DIFF-FAIL',
         file,
-        message: `${label}: ${themed.diffPercent}% diff exceeds ${opts.warnThreshold}% fail threshold.`,
+        message: `${label}: ${themed.diffPercent}% diff exceeds ${opts.warnThreshold}% fail threshold${masked}.`,
         fix: 'Inspect the diff image; run 15-style-parity for exact values; adjust CSS or token mapping. If the design intentionally drifted from Figma, re-export the reference.',
       }),
     );
@@ -537,7 +551,7 @@ function findingsFor(label, themed, scale, opts) {
         severity: 'warning',
         code: 'PIXEL-DIFF-WARNING',
         file,
-        message: `${label}: ${themed.diffPercent}% diff is borderline (requires AI review).`,
+        message: `${label}: ${themed.diffPercent}% diff is borderline (requires AI review)${masked}.`,
       }),
     );
   } else if (themed.status === 'UNKNOWN' && themed.error) {
@@ -551,9 +565,9 @@ function findingsFor(label, themed, scale, opts) {
  * Pixelmatch invocation in ONE place (single source of truth for the diff
  * algorithm + thresholds).
  *
- * Returns { ok, diffPixels?, diffPercent?, status?, sizeMismatch?, error? }.
+ * Returns { ok, diffPixels?, maskedPixels?, diffPercent?, status?, sizeMismatch?, error? }.
  */
-function runVisualDiff({ figmaPath, browserPath, outputPath, align = 'top-left', background = '#ffffff' }) {
+function runVisualDiff({ figmaPath, browserPath, outputPath, align = 'top-left', background = '#ffffff', masks = [] }) {
   const script = join(REPO_ROOT, 'scripts', 'visual-diff.mjs');
   const res = spawnSync(
     process.execPath,
@@ -569,6 +583,7 @@ function runVisualDiff({ figmaPath, browserPath, outputPath, align = 'top-left',
       align,
       '--background',
       background,
+      ...(masks?.length ? ['--masks', JSON.stringify(masks)] : []),
     ],
     { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 },
   );

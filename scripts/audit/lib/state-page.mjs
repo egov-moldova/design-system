@@ -143,7 +143,7 @@ async function interact(page, { type, target }) {
  *
  * @returns {Promise<{ path, box: {x,y,width,height}, bleed: {top,right,bottom,left} }>}
  */
-export async function captureState(page, { selector, bleed = 'auto' }, outputPath) {
+export async function captureState(page, { selector, bleed = 'auto', mask = [] }, outputPath) {
   const locator = page.locator(selector).first();
   if ((await locator.count()) === 0) throw new Error(`capture target not found: ${selector}`);
   await locator.scrollIntoViewIfNeeded();
@@ -158,8 +158,29 @@ export async function captureState(page, { selector, bleed = 'auto' }, outputPat
   }
 
   const clip = captureClip(box, ext, page.viewportSize());
+  const boxes = [];
+  for (const sel of mask) {
+    const all = page.locator(sel);
+    const n = await all.count();
+    if (n === 0) throw new Error(`mask target not found: ${sel}`);
+    for (let i = 0; i < n; i++) {
+      const b = await all.nth(i).boundingBox();
+      if (b) boxes.push(b);
+    }
+  }
+  const scale = await page.evaluate(() => window.devicePixelRatio);
   await page.screenshot({ path: outputPath, clip, animations: 'disabled', caret: 'hide', scale: 'device' });
-  return { path: outputPath, box, bleed: ext };
+  return { path: outputPath, box, bleed: ext, clip, maskRects: maskRects(boxes, clip, scale) };
+}
+
+/** Element boxes (CSS px, page) → rects in capture pixels relative to the clip. Pure — exported for tests. */
+export function maskRects(boxes, clip, scale) {
+  return boxes.map(b => ({
+    x: Math.round((b.x - clip.x) * scale),
+    y: Math.round((b.y - clip.y) * scale),
+    width: Math.round(b.width * scale),
+    height: Math.round(b.height * scale),
+  }));
 }
 
 /** Per-side bleed: how far any box-shadow inside the target paints past its box. */

@@ -8,7 +8,7 @@
  * itself lives in `scripts/audit/lib/image-diff.mjs`.
  *
  * Usage:
- *   node scripts/visual-diff.mjs --figma <path> --browser <path> [--output <path>] [--threshold <0-1>] [--align top-left|center] [--background #rrggbb]
+ *   node scripts/visual-diff.mjs --figma <path> --browser <path> [--output <path>] [--threshold <0-1>] [--align top-left|center] [--background #rrggbb] [--masks <json>]
  *
  * Options:
  *   --figma      Path to Figma reference PNG
@@ -19,12 +19,14 @@
  *                (default: top-left; center for symmetric but unmatched margins)
  *   --background Page background both images are flattened onto (default: #ffffff).
  *                Figma exports are transparent around the component; captures are not.
+ *   --masks      JSON array of {x, y, width, height} in capture pixels, painted with the
+ *                background on both images before the diff (mock data). Reported as maskedPixels.
  *
  * Exit codes: 0 PASS/WARNING · 1 FAIL (diff >= 2%) · 2 usage error or unreadable
  * input (these were 1 before; 11-pixel-diff-states distinguishes them).
  *
  * Output (JSON to stdout):
- *   { figma, browser, dimensions, diffPixels, totalPixels, diffPercent, status, align, background, sizeMismatch, outputPath }
+ *   { figma, browser, dimensions, diffPixels, maskedPixels, totalPixels, diffPercent, status, align, background, sizeMismatch, outputPath }
  *
  * Cross-platform: Windows, macOS, Linux — pure JS, zero native deps.
  */
@@ -47,10 +49,21 @@ const outputPath = resolve(getArg('output', 'diff-result.png'));
 const threshold = parseFloat(getArg('threshold', '0.1'));
 const align = getArg('align', 'top-left');
 const background = getArg('background', '#ffffff');
+let masks = [];
+const masksArg = getArg('masks', '');
+if (masksArg) {
+  try {
+    masks = JSON.parse(masksArg);
+    if (!Array.isArray(masks)) throw new Error('not an array');
+  } catch (e) {
+    console.error(`ERROR: --masks must be a JSON array of {x, y, width, height}: ${e.message}`);
+    process.exit(2);
+  }
+}
 
 if (!getArg('figma', '') || !getArg('browser', '')) {
   console.error(
-    'Usage: node scripts/visual-diff.mjs --figma <path> --browser <path> [--output <path>] [--threshold <0-1>] [--align top-left|center] [--background #rrggbb]',
+    'Usage: node scripts/visual-diff.mjs --figma <path> --browser <path> [--output <path>] [--threshold <0-1>] [--align top-left|center] [--background #rrggbb] [--masks <json>]',
   );
   process.exit(2);
 }
@@ -72,7 +85,7 @@ try {
 
 let diff;
 try {
-  diff = diffImages(img1, img2, { threshold, align, background: parseHexColor(background) });
+  diff = diffImages(img1, img2, { threshold, align, background: parseHexColor(background), masks });
 } catch (e) {
   console.error(`ERROR: ${e.message}`);
   process.exit(2);
@@ -97,6 +110,7 @@ const result = {
   browser: basename(browserPath),
   dimensions: `${diff.width}x${diff.height}`,
   diffPixels: diff.diffPixels,
+  maskedPixels: diff.maskedPixels,
   totalPixels: diff.totalPixels,
   diffPercent: diff.diffPercent,
   status,

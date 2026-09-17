@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { captureClip, stateUrl } from '../../audit/lib/state-page.mjs';
+import { captureClip, maskRects, stateUrl } from '../../audit/lib/state-page.mjs';
 
 describe('state-page: stateUrl', () => {
   it('builds the story iframe url', () => {
@@ -51,5 +51,14 @@ describe('state-page: captureClip', () => {
       width: 30,
       height: 40,
     });
+  });
+});
+
+describe('state-page: maskRects', () => {
+  it('maps element boxes into capture pixels relative to the clip', () => {
+    assert.deepEqual(
+      maskRects([{ x: 110, y: 60, width: 20, height: 10 }], { x: 100, y: 50, width: 200, height: 100 }, 2),
+      [{ x: 20, y: 20, width: 40, height: 20 }],
+    );
   });
 });
