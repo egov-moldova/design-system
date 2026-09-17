@@ -460,6 +460,19 @@ describe('review fixes', () => {
     );
   });
 
+  it('fails loudly when an index or the agent catalog exists but cannot be read', () => {
+    // A directory where the file should be: readFileSync throws EISDIR, not ENOENT.
+    const unreadableIndex = makeFixture({ 'package.json': pkgJson(), 'AGENTS.md/x': '', '_agents/a.md': '# A\n' });
+    assert.throws(() => checkAiDocs({ root: unreadableIndex }), { code: 'EISDIR' });
+
+    const unreadableCatalog = makeFixture({
+      'package.json': pkgJson(),
+      '.claude/agents/new-component.md': 'x',
+      '.claude/agents/README.md/x': '',
+    });
+    assert.throws(() => checkAiDocs({ root: unreadableCatalog }), { code: 'EISDIR' });
+  });
+
   it('reads the --root repository even when a git hook exports GIT_DIR', () => {
     const root = makeFixture({
       'package.json': pkgJson(),

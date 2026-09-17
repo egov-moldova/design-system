@@ -349,6 +349,17 @@ function listNames(root, dir) {
   }
 }
 
+// Only an absent file is an answer; any other read error must reach main()'s
+// exit 2 rather than pass as a clean result.
+function readIfExists(root, relPath) {
+  try {
+    return fs.readFileSync(path.join(root, relPath), 'utf8');
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+}
+
 function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -465,12 +476,8 @@ function checkDocOrphan(relPath, root) {
   const m = relPath.match(/^(?:(.*)\/)?_agents\/([^/]+\.md)$/);
   if (!m) return [];
   const indexRel = m[1] ? `${m[1]}/AGENTS.md` : 'AGENTS.md';
-  let index;
-  try {
-    index = fs.readFileSync(path.join(root, indexRel), 'utf8');
-  } catch {
-    return [];
-  }
+  const index = readIfExists(root, indexRel);
+  if (index === null) return [];
   const named = new RegExp(`(?<![\\w.-])${escapeRegExp(m[2])}(?![\\w-])`).test(index);
   return named ? [] : [makeHit(relPath, 1, 'doc-orphan', `not indexed in ${indexRel}`)];
 }
@@ -526,12 +533,8 @@ function agentFrontmatter(root, name) {
 
 function checkAgentCatalog(root) {
   const readme = '.claude/agents/README.md';
-  let text;
-  try {
-    text = fs.readFileSync(path.join(root, readme), 'utf8');
-  } catch {
-    return [];
-  }
+  const text = readIfExists(root, readme);
+  if (text === null) return [];
   const names = listNames(root, '.claude/agents');
   const hits = names
     .filter(name => !new RegExp(`^\\|\\s*\`${escapeRegExp(name)}\`\\s*\\|`, 'm').test(text))
@@ -825,11 +828,13 @@ function main() {
 // reached through a symlinked path (macOS `/tmp`, a linked bin) would otherwise
 // skip main() and exit 0 having checked nothing.
 function isEntrypointPath(argvPath) {
+  let resolved;
   try {
-    return import.meta.url === pathToFileURL(fs.realpathSync(argvPath)).href;
+    resolved = fs.realpathSync(argvPath);
   } catch {
-    return false;
+    resolved = path.resolve(argvPath);
   }
+  return import.meta.url === pathToFileURL(resolved).href;
 }
 const isEntrypoint = process.argv[1] !== undefined && isEntrypointPath(process.argv[1]);
 
