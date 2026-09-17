@@ -36,6 +36,9 @@
  *                     `--pcre2`/`-P`; ripgrep's default engine rejects it.
  *   stencil-version — a `Stencil 4.x` claim, or a minor above the
  *                     `@stencil/core` pin, for the pinned major.
+ *   mcp-server     — an `mcp__<server>__<tool>` name, in agent frontmatter
+ *                     `tools:` or a doc code span, whose server `.mcp.json`
+ *                     does not configure.
  *
  * Exit codes: 0 clean, 1 one or more hits, 2 internal error (e.g. an
  * unreadable or malformed package.json).
@@ -915,6 +918,41 @@ function enginesMajor(pkg) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: mcp-server
+// ---------------------------------------------------------------------------
+
+const MCP_TOOL_RE = /\bmcp__([a-z0-9-]+)__[a-z0-9_]+/gi;
+
+function mcpServers(root) {
+  const text = readIfExists(root, '.mcp.json');
+  if (text === null) return null;
+  return new Set(Object.keys(JSON.parse(text).mcpServers ?? {}));
+}
+
+function checkMcpServers(relPath, lines, servers) {
+  const hits = [];
+  lines.forEach((line, i) => {
+    const frontmatterTools = relPath.startsWith('.claude/agents/') && /^tools:/.test(line);
+    const segments = frontmatterTools ? [line] : findCodeSpans(line).map(sp => sp.content);
+    for (const segment of segments) {
+      for (const m of segment.matchAll(MCP_TOOL_RE)) {
+        if (!servers.has(m[1])) {
+          hits.push(
+            makeHit(
+              relPath,
+              i + 1,
+              'mcp-server',
+              `\`${m[0]}\` needs MCP server "${m[1]}", which .mcp.json does not configure`,
+            ),
+          );
+        }
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Core
 // ---------------------------------------------------------------------------
 
@@ -926,6 +964,7 @@ export function checkAiDocs({ root }) {
   const agentSlash = agentSlashPattern(root);
   const yarnNames = knownYarnNames(root, pkg);
   const stencilPin = pinnedMajorMinor(pkg, '@stencil/core');
+  const servers = mcpServers(root);
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -956,6 +995,7 @@ export function checkAiDocs({ root }) {
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkYarnScripts(relPath, lines, yarnNames));
     if (needsDocScope) hits.push(...checkDocOrphan(relPath, root));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
+    if (needsDocScope && servers) hits.push(...checkMcpServers(relPath, lines, servers));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkStalePrefix(relPath, lines));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkLookaround(relPath, lines));
