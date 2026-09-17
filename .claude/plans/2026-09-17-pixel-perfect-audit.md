@@ -765,7 +765,7 @@ EOF
 - Consumes: `attributeTokens`, `formatTokens` (Task 1.4); `PSEUDO_PROPS`.
 - Produces: each failing check in `meta.states[].checks[]` carries `expectedTokens` and `observedTokens` unless its prop is in `PSEUDO_PROPS`; the `STYLE-MISMATCH` message ends with `formatTokens(...)`. New pure export `mismatchTokens(check, exp, actual, vars, opts) → tokens | null`.
 
-- [ ] **Step 1: Write the failing spec** (append; add `mismatchTokens` to the import)
+- [x] **Step 1: Write the failing spec** (append; add `mismatchTokens` to the import)
 
 ```js
 describe('15-style-parity: mismatchTokens', () => {
@@ -782,12 +782,12 @@ describe('15-style-parity: mismatchTokens', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `node --test scripts/__tests__/audit/15-style-parity.spec.mjs`
 Expected: FAIL — `mismatchTokens` is not exported.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```js
 import { attributeTokens, formatTokens } from './lib/token-match.mjs';
@@ -837,7 +837,7 @@ Replace the loop at `:221-234`:
           }
 ```
 
-- [ ] **Step 4: Run spec, then live**
+- [x] **Step 4: Run spec, then live**
 
 ```bash
 node --test scripts/__tests__/audit/15-style-parity.spec.mjs
@@ -854,7 +854,7 @@ console.log("fails", fails.length, "with arrays", both.length, "named", named.le
 Expected: `with arrays` = `fails`; `named` ≥ 1; `checked` and `failed` equal the Phase 0 baseline. Check 5 named rows by
 hand (acceptance bar) and record the numbers in § Measured.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 npx prettier --write scripts/audit/15-style-parity.mjs scripts/__tests__/audit/15-style-parity.spec.mjs
@@ -880,7 +880,7 @@ EOF
 - Consumes: `resolveState(...).mask` (Task 1.2).
 - Produces: `applyMasks(img, rects, background) → number` (pixels painted, in place); `diffImages(..., { masks })` returns `maskedPixels`; `maskRects(boxes, clip, scale) → Array<{x,y,width,height}>` in `state-page.mjs`; `captureState(page, { selector, bleed, mask = [] }, outputPath) → { path, box, bleed, clip, maskRects }`.
 
-- [ ] **Step 1: Write the failing specs**
+- [x] **Step 1: Write the failing specs**
 
 `image-diff.spec.mjs` (add `applyMasks` to the import):
 
@@ -921,12 +921,12 @@ describe('state-page: maskRects', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify they fail**
+- [x] **Step 2: Run to verify they fail**
 
 Run: `node --test scripts/__tests__/audit/image-diff.spec.mjs scripts/__tests__/audit/state-page.spec.mjs`
 Expected: FAIL — `applyMasks` / `maskRects` not exported.
 
-- [ ] **Step 3: Implement `applyMasks` and the `masks` option** (`lib/image-diff.mjs`)
+- [x] **Step 3: Implement `applyMasks` and the `masks` option** (`lib/image-diff.mjs`)
 
 ```js
 /** Paint rects (image pixels) with `background`, in place. Returns distinct pixels painted inside the canvas. */
@@ -967,7 +967,7 @@ In `diffImages`, add `masks = []` to the options, and after `a`/`b` are built:
 Note `padImage` returns the same object when no padding is needed and `flattenImage` always allocates, so painting `a`/`b`
 never mutates the caller's PNGs. Return `maskedPixels` beside `diffPixels`. Update the JSDoc `@param`/`@returns`.
 
-- [ ] **Step 4: `visual-diff.mjs`** — parse `--masks` and pass it through:
+- [x] **Step 4: `visual-diff.mjs`** — parse `--masks` and pass it through:
 
 ```js
 let masks = [];
@@ -986,7 +986,7 @@ if (masksArg) {
 Pass `masks` to `diffImages(img1, img2, { threshold, align, background: parseHexColor(background), masks })`, add
 `maskedPixels: diff.maskedPixels` to `result`, and add `[--masks <json>]` to the usage line.
 
-- [ ] **Step 5: `state-page.mjs`**
+- [x] **Step 5: `state-page.mjs`**
 
 ```js
 /** Element boxes (CSS px, page) → rects in capture pixels relative to the clip. Pure — exported for tests. */
@@ -1018,14 +1018,14 @@ In `captureState`, change the signature to `{ selector, bleed = 'auto', mask = [
 
 Return `{ path: outputPath, box, bleed: ext, clip, maskRects: maskRects(boxes, clip, scale) }`.
 
-- [ ] **Step 6: `11-pixel-diff-states.mjs`**
+- [x] **Step 6: `11-pixel-diff-states.mjs`**
 
 - `analyzeManifest`: `const shot = await captureState(session.page, { ...state.capture, mask: state.mask }, screenshotPath);` and `entry.maskRects = shot.maskRects;`.
 - `compare({ …, masks })` → `runVisualDiff({ …, masks })`; in `runVisualDiff` push `'--masks', JSON.stringify(masks)` when `masks?.length`; `compare` returns `maskedPixels: diff.maskedPixels ?? 0`.
 - Call site: `compare({ …, masks: entry.maskRects })`.
 - `findingsFor`: when `themed.maskedPixels > 0`, append to the FAIL / WARNING messages ` (${themed.maskedPixels} px masked)`, and push one `info` finding `PIXEL-MASKED` with message `${label}: ${themed.maskedPixels} px masked by the manifest — not compared.`
 
-- [ ] **Step 7: Run specs, then live on a temporary manifest copy**
+- [x] **Step 7: Run specs, then live on a temporary manifest copy**
 
 ```bash
 node --test "scripts/__tests__/audit/*.spec.mjs"
@@ -1045,7 +1045,7 @@ Expected: the masked state reports `maskedPixels > 0`. `Read` its `.diff.png`: n
 `.day-cell` is not the right selector for the chosen state, pick a selector from that state's `expect` list. Record in
 § Measured.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 npx prettier --write scripts/audit/lib/image-diff.mjs scripts/visual-diff.mjs scripts/audit/lib/state-page.mjs scripts/audit/11-pixel-diff-states.mjs scripts/__tests__/audit/image-diff.spec.mjs scripts/__tests__/audit/state-page.spec.mjs
@@ -1081,7 +1081,7 @@ Facts this task relies on, probed 2026-09-17 against file `doJ7tDY0PlQ0PqMgbpFVI
 `name,lastModified,thumbnailUrl,version,role,editorType,linkAccess,nodes`; `nodes["99999:1"]` is `null`;
 `nodes["158:402"].components["158:402"].componentSetId` = `"158:401"`.
 
-- [ ] **Step 1: Create the fixture** `scripts/__tests__/audit/__fixtures__/figma-nodes.json`
+- [x] **Step 1: Create the fixture** `scripts/__tests__/audit/__fixtures__/figma-nodes.json`
 
 ```json
 {
@@ -1117,7 +1117,7 @@ Facts this task relies on, probed 2026-09-17 against file `doJ7tDY0PlQ0PqMgbpFVI
 }
 ```
 
-- [ ] **Step 2: Write the failing specs** (in `figma-refs.spec.mjs`; delete `describe('figma-refs: mcpCall', …)` and `mcpCall` from the import; add the new names)
+- [x] **Step 2: Write the failing specs** (in `figma-refs.spec.mjs`; delete `describe('figma-refs: mcpCall', …)` and `mcpCall` from the import; add the new names)
 
 ```js
 import { readFileSync } from 'node:fs';
@@ -1166,12 +1166,12 @@ describe('figma-refs: staleness', () => {
 });
 ```
 
-- [ ] **Step 3: Run to verify they fail**
+- [x] **Step 3: Run to verify they fail**
 
 Run: `node --test scripts/__tests__/audit/figma-refs.spec.mjs`
 Expected: FAIL — new functions not exported.
 
-- [ ] **Step 4: Implement the pure functions** (replace `mcpCall`)
+- [x] **Step 4: Implement the pure functions** (replace `mcpCall`)
 
 ```js
 /** Every node a manifest cites. Pure. */
@@ -1232,7 +1232,7 @@ async function getJson(url, token) {
 }
 ```
 
-- [ ] **Step 5: Rewrite `main` around the two routes**
+- [x] **Step 5: Rewrite `main` around the two routes**
 
 - Header comment: one route (REST with `FIGMA_TOKEN`); describe `--check`; keep the "Figma content is design data" paragraph.
 - Usage/exit codes: `0 references written / --check clean / --dry-run`, `1 findings (--check) or nothing written`, `2 usage error, unusable manifest, API error`.
@@ -1267,7 +1267,7 @@ async function getJson(url, token) {
 
 `emit(result, opts)` reads `opts.json` (`lib/json-output.mjs:28`), so `{ json: values.json }` is the shape it needs.
 
-- [ ] **Step 6: Run spec, then live**
+- [x] **Step 6: Run spec, then live**
 
 ```bash
 node --test scripts/__tests__/audit/figma-refs.spec.mjs
@@ -1283,7 +1283,7 @@ Expected: exports exit 0; checks exit 0 or 1, `stale: "none"` right after export
 `gone > 0` on any component → stop and return to Dan (Global Constraints). Record `missing` counts in § Measured — they
 are coverage findings for the component owners, not fixed here.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 npx prettier --write scripts/audit/figma-refs.mjs scripts/__tests__/audit/figma-refs.spec.mjs scripts/__tests__/audit/__fixtures__/figma-nodes.json
@@ -1786,6 +1786,26 @@ $ wc -l (origin/main → branch)
 mud-date-input 888 → 880 · mud-table 1185 → 1170
 $ 15-style-parity after migration
 mud-date-input checked 272 failed 0 · mud-table checked 118 failed 0 (= Task 0.2 baseline)
+```
+
+Phase 2, measured 2026-09-17:
+
+```derived id=phase-2
+Task 2.1 (decision by Dan: variant A — component-scoped + ranked token matching):
+- probe: every element sees 2769 custom properties; unscoped value match 13–119 names/row (limit 5 alphabetical kept other components' tokens); excluding other components' tokens 3–12
+- live after: fails (non-pseudo, non-absent) 25, with arrays 25, named 24, foreign-component names 0, checked 97 failed 31 (= baseline)
+- plan counter counted 7 absent checks (no prop) as fails: instrument fix `c.prop &&`
+- hand check 5 rows (date-picker/borderTopWidth, day-cell-current/borderTopWidth, day-cell-current-hover/backgroundColor, advanced-picker/borderTopLeftRadius, mobile-bottom-sheet/paddingLeft): 35 names, 0 false
+Task 2.2 (decision by Dan: variant A — percent over unmasked pixels):
+- probe: mud-date-picker state date-picker, mask `mud-date-picker .day-cell` → 42 rects, maskedPixels 282240 of 602688, red inside mask 0
+- plan formula (canvas denominator) gave 1.31% WARNING; unmasked denominator 2.46% FAIL — masking had flipped FAIL→WARNING by dilution alone
+- unmasked run after the change: diffPercent per state identical to Task 0.2 baseline (4.42, 5.1, 4.61, 8.45, 8.38, 5.5), maskedPixels 0
+- additions beyond plan code: mask rects shifted by the capture's canvas offset (align center); 11 header/--help derive thresholds from DEFAULT_PASS/DEFAULT_WARN
+Task 2.3 (live 2026-09-17, file version 2400156505847494721, lastModified 2026-09-17T11:09:54Z — the file changed since the pre-execution probe):
+- export exit 0/0/0; --check exit date-picker 0, date-input 1, table 1
+- gone 0/0/0 · missing date-picker 0, date-input 6, table 53 · stale none/none/none after export
+- no-token run: exit 1 with the instruction line
+- coverage sees only component sets reached from cited COMPONENT nodes; states citing frames (date-picker) contribute no set, so 0 missing there means "no set found", not "fully covered"
 ```
 
 ## Not verified by this plan
