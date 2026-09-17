@@ -1310,7 +1310,7 @@ EOF
 
 **Files:** Modify `.claude/skills/pixel-perfect/SKILL.md`
 
-- [ ] **Step 1: Apply the edits**
+- [x] **Step 1: Apply the edits**
   - `:10` → `**Not for** cloning an external website or screenshot into code.`
   - Step 0 route table (`:43-51`): two rows — official Figma MCP (design extraction, step 1) and Figma REST with `FIGMA_TOKEN` (references, step 3, and `--check`). Delete the Framelink row. "If no route works" → "No `FIGMA_TOKEN` → references cannot be exported: style parity still runs, the pixel diff reports `PIXEL-NO-REFERENCE`, and the report lists the pixel states under Not verified."
   - Pipeline table: step 1 adds `node scripts/audit/figma-refs.mjs <name> --check --json` after extraction ("uncovered variants, gone nodes, stale references"); step 6 unchanged.
@@ -1348,7 +1348,7 @@ EOF
 
   - Step 7 report template: first line `**Verdict: FAIL | INCOMPLETE | WARN | PASS**` with the rule "FAIL if any error finding; INCOMPLETE if anything is under Not verified; WARN if any warning; PASS otherwise." Add a `Tokens` column to the Drift table.
 
-- [ ] **Step 2: Verify codes against the scripts**
+- [x] **Step 2: Verify codes against the scripts**
 
 ```bash
 grep -ohE "code: '(STYLE|PIXEL|FIGMA)-[A-Z-]+'" scripts/audit/11-pixel-diff-states.mjs scripts/audit/15-style-parity.mjs scripts/audit/figma-refs.mjs | sort -u
@@ -1357,13 +1357,13 @@ grep -oE '`(STYLE|PIXEL|FIGMA)-[A-Z-]+`' .claude/skills/pixel-perfect/SKILL.md |
 
 Expected: the two sets are equal (the spec in Task 4.2 makes this permanent).
 
-- [ ] **Step 3: Commit** (`docs(skills): make the pixel-perfect skill run its scripts and index its rules`, `Refs #87`), staging only `SKILL.md`, after `npx prettier --write` and `node scripts/docs/check-ai-docs.mjs`.
+- [x] **Step 3: Commit** (`docs(skills): make the pixel-perfect skill run its scripts and index its rules`, `Refs #87`), staging only `SKILL.md`, after `npx prettier --write` and `node scripts/docs/check-ai-docs.mjs`.
 
 ### Task 3.2: `pixel-perfect-verifier.md`
 
 **Files:** Modify `.claude/agents/pixel-perfect-verifier.md`
 
-- [ ] **Step 1: Apply the edits**
+- [x] **Step 1: Apply the edits**
   - Frontmatter `tools`: remove `mcp__figma-mcp__get_figma_data`, `mcp__figma-mcp__download_figma_images`.
   - Inputs: required `componentName`; `figmaUrl` (preferred — carries file key and node) or `figmaNodeId`, read with the manifest's `figma.fileKey`. Remove `acceptThreshold` (thresholds live in `lib/image-diff.mjs`). Keep `storybookBaseUrl`, `statesToVerify`.
   - Procedure step 2: manifest exists → `node scripts/audit/figma-refs.mjs <name> --check --json` and report `FIGMA-*` findings. Missing → return `manifest-missing` with the list of Figma variants (name + node id) from `mcp__figma__get_metadata`; **do not draft values**.
@@ -1372,26 +1372,26 @@ Expected: the two sets are equal (the spec in Task 4.2 makes this permanent).
   - Report: first line `Verdict: FAIL | INCOMPLETE | WARN | PASS` (same rule as the skill); Evidence adds `Coverage: <missing> uncovered variants, <gone> gone nodes, references <stale>`; Drift table gains `Tokens`; delete the `Draft manifest` section; Acceptance adds "0 `FIGMA-NODE-GONE`; every `FIGMA-STATE-MISSING` added or skipped with a reason".
   - Failure modes, add rows: `manifest-missing` (no `<name>.figma.json`); `story-not-found` (`STYLE-STATE-FAILED` / `PIXEL-CAPTURE-FAILED` with a Storybook 404 or missing story id → report the id from `05-story-exports`); `references-missing` (`PIXEL-NO-REFERENCE`, or `FIGMA-NO-TOKEN`); `figma-node-gone` (`FIGMA-NODE-GONE` → stop, the manifest cites a deleted node). Replace the `figma-unavailable` row's cause with "official Figma MCP not authenticated (`/mcp`) and no `FIGMA_TOKEN`".
 
-- [ ] **Step 2: Commit** (`docs(agents): align pixel-perfect-verifier with the tools and scripts it has`, `Refs #87`), staging only the agent file, after prettier and the docs checker.
+- [x] **Step 2: Commit** (`docs(agents): align pixel-perfect-verifier with the tools and scripts it has`, `Refs #87`), staging only the agent file, after prettier and the docs checker.
 
 ### Task 3.3: `_agents/pixel-perfect-qa.md` and `_agents/mcp-tools.md`
 
 **Files:** Modify `_agents/pixel-perfect-qa.md`, `_agents/mcp-tools.md:97`
 
-- [ ] **Step 1: Apply the edits**
+- [x] **Step 1: Apply the edits**
   - Loop step 1: "a working Figma route" → "`FIGMA_TOKEN` for references; the official Figma MCP for design extraction".
   - Loop step 3: after writing the manifest, run `node scripts/audit/figma-refs.mjs <name> --check`.
   - Tolerances: "Zero tolerance — computed values, checked by `15-style-parity` (including `lineHeight`)". "Rendering tolerance — glyph pixels only, judged on the diff image". Pixel diff line → "thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `scripts/audit/lib/image-diff.mjs` (PASS below the first, WARNING below the second, FAIL at or above it)."
   - States table: add rows "Mock data (dates, avatars) | `mask: [selector]` — reported, not hidden" and "Variant deliberately not covered | `figma.skip: [{ node, reason }]`".
   - `mcp-tools.md:97`: drop the Framelink sentence; keep OAuth; "For pixel-perfect references set `FIGMA_TOKEN` (see the `pixel-perfect` skill, step 0)."
 
-- [ ] **Step 2: Commit** (`docs(agents): keep pixel-perfect tolerances and Figma access in one place`, `Refs #87`).
+- [x] **Step 2: Commit** (`docs(agents): keep pixel-perfect tolerances and Figma access in one place`, `Refs #87`).
 
 ### Task 3.4: Consumers
 
 **Files:** Modify `.claude/agents/new-component.md:159`, `redesign-component.md:209,274`, `refactor-component.md:105,112`, `custom-component.md:142,145`, `.claude/skills/parallel-aux-tasks/SKILL.md:37,47,55`
 
-- [ ] **Step 1: Apply the edits**
+- [x] **Step 1: Apply the edits**
   - `new-component.md:159`, `redesign-component.md:209` → `Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaUrl=<figma url with node-id>")`.
   - `redesign-component.md:274` → `- pixel-perfect-verifier: Verdict <FAIL|INCOMPLETE|WARN|PASS> (<n> style mismatches, pixel PASS/WARNING/FAIL <a>/<b>/<c>, <m> uncovered variants)`.
   - `refactor-component.md:105` → `prompt="componentName=mud-<name>, figmaUrl=<url-if-available>"`; `:112` → "`pixel-perfect-verifier`: Verdict PASS or WARN against the existing manifest; no manifest → `manifest-missing`, and the before/after screenshots of Step 5 are the regression check" (D3).
@@ -1409,7 +1409,7 @@ git status --porcelain=v1 | diff "${TMPDIR:-/tmp}/aux-before.txt" - | grep '^>' 
   The check sees a file whose status line changes (new, deleted, first modification). It does not see a second edit to a
   file the orchestrator had already modified before the dispatch — stated under Not verified.
 
-- [ ] **Step 2: Verify no consumer passes a removed input**
+- [x] **Step 2: Verify no consumer passes a removed input**
 
 ```bash
 grep -rnE "pixel-perfect-verifier.*(threshold|figmaReferenceDir|useBaseline|figmaNodeId=)" .claude
@@ -1418,7 +1418,7 @@ grep -rn "pre-refactor baseline" .claude/skills/parallel-aux-tasks .claude/agent
 
 Expected: no output from either.
 
-- [ ] **Step 3: Prove the write check fires**
+- [x] **Step 3: Prove the write check fires**
 
 ```bash
 git status --porcelain=v1 > "${TMPDIR:-/tmp}/aux-before.txt"
@@ -1429,7 +1429,7 @@ rm src/components/mud-table/aux-probe.txt
 
 Expected: exactly one line, `> ?? src/components/mud-table/aux-probe.txt`; after `rm`, re-running the last pipeline prints nothing.
 
-- [ ] **Step 4: Commit** (`docs(agents): dispatch pixel-perfect-verifier with the inputs it accepts`, `Refs #87`), staging the five files by name.
+- [x] **Step 4: Commit** (`docs(agents): dispatch pixel-perfect-verifier with the inputs it accepts`, `Refs #87`), staging the five files by name.
 
 ---
 
@@ -1447,7 +1447,7 @@ Expected: exactly one line, `> ?? src/components/mud-table/aux-probe.txt`; after
 - Consumes: `readIfExists`, `findCodeSpans`, `makeHit`, `isDocScope`.
 - Produces: rule id `mcp-server`.
 
-- [ ] **Step 1: Write the failing spec** (append; reuse `makeFixture`/`pkgJson`)
+- [x] **Step 1: Write the failing spec** (append; reuse `makeFixture`/`pkgJson`)
 
 ```js
 describe('mcp-server rule', () => {
@@ -1478,12 +1478,12 @@ describe('mcp-server rule', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `node --test scripts/__tests__/check-ai-docs.spec.mjs`
 Expected: FAIL — no `mcp-server` hits.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```js
 // ---------------------------------------------------------------------------
@@ -1530,7 +1530,7 @@ The fixture's `v.md` line 3 is the frontmatter `tools:` line and line 6 carries 
 `mcp__playwright__…` are configured and do not hit. If the header regex also matches a `tools:` line whose first token
 is a Markdown table in some other agent, the live run in Step 4 shows it.
 
-- [ ] **Step 4: Run spec and the live checker**
+- [x] **Step 4: Run spec and the live checker**
 
 ```bash
 node --test scripts/__tests__/check-ai-docs.spec.mjs
@@ -1540,13 +1540,13 @@ node scripts/docs/check-ai-docs.mjs
 Expected: spec PASS; live `check-ai-docs: clean` (Phase 3 removed every `figma-mcp` name — 8 on `c4b3214`). A live hit on
 any other server → stop and return to Dan.
 
-- [ ] **Step 5: Commit** (`feat(docs): fail when an agent or doc names an MCP server .mcp.json does not configure`, `Refs #87`).
+- [x] **Step 5: Commit** (`feat(docs): fail when an agent or doc names an MCP server .mcp.json does not configure`, `Refs #87`).
 
 ### Task 4.2: Skill parity spec
 
 **Files:** Create `scripts/__tests__/pixel-perfect-skill.spec.mjs`
 
-- [ ] **Step 1: Write the spec**
+- [x] **Step 1: Write the spec**
 
 ```js
 /**
@@ -1586,18 +1586,18 @@ describe('pixel-perfect skill parity', () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `node --test scripts/__tests__/pixel-perfect-skill.spec.mjs`
 Expected: PASS. A failure means Task 3.1's index and the scripts disagree — fix the doc, not the spec.
 
-- [ ] **Step 3: Commit** (`test(docs): keep the pixel-perfect skill in step with the codes its scripts emit`, `Refs #87`).
+- [x] **Step 3: Commit** (`test(docs): keep the pixel-perfect skill in step with the codes its scripts emit`, `Refs #87`).
 
 ### Task 4.3: Mutation check
 
 **Files:** Create `scripts/__tests__/audit/pixel-perfect.mutations.mjs` (not a `*.spec.mjs`: CI does not run it)
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 ```js
 #!/usr/bin/env node
@@ -1688,14 +1688,14 @@ console.log(`caught ${caught}/${MUTATIONS.length}`);
 process.exit(caught === MUTATIONS.length ? 0 : 1);
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `node scripts/__tests__/audit/pixel-perfect.mutations.mjs`
 Expected: `caught 6/6`, exit 0. An `anchor not found` means an earlier task's code differs from this plan — read the
 file and update the anchor to the real text, never to a fallback. A `MISSED` means the spec cannot fail on that rule —
 add the missing assertion to that spec.
 
-- [ ] **Step 3: Commit** (`test(audit): prove each pixel-perfect spec fails when its rule is broken`, `Refs #87`).
+- [x] **Step 3: Commit** (`test(audit): prove each pixel-perfect spec fails when its rule is broken`, `Refs #87`).
 
 ---
 
@@ -1705,13 +1705,13 @@ add the missing assertion to that spec.
 
 ### Task 5.1: Full verification
 
-- [ ] **Step 1:** Run every acceptance-bar row (1–8) and the four numeric tolerances; record results in § Measured.
-- [ ] **Step 2:** Re-run Task 0.2 Step 3's snippet; `propertiesChecked` / `propertiesFailed` per component must equal the baseline.
-- [ ] **Step 3:** `git log --oneline origin/main..HEAD` and `git diff --stat origin/main...HEAD` — only files this plan names.
+- [x] **Step 1:** Run every acceptance-bar row (1–8) and the four numeric tolerances; record results in § Measured.
+- [x] **Step 2:** Re-run Task 0.2 Step 3's snippet; `propertiesChecked` / `propertiesFailed` per component must equal the baseline.
+- [x] **Step 3:** `git log --oneline origin/main..HEAD` and `git diff --stat origin/main...HEAD` — only files this plan names.
 
 ### Task 5.2: Draft the PR body (Dan opens the PR)
 
-- [ ] Write the PR body into the session, not a file: title `Audit and tighten the pixel-perfect lane`; `Closes #87`;
+- [x] Write the PR body into the session, not a file: title `Audit and tighten the pixel-perfect lane`; `Closes #87`;
   a findings table with each F-row's disposition and commit; the F13 correction to the issue text; § Measured values;
   "Not verified" from this plan; the #86 rebase note. Stop there — push and PR are Dan's.
 
@@ -1806,6 +1806,20 @@ Task 2.3 (live 2026-09-17, file version 2400156505847494721, lastModified 2026-0
 - gone 0/0/0 · missing date-picker 0, date-input 6, table 53 · stale none/none/none after export
 - no-token run: exit 1 with the instruction line
 - coverage sees only component sets reached from cited COMPONENT nodes; states citing frames (date-picker) contribute no set, so 0 missing there means "no set found", not "fully covered"
+```
+
+Phases 3–5, measured 2026-09-17:
+
+```derived id=phases-3-5
+- Task 4.1: new checker on a git-archive of c4b3214 → 8 mcp-server hits, all figma-mcp (= pre-execution count); on the branch → clean
+- Task 4.3: caught 8/8 (plan's 6, mutation 6 re-anchored on canvasMasks, plus 7 = masked denominator and 8 = foreign-component token exclusion); sandbox also copies src/components/*/test/*.figma.json because figma-manifest.spec loads the real manifests
+Task 3.4: Step 2 greps → no output outside `.claude/plans/` (the plan file quotes the removed inputs itself); Step 3 write-check probe → exactly `> ?? src/components/mud-table/aux-probe.txt`, nothing after rm
+Task 5.1 (2026-09-17, HEAD 2566c97):
+- row 1: 755 tests, 0 fail · row 2: check-ai-docs clean · row 3: no output outside `.claude/plans/` (6 lines in this plan file, which quotes the name) · row 4: caught 8/8 · row 5: covered by row 1 · row 6: 3/3 ok · row 7: mud-date-input 0, mud-table 0 · row 8: yarn check.verify exit 0
+- style parity checked/failed = baseline: date-picker 97/31, date-input 272/0, table 118/0
+- pixel P/W/F/U = baseline and every diffPercent identical: date-picker 0/0/6/0, date-input 15/8/0/0, table 0/9/0/0
+- figma-refs --check exit 0/1/1 (never 2): missing 0/6/53, gone 0/0/0, stale none
+- git diff --stat origin/main...HEAD: 31 files, all named by the plan
 ```
 
 ## Not verified by this plan
