@@ -68,7 +68,7 @@ function documentedNames(section, heading) {
       line
         .split('|')[1]
         .trim()
-        .replace(/^`"?|"?`$/g, ''),
+        .replace(/^`"?([^`]+?)"?`.*$/, '$1'),
     );
 }
 
