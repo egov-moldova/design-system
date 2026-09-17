@@ -107,6 +107,27 @@ describe('setup-merge-drivers: merge=ours', () => {
   });
 });
 
+describe('hook installation', () => {
+  const readJson = rel => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
+
+  // `npm publish` sends the on-disk package.json as the registry manifest, and a dry-run
+  // pack runs prepack/postpack, so any of these on the root reaches consumers or edits it.
+  it('the published root package declares no install or pack lifecycle script', () => {
+    const lifecycle = ['preinstall', 'install', 'postinstall', 'prepare', 'prepack', 'postpack'];
+    assert.deepEqual(
+      Object.keys(readJson('package.json').scripts).filter(s => lifecycle.includes(s)),
+      [],
+    );
+  });
+
+  it('runs from the postinstall of a private workspace', () => {
+    assert.ok(readJson('package.json').workspaces.includes('react'));
+    const react = readJson('react/package.json');
+    assert.equal(react.private, true);
+    assert.equal(react.scripts.postinstall, 'node ../scripts/git/install-hooks.mjs');
+  });
+});
+
 describe('scratch repos under a git hook', () => {
   it('.husky/pre-push unsets exactly the variables scripts/git/env.mjs strips', () => {
     const hook = fs.readFileSync(path.join(ROOT, '.husky', 'pre-push'), 'utf8');

@@ -9,7 +9,7 @@
 # The post-merge hint lives in the tracked `.husky/post-merge`; hooks in
 # `.git/hooks` never run once Husky sets `core.hooksPath`.
 #
-# Invoked by the package.json `postinstall`. Idempotent; safe to re-run.
+# Invoked by scripts/git/install-hooks.mjs. Idempotent; safe to re-run.
 
 $ErrorActionPreference = 'Stop'
 

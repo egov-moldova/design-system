@@ -21,12 +21,12 @@ No hook unstages or force-removes these files: they are committed in the same co
 
 ## Setup (runs automatically)
 
-`yarn install` invokes the `postinstall` script (`husky && node scripts/git/setup-merge-drivers.mjs`) — Yarn never runs a root `prepare` script on `yarn install`, so `postinstall` is the only activation point. `setup-merge-drivers.mjs` registers `merge.ours.driver` (`git config merge.ours.driver true`), since `merge=ours` is not a git built-in.
+`yarn install` runs the private `react` workspace's `postinstall`, which runs `scripts/git/install-hooks.mjs`: `husky`, then `setup-merge-drivers.mjs`. Yarn never runs a root `prepare` on install, and a root install script would ship in the manifest `npm publish` sends for `@egov-moldova/mud`, so the private workspace is the activation point. `setup-merge-drivers.mjs` registers `merge.ours.driver` (`git config merge.ours.driver true`), since `merge=ours` is not a git built-in.
 
 ### Manual setup (only if install scripts did not run, e.g. `yarn install --mode=skip-build` or `enableScripts: false`)
 
 ```bash
-node scripts/git/setup-merge-drivers.mjs
+node scripts/git/install-hooks.mjs
 ```
 
 ### Verify the setup

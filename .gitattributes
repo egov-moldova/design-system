@@ -8,7 +8,7 @@
 # though the canonical resolution is deterministic — just re-run `yarn build`.
 #
 # `merge=ours` keeps the current branch's version on merge. It is not a
-# built-in driver: `scripts/git/setup-merge-drivers.mjs` (run by `postinstall`)
+# built-in driver: `scripts/git/setup-merge-drivers.mjs` (run on `yarn install`)
 # registers `merge.ours.driver`; without it git merges these files as text.
 # Merge silence is safe because `.husky/pre-push` and the CI "Tokens validation"
 # job rebuild and fail when a tracked generated file differs from the build.

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Cross-platform dispatcher for the AGE merge-driver setup.
-// Invoked by package.json "postinstall" after `husky` (Yarn 4 never runs "prepare").
+// Invoked by scripts/git/install-hooks.mjs after `husky` (see there for why).
 // Detects platform and delegates to the matching .sh / .ps1 script.
 // Idempotent; safe to run multiple times.
 

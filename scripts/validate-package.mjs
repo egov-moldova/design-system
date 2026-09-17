@@ -476,14 +476,13 @@ export function checkFontFaceCoverage(pkg, packedFiles, readText, readBuffer) {
  *
  * Yarn, because this repo is Yarn 4 (`packageManager` in package.json) and
  * `web-components` already publishes with `yarn npm publish`. Two properties
- * make it the better instrument here, both measured rather than assumed:
+ * make it a sound instrument here, both measured rather than assumed:
  *
- *   1. `yarn pack --dry-run` runs NO lifecycle script — neither `prepare` nor
- *      `prepack`. `npm pack --dry-run` runs `prepare`, `prepack` and
- *      `postpack`, and one that exits non-zero aborts the pack with that code.
- *      This package's `prepack`/`postpack` rewrite package.json (`pinst`
- *      disables and re-enables `postinstall`), so an npm-based gate would edit
- *      a tracked file as a side effect of a read-only validation.
+ *   1. Packing edits nothing, because this package declares no `prepare`,
+ *      `prepack` or `postpack` script. Both packers would run them on a dry
+ *      run: `yarn pack --dry-run` runs `prepack` and `postpack` (measured on
+ *      Yarn 4.12, with no switch to skip them), and `npm pack --dry-run` also
+ *      runs `prepare`. scripts/__tests__/git-hooks.spec.mjs keeps them absent.
  *   2. On this package the two packers agree exactly. That agreement is what
  *      lets a yarn-measured list stand for an npm-published tarball, so it is
  *      not assumed here: `checkPackerAgreement` re-derives it on every run and
@@ -510,12 +509,9 @@ export function packedFileList(cwd = PROJECT_ROOT) {
  * The same list as `packedFileList`, asked of the packer the Azure DevOps
  * release path actually uses (`npm publish`).
  *
- * `--ignore-scripts` is required, not cosmetic: without it `npm pack --dry-run`
- * runs this package's `prepack` and `postpack` (`pinst`, which rewrites
- * package.json), so a read-only validation would edit a tracked file as a side
- * effect. It also keeps the
- * comparison honest — yarn runs no lifecycle script either, so both sides are
- * measured under the same conditions.
+ * `--ignore-scripts` keeps a pack lifecycle script, should one ever be added,
+ * from running inside a read-only validation. This package declares none today,
+ * so it does not change what the two packers are compared on.
  *
  * Output is a JSON array with one entry, whose `files[].path` are the tarball
  * paths without the `package/` prefix — the same shape yarn's `location` has.

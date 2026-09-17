@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "tsc || true",
+    "postinstall": "node ../scripts/git/install-hooks.mjs",
     "prepare": "echo 'skip build on link; Vite consumes src directly'"
   },
   "dependencies": {
