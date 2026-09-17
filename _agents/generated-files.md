@@ -23,7 +23,7 @@ No hook unstages or force-removes these files: they are committed in the same co
 
 `yarn install` invokes the `postinstall` script (`husky && node scripts/git/setup-merge-drivers.mjs`) — Yarn never runs a root `prepare` script on `yarn install`, so `postinstall` is the only activation point. `setup-merge-drivers.mjs` registers `merge.ours.driver` (`git config merge.ours.driver true`), since `merge=ours` is not a git built-in.
 
-### Manual setup (only if you ran `yarn install --skip-scripts`)
+### Manual setup (only if install scripts did not run, e.g. `yarn install --mode=skip-build` or `enableScripts: false`)
 
 ```bash
 node scripts/git/setup-merge-drivers.mjs
@@ -32,8 +32,8 @@ node scripts/git/setup-merge-drivers.mjs
 ### Verify the setup
 
 ```bash
-git check-attr merge -- src/components.d.ts
-# expect: src/components.d.ts: merge: ours
+git config --get merge.ours.driver
+# expect: true — `git check-attr merge` prints `merge: ours` even when no driver is registered
 ```
 
 ## What contributors and agents must NEVER do
@@ -44,4 +44,4 @@ git check-attr merge -- src/components.d.ts
 
 ## Why `merge=ours` (and not a custom regenerate driver)
 
-A custom driver that ran `yarn build` on every 3-way merge would add 60–120 s per file per merge and would fail in IDE/GUI git clients that don't load the project environment. The built-in `merge=ours` is instant; CI's `Validate (PR)` job is the single canonical regeneration point and the hard gate that prevents stale content from reaching `main`.
+A custom driver that ran `yarn build` on every 3-way merge would add 60–120 s per file per merge and would fail in IDE/GUI git clients that don't load the project environment. The registered `merge.ours.driver` is instant; CI's `Tokens validation` job is the single canonical regeneration point and the hard gate that prevents stale content from reaching `main`.

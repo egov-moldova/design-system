@@ -132,7 +132,7 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`) — they are committed together with the source change that regenerates them; no hook unstages them. `.storybook/custom-elements.json` and `tokens/generated/**` are git-ignored, so they never need staging. The `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, `.husky/pre-push` fails the push if a rebuilt generated file differs from the committed copy, and CI's `Tokens validation` job re-runs the same check on PR. If that CI step ("Verify generated files are committed") or the pre-push hook fails, run `yarn build` locally and commit the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Step 11: Human Approval Gate
 

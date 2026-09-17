@@ -181,7 +181,7 @@ These paths are governed by:
 
 **Subagent contract:** subagents must NEVER stage these paths from an incidental local `yarn build`/`yarn sp.build` unless the regeneration is the actual, intended output of their own task. If a subagent reports "regenerated N files" as a side effect, that is informational only — the controller must NOT stage those paths (no hook discards them; an unrelated staged copy will pass `git add <specific paths>` and enter history as-is, and `.husky/pre-push` only catches it at push time). Subagents must NEVER hand-edit `components.d.ts` or any other auto-generated file.
 
-If you see conflict markers (`<<<<<<<`) in any of these files locally, treat it as a bug in the merge driver setup — run `node scripts/git/setup-merge-drivers.mjs` and `git check-attr merge -- src/components.d.ts` (expect `merge: ours`). See `AGENTS.md` -> "Merge driver for auto-generated files".
+If you see conflict markers (`<<<<<<<`) in any of these files locally, treat it as a bug in the merge driver setup — run `node scripts/git/setup-merge-drivers.mjs` and `git config --get merge.ours.driver` (expect `true`). See `_agents/generated-files.md`.
 
 ## Failure modes
 

@@ -97,7 +97,7 @@ For full anti-pattern catalogue see [`stencil-compliance/references/anti-pattern
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
 - Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` immediately)
-- Merge driver + pre-commit hook still in place — `git check-attr merge -- src/components.d.ts` returns `merge: ours`; if not, run `node scripts/git/setup-merge-drivers.mjs`
+- Merge driver still registered — `git config --get merge.ours.driver` returns `true`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)
 
