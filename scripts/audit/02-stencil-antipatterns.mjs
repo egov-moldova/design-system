@@ -2,9 +2,10 @@
 /**
  * 02-stencil-antipatterns.mjs
  *
- * Scans TSX and CSS for the 16+ Stencil + project anti-patterns documented in
- * `.claude/skills/stencil-compliance/references/anti-patterns.md` and
- * `.claude/skills/audit-component/SKILL.md` Wave 1.
+ * Scans TSX and CSS for Stencil and project anti-patterns. Each rule's `code` is
+ * its stable identifier; its `ruleScope` names the doc that owns it:
+ * `'stencil'` → `.claude/skills/stencil-compliance/`, `'project'` →
+ * `_agents/anti-patterns.md` and the token/icon/security docs.
  *
  * Replaces AI work in:
  *   - `.claude/commands/pre-pr-check.md` Wave 1 (6 separate rg calls)
@@ -45,14 +46,15 @@ const USAGE = defaultUsage(
  * Pattern registry. Each entry:
  *   - code:     stable identifier (referenced by AI workflows and tests)
  *   - severity: error | warning | info
- *   - scope:    'tsx' | 'css' (which file kind to scan)
- *   - regex:    matched line-by-line; capture group 0 is the snippet shown
- *   - filter:   optional fn(match, ctx) => boolean — skip false positives
- *   - message:  human-readable description
- *   - fix:      optional one-line remediation hint
+ *   - scope:     'tsx' | 'css' (which file kind to scan)
+ *   - ruleScope: 'stencil' | 'project' (which doc owns the rule)
+ *   - regex:     matched line-by-line; capture group 0 is the snippet shown
+ *   - filter:    optional fn(match, ctx) => boolean — skip false positives
+ *   - message:   human-readable description
+ *   - fix:       optional one-line remediation hint
  *
- * Anti-pattern numbers reference
- * `.claude/skills/stencil-compliance/references/anti-patterns.md`.
+ * Cite rules by `code`; the number inside a code is historical, not an index
+ * into any doc.
  */
 export const PATTERNS = [
   // ── TSX patterns ──────────────────────────────────────────────────────────
@@ -60,6 +62,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-TS-ANY',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /:\s*any\b/,
     message: 'TypeScript `any` violates strict mode — use a specific type or `unknown`.',
     fix: 'Replace `: any` with a specific type or `unknown` + narrowing.',
@@ -68,6 +71,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-001-INLINE-STYLE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bstyle=\{/,
     message: 'Inline `style={}` in JSX — violates CSP and bypasses design tokens.',
     fix: 'Move styles to the CSS file and toggle via classes / attribute selectors on :host.',
@@ -76,6 +80,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-002-HOST-CLASSLIST',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /this\.host\.classList\.(add|remove|toggle)/,
     message: 'Imperative `host.classList.*` — Stencil expects declarative state via @State + render().',
     fix: 'Add @State() classes or compute className in render() returning <Host class={...}>.',
@@ -84,6 +89,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-023-CLASSNAME',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bclassName=/,
     message: '`className=` is React syntax — Stencil JSX uses `class=`.',
     fix: 'Replace `className=` with `class=`.',
@@ -93,6 +99,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-004-EVENTEMITTER-UNTYPED',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     // Type-annotation context only (`: EventEmitter`) — avoids matching `import { EventEmitter }`.
     regex: /:\s*EventEmitter(?!<)/,
     message: '`EventEmitter` without a generic type — payload type is `any`.',
@@ -102,6 +109,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-005-ARRAY-MUTATION',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bthis\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(/,
     message: 'Direct mutation of a reactive array via push/pop/splice/sort/etc — Stencil will not re-render.',
     fix: 'Use immutable updates: `this.items = [...this.items, x]` or `this.items = this.items.filter(...)`.',
@@ -110,6 +118,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-013-FORCEUPDATE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bforceUpdate\(/,
     message: '`forceUpdate()` is an escape hatch — usually masks a reactivity bug.',
     fix: 'Use @State() correctly; ensure props/state are reassigned (not mutated).',
@@ -118,6 +127,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-014-SHOULDUPDATE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bcomponentShouldUpdate\b/,
     message: '`componentShouldUpdate` is forbidden — Stencil already optimizes rerenders.',
     fix: 'Remove and trust the framework; investigate root reactivity bug if needed.',
@@ -126,6 +136,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-TS-IGNORE',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /@ts-(ignore|expect-error)\b/,
     message: 'TypeScript suppression directive — usually hides a real issue.',
     fix: 'Investigate the underlying type error; if suppression is truly needed, leave a // why-comment above.',
@@ -135,6 +146,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-021-RAW-SVG',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /<svg\b/,
     message: 'Raw `<svg>` in JSX — use <mud-icon> component for consistency and accessibility.',
     fix: 'Replace with <mud-icon name="..."/> or add a local icon to src/assets/icons/.',
@@ -144,6 +156,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-SECURITY-INNERHTML',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /\binnerHTML\s*=/,
     message: 'innerHTML assignment — XSS risk. Use textContent or a sanitized renderer.',
     fix: 'Use textContent for plain text; if HTML is required, sanitize via DOMPurify or equivalent.',
@@ -152,6 +165,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-010-SETFORMVALUE-1ARG',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bsetFormValue\(\s*[^,)]+\s*\)/,
     message: 'setFormValue() called with 1 argument — Stencil requires (value, state) for form restoration.',
     fix: 'Pass the second `state` argument: this.internals.setFormValue(value, value).',
@@ -162,6 +176,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-020-PALETTE-IN-CSS',
     severity: 'error',
     scope: 'css',
+    ruleScope: 'project',
     regex: /var\(\s*--palette-/,
     message: 'Component CSS references --palette-* directly — breaks 3-tier hierarchy.',
     fix: 'Use a semantic token (--color-*, --spacing-*, --font-*) instead; map via tokens/core/components/<name>.tokens.json.',
@@ -170,6 +185,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-019-RAW-HEX',
     severity: 'error',
     scope: 'css',
+    ruleScope: 'project',
     regex: /#[0-9a-fA-F]{3,8}\b/,
     message: 'Hardcoded hex color — should be a design token.',
     fix: 'Replace with var(--color-*) semantic token; if no token exists, add one to tokens/core/.',
@@ -183,6 +199,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-RAW-PIXELS',
     severity: 'warning',
     scope: 'css',
+    ruleScope: 'project',
     regex: /\b(\d+)px\b/,
     message: 'Hardcoded pixel value — should use a spacing/sizing token.',
     fix: 'Replace with var(--spacing-*) or var(--size-*); allow 0px and 1px (borders/resets) only.',
@@ -191,6 +208,13 @@ export const PATTERNS = [
       if (num === 0 || num === 1) return false;
       const trimmed = line.trim();
       if (trimmed.startsWith('/*') || trimmed.startsWith('*')) return false;
+      // No token scale covers these: breakpoint conditions, the literal fallback of a
+      // token reference, arithmetic inside calc(), and sub-pixel hairlines (`0.5px`).
+      if (/^@(media|container)\b/.test(trimmed)) return false;
+      const before = line.slice(0, match.index);
+      if (/var\(\s*--[\w-]+\s*,\s*-?$/.test(before)) return false;
+      if (/\b0\.$/.test(before)) return false;
+      if (isInsideCalc(before)) return false;
       return true;
     },
   },
@@ -198,6 +222,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-IMPORTANT',
     severity: 'warning',
     scope: 'css',
+    ruleScope: 'stencil',
     regex: /!important\b/,
     message: '!important is a code smell — usually indicates specificity issues.',
     fix: 'Remove !important; restructure selectors so the rule wins by specificity.',
@@ -206,6 +231,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-018-TRANSITION-ALL',
     severity: 'warning',
     scope: 'css',
+    ruleScope: 'stencil',
     regex: /transition:\s*all\b/,
     message: '`transition: all` triggers reflow on every animatable property — performance and animation-bug magnet.',
     fix: 'Enumerate specific properties: `transition: background-color 0.2s, transform 0.2s`.',
@@ -221,6 +247,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-007-LIFECYCLE-LEAK',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     check: (content, ctx) => {
       const hasObserver =
         /\b(setInterval|setTimeout|addEventListener|ResizeObserver|MutationObserver|IntersectionObserver)\b/.test(
@@ -247,6 +274,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-003-METHOD-NON-ASYNC',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     check: (content, ctx) => {
       const findings = [];
       const lines = content.split('\n');
@@ -286,6 +314,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-025-EVENT-PREFIX',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     check: (content, ctx) => {
       const findings = [];
       const lines = content.split('\n');
@@ -324,6 +353,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     check: (content, ctx) => {
       // Gate: component must declare an `ariaLabel` prop (signals ARIA participation).
       if (!/@Prop\([^)]*\)\s+ariaLabel\b/.test(content)) return [];
@@ -365,6 +395,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-FETCH-CACHE-NO-EVICTION',
     severity: 'warning',
     scope: 'providers',
+    ruleScope: 'project',
     check: (content, ctx) => {
       // Gate: file must actually do fetch-based caching.
       if (!/\bfetch\s*\(/.test(content)) return [];
@@ -409,6 +440,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     check: (content, ctx) => {
       const findings = [];
 
@@ -485,6 +517,31 @@ export const FILE_CHECKS = [
       }
 
       return findings;
+    },
+  },
+  {
+    code: 'ANTIPATTERN-HOST-DISPLAY',
+    severity: 'warning',
+    scope: 'css',
+    ruleScope: 'stencil',
+    check: (content, ctx) => {
+      const css = stripCssBlockComments(content);
+      // Only the bare `:host { … }` rule sets the element's default display;
+      // `:host(...)` state rules may legitimately omit it.
+      const m = css.match(/(^|[};])\s*:host\s*\{([^}]*)\}/);
+      if (!m) return [];
+      if (/(^|;|\{)\s*display\s*:/.test(m[2])) return [];
+      const line = css.slice(0, m.index + m[0].indexOf(':host')).split('\n').length;
+      return [
+        finding({
+          severity: 'warning',
+          code: 'ANTIPATTERN-HOST-DISPLAY',
+          file: ctx.fileRel,
+          line,
+          message: '`:host` has no `display` — a custom element defaults to `display: inline`.',
+          fix: 'Declare `display` in the bare `:host { }` rule.',
+        }),
+      ];
     },
   },
 ];
@@ -586,6 +643,19 @@ export async function analyzeComponent(target) {
  */
 export function stripCssBlockComments(content) {
   return content.replace(/\/\*[\s\S]*?\*\//g, match => match.replace(/[^\n]/g, ' '));
+}
+
+/**
+ * True when the text ending at a match leaves a `calc(` open, i.e. the match sits
+ * inside that calc's parentheses (nested `var(...)` groups are balanced out).
+ */
+function isInsideCalc(before) {
+  const stack = [];
+  for (const m of before.matchAll(/(calc)?\(|\)/g)) {
+    if (m[0] === ')') stack.pop();
+    else stack.push(m[1] === 'calc');
+  }
+  return stack.includes(true);
 }
 
 /**

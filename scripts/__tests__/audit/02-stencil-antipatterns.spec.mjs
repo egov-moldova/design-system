@@ -64,6 +64,12 @@ describe('02-stencil-antipatterns: pattern registry coverage', () => {
       assert.ok(p.message, `message required for ${p.code}`);
     }
   });
+
+  it('tags every rule with the doc that owns it', () => {
+    for (const entry of [...PATTERNS, ...FILE_CHECKS]) {
+      assert.ok(['stencil', 'project'].includes(entry.ruleScope), `${entry.code}: ruleScope`);
+    }
+  });
 });
 
 describe('02-stencil-antipatterns: TSX pattern detection', () => {
@@ -218,6 +224,46 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
       file: 'fake.css',
     });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length, 0);
+  });
+
+  const rawPixels = content =>
+    scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length;
+
+  it('does NOT flag a pixel fallback inside var(--token, Npx)', () => {
+    assert.equal(rawPixels('.foo { gap: var(--spacing-8, 8px); }'), 0);
+  });
+
+  it('does NOT flag pixel conditions of @media / @container', () => {
+    assert.equal(rawPixels('@media (max-width: 640px) {'), 0);
+    assert.equal(rawPixels('@container card (max-width: 520px) {'), 0);
+  });
+
+  it('does NOT flag pixels inside calc()', () => {
+    assert.equal(rawPixels('.foo { margin-block-start: calc((var(--_lh) - 16px) / 2); }'), 0);
+  });
+
+  it('does NOT flag sub-pixel values below 1px', () => {
+    assert.equal(rawPixels('.foo { letter-spacing: 0.5px; }'), 0);
+  });
+
+  it('still flags a raw pixel outside calc() on the same line', () => {
+    assert.equal(rawPixels('.foo { padding: 12px calc(100% - 4px); }'), 1);
+  });
+
+  it('flags :host without display', () => {
+    const findings = scanFile(
+      { kind: 'css', path: 'x.css', rel: 'x.css', content: ':host {\n  gap: 1rem;\n}\n' },
+      'mud-x',
+    );
+    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 1);
+  });
+
+  it('does NOT flag :host that declares display', () => {
+    const findings = scanFile(
+      { kind: 'css', path: 'x.css', rel: 'x.css', content: ':host {\n  display: block;\n}\n' },
+      'mud-x',
+    );
+    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 0);
   });
 
   it('flags !important', () => {

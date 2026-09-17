@@ -215,7 +215,7 @@ twice restarts one tier up with fresh context.
 
 **Files:** none written in the repo; results recorded in this plan under "Measured".
 
-- [ ] **Step 1: Count each approved ESLint rule on `src/components`**
+- [x] **Step 1: Count each approved ESLint rule on `src/components`**
 
 ```bash
 for r in async-methods element-type render-returns-host reserved-member-names single-export props-must-be-public methods-must-be-public; do
@@ -227,7 +227,7 @@ done
 
 Expected: one line per rule with a count. Record them.
 
-- [ ] **Step 2: Count the two stylelint rules**
+- [x] **Step 2: Count the two stylelint rules**
 
 stylelint 17's `--config` takes a file path, and its JSON report goes to stderr:
 
@@ -241,7 +241,7 @@ npx stylelint "src/components/**/*.css" --allow-empty-input -f json --config /tm
 
 Expected (§ Measured): `declaration-no-important 3`, `declaration-property-value-disallowed-list 0`.
 
-- [ ] **Step 3: Classify the RAW-PIXELS warnings**
+- [x] **Step 3: Classify the RAW-PIXELS warnings**
 
 ```bash
 node scripts/audit/02-stencil-antipatterns.mjs --all --json 2>/dev/null \
@@ -252,13 +252,13 @@ node scripts/audit/02-stencil-antipatterns.mjs --all --json 2>/dev/null \
 Expected: 84 lines. Group them by value shape (`1px`, `calc(...)`, media query, `0.5px`, other) and
 record the group counts; Task 1.1 Step 5 keys the tune on these groups.
 
-- [ ] **Step 4: Record results** under "Measured" at the end of this plan. If any Step 1/2 count is >0, Task 1.3 stops for that rule.
+- [x] **Step 4: Record results** under "Measured" at the end of this plan. If any Step 1/2 count is >0, Task 1.3 stops for that rule.
 
 ### Task 0.2: Verify the unverified skill claims (A9, B3)
 
 **Files:** a probe page in a scratch directory outside the repo, plus one temporary `console.log` in `src/components/mud-accordion/mud-accordion.tsx` that is removed before the task ends (never committed); results recorded under "Measured".
 
-- [ ] **Step 1: SE3/SE6/SE9 against the installed runtime.** Read the serializer paths and record `file:line` for each claim:
+- [x] **Step 1: SE3/SE6/SE9 against the installed runtime.** Read the serializer paths and record `file:line` for each claim:
 
 ```bash
 grep -n "PropSerialize\|AttrDeserialize\|serializers\|deserializers" node_modules/@stencil/core/internal/client/index.js | head -30
@@ -269,7 +269,7 @@ For each of SE3 ("serializer MUST return string or null; null removes the attrib
 ("`reflect: true` not required with `@PropSerialize`"), SE9 ("both set → undefined behaviour"), write
 `true (file:line)`, `false (file:line)` or `undecidable from source`.
 
-- [ ] **Step 2: #16/EL6 probe ("host children are not available in `componentWillLoad`").** Build once; the lazy loader lands in `dist/mud/` (there is no `www` output target: `stencil.config.ts`), then serve the repo root with `python3 -m http.server 8080`:
+- [x] **Step 2: #16/EL6 probe ("host children are not available in `componentWillLoad`").** Build once; the lazy loader lands in `dist/mud/` (there is no `www` output target: `stencil.config.ts`), then serve the repo root with `python3 -m http.server 8080`:
 
 ```bash
 yarn dx:stencil:once
@@ -303,7 +303,7 @@ temporary `componentWillLoad() { console.log('cwl', this.host.id, this.host.chil
 the Edit tool and confirm `git diff --quiet -- src/components/mud-accordion` exits 0 and `probe.html` is deleted. If the probe
 cannot run, the rule is deleted in Task 2.3, not kept unverified.
 
-- [ ] **Step 3: B3 runtime fact.** Record `internal/client/index.js:2352-2353` and the two call sites (`:3545`, `:3728`) under "Measured".
+- [x] **Step 3: B3 runtime fact.** Record `internal/client/index.js:2352-2353` and the two call sites (`:3545`, `:3728`) under "Measured".
 
 ---
 
@@ -313,8 +313,8 @@ cannot run, the rule is deleted in Task 2.3, not kept unverified.
 
 ### Task 1.0: Create the branch
 
-- [ ] **Step 1:** The branch exists (created 2026-09-17 at `18c3aae`, not checked out, because another session works in the PR #83 worktree). Check it out in the worktree Dan names at execution start, then `git log -1 --oneline` → `18c3aae` or a later PR #83 tip merged in; if PR #83 has moved, `git merge fix/issue-53-ai-docs-alignment` first.
-- [ ] **Step 2:** Move this plan file into that worktree's `.claude/plans/` and commit it alone: `git add .claude/plans/2026-09-17-stencil-compliance-skill.md && git commit -m "docs(plans): plan the stencil-compliance skill overhaul"`.
+- [x] **Step 1:** The branch exists (created 2026-09-17 at `18c3aae`, not checked out, because another session works in the PR #83 worktree). Check it out in the worktree Dan names at execution start, then `git log -1 --oneline` → `18c3aae` or a later PR #83 tip merged in; if PR #83 has moved, `git merge fix/issue-53-ai-docs-alignment` first.
+- [x] **Step 2:** Move this plan file into that worktree's `.claude/plans/` and commit it alone: `git add .claude/plans/2026-09-17-stencil-compliance-skill.md && git commit -m "docs(plans): plan the stencil-compliance skill overhaul"`.
 
 ### Task 1.1: Script 02 — `scope` field, `:host` display check, RAW-PIXELS tune
 
@@ -326,7 +326,7 @@ cannot run, the rule is deleted in Task 2.3, not kept unverified.
 **Interfaces:**
 - Produces: every `PATTERNS` and `FILE_CHECKS` entry gains `ruleScope: 'stencil' | 'project'` (the existing `scope` field keeps meaning file kind). Task 3.2 reads `ruleScope`. New code `ANTIPATTERN-HOST-DISPLAY` (`ruleScope: 'stencil'`, `scope: 'css'`).
 
-- [ ] **Step 1: Add `ruleScope`** to each entry: `'stencil'` for `001-INLINE-STYLE`, `002-HOST-CLASSLIST`, `023-CLASSNAME`, `004-EVENTEMITTER-UNTYPED`, `005-ARRAY-MUTATION`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`, `010-SETFORMVALUE-1ARG`, `007-LIFECYCLE-LEAK`, `003-METHOD-NON-ASYNC`, `025-EVENT-PREFIX`, `018-TRANSITION-ALL`, `IMPORTANT`, `HOST-DISPLAY`; `'project'` for `TS-ANY`, `TS-IGNORE`, `021-RAW-SVG`, `SECURITY-INNERHTML`, `020-PALETTE-IN-CSS`, `019-RAW-HEX`, `RAW-PIXELS`, `RENDER-NULL-NO-FALLBACK-ARIA`, `FETCH-CACHE-NO-EVICTION`, `026-PROP-CONTENT-SLOT-FALLBACK`. Add to `scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs`, next to its existing shape assertion (`:59-62`), a test that fails first:
+- [x] **Step 1: Add `ruleScope`** to each entry: `'stencil'` for `001-INLINE-STYLE`, `002-HOST-CLASSLIST`, `023-CLASSNAME`, `004-EVENTEMITTER-UNTYPED`, `005-ARRAY-MUTATION`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`, `010-SETFORMVALUE-1ARG`, `007-LIFECYCLE-LEAK`, `003-METHOD-NON-ASYNC`, `025-EVENT-PREFIX`, `018-TRANSITION-ALL`, `IMPORTANT`, `HOST-DISPLAY`; `'project'` for `TS-ANY`, `TS-IGNORE`, `021-RAW-SVG`, `SECURITY-INNERHTML`, `020-PALETTE-IN-CSS`, `019-RAW-HEX`, `RAW-PIXELS`, `RENDER-NULL-NO-FALLBACK-ARIA`, `FETCH-CACHE-NO-EVICTION`, `026-PROP-CONTENT-SLOT-FALLBACK`. Add to `scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs`, next to its existing shape assertion (`:59-62`), a test that fails first:
 
 ```js
   it('tags every rule with the doc that owns it', () => {
@@ -338,7 +338,7 @@ cannot run, the rule is deleted in Task 2.3, not kept unverified.
 
 Run `node --test scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs` → FAIL before the tags, PASS after.
 
-- [ ] **Step 2: Write the `:host` display fixtures**
+- [x] **Step 2: Write the `:host` display fixtures**
 
 `scripts/audit/__fixtures__/host-display/positive/host-display.css`:
 ```css
@@ -360,7 +360,7 @@ Run `node --test scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs` → F
 
 Run: `node scripts/audit/__tests__/02-antipatterns.test.mjs` → prints `skip host-display … orphan fixture folder?` (the runner skips an unknown slug rather than failing). The red phase is the spec: add to `02-stencil-antipatterns.spec.mjs` a case that `scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content: ':host {\n  gap: 1rem;\n}\n' }, 'mud-x')` returns a finding with code `ANTIPATTERN-HOST-DISPLAY`, and that `':host {\n  display: block;\n}\n'` returns none → FAIL.
 
-- [ ] **Step 3: Implement `ANTIPATTERN-HOST-DISPLAY`** as a `FILE_CHECKS` entry:
+- [x] **Step 3: Implement `ANTIPATTERN-HOST-DISPLAY`** as a `FILE_CHECKS` entry:
 
 ```js
 {
@@ -392,11 +392,11 @@ Run: `node scripts/audit/__tests__/02-antipatterns.test.mjs` → prints `skip ho
 
 Run the fixture runner → PASS. Then `node scripts/audit/02-stencil-antipatterns.mjs --all --json | node -e "…count ANTIPATTERN-HOST-DISPLAY…"` and record the count; each hit is either a real violation (reported, not fixed — Global Constraints) or a classifier bug fixed now.
 
-- [ ] **Step 4: Tune `ANTIPATTERN-RAW-PIXELS`** (`:183`; `1px` is already skipped at `:191`) using the measured groups (§ Measured: 41 `var(--token, Npx)` fallbacks, 11 `@media`/`@container` conditions, 4 inside `calc(`, 1 `0.5px`, 27 other). Skip the first four groups; the 27 "other" hits stay. Add one negative fixture per skipped group under `__fixtures__/raw-pixels/negative/` and one positive (`padding: 12px;`) under `positive/`, plus one spec case per group in `02-stencil-antipatterns.spec.mjs`. Run the spec and the fixture runner → PASS; re-run Task 0.1 Step 3 → 27 (± hits whose group was misread; open each difference).
+- [x] **Step 4: Tune `ANTIPATTERN-RAW-PIXELS`** (`:183`; `1px` is already skipped at `:191`) using the measured groups (§ Measured: 41 `var(--token, Npx)` fallbacks, 11 `@media`/`@container` conditions, 4 inside `calc(`, 1 `0.5px`, 27 other). Skip the first four groups; the 27 "other" hits stay. Add one negative fixture per skipped group under `__fixtures__/raw-pixels/negative/` and one positive (`padding: 12px;`) under `positive/`, plus one spec case per group in `02-stencil-antipatterns.spec.mjs`. Run the spec and the fixture runner → PASS; re-run Task 0.1 Step 3 → 27 (± hits whose group was misread; open each difference).
 
-- [ ] **Step 5: Update the header comment** (`:1-28`, `:52-56`): drop "Anti-pattern numbers reference `.claude/skills/stencil-compliance/references/anti-patterns.md`"; state that codes are the stable identifiers and `ruleScope` says which doc owns the rule.
+- [x] **Step 5: Update the header comment** (`:1-28`, `:52-56`): drop "Anti-pattern numbers reference `.claude/skills/stencil-compliance/references/anti-patterns.md`"; state that codes are the stable identifiers and `ruleScope` says which doc owns the rule.
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 ```bash
 npx prettier --write scripts/audit/02-stencil-antipatterns.mjs scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs
@@ -1404,6 +1404,26 @@ exit 1 · componentsScanned 46 · MEMBER-ORDER 20 · MAP-KEY 10 · FORM-BOOLEAN-
 ```
 
 Filled in during execution: Task 0.2, 1.1 Steps 3-4, 1.2 Step 6, 4.1.
+
+Task 0.1, re-measured on the branch at `c4b3214` (tree identical to `ed19d51`: `git diff --quiet ed19d51 c4b3214` → exit 0), Node 24.19.0, `@stencil/core` 4.45.0:
+
+```derived id=lint-baselines-execution
+async-methods 0 · element-type 5 (mud-badge.tsx:83, mud-separator.tsx:21, mud-stepper.tsx:108, mud-table.tsx:139, mud-tooltip.tsx:162) · render-returns-host 0 · reserved-member-names 35 · single-export 0 · props-must-be-public 0 · methods-must-be-public 0
+declaration-no-important 3 (mud-accordion-item.css:110, mud-service-button.css:87,88) · declaration-property-value-disallowed-list 0
+RAW-PIXELS 84: 11 @media/@container · 1 0.5px · 27 other · 45 var fallback or calc( (3 lines hold both; split 41/4 when calc( is tested first)
+```
+
+All equal § Measured above; Task 1.3 is not stopped.
+
+Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.0, Yarn-patched):
+
+- SE3 "serializer MUST return string or null; null removes the attribute": **partly true.** `null` or `false` removes the attribute (`:2537-2543`); `true` writes `""` and a number is coerced by `setAttribute` (`:2545-2550`); a complex value is never written (`:2545`, `!isComplex`). "MUST return string" is too strict; "return a string, or `null` to remove the attribute" is accurate.
+- SE6 "`reflect: true` not required with `@PropSerialize`": **false.** The serializer runs only when the component has reflected attributes (`:3551`), and its output reaches the DOM only through the `$attrsToReflect$` loop (`:3093-3097`), which holds only props flagged `ReflectAttr` (`:3870-3871`). Without `reflect: true` the serialized value is never written.
+- SE9 "both `reflect: true` and `@PropSerialize` → undefined behaviour": **false.** That combination is the defined path: the reflect loop prefers `$serializerValues$` over the raw prop (`:3096-3097`).
+- #16/EL6 "host children are not available in `componentWillLoad`": **false for markup.** Probe (built with `yarn dx:stencil:once`, served from the repo root, Playwright console), `this.host.children.length` inside `componentWillLoad`: case 1 parser-inserted markup → `1`; case 2 element appended empty, child appended after `componentOnReady()` → `0`; case 3 markup via `innerHTML` on a connected container → `1`. Light-DOM children present in the markup are readable in `componentWillLoad`; children added after load reach the component only through `slotchange`. Temporary `componentWillLoad` removed (`git diff --quiet -- src/components/mud-accordion` → exit 0), `probe.html` deleted.
+- Task 1.1 Step 3: `ANTIPATTERN-HOST-DISPLAY` over `--all` → 0. Independent check (brace-balanced body of the first bare `:host` rule, nested rules removed, in each of the 55 `src/components/*/*.css`) → every file declares `display`; the 0 is not a miss.
+- Task 1.1 Step 4: `ANTIPATTERN-RAW-PIXELS` over `--all` → 27 (was 84), equal to the hand-counted "other" group.
+- B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan
 
