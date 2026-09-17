@@ -102,14 +102,14 @@ Strict dependency order:
 Once the refactored component renders without console errors, invoke the **`parallel-aux-tasks` skill** with the **refactor-3** subagent set:
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id-if-available>, threshold=0.5, useBaseline=true")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaUrl=<url-if-available>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
 Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=refactor, apiChanges=<list-if-any>")
 ```
 
 A refactor SHOULD NOT change the visual or API. The reports should be all-PASS:
 
-- `pixel-perfect-verifier`: every state matches the pre-refactor baseline (Step 1.5) within `< 0.5%`
+- `pixel-perfect-verifier`: Verdict PASS or WARN against the existing manifest; no manifest → `manifest-missing`, and the before/after screenshots of Step 5 are the regression check
 - `a11y-verifier`: no new violations vs pre-refactor
 - `integration-checker`: no stale callsites (unless approved breaking change in Step 3.5)
 

@@ -156,7 +156,7 @@ Modes:
 Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id>, threshold=0.5")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaUrl=<figma url with node-id>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
 Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>, figmaMetadata=<metadata>")
 Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
