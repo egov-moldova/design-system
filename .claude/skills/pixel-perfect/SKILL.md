@@ -146,6 +146,7 @@ Without a manifest the script falls back to story mode (`--figma-dir` with one `
 | Manifest is well-formed; every expectation cites a node | script — `scripts/audit/lib/figma-manifest.mjs` | `STYLE-MANIFEST-INVALID`, `PIXEL-MANIFEST-INVALID` |
 | No manifest → nothing verified | script — `15-style-parity` | `STYLE-NO-MANIFEST` |
 | Every Figma variant has a state or a skip reason | script — `figma-refs --check` | `FIGMA-STATE-MISSING` |
+| Coverage could be checked at all (cited nodes reach a component set) | script — `figma-refs --check` | `FIGMA-COVERAGE-UNKNOWN` |
 | Cited nodes exist | script — `figma-refs --check` | `FIGMA-NODE-GONE` |
 | References match the current file | script — `figma-refs --check` | `FIGMA-REFERENCE-STALE` |
 | References can be exported | script — `figma-refs` | `FIGMA-NO-TOKEN` |

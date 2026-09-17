@@ -12,6 +12,7 @@ import {
   buildImagesUrl,
   buildNodesUrl,
   checkCoverage,
+  checkFindings,
   citedNodeIds,
   componentSetIds,
   figmaToken,
@@ -106,5 +107,29 @@ describe('figma-refs: staleness', () => {
     assert.equal(staleness(null, '1'), 'never-exported');
     assert.equal(staleness({ version: '1' }, '2'), 'changed');
     assert.equal(staleness({ version: '2' }, '2'), 'none');
+  });
+});
+
+describe('figma-refs: checkFindings', () => {
+  const cov = { gone: [], missing: [{ setId: '1:1', setName: 'set', node: '1:2', name: 'State=Hover' }] };
+  const opts = { stale: 'none', setCount: 1, manifestRel: 'm.json', name: 'mud-x' };
+  const codes = (c, o) => checkFindings(c, { ...opts, ...o }).map(f => [f.code, f.severity]);
+
+  it('reports uncovered variants as warnings and gone nodes as errors', () => {
+    assert.deepEqual(codes({ ...cov, gone: ['9:9'] }), [
+      ['FIGMA-NODE-GONE', 'error'],
+      ['FIGMA-STATE-MISSING', 'warning'],
+    ]);
+  });
+
+  it('says coverage is unknown when no cited node reached a component set', () => {
+    assert.deepEqual(codes({ gone: [], missing: [] }, { setCount: 0 }), [['FIGMA-COVERAGE-UNKNOWN', 'warning']]);
+  });
+
+  it('reports never-exported and changed references', () => {
+    assert.deepEqual(codes({ gone: [], missing: [] }, { stale: 'never-exported' }), [
+      ['FIGMA-REFERENCE-STALE', 'warning'],
+    ]);
+    assert.match(checkFindings({ gone: [], missing: [] }, { ...opts, stale: 'changed' })[0].message, /file changed/);
   });
 });
