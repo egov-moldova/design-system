@@ -44,7 +44,8 @@ returns ONE JSON envelope you can read in a single tool call:
 node scripts/audit/run-all.mjs --changed --no-browser --json
 ```
 
-Read the result. The `blockers` array lists every error-severity finding;
+Read the result. The `blockers` array lists every error-severity finding except those of
+report-only scripts (`stencil-contract`), which count in `summary` but never block;
 each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`).
 If `blockers` is non-empty, STOP and report — do not proceed to Wave 2.
 

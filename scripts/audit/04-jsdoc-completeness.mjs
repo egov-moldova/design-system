@@ -326,7 +326,7 @@ async function resolveTargets(args) {
   if (args.changed) {
     return listChangedComponents().map(n => resolveComponentPaths(n));
   }
-  return [resolveComponentPaths(args.component)];
+  return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
 function listChangedComponents() {

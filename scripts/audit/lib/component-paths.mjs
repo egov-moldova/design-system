@@ -66,8 +66,11 @@ export function bareName(componentName) {
  *
  * If neither `src/components/<name>/` nor `src/hidden/<name>/` exists, returns
  * `{ found: false, ... }` so the caller can produce a clean "not found" error.
+ *
+ * `allowSubComponent` is opt-in: a sub-component has no stories, spec or readme of its own,
+ * so only a caller that reads the source file alone may accept one.
  */
-export function resolveComponentPaths(componentName) {
+export function resolveComponentPaths(componentName, { allowSubComponent = false } = {}) {
   const name = normalizeComponentName(componentName);
   if (!name) {
     return { found: false, reason: 'invalid-name', input: componentName };
@@ -87,10 +90,10 @@ export function resolveComponentPaths(componentName) {
     }
   }
   // A sub-component (`mud-tab`) has no folder of its own: it lives as `<name>.tsx` inside
-  // another component's folder (`mud-tabs/`). Resolve it there, flagged, so callers can
-  // scan that one component instead of reporting it missing.
+  // another component's folder (`mud-tabs/`). Resolve it there, flagged, so a caller that
+  // opted in can scan that one component instead of reporting it missing.
   let subComponent = false;
-  if (!matched) {
+  if (!matched && allowSubComponent) {
     for (const component of listAllComponents()) {
       if (isFileSafe(path.join(component.root, `${name}.tsx`))) {
         matched = { location: component.location, root: component.root };

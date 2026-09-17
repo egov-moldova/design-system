@@ -30,6 +30,7 @@
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import postcss from 'postcss';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
@@ -474,40 +475,30 @@ export const FILE_CHECKS = [
     scope: 'css',
     ruleScope: 'stencil',
     check: (content, ctx) => {
-      const css = stripCssBlockComments(content);
-      // Only a top-level rule whose selector list includes a bare `:host` sets the element's
-      // default display: `:host(...)` state rules and a `:host` nested in `@media` do not. The
-      // bare rule may be split into several blocks and may nest rules (postcss-nested), so every
-      // such block is read with its nested rules removed. No bare rule at all leaves it inline.
-      const blocks = [];
-      let depth = 0;
-      let selectorStart = 0;
-      for (let i = 0; i < css.length; i++) {
-        const ch = css[i];
-        if (ch === '{') {
-          const selector = css.slice(selectorStart, i);
-          if (depth === 0 && selector.split(',').some(part => part.trim() === ':host')) {
-            let inner = 1;
-            let end = i + 1;
-            while (end < css.length && inner > 0) {
-              if (css[end] === '{') inner++;
-              else if (css[end] === '}') inner--;
-              end++;
-            }
-            let body = css.slice(i + 1, end - 1);
-            while (/\{[^{}]*\}/.test(body)) body = body.replace(/\{[^{}]*\}/g, ';');
-            blocks.push({ at: selectorStart + Math.max(0, selector.search(/\S/)), body });
-          }
-          depth++;
-        } else if (ch === '}') {
-          depth--;
-          if (depth === 0) selectorStart = i + 1;
-        } else if (ch === ';' && depth === 0) {
-          selectorStart = i + 1;
-        }
+      let root;
+      try {
+        root = postcss.parse(content);
+      } catch {
+        return [];
       }
-      if (blocks.some(b => /(^|;|\{)\s*display\s*:/.test(b.body))) return [];
-      const line = blocks.length ? css.slice(0, blocks[0].at).split('\n').length : 1;
+      if (!root.nodes.some(node => node.type !== 'comment')) return [];
+      // Only a rule whose selector list includes a bare `:host` sets the element's default
+      // display, and only when nothing conditional wraps it: `:host(...)` state rules, a `:host`
+      // under `@media`/`@supports` and a `:host` nested in another rule do not. `@layer` applies
+      // unconditionally. Rules nested inside a bare block (postcss-nested) style something else,
+      // so only the block's own declarations count. No bare rule at all leaves it inline.
+      const hostRules = [];
+      root.walkRules(rule => {
+        if (!rule.selectors.includes(':host')) return;
+        for (let p = rule.parent; p !== root; p = p.parent) {
+          if (p.type !== 'atrule' || p.name !== 'layer') return;
+        }
+        hostRules.push(rule);
+      });
+      if (hostRules.some(rule => rule.nodes.some(node => node.type === 'decl' && node.prop === 'display'))) {
+        return [];
+      }
+      const line = hostRules[0]?.source?.start?.line ?? 1;
       return [
         finding({
           severity: 'warning',
@@ -627,9 +618,11 @@ export function stripCssBlockComments(content) {
  */
 function isInsideCalc(before) {
   const stack = [];
-  for (const m of before.matchAll(/\b(calc|min|max|clamp)?\(|\)/g)) {
+  // Every `(` is pushed, named or bare, so each `)` pops its own group. `min()`, `max()` and
+  // `clamp()` are not exempt: a pixel literal there is a hard-coded size, not arithmetic.
+  for (const m of before.matchAll(/([\w-]*)\(|\)/g)) {
     if (m[0] === ')') stack.pop();
-    else stack.push(m[1] !== undefined);
+    else stack.push(m[1] === 'calc');
   }
   return stack.includes(true);
 }
@@ -720,7 +713,7 @@ async function resolveTargets(args) {
     const names = listChangedComponents();
     return names.map(n => resolveComponentPaths(n));
   }
-  return [resolveComponentPaths(args.component)];
+  return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
 function listChangedComponents() {

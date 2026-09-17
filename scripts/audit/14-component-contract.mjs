@@ -476,7 +476,7 @@ function sourceText(node, sourceFile) {
 async function resolveTargets(args) {
   if (args.all) return listAllComponents().map(c => resolveComponentPaths(c.name));
   if (args.changed) return listChangedComponents().map(n => resolveComponentPaths(n));
-  return [resolveComponentPaths(args.component)];
+  return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];

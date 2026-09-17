@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { checkSource, isComponentFile, RULES } from '../../audit/16-stencil-contract.mjs';
+import { changedComponents, checkSource, isComponentFile, RULES } from '../../audit/16-stencil-contract.mjs';
 
 const SCRIPT = new URL('../../audit/16-stencil-contract.mjs', import.meta.url);
 
@@ -264,6 +264,9 @@ export class P {
       [],
     );
     assert.notEqual(run.status, 2);
+    // Zero changed components is a legitimate result (no local `main` ref), so the count is
+    // compared with the list rather than asserted non-empty.
+    assert.equal(envelope.meta.componentsScanned, changedComponents().length);
   });
 
   it('does not decide shadow DOM when the option is not a literal', () => {
@@ -277,6 +280,27 @@ export class P {
 @Component({ tag: 'mud-probe', shadow: SHADOW }) export class P { render() { return <Host />; } }`),
       [],
     );
+    assert.deepEqual(
+      codes(`const shadow = true;
+@Component({ tag: 'mud-probe', shadow }) export class P { render() { return <Host />; } }`),
+      [],
+    );
+    assert.deepEqual(
+      codes(`const BASE = { shadow: true };
+@Component({ ...BASE, tag: 'mud-probe' }) export class P { render() { return <Host />; } }`),
+      [],
+    );
+  });
+
+  it('reads a quoted shadow key like an unquoted one', () => {
+    assert.deepEqual(
+      codes(`@Component({ tag: 'mud-probe', 'shadow': true }) export class P { render() { return <Host />; } }`),
+      [],
+    );
+    assert.deepEqual(
+      codes(`@Component({ tag: 'mud-probe', 'shadow': false }) export class P { render() { return <Host />; } }`),
+      ['STENCIL-SHADOW-REQUIRED'],
+    );
   });
 
   it('reports a decorated member after render() once', () => {
@@ -286,6 +310,27 @@ export class P {
   @Prop() late: string = '';
 }`;
     assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER']);
+  });
+
+  it('reports members after render() once, whichever kind comes first', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  render() { return <Host />; }
+  private helper() {}
+  @Prop() late: string = '';
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER']);
+  });
+
+  it('reports a group violation and a member after render() separately', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @State() b = 0;
+  @Prop() a: string = '';
+  render() { return <Host />; }
+  private c() {}
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER', 'STENCIL-MEMBER-ORDER']);
   });
 
   it('reports only the first group-order violation in a class', () => {
@@ -314,6 +359,20 @@ export class P {
     assert.deepEqual(codes(cmp(`@Watch('size') v() { if (true) this.size = 'md'; }`)), [
       'STENCIL-WATCH-WRITES-WATCHED',
     ]);
+    assert.deepEqual(codes(cmp(`@Watch('size') v() { if ((true)) this.size = 'md'; }`)), [
+      'STENCIL-WATCH-WRITES-WATCHED',
+    ]);
+    assert.deepEqual(codes(cmp(`@Watch('size') v() { if ((this.size = 'md')) {} }`)), ['STENCIL-WATCH-WRITES-WATCHED']);
+  });
+
+  it('exempts a literal write under an always-true if nested in a real condition', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop({ mutable: true }) size: string = 'md';
+  @Watch('size') v(n: string) { if (n !== 'md') { if (true) this.size = 'md'; } }
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(codes(src), []);
   });
 
   it('only treats a .tsx declaring @Component as a component file', () => {

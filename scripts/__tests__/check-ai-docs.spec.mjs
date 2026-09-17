@@ -611,6 +611,27 @@ describe('lookaround rule: flags and fences', () => {
       [[5, 'lookaround']],
     );
   });
+
+  it('reads grep named after the span, and does not let an escaped quote carry a flag across a pipe', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          'Pattern `(?<=x)y` — pass it to Grep.',
+          '',
+          '`rg --pcre2 "a\\"b" | grep \'(?<=x)y\'`',
+          '',
+          'Build `/(?<=x)y/` in JavaScript.',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'lookaround'],
+        [3, 'lookaround'],
+      ],
+    );
+  });
 });
 
 describe('stencil-version rule: case and package spellings', () => {

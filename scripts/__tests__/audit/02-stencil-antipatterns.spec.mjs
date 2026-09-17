@@ -231,6 +231,11 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     assert.equal(rawPixels('.foo { letter-spacing: 0.5px; }'), 0);
   });
 
+  it('keeps a pixel inside calc() exempt after a bare or nested group closes', () => {
+    assert.equal(rawPixels('.a { margin: calc((100% - 1rem) / 2 - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc((var(--a)) + 12px); }'), 0);
+  });
+
   it('still flags a raw pixel outside calc() on the same line', () => {
     assert.equal(rawPixels('.foo { padding: 12px calc(100% - 4px); }'), 1);
   });
@@ -283,12 +288,25 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     assert.equal(hostDisplay(':host(.open) {\n  display: flex;\n}\n'), 1);
   });
 
-  it('does not read digits inside a custom-property name, and skips min()/max()/clamp() and media continuations', () => {
+  it('reads :host inside @layer, ignores braces inside strings, and skips a stylesheet with no rules', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(hostDisplay('@layer base {\n  :host {\n    display: block;\n  }\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  --x: "}";\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay('@supports (display: grid) {\n  :host {\n    display: grid;\n  }\n}\n'), 1);
+    assert.equal(hostDisplay(''), 0);
+    assert.equal(hostDisplay('/* no rules yet */\n'), 0);
+  });
+
+  it('does not read digits inside a custom-property name, reports min()/max()/clamp() sizes, and skips media continuations', () => {
     const px = content =>
       scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length;
     assert.equal(px('.foo { --size-x2px: 2px; }'), 1);
-    assert.equal(px('.foo { width: min(100%, 480px); }'), 0);
-    assert.equal(px('.foo { width: clamp(12px, 2vw, 24px); }'), 0);
+    assert.equal(px('.foo { width: min(100%, 480px); }'), 1);
+    assert.equal(px('.foo { font-size: clamp(12px, 2vw, 24px); }'), 2);
+    assert.equal(px('.foo { margin: -2px; }'), 1);
     assert.equal(px('@media screen\n  and (width <= 1024px) {'), 0);
     assert.equal(px('@media print\n  and (min-width: 1024px) {'), 0);
   });

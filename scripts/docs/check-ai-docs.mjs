@@ -724,6 +724,11 @@ function commandsOf(text) {
   let start = 0;
   for (let i = 0; i < text.length; i++) {
     const ch = text[i];
+    // A backslash escapes the next character everywhere except inside single quotes.
+    if (ch === '\\' && quote !== "'") {
+      i++;
+      continue;
+    }
     if (quote) {
       if (ch === quote) quote = null;
       continue;
@@ -743,8 +748,9 @@ function commandsOf(text) {
   return commands;
 }
 const needsPcre = text => commandsOf(text).some(cmd => LOOKAROUND.test(cmd) && !PCRE2_FLAG.test(cmd));
-// A code span is a grep pattern only when it holds a grep command or its line names grep (a
-// "Grep `…`" table cell); `new RegExp('(?<![\\d.])px')` or `/(?<=\\d)px/` is JavaScript.
+// A code span is a grep pattern only when it holds a grep command or the rest of its line names
+// grep (a "Grep `…`" table cell, "pass `…` to Grep"); `new RegExp('(?<![\\d.])px')` or
+// `/(?<=\\d)px/` is JavaScript.
 const GREP_COMMAND = /(?:^|[\s|;&(])(?:rg|grep|git\s+grep)\s/;
 const NAMES_GREP = /\b(?:grep|rg)\b/i;
 // Only shell fences hold grep commands; a JS/TS sample's regex literal may use lookarounds.
@@ -779,7 +785,8 @@ function checkLookaround(relPath, lines) {
       return;
     }
     for (const span of findCodeSpans(line)) {
-      const grepContext = GREP_COMMAND.test(span.content) || NAMES_GREP.test(line.slice(0, span.start));
+      const grepContext =
+        GREP_COMMAND.test(span.content) || NAMES_GREP.test(line.slice(0, span.start) + ' ' + line.slice(span.end));
       if (grepContext && needsPcre(span.content)) {
         hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
         break;

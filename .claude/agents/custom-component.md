@@ -119,7 +119,7 @@ Follow file structure and CSS patterns from `src/components/AGENTS.md`.
 
 TypeScript strict mode:
 
-- `!` on all decorator properties (MANDATORY): `@Element() host!: HTMLMud<Name>Element;` (the generated type; `@stencil/element-type` rejects bare `HTMLElement`), `@Event() mudChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
+- `!` on all decorator properties (MANDATORY): `@Element() host!: HTMLMud<Name>Element;` ([`SKILL.md` EL1](../skills/stencil-compliance/SKILL.md#rule-index)), `@Event() mudChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
 - `Record<string, T>` for object maps (size/variant lookups) — SHOULD, not MUST; inference already covers a literal map, the annotation documents intent for index lookups
 - `?? ''` after optional chaining (MANDATORY)
 

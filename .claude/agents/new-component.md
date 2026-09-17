@@ -130,7 +130,7 @@ Follow `src/components/AGENTS.md` directly.
 
 Project-specific requirements:
 
-- `!` on all decorator props: `@Element() host!: HTMLMud<Name>Element` (the generated type; `@stencil/element-type` rejects bare `HTMLElement`), `@Event() mudChange!: EventEmitter<T>`
+- `!` on all decorator props: `@Element() host!: HTMLMud<Name>Element` ([`SKILL.md` EL1](../skills/stencil-compliance/SKILL.md#rule-index)), `@Event() mudChange!: EventEmitter<T>`
 - `Record<string, T>` for size/variant maps
 - `?? ''` after optional chaining
 

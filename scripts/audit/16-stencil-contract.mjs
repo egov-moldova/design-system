@@ -91,15 +91,22 @@ function walk(node, visit) {
   ts.forEachChild(node, child => walk(child, visit));
 }
 
-// A validation fallback runs in the watcher itself, under a real condition: an `if` between the
-// write and the watcher body, with no nested function in between (a deferred write re-triggers
-// the watcher later) and a condition that is not a literal `true`.
+// A validation fallback runs in the watcher itself, under a real condition: a branch of an `if`
+// between the write and the watcher body (not its condition), with no nested function in between
+// (a deferred write re-triggers the watcher later) and a condition that is not a literal `true`,
+// parenthesised or not. An always-true `if` inside a real one is still guarded by the outer one.
 function isInsideIf(node, stopAt) {
-  for (let p = node.parent; p && p !== stopAt; p = p.parent) {
+  for (let child = node, p = node.parent; p && p !== stopAt; child = p, p = p.parent) {
     if (ts.isFunctionLike(p)) return false;
-    if (ts.isIfStatement(p)) return p.expression.kind !== ts.SyntaxKind.TrueKeyword;
+    if (ts.isIfStatement(p) && child !== p.expression && !isTrueLiteral(p.expression)) return true;
   }
   return false;
+}
+
+function isTrueLiteral(expression) {
+  let e = expression;
+  while (ts.isParenthesizedExpression(e)) e = e.expression;
+  return e.kind === ts.SyntaxKind.TrueKeyword;
 }
 
 const isLiteral = n =>
@@ -201,21 +208,27 @@ export function checkSource(tsxPath, componentName) {
       }),
     );
 
-  // Shadow DOM is decidable only from literal options; `@Component(OPTS)` or `shadow: SHADOW` is skipped.
+  // Shadow DOM is decidable only from a literal options object with no spread, whose `shadow`
+  // (quoted or not) is absent, a boolean or an object; `@Component(OPTS)`, `shadow: SHADOW`,
+  // a shorthand `shadow` and `...BASE` are skipped.
   const componentCall = getDecorators(classNode).find(d => getDecoratorName(d) === 'Component')?.expression;
   const options = componentCall && ts.isCallExpression(componentCall) ? componentCall.arguments[0] : undefined;
-  const shadowProp =
-    options && ts.isObjectLiteralExpression(options)
-      ? options.properties.find(p => ts.isPropertyAssignment(p) && p.name.getText(sourceFile) === 'shadow')
-      : undefined;
+  const optionProps = options && ts.isObjectLiteralExpression(options) ? options.properties : undefined;
+  const namedShadow = p =>
+    p.name && (ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)) && p.name.text === 'shadow';
+  const shadowProp = optionProps?.find(p => ts.isPropertyAssignment(p) && namedShadow(p));
+  const shadowValue = shadowProp?.initializer;
   const shadowDecidable =
-    options &&
-    ts.isObjectLiteralExpression(options) &&
-    (!shadowProp ||
-      shadowProp.initializer.kind === ts.SyntaxKind.TrueKeyword ||
-      shadowProp.initializer.kind === ts.SyntaxKind.FalseKeyword ||
-      ts.isObjectLiteralExpression(shadowProp.initializer));
-  if (shadowDecidable && !contract.shadow) {
+    optionProps !== undefined &&
+    !optionProps.some(p => ts.isSpreadAssignment(p) || (ts.isShorthandPropertyAssignment(p) && namedShadow(p))) &&
+    (!shadowValue ||
+      shadowValue.kind === ts.SyntaxKind.TrueKeyword ||
+      shadowValue.kind === ts.SyntaxKind.FalseKeyword ||
+      ts.isObjectLiteralExpression(shadowValue));
+  const shadowEnabled =
+    shadowValue !== undefined &&
+    (shadowValue.kind === ts.SyntaxKind.TrueKeyword || ts.isObjectLiteralExpression(shadowValue));
+  if (shadowDecidable && !shadowEnabled) {
     add(
       'STENCIL-SHADOW-REQUIRED',
       classNode,
@@ -262,26 +275,28 @@ export function checkSource(tsxPath, componentName) {
     }
   }
 
+  // Members after render() are one violation, reported once on the first of them; the group
+  // order is judged only up to render().
+  const renderIndex = classNode.members.findIndex(m => getMemberName(m) === 'render');
+  const beforeRender = renderIndex === -1 ? classNode.members : classNode.members.slice(0, renderIndex + 1);
   let highest = -1;
-  let reported;
-  for (const member of classNode.members) {
+  for (const member of beforeRender) {
     const group = memberGroup(member);
     if (!group) continue;
     const rank = GROUP_ORDER.indexOf(group);
-    if (rank < highest && !reported) {
+    if (rank < highest) {
       add(
         'STENCIL-MEMBER-ORDER',
         member,
         `\`${getMemberName(member)}\` (${group}) is declared after a later member group; order is ${GROUP_ORDER.join(' → ')}.`,
       );
-      reported = member;
+      break;
     }
     highest = Math.max(highest, rank);
   }
-  const renderIndex = classNode.members.findIndex(m => getMemberName(m) === 'render');
   const afterRender =
     renderIndex === -1 ? undefined : classNode.members.slice(renderIndex + 1).find(m => !ts.isSemicolonClassElement(m));
-  if (afterRender && afterRender !== reported) {
+  if (afterRender) {
     add(
       'STENCIL-MEMBER-ORDER',
       afterRender,
@@ -358,20 +373,20 @@ export function checkSource(tsxPath, componentName) {
   return out;
 }
 
-// Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
-// file in that folder, sub-components included (`mud-header-nav-item.tsx`); a sub-component
-// name resolves to its own file in whichever component folder holds it.
+// A `.tsx` that declares a `@Component`; specs, e2e tests, stories and JSX helpers are not.
 export function isComponentFile(file) {
   return (
     /\.tsx$/.test(file) &&
     !/\.(spec|e2e|stories)\.tsx$/.test(file) &&
-    fs.existsSync(file) &&
     /@Component\(/.test(fs.readFileSync(file, 'utf8'))
   );
 }
 
+// Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
+// file in that folder, sub-components included (`mud-header-nav-item.tsx`); a sub-component
+// name resolves to its own file in whichever component folder holds it.
 function componentFiles(name) {
-  const target = resolveComponentPaths(name);
+  const target = resolveComponentPaths(name, { allowSubComponent: true });
   if (!target.found) return [];
   if (target.subComponent) return isComponentFile(target.paths.tsx) ? [target.paths.tsx] : [];
   return fs
@@ -381,13 +396,18 @@ function componentFiles(name) {
     .sort();
 }
 
+// A component folder deleted or renamed on the branch is still in the diff; it has nothing to check.
+export function changedComponents() {
+  return listChangedComponents().filter(name => resolveComponentPaths(name).found);
+}
+
 async function main() {
   const args = parseAuditArgs({ toolName: TOOL, usage: USAGE });
   const t0 = Date.now();
   const targets = args.all
     ? listAllComponents().map(c => c.name)
     : args.changed
-      ? listChangedComponents()
+      ? changedComponents()
       : [args.component];
   const findings = [];
   let filesScanned = 0;

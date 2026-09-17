@@ -433,7 +433,10 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
     }
   }
 
-  const ok = blockingErrors === 0 && results.every(r => r.ok !== false);
+  // A script's own `ok` is false whenever it has errors, so a report-only script that ran
+  // (it returned a summary) is excused; one that crashed or emitted no envelope still fails.
+  const ok =
+    blockingErrors === 0 && results.every(r => r.ok !== false || (reportOnly.has(r.name) && r.summary !== undefined));
 
   return {
     schemaVersion: SCHEMA_VERSION,

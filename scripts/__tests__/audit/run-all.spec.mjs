@@ -118,6 +118,7 @@ describe('run-all: aggregate', () => {
       makeResult({
         id: '16',
         name: 'stencil-contract',
+        ok: false,
         summary: { errors: 2, warnings: 0, info: 0 },
         findings: [{ severity: 'error', code: 'STENCIL-WATCH-ASYNC' }],
       }),
@@ -126,6 +127,12 @@ describe('run-all: aggregate', () => {
     assert.deepEqual(combined.blockers, []);
     assert.equal(combined.ok, true);
     assert.equal(combined.summary.errors, 2);
+  });
+
+  it('still fails when a report-only script crashed (no summary)', () => {
+    const results = [{ id: '16', name: 'stencil-contract', wave: 'A', ok: false, exitCode: 2, durationMs: 1 }];
+    const combined = aggregate({ targetArg: 'mud-icon', results, durationMs: 100 });
+    assert.equal(combined.ok, false);
   });
 
   it('ok=false when any script crashed (ok: false from runScript)', () => {

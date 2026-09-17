@@ -41,7 +41,7 @@ Two kinds exist:
 | F7  | `setValidity(flags, message, anchor)`: a flag set to `true` comes with a non-empty message, and the anchor is the internal focusable control               | `manual`                                      |
 | F9  | Custom states for `:host(:state(invalid))` are declared in `@AttachInternals({ states: { … } })`                                                           | `manual`                                      |
 
-A boolean prop on a form-associated component does not default to `true`: [`decorators.md` P8](decorators.md#prop).
+A boolean prop defaulting to `true` on a form-associated component is reported, and its fix is consumer-side: [`decorators.md` P8](decorators.md#prop).
 
 Every form-associated component also reflects its `name` prop; that invariant is asserted by
 `scripts/__tests__/form-associated-contract.spec.mjs` (run it for any form-associated change).
