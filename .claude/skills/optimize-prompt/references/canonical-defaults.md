@@ -22,7 +22,7 @@ These defaults are auto-injected by [`SKILL.md`](../SKILL.md) into every spec, s
 
 ## 2. Focus ring
 
-Always rendered on `:focus-visible`, **never** on `:focus`. Forbidden: `outline: none` without an explicit replacement (anti-pattern #14 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md)).
+Always rendered on `:focus-visible`, **never** on `:focus`. Forbidden: `outline: none` without an explicit replacement (visible `:focus-visible` ring — [`accessibility-compliance`](../../accessibility-compliance/SKILL.md)).
 
 ```css
 :focus-visible {
@@ -52,9 +52,9 @@ Tooltip / popover:    100ms ease-out         (--motion-duration-quick, --motion-
 ```
 
 **Forbidden:**
-- `transition: all` — list exact properties (anti-pattern #19)
+- `transition: all` — list exact properties (`stylelint:declaration-property-value-disallowed-list`)
 - Hardcoded ms values in CSS — always token references
-- Missing `prefers-reduced-motion` fallback (anti-pattern #20)
+- Missing `prefers-reduced-motion` fallback (anti-pattern #20 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md), accessibility)
 
 **Required for every animated/transitioned component:**
 
@@ -138,7 +138,7 @@ For **layout** archetype:
 
 ## 7. Event naming + payload
 
-**Canonical event name format:** `cor<PascalComponent><PascalAction>`. Examples: `corClick`, `corChange`, `corOpen`, `corClose`, `corSelect`, `corDismiss`, `corNavigate`.
+**Canonical event name format:** `mud<PascalComponent><PascalAction>`. Examples: `mudClick`, `mudChange`, `mudOpen`, `mudClose`, `mudSelect`, `mudDismiss`, `mudNavigate`.
 
 **Payload type MUST be exported** from `<component>.types.ts` as `<Component><Action>Detail`. Even single-value payloads use a typed interface, not raw `string` / `number`.
 
@@ -150,7 +150,7 @@ export interface ButtonClickDetail {
 }
 
 // mud-button.tsx
-@Event({ composed: true, bubbles: true }) corClick!: EventEmitter<ButtonClickDetail>;
+@Event({ composed: true, bubbles: true }) mudClick!: EventEmitter<ButtonClickDetail>;
 ```
 
 **Opt-out:** native events (`click`, `change`, `input`) when the component is Pattern A and the slotted element bubbles them naturally. Document the choice in API → Events.
@@ -168,7 +168,7 @@ Every form-associated component MUST declare:
   shadow: true,
   formAssociated: true,  // ← mandatory
 })
-export class Cor<Name> {
+export class Mud<Name> {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop({ reflect: true }) value: string = '';
@@ -219,7 +219,7 @@ export class Cor<Name> {
 
 **Required pattern:** declarative `<Host class={getHostClasses()}>` driven by a private `getHostClasses(): string` method.
 
-**Forbidden:** `this.host.classList.add()` / `.remove()` / `.toggle()` in lifecycle hooks or event handlers (anti-pattern #26 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md)).
+**Forbidden:** `this.host.classList.add()` / `.remove()` / `.toggle()` in lifecycle hooks or event handlers (anti-pattern #26 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md), detected by `ANTIPATTERN-002-HOST-CLASSLIST`).
 
 ```tsx
 // ✓ Correct
@@ -279,7 +279,7 @@ Components opt into shapes via `shape` prop (atom-interactive only typically).
 
 When a component has `disabled: boolean`:
 - `@Prop({ reflect: true }) disabled: boolean = false;`
-- Render `aria-disabled={String(this.disabled)}` on host (per anti-pattern #12 corollary)
+- Render `aria-disabled={String(this.disabled)}` on host (ARIA states reflect reality — [`accessibility-compliance`](../../accessibility-compliance/SKILL.md))
 - CSS: `:host([disabled]) { pointer-events: none; cursor: not-allowed; opacity: <token>; }` — opacity via token, never hardcoded
 - For form-associated: `disabled` also blocks `setFormValue` calls
 

@@ -159,7 +159,7 @@ export class MudTooltip {
 
   @State() private resolvedPosition: TooltipResolvedPosition = 'top';
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudTooltipElement;
 
   /** Fired when the tooltip becomes visible (after `showDelay` for hover triggers). */
   @Event() mudOpen!: EventEmitter<void>;
@@ -744,7 +744,9 @@ export class MudTooltip {
 
   private readCssPixel(propertyName: string, fallback: number): number {
     if (typeof window === 'undefined') return fallback;
-    const raw = getComputedStyle(this.host).getPropertyValue(propertyName).trim();
+    const raw = getComputedStyle(this.host as unknown as Element)
+      .getPropertyValue(propertyName)
+      .trim();
     const parsed = parseFloat(raw);
     return Number.isNaN(parsed) ? fallback : parsed;
   }

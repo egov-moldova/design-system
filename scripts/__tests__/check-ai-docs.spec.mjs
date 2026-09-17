@@ -498,3 +498,264 @@ describe('review fixes', () => {
     }
   });
 });
+
+describe('stale-prefix rule', () => {
+  it('flags every spelling of the retired prefix in doc scope', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Emit `corChange`.\n\nExtends `CorInput`.\n\nType `HTMLCorButtonElement`.\n\nJSX `onCorToggle`.\n\nCorlab is the vendor.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [
+        ['_agents/x.md', 1, 'stale-prefix'],
+        ['_agents/x.md', 3, 'stale-prefix'],
+        ['_agents/x.md', 5, 'stale-prefix'],
+        ['_agents/x.md', 7, 'stale-prefix'],
+      ],
+    );
+  });
+
+  it('ignores plans', () => {
+    const root = makeFixture({ 'package.json': pkgJson(), '.claude/plans/p.md': 'Grep for `corChange`.\n' });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});
+
+describe('lookaround rule', () => {
+  it('flags a lookaround inside a code span unless the span enables PCRE2', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          '| Q2 | Grep `@Method\\(\\)\\s+(?!async)` |',
+          '`rg "foo(?=bar)"`',
+          '`rg --pcre2 "foo(?!bar)"`',
+          '`rg -P "(?<!a)b"`',
+          '`rg "(?<name>ab)c"`',
+          'Prose (?!x) outside code.',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'lookaround'],
+        [2, 'lookaround'],
+      ],
+    );
+  });
+});
+
+describe('stencil-version rule', () => {
+  const pkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+
+  it('flags a Stencil version claim that differs from the pinned major.minor', () => {
+    const root = makeFixture({
+      'package.json': pkg(),
+      '_agents/x.md':
+        'Built for Stencil 4.x.\n\nNeeds Stencil 4.46.\n\nStencil 4.45 is pinned.\n\nStencil 5 is in beta.\n\nStencil 4.38 added serializers.\n\nThe Stencil 4 harness was retired.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [3, 'stencil-version'],
+      ],
+    );
+  });
+});
+
+describe('stale-prefix rule: kebab and prose spellings', () => {
+  it('flags kebab tags, custom properties and the prefix named as a word, but not legacy paths or the vendor', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Render `<cor-button>`.\n\nSet `--cor-color-primary`.\n\nName events with the `cor` prefix.\n\nLegacy tags live under src/legacy/cor-accordion.\n\nVisit corlab-docs.example.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+});
+
+describe('lookaround rule: flags and fences', () => {
+  it('accepts grouped and long PCRE flags, judges each fenced command alone, and skips non-shell fences', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          '`grep -oP "a(?=b)" f`',
+          '`rg --perl-regexp "a(?=b)"`',
+          '```bash',
+          "rg -P 'a(?=b)' src",
+          "rg 'c(?!d)' src",
+          '```',
+          '```js',
+          'const re = /foo(?=bar)/;',
+          '```',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[5, 'lookaround']],
+    );
+  });
+
+  it('reads grep only before the span, and does not let an escaped quote carry a flag across a pipe', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          "In JS use `/(?<=\\d)px/`; from the shell use `rg --pcre2 '(?<=\\d)px'`.",
+          '',
+          '`rg --pcre2 "a\\"b" | grep \'(?<=x)y\'`',
+          '',
+          'Grep `(?<=x)y` across the docs.',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [3, 'lookaround'],
+        [5, 'lookaround'],
+      ],
+    );
+  });
+});
+
+describe('stencil-version rule: case and package spellings', () => {
+  const pkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+
+  it('flags an upper-case X and package-spelled claims above the pin, not the pin itself', () => {
+    const root = makeFixture({
+      'package.json': pkg(),
+      '_agents/x.md':
+        'Built for Stencil 4.X.\n\nNeeds `@stencil/core` `~4.46.0`.\n\nPinned: `@stencil/core` `~4.45.0`.\n\nInstall @stencil/core@4.47.1.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [3, 'stencil-version'],
+        [7, 'stencil-version'],
+      ],
+    );
+  });
+});
+
+describe('stale-prefix rule: placeholder spellings', () => {
+  it('flags Cor<Name>, cor<Component> and template-literal forms', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'export class Cor<Name> {\n\nEvent naming cor<Component><Action>.\n\nType HTMLCor${Name}Element.\n\nExport Mud<X>CustomEvent.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+});
+
+describe('docs checker rules: remaining spellings', () => {
+  it('lookaround: skips a JS regex literal span, accepts --engine pcre2, judges each piped command', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md': ['`/(?<=\\d)px/`', '`rg --engine pcre2 "a(?=b)"`', '`find -P . | rg "(?=y)"`'].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[3, 'lookaround']],
+    );
+  });
+
+  it('stale-prefix: flags capitalised word forms, and exempts only the legacy path token', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Use the `Cor` prefix.\n\nThe Cor prefix is retired.\n\nLegacy tags live under src/legacy/cor-accordion while new code uses corButton.\n\nLegacy tags live under src/legacy/cor-accordion.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+
+  it('stencil-version: reads range, parenthesised, JSON and table spellings, and package claims in fences', () => {
+    const pkg = JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+    const root = makeFixture({
+      'package.json': pkg,
+      '_agents/x.md':
+        [
+          'Needs Stencil >= 4.50.',
+          'Needs Stencil ^4.50.',
+          'Needs Stencil (4.50).',
+          '| Stencil | `~4.50.0` |',
+          '```json',
+          '"@stencil/core": "~4.50.0"',
+          '```',
+          '| Stencil | `~4.45.0` |',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [2, 'stencil-version'],
+        [3, 'stencil-version'],
+        [4, 'stencil-version'],
+        [6, 'stencil-version'],
+      ],
+    );
+  });
+});
+
+describe('lookaround rule: quoting, continuations and non-grep spans', () => {
+  it('keeps a quoted alternation whole, reads a continued command, and skips a span that is not a grep', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          "`rg --pcre2 'foo | (?<=x)bar' src`",
+          '```bash',
+          "rg '(?<=x)y' \\",
+          '  --pcre2 src',
+          '```',
+          "`new RegExp('(?<![\\d.])px')`",
+          '| Q2 | Grep `a(?!b)` |',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[7, 'lookaround']],
+    );
+  });
+});

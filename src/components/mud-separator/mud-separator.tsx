@@ -18,7 +18,7 @@ import type { SeparatorOrientation, SeparatorSize, SeparatorVariant } from './mu
   shadow: true,
 })
 export class MudSeparator {
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudSeparatorElement;
 
   /**
    * Layout orientation of the separator.

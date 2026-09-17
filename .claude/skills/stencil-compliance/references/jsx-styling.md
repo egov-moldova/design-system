@@ -1,8 +1,10 @@
 # JSX & Styling
 
-**Aligned with:** Stencil 4.x.
+Load when writing or reviewing `render()` output or a component stylesheet. `enforced-by` grammar:
+[`decorators.md`](decorators.md).
 
 Sections:
+
 - [JSX templating](#jsx)
 - [CSS / Styling](#styling)
 
@@ -12,118 +14,72 @@ Sections:
 
 Reference: <https://stenciljs.com/docs/templating-jsx>.
 
-### Core rules
+| #   | Rule                                                                                                               | enforced-by                                  |
+| --- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| J1  | `h` is imported from `@stencil/core` (the `jsxFactory` in `tsconfig.json`)                                         | `tsc`                                        |
+| J2  | Conditional render uses expressions: `{this.open && <div>…</div>}`                                                 | `manual`                                     |
+| J3  | An element returned from a `.map()` callback carries a unique `key`                                                | `script-16:STENCIL-MAP-KEY`                  |
+| J4  | A `key` on conditionally swapped siblings keeps each one's DOM and state apart                                     | `manual`                                     |
+| J5  | Event handlers are class-field arrows (or inline arrows), so `this` stays bound                                    | `manual`                                     |
+| J6  | Refs: `ref={el => (this.inputElement = el)}`                                                                       | `manual`                                     |
+| J7  | `attr:` / `prop:` prefixes force an attribute or a property write (`<input prop:checked={…}>`); rare               | `manual`                                     |
+| J8  | A JSX node stored in a variable is not rendered twice — use a render function                                      | `manual`                                     |
+| J11 | `class=`, never React's `className=`                                                                               | `script-02:ANTIPATTERN-023-CLASSNAME`        |
+| J12 | `render()` is pure: no DOM writes, no state writes                                                                 | `manual`                                     |
 
-| # | Rule | Verification |
-|---|------|--------------|
-| J1 | `h()` factory imported from `@stencil/core` (TS jsxFactory: 'h') | Read tsconfig + imports |
-| J2 | `Fragment` from `@stencil/core` for grouping without wrapper | Read imports |
-| J3 | Conditional render via JS expressions: `{this.open && <div>...</div>}` | Manual review |
-| J4 | Lists rendered with `.map(...)` MUST have unique `key` attribute | Grep `\.map\(.*=>\s*<` and verify `key=` |
-| J5 | `key` attribute also recommended for conditional swaps (preserves lifecycle) | Manual review |
-| J6 | Event handlers MUST be arrow functions OR class field arrows to preserve `this` binding | Grep `on\w+=\{(?!this\.|\(\))` |
-| J7 | Refs: `ref={(el) => this.x = el}` — UNSET in `disconnectedCallback` if you need cleanup | Manual review |
-| J8 | `attr:` prefix forces attribute write: `<div attr:role="button">` (rare) | Manual review |
-| J9 | `prop:` prefix forces property write: `<input prop:checked={this.checked}>` (rare; useful for native form elements) | Manual review |
-| J10 | DON'T reuse JSX variable instances multiple times — create unique nodes or factory function | Manual review |
-| J11 | `innerHTML` attribute = security risk (XSS) — only with sanitized input | Grep `innerHTML\s*=` |
-| J12 | Multiple JSX root elements wrapped in `<Host>` or `<Fragment>` — NEVER return array of siblings directly (legal but discouraged) | Manual review |
-| J13 | Comments inside JSX: `{/* comment */}` — not `<!-- -->` | Manual review |
-| J14 | Boolean attributes: `<button disabled={this.disabled}>` (Stencil handles toggle) | Manual review |
-| J15 | NEVER use inline `style={{ ... }}` — use CSS classes + custom properties (Anti-Pattern #2) | Grep `style=\{` |
-| J16 | Use `class={...}` (NOT React's `className`) — Stencil follows native | Grep `className=` should be empty |
-| J17 | `tabindex` lowercase (HTML), `tabIndex` camelCase in JSX both work; prefer `tabindex` for consistency with HTML | Manual review |
-| J18 | `aria-*` attributes lowercase with dash (`aria-label`, `aria-disabled`) — JSX accepts both but kebab-case is standard | Manual review |
-| J19 | Stencil auto-keys non-conditional JSX nodes; manual `key` needed for conditional branches | Manual review |
-| J20 | TS strict: typed props on JSX components — `<mud-button variant={ButtonVariant.PRIMARY}>` | Manual review |
-| J21 | NO direct DOM mutations from render — render is PURE | Anti-Pattern #1 |
+No inline `style={…}`: [`lifecycle-host.md` H3](lifecycle-host.md#host).
 
-### Examples
+Script 02 also reports two project rules on JSX, owned outside this skill: no unsanitized `innerHTML`
+(`ANTIPATTERN-SECURITY-INNERHTML`) and icons through `<mud-icon>` instead of inline `<svg>`
+(`ANTIPATTERN-021-RAW-SVG`). Their fix text comes with the finding.
 
 ```tsx
-// ✅ Conditional render
-render() {
-  return (
-    <Host>
-      {this.label && <label>{this.label}</label>}
-      <input ref={(el) => this.inputElement = el} />
-      {this.error && <span role="alert">{this.error}</span>}
-    </Host>
-  );
-}
+// ✅ Keyed list
+{this.items.map(item => (
+  <li key={item.id}>{item.label}</li>
+))}
 
-// ✅ List with keys
-render() {
-  return (
-    <Host>
-      <ul>
-        {this.items.map((item) => (
-          <li key={item.id}>{item.label}</li>
-        ))}
-      </ul>
-    </Host>
-  );
-}
-
-// ✅ Arrow handler preserves `this`
-private handleClick = (e: MouseEvent) => {
-  this.corClick.emit({ value: this.value });
+// ✅ Class-field arrow keeps `this`
+private handleClick = () => {
+  this.mudClick.emit({ value: this.value });
 };
-
 render() {
   return <button onClick={this.handleClick}>Click</button>;
 }
 
-// ❌ Method reference loses `this`
+// ❌ Prototype method passed by reference — `this` is undefined when it runs
+private handleClick() {
+  this.mudClick.emit({ value: this.value });
+}
 render() {
   return <button onClick={this.handleClick}>Click</button>;
-  // works IF handleClick is class-field arrow; FAILS if it's a regular method
 }
 
-// ❌ Inline style
-render() {
-  return <Host style={{ color: 'red' }}>...</Host>;  // ← forbidden
-}
-
-// ❌ Reused JSX variable
+// ❌ One node rendered twice
 const icon = <mud-icon name="alert" />;
-return <Host>{icon}{icon}</Host>;  // ← second instance breaks lifecycle
-// FIX: factory function
+return <Host>{icon}{icon}</Host>;
+// ✅ Render function
 const renderIcon = () => <mud-icon name="alert" />;
 return <Host>{renderIcon()}{renderIcon()}</Host>;
 ```
 
-### Slots in JSX
+### Slots
 
 ```tsx
-// Default slot
-<Host>
-  <slot />
-</Host>
-
-// Named slots
 <Host>
   <div class="header"><slot name="header" /></div>
   <div class="body"><slot /></div>
 </Host>
 
-// Slot fallback content
+// Fallback content
 <slot name="icon">
   <mud-icon name="default-icon" />
 </slot>
-
-// Slot detection (componentDidLoad)
-componentDidLoad() {
-  this.hasFooter = this.host.querySelectorAll('[slot=footer]').length > 0;
-}
 ```
 
-### Project-specific extras
-
-- **NO `className=`** — Stencil uses native `class=` (React's `className` is JSX-specific and not the Stencil convention).
-- **NO inline `style={{ }}`** — Anti-Pattern #2. Use CSS classes + `:host([attr])` selectors + CSS variables.
-- **All slot-accepting components MUST validate slotted content** via `invalidSlottedTag()` utility — see `src/utils/invalid-slotted-tag` and `src/components/_agents/slot-patterns.md`.
-- **Icons** — use `<mud-icon name="...">`, NEVER inline SVG (a new `mud-icon` component loading Figma-exported SVGs by `name` prop is coming in a follow-up branch).
+Slot APIs, validation of slotted content and slot detection:
+[`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md). Visible content comes from
+the slot, not from a prop rendered as its fallback (`script-02:ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`).
 
 ---
 
@@ -131,164 +87,94 @@ componentDidLoad() {
 
 Reference: <https://stenciljs.com/docs/styling>.
 
-### Shadow DOM CSS rules
+| #    | Rule                                                                                                           | enforced-by                                               |
+| ---- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| ST1  | The bare `:host { }` rule declares `display` (a custom element defaults to `inline`)                           | `script-02:ANTIPATTERN-HOST-DISPLAY`                      |
+| ST2  | Custom properties meant for consumers are declared on `:host`                                                  | `manual`                                                  |
+| ST3  | Attribute variants use `:host([variant='primary'])`; state classes use `:host(.is-open)`                        | `manual`                                                  |
+| ST4  | `::slotted()` matches only top-level slotted elements, never default content rendered inside the shadow root   | `manual`                                                  |
+| ST5  | `::part(name)` is an opt-in styling API; `exportparts` forwards a nested component's parts                     | `manual`                                                  |
+| ST6 | No `!important` unless the line above carries `/* stylelint-disable-next-line declaration-no-important */` | `stylelint:declaration-no-important` |
+| ST7  | No `transition: all` / `transition-property: all` — list the properties                                        | `stylelint:declaration-property-value-disallowed-list`    |
+| ST8  | `prefers-reduced-motion` is handled once, in `src/assets/css/base/html.css`                                     | `manual`                                                  |
+| ST9  | Global tokens (`:root` in `dist/mud/tokens/*.css`) inherit into shadow roots                                    | `manual`                                                  |
+| ST10 | One conceptual element is not styled through both `::slotted()` and an internal class | `manual` |
+| ST11 | A load-bearing `!important` disable comment is accompanied by a comment saying why | `manual` |
 
-| # | Rule | Verification |
-|---|------|--------------|
-| ST1 | Every component MUST have `:host { display: ... }` (default is inline; usually wrong) | Grep `:host\s*\{` and verify `display:` |
-| ST2 | Component-exposed CSS variables MUST be declared on `:host` for consumer access | Read CSS |
-| ST3 | Use `:host([variant=primary])` for attribute-driven variants | Manual review |
-| ST4 | Use `:host(.is-open)` for state-driven classes (set via `getHostClasses()`) | Manual review |
-| ST5 | `::slotted(*)` for styling slot CHILDREN (Pattern A) | Manual review |
-| ST6 | `::slotted()` selector has limitations: only first-level slotted descendants | Conceptual |
-| ST7 | `::part(name)` exposes internal elements to consumer styling — opt-in API | Manual review |
-| ST8 | `exportparts="inner-part: outer-part"` forwards parts through compound components | Manual review |
-| ST9 | NEVER use `!important` without a comment explaining why | Grep `!important` |
-| ST10 | NEVER use raw hex colors — always tokens | Grep `#[0-9a-fA-F]{3,8}` |
-| ST11 | NEVER use raw `px` values for spacing/sizing — always tokens (except `0px`, `1px` for borders) | Grep `\d+px` |
-| ST12 | `transition: 150ms ease-in-out <property>` — NEVER `transition: all` (perf + a11y) | Grep `transition:\s*all` |
-| ST13 | `prefers-reduced-motion` handled globally in `src/assets/css/base/html.css` — don't duplicate | Manual review |
-| ST14 | Global tokens (defined on `:root` in `dist/mud/tokens/*.css`) penetrate shadow DOM | Conceptual |
+Colour, spacing and token-tier rules are project rules, not Stencil rules: see
+[`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) and the
+[`token-creation`](../../token-creation/SKILL.md) skill.
 
-### Two architectural patterns
+### Two patterns — pick one per component
 
-#### Pattern A — Slot-based (e.g. `mud-button`)
+#### Pattern A — slotted content (`mud-accordion-item` heading slots)
 
 ```css
-:host {
-  display: inline-flex;
-  /* host-level layout + variables */
-}
-
-:host([variant='primary']) {
-  --button-bg: var(--color-background-brand-default);
-}
-
-::slotted(button),
-::slotted(a) {
-  background: var(--button-bg);
-  padding: var(--button-padding-block) var(--button-padding-inline);
-  color: var(--button-color);
-}
-
-::slotted(button:hover:not(:disabled)),
-::slotted(a:hover:not([aria-disabled='true'])) {
-  background: var(--button-bg-hover);
+:host([disabled]) slot[name='heading']::slotted(*) {
+  pointer-events: none;
 }
 ```
 
-#### Pattern B — Internal DOM (e.g. `mud-input`)
+#### Pattern B — internal DOM (`mud-text-input`)
 
 ```css
 :host {
   display: block;
-  --input-height: var(--input-md-height);
 }
 
-:host([size='lg']) {
-  --input-height: var(--input-lg-height);
-}
-
-.input-wrapper {
-  height: var(--input-height);
-  border: 1px solid var(--input-border-color);
-}
-
-:host(.is-focused) .input-wrapper {
-  border-color: var(--input-border-color-focus);
+:host(.is-focused:not(.is-disabled)) .control {
+  border-color: var(--text-input-border-color-focus);
 }
 ```
 
-**Rule**: pick ONE pattern per component — don't mix `::slotted()` with internal `.class` selectors that style the same conceptual element.
+Don't style one conceptual element through both `::slotted()` and an internal class (ST10).
 
-### CSS Variables
+### Slot default content — dual selectors
 
-| # | Rule | Verification |
-|---|------|--------------|
-| V1 | Component-specific tokens: `--{component}-{element}-{property}-{scale/state}` | Token-creation skill |
-| V2 | Always fall back to semantic tokens: `var(--button-color, var(--color-text-base-default))` | Read CSS |
-| V3 | Define variable on `:host` for external override (`--button-color` available via component selector) | Manual review |
-| V4 | Consume but DON'T define `--color-*` palette tokens — palette is global | Manual review |
-| V5 | Use `:host([size='md']) { --button-size: var(--button-md-size); }` to remap sized vars | Manual review |
-
-### `::part()` exposure (advanced)
-
-Use ONLY when consumer needs to restyle internal DOM AND token API isn't enough:
+`::slotted()` does not reach the fallback content inside `<slot>`. Style both with two selectors —
+[`_agents/shadow-dom-patterns.md`](../../../../_agents/shadow-dom-patterns.md):
 
 ```css
-/* Component CSS */
-.input-wrapper { ... }
-.error-message { color: var(--color-text-error); }
+::slotted(mud-icon) {
+  --icon-color: var(--badge-icon-color);
+}
+
+.badge mud-icon {
+  --icon-color: var(--badge-icon-color);
+}
 ```
+
+### `::part()`
+
+Use only when consumers must restyle internal DOM and the custom-property API is not enough:
 
 ```tsx
-// Component TSX
-<Host>
-  <div class="input-wrapper" part="wrapper">
-    <input part="input" />
-  </div>
-  <span class="error-message" part="error">{this.error}</span>
-</Host>
+<div class="input-wrapper" part="wrapper">
+  <input part="input" />
+</div>
 ```
 
 ```css
-/* Consumer CSS */
-mud-input::part(input) { font-family: monospace; }
-mud-input::part(error) { font-style: italic; }
+mud-text-input::part(input) {
+  font-family: monospace;
+}
 ```
 
-For compound components (e.g. `mud-input` wrapping nested `mud-icon`), use `exportparts`:
+### Nesting
 
-```tsx
-<mud-icon name="alert" exportparts="svg: icon-svg" />
-```
-
-Then consumer can target: `mud-input::part(icon-svg)`.
-
-### Style Modes (Stencil feature — N/A for this project)
-
-Stencil supports `styleUrls: { md: '...md.css', ios: '...ios.css' }` for multi-mode theming. The repo uses CSS-variable theming via `data-theme="dark"` instead. Don't introduce style modes without team consensus.
-
-### Project-specific extras
-
-- **`::slotted(*)`** is the canonical wildcard slot selector — use `::slotted(button)` for tag-specific styling.
-- **Dual selector for slot defaults** — see `_agents/shadow-dom-patterns.md`:
-  ```css
-  ::slotted(*),
-  > * {
-    /* style applies to slotted content AND direct children fallback */
-  }
-  ```
-- **PostCSS nesting** is enabled (`@stencil/postcss` with nested plugin). Use `&` for nesting:
-  ```css
-  :host {
-    display: inline-flex;
-
-    &([disabled]) {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-  }
-  ```
-- **Tokens** consumed via `var(--token-name, var(--fallback))` — see `token-creation` skill for the 3-tier hierarchy.
-
-### Anti-patterns
+Stylesheets compile with `postcss-nested` (`stencil-postcss.config.mjs`), so `&` nests:
 
 ```css
-/* ❌ Hardcoded colors */
-.button { background: #1976d2; }
+:host {
+  display: inline-flex;
 
-/* ❌ Hardcoded spacing */
-.button { padding: 12px 16px; }
-
-/* ❌ transition: all */
-.button { transition: all 250ms; }
-
-/* ❌ !important without justification */
-.button { color: red !important; }
-
-/* ❌ Palette token in component CSS */
-.button { background: var(--palette-blue-500); }
-/* ✅ Right — semantic token */
-.button { background: var(--color-background-brand-default); }
+  &([disabled]) {
+    opacity: 0.5;
+  }
+}
 ```
+
+### Style modes
+
+`styleUrls: { md: …, ios: … }` modes are not used; theming is CSS custom properties, with dark
+values under `:root[data-theme="dark"]` (`tokens/generated/core.dark.tokens.css`).

@@ -132,8 +132,8 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 @State() isFocused: boolean = false;
 @State() hasValue: boolean = false;
 @AttachInternals() internals!: ElementInternals;
-@Event({ composed: true, bubbles: true }) corChange!: EventEmitter<string>;
-@Event({ composed: true, bubbles: true }) corInput!: EventEmitter<string>;
+@Event({ composed: true, bubbles: true }) mudChange!: EventEmitter<string>;
+@Event({ composed: true, bubbles: true }) mudInput!: EventEmitter<string>;
 ```
 
 **Form callbacks MUST be present:**
@@ -189,7 +189,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 @Prop({ reflect: true }) selected: boolean = false;
 @Prop({ reflect: true }) disabled: boolean = false;
 @State() isHovered: boolean = false;  // internal only — never @Prop
-@Event() corSelect!: EventEmitter<{ value: string }>;
+@Event() mudSelect!: EventEmitter<{ value: string }>;
 ```
 
 **A11y baseline:** ARIA states reflect props (`aria-selected`, `aria-expanded`, `aria-disabled`); keyboard arrows when part of a composite widget.

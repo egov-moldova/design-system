@@ -105,7 +105,7 @@ export class MudStepper {
   /** True when the container is narrower than the auto-compact breakpoint. */
   @State() private isNarrow: boolean = false;
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudStepperElement;
 
   /**
    * Emitted when an interactive step is activated via mouse, keyboard, or AT.
@@ -125,7 +125,7 @@ export class MudStepper {
       const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
       if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
     });
-    this.resizeObserver.observe(this.host);
+    this.resizeObserver.observe(this.host as unknown as Element);
   }
 
   componentWillLoad() {

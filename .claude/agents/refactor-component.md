@@ -85,7 +85,7 @@ Strict dependency order:
    - Reorder members to match convention
    - Add `{ reflect: true }` to visual props
    - Add missing JSDoc
-   - Fix event naming to `cor` prefix
+   - Fix event naming to the `mud` prefix (`mudChange`)
    - Add proper TypeScript types (remove `any`)
 5. **Types/Enums** → create or update `.types.ts` and `.enums.ts`
    - Extract string literals into enums

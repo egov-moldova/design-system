@@ -23,30 +23,18 @@ Required vs optional file list lives in
 error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
 `STRUCTURE-UNGRADUATED` (info, hidden-folder marker).
 
-**TSX member order** (must match exactly — see `src/components/AGENTS.md` and [`stencil-compliance/references/decorators.md`](../../stencil-compliance/references/decorators.md#member-order-project-specific-overlay)):
+**TSX member order**: defined once, in [`component-structure.md` § TSX Class Member Order](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
-1. `@Prop({ reflect: true })` — JSDoc, defaults, enum types
-2. `@State()` — internal reactive state
-3. `@Element()` — host element ref
-4. `@AttachInternals()` — form internals (form elements only)
-5. `@Event()` — custom events with `cor` prefix
-6. Private fields (refs, IDs) — NOT decorated
-7. `@Watch()` — prop watchers (rule below)
-8. `@Listen()` — DOM event listeners
-9. Lifecycle (`connectedCallback` → `componentWillLoad` → `componentDidLoad` → `componentDidUpdate` → `disconnectedCallback`)
-10. Private methods
-11. `render()` — always last
-
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties (e.g., `inputElement.indeterminate`, `inputElement.checked`).
+**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
 ### 2.2 TypeScript Strict Mode Audit
 
 Cross-reference [`stencil-compliance/references/decorators.md`](../../stencil-compliance/references/decorators.md):
 
-- All `@Element()` properties use `!` assertion: `@Element() host!: HTMLCorXElement;`
+- All `@Element()` properties use `!` assertion: `@Element() host!: HTMLMudXElement;`
 - All `@Event()` properties use `!` assertion: `@Event() mudChange!: EventEmitter<T>;`
 - All `@AttachInternals()` use `!` assertion
-- Element type uses generated `HTMLCorXElement` (not bare `HTMLElement`)
+- Element type uses generated `HTMLMudXElement` (not bare `HTMLElement`)
 - Object maps have explicit `Record<string, T>` annotations
 - Optional chaining uses nullish coalescing: `?.tagName?.toLowerCase() ?? ''`
 - Story render functions have typed args
@@ -58,20 +46,13 @@ Cross-reference [`stencil-compliance/references/decorators.md`](../../stencil-co
 
 ### 2.3 Stencil Decorator Audit (delegates to `stencil-compliance`)
 
-Apply the Top-10 quick rules from [`stencil-compliance/SKILL.md`](../../stencil-compliance/SKILL.md#2-top-10-must-check-rules-quick-audit):
+Run `yarn audit:antipatterns <component>` and `yarn audit:stencil-contract <component>`
+(the scripts behind `stencil-compliance`'s [Run contract](../../stencil-compliance/SKILL.md#run-contract)),
+then judge the remaining `manual` rows from its
+[Rule index](../../stencil-compliance/SKILL.md#rule-index) against the component source.
+Do not restate the rules here.
 
-- **Q1** `@Component`: `tag` starts with `mud-`, `shadow: true`, never `scoped: true`
-- **Q2** All `@Method()` async / `Promise<T>` (verified by Wave 1 grep)
-- **Q3** `EventEmitter<T>` non-empty type (verified by Wave 1 grep)
-- **Q4** Events that escape shadow DOM use `composed: true` (default; flag if overridden to false unintentionally)
-- **Q5** No direct mutations (verified by Wave 1 grep)
-- **Q6** Lifecycle cleanup pair (Phase 2.4)
-- **Q7** No `this.host.classList` (verified by Wave 1 grep)
-- **Q8** Form-associated has full callback set (Phase 2.5)
-- **Q9** `setFormValue(value, state)` 2-arg (verified by Wave 1 grep)
-- **Q10** Definite-assignment `!` on decorated fields
-
-If `--deep`: invoke `stencil-compliance` skill and run full 14-section pass; report findings under "Deep Stencil Audit".
+If `--deep`: invoke the `stencil-compliance` skill and run its full Run contract; report findings under "Deep Stencil Audit".
 
 ### 2.4 Lifecycle Cleanup Audit
 
@@ -140,7 +121,7 @@ Determine which CSS pattern applies and verify it's used consistently:
 - State via host class: `:host(.is-focused) .container { ... }`
 
 **Common CSS checks**:
-- `:host { display: ...; }` set (Anti-Pattern #17)
+- `:host { display: ...; }` set (`ANTIPATTERN-HOST-DISPLAY`)
 - Transitions: explicit properties (NOT `all`)
 - PostCSS nesting uses `&` correctly
 - No `!important` without justification
@@ -174,7 +155,7 @@ Read `.stories.ts` (already loaded) and verify:
 - CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
 - `component: 'mud-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
-- `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
+- `title` follows atomic hierarchy without the prefix: `Atoms/Badge`, `Molecules/Accordion Item`, etc.
 - No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
 
 **Type-safety anti-patterns** (flag any of these):

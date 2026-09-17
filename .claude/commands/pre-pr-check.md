@@ -44,9 +44,11 @@ returns ONE JSON envelope you can read in a single tool call:
 node scripts/audit/run-all.mjs --changed --no-browser --json
 ```
 
-Read the result. The `blockers` array lists every error-severity finding;
+Read the result. The `blockers` array lists every error-severity finding except those of
+report-only scripts (`stencil-contract`), which count in `summary` but never block;
 each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`).
-If `blockers` is non-empty, STOP and report — do not proceed to Wave 2.
+If `ok` is false or `blockers` is non-empty, STOP and report — do not proceed to Wave 2. A script that
+crashed adds no finding, so `ok: false` with empty `blockers` is still a stop: read `results[].error`.
 
 If you also want git + branch + commit hygiene as part of Wave 1, you already
 have it: the orchestrator includes `03-git-hygiene` automatically.
@@ -89,7 +91,7 @@ node scripts/audit/02-stencil-antipatterns.mjs --changed --json
 node scripts/audit/03-git-hygiene.mjs --json
 ```
 
-For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
+Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md); project codes (tokens, colours, icons, `innerHTML`, `any`): [`_agents/anti-patterns.md`](../../_agents/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
 
 **Verify after Wave 1 results land**:
 

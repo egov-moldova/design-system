@@ -49,7 +49,7 @@ For atom-interactive and form-associated archetypes, additionally check:
 
 - Variants in the request (e.g., `primary | secondary | strict | neutral | destructive`) vs variants of existing components — if a request "Create mud-call-to-action with primary/secondary" overlaps 80%+ with `mud-button` variants, emit "Extend mud-button instead?"
 - Slot patterns — if request mentions slots that match an existing constant in `slotConstants`, cite that constant
-- Event surface — if request emits `corChange` and an existing component already emits that name for a similar payload, surface it
+- Event surface — if request emits `mudChange` and an existing component already emits that name for a similar payload, surface it
 
 ### Step D — Token match
 

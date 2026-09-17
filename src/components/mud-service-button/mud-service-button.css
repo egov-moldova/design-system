@@ -84,7 +84,9 @@
    a public CSS custom-property contract (--mud-logo-size). */
 ::slotted([slot='badge']) {
   display: block;
+  /* stylelint-disable-next-line declaration-no-important */
   inline-size: var(--_badge-size) !important;
+  /* stylelint-disable-next-line declaration-no-important */
   block-size: var(--_badge-size) !important;
 }
 

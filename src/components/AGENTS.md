@@ -69,46 +69,15 @@ src/components/mud-[name]/
 
 ## Quick Reference — TSX Member Order
 
-1. `@Prop({ reflect: true })` — public props
-2. `@State()` — internal state
-3. `@Element()` — host reference
-4. `@AttachInternals()` — form internals
-5. `@Event()` — custom events
-6. `@Watch()` — prop watchers (restricted use)
-7. `@Listen()` — DOM listeners
-8. Lifecycle methods
-9. Private methods
-10. `render()` — always last
+Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
 ---
 
-## Stencil Compliance — Stencil 4.x
+## Stencil Compliance
 
-Every `mud-*` component must conform to the [`stencil-compliance` Skill](../../.claude/skills/stencil-compliance/SKILL.md). It catalogs the **14 areas** of Stencil rules across decorators, lifecycle, host element, JSX, styling, form-associated custom elements, reactive data, serialization, functional components, and the public API surface.
+Every `mud-*` component conforms to the [`stencil-compliance` skill](../../.claude/skills/stencil-compliance/SKILL.md).
 
-**Top-10 must-check rules** (full table in the Skill):
-
-1. `@Component`: `tag: 'mud-<name>'`, `shadow: true`, never `scoped: true`.
-2. All `@Method()` are `async` or return `Promise<T>`.
-3. `EventEmitter<T>` always typed with non-empty payload.
-4. Events that must escape shadow DOM use `composed: true` (default).
-5. No direct mutation of reactive arrays/objects — reassign with spread.
-6. Components with `setInterval` / `addEventListener` / `*Observer` have matching `disconnectedCallback` cleanup.
-7. No imperative `this.host.classList.add/remove` — use `<Host class={...}>`.
-8. Form-associated components have full callback set (`formReset`, `formDisabled`, `formStateRestore`).
-9. `setFormValue(value, state)` always called with both arguments.
-10. `!` definite-assignment on decorated fields (`@Element`, `@Event`, `@AttachInternals`).
-
-**Reference files** load on-demand:
-
-- [`stencil-compliance/references/decorators.md`](../../.claude/skills/stencil-compliance/references/decorators.md) — `@Component`, `@Prop`, `@State`, `@Event`/`@Listen`, `@Method`, `@Watch`
-- [`stencil-compliance/references/lifecycle-host.md`](../../.claude/skills/stencil-compliance/references/lifecycle-host.md) — lifecycle hooks + `<Host>` + `@Element`
-- [`stencil-compliance/references/jsx-styling.md`](../../.claude/skills/stencil-compliance/references/jsx-styling.md) — JSX templating + shadow DOM CSS
-- [`stencil-compliance/references/form-reactivity.md`](../../.claude/skills/stencil-compliance/references/form-reactivity.md) — form-associated + reactive data + serialization
-- [`stencil-compliance/references/functional-api.md`](../../.claude/skills/stencil-compliance/references/functional-api.md) — Functional Components + public API
-- [`stencil-compliance/references/anti-patterns.md`](../../.claude/skills/stencil-compliance/references/anti-patterns.md) — top 25 anti-patterns with fixes
-
-**Verification:** `/audit-component @mud-<name> --deep` invokes this Skill end-to-end; `/pre-pr-check` runs Wave 1 grep gates from the anti-pattern catalog.
+Follow the skill's [Run contract](../../.claude/skills/stencil-compliance/SKILL.md#run-contract): scripts first, then only what they leave for judgment.
 
 ---
 

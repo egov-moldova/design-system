@@ -1,8 +1,12 @@
 # Form-Associated, Reactive Data & Serialization
 
-**Aligned with:** Stencil 4.x.
+Load when writing or reviewing a form-associated component, state updates, or
+`@PropSerialize`/`@AttrDeserialize`. `enforced-by` grammar: [`decorators.md`](decorators.md).
+Runtime line citations refer to `node_modules/@stencil/core/internal/client/index.js` at the pinned
+version ([`version-delta.md`](version-delta.md)).
 
 Sections:
+
 - [Form-Associated Custom Elements](#form-associated)
 - [Reactive Data](#reactive)
 - [Serialization](#serialization)
@@ -13,220 +17,108 @@ Sections:
 
 Reference: <https://stenciljs.com/docs/form-associated> and <https://stenciljs.com/docs/attach-internals>.
 
-Form-associated custom elements participate in `<form>` submission and HTML5 validation via the `ElementInternals` API.
+A form-associated custom element submits a value with its `<form>`, resets with it, is restored by
+the browser, and takes part in constraint validation — all through `ElementInternals`.
 
-### When to use
+Form-associated components: `grep -rl 'formAssociated: true' src/components --include='*.tsx'`.
 
-Make a component form-associated if it represents a form field whose value should:
-- Submit with the form (`name="..."` ⇒ value goes into FormData)
-- Reset when the form resets
-- Restore on browser autofill / bfcache
-- Participate in native validation (`form.checkValidity()`, `:invalid` pseudo-class on the form)
+Two kinds exist:
 
-Project components that MUST be form-associated:
-- `mud-input`, `mud-textarea`
-- `mud-checkbox`, `mud-radio-button`, `mud-toggle`, `mud-switch`
-- `mud-select`, `mud-combobox` (any custom dropdown that picks a value)
-
-### Required pattern
-
-```ts
-import {
-  Component,
-  Host,
-  Prop,
-  State,
-  Event,
-  Element,
-  AttachInternals,
-  EventEmitter,
-  Watch,
-  h,
-} from '@stencil/core';
-
-@Component({
-  tag: 'mud-input',
-  styleUrl: 'mud-input.css',
-  shadow: true,
-  formAssociated: true,                  // ← REQUIRED
-})
-export class CorInput {
-  @Prop({ reflect: true }) name?: string;
-  @Prop({ mutable: true }) value: string = '';
-  @Prop({ reflect: true }) required: boolean = false;
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true, mutable: true }) invalid: boolean = false;
-
-  @Element() host!: HTMLCorInputElement;
-
-  @AttachInternals() internals!: ElementInternals;   // ← REQUIRED
-
-  @Event() corChange!: EventEmitter<string>;
-
-  // === Form callbacks (all called by the platform when applicable) ===
-
-  /** Called when value should reset (form.reset()) */
-  formResetCallback() {
-    this.value = '';
-    this.invalid = false;
-    this.internals.setFormValue('');
-    this.internals.setValidity({});
-  }
-
-  /** Called when form's disabled state changes */
-  formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
-  }
-
-  /** Called on bfcache restore / autofill */
-  formStateRestoreCallback(state: string | FormData | null, mode: 'restore' | 'autocomplete') {
-    if (typeof state === 'string') {
-      this.value = state;
-      this.internals.setFormValue(state, state);
-    }
-  }
-
-  /** Called when the element is associated with a form (or disassociated with null) */
-  formAssociatedCallback(form: HTMLFormElement | null) {
-    // Optional — only needed if you need a reference to the form
-    this.formElement = form ?? undefined;
-  }
-
-  // === Watchers ===
-
-  @Watch('value')
-  watchValue(newValue: string) {
-    this.syncFormValue();
-  }
-
-  // === Internal sync ===
-
-  private syncFormValue() {
-    // 2-arg form: setFormValue(value, state) — state used for restoration
-    this.internals.setFormValue(this.value ?? '', this.value ?? '');
-    this.updateValidity();
-  }
-
-  private updateValidity() {
-    const flags: ValidityStateFlags = {};
-    let message = '';
-
-    if (this.required && !this.value) {
-      flags.valueMissing = true;
-      message = 'This field is required.';
-    }
-
-    if (this.inputElement) {
-      // Also copy native input validity flags
-      const v = this.inputElement.validity;
-      if (v.patternMismatch) { flags.patternMismatch = true; message = message || 'Pattern mismatch.'; }
-      if (v.typeMismatch)   { flags.typeMismatch = true;   message = message || 'Invalid value.'; }
-      // … etc
-    }
-
-    // 3-arg setValidity(flags, message?, anchor?) — anchor for focus on .reportValidity()
-    this.internals.setValidity(flags, message || undefined, this.inputElement);
-    this.invalid = !this.internals.validity.valid && message !== '';
-  }
-
-  // === Lifecycle ===
-
-  componentDidLoad() {
-    this.syncFormValue();
-  }
-
-  private inputElement!: HTMLInputElement;
-  private formElement?: HTMLFormElement;
-
-  render() {
-    return (
-      <Host class={this.invalid ? 'is-invalid' : ''}>
-        <input
-          ref={(el) => (this.inputElement = el)}
-          value={this.value}
-          required={this.required}
-          disabled={this.disabled}
-          aria-invalid={this.invalid ? 'true' : 'false'}
-          onInput={(e) => (this.value = (e.target as HTMLInputElement).value)}
-          onChange={() => this.corChange.emit(this.value)}
-        />
-      </Host>
-    );
-  }
-}
-```
+- **Value controls** (text input, checkbox, select, …) submit a value and need the full callback set.
+- **Submitters** (`mud-button`, `mud-service-button`) call `this.internals.form?.requestSubmit()`.
+  They hold no state the browser restores, so they need no `formStateRestoreCallback`.
 
 ### Rules
 
-| # | Rule | Verification |
-|---|------|--------------|
-| F1 | `formAssociated: true` in `@Component()` | Read decorator |
-| F2 | `@AttachInternals() internals!: ElementInternals;` with `!` | Read TSX |
-| F3 | `formResetCallback()` resets `value` + calls `internals.setFormValue('')` + `internals.setValidity({})` | Read TSX |
-| F4 | `formDisabledCallback(disabled: boolean)` updates `this.disabled` | Read TSX |
-| F5 | `formStateRestoreCallback(state, mode)` handles BOTH `'restore'` and `'autocomplete'` modes | Read TSX |
-| F6 | `formAssociatedCallback(form)` IF component needs form reference (optional) | Read TSX |
-| F7 | `internals.setFormValue(value, state)` — TWO arguments; second is state for restoration | Grep `setFormValue\(([^,)]+)\)` (one arg = WARN) |
-| F8 | `internals.setValidity(flags, message?, anchor?)` — anchor element for focus-on-invalid | Manual review |
-| F9 | All native validity flags copied (`valueMissing`, `patternMismatch`, `tooLong`, `tooShort`, `rangeOverflow`, `rangeUnderflow`, `stepMismatch`, `typeMismatch`, `badInput`, `customError`) | Manual review |
-| F10 | Optional: Custom States via `@AttachInternals({ states: { invalid: false, … } })` for `:host(:state(invalid))` CSS | Manual review |
-| F11 | Test coverage MUST include `formResetCallback`, `formDisabledCallback`, `formStateRestoreCallback`, and a `FormData` submission check | See `vitest-setup.ts` for ElementInternals mock |
+| #   | Rule                                                                                                                                                       | enforced-by                                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| F1  | `formAssociated: true` in `@Component()` and `@AttachInternals() internals!: ElementInternals;`                                                            | `manual`                                      |
+| F2  | `formResetCallback` and `formDisabledCallback` on every form-associated component; `formStateRestoreCallback` on every value control (not on a submitter) | `script-16:STENCIL-FORM-CALLBACKS`            |
+| F3  | `formResetCallback` restores the value captured at load and republishes it with `setFormValue`                                                            | `manual`                                      |
+| F4  | `formDisabledCallback(disabled)` sets a `@State` (the fieldset's disabled state), never the component's own `disabled` prop                                | `manual`                                      |
+| F5  | `formStateRestoreCallback(state, mode)` handles a string state and ignores what it cannot restore                                                          | `manual`                                      |
+| F6  | `setFormValue(value, state)` is called with both arguments, so the browser can restore the state                                                          | `script-02:ANTIPATTERN-010-SETFORMVALUE-1ARG` |
+| F7  | `setValidity(flags, message, anchor)`: a flag set to `true` comes with a non-empty message, and the anchor is the internal focusable control               | `manual`                                      |
+| F9  | Custom states for `:host(:state(invalid))` are declared in `@AttachInternals({ states: { … } })`                                                           | `manual`                                      |
 
-### Custom States API (Stencil 4 + browsers Chrome 90+/Firefox 119+/Safari 17.4+)
+A string `"false"` assigned to a boolean property of a form-associated component parses as `true`, whatever the default; consumers set these properties to a boolean ([`version-delta.md`](version-delta.md)).
+
+Every form-associated component also reflects its `name` prop; that invariant is asserted by
+`scripts/__tests__/form-associated-contract.spec.mjs` (run it for any form-associated change).
+
+### Value-control shape (`mud-text-input`)
+
+```tsx
+@Component({
+  tag: 'mud-text-input',
+  styleUrl: 'mud-text-input.css',
+  shadow: { delegatesFocus: true },
+  formAssociated: true,
+})
+export class MudTextInput {
+  @Prop({ reflect: true }) name?: string;
+  @Prop({ mutable: true }) value: string = '';
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  @State() private fieldsetDisabled: boolean = false;
+
+  @AttachInternals() internals!: ElementInternals;
+
+  private initialValue: string = '';
+
+  componentWillLoad() {
+    this.initialValue = this.value;
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled;
+  }
+
+  formResetCallback() {
+    this.value = this.initialValue;
+    this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.syncValidity();
+  }
+
+  formStateRestoreCallback(state: string | File | FormData | null) {
+    if (typeof state === 'string') {
+      this.value = state;
+      this.internals.setFormValue(state, state);
+      this.syncValidity();
+    }
+  }
+}
+```
+
+The disabled state the component renders is `this.disabled || this.fieldsetDisabled`: a fieldset
+toggling its `disabled` must not overwrite the consumer's own prop.
+
+### Submitter shape (`mud-button`, simplified)
+
+```tsx
+private handleClick = () => {
+  if (this.type === 'submit') this.internals.form?.requestSubmit();
+};
+```
+
+### Custom states
 
 ```ts
-@AttachInternals({ states: { invalid: false, dirty: false } })
+@AttachInternals({ states: { invalid: false } })
 internals!: ElementInternals;
 
-// Update state at runtime
+// later
 this.internals.states.add('invalid');
-this.internals.states.delete('invalid');
-
-// Or via Watch (already-existing flag)
-@Watch('invalid')
-syncInvalid(newValue: boolean) {
-  if (newValue) this.internals.states.add('invalid');
-  else this.internals.states.delete('invalid');
-}
 ```
 
-CSS:
 ```css
-:host(:state(invalid)) .input { border-color: var(--color-border-error); }
-
-/* Consumer can also target externally */
-mud-input:state(invalid) { /* … */ }
-```
-
-### Common mistakes
-
-```ts
-// ❌ setFormValue with only one arg — no state for restoration
-this.internals.setFormValue(this.value);
-
-// ✅ Right
-this.internals.setFormValue(this.value, this.value);
-
-// ❌ Missing formResetCallback — form.reset() won't clear this component
-@Component({ tag: 'mud-input', formAssociated: true })
-export class CorInput {
-  @Prop({ mutable: true }) value: string = '';
-  // … no formResetCallback!
+:host(:state(invalid)) .control {
+  border-color: var(--color-border-error);
 }
-
-// ❌ formAssociated: true without @AttachInternals — Stencil build error
-@Component({ tag: 'mud-x', formAssociated: true })
-export class CorX { /* missing @AttachInternals */ }
 ```
 
-### Project-specific extras
-
-- ElementInternals is mocked in `vitest-setup.ts` — Vitest spec tests have access to:
-  - `setFormValue(value, state)`
-  - `checkValidity()`, `reportValidity()`
-  - `setValidity({ … }, message?, anchor?)`
-  - `.form`, `.labels`, `.validity`, `.validationMessage`, `.willValidate`
-- See `src/components/_agents/form-associated.md` for additional project notes (validity sync, label association).
+Spec tests run against the `ElementInternals` shim in `vitest-setup.ts`; project notes on validity
+sync and label association: [`form-associated.md`](../../../../src/components/_agents/form-associated.md).
 
 ---
 
@@ -234,192 +126,65 @@ export class CorX { /* missing @AttachInternals */ }
 
 Reference: <https://stenciljs.com/docs/reactive-data>.
 
-Stencil triggers re-renders ONLY when a `@Prop` or `@State` decorated property's reference changes. In-place mutations are invisible to the reactivity system.
+A render is scheduled when a `@Prop` or `@State` is **assigned**. In-place mutation assigns nothing.
 
-### Rules
+| #   | Rule                                                                                                                  | enforced-by                                |
+| --- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| R2  | Objects are reassigned with spread; `obj.x = y`, `obj['x'] = y`, `delete obj.x`, `arr[i] = y` do not re-render          | `manual`                                   |
+| R3  | `@Watch` fires on assignment, not on mutation                                                                         | `manual`                                   |
+| R4  | A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render; mirror the value into a `@State` rather than calling `forceUpdate()` | `manual`                                   |
 
-| # | Rule | Verification |
-|---|------|--------------|
-| R1 | Re-render trigger = REFERENCE change of `@Prop`/`@State` | Conceptual |
-| R2 | Array `push`, `pop`, `shift`, `unshift`, `splice`, `sort`, `reverse` DO NOT trigger | Grep mutation patterns |
-| R3 | Object `obj.x = y`, `obj['x'] = y`, `delete obj.x` DO NOT trigger | Grep |
-| R4 | Reassign: `this.items = [...this.items, newItem]` ✅ | Manual review |
-| R5 | Reassign: `this.config = { ...this.config, theme: 'dark' }` ✅ | Manual review |
-| R6 | `@Watch('propName')` fires on reassignment, NOT on mutation | Conceptual |
-| R7 | `@Watch('aria-label', …)` (lowercase) for native HTML attribute changes | Manual review |
-| R8 | Native attribute watch does NOT auto re-render — pair with `forceUpdate(this)` | Manual review |
-| R9 | `{ immediate: true }` fires `@Watch` on initial render too | Read decorator option |
-| R10 | Multiple `@Watch('a')`, `@Watch('b')` can stack on one method | Read TSX |
-| R11 | `forceUpdate()` outside this use case is a CODE SMELL — flag for review | Grep |
-| R12 | Updating a prop INSIDE `@Watch` for that prop can loop — guard `if (newVal !== oldVal)` | Manual review |
+Array mutation is [`decorators.md` S4](decorators.md#state); `forceUpdate()` is [`lifecycle-host.md` LC6](lifecycle-host.md#lifecycle).
 
-### Mutation grep patterns (for audits)
-
-```bash
-# Direct array mutation on reactive properties
-rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components --type ts
-
-# Direct property assignment (rough; false positives possible)
-rg "this\.\w+\.[a-zA-Z_$][\w$]*\s*=\s*[^=]" src/components --type ts | rg -v "// (constant|allowed|sync)"
-
-# delete operator on reactive object
-rg "delete\s+this\.\w+\." src/components --type ts
-
-# forceUpdate usage (review each occurrence)
-rg "forceUpdate\(" src/components --type ts
-```
-
-### Patterns
+What a watcher may write: [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md).
 
 ```ts
-// ✅ Add item to array
-addItem(item: Item) {
-  this.items = [...this.items, item];
-}
+// ✅
+this.items = [...this.items, item];
+this.items = this.items.filter(it => it.id !== id);
+this.items = this.items.map(it => (it.id === id ? { ...it, ...patch } : it));
+this.config = { ...this.config, ...patch };
 
-// ✅ Remove item from array
-removeItem(id: string) {
-  this.items = this.items.filter(it => it.id !== id);
-}
-
-// ✅ Update one item in array
-updateItem(id: string, patch: Partial<Item>) {
-  this.items = this.items.map(it => it.id === id ? { ...it, ...patch } : it);
-}
-
-// ✅ Update one property of object
-updateConfig(patch: Partial<Config>) {
-  this.config = { ...this.config, ...patch };
-}
-
-// ✅ Reset map
-resetMap() {
-  this.dictionary = {};
-}
-
-// ❌ All of these are reactivity bugs
+// ❌ No re-render
 this.items.push(item);
-this.items.splice(idx, 1);
+this.items[0] = item;
 this.config.theme = 'dark';
 delete this.config.legacy;
-this.items[0] = newItem;          // assigning to index also doesn't trigger
-this.items.length = 0;            // length mutation doesn't trigger either
 ```
-
-### When `forceUpdate()` is legitimate
-
-```ts
-import { forceUpdate } from '@stencil/core';
-
-// Watching a NATIVE attribute (not a @Prop) — requires forceUpdate
-@Watch('aria-label')
-watchAriaLabel() {
-  forceUpdate(this);
-}
-
-// Updating an external imperative state (rare; document why)
-this.imperativeBackend.update();
-forceUpdate(this);
-```
-
-Anywhere else `forceUpdate(this)` appears in component code, it's a smell — likely state should be a `@State` instead.
 
 ---
 
 ## Serialization
 
-Reference: <https://stenciljs.com/docs/serialization>.
+Reference: <https://stenciljs.com/docs/serialization>. `@PropSerialize` and `@AttrDeserialize` arrived
+in Stencil 4.38; no component here uses them.
 
-Stencil 4 supports two complementary decorators for complex prop serialization:
+| #   | Rule                                                                                                                                                                  | enforced-by |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| SE1 | No `reflect: true` on an object or array prop without a serializer — a complex value is never written to an attribute                                       | `manual`    |
+| SE2 | A `@PropSerialize` method returns a string, or `null` to remove the attribute; `false` also removes it, `true` writes `""`                              | `manual`    |
+| SE3 | `@PropSerialize` output reaches the attribute only when the prop also has `reflect: true`: the serializer runs for reflected components and its value is written only by the reflect loop over `ReflectAttr` props | `manual`    |
+| SE4 | `@AttrDeserialize` never throws on bad input — wrap `JSON.parse` and fall back                                                                                        | `manual`    |
+| SE5 | The serialized format is documented in the prop's JSDoc                                                                                                               | `manual`    |
 
-- `@PropSerialize('propName')` — converts JS property to attribute string (for SSR / reflection)
-- `@AttrDeserialize('propName')` — converts attribute string back to JS property
-
-### When you need them
-
-- **You don't** for primitives (string, number, boolean) — Stencil auto-handles.
-- **You DO** when:
-  - Component must hydrate from SSR HTML (attribute is the only carrier of state)
-  - Want to expose a complex prop as an HTML attribute (`<mud-x config='{"a":1}'>`) — discouraged by Stencil docs but sometimes needed for analytics tooling or markup-driven config
-
-### Rules
-
-| # | Rule | Verification |
-|---|------|--------------|
-| SE1 | DON'T `reflect: true` on object/array `@Prop` — anti-pattern (Stencil docs §serialization) | Read TSX |
-| SE2 | If you need attribute representation: use `@PropSerialize` + `@AttrDeserialize` paired | Read TSX |
-| SE3 | `@PropSerialize` MUST return `string` or `null` (null removes the attribute) | Manual review |
-| SE4 | `@AttrDeserialize` MUST handle parse errors gracefully (try/catch around `JSON.parse`) | Read TSX |
-| SE5 | Don't double-serialize — use `JSON.stringify` once, `JSON.parse` once | Manual review |
-| SE6 | `reflect: true` not required when using `@PropSerialize` — Stencil syncs via the serializer | Manual review |
-| SE7 | Document the serialization format in JSDoc (e.g. "JSON-encoded `Config`") | Read JSDoc |
-| SE8 | Test coverage: round-trip a complex object through `setAttribute` and back | Spec test |
-| SE9 | If both `reflect: true` AND `@PropSerialize` are set, behavior is undefined — pick one | Read decorator options |
-
-### Examples
+Runtime evidence (`node_modules/@stencil/core/internal/client/index.js`, 4.45.0): R4 `:3830-3835`; SE1 `:2545`; SE2 `:2537-2550`;
+SE3 `:3551`, `:3093-3097`, `:3870-3871`.
 
 ```ts
-import { Component, Prop, PropSerialize, AttrDeserialize, h } from '@stencil/core';
+@Prop({ reflect: true }) config?: Config;
 
-interface Config {
-  theme: 'light' | 'dark';
-  density: 'compact' | 'spacious';
+@PropSerialize('config')
+serializeConfig(value: Config | undefined): string | null {
+  return value ? JSON.stringify(value) : null;
 }
 
-@Component({ tag: 'mud-widget', shadow: true })
-export class CorWidget {
-  /**
-   * Configuration object. Can be set as JS property or JSON-encoded attribute.
-   * @example
-   *   <mud-widget config='{"theme":"dark","density":"compact"}'></mud-widget>
-   */
-  @Prop() config?: Config;
-
-  @PropSerialize('config')
-  serializeConfig(value: Config | undefined): string | null {
-    if (!value) return null;
-    return JSON.stringify(value);
-  }
-
-  @AttrDeserialize('config')
-  deserializeConfig(value: string | null): Config | undefined {
-    if (!value) return undefined;
-    try {
-      return JSON.parse(value) as Config;
-    } catch {
-      console.warn('mud-widget: invalid JSON in config attribute');
-      return undefined;
-    }
-  }
-
-  render() {
-    return <Host>{this.config?.theme}</Host>;
-  }
-}
-```
-
-### Anti-patterns
-
-```ts
-// ❌ Reflecting complex prop — Stencil warns
-@Prop({ reflect: true }) config: Config;
-
-// ❌ Throwing in deserializer — breaks component on bad input
-@AttrDeserialize('config')
-deserializeConfig(value: string): Config {
-  return JSON.parse(value);  // ← throws on invalid JSON
-}
-
-// ✅ Right — graceful fallback
 @AttrDeserialize('config')
 deserializeConfig(value: string | null): Config | undefined {
   if (!value) return undefined;
-  try { return JSON.parse(value); }
-  catch { return undefined; }
+  try {
+    return JSON.parse(value) as Config;
+  } catch {
+    return undefined;
+  }
 }
 ```
-
-### Project-specific extras
-
-- Most `mud-*` components do NOT need serialization — complex props are rare. If you reach for `@PropSerialize`, reconsider whether the data should be passed via slot content + DOM instead.
-- Document the JSON shape in `mud-<name>.types.ts` and reference from JSDoc.

@@ -10,7 +10,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 
 1. **Hardcoded values in CSS** — always use `var(--token-name)` or `var(--token, var(--fallback))`
 2. **Inline styles in TSX** — breaks theming, violates CSP
-3. **Use `!important`** — never; use proper specificity and token fallbacks. Shadow DOM prevents conflicts
+3. **Use `!important`** — use proper specificity and token fallbacks; shadow DOM prevents conflicts. The only exception is a load-bearing declaration carrying `/* stylelint-disable-next-line declaration-no-important */` and a comment saying why (`stylelint:declaration-no-important`)
 4. **Round Figma values** — use exact dimensions (`48px` not `50px`). NO rounding
 5. **Palette token as CSS fallback** — `var(--token, var(--palette-ui-gray-9))` is forbidden (`yarn lint.colors` fails on it). Use semantic `--color-*` tokens. See `tokens/_agents/semantic-tokens.md`
 6. **Direct palette token in CSS** — `var(--palette-ui-gray-13)` is forbidden (`yarn lint.colors` fails on it). Use `var(--color-neutral-text-default)` or component token wrapper
@@ -29,7 +29,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 16. **Untyped object maps** — SHOULD use `Record<string, T>`; not MUST, since inference already covers a literal map — the annotation documents intent for index lookups. See `_agents/typescript-strict.md`
 17. **Inline slot validation constants** — use shared constants from `src/legacy/shared.constants.ts`
 18. **Light-DOM queries into a shadow root in browser tests** — `document.querySelector('mud-text-input input')` returns `null`; use Playwright's shadow-piercing `page.locator('mud-text-input input')`, or `shadowRoot` inside `page.evaluate()`. See `src/components/_agents/e2e-testing.md`
-26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`
+26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`. Detected by `ANTIPATTERN-002-HOST-CLASSLIST`.
 
 ## Design Fidelity
 

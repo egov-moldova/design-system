@@ -107,6 +107,7 @@
 :host([disabled]) slot[name='heading']::slotted(*),
 :host([disabled]) slot[name='supporting']::slotted(*),
 :host([disabled]) slot[name='trailing']::slotted(*) {
+  /* stylelint-disable-next-line declaration-no-important */
   pointer-events: none !important;
 }
 

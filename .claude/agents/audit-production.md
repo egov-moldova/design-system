@@ -116,20 +116,9 @@ needed; just confirm the script reported `errors: 0`.
 
 ### 1.2 TSX Member Order
 
-Verify `mud-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
+Member order is defined once, in [`component-structure.md` § TSX Class Member Order](../../src/components/_agents/component-structure.md), and checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
-1. `@Prop({ reflect: true })` — public props (with JSDoc, defaults, enums)
-2. `@State()` — internal reactive state
-3. `@Element()` — host element reference
-4. `@AttachInternals()` — form internals (form elements only)
-5. `@Event()` — custom events
-6. `@Watch()` — prop watchers (rule below)
-7. `@Listen()` — DOM event listeners
-8. Lifecycle: `componentWillLoad` → `componentDidLoad` → `componentDidUpdate`
-9. Private methods and refs
-10. `render()` — always last
-
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties not reflectable via attributes. See [`stencil-compliance/references/decorators.md#watch`](../skills/stencil-compliance/references/decorators.md#watch).
+**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
 ### 1.2.1 + 1.2.2 Lifecycle Cleanup + Reactivity Mutation
 
@@ -163,8 +152,9 @@ Mechanical part covered by Fast Path scripts:
 - `14-component-contract` exposes the full prop list with types + defaults
 
 Judgment that STAYS here: are enum props using the right enum type? Do
-booleans default to `false` (project convention, not script-enforced)? Is
-`@Watch()` used only for syncing native DOM properties (not state cascades)?
+booleans default to `false` (project convention)? Is a literal write to the watched
+prop inside an `if` really a validation fallback (the one `@Watch` question the
+script leaves to review — [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md))?
 
 ### 1.5 Slot Validation
 
@@ -350,7 +340,7 @@ Verify:
 - `component: 'mud-[name]'` (string tag, NOT JS reference)
 - `render` function with HTML template strings
 - `/*html*/` prefix for IDE syntax highlighting
-- `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
+- `title` follows atomic hierarchy without the prefix: `Atoms/Badge`, `Molecules/Accordion Item`, etc.
 - No `tags: ['autodocs']`
 
 ### 4.3 ArgTypes Completeness
@@ -556,24 +546,12 @@ surfaces an unexpected change; otherwise trust the envelope.
 
 ## Phase 10: Stencil Compliance Deep Pass
 
-The `audit-component --deep` invocation in Phase 1 already covers the 14-section Stencil rule pass. This phase surfaces the findings explicitly in the production report under their own header so reviewers see them grouped.
-
-Sections audited (delegated to [`stencil-compliance`](../skills/stencil-compliance/SKILL.md)):
-
-1. `@Component` decorator options
-2. `@Prop()` (mutability, reflection, types, defaults)
-3. `@State()` (mutation patterns)
-4. `@Event()` / `@Listen()` (composed, cancelable, target)
-5. `@Method()` (async / Promise contract)
-6. Lifecycle hooks (cleanup, async patterns)
-7. `<Host>` & `@Element()` (declarative pattern)
-8. JSX / Templating (keys, refs, event handlers)
-9. CSS / Styling (`::part`, `:host`, tokens)
-10. Form-Associated (full callback set)
-11. Reactive Data (no direct mutation)
-12. Serialization (when complex props)
-13. Functional Components (if used)
-14. Public API (imports, `readTask`/`writeTask`)
+The `audit-component --deep` invocation in Phase 1 already covers
+[`stencil-compliance`](../skills/stencil-compliance/SKILL.md)'s
+[Run contract](../skills/stencil-compliance/SKILL.md#run-contract), judged against its
+[Rule index](../skills/stencil-compliance/SKILL.md#rule-index). This phase surfaces the
+findings explicitly in the production report under their own header so reviewers see
+them grouped.
 
 For component-level deep audit (interactive), invoke `/audit-component @mud-<name> --deep`.
 

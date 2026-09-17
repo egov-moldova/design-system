@@ -414,7 +414,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 ## See also
 
 - [`README.md`](./README.md) — full build + bundler-based install guide
-- [`STACK.md`](./STACK.md) — stack overview (Stencil 4.x, Style Dictionary, Storybook)
+- [`STACK.md`](./STACK.md) — stack overview (Stencil, Style Dictionary, Storybook)
 - [`DESIGN.md`](./DESIGN.md) — design tokens, theming, naming
 - Storybook (when published) — live API docs per component
 - `web-components/demo/` — runnable vanilla-HTML examples per component (`yarn demo.web`)

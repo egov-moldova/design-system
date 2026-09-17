@@ -16,7 +16,7 @@ Every optimize-prompt output is graded against this checklist. Each rule cites i
 | 10 | Story variants explicit (Default, AllVariants, AllSizes, States, AllStatesTable as applicable) | Acceptance Criteria → Stories | [`src/components/_agents/storybook-stories.md`](../../../../src/components/_agents/storybook-stories.md) |
 | 11 | TSX member order — 10-item sequence (cited, never inlined) | Implementation Rules | [`src/components/AGENTS.md`](../../../../src/components/AGENTS.md) § "TSX Member Order" |
 | 12 | TypeScript strict: `!` decorators, `Record<>`, `?? ''`, `import type` | Implementation Rules | [`_agents/typescript-strict.md`](../../../../_agents/typescript-strict.md) |
-| 13 | Event naming `cor<Component><Action>` + exported `EventEmitter<T>` payload type | API → Events | [`canonical-defaults.md`](canonical-defaults.md) § 7 |
+| 13 | Event naming `mud<Component><Action>` + exported `EventEmitter<T>` payload type | API → Events | [`canonical-defaults.md`](canonical-defaults.md) § 7 |
 | 14 | Reuse check (Step 0) — scan existing components/tokens before emission | Top of output (Reuse candidates block) | [`_agents/reuse-architecture.md`](../../../../_agents/reuse-architecture.md) § "Reuse-First Protocol" |
 | 15 | Token JSON path explicit (`tokens/core/components/<name>.tokens.json`) + DTCG format reminder | Implementation Rules | [`.claude/skills/token-creation/SKILL.md`](../../token-creation/SKILL.md) |
 

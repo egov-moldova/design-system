@@ -30,6 +30,12 @@
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
  *                     baked into `.claude/settings.json`.
+ *   stale-prefix   — a retired `cor`/`Cor`/`HTMLCor`/`onCor` component identifier
+ *                     in doc scope; the prefix is `mud`.
+ *   lookaround     — a lookahead/lookbehind in a code span or fence without
+ *                     `--pcre2`/`-P`; ripgrep's default engine rejects it.
+ *   stencil-version — a `Stencil 4.x` claim, or a minor above the
+ *                     `@stencil/core` pin, for the pinned major.
  *
  * Exit codes: 0 clean, 1 one or more hits, 2 internal error (e.g. an
  * unreadable or malformed package.json).
@@ -674,6 +680,173 @@ function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: stale-prefix
+// ---------------------------------------------------------------------------
+
+// The component prefix was renamed; a `cor`-prefixed name in agent docs is stale, in every
+// spelling a doc uses: camel/Pascal identifiers, kebab tags and custom properties
+// (`cor-button`, `--cor-color`), and the prefix named as a word (`cor` prefix).
+// `src/legacy` still ships `cor-*` components, so a match inside a `src/legacy/…` path is exempt.
+// `Corlab` / `corlab-` (lowercase after the prefix) is the vendor name and does not match.
+// Placeholder spellings (`Cor<Name>`, `cor<Component>`, `HTMLCor${Name}Element`) count too.
+const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z<]|\b[Cc]or\$\{|HTMLCor[A-Z<$]|\bcor-[a-z]|`[Cc]or`|\b[Cc]or\s+prefix/g;
+const LEGACY_PATH = /src\/legacy\/[^\s`)]*/g;
+
+function checkStalePrefix(relPath, lines) {
+  const hits = [];
+  lines.forEach((line, i) => {
+    const legacy = [...line.matchAll(LEGACY_PATH)].map(m => [m.index, m.index + m[0].length]);
+    for (const m of line.matchAll(STALE_PREFIX)) {
+      if (legacy.some(([start, end]) => m.index >= start && m.index < end)) continue;
+      hits.push(
+        makeHit(relPath, i + 1, 'stale-prefix', `retired component prefix in \`${m[0]}…\`; use the mud prefix`),
+      );
+      break;
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
+// Rule: lookaround
+// ---------------------------------------------------------------------------
+
+// ripgrep's default engine rejects lookahead/lookbehind ("regex parse error"),
+// and the Grep tool is ripgrep-backed. Named groups `(?<name>` are supported.
+// PCRE is enabled by `--pcre2`, `--perl-regexp`, or a short-flag group containing `P` (`-oP`).
+const LOOKAROUND = /\(\?(?:[=!]|<[=!])/;
+const PCRE2_FLAG = /(?:^|\s)(?:--pcre2|--perl-regexp|--engine[= ](?:pcre2|auto)|-[A-Za-z]*P[A-Za-z]*)(?:\s|$)/;
+// A line may chain several commands; each one needs its own PCRE flag. Separators inside quotes
+// (`rg --pcre2 'foo | (?<=x)bar'`) belong to the pattern, not to the shell.
+function commandsOf(text) {
+  const commands = [];
+  let quote = null;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    // A backslash escapes the next character everywhere except inside single quotes.
+    if (ch === '\\' && quote !== "'") {
+      i++;
+      continue;
+    }
+    if (quote) {
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch;
+      continue;
+    }
+    const separator = text.slice(i).match(/^(?:\s\|\s|&&|\|\||;\s)/);
+    if (separator) {
+      commands.push(text.slice(start, i));
+      start = i + separator[0].length;
+      i = start - 1;
+    }
+  }
+  commands.push(text.slice(start));
+  return commands;
+}
+const needsPcre = text => commandsOf(text).some(cmd => LOOKAROUND.test(cmd) && !PCRE2_FLAG.test(cmd));
+// A code span is a grep pattern only when it holds a grep command or the text before it names
+// grep (a "Grep `…`" table cell); `new RegExp('(?<![\\d.])px')` or `/(?<=\\d)px/` is JavaScript.
+// Text after the span is not read: a JS span followed on the same line by the `rg --pcre2` form
+// of the pattern is not a grep pattern.
+const GREP_COMMAND = /(?:^|[\s|;&(])(?:rg|grep|git\s+grep)\s/;
+const NAMES_GREP = /\b(?:grep|rg)\b/i;
+// Only shell fences hold grep commands; a JS/TS sample's regex literal may use lookarounds.
+const SHELL_FENCE_LANGS = new Set(['', 'bash', 'sh', 'shell', 'zsh', 'console']);
+
+function checkLookaround(relPath, lines) {
+  const hits = [];
+  let inFence = false;
+  let shellFence = false;
+  // A fenced command continued with `\` is judged as one command, whichever line carries the flag.
+  let pending = [];
+  const judge = () => {
+    const joined = pending.map(p => p.text.replace(/\\\s*$/, ' ')).join(' ');
+    const at = pending.find(p => LOOKAROUND.test(p.text));
+    if (at && needsPcre(joined)) {
+      hits.push(makeHit(relPath, at.line, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
+    }
+    pending = [];
+  };
+  lines.forEach((line, i) => {
+    const fence = line.match(/^\s*(?:```|~~~)\s*([\w-]*)/);
+    if (fence) {
+      if (pending.length) judge();
+      inFence = !inFence;
+      shellFence = inFence && SHELL_FENCE_LANGS.has(fence[1].toLowerCase());
+      return;
+    }
+    if (inFence) {
+      if (!shellFence) return;
+      pending.push({ text: line, line: i + 1 });
+      if (!/\\\s*$/.test(line)) judge();
+      return;
+    }
+    for (const span of findCodeSpans(line)) {
+      const grepContext = GREP_COMMAND.test(span.content) || NAMES_GREP.test(line.slice(0, span.start));
+      if (grepContext && needsPcre(span.content)) {
+        hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
+        break;
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
+// Rule: stencil-version
+// ---------------------------------------------------------------------------
+
+// Prose (`Stencil 4.46`, `Stencil >= 4.46`, `Stencil (4.46)`), table rows (`| Stencil | ~4.46.0 |`) and
+// package spellings (`@stencil/core` `~4.46.0`, `@stencil/core@4.46`, `"@stencil/core": "~4.46.0"`).
+const STENCIL_PROSE_CLAIMS = [
+  /\bStencil\s+[`(]?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)(?:\.(\d+|x))?/gi,
+  /\bStencil\s*\|\s*`?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)\.(\d+|x)/gi,
+];
+const STENCIL_PACKAGE_CLAIM = /@stencil\/core[`"]?(?:@|:?\s*)[`"]?\s*(?:[~^]|>=?)?v?(\d+)\.(\d+|x)/gi;
+
+function pinnedMajorMinor(pkg, name) {
+  const range = pkg.dependencies?.[name] ?? pkg.devDependencies?.[name];
+  const m = typeof range === 'string' ? range.match(/(\d+)\.(\d+)/) : null;
+  return m ? { major: Number(m[1]), minor: Number(m[2]) } : null;
+}
+
+function checkStencilVersion(relPath, lines, pin) {
+  const hits = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    // Inside a fence only the package spelling is a claim (a manifest or install command).
+    const patterns = inFence ? [STENCIL_PACKAGE_CLAIM] : [...STENCIL_PROSE_CLAIMS, STENCIL_PACKAGE_CLAIM];
+    const claims = patterns.flatMap(re => [...line.matchAll(re)]);
+    for (const m of claims) {
+      if (Number(m[1]) !== pin.major) continue; // another major is a forward or history reference
+      // `4.x` is a vague claim; a minor above the pin claims an API this repo does not have.
+      // A lower minor ("Stencil 4.38 added …") and a bare major are history, not claims.
+      const minor = m[2]?.toLowerCase();
+      if (minor === 'x' || (minor !== undefined && Number(minor) > pin.minor)) {
+        hits.push(
+          makeHit(
+            relPath,
+            i + 1,
+            'stencil-version',
+            `version claim "${m[0]}" does not match pinned ${pin.major}.${pin.minor}`,
+          ),
+        );
+        break;
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: package-name
 // ---------------------------------------------------------------------------
 
@@ -752,6 +925,7 @@ export function checkAiDocs({ root }) {
   const sdMajor = dependencyMajor(pkg, 'style-dictionary');
   const agentSlash = agentSlashPattern(root);
   const yarnNames = knownYarnNames(root, pkg);
+  const stencilPin = pinnedMajorMinor(pkg, '@stencil/core');
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -783,6 +957,9 @@ export function checkAiDocs({ root }) {
     if (needsDocScope) hits.push(...checkDocOrphan(relPath, root));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkStalePrefix(relPath, lines));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkLookaround(relPath, lines));
+    if (needsNodeVersion && stencilPin) hits.push(...checkStencilVersion(relPath, lines, stencilPin));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
     if (needsSettingsPath) hits.push(...checkSettingsPath(relPath, lines));

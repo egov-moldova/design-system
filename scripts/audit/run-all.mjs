@@ -14,6 +14,7 @@
  *     05-story-exports
  *     07-integration-usage
  *     14-component-contract
+ *     16-stencil-contract
  *
  *   Wave B (parallel, depend on existing build artifacts):
  *     06-test-coverage         (reads coverage/coverage-summary.json)
@@ -77,7 +78,8 @@ Options:
 Script ids:
   Wave A (fast, no browser, no build):
     01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
-    05 story-exports, 07 integration-usage, 14 component-contract
+    05 story-exports, 07 integration-usage, 14 component-contract,
+    16 stencil-contract
   Wave B (depends on existing build artifacts):
     06 test-coverage, 08 bundle-size, 13 token-diff
   Wave C (browser; needs Storybook + Playwright):
@@ -126,6 +128,16 @@ const AUDIT_SCRIPTS = [
     name: 'component-contract',
     perComponent: true,
     requiresBuild: false,
+  },
+  {
+    id: '16',
+    wave: 'A',
+    file: '16-stencil-contract.mjs',
+    name: 'stencil-contract',
+    perComponent: true,
+    requiresBuild: false,
+    // Report-only: its error-severity findings are quoted in the summary but never block.
+    blocking: false,
   },
   {
     id: '06',
@@ -359,7 +371,7 @@ function runScript(script, targetArg, args = {}) {
       }
       let envelope;
       try {
-        envelope = JSON.parse(stdout || '{}');
+        envelope = JSON.parse(stdout);
       } catch (err) {
         resolve({
           id: script.id,
@@ -369,6 +381,18 @@ function runScript(script, targetArg, args = {}) {
           exitCode,
           durationMs,
           error: `failed to parse output JSON: ${err.message}`,
+        });
+        return;
+      }
+      if (typeof envelope?.ok !== 'boolean' || !envelope.summary) {
+        resolve({
+          id: script.id,
+          name: script.name,
+          wave: script.wave,
+          ok: false,
+          exitCode,
+          durationMs,
+          error: 'no result envelope in output',
         });
         return;
       }
@@ -403,22 +427,33 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
   const summary = { errors: 0, warnings: 0, info: 0 };
   const blockers = [];
   const findingsByTool = {};
+  const reportOnly = new Set(AUDIT_SCRIPTS.filter(s => s.blocking === false).map(s => s.name));
+  // A script's own `ok` is false whenever it has errors. A report-only script is excused only
+  // when those errors are rule findings: it exited 1 with a summary and resolved its target. A
+  // crash, a missing envelope or STRUCTURE-NOT-FOUND (a mistyped or missing component) still fails.
+  const excused = r =>
+    reportOnly.has(r.name) &&
+    r.exitCode === 1 &&
+    r.summary !== undefined &&
+    !(r.findings ?? []).some(f => f.code === 'STRUCTURE-NOT-FOUND');
+  let blockingErrors = 0;
 
   for (const r of results) {
     if (r.summary) {
       summary.errors += r.summary.errors ?? 0;
       summary.warnings += r.summary.warnings ?? 0;
       summary.info += r.summary.info ?? 0;
+      if (!reportOnly.has(r.name)) blockingErrors += r.summary.errors ?? 0;
     }
     if (r.findings) {
       findingsByTool[r.name] = r.findings;
       for (const f of r.findings) {
-        if (f.severity === 'error') blockers.push(`${r.name}/${f.code}`);
+        if (f.severity === 'error' && !reportOnly.has(r.name)) blockers.push(`${r.name}/${f.code}`);
       }
     }
   }
 
-  const ok = summary.errors === 0 && results.every(r => r.ok !== false);
+  const ok = blockingErrors === 0 && results.every(r => r.ok || excused(r));
 
   return {
     schemaVersion: SCHEMA_VERSION,
@@ -431,7 +466,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
       id: r.id,
       name: r.name,
       wave: r.wave,
-      ok: r.ok,
+      ok: r.ok || excused(r),
       exitCode: r.exitCode,
       durationMs: r.durationMs,
       summary: r.summary ?? null,

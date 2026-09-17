@@ -80,7 +80,7 @@ export class MudBadge {
 
   @State() private resolvedAriaLabel?: string;
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudBadgeElement;
 
   componentWillLoad() {
     this.captureAriaLabel();

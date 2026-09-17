@@ -103,12 +103,12 @@ render() {
 Use when layout changes based on slot content (e.g., icon-only mode):
 
 ```typescript
-@Element() el!: HTMLElement;
+@Element() host!: HTMLMud<Name>Element;
 @State() private hasDefaultSlotContent: boolean = true;
 
 componentDidLoad() {
   this.checkDefaultSlotContent();
-  const slots = this.el.shadowRoot?.querySelectorAll('slot');
+  const slots = this.host.shadowRoot?.querySelectorAll('slot');
   slots?.forEach(slot => {
     slot.addEventListener('slotchange', () => {
       if (!slot.name) this.checkDefaultSlotContent();
@@ -117,7 +117,7 @@ componentDidLoad() {
 }
 
 private checkDefaultSlotContent() {
-  const children = Array.from(this.el.childNodes);
+  const children = Array.from(this.host.childNodes);
   this.hasDefaultSlotContent = children.some(node => {
     if (node.nodeType === Node.ELEMENT_NODE) return !(node as HTMLElement).getAttribute('slot');
     if (node.nodeType === Node.TEXT_NODE) return node.textContent?.trim() !== '';

@@ -2,9 +2,10 @@
 /**
  * 02-stencil-antipatterns.mjs
  *
- * Scans TSX and CSS for the 16+ Stencil + project anti-patterns documented in
- * `.claude/skills/stencil-compliance/references/anti-patterns.md` and
- * `.claude/skills/audit-component/SKILL.md` Wave 1.
+ * Scans TSX and CSS for Stencil and project anti-patterns. Each rule's `code` is
+ * its stable identifier; its `ruleScope` names the doc that owns it:
+ * `'stencil'` → `.claude/skills/stencil-compliance/`, `'project'` →
+ * `_agents/anti-patterns.md` and the token/icon/security docs.
  *
  * Replaces AI work in:
  *   - `.claude/commands/pre-pr-check.md` Wave 1 (6 separate rg calls)
@@ -27,10 +28,11 @@
  * if they only want the count, but they gain precise navigation when desired.
  */
 import { readFile } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import postcss from 'postcss';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 
@@ -45,14 +47,15 @@ const USAGE = defaultUsage(
  * Pattern registry. Each entry:
  *   - code:     stable identifier (referenced by AI workflows and tests)
  *   - severity: error | warning | info
- *   - scope:    'tsx' | 'css' (which file kind to scan)
- *   - regex:    matched line-by-line; capture group 0 is the snippet shown
- *   - filter:   optional fn(match, ctx) => boolean — skip false positives
- *   - message:  human-readable description
- *   - fix:      optional one-line remediation hint
+ *   - scope:     'tsx' | 'css' (which file kind to scan)
+ *   - ruleScope: 'stencil' | 'project' (which doc owns the rule)
+ *   - regex:     matched line-by-line; capture group 0 is the snippet shown
+ *   - filter:    optional fn(match, ctx) => boolean — skip false positives
+ *   - message:   human-readable description
+ *   - fix:       optional one-line remediation hint
  *
- * Anti-pattern numbers reference
- * `.claude/skills/stencil-compliance/references/anti-patterns.md`.
+ * Cite rules by `code`; the number inside a code is historical, not an index
+ * into any doc.
  */
 export const PATTERNS = [
   // ── TSX patterns ──────────────────────────────────────────────────────────
@@ -60,6 +63,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-TS-ANY',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /:\s*any\b/,
     message: 'TypeScript `any` violates strict mode — use a specific type or `unknown`.',
     fix: 'Replace `: any` with a specific type or `unknown` + narrowing.',
@@ -68,6 +72,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-001-INLINE-STYLE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bstyle=\{/,
     message: 'Inline `style={}` in JSX — violates CSP and bypasses design tokens.',
     fix: 'Move styles to the CSS file and toggle via classes / attribute selectors on :host.',
@@ -76,6 +81,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-002-HOST-CLASSLIST',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /this\.host\.classList\.(add|remove|toggle)/,
     message: 'Imperative `host.classList.*` — Stencil expects declarative state via @State + render().',
     fix: 'Add @State() classes or compute className in render() returning <Host class={...}>.',
@@ -84,15 +90,16 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-023-CLASSNAME',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bclassName=/,
     message: '`className=` is React syntax — Stencil JSX uses `class=`.',
     fix: 'Replace `className=` with `class=`.',
   },
-  // ANTIPATTERN-003-METHOD-NON-ASYNC — handled in FILE_CHECKS (needs cross-line pairing)
   {
     code: 'ANTIPATTERN-004-EVENTEMITTER-UNTYPED',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     // Type-annotation context only (`: EventEmitter`) — avoids matching `import { EventEmitter }`.
     regex: /:\s*EventEmitter(?!<)/,
     message: '`EventEmitter` without a generic type — payload type is `any`.',
@@ -102,6 +109,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-005-ARRAY-MUTATION',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bthis\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(/,
     message: 'Direct mutation of a reactive array via push/pop/splice/sort/etc — Stencil will not re-render.',
     fix: 'Use immutable updates: `this.items = [...this.items, x]` or `this.items = this.items.filter(...)`.',
@@ -110,6 +118,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-013-FORCEUPDATE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bforceUpdate\(/,
     message: '`forceUpdate()` is an escape hatch — usually masks a reactivity bug.',
     fix: 'Use @State() correctly; ensure props/state are reassigned (not mutated).',
@@ -118,6 +127,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-014-SHOULDUPDATE',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bcomponentShouldUpdate\b/,
     message: '`componentShouldUpdate` is forbidden — Stencil already optimizes rerenders.',
     fix: 'Remove and trust the framework; investigate root reactivity bug if needed.',
@@ -126,6 +136,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-TS-IGNORE',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /@ts-(ignore|expect-error)\b/,
     message: 'TypeScript suppression directive — usually hides a real issue.',
     fix: 'Investigate the underlying type error; if suppression is truly needed, leave a // why-comment above.',
@@ -135,6 +146,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-021-RAW-SVG',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /<svg\b/,
     message: 'Raw `<svg>` in JSX — use <mud-icon> component for consistency and accessibility.',
     fix: 'Replace with <mud-icon name="..."/> or add a local icon to src/assets/icons/.',
@@ -144,6 +156,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-SECURITY-INNERHTML',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'project',
     regex: /\binnerHTML\s*=/,
     message: 'innerHTML assignment — XSS risk. Use textContent or a sanitized renderer.',
     fix: 'Use textContent for plain text; if HTML is required, sanitize via DOMPurify or equivalent.',
@@ -152,6 +165,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-010-SETFORMVALUE-1ARG',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     regex: /\bsetFormValue\(\s*[^,)]+\s*\)/,
     message: 'setFormValue() called with 1 argument — Stencil requires (value, state) for form restoration.',
     fix: 'Pass the second `state` argument: this.internals.setFormValue(value, value).',
@@ -162,6 +176,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-020-PALETTE-IN-CSS',
     severity: 'error',
     scope: 'css',
+    ruleScope: 'project',
     regex: /var\(\s*--palette-/,
     message: 'Component CSS references --palette-* directly — breaks 3-tier hierarchy.',
     fix: 'Use a semantic token (--color-*, --spacing-*, --font-*) instead; map via tokens/core/components/<name>.tokens.json.',
@@ -170,6 +185,7 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-019-RAW-HEX',
     severity: 'error',
     scope: 'css',
+    ruleScope: 'project',
     regex: /#[0-9a-fA-F]{3,8}\b/,
     message: 'Hardcoded hex color — should be a design token.',
     fix: 'Replace with var(--color-*) semantic token; if no token exists, add one to tokens/core/.',
@@ -183,32 +199,32 @@ export const PATTERNS = [
     code: 'ANTIPATTERN-RAW-PIXELS',
     severity: 'warning',
     scope: 'css',
-    regex: /\b(\d+)px\b/,
+    ruleScope: 'project',
+    // Not inside a name (`--size-x2px`, `--space-2px`); a negative value (`-2px`) still counts.
+    regex: /(?<![\w.])(?<!\w-)(\d+(?:\.\d+)?)px\b/,
     message: 'Hardcoded pixel value — should use a spacing/sizing token.',
     fix: 'Replace with var(--spacing-*) or var(--size-*); allow 0px and 1px (borders/resets) only.',
     filter: ({ match, line }) => {
       const num = Number(match[1]);
-      if (num === 0 || num === 1) return false;
+      if (num <= 1) return false;
       const trimmed = line.trim();
       if (trimmed.startsWith('/*') || trimmed.startsWith('*')) return false;
+      // No token scale covers these: breakpoint conditions (including a condition continued on
+      // the next line), the literal fallback of a token reference, arithmetic inside calc(), and
+      // sub-pixel hairlines (`0.5px`, already excluded by the `<= 1` test above).
+      if (/^@(media|container)\b/.test(trimmed)) return false;
+      if (
+        /^(?:(?:and|or|not|only)\s+)?(?:(?:screen|print|all)\s+(?:and\s+)?)?\(\s*(?:(?:min|max)-)?(?:width|height)\s*[:<>=]/.test(
+          trimmed,
+        )
+      ) {
+        return false;
+      }
+      const before = line.slice(0, match.index);
+      if (/var\(\s*--[\w-]+\s*,\s*-?$/.test(before)) return false;
+      if (isInsideCalc(before)) return false;
       return true;
     },
-  },
-  {
-    code: 'ANTIPATTERN-IMPORTANT',
-    severity: 'warning',
-    scope: 'css',
-    regex: /!important\b/,
-    message: '!important is a code smell — usually indicates specificity issues.',
-    fix: 'Remove !important; restructure selectors so the rule wins by specificity.',
-  },
-  {
-    code: 'ANTIPATTERN-018-TRANSITION-ALL',
-    severity: 'warning',
-    scope: 'css',
-    regex: /transition:\s*all\b/,
-    message: '`transition: all` triggers reflow on every animatable property — performance and animation-bug magnet.',
-    fix: 'Enumerate specific properties: `transition: background-color 0.2s, transform 0.2s`.',
   },
 ];
 
@@ -221,6 +237,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-007-LIFECYCLE-LEAK',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     check: (content, ctx) => {
       const hasObserver =
         /\b(setInterval|setTimeout|addEventListener|ResizeObserver|MutationObserver|IntersectionObserver)\b/.test(
@@ -244,48 +261,10 @@ export const FILE_CHECKS = [
     },
   },
   {
-    code: 'ANTIPATTERN-003-METHOD-NON-ASYNC',
-    severity: 'error',
-    scope: 'tsx',
-    check: (content, ctx) => {
-      const findings = [];
-      const lines = content.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        if (!/@Method\(/.test(lines[i])) continue;
-        for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
-          const sig = lines[j];
-          // signature: <name>(...): <returnType>
-          const m = sig.match(/^\s*\w+\s*\([^)]*\)\s*:\s*([A-Za-z_]\w*)/);
-          if (!m) {
-            if (/^\s*async\s+\w+\s*\(/.test(sig) || /^\s*\w+\s*\([^)]*\)\s*\{/.test(sig)) break;
-            continue;
-          }
-          const returnType = m[1];
-          if (returnType !== 'Promise' && returnType !== 'void') {
-            if (!/\basync\b/.test(sig)) {
-              findings.push(
-                finding({
-                  severity: 'error',
-                  code: 'ANTIPATTERN-003-METHOD-NON-ASYNC',
-                  file: ctx.fileRel,
-                  line: j + 1,
-                  message: `@Method() must return Promise<T> or be async — got "${returnType}".`,
-                  snippet: sig.trim().slice(0, 120),
-                  fix: 'Add `async` to the method or change return type to Promise<T>.',
-                }),
-              );
-            }
-          }
-          break;
-        }
-      }
-      return findings;
-    },
-  },
-  {
     code: 'ANTIPATTERN-025-EVENT-PREFIX',
     severity: 'error',
     scope: 'tsx',
+    ruleScope: 'stencil',
     check: (content, ctx) => {
       const findings = [];
       const lines = content.split('\n');
@@ -324,6 +303,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     check: (content, ctx) => {
       // Gate: component must declare an `ariaLabel` prop (signals ARIA participation).
       if (!/@Prop\([^)]*\)\s+ariaLabel\b/.test(content)) return [];
@@ -365,6 +345,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-FETCH-CACHE-NO-EVICTION',
     severity: 'warning',
     scope: 'providers',
+    ruleScope: 'project',
     check: (content, ctx) => {
       // Gate: file must actually do fetch-based caching.
       if (!/\bfetch\s*\(/.test(content)) return [];
@@ -409,6 +390,7 @@ export const FILE_CHECKS = [
     code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
     severity: 'warning',
     scope: 'tsx',
+    ruleScope: 'project',
     check: (content, ctx) => {
       const findings = [];
 
@@ -485,6 +467,50 @@ export const FILE_CHECKS = [
       }
 
       return findings;
+    },
+  },
+  {
+    code: 'ANTIPATTERN-HOST-DISPLAY',
+    severity: 'warning',
+    scope: 'css',
+    ruleScope: 'stencil',
+    check: (content, ctx) => {
+      let root;
+      try {
+        root = postcss.parse(content);
+      } catch {
+        // Stylelint parses every stylesheet in `yarn lint` and fails on a syntax error; this
+        // check has nothing to add to that report.
+        return [];
+      }
+      if (!root.nodes.some(node => node.type !== 'comment')) return [];
+      // Only a rule whose selector list includes a bare `:host` sets the element's default
+      // display, and only when nothing conditional wraps it: `:host(...)` state rules, a `:host`
+      // under `@media`/`@supports` and a `:host` nested in another rule do not. `@layer` applies
+      // unconditionally. Rules nested inside a bare block (postcss-nested) style something else,
+      // so only the block's own declarations count. No bare rule at all leaves it inline.
+      const hostRules = [];
+      root.walkRules(rule => {
+        if (!rule.selectors.includes(':host')) return;
+        for (let p = rule.parent; p !== root; p = p.parent) {
+          if (p.type !== 'atrule' || p.name !== 'layer') return;
+        }
+        hostRules.push(rule);
+      });
+      if (hostRules.some(rule => rule.nodes.some(node => node.type === 'decl' && node.prop === 'display'))) {
+        return [];
+      }
+      const line = hostRules[0]?.source?.start?.line ?? 1;
+      return [
+        finding({
+          severity: 'warning',
+          code: 'ANTIPATTERN-HOST-DISPLAY',
+          file: ctx.fileRel,
+          line,
+          message: '`:host` has no `display` — a custom element defaults to `display: inline`.',
+          fix: 'Declare `display` in the bare `:host { }` rule.',
+        }),
+      ];
     },
   },
 ];
@@ -589,6 +615,22 @@ export function stripCssBlockComments(content) {
 }
 
 /**
+ * True when the text ending at a match leaves a `calc(` open, i.e. the match sits
+ * inside that calc's parentheses (nested `var(...)` groups are balanced out).
+ */
+function isInsideCalc(before) {
+  const stack = [];
+  // Every `(` is pushed, named or bare, so each `)` pops its own group. The innermost named
+  // function decides: a pixel literal inside `min()`, `max()` or `clamp()` is a hard-coded
+  // size even within `calc()`. CSS function names are case-insensitive and may carry a vendor prefix.
+  for (const m of before.matchAll(/([\w-]*)\(|\)/g)) {
+    if (m[0] === ')') stack.pop();
+    else stack.push(m[1] ? m[1].toLowerCase().replace(/^-[a-z]+-/, '') : null);
+  }
+  return stack.filter(name => name !== null).at(-1) === 'calc';
+}
+
+/**
  * Apply all patterns + file checks to one file's content. Exported for tests
  * so we can pass synthetic content without touching disk.
  */
@@ -674,18 +716,7 @@ async function resolveTargets(args) {
     const names = listChangedComponents();
     return names.map(n => resolveComponentPaths(n));
   }
-  return [resolveComponentPaths(args.component)];
-}
-
-function listChangedComponents() {
-  const res = spawnSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  const names = new Set();
-  for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-    if (m) names.add(m[2]);
-  }
-  return [...names].sort();
+  return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];

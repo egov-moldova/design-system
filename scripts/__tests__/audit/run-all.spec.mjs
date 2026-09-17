@@ -25,8 +25,8 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
     assert.equal(new Set(ids).size, ids.length);
   });
 
-  it('Wave A has 7 scripts (the no-build-required ones)', () => {
-    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'A').length, 7);
+  it('Wave A has 8 scripts (the no-build-required ones)', () => {
+    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'A').length, 8);
   });
 
   it('Wave B has 3 scripts (build/coverage/token-export-dependent)', () => {
@@ -86,8 +86,9 @@ describe('run-all: aggregate', () => {
     ok = true,
     wave = 'A',
     durationMs = 100,
+    exitCode = ok ? 0 : 1,
   }) {
-    return { id, name, wave, ok, exitCode: 0, durationMs, summary, findings };
+    return { id, name, wave, ok, exitCode, durationMs, summary, findings };
   }
 
   it('sums errors/warnings/info across results', () => {
@@ -111,6 +112,44 @@ describe('run-all: aggregate', () => {
     const results = [makeResult({ id: '01', name: 'structure', summary: { errors: 0, warnings: 5, info: 3 } })];
     const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.ok, true);
+  });
+
+  it("does not turn a report-only script's errors into blockers", () => {
+    const results = [
+      makeResult({
+        id: '16',
+        name: 'stencil-contract',
+        ok: false,
+        summary: { errors: 2, warnings: 0, info: 0 },
+        findings: [{ severity: 'error', code: 'STENCIL-WATCH-ASYNC' }],
+      }),
+    ];
+    const combined = aggregate({ targetArg: 'mud-icon', results, durationMs: 100 });
+    assert.deepEqual(combined.blockers, []);
+    assert.equal(combined.ok, true);
+    assert.equal(combined.results[0].ok, true);
+    assert.equal(combined.summary.errors, 2);
+  });
+
+  it('does not excuse a report-only script that could not find its component', () => {
+    const results = [
+      makeResult({
+        id: '16',
+        name: 'stencil-contract',
+        ok: false,
+        summary: { errors: 1, warnings: 0, info: 0 },
+        findings: [{ severity: 'error', code: 'STRUCTURE-NOT-FOUND' }],
+      }),
+    ];
+    const combined = aggregate({ targetArg: 'mud-does-not-exist', results, durationMs: 100 });
+    assert.equal(combined.ok, false);
+    assert.equal(combined.results[0].ok, false);
+  });
+
+  it('still fails when a report-only script crashed (no summary)', () => {
+    const results = [{ id: '16', name: 'stencil-contract', wave: 'A', ok: false, exitCode: 2, durationMs: 1 }];
+    const combined = aggregate({ targetArg: 'mud-icon', results, durationMs: 100 });
+    assert.equal(combined.ok, false);
   });
 
   it('ok=false when any script crashed (ok: false from runScript)', () => {
