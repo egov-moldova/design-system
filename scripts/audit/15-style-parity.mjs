@@ -29,10 +29,10 @@
  *   node scripts/audit/15-style-parity.mjs mud-date-picker --json
  */
 import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
-import { resolveComponentPaths, relativeToRepo } from './lib/component-paths.mjs';
+import { REPO_ROOT, resolveComponentPaths, relativeToRepo } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { DEFAULT_PORT, isStorybookReachable } from './lib/storybook-helpers.mjs';
@@ -40,6 +40,7 @@ import { launchBrowser, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HINT } from 
 import { loadManifest, manifestPathFor, resolveState } from './lib/figma-manifest.mjs';
 import { openState } from './lib/state-page.mjs';
 import { compareStyleValue } from './lib/style-values.mjs';
+import { attributeTokens, formatTokens } from './lib/token-match.mjs';
 
 const TOOL = 'style-parity';
 
@@ -102,6 +103,36 @@ async function readStyles(page, selector, props) {
     },
     { props, pseudo: PSEUDO_PROPS },
   );
+}
+
+/** Tokens for one failing, non-pseudo check; null otherwise. Pure — exported for tests. */
+export function mismatchTokens(check, exp, actualValues, vars, opts = {}) {
+  if (check.pass || PSEUDO_PROPS.includes(check.prop)) return null;
+  return attributeTokens(check.prop, exp.styles[check.prop], actualValues[check.prop], vars, opts);
+}
+
+/** Component names that own tokens (`tokens/core/components/<name>.tokens.json`), used to scope token matches. */
+function componentTokenNames() {
+  const dir = join(REPO_ROOT, 'tokens', 'core', 'components');
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter(f => f.endsWith('.tokens.json'))
+    .map(f => f.slice(0, -'.tokens.json'.length));
+}
+
+/** Every custom property the element sees, resolved. Read only when a check fails. */
+async function readCustomProperties(page, selector) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate(el => {
+      const cs = getComputedStyle(el);
+      const out = {};
+      for (let i = 0; i < cs.length; i++) {
+        if (cs[i].startsWith('--')) out[cs[i]] = cs.getPropertyValue(cs[i]).trim();
+      }
+      return out;
+    });
 }
 
 async function main() {
@@ -176,6 +207,7 @@ async function main() {
   let checked = 0;
   let browserHandle;
   let failure;
+  const tokenScope = { tolerance, component: target.name, components: componentTokenNames() };
   try {
     browserHandle = await launchBrowser();
     for (const raw of manifest.states) {
@@ -218,16 +250,20 @@ async function main() {
             stateResult.checks.push({ target: exp.target, node: exp.node, missing: true });
             continue;
           }
-          for (const check of compareExpectation(exp.styles, actual, { tolerance })) {
+          const checks = compareExpectation(exp.styles, actual, { tolerance });
+          const needsVars = checks.some(c => !c.pass && !PSEUDO_PROPS.includes(c.prop));
+          const vars = needsVars ? await readCustomProperties(session.page, exp.target) : {};
+          for (const check of checks) {
             checked++;
-            stateResult.checks.push({ target: exp.target, node: exp.node, ...check });
+            const tokens = mismatchTokens(check, exp, actual, vars, tokenScope);
+            stateResult.checks.push({ target: exp.target, node: exp.node, ...check, ...(tokens ?? {}) });
             if (!check.pass) {
               findings.push(
                 finding({
                   severity: 'error',
                   code: 'STYLE-MISMATCH',
                   file: manifestRel,
-                  message: `${state.name} › ${exp.target} › ${check.prop}: Figma ${exp.node} = ${check.expected}, rendered ${check.actual}`,
+                  message: `${state.name} › ${exp.target} › ${check.prop}: Figma ${exp.node} = ${check.expected}, rendered ${check.actual}${formatTokens(tokens)}`,
                 }),
               );
             }

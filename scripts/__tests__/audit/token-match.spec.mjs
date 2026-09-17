@@ -5,7 +5,14 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { attributeTokens, formatTokens, matchTokens } from '../../audit/lib/token-match.mjs';
+import {
+  TOKEN_MATCH_LIMIT,
+  attributeTokens,
+  formatTokens,
+  matchTokens,
+  propertyWords,
+  tokenOwner,
+} from '../../audit/lib/token-match.mjs';
 
 const vars = {
   '--color-background-primary-default': '#0058D2',
@@ -60,5 +67,52 @@ describe('token-match: attributeTokens + formatTokens', () => {
       ' · tokens: rendered = none; Figma value = none',
     );
     assert.equal(formatTokens(null), '');
+  });
+});
+
+describe('token-match: component scope and ranking', () => {
+  const components = ['badge', 'date', 'date-picker', 'button', 'button-group'];
+  const scoped = {
+    '--badge-offset': '8px',
+    '--date-gap': '8px',
+    '--date-picker-header-gap': '8px',
+    '--date-picker-container-padding': '8px',
+    '--spacing-8': '8px',
+    '--gap-8': '8px',
+    '--_container-gap': '8px',
+  };
+
+  it('names the property words, dropping directions and the colour of a background', () => {
+    assert.deepEqual(propertyWords('borderTopLeftRadius'), ['border', 'radius']);
+    assert.deepEqual(propertyWords('rowGap'), ['gap']);
+    assert.deepEqual(propertyWords('backgroundColor'), ['background']);
+    assert.deepEqual(propertyWords('paddingLeft'), ['padding']);
+  });
+
+  it('attributes a token to the longest component name it starts with', () => {
+    assert.equal(tokenOwner('--button-group-gap', components), 'button-group');
+    assert.equal(tokenOwner('--button-gap', components), 'button');
+    assert.equal(tokenOwner('--date-picker-header-gap', components), 'date-picker');
+    assert.equal(tokenOwner('--spacing-8', components), null);
+  });
+
+  it("excludes other components' tokens and ranks own, then named, then semantic", () => {
+    assert.deepEqual(matchTokens('rowGap', '8px', scoped, { component: 'mud-date-picker', components }), [
+      '--_container-gap',
+      '--date-picker-header-gap',
+      '--date-picker-container-padding',
+      '--gap-8',
+      '--spacing-8',
+    ]);
+  });
+
+  it('keeps every value match when no component is given', () => {
+    assert.equal(matchTokens('rowGap', '8px', scoped).length, 7);
+  });
+
+  it('caps at TOKEN_MATCH_LIMIT by default', () => {
+    const many = Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`--alias-${i}`, '6px']));
+    assert.equal(TOKEN_MATCH_LIMIT, 8);
+    assert.equal(matchTokens('borderTopLeftRadius', '6px', many).length, 8);
   });
 });

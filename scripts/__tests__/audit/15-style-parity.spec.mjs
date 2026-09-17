@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { PSEUDO_PROPS, absenceResult, compareExpectation } from '../../audit/15-style-parity.mjs';
+import { PSEUDO_PROPS, absenceResult, compareExpectation, mismatchTokens } from '../../audit/15-style-parity.mjs';
 
 describe('15-style-parity: compareExpectation', () => {
   it('returns one check per property with normalised values', () => {
@@ -51,5 +51,26 @@ describe('15-style-parity: absenceResult', () => {
     assert.equal(check.pass, false);
     assert.equal(check.count, 1);
     assert.equal(message, 'default: rendered 1 × mud-x .footer, which Figma 157:4570 does not have');
+  });
+});
+
+describe('15-style-parity: mismatchTokens', () => {
+  const vars = { '--a': '#0058d2', '--b': '#0046a8' };
+  it('attributes a failing style check', () => {
+    const check = { prop: 'backgroundColor', pass: false };
+    const t = mismatchTokens(
+      check,
+      { styles: { backgroundColor: '#0046A8' } },
+      { backgroundColor: 'rgb(0, 88, 210)' },
+      vars,
+    );
+    assert.deepEqual(t, { expectedTokens: ['--b'], observedTokens: ['--a'] });
+  });
+  it('returns null for a passing check or a pseudo property', () => {
+    assert.equal(mismatchTokens({ prop: 'backgroundColor', pass: true }, { styles: {} }, {}, vars), null);
+    assert.equal(
+      mismatchTokens({ prop: 'boxWidth', pass: false }, { styles: { boxWidth: '1px' } }, { boxWidth: '2px' }, vars),
+      null,
+    );
   });
 });
