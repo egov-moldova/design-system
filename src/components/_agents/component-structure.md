@@ -47,9 +47,13 @@ src/components/mud-[name]/
 
 ### @Watch Rule
 
-**Forbidden** for side effects or state cascades.
+**Allowed:** validating the new value, deriving `@State` from it, syncing a native DOM property
+that has no attribute equivalent, syncing `internals.setFormValue(value, state)`, and a
+**validation fallback** — assigning a literal to the watched prop inside an `if` block of the
+watcher.
 
-**Allowed** only for syncing native DOM properties without attribute equivalent:
+**Forbidden:** an `async` watcher, and any other write to the watched prop (a computed value, a
+compound assignment, an unconditional reset).
 
 ```typescript
 // ✅ ALLOWED — DOM property sync
@@ -61,13 +65,26 @@ watchChecked(newValue: boolean) {
   }
 }
 
-// ❌ FORBIDDEN — side effects
+// ✅ ALLOWED — validation fallback (mud-radio.tsx)
+@Watch('size')
+validateSize(next: RadioSize) {
+  if (!RADIO_SIZES.includes(next)) {
+    console.warn(`[mud-radio] size="${String(next)}" is not supported. Falling back to "md".`);
+    this.size = 'md';
+  }
+}
+
+// ❌ FORBIDDEN — async watcher, computed write to the watched prop
 @Watch('value')
-watchValue(newValue: string) {
-  this.doApiCall(newValue);    // Use @Listen or lifecycle instead
-  this.someOtherState = newValue;
+async watchValue(newValue: string) {
+  await this.doApiCall(newValue); // Use an event handler or lifecycle instead
+  this.value = newValue.trim();
 }
 ```
+
+Enforced by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`;
+report-only, not a CI gate). Whether a literal write inside an `if` really is validation is not
+decidable from source and stays a review question.
 
 ---
 

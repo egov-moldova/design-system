@@ -893,13 +893,13 @@ Codes cited must be exactly the `code` strings in `02-stencil-antipatterns.mjs` 
 - Modify: `src/components/AGENTS.md` (`## Stencil Compliance — Stencil 4.x`, `:84-100`)
 - Modify: `_agents/anti-patterns.md` (item 26, `:32`)
 
-- [ ] **Step 1: Rewrite `### @Watch Rule`** to Decision 2. Keep the two existing examples, add a third "✅ ALLOWED — validation fallback" using the `mud-radio.tsx:134-143` shape, and state: "Enforced by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`)." The old "Allowed only for syncing native DOM properties" sentence is removed.
+- [x] **Step 1: Rewrite `### @Watch Rule`** to Decision 2. Keep the two existing examples, add a third "✅ ALLOWED — validation fallback" using the `mud-radio.tsx:134-143` shape, and state: "Enforced by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`)." The old "Allowed only for syncing native DOM properties" sentence is removed.
 
-- [ ] **Step 2: Replace the Top-10 list** in `src/components/AGENTS.md` with three lines: the skill link, "Run `yarn audit:antipatterns <component>` and `yarn audit:stencil-contract <component>` first; the skill says what remains for judgment", and the heading renamed to `## Stencil Compliance`. Delete "14 areas" and "Stencil 4.x".
+- [x] **Step 2: Replace the Top-10 list** in `src/components/AGENTS.md` with three lines: the skill link, "Run `yarn audit:antipatterns <component>` and `yarn audit:stencil-contract <component>` first; the skill says what remains for judgment", and the heading renamed to `## Stencil Compliance`. Delete "14 areas" and "Stencil 4.x".
 
-- [ ] **Step 3: Item 26 in `_agents/anti-patterns.md`:** keep the rule text, append "Detected by `ANTIPATTERN-002-HOST-CLASSLIST`." Do not renumber the list (other docs cite item numbers; codes are the stable handle going forward).
+- [x] **Step 3: Item 26 in `_agents/anti-patterns.md`:** keep the rule text, append "Detected by `ANTIPATTERN-002-HOST-CLASSLIST`." Do not renumber the list (other docs cite item numbers; codes are the stable handle going forward).
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```bash
 grep -n "shadow: true\|14 areas\|Stencil 4.x" src/components/AGENTS.md   # → no output

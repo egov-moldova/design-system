@@ -29,7 +29,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 16. **Untyped object maps** — SHOULD use `Record<string, T>`; not MUST, since inference already covers a literal map — the annotation documents intent for index lookups. See `_agents/typescript-strict.md`
 17. **Inline slot validation constants** — use shared constants from `src/legacy/shared.constants.ts`
 18. **Light-DOM queries into a shadow root in browser tests** — `document.querySelector('mud-text-input input')` returns `null`; use Playwright's shadow-piercing `page.locator('mud-text-input input')`, or `shadowRoot` inside `page.evaluate()`. See `src/components/_agents/e2e-testing.md`
-26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`
+26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`. Detected by `ANTIPATTERN-002-HOST-CLASSLIST`.
 
 ## Design Fidelity
 
