@@ -28,11 +28,11 @@
  * if they only want the count, but they gain precise navigation when desired.
  */
 import { readFile } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import postcss from 'postcss';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 
@@ -479,6 +479,8 @@ export const FILE_CHECKS = [
       try {
         root = postcss.parse(content);
       } catch {
+        // Stylelint parses every stylesheet in `yarn lint` and fails on a syntax error; this
+        // check has nothing to add to that report.
         return [];
       }
       if (!root.nodes.some(node => node.type !== 'comment')) return [];
@@ -618,13 +620,14 @@ export function stripCssBlockComments(content) {
  */
 function isInsideCalc(before) {
   const stack = [];
-  // Every `(` is pushed, named or bare, so each `)` pops its own group. `min()`, `max()` and
-  // `clamp()` are not exempt: a pixel literal there is a hard-coded size, not arithmetic.
+  // Every `(` is pushed, named or bare, so each `)` pops its own group. The innermost named
+  // function decides: a pixel literal inside `min()`, `max()` or `clamp()` is a hard-coded
+  // size even within `calc()`. CSS function names are case-insensitive and may carry a vendor prefix.
   for (const m of before.matchAll(/([\w-]*)\(|\)/g)) {
     if (m[0] === ')') stack.pop();
-    else stack.push(m[1] === 'calc');
+    else stack.push(m[1] ? m[1].toLowerCase().replace(/^-[a-z]+-/, '') : null);
   }
-  return stack.includes(true);
+  return stack.filter(name => name !== null).at(-1) === 'calc';
 }
 
 /**
@@ -714,17 +717,6 @@ async function resolveTargets(args) {
     return names.map(n => resolveComponentPaths(n));
   }
   return [resolveComponentPaths(args.component, { allowSubComponent: true })];
-}
-
-function listChangedComponents() {
-  const res = spawnSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  const names = new Set();
-  for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-    if (m) names.add(m[2]);
-  }
-  return [...names].sort();
 }
 
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];

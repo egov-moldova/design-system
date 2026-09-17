@@ -184,20 +184,6 @@ only the first two — [`form-reactivity.md`](form-reactivity.md#form-associated
 
 ---
 
-## STENCIL-FORM-BOOLEAN-DEFAULT-TRUE — boolean prop defaulting to `true` on a form-associated component
-
-**Why**: on a form-associated component a string `"false"` assigned to the property parses as
-`true` (`internal/client/index.js:2352-2353`), so `el.clearable = "false"` — what a framework
-does when it binds the property from a template string — leaves `mud-search-input` clearable. The
-HTML attribute `clearable="false"` is not affected: `attributeChangedCallback` coerces it to
-`false` first (`:3854-3856`).
-
-**Fix**: consumers set the property to a boolean (`el.clearable = false`), never the string `"false"`.
-Inverting the prop does not help — a string `"false"` also turns a default-`false` prop on. Removing the
-parse itself is a runtime change (a patch to `@stencil/core`), outside this skill; see [`version-delta.md`](version-delta.md).
-
----
-
 ## STENCIL-MEMBER-ORDER — decorator groups out of order
 
 **Why**: the canonical order makes a class scannable and keeps reviews diffable.

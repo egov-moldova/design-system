@@ -152,8 +152,7 @@ Mechanical part covered by Fast Path scripts:
 - `14-component-contract` exposes the full prop list with types + defaults
 
 Judgment that STAYS here: are enum props using the right enum type? Do
-booleans default to `false` (project convention; on a form-associated component
-`STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` reports it)? Is a literal write to the watched
+booleans default to `false` (project convention)? Is a literal write to the watched
 prop inside an `if` really a validation fallback (the one `@Watch` question the
 script leaves to review — [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md))?
 

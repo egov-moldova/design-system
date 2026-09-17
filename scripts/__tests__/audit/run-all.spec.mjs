@@ -86,8 +86,9 @@ describe('run-all: aggregate', () => {
     ok = true,
     wave = 'A',
     durationMs = 100,
+    exitCode = ok ? 0 : 1,
   }) {
-    return { id, name, wave, ok, exitCode: 0, durationMs, summary, findings };
+    return { id, name, wave, ok, exitCode, durationMs, summary, findings };
   }
 
   it('sums errors/warnings/info across results', () => {
@@ -126,7 +127,23 @@ describe('run-all: aggregate', () => {
     const combined = aggregate({ targetArg: 'mud-icon', results, durationMs: 100 });
     assert.deepEqual(combined.blockers, []);
     assert.equal(combined.ok, true);
+    assert.equal(combined.results[0].ok, true);
     assert.equal(combined.summary.errors, 2);
+  });
+
+  it('does not excuse a report-only script that could not find its component', () => {
+    const results = [
+      makeResult({
+        id: '16',
+        name: 'stencil-contract',
+        ok: false,
+        summary: { errors: 1, warnings: 0, info: 0 },
+        findings: [{ severity: 'error', code: 'STRUCTURE-NOT-FOUND' }],
+      }),
+    ];
+    const combined = aggregate({ targetArg: 'mud-does-not-exist', results, durationMs: 100 });
+    assert.equal(combined.ok, false);
+    assert.equal(combined.results[0].ok, false);
   });
 
   it('still fails when a report-only script crashed (no summary)', () => {

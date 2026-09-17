@@ -612,23 +612,23 @@ describe('lookaround rule: flags and fences', () => {
     );
   });
 
-  it('reads grep named after the span, and does not let an escaped quote carry a flag across a pipe', () => {
+  it('reads grep only before the span, and does not let an escaped quote carry a flag across a pipe', () => {
     const root = makeFixture({
       'package.json': pkgJson(),
       '_agents/x.md':
         [
-          'Pattern `(?<=x)y` — pass it to Grep.',
+          "In JS use `/(?<=\\d)px/`; from the shell use `rg --pcre2 '(?<=\\d)px'`.",
           '',
           '`rg --pcre2 "a\\"b" | grep \'(?<=x)y\'`',
           '',
-          'Build `/(?<=x)y/` in JavaScript.',
+          'Grep `(?<=x)y` across the docs.',
         ].join('\n') + '\n',
     });
     assert.deepEqual(
       checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
       [
-        [1, 'lookaround'],
         [3, 'lookaround'],
+        [5, 'lookaround'],
       ],
     );
   });

@@ -3,8 +3,15 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
+
+const script = name => new URL(`../../audit/${name}.mjs`, import.meta.url).pathname;
+const notFound = name => {
+  const run = spawnSync(process.execPath, [script(name), 'mud-tab', '--json'], { encoding: 'utf8' });
+  return JSON.parse(run.stdout).findings.some(f => f.code === 'STRUCTURE-NOT-FOUND');
+};
 
 describe('component-paths: resolveComponentPaths', () => {
   it('reports a sub-component as not found unless the caller opts in', () => {
@@ -17,6 +24,20 @@ describe('component-paths: resolveComponentPaths', () => {
     assert.equal(target.subComponent, true);
     assert.equal(path.basename(target.root), 'mud-tabs');
     assert.equal(target.exists.tsx, true);
+  });
+
+  it('lets only the source-reading scripts accept a sub-component by name', () => {
+    for (const name of [
+      '02-stencil-antipatterns',
+      '04-jsdoc-completeness',
+      '14-component-contract',
+      '16-stencil-contract',
+    ]) {
+      assert.equal(notFound(name), false, name);
+    }
+    for (const name of ['01-component-structure', '05-story-exports']) {
+      assert.equal(notFound(name), true, name);
+    }
   });
 
   it('never flags a component that has its own folder', () => {

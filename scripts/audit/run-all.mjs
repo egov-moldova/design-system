@@ -371,7 +371,7 @@ function runScript(script, targetArg, args = {}) {
       }
       let envelope;
       try {
-        envelope = JSON.parse(stdout || '{}');
+        envelope = JSON.parse(stdout);
       } catch (err) {
         resolve({
           id: script.id,
@@ -381,6 +381,18 @@ function runScript(script, targetArg, args = {}) {
           exitCode,
           durationMs,
           error: `failed to parse output JSON: ${err.message}`,
+        });
+        return;
+      }
+      if (typeof envelope?.ok !== 'boolean' || !envelope.summary) {
+        resolve({
+          id: script.id,
+          name: script.name,
+          wave: script.wave,
+          ok: false,
+          exitCode,
+          durationMs,
+          error: 'no result envelope in output',
         });
         return;
       }
@@ -416,6 +428,14 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
   const blockers = [];
   const findingsByTool = {};
   const reportOnly = new Set(AUDIT_SCRIPTS.filter(s => s.blocking === false).map(s => s.name));
+  // A script's own `ok` is false whenever it has errors. A report-only script is excused only
+  // when those errors are rule findings: it exited 1 with a summary and resolved its target. A
+  // crash, a missing envelope or STRUCTURE-NOT-FOUND (a mistyped or missing component) still fails.
+  const excused = r =>
+    reportOnly.has(r.name) &&
+    r.exitCode === 1 &&
+    r.summary !== undefined &&
+    !(r.findings ?? []).some(f => f.code === 'STRUCTURE-NOT-FOUND');
   let blockingErrors = 0;
 
   for (const r of results) {
@@ -433,10 +453,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
     }
   }
 
-  // A script's own `ok` is false whenever it has errors, so a report-only script that ran
-  // (it returned a summary) is excused; one that crashed or emitted no envelope still fails.
-  const ok =
-    blockingErrors === 0 && results.every(r => r.ok !== false || (reportOnly.has(r.name) && r.summary !== undefined));
+  const ok = blockingErrors === 0 && results.every(r => r.ok || excused(r));
 
   return {
     schemaVersion: SCHEMA_VERSION,
@@ -449,7 +466,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
       id: r.id,
       name: r.name,
       wave: r.wave,
-      ok: r.ok,
+      ok: r.ok || excused(r),
       exitCode: r.exitCode,
       durationMs: r.durationMs,
       summary: r.summary ?? null,

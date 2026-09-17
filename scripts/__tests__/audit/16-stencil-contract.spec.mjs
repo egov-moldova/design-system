@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { changedComponents, checkSource, isComponentFile, RULES } from '../../audit/16-stencil-contract.mjs';
+import { checkSource, isComponentFile, RULES } from '../../audit/16-stencil-contract.mjs';
 
 const SCRIPT = new URL('../../audit/16-stencil-contract.mjs', import.meta.url);
 
@@ -24,7 +24,6 @@ const codes = source =>
 describe('16-stencil-contract', () => {
   it('registers every code it can emit', () => {
     assert.deepEqual(RULES.map(r => r.code).sort(), [
-      'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE',
       'STENCIL-FORM-CALLBACKS',
       'STENCIL-MAP-KEY',
       'STENCIL-MEMBER-ORDER',
@@ -64,21 +63,6 @@ export class P {
     assert.deepEqual(codes(base('onClick() { this.internals.form?.requestSubmit(); }')), []);
     assert.deepEqual(codes(base('')), ['STENCIL-FORM-CALLBACKS']);
     assert.deepEqual(codes(base('formStateRestoreCallback() {}')), []);
-  });
-
-  it('flags a boolean prop defaulting to true only on a form-associated component', () => {
-    const cmp = fa => `@Component({ tag: 'mud-probe', shadow: true${fa ? ', formAssociated: true' : ''} })
-export class P {
-  @Prop() clearable: boolean = true;
-  @AttachInternals() internals!: ElementInternals;
-  formResetCallback() {} formDisabledCallback() {} formStateRestoreCallback() {}
-  render() { return <Host />; }
-}`;
-    assert.deepEqual(codes(cmp(true)), ['STENCIL-FORM-BOOLEAN-DEFAULT-TRUE']);
-    assert.deepEqual(
-      codes(cmp(false)).filter(c => c === 'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE'),
-      [],
-    );
   });
 
   it('allows a validation fallback write but flags other watched-prop writes and async watchers', () => {
@@ -164,17 +148,6 @@ export class P {
       [],
     );
     assert.deepEqual(codes(cmp(`@Watch('max') v(n?: number) { if (Number.isNaN(n)) { this.max = undefined; } }`)), []);
-  });
-
-  it('flags a boolean | undefined prop defaulting to true on a form-associated component', () => {
-    const src = `@Component({ tag: 'mud-probe', shadow: true, formAssociated: true })
-export class P {
-  @Prop() clearable: boolean | undefined = true;
-  @AttachInternals() internals!: ElementInternals;
-  formResetCallback() {} formDisabledCallback() {} formStateRestoreCallback() {}
-  render() { return <Host />; }
-}`;
-    assert.deepEqual(codes(src), ['STENCIL-FORM-BOOLEAN-DEFAULT-TRUE']);
   });
 
   it('passes on the contract finding when the file has no component class', () => {
@@ -264,9 +237,6 @@ export class P {
       [],
     );
     assert.notEqual(run.status, 2);
-    // Zero changed components is a legitimate result (no local `main` ref), so the count is
-    // compared with the list rather than asserted non-empty.
-    assert.equal(envelope.meta.componentsScanned, changedComponents().length);
   });
 
   it('does not decide shadow DOM when the option is not a literal', () => {
@@ -384,6 +354,9 @@ export class P {
     assert.equal(isComponentFile(component), true);
     assert.equal(isComponentFile(helper), false);
     assert.equal(isComponentFile(path.join(dir, 'mud-probe.spec.tsx')), false);
+    const dangling = path.join(dir, 'mud-probe-old.tsx');
+    fs.symlinkSync(path.join(dir, 'missing.tsx'), dangling);
+    assert.equal(isComponentFile(dangling), false);
   });
 
   it('reports a component it cannot find instead of passing it as clean', () => {

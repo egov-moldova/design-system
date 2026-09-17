@@ -234,6 +234,13 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
   it('keeps a pixel inside calc() exempt after a bare or nested group closes', () => {
     assert.equal(rawPixels('.a { margin: calc((100% - 1rem) / 2 - 8px); }'), 0);
     assert.equal(rawPixels('.a { width: calc((var(--a)) + 12px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc(100% - (8px + 1rem)); }'), 0);
+  });
+
+  it('reads calc() in any case or vendor prefix, and judges the innermost named function', () => {
+    assert.equal(rawPixels('.a { width: -webkit-calc(100% - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: CALC(100% - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc(min(100%, 480px) - 8px); }'), 1);
   });
 
   it('still flags a raw pixel outside calc() on the same line', () => {
@@ -297,6 +304,7 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     assert.equal(hostDisplay(':host {\n  --x: "}";\n  display: block;\n}\n'), 0);
     assert.equal(hostDisplay('@supports (display: grid) {\n  :host {\n    display: grid;\n  }\n}\n'), 1);
     assert.equal(hostDisplay(''), 0);
+    assert.equal(hostDisplay(':host { display: block;\n.a { color: red; }'), 0);
     assert.equal(hostDisplay('/* no rules yet */\n'), 0);
   });
 

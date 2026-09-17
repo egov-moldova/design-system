@@ -43,7 +43,6 @@ const USAGE = defaultUsage(
 export const RULES = [
   { code: 'STENCIL-SHADOW-REQUIRED', severity: 'error', ruleScope: 'stencil' },
   { code: 'STENCIL-FORM-CALLBACKS', severity: 'error', ruleScope: 'stencil' },
-  { code: 'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE', severity: 'warning', ruleScope: 'stencil' },
   { code: 'STENCIL-MEMBER-ORDER', severity: 'warning', ruleScope: 'stencil' },
   { code: 'STENCIL-WATCH-ASYNC', severity: 'error', ruleScope: 'stencil' },
   { code: 'STENCIL-WATCH-WRITES-WATCHED', severity: 'warning', ruleScope: 'stencil' },
@@ -260,19 +259,6 @@ export function checkSource(tsxPath, componentName) {
     if (missing.length) {
       add('STENCIL-FORM-CALLBACKS', classNode, `Form-associated component lacks ${missing.join(', ')}.`);
     }
-    for (const prop of contract.props) {
-      // An unannotated `@Prop() clearable = true` has type null and is still boolean.
-      const types = prop.type === null ? ['boolean'] : prop.type.split('|').map(t => t.trim());
-      const isBoolean = types.filter(t => t !== 'undefined' && t !== 'null').join('|') === 'boolean';
-      if (isBoolean && prop.default === 'true') {
-        const member = classNode.members.find(m => getMemberName(m) === prop.name);
-        add(
-          'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE',
-          member,
-          `Boolean prop \`${prop.name}\` defaults to true on a form-associated component; a string "false" set on the property parses as true here, so a consumer binding the property from a template string cannot turn it off (HTML attributes are coerced to a boolean first).`,
-        );
-      }
-    }
   }
 
   // Members after render() are one violation, reported once on the first of them; the group
@@ -375,11 +361,13 @@ export function checkSource(tsxPath, componentName) {
 
 // A `.tsx` that declares a `@Component`; specs, e2e tests, stories and JSX helpers are not.
 export function isComponentFile(file) {
-  return (
-    /\.tsx$/.test(file) &&
-    !/\.(spec|e2e|stories)\.tsx$/.test(file) &&
-    /@Component\(/.test(fs.readFileSync(file, 'utf8'))
-  );
+  if (!/\.tsx$/.test(file) || /\.(spec|e2e|stories)\.tsx$/.test(file)) return false;
+  try {
+    return /@Component\(/.test(fs.readFileSync(file, 'utf8'));
+  } catch {
+    // A dangling symlink or a file removed mid-run is not a component to check.
+    return false;
+  }
 }
 
 // Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
@@ -396,18 +384,13 @@ function componentFiles(name) {
     .sort();
 }
 
-// A component folder deleted or renamed on the branch is still in the diff; it has nothing to check.
-export function changedComponents() {
-  return listChangedComponents().filter(name => resolveComponentPaths(name).found);
-}
-
 async function main() {
   const args = parseAuditArgs({ toolName: TOOL, usage: USAGE });
   const t0 = Date.now();
   const targets = args.all
     ? listAllComponents().map(c => c.name)
     : args.changed
-      ? changedComponents()
+      ? listChangedComponents()
       : [args.component];
   const findings = [];
   let filesScanned = 0;

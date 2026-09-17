@@ -23,11 +23,11 @@
  *   node scripts/audit/05-story-exports.mjs mud-button --json
  *   node scripts/audit/05-story-exports.mjs --all --json
  */
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { createSourceFile, getLineNumber } from './lib/ts-parser.mjs';
@@ -462,17 +462,6 @@ async function resolveTargets(args) {
   if (args.all) return listAllComponents().map(c => resolveComponentPaths(c.name));
   if (args.changed) return listChangedComponents().map(n => resolveComponentPaths(n));
   return [resolveComponentPaths(args.component)];
-}
-
-function listChangedComponents() {
-  const res = spawnSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  const names = new Set();
-  for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-    if (m) names.add(m[2]);
-  }
-  return [...names].sort();
 }
 
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
