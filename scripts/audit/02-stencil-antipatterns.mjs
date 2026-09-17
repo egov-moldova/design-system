@@ -94,7 +94,6 @@ export const PATTERNS = [
     message: '`className=` is React syntax — Stencil JSX uses `class=`.',
     fix: 'Replace `className=` with `class=`.',
   },
-  // ANTIPATTERN-003-METHOD-NON-ASYNC — handled in FILE_CHECKS (needs cross-line pairing)
   {
     code: 'ANTIPATTERN-004-EVENTEMITTER-UNTYPED',
     severity: 'error',
@@ -218,24 +217,6 @@ export const PATTERNS = [
       return true;
     },
   },
-  {
-    code: 'ANTIPATTERN-IMPORTANT',
-    severity: 'warning',
-    scope: 'css',
-    ruleScope: 'stencil',
-    regex: /!important\b/,
-    message: '!important is a code smell — usually indicates specificity issues.',
-    fix: 'Remove !important; restructure selectors so the rule wins by specificity.',
-  },
-  {
-    code: 'ANTIPATTERN-018-TRANSITION-ALL',
-    severity: 'warning',
-    scope: 'css',
-    ruleScope: 'stencil',
-    regex: /transition:\s*all\b/,
-    message: '`transition: all` triggers reflow on every animatable property — performance and animation-bug magnet.',
-    fix: 'Enumerate specific properties: `transition: background-color 0.2s, transform 0.2s`.',
-  },
 ];
 
 /**
@@ -268,46 +249,6 @@ export const FILE_CHECKS = [
           fix: 'Add disconnectedCallback() that clears intervals/timeouts and removes listeners/observers.',
         }),
       ];
-    },
-  },
-  {
-    code: 'ANTIPATTERN-003-METHOD-NON-ASYNC',
-    severity: 'error',
-    scope: 'tsx',
-    ruleScope: 'stencil',
-    check: (content, ctx) => {
-      const findings = [];
-      const lines = content.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        if (!/@Method\(/.test(lines[i])) continue;
-        for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
-          const sig = lines[j];
-          // signature: <name>(...): <returnType>
-          const m = sig.match(/^\s*\w+\s*\([^)]*\)\s*:\s*([A-Za-z_]\w*)/);
-          if (!m) {
-            if (/^\s*async\s+\w+\s*\(/.test(sig) || /^\s*\w+\s*\([^)]*\)\s*\{/.test(sig)) break;
-            continue;
-          }
-          const returnType = m[1];
-          if (returnType !== 'Promise' && returnType !== 'void') {
-            if (!/\basync\b/.test(sig)) {
-              findings.push(
-                finding({
-                  severity: 'error',
-                  code: 'ANTIPATTERN-003-METHOD-NON-ASYNC',
-                  file: ctx.fileRel,
-                  line: j + 1,
-                  message: `@Method() must return Promise<T> or be async — got "${returnType}".`,
-                  snippet: sig.trim().slice(0, 120),
-                  fix: 'Add `async` to the method or change return type to Promise<T>.',
-                }),
-              );
-            }
-          }
-          break;
-        }
-      }
-      return findings;
     },
   },
   {

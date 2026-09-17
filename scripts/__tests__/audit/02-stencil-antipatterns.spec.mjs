@@ -29,21 +29,18 @@ describe('02-stencil-antipatterns: pattern registry coverage', () => {
     'ANTIPATTERN-TS-ANY',
     'ANTIPATTERN-001-INLINE-STYLE',
     'ANTIPATTERN-002-HOST-CLASSLIST',
-    'ANTIPATTERN-003-METHOD-NON-ASYNC',
     'ANTIPATTERN-004-EVENTEMITTER-UNTYPED',
     'ANTIPATTERN-005-ARRAY-MUTATION',
     'ANTIPATTERN-007-LIFECYCLE-LEAK',
     'ANTIPATTERN-010-SETFORMVALUE-1ARG',
     'ANTIPATTERN-013-FORCEUPDATE',
     'ANTIPATTERN-014-SHOULDUPDATE',
-    'ANTIPATTERN-018-TRANSITION-ALL',
     'ANTIPATTERN-019-RAW-HEX',
     'ANTIPATTERN-020-PALETTE-IN-CSS',
     'ANTIPATTERN-021-RAW-SVG',
     'ANTIPATTERN-023-CLASSNAME',
     'ANTIPATTERN-025-EVENT-PREFIX',
     'ANTIPATTERN-SECURITY-INNERHTML',
-    'ANTIPATTERN-IMPORTANT',
     'ANTIPATTERN-RAW-PIXELS',
     'ANTIPATTERN-TS-IGNORE',
   ];
@@ -94,18 +91,6 @@ describe('02-stencil-antipatterns: TSX pattern detection', () => {
   it('flags className= (React idiom)', () => {
     const findings = scan({ content: '<div className="x" />', kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-023-CLASSNAME').length, 1);
-  });
-
-  it('flags @Method() with non-async, non-Promise return', () => {
-    const tsx = `@Method()\ndoSomething(): string {\n  return "x";\n}`;
-    const findings = scan({ content: tsx, kind: 'tsx' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-003-METHOD-NON-ASYNC').length, 1);
-  });
-
-  it('does NOT flag @Method() returning Promise<T>', () => {
-    const tsx = `@Method()\ndoSomething(): Promise<string> {\n  return Promise.resolve("x");\n}`;
-    const findings = scan({ content: tsx, kind: 'tsx' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-003-METHOD-NON-ASYNC').length, 0);
   });
 
   it('flags EventEmitter without generic type', () => {
@@ -264,20 +249,6 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
       'mud-x',
     );
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 0);
-  });
-
-  it('flags !important', () => {
-    const findings = scan({ content: '.foo { color: red !important; }', kind: 'css', file: 'fake.css' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-IMPORTANT').length, 1);
-  });
-
-  it('flags transition: all', () => {
-    const findings = scan({
-      content: '.foo { transition: all 0.2s ease; }',
-      kind: 'css',
-      file: 'fake.css',
-    });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-018-TRANSITION-ALL').length, 1);
   });
 });
 

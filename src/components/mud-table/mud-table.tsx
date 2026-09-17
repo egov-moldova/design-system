@@ -136,7 +136,7 @@ export class MudTable {
   @State() private headerCellSlotted: Set<string> = new Set();
 
   /** Internal host reference. */
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudTableElement;
 
   /** Emitted when the user activates a sortable header. */
   @Event() mudSort!: EventEmitter<TableSortChangeDetail>;

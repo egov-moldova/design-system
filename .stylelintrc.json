@@ -32,6 +32,11 @@
     "selector-not-notation": null,
     "property-no-vendor-prefix": null,
     "media-feature-range-notation": null,
-    "comment-whitespace-inside": null
+    "comment-whitespace-inside": null,
+    "declaration-no-important": true,
+    "declaration-property-value-disallowed-list": {
+      "transition": ["/\\ball\\b/"],
+      "transition-property": ["all"]
+    }
   }
 }

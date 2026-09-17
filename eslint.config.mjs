@@ -44,15 +44,22 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Stencil-plugin rules — explicit opt-out (the plugin's own `flat.recommended`
-      // would turn many of these on; we register the plugin manually and only
-      // enable `no-unused-watch`).
+      // Stencil-plugin rules — the plugin is registered manually, not through its
+      // `flat.recommended`. Enabled: the rules measured at 0 violations (element-type
+      // after typing five `@Element()` fields) plus `no-unused-watch`; the rest are off.
       '@stencil/strict-mutable': 'off',
       '@stencil/decorators-context': 'off',
       '@stencil/ban-exported-const-enums': 'off',
       '@stencil/own-methods-must-be-private': 'off',
       '@stencil/strict-boolean-conditions': 'off',
       '@stencil/no-unused-watch': 'warn',
+      '@stencil/async-methods': 'error',
+      '@stencil/element-type': 'error',
+      '@stencil/render-returns-host': 'error',
+      '@stencil/single-export': 'error',
+      '@stencil/props-must-be-public': 'error',
+      '@stencil/methods-must-be-public': 'error',
+      // reserved-member-names stays off: 35 public @Prop names would need breaking renames (#88).
       '@stencil/required-jsdoc': 'off',
       '@stencil/dependency-suggestions': 'off',
 

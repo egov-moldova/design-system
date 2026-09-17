@@ -827,9 +827,9 @@ git commit -m "feat(audit): add a parser-based Stencil contract check"
 **Interfaces:**
 - Produces: enabled rule IDs `@stencil/async-methods`, `@stencil/element-type`, `@stencil/render-returns-host`, `@stencil/single-export`, `@stencil/props-must-be-public`, `@stencil/methods-must-be-public`, `declaration-no-important`, `declaration-property-value-disallowed-list`. Task 2.3 cites exactly these as `eslint:`/`stylelint:` cells; Task 3.2 loads the configs.
 
-- [ ] **Step 1: Gate.** Re-run Task 0.1 Steps 1-2. Any count different from § Measured → STOP and return to Dan (Decision 3).
+- [x] **Step 1: Gate.** Re-run Task 0.1 Steps 1-2. Any count different from § Measured → STOP and return to Dan (Decision 3).
 
-- [ ] **Step 2: Fix the five `@Element()` types.** For each file, set the declared type to the component's own element interface, e.g. in `mud-badge.tsx:83`:
+- [x] **Step 2: Fix the five `@Element()` types.** For each file, set the declared type to the component's own element interface, e.g. in `mud-badge.tsx:83`:
 
 ```ts
   @Element() host!: HTMLMudBadgeElement;
@@ -837,7 +837,7 @@ git commit -m "feat(audit): add a parser-based Stencil contract check"
 
 (`HTMLMudSeparatorElement`, `HTMLMudStepperElement`, `HTMLMudTableElement`, `HTMLMudTooltipElement` for the others; the interfaces are generated in `src/components.d.ts`.) Where the class then uses a member the narrower type does not declare, keep the type and fix the usage, not the rule. Run `yarn typecheck` → exit 0.
 
-- [ ] **Step 3: Enable the ESLint rules** in the `rules` block, next to `no-unused-watch`:
+- [x] **Step 3: Enable the ESLint rules** in the `rules` block, next to `no-unused-watch`:
 
 ```js
       '@stencil/async-methods': 'error',
@@ -851,7 +851,7 @@ git commit -m "feat(audit): add a parser-based Stencil contract check"
 
 Update the comment above the block (`:47-49`), which says only `no-unused-watch` is enabled.
 
-- [ ] **Step 4: Enable the stylelint rules** in `.stylelintrc.json` `rules`:
+- [x] **Step 4: Enable the stylelint rules** in `.stylelintrc.json` `rules`:
 
 ```json
     "declaration-no-important": true,
@@ -863,9 +863,9 @@ Update the comment above the block (`:47-49`), which says only `no-unused-watch`
 
 and put `/* stylelint-disable-next-line declaration-no-important */` directly above each of the three declarations (`mud-service-button.css:87`, `:88`, `mud-accordion-item.css:110`), keeping their existing explanatory comments.
 
-- [ ] **Step 5: Delete the superseded script 02 entries** `ANTIPATTERN-IMPORTANT`, `ANTIPATTERN-018-TRANSITION-ALL` (stylelint now covers `src/**/*.css`) and `ANTIPATTERN-003-METHOD-NON-ASYNC` (`@stencil/async-methods` now covers it; the compiler alone only warns, for `void` returns: `compiler/stencil.js:280060-280063`). In `02-stencil-antipatterns.spec.mjs` remove the three codes from the required list and delete the detection tests of all three (`:94-103` for 003; `:223-235` for `!important` and `transition: all`).
+- [x] **Step 5: Delete the superseded script 02 entries** `ANTIPATTERN-IMPORTANT`, `ANTIPATTERN-018-TRANSITION-ALL` (stylelint now covers `src/**/*.css`) and `ANTIPATTERN-003-METHOD-NON-ASYNC` (`@stencil/async-methods` now covers it; the compiler alone only warns, for `void` returns: `compiler/stencil.js:280060-280063`). In `02-stencil-antipatterns.spec.mjs` remove the three codes from the required list and delete the detection tests of all three (`:94-103` for 003; `:223-235` for `!important` and `transition: all`).
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 ```bash
 npx prettier --write eslint.config.mjs .stylelintrc.json scripts/audit/02-stencil-antipatterns.mjs scripts/__tests__/audit/02-stencil-antipatterns.spec.mjs src/components/mud-service-button/mud-service-button.css src/components/mud-accordion-item/mud-accordion-item.css src/components/mud-badge/mud-badge.tsx src/components/mud-separator/mud-separator.tsx src/components/mud-stepper/mud-stepper.tsx src/components/mud-table/mud-table.tsx src/components/mud-tooltip/mud-tooltip.tsx
@@ -1424,6 +1424,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - Task 1.1 Step 3: `ANTIPATTERN-HOST-DISPLAY` over `--all` → 0. Independent check (brace-balanced body of the first bare `:host` rule, nested rules removed, in each of the 55 `src/components/*/*.css`) → every file declares `display`; the 0 is not a miss.
 - Task 1.1 Step 4: `ANTIPATTERN-RAW-PIXELS` over `--all` → 27 (was 84), equal to the hand-counted "other" group.
 - Task 1.2 Step 6: `node scripts/audit/16-stencil-contract.mjs --all --json` → exit 1, `componentsScanned` 46 · MEMBER-ORDER 20 · MAP-KEY 10 · FORM-BOOLEAN-DEFAULT-TRUE 5 (exactly Decision 5's props) · WATCH-ASYNC 3 (`mud-icon.tsx:86,92`, `mud-logo.tsx:68`) · WATCH-WRITES-WATCHED 1 (`mud-pagination.tsx:163`) · FORM-CALLBACKS 0 (neither `mud-button` nor `mud-service-button`). Equal to § Measured. Every hit opened: the 20 MEMBER-ORDER hits each show a group out of `component-structure.md:35-46` order in the class's member sequence (19 × `@Watch`/`@Listen` or `@State` after a later group, `mud-separator.tsx` `@Element` before `@Prop`); the 10 MAP-KEY roots carry no `key` (none within 40 lines of the `.map(`). 0 false positives.
+- Task 1.3 Step 1: gate held without re-running the tools — `git diff --quiet c4b3214 HEAD -- src eslint.config.mjs .stylelintrc.json` → exit 0, so no input to either count changed since Task 0.1. Step 2: `mud-stepper.tsx:128` and `mud-tooltip.tsx:747` pass the host to DOM APIs typed `Element`; the narrowed type is not assignable there (its `ariaLabel?: string` conflicts with `Element.ariaLabel: string | null`, the #88 names), so both casts follow `mud-cookie-banner.tsx:164` (`this.host as unknown as Element`) — type-only. Step 4: the two stylelint rules, probed on a scratch CSS file inside `src/`, fire on `!important`, `transition: all` and `transition-property: all`, and not on `allow`.
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan
