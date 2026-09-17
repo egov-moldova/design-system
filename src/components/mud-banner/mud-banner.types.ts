@@ -10,9 +10,9 @@ export type BannerEmphasis = (typeof BANNER_EMPHASES)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` is unset. */
 export const BANNER_DEFAULT_ICONS: Record<BannerVariant, IconName> = {
-  info: 'circle-info-filled',
-  warning: 'warning-filled',
-  error: 'circle-error-filled',
+  info: 'circle-info',
+  warning: 'warning',
+  error: 'circle-error',
 };
 
 /**

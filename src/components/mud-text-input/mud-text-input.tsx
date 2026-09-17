@@ -465,15 +465,27 @@ export class MudTextInput {
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+            <mud-icon
+              class="assistive-icon"
+              name="circle-error"
+              variant="filled"
+              size={20}
+              color="icon-danger-default"
+            />
             <span class="assistive-text">{errorText}</span>
           </div>
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             {variant === 'warning' ? (
-              <mud-icon class="assistive-icon" name="warning-filled" size={20} color="icon-warning-default" />
+              <mud-icon class="assistive-icon" name="warning" variant="filled" size={20} color="icon-warning-default" />
             ) : variant === 'success' ? (
-              <mud-icon class="assistive-icon" name="circle-checkmark-filled" size={20} color="icon-positive-default" />
+              <mud-icon
+                class="assistive-icon"
+                name="circle-checkmark"
+                variant="filled"
+                size={20}
+                color="icon-positive-default"
+              />
             ) : null}
             <span class="assistive-text">
               {this.hasHelperSlot ? null : helperText}

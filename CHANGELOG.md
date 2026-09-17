@@ -2,14 +2,41 @@
 
 ## Unreleased
 
+### Changed — icon style is a `variant` prop, and the size scale is 16 / 20 / 24 / 32
+
+The style used to live inside the name (`car-filled`) and the size used to pick a
+different drawing (`assets/24/car.svg`). Both are props now, and the assets are
+keyed by style: `assets/outlined/car.svg` and `assets/filled/car.svg`, one drawing
+each, scaled through `size`.
+
+```html
+<!-- before -->              <!-- after -->
+<mud-icon name="car-filled" size="24"></mud-icon>
+<mud-icon name="car" variant="filled" size="24"></mud-icon>
+```
+
+**Migration:** drop the `-filled` suffix from every icon name and pass
+`variant="filled"`. `size="12"` is gone — the scale is `16 | 20 | 24 | 32`, and
+`32` is new. `ICON_VARIANTS`, `ICON_SIZES`, `IconVariant`, `IconSize` and
+`hasIconVariant(name, variant)` are exported from the package root.
+
+142 of the 174 icons are drawn in one style only. Asking for the style an icon
+does not have renders the one it does and logs a warning; `hasIconVariant` answers
+the question up front when you want the filled drawing only where one exists.
+
+**`mud-sidebar-item`'s `icon-active` attribute is removed.** It existed to name a
+second icon for the active row, which is what `variant` expresses now — an active
+item renders the filled style of `icon` when that icon has one.
+
 ### Changed — icon names are typed as `IconName`, and `mud-icon` requires `name`
 
 Every prop and data field that names an icon was typed `string`, so a misspelled or
 removed name compiled and rendered nothing. They are now typed `IconName`, the union
 of the names `mud-icon` ships: `mud-icon`'s `name`; `iconName` on `mud-toast`,
 `mud-banner`, `mud-info-box`, `mud-inline-message`, `mud-tab`, `mud-avatar` and
-`mud-search-input`; `icon` on `mud-menu-item`; `icon` and `iconActive` on
-`mud-sidebar-item`; and `StepperStep.iconName`, `TabDescriptor.iconName`,
+`mud-search-input`; `icon` on `mud-menu-item`; `icon` on `mud-sidebar-item`
+(`iconActive` was typed here too, and is removed by the entry above); and
+`StepperStep.iconName`, `TabDescriptor.iconName`,
 `SegmentedControlSegment.iconName` and `BreadcrumbItem.iconStart`.
 
 **If you pass a plain `string`, TypeScript now rejects it.** Type the value as

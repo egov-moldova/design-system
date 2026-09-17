@@ -526,7 +526,6 @@ export class MudInputChip {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const maxReached = this.isMaxReached();
     const placeholder = this.chips.length === 0 ? this.placeholder : undefined;
-    const removeIconSize = this.size === 'lg' ? 16 : 12;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -577,7 +576,9 @@ export class MudInputChip {
                 onClick={this.handleChipRemoveClick(index)}
                 onKeyDown={this.handleChipKeyDown(index)}
               >
-                <mud-icon class="chip-remove-icon" name="cross-small" size={removeIconSize} />
+                {/* `.chip-remove-icon` pins the rendered box to --input-chip-chip-remove-icon-size-*
+                    (12px on md/sm), so `size` only has to be a valid IconSize here. */}
+                <mud-icon class="chip-remove-icon" name="cross-small" size={16} />
               </button>
             </span>
           ))}
@@ -607,7 +608,13 @@ export class MudInputChip {
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+            <mud-icon
+              class="assistive-icon"
+              name="circle-error"
+              variant="filled"
+              size={20}
+              color="icon-danger-default"
+            />
             <span class="assistive-text">{errorText}</span>
           </div>
         ) : this.hasHelperMessage() ? (

@@ -2,12 +2,14 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { TOAST_VARIANTS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type ToastArgs = {
   variant: ToastVariant;
   closable: boolean;
   titleText: string;
-  iconName: string;
+  iconName: IconName | '';
   body: string;
   closeLabel: string;
 };
@@ -72,8 +74,9 @@ the consumer is responsible for animating out and removing the element.
     },
     iconName: {
       name: 'icon-name',
-      control: 'text',
-      description: 'Override the default per-variant icon (mud-icon name).',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon (mud-icon name). Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot text content.' },
     closeLabel: {
@@ -213,12 +216,12 @@ const renderEdgeCases = () => /*html*/ `
     <mud-toast variant="warning">Înălțime mărită — țineți cont de această modificare.</mud-toast>
 
     <p style="${captionStyle}">Custom icon override</p>
-    <mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+    <mud-toast variant="success" icon-name="receipt-check" closable title-text="Bon fiscal generat">
       Vezi detalii în istoricul plăților.
     </mud-toast>
   </div>
 `;
-const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check" closable title-text="Bon fiscal generat">
   Vezi detalii în istoricul plăților.
 </mud-toast>`;
 export const EdgeCases: Story = {

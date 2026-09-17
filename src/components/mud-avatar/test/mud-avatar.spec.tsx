@@ -6,6 +6,7 @@ import '../../mud-icon/mud-icon';
 
 import { AVATAR_SIZES, AVATAR_TYPES } from '../mud-avatar.types';
 import { deriveInitials, ICON_SIZE_FOR } from '../mud-avatar.utils';
+import { ICON_SIZES } from '../../mud-icon/mud-icon.types';
 
 // `mud-icon` fetches its SVGs asynchronously via `getAssetPath` + `fetch`.
 // Stub both in this test environment so the avatar tests that render
@@ -15,9 +16,9 @@ let fetchSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   setAssetPath('http://localhost/');
   fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+    const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
     if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[2]}" data-size="${match[1]}"></svg>`, {
+    return new Response(`<svg data-name="${match[2]}" data-variant="${match[1]}"></svg>`, {
       status: 200,
       headers: { 'Content-Type': 'image/svg+xml' },
     });
@@ -78,7 +79,7 @@ describe('deriveInitials', () => {
 describe('ICON_SIZE_FOR', () => {
   it('maps every avatar size to a supported mud-icon size', () => {
     for (const size of AVATAR_SIZES) {
-      expect([12, 16, 20, 24]).toContain(ICON_SIZE_FOR[size]);
+      expect(ICON_SIZES).toContain(ICON_SIZE_FOR[size]);
     }
   });
 });

@@ -6,21 +6,25 @@ import path from 'node:path';
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
 import { clearIconSvgCache, fetchIconSvg, resolveIconAsset } from '../mud-icon.providers';
-import { ICON_NAMES, type IconManifest, type IconName } from '../mud-icon.types';
+import {
+  hasIconVariant,
+  ICON_NAMES,
+  ICON_VARIANTS,
+  type IconManifest,
+  type IconName,
+  type IconVariant,
+} from '../mud-icon.types';
 
-const NAME_WITH_ALL_SIZES = ICON_NAMES.find(
-  n => (manifest as Record<string, { sizes: number[] }>)[n].sizes.length === 4,
-);
-const NAME_PARTIAL_SIZES = ICON_NAMES.find(n => {
-  const s = (manifest as Record<string, { sizes: number[] }>)[n].sizes;
-  return s.length > 0 && s.length < 4;
-});
+const REAL_MANIFEST = manifest as IconManifest;
+const variantsOf = (name: IconName): readonly IconVariant[] => REAL_MANIFEST[name]?.variants ?? [];
+const NAME_IN_BOTH_VARIANTS = ICON_NAMES.find(n => variantsOf(n).length === 2);
+const FILLED_ONLY_NAME = ICON_NAMES.find(n => !variantsOf(n).includes('outlined'));
 
 function makeFetchMock() {
   return vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+    const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
     if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[2]}" data-size="${match[1]}"></svg>`, {
+    return new Response(`<svg data-name="${match[2]}" data-variant="${match[1]}"></svg>`, {
       status: 200,
       headers: { 'Content-Type': 'image/svg+xml' },
     });
@@ -43,20 +47,41 @@ describe('mud-icon', () => {
     fetchSpy.mockRestore();
   });
 
-  it('renders with default props (size=16)', async () => {
+  it('renders with default props (size=16, variant=outlined)', async () => {
     const defaultName = ICON_NAMES[0];
     const { root, waitForChanges } = await render(<mud-icon name={defaultName} />);
     await waitForChanges();
 
     expect(root?.getAttribute('size')).toBe('16');
+    expect(root?.getAttribute('variant')).toBe('outlined');
     expect(root?.getAttribute('color')).toBe('currentColor');
     expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeTruthy();
   });
 
   it('reflects size to the host attribute', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<mud-icon name={name} size={24} />);
-    expect(root?.getAttribute('size')).toBe('24');
+    const { root } = await render(<mud-icon name={name} size={32} />);
+    expect(root?.getAttribute('size')).toBe('32');
+  });
+
+  it('loads the filled drawing when variant=filled', async () => {
+    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<mud-icon name={name} variant="filled" />);
+    await waitForChanges();
+    expect(root?.getAttribute('variant')).toBe('filled');
+    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/filled/${name}.svg`))).toBe(true);
+  });
+
+  it('falls back to the drawing that exists and warns when the variant is missing', async () => {
+    if (!FILLED_ONLY_NAME) return;
+    const { root, waitForChanges } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="outlined" />);
+    await waitForChanges();
+    expect(warnSpy).toHaveBeenCalled();
+    expect(
+      fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/filled/${FILLED_ONLY_NAME}.svg`)),
+    ).toBe(true);
+    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
+    expect(innerHTML).toContain('data-variant="filled"');
   });
 
   it('reflects interactive + disabled flags', async () => {
@@ -270,15 +295,28 @@ describe('mud-icon', () => {
     expect(innerHTML.toLowerCase()).toContain('<svg');
   });
 
-  it('onSizeChange: changing size reloads the SVG at the new size', async () => {
+  it('onVariantChange: changing variant reloads the SVG from the other style', async () => {
+    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<mud-icon name={name} variant="outlined" />);
+    await waitForChanges();
+
+    (root as unknown as { variant: string }).variant = 'filled';
+    await waitForChanges();
+
+    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes('/filled/'))).toBe(true);
+  });
+
+  it('changing size alone does not refetch — one drawing covers every size', async () => {
     const name = ICON_NAMES[0];
     const { root, waitForChanges } = await render(<mud-icon name={name} size={16} />);
     await waitForChanges();
+    fetchSpy.mockClear();
 
-    (root as unknown as { size: number }).size = 24;
+    (root as unknown as { size: number }).size = 32;
     await waitForChanges();
 
-    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes('/24/'))).toBe(true);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(root?.getAttribute('size')).toBe('32');
   });
 
   it('onNameChange: same-value guard (newVal === oldVal) skips reload', async () => {
@@ -296,35 +334,30 @@ describe('mud-icon', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('onSizeChange: same-value guard (newVal === oldVal) skips reload', async () => {
+  it('onVariantChange: same-value guard (newVal === oldVal) skips reload', async () => {
     const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} size={16} />);
+    const { root, waitForChanges } = await render(<mud-icon name={name} />);
     await waitForChanges();
     clearIconSvgCache();
     fetchSpy.mockClear();
 
-    type WatchInstance = { onSizeChange: (newVal: number, oldVal: number) => Promise<void> };
-    await (root as unknown as WatchInstance).onSizeChange(16, 16);
+    type WatchInstance = { onVariantChange: (newVal: string, oldVal: string) => Promise<void> };
+    await (root as unknown as WatchInstance).onVariantChange('outlined', 'outlined');
     await waitForChanges();
 
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('svgCacheKey guard: size fallback to already-loaded resolved size skips fetch', async () => {
-    // Find an icon that has 16px but not 12px; requesting 12 falls back to 16.
-    const name = ICON_NAMES.find(n => {
-      const s = (manifest as Record<string, { sizes: number[] }>)[n].sizes;
-      return s.includes(16) && !s.includes(12);
-    });
-    if (!name) return;
+  it('svgCacheKey guard: variant fallback to the already-loaded style skips fetch', async () => {
+    if (!FILLED_ONLY_NAME) return;
 
-    const { root, waitForChanges } = await render(<mud-icon name={name} size={16} />);
+    const { root, waitForChanges } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="filled" />);
     await waitForChanges();
-    // svgCacheKey is now "name|16"
+    // svgCacheKey is now "name|filled"
     fetchSpy.mockClear();
 
-    // size=12 → resolveIconAsset falls back to 16 → cacheKey === svgCacheKey → early return
-    (root as unknown as { size: number }).size = 12;
+    // variant=outlined → resolveIconAsset falls back to filled → cacheKey unchanged → early return
+    (root as unknown as { variant: string }).variant = 'outlined';
     await waitForChanges();
 
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -342,15 +375,15 @@ describe('mud-icon', () => {
     clearIconSvgCache();
     let resolveBFetch!: (r: Response) => void;
     fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url: unknown) => {
-      const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+      const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
       if (!match) return new Response('', { status: 404 });
-      const [, size, iconName] = match;
+      const [, variant, iconName] = match;
       if (iconName === nameB) {
         return new Promise<Response>(resolve => {
           resolveBFetch = resolve;
         });
       }
-      return new Response(`<svg data-name="${iconName}" data-size="${size}"></svg>`, {
+      return new Response(`<svg data-name="${iconName}" data-variant="${variant}"></svg>`, {
         status: 200,
         headers: { 'Content-Type': 'image/svg+xml' },
       });
@@ -381,100 +414,124 @@ describe('resolveIconAsset (provider URL builder)', () => {
     setAssetPath('http://localhost/');
   });
 
+  // Real names: the manifest type is keyed by IconName, so a made-up key no
+  // longer type-checks — which is the point of keying it.
   const manifest: IconManifest = {
-    sun: { sizes: [16, 24] },
-    moon: { sizes: [12] },
+    sun: { variants: ['outlined', 'filled'] },
+    moon: { variants: ['filled'] },
   };
 
-  it('returns an exact-size URL when available', () => {
-    const r = resolveIconAsset('sun', 16, manifest);
-    expect(r?.resolvedSize).toBe(16);
-    expect(r?.url).toContain('/16/sun.svg');
+  it('returns the requested style when the icon is drawn in it', () => {
+    const r = resolveIconAsset('sun', 'filled', manifest);
+    expect(r?.resolvedVariant).toBe('filled');
+    expect(r?.url).toContain('/filled/sun.svg');
   });
 
-  it('falls back UP to the next larger size when the requested size is missing', () => {
-    // sun has 16 + 24; requesting 20 should pick 24
-    const r = resolveIconAsset('sun', 20, manifest);
-    expect(r?.resolvedSize).toBe(24);
-    expect(r?.url).toContain('/24/sun.svg');
-  });
-
-  it('falls back DOWN to the largest smaller size when no larger size exists', () => {
-    // moon only has 12; requesting 24 should pick 12
-    const r = resolveIconAsset('moon', 24, manifest);
-    expect(r?.resolvedSize).toBe(12);
-    expect(r?.url).toContain('/12/moon.svg');
-  });
-
-  it('falls back UP rather than DOWN when both options exist', () => {
-    // sun has 16 + 24; requesting 12 should prefer 16
-    const r = resolveIconAsset('sun', 12, manifest);
-    expect(r?.resolvedSize).toBe(16);
+  it('falls back to the only style the icon is drawn in', () => {
+    const r = resolveIconAsset('moon', 'outlined', manifest);
+    expect(r?.resolvedVariant).toBe('filled');
+    expect(r?.url).toContain('/filled/moon.svg');
   });
 
   it('returns undefined for unknown names', () => {
-    const r = resolveIconAsset('unknown', 16, manifest);
+    const r = resolveIconAsset('car', 'outlined', manifest);
     expect(r).toBeUndefined();
   });
 
-  it('returns undefined when entry has no usable size', () => {
-    const empty: IconManifest = { ghost: { sizes: [] } };
-    const r = resolveIconAsset('ghost', 16, empty);
+  it('returns undefined when the entry lists no style', () => {
+    const empty: IconManifest = { stamp: { variants: [] } };
+    const r = resolveIconAsset('stamp', 'outlined', empty);
     expect(r).toBeUndefined();
   });
 
   // Sanity check against the real manifest — at least one icon should resolve.
   it('resolves a URL from the real manifest', () => {
     if (!ICON_NAMES.length) return;
-    const name = NAME_WITH_ALL_SIZES ?? ICON_NAMES[0];
-    const r = resolveIconAsset(name, 24);
+    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
+    const r = resolveIconAsset(name, 'outlined');
     expect(r?.url).toBeTruthy();
-    expect(r?.url).toContain('/24/');
+    expect(r?.url).toContain('/outlined/');
   });
 
-  it('exercises fallback against the real manifest when partial sizes exist', () => {
-    if (!NAME_PARTIAL_SIZES) return;
-    const entry = (manifest as Record<string, { sizes: number[] }>)[NAME_PARTIAL_SIZES];
-    if (!entry) return;
-    const allSizes = [12, 16, 20, 24];
-    const missing = allSizes.find(s => !entry.sizes.includes(s)) as 12 | 16 | 20 | 24 | undefined;
-    if (!missing) return;
-    const r = resolveIconAsset(NAME_PARTIAL_SIZES, missing);
-    expect(r?.url).toBeTruthy();
-    expect(r?.resolvedSize).not.toBe(missing);
+  it('exercises the fallback against the real manifest', () => {
+    if (!FILLED_ONLY_NAME) return;
+    const r = resolveIconAsset(FILLED_ONLY_NAME, 'outlined');
+    expect(r?.resolvedVariant).toBe('filled');
+    expect(r?.url).toContain(`/filled/${FILLED_ONLY_NAME}.svg`);
   });
 });
 
-describe('icons.manifest.json (public icon names)', () => {
-  const realManifest = manifest as IconManifest;
+describe('hasIconVariant', () => {
+  // Named icons, not values derived from the same data the function reads —
+  // otherwise the assertion restates the source instead of checking it.
+  it('is true for both styles of an icon drawn in both', () => {
+    expect(hasIconVariant('calendar', 'outlined')).toBe(true);
+    expect(hasIconVariant('calendar', 'filled')).toBe(true);
+  });
 
+  it('is false for the style an icon is not drawn in', () => {
+    expect(hasIconVariant('facebook', 'outlined')).toBe(false);
+    expect(hasIconVariant('facebook', 'filled')).toBe(true);
+    expect(hasIconVariant('search', 'filled')).toBe(false);
+    expect(hasIconVariant('search', 'outlined')).toBe(true);
+  });
+
+  it('agrees with the manifest for every name and style', () => {
+    const disagreements = ICON_NAMES.flatMap(name =>
+      ICON_VARIANTS.filter(
+        variant => hasIconVariant(name, variant) !== (REAL_MANIFEST[name]?.variants.includes(variant) ?? false),
+      ).map(variant => `${name}/${variant}`),
+    );
+    expect(disagreements).toEqual([]);
+  });
+
+  it('is false for an absent name instead of throwing', () => {
+    expect(hasIconVariant(undefined, 'filled')).toBe(false);
+    expect(hasIconVariant('this-icon-does-not-exist', 'filled')).toBe(false);
+  });
+
+  // `manifest['constructor']` resolves through Object.prototype to a truthy
+  // function, so an unguarded lookup read `.variants` off it and threw inside
+  // five components' render(). Same hazard as mud-icon's own isIconName guard.
+  it.each(['constructor', 'toString', 'valueOf', '__proto__', 'hasOwnProperty'])(
+    'is false for the Object.prototype member "%s"',
+    member => {
+      expect(hasIconVariant(member, 'filled')).toBe(false);
+      expect(hasIconVariant(member, 'outlined')).toBe(false);
+    },
+  );
+});
+
+describe('icons.manifest.json (public icon names)', () => {
   it('exposes the calendar family under the correct spelling', () => {
-    expect(realManifest['calendar-add']?.sizes).toEqual([20, 24]);
-    expect(realManifest['calendar-remove']?.sizes).toEqual([20, 24]);
-    expect(realManifest['calendar-remove-filled']?.sizes).toEqual([16, 20]);
+    expect(REAL_MANIFEST['calendar-add']?.variants).toEqual(['outlined']);
+    expect(REAL_MANIFEST['calendar-remove']?.variants).toEqual(['outlined', 'filled']);
   });
 
   it('no longer exposes the misspelled "calender" names', () => {
     expect(ICON_NAMES.filter(n => n.includes('calender'))).toEqual([]);
   });
+
+  it('no longer encodes the style in the name', () => {
+    expect(ICON_NAMES.filter(n => /-(filled|fill|solid)$/.test(n))).toEqual([]);
+  });
 });
 
 describe('icon asset shape (what `yarn svg:icons` normalizes to)', () => {
   const ASSETS_ROOT = path.resolve(__dirname, '../assets');
-  const SIZES = [12, 16, 20, 24];
 
-  const files = SIZES.flatMap(size => {
-    const dir = path.join(ASSETS_ROOT, String(size));
+  const files = ICON_VARIANTS.flatMap(variant => {
+    const dir = path.join(ASSETS_ROOT, variant);
     return fs
       .readdirSync(dir)
       .filter(name => name.endsWith('.svg'))
-      .map(name => ({ rel: `${size}/${name}`, source: fs.readFileSync(path.join(dir, name), 'utf8') }));
+      .map(name => ({ rel: `${variant}/${name}`, source: fs.readFileSync(path.join(dir, name), 'utf8') }));
   });
 
   // Guards against a vacuous scan: a moved assets directory would make every
   // assertion below pass over an empty list.
   it('reads the whole icon set', () => {
-    expect(files.length).toBe(Object.values(manifest as IconManifest).reduce((n, e) => n + e.sizes.length, 0));
+    expect(files.length).toBe(Object.values(REAL_MANIFEST).reduce((n, e) => n + (e?.variants.length ?? 0), 0));
   });
 
   // `mud-icon` inlines the SVG into its shadow root, where `mud-icon.css`'s
@@ -497,6 +554,29 @@ describe('icon asset shape (what `yarn svg:icons` normalizes to)', () => {
   it('carries no intrinsic size on the root element', () => {
     const offenders = files
       .filter(({ source }) => /<svg[^>]*\s(?:width|height)=/.test(source.slice(0, source.indexOf('>') + 1)))
+      .map(({ rel }) => rel);
+    expect(offenders).toEqual([]);
+  });
+
+  // Both styles of one icon stretch to the same host box, so a 24-grid drawing
+  // beside a 16-grid one makes the glyph resize when `variant` toggles.
+  it('draws both styles of an icon on the same grid', () => {
+    const viewBoxOf = (rel: string) => {
+      const source = files.find(f => f.rel === rel)?.source ?? '';
+      return source.slice(0, source.indexOf('>') + 1).match(/viewBox="0 0 (\d+(?:\.\d+)?) /)?.[1] ?? null;
+    };
+    const mismatched = ICON_NAMES.filter(name => {
+      if (!hasIconVariant(name, 'outlined') || !hasIconVariant(name, 'filled')) return false;
+      return viewBoxOf(`outlined/${name}.svg`) !== viewBoxOf(`filled/${name}.svg`);
+    });
+    expect(mismatched).toEqual([]);
+  });
+
+  // Every drawing must scale from its viewBox alone — `size` is the only thing
+  // that decides the rendered box now that the assets are style-keyed.
+  it('carries a viewBox on every drawing', () => {
+    const offenders = files
+      .filter(({ source }) => !/<svg[^>]*\sviewBox="/.test(source.slice(0, source.indexOf('>') + 1)))
       .map(({ rel }) => rel);
     expect(offenders).toEqual([]);
   });

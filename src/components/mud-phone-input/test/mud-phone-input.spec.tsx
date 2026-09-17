@@ -609,9 +609,9 @@ describe('mud-phone-input', () => {
       const { root } = await render(<mud-phone-input label="x" readonly value="+37362123456"></mud-phone-input>);
       const icon = queryValidIcon(root);
       expect(icon).toBeTruthy();
-      // Must reference a real icon in the set (`circle-checkmark-filled`), not a
+      // Must reference a real icon in the set (`circle-checkmark`), not a
       // transposed name — otherwise the glyph silently fails to paint.
-      expect(icon?.getAttribute('name')).toBe('circle-checkmark-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-checkmark');
     });
 
     it('readonly with invalid value does NOT surface the checkmark', async () => {

@@ -306,24 +306,37 @@ describe('mud-sidebar-item', () => {
       expect(root?.shadowRoot?.querySelector('mud-icon.icon')).toBeNull();
     });
 
-    it('uses iconActive name when active=true and iconActive is set', async () => {
-      const { root } = await render(
-        <mud-sidebar-item icon="home-line" iconActive="home-line-filled" active label="Home" />,
-      );
-      const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-line-filled');
-    });
-
-    it('falls back to icon when active=true but iconActive is not set', async () => {
+    it('renders the filled style of the same icon when active=true', async () => {
       const { root } = await render(<mud-sidebar-item icon="home-line" active label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('filled');
     });
 
-    it('uses icon (not iconActive) when active=false even if iconActive is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home-line" iconActive="home-line-filled" label="Home" />);
+    it('keeps an outlined-only icon outlined when active, without warning', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        // `search` has no filled drawing, so asking mud-icon for one would warn
+        // on every activation. Baseline: `node -e "const
+        // n=require('./src/components/mud-icon/icon-names.ts')"` is not runnable on a
+        // .ts module — read FILLED_ICON_NAMES in that generated file instead; `search`
+        // is absent from it.
+        const { root, waitForChanges } = await render(<mud-sidebar-item icon="search" active label="Search" />);
+        // The warning would come from the child's own load, which has not run yet.
+        await waitForChanges();
+        const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
+        expect(icon?.getAttribute('variant')).toBe('outlined');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('renders the outlined style when active=false', async () => {
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('outlined');
     });
   });
 

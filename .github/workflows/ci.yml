@@ -55,6 +55,10 @@ jobs:
       - name: Validate tokens
         run: yarn tokens.validate
 
+      # `.storybook/custom-elements.json` is a build artifact, and
+      # scripts/__tests__/storybook-manifest.spec.mjs checks it against the
+      # component readmes. Without this step that spec fails on a missing file
+      # rather than on a disagreement.
       - name: Build
         run: yarn build
 

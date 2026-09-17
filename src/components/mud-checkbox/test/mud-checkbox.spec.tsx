@@ -123,7 +123,8 @@ describe('mud-checkbox', () => {
       const { root } = await render(<mud-checkbox label="x" invalid error-text="Câmp obligatoriu."></mud-checkbox>);
       const error = root?.shadowRoot?.querySelector('.error');
       expect(error).toBeTruthy();
-      expect(error?.querySelector('.error-icon')?.getAttribute('name')).toBe('circle-error-filled');
+      expect(error?.querySelector('.error-icon')?.getAttribute('name')).toBe('circle-error');
+      expect(error?.querySelector('.error-icon')?.getAttribute('variant')).toBe('filled');
       expect(error?.querySelector('.error-text')?.textContent).toContain('Câmp obligatoriu.');
     });
 

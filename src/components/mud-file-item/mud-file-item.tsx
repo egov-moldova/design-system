@@ -206,13 +206,20 @@ export class MudFileItem {
             {isSuccess ? (
               <mud-icon
                 class="status status-success"
-                name="circle-checkmark-filled"
+                name="circle-checkmark"
+                variant="filled"
                 size={20}
                 color="icon-positive-default"
               />
             ) : null}
             {isError ? (
-              <mud-icon class="status status-error" name="circle-error-filled" size={20} color="icon-danger-default" />
+              <mud-icon
+                class="status status-error"
+                name="circle-error"
+                variant="filled"
+                size={20}
+                color="icon-danger-default"
+              />
             ) : null}
             {showRemove ? (
               <button

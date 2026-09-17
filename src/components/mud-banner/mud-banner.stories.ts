@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { BANNER_EMPHASES, BANNER_VARIANTS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type BannerArgs = {
   variant: BannerVariant;
@@ -9,7 +11,7 @@ type BannerArgs = {
   dismissible: boolean;
   linkText: string;
   linkHref: string;
-  iconName: string;
+  iconName: IconName | '';
   body: string;
   closeLabel: string;
 };
@@ -75,7 +77,12 @@ button; the consumer animates out and removes the element.
     },
     linkText: { name: 'link-text', control: 'text', description: 'Optional inline link text.' },
     linkHref: { name: 'link-href', control: 'text', description: 'Href for the inline link.' },
-    iconName: { name: 'icon-name', control: 'text', description: 'Override the default per-variant icon.' },
+    iconName: {
+      name: 'icon-name',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon. Empty keeps the variant default.',
+    },
     body: { control: 'text', description: 'Default-slot message text.' },
     closeLabel: {
       name: 'close-label',

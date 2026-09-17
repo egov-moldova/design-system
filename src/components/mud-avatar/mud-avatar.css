@@ -124,6 +124,14 @@
   pointer-events: none;
 }
 
+/* `xs` is the one rung whose token (12px) sits below mud-icon's smallest `size`,
+   so it is the one rung where the avatar has to override the icon's own box.
+   Every other rung is set by ICON_SIZE_FOR, which matches the token. */
+:host([size='xs']) .icon {
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+}
+
 /*
  * Badge slot — anchored on the avatar's north-east edge (~45°) so the badge
  * overlaps the circle instead of floating in the empty corner of the square

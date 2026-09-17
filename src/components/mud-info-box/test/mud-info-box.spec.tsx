@@ -37,14 +37,14 @@ describe('mud-info-box', () => {
     const { root: b, waitForChanges: wb } = await render(<mud-info-box variant="info-moderate">B</mud-info-box>);
     await wa();
     await wb();
-    expect(a?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('circle-info-filled');
-    expect(b?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('circle-info-filled');
+    expect(a?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('circle-info');
+    expect(b?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('circle-info');
   });
 
   it('honors the iconName override', async () => {
-    const { root, waitForChanges } = await render(<mud-info-box icon-name="sparkles-filled">Body</mud-info-box>);
+    const { root, waitForChanges } = await render(<mud-info-box icon-name="sparkles">Body</mud-info-box>);
     await waitForChanges();
-    expect(root?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('sparkles-filled');
+    expect(root?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('sparkles');
   });
 
   it('suppresses the icon when hide-icon is set', async () => {

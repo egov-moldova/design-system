@@ -148,7 +148,7 @@ export const AllVariations: Story = {
             'tabs-var-icon',
             [
               { value: 'profil', label: 'Label', iconName: 'person' },
-              { value: 'documente', label: 'Label', iconName: 'document-filled' },
+              { value: 'documente', label: 'Label', iconName: 'document' },
               { value: 'notificari', label: 'Label', iconName: 'notification' },
               { value: 'setari', label: 'Label', iconName: 'settings' },
             ],
@@ -201,7 +201,7 @@ export const AllVariations: Story = {
             'tabs-var-sm-icon',
             [
               { value: 'profil', label: 'Label', iconName: 'person' },
-              { value: 'documente', label: 'Label', iconName: 'document-filled' },
+              { value: 'documente', label: 'Label', iconName: 'document' },
               { value: 'notificari', label: 'Label', iconName: 'notification' },
               { value: 'setari', label: 'Label', iconName: 'settings' },
             ],
@@ -415,7 +415,7 @@ export const Mobile: Story = {
                 'tabs-mobile-2',
                 [
                   { value: 'profil', label: 'Profil', iconName: 'person' },
-                  { value: 'documente', label: 'Documente', iconName: 'document-filled' },
+                  { value: 'documente', label: 'Documente', iconName: 'document' },
                   { value: 'notificari', label: 'Notificări', iconName: 'notification', badgeCount: 4 },
                   { value: 'setari', label: 'Setări', iconName: 'settings' },
                   { value: 'plati', label: 'Plăți', iconName: 'credit-card' },

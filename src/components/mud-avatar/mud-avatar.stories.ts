@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { AVATAR_SIZES, AVATAR_TYPES } from './mud-avatar.types';
 import type { AvatarSize, AvatarType } from './mud-avatar.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type AvatarArgs = {
   type: AvatarType;
@@ -10,7 +12,7 @@ type AvatarArgs = {
   alt: string;
   name: string;
   initials: string;
-  iconName: string;
+  iconName: IconName;
   ariaLabel: string;
   badge: 'none' | 'dot' | 'count';
 };
@@ -372,7 +374,8 @@ const meta: Meta<AvatarArgs> = {
       description: 'Override the auto-derived initials.',
     },
     iconName: {
-      control: 'text',
+      control: 'select',
+      options: ICON_NAMES,
       description: 'Glyph for `type="icon"`.',
       name: 'icon-name',
       table: { defaultValue: { summary: 'person' } },
