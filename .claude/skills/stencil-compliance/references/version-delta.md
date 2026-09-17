@@ -12,7 +12,7 @@ stenciljs.com documents 4.43 as its default version (version selector, checked 2
 - 4.37: `Mixin()` and class inheritance (<https://stenciljs.com/docs/extends>); watchers fire earlier (breaking). Not adopted here.
 - 4.38: `@PropSerialize` / `@AttrDeserialize`. Unused here; their runtime behaviour is in [`form-reactivity.md`](form-reactivity.md#serialization).
 - 4.41.3: form-associated components get `name`, `form`, `disabled` in their JSX typings when not declared as props — typing only (`compiler/stencil.js:277363,277406`).
-- Form-associated boolean props: the attribute string `"false"` parses as `true` (`internal/client/index.js:2352-2353`). Default boolean props to `false` there (`STENCIL-FORM-BOOLEAN-DEFAULT-TRUE`).
+- Form-associated boolean props: a string `"false"` assigned to the property parses as `true` (`internal/client/index.js:2352-2353`); an HTML attribute `"false"` is coerced to `false` before the prop is set (`:3854-3856`), measured in a browser on 4.45.0. Default boolean props to `false` there (`STENCIL-FORM-BOOLEAN-DEFAULT-TRUE`).
 - Local Yarn patch `.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch` (applied through `package.json` `resolutions`) adds `OneOf3` required-prop typing for JSX `attr:`/`prop:` prefixes. Re-create it on upgrade; the skill parity spec (`scripts/__tests__/stencil-compliance-skill.spec.mjs`) fails if it stops applying.
 
 ## Watch

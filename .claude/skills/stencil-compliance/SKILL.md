@@ -59,7 +59,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Prop | P5: `attribute: 'custom-name'` only when the default kebab-case name is wrong | `manual` | [decorators P5](references/decorators.md#prop) |
 | @Prop | P6: Optional props use `?`: `@Prop() width?: string;` | `manual` | [decorators P6](references/decorators.md#prop) |
 | @Prop | P7: A prop with neither a default nor `?` needs `!` under `strict` | `tsc` | — |
-| @Prop | P8: On a form-associated component, a boolean prop does not default to `true`: the attribute string `"false"` parses as `true` there, so HTML cannot turn it off | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` | `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
+| @Prop | P8: On a form-associated component, a boolean prop does not default to `true`: a string `"false"` assigned to the property parses as `true` there, so a consumer that sets the property from a template string cannot turn it off (HTML attributes are coerced to a boolean first) | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` | `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
 | @Prop | P9: Enum props import their values from `mud-<name>.enums.ts` or a union type | `manual` | [decorators P9](references/decorators.md#prop) |
 | @Prop | P10: Every `@Prop()` has JSDoc; a prop with a default documents it | `manual` | [decorators P10](references/decorators.md#prop) |
 | @Prop | P11: Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual` | [decorators P11](references/decorators.md#prop) |

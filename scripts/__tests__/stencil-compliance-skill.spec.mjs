@@ -98,11 +98,19 @@ describe('stencil-compliance skill ↔ installed Stencil', () => {
     assert.match(read('node_modules/@stencil/core/compiler/stencil.js'), /OneOf3/);
   });
 
-  it('form-associated boolean parsing still treats "false" as true', () => {
+  it('form-associated boolean parsing still treats a property string "false" as true', () => {
     const runtime = read('node_modules/@stencil/core/internal/client/index.js');
     assert.match(
       runtime,
       /isFormAssociated && typeof propValue === "string"\) \{\s*return propValue === "" \|\| !!propValue;/,
+    );
+  });
+
+  it('boolean attributes are still coerced before the prop is set, so HTML "false" stays false', () => {
+    const runtime = read('node_modules/@stencil/core/internal/client/index.js');
+    assert.match(
+      runtime,
+      /if \(isBooleanTarget\) \{\s*newValue = newValue === null \|\| newValue === "false" \? false : true;/,
     );
   });
 });

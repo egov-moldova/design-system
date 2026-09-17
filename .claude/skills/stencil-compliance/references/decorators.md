@@ -69,7 +69,7 @@ Reference: <https://stenciljs.com/docs/properties>.
 | P5  | `attribute: 'custom-name'` only when the default kebab-case name is wrong                                                                 | `manual`                                      |
 | P6  | Optional props use `?`: `@Prop() width?: string;`                                                                                         | `manual`                                      |
 | P7  | A prop with neither a default nor `?` needs `!` under `strict`                                                                            | `tsc`                                         |
-| P8  | On a form-associated component, a boolean prop does not default to `true`: the attribute string `"false"` parses as `true` there, so HTML cannot turn it off | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
+| P8  | On a form-associated component, a boolean prop does not default to `true`: a string `"false"` assigned to the property parses as `true` there, so a consumer that sets the property from a template string cannot turn it off (HTML attributes are coerced to a boolean first) | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
 | P9  | Enum props import their values from `mud-<name>.enums.ts` or a union type                                                                 | `manual`                                      |
 | P10 | Every `@Prop()` has JSDoc; a prop with a default documents it                                                                             | `manual`                                      |
 | P11 | Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual`                                      |
@@ -81,7 +81,7 @@ Reference: <https://stenciljs.com/docs/properties>.
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `string`  | As written                                                                                                                               |
 | `number`  | `parseFloat` of the string                                                                                                               |
-| `boolean` | Present or `""` → `true`. `"false"` → `false`, **except on a form-associated component, where `"false"` → `true`** (`internal/client/index.js:2352-2353`) |
+| `boolean` | Present or `""` → `true`. `"false"` → `false` — `attributeChangedCallback` coerces the attribute to a boolean before the prop is set (`internal/client/index.js:3854-3856`). A string `"false"` assigned to the **property** of a form-associated component parses as `true` (`:2352-2353`) |
 | object    | Not possible — set the JS property (`el.config = {…}`)                                                                                   |
 | array     | Not possible — set the JS property                                                                                                       |
 

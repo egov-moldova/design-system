@@ -189,9 +189,11 @@ only the first two — [`form-reactivity.md`](form-reactivity.md#form-associated
 
 ## STENCIL-FORM-BOOLEAN-DEFAULT-TRUE — boolean prop defaulting to `true` on a form-associated component
 
-**Why**: on a form-associated component the attribute string `"false"` parses as `true`
-(`internal/client/index.js:2352-2353`), so `<mud-search-input clearable="false">` cannot turn the
-prop off from HTML.
+**Why**: on a form-associated component a string `"false"` assigned to the property parses as
+`true` (`internal/client/index.js:2352-2353`), so `el.clearable = "false"` — what a framework
+does when it binds the property from a template string — leaves `mud-search-input` clearable. The
+HTML attribute `clearable="false"` is not affected: `attributeChangedCallback` coerces it to
+`false` first (`:3854-3856`).
 
 **Fix**: invert the prop so its default is `false` (a breaking API change — decide it per component).
 

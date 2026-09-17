@@ -39,7 +39,7 @@ Two kinds exist:
 | F5  | `formStateRestoreCallback(state, mode)` handles a string state and ignores what it cannot restore                                                          | `manual`                                      |
 | F6  | `setFormValue(value, state)` is called with both arguments, so the browser can restore the state                                                          | `script-02:ANTIPATTERN-010-SETFORMVALUE-1ARG` |
 | F7  | `setValidity(flags, message, anchor)`: a flag set to `true` comes with a non-empty message, and the anchor is the internal focusable control               | `manual`                                      |
-| F8  | A boolean prop does not default to `true` — the attribute string `"false"` parses as `true` on a form-associated component (`:2352-2353`)                  | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
+| F8  | A boolean prop does not default to `true` — a string `"false"` assigned to the property parses as `true` on a form-associated component (`:2352-2353`); HTML attributes are coerced to a boolean first (`:3854-3856`)                  | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
 | F9  | Custom states for `:host(:state(invalid))` are declared in `@AttachInternals({ states: { … } })`                                                           | `manual`                                      |
 
 Every form-associated component also reflects its `name` prop; that invariant is asserted by

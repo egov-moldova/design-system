@@ -66,6 +66,11 @@ a real violation can pass as "0 results". Nothing fails when it drifts again.
    turned off from HTML. The five live instances (`mud-numeric-input.tsx:183,190,225`,
    `mud-search-input.tsx:86`, `mud-textarea.tsx:119`) are a product bug filed as a separate issue
    (Task 4.2), not fixed in this PR.
+   **Corrected at execution (Dan, 2026-09-17):** a browser probe showed the premise holds only for a
+   string `"false"` assigned to the property; `attributeChangedCallback` coerces an HTML attribute to
+   a boolean first (`internal/client/index.js:3854-3856`), so `clearable="false"` in markup gives
+   `false`. The check is kept at `warning`, the docs and script message say "property string", the
+   parity spec guards both runtime lines, and the Task 4.2 draft targets the property-string path.
 
 ### Options
 
@@ -1429,6 +1434,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - Task 2.4 (implementer subagent): 8 files edited; `output-templates.md` and `must-enforce-checklist.md` had no matching claim. Left for follow-up, not in this task's rules: `optimize-prompt/references/canonical-defaults.md:25,55,57,282` cite `_agents/anti-patterns.md` #14, #19, #20, #12 for rules those items do not state; `.claude/agents/audit-production.md:132` still restates the pre-Decision-2 `@Watch` rule.
 - Task 3.1 Step 3: sweep found 72 hits (70 `stale-prefix`, 2 `stencil-version`, 0 `lookaround`) in 16 files. 66 rename pairs over 14 files applied by `mechanical-worker` after an existence check per new name; placeholders (`MudName`, `mudX`, `HTMLMudXElement`, `MudButtonArgs`) kept as placeholders; `CorInput` → `MudTextInput`, `CorSelectInput` → `MudSelect`; `CorCard` is prose proposing a new component (renamed, not deleted); catalog rows `CorNotification` and `CorProgressTracker` deleted (no component). The worker also moved `cor<PascalComponent>` → `mud<PascalComponent>` in `canonical-defaults.md:141` (same line, outside its list; kept). The two `Stencil 4.x` claims (`optimize-prompt/SKILL.md:3`, `INTEGRATION.md:417`) now say `Stencil`.
 - Task 3.2: `node --test scripts/__tests__/stencil-compliance-skill.spec.mjs` → 7/7. Mutation check (anchored substitutions, restores asserted byte-equal, sentinel variants in a temporary spec copy; TAP names the failing test): a → "every code the skill cites exists"; b → "version-delta.md carries a section"; c and c' → "public API table matches … both ways"; d and e → "every eslint:/stylelint: enforced-by cell names a rule that is enabled"; f (all `STENCIL-MAP-KEY` citations removed) → "every stencil-scoped registry code is cited"; g and g' → "the local Yarn patch still applies"; h → "form-associated boolean parsing". 10/10 killed by the intended assertion; baseline 7/7 after restore.
+- Task 4.2 reproduction probe (lazy build, served from the repo root, Playwright console), `mud-search-input value="abc"`: markup `clearable="false"` → prop `false`, attribute removed; `setAttribute('clearable','false')` → `false`; `el.clearable = 'false'` (string) → `true`, attribute `""`; `el.clearable = false` → `false`; `mud-textarea show-counter="false"` (form-associated, not reflected) → `false`. Cause: `attributeChangedCallback` maps `null`/`"false"` to `false` before assigning (`:3854-3856`), so `parsePropertyValue`'s string branch (`:2352-2353`) is reached only by a string set on the property. Contradicted Decision 5 → stopped; Dan chose to keep the check corrected (see Decision 5 note). The DOM query for the clear control did not match even on the default element, so the probe's evidence is the prop values, which `mud-search-input.tsx:404` reads directly.
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan

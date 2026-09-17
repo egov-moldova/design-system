@@ -40,7 +40,7 @@ const USAGE = defaultUsage(
 export const RULES = [
   { code: 'STENCIL-SHADOW-REQUIRED', severity: 'error', ruleScope: 'stencil' },
   { code: 'STENCIL-FORM-CALLBACKS', severity: 'error', ruleScope: 'stencil' },
-  { code: 'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE', severity: 'error', ruleScope: 'stencil' },
+  { code: 'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE', severity: 'warning', ruleScope: 'stencil' },
   { code: 'STENCIL-MEMBER-ORDER', severity: 'warning', ruleScope: 'stencil' },
   { code: 'STENCIL-WATCH-ASYNC', severity: 'error', ruleScope: 'stencil' },
   { code: 'STENCIL-WATCH-WRITES-WATCHED', severity: 'warning', ruleScope: 'stencil' },
@@ -157,7 +157,7 @@ export function checkSource(tsxPath, componentName) {
         add(
           'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE',
           member,
-          `Boolean prop \`${prop.name}\` defaults to true on a form-associated component; the attribute "false" parses as true here, so it cannot be turned off from HTML.`,
+          `Boolean prop \`${prop.name}\` defaults to true on a form-associated component; a string "false" set on the property parses as true here, so a consumer binding the property from a template string cannot turn it off (HTML attributes are coerced to a boolean first).`,
         );
       }
     }
