@@ -113,10 +113,17 @@ export class MudHeaderMobile {
           <div class="drawer-top">
             <span class="logo">{this.renderLogo()}</span>
             <div class="drawer-top-actions">
-              <button type="button" class="language" aria-label={this.languageLabel} onClick={this.handleLanguageCycle}>
-                <mud-icon name="globe" size={20} aria-hidden="true"></mud-icon>
-                <span class="language-code">{activeLang?.label ?? ''}</span>
-              </button>
+              {this.languages.length > 0 && (
+                <button
+                  type="button"
+                  class="language"
+                  aria-label={this.languageLabel}
+                  onClick={this.handleLanguageCycle}
+                >
+                  <mud-icon name="globe" size={20} aria-hidden="true"></mud-icon>
+                  <span class="language-code">{activeLang?.label ?? ''}</span>
+                </button>
+              )}
               <button type="button" class="action close" aria-label={this.closeLabel} onClick={this.handleClose}>
                 <mud-icon name="cross-large" size={24} aria-hidden="true"></mud-icon>
               </button>

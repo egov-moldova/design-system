@@ -61,6 +61,12 @@ describe('mud-header-mobile', () => {
       queryShadow<HTMLElement>(root, '.language')?.click();
       expect((spy.mock.calls[0][0] as CustomEvent).detail.code).toBe('ru');
     });
+
+    it('is not rendered when languages is empty', async () => {
+      const { root } = await render(<mud-header-mobile open languages={[]}></mud-header-mobile>);
+      expect(queryShadow(root, '.language')).toBeNull();
+      expect(queryShadow(root, '.action.close')).not.toBeNull();
+    });
   });
 
   describe('drawer slots', () => {
