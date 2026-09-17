@@ -217,7 +217,7 @@ cd ../fix-issue-87-pixel-perfect-audit
 yarn install
 ```
 
-- [ ] **Step 2: Copy and commit this plan**
+- [x] **Step 2: Copy and commit this plan**
 
 ```bash
 mkdir -p .claude/plans
@@ -233,7 +233,7 @@ EOF
 
 ### Task 0.2: Environment and baseline (no commits)
 
-- [ ] **Step 1: Start Storybook and confirm the environment**
+- [x] **Step 1: Start Storybook and confirm the environment**
 
 ```bash
 yarn dx:prepare                     # tokens + custom elements, first run only
@@ -243,7 +243,7 @@ npx playwright install chromium-headless-shell
 [ -n "$FIGMA_TOKEN" ] && echo token-set                           # expect token-set
 ```
 
-- [ ] **Step 2: Run every command the skill, agent and QA doc name, record exit codes** (issue scope item 1)
+- [x] **Step 2: Run every command the skill, agent and QA doc name, record exit codes** (issue scope item 1)
 
 ```bash
 for c in mud-date-picker mud-date-input mud-table; do
@@ -256,7 +256,7 @@ node scripts/audit/05-story-exports.mjs mud-date-picker --json > /dev/null; echo
 
 Expected: each exits 0 or 1 (1 = findings), never 2.
 
-- [ ] **Step 3: Record the baseline in § Measured**
+- [x] **Step 3: Record the baseline in § Measured**
 
 ```bash
 for c in mud-date-picker mud-date-input mud-table; do
@@ -1753,6 +1753,23 @@ custom properties from :root and :host enumerated, var() substituted (value keep
 ```
 
 Filled in during execution: Task 0.2 Step 3, Task 1.3 Step 3, Task 2.1 Step 4, Task 2.2 Step 7, Task 2.3 Step 6, Task 5.1.
+
+Task 0.2, measured 2026-09-17 on `2ab30d8` (base `c4b3214`), Storybook 6007 served from this worktree, `FIGMA_TOKEN`
+set:
+
+```derived id=task-0.2
+$ exit codes (Step 2)
+figma-refs 0/0/0 · 15-style-parity date-picker 1, date-input 0, table 0 · 11-pixel-diff-states date-picker 1, date-input 0, table 0 · 05-story-exports 0 · no exit 2
+$ baseline (Step 3 snippet; pixel envelope shape is meta.states[].light|dark.status as assumed)
+mud-date-picker checked 97 failed 31 pixel PASS 0 WARNING 0 FAIL 6 UNKNOWN 0 (6 pixel states)
+mud-date-input checked 272 failed 0 pixel PASS 15 WARNING 8 FAIL 0 UNKNOWN 0 (23 pixel states)
+mud-table checked 118 failed 0 pixel PASS 0 WARNING 9 FAIL 0 UNKNOWN 0 (9 pixel states)
+$ mud-date-picker findings on main
+STYLE-MISMATCH 31 · STYLE-UNEXPECTED-ELEMENT 7 · every pixel FAIL pairs with PIXEL-SIZE-MISMATCH (capture 438 px tall vs Figma 390–392)
+```
+
+Pixel-state counts agree with the pre-execution `pixel:false` counts (15−9, 27−4, 11−2). The date-picker drift is
+pre-existing component work, not in scope.
 
 ## Not verified by this plan
 
