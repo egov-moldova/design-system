@@ -47,7 +47,7 @@ import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
 import { DEFAULT_PORT, isStorybookReachable, storyUrl } from './lib/storybook-helpers.mjs';
 import { launchBrowser, setTheme, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HINT } from './lib/browser-context.mjs';
-import { describeSizeMismatch } from './lib/image-diff.mjs';
+import { DEFAULT_PASS, DEFAULT_WARN, classifyDiff, describeSizeMismatch } from './lib/image-diff.mjs';
 import {
   defaultRefsDir,
   loadManifest,
@@ -78,20 +78,9 @@ const USAGE = defaultUsage(
   ],
 );
 
-const DEFAULT_PASS = 0.5;
-const DEFAULT_WARN = 2.0;
 const DEFAULT_SCALE = 2;
 
-// ─── Thresholds + status (pure, exported for tests) ───────────────────────
-
-export function classifyDiff(diffPercent, { passThreshold = DEFAULT_PASS, warnThreshold = DEFAULT_WARN } = {}) {
-  if (diffPercent === null || diffPercent === undefined || Number.isNaN(diffPercent)) {
-    return { status: 'UNKNOWN', requiresReview: true };
-  }
-  if (diffPercent < passThreshold) return { status: 'PASS', requiresReview: false };
-  if (diffPercent < warnThreshold) return { status: 'WARNING', requiresReview: true };
-  return { status: 'FAIL', requiresReview: false };
-}
+export { classifyDiff };
 
 export function kebabCase(s) {
   return s

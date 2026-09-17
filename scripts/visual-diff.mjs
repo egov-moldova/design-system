@@ -32,7 +32,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import { PNG } from 'pngjs';
-import { diffImages, parseHexColor } from './audit/lib/image-diff.mjs';
+import { classifyDiff, diffImages, parseHexColor } from './audit/lib/image-diff.mjs';
 
 // --- Parse CLI args ---
 const args = process.argv.slice(2);
@@ -90,14 +90,7 @@ if (diff.sizeMismatch) {
 writeFileSync(outputPath, PNG.sync.write(diff.diffImage));
 
 // --- Output results ---
-let status;
-if (diff.diffPercent < 0.5) {
-  status = 'PASS';
-} else if (diff.diffPercent < 2.0) {
-  status = 'WARNING';
-} else {
-  status = 'FAIL';
-}
+const { status } = classifyDiff(diff.diffPercent);
 
 const result = {
   figma: basename(figmaPath),

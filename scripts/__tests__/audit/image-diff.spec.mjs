@@ -3,17 +3,27 @@
  * Pixelmatch wrapper used by scripts/visual-diff.mjs and 11-pixel-diff-states.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 
 import {
+  DEFAULT_PASS,
+  DEFAULT_WARN,
   alignOffset,
+  classifyDiff,
   describeSizeMismatch,
   diffImages,
   flattenImage,
   padImage,
   parseHexColor,
 } from '../../audit/lib/image-diff.mjs';
+
+const SCRIPT = fileURLToPath(new URL('../../visual-diff.mjs', import.meta.url));
 
 /** Solid image; `fill(x, y)` may override individual pixels. */
 function image(width, height, rgba, fill) {
@@ -139,5 +149,42 @@ describe('image-diff: describeSizeMismatch', () => {
 
   it('returns null without a mismatch', () => {
     assert.equal(describeSizeMismatch(null, 2), null);
+  });
+});
+
+describe('image-diff: classifyDiff', () => {
+  it('bands on the shared defaults, with the lower bound exclusive', () => {
+    assert.equal(DEFAULT_PASS, 0.5);
+    assert.equal(DEFAULT_WARN, 2.0);
+    assert.equal(classifyDiff(0.49).status, 'PASS');
+    assert.equal(classifyDiff(0.5).status, 'WARNING');
+    assert.equal(classifyDiff(1.99).status, 'WARNING');
+    assert.equal(classifyDiff(2.0).status, 'FAIL');
+  });
+
+  it('is the function 11-pixel-diff-states exports', async () => {
+    const eleven = await import('../../audit/11-pixel-diff-states.mjs');
+    assert.equal(eleven.classifyDiff, classifyDiff);
+  });
+});
+
+describe('visual-diff CLI: status', () => {
+  it('reports the status classifyDiff gives for the measured percent', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const a = path.join(dir, 'a.png');
+    const b = path.join(dir, 'b.png');
+    fs.writeFileSync(a, PNG.sync.write(image(10, 10, [255, 255, 255, 255])));
+    fs.writeFileSync(
+      b,
+      PNG.sync.write(image(10, 10, [255, 255, 255, 255], (x, y) => (x < 3 && y < 3 ? [0, 0, 0, 255] : null))),
+    );
+    const res = spawnSync(
+      process.execPath,
+      [SCRIPT, '--figma', a, '--browser', b, '--output', path.join(dir, 'd.png')],
+      { encoding: 'utf8' },
+    );
+    const out = JSON.parse(res.stdout);
+    assert.ok(out.diffPercent > 2, `expected a FAIL-band percent, got ${out.diffPercent}`);
+    assert.equal(out.status, classifyDiff(out.diffPercent).status);
   });
 });

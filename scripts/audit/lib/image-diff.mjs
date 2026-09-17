@@ -25,6 +25,19 @@ import pixelmatch from 'pixelmatch';
 export const ALIGN_MODES = ['top-left', 'center'];
 export const WHITE = [255, 255, 255];
 
+/** Percent diff below which a comparison is PASS, and below which it is still WARNING. */
+export const DEFAULT_PASS = 0.5;
+export const DEFAULT_WARN = 2.0;
+
+export function classifyDiff(diffPercent, { passThreshold = DEFAULT_PASS, warnThreshold = DEFAULT_WARN } = {}) {
+  if (diffPercent === null || diffPercent === undefined || Number.isNaN(diffPercent)) {
+    return { status: 'UNKNOWN', requiresReview: true };
+  }
+  if (diffPercent < passThreshold) return { status: 'PASS', requiresReview: false };
+  if (diffPercent < warnThreshold) return { status: 'WARNING', requiresReview: true };
+  return { status: 'FAIL', requiresReview: false };
+}
+
 /** Offset that places an image of size `inner` inside a canvas of size `outer`. */
 export function alignOffset(outer, inner, align = 'top-left') {
   if (!ALIGN_MODES.includes(align)) throw new Error(`unknown align "${align}" (expected ${ALIGN_MODES.join(' | ')})`);
