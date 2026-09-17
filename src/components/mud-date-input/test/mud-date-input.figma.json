@@ -16,6 +16,38 @@
       "bleed": "auto"
     }
   },
+  "shared": {
+    "control-lg-focus": [
+      {
+        "target": "mud-date-input .control",
+        "node": "184:848",
+        "styles": {
+          "boxWidth": "282px",
+          "boxHeight": "48px",
+          "paddingLeft": "15px",
+          "paddingRight": "15px",
+          "columnGap": "8px",
+          "borderTopLeftRadius": "8px",
+          "borderTopColor": "#0058D2",
+          "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+        },
+        "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+      }
+    ],
+    "native-lg-populated": [
+      {
+        "target": "mud-date-input .native",
+        "node": "471:5984",
+        "styles": {
+          "fontFamily": "Onest",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "fontWeight": "400",
+          "color": "#121212"
+        }
+      }
+    ]
+  },
   "states": [
     {
       "name": "lg-default",
@@ -131,19 +163,7 @@
       },
       "expect": [
         {
-          "target": "mud-date-input .control",
-          "node": "184:848",
-          "styles": {
-            "boxWidth": "282px",
-            "boxHeight": "48px",
-            "paddingLeft": "15px",
-            "paddingRight": "15px",
-            "columnGap": "8px",
-            "borderTopLeftRadius": "8px",
-            "borderTopColor": "#0058D2",
-            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
-          },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "use": "control-lg-focus"
         },
         {
           "target": "mud-date-input .native",
@@ -170,15 +190,7 @@
       },
       "expect": [
         {
-          "target": "mud-date-input .native",
-          "node": "471:5984",
-          "styles": {
-            "fontFamily": "Onest",
-            "fontSize": "16px",
-            "lineHeight": "24px",
-            "fontWeight": "400",
-            "color": "#121212"
-          }
+          "use": "native-lg-populated"
         },
         {
           "target": "mud-date-input .ghost-remaining",
@@ -219,30 +231,10 @@
       },
       "expect": [
         {
-          "target": "mud-date-input .control",
-          "node": "184:848",
-          "styles": {
-            "boxWidth": "282px",
-            "boxHeight": "48px",
-            "paddingLeft": "15px",
-            "paddingRight": "15px",
-            "columnGap": "8px",
-            "borderTopLeftRadius": "8px",
-            "borderTopColor": "#0058D2",
-            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
-          },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "use": "control-lg-focus"
         },
         {
-          "target": "mud-date-input .native",
-          "node": "471:5984",
-          "styles": {
-            "fontFamily": "Onest",
-            "fontSize": "16px",
-            "lineHeight": "24px",
-            "fontWeight": "400",
-            "color": "#121212"
-          }
+          "use": "native-lg-populated"
         },
         {
           "target": "mud-date-input .ghost",
