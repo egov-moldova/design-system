@@ -916,26 +916,26 @@ git commit -m "docs(agents): relax the @Watch rule and point component docs at t
 **Interfaces:**
 - Produces: the section names Task 2.4 links to — `## Run contract`, `## Rule index`, `## Failure modes`, `## Self-check`, `## Out of scope`; the `enforced-by` cell grammar used in every rule table of the skill: exactly one of `compiler`, `tsc`, `eslint:<rule id>` (e.g. `eslint:@stencil/single-export`), `stylelint:<rule id>` (e.g. `stylelint:declaration-no-important`), `script-02:<code>`, `script-14`, `script-16:<code>`, `manual`, written in backticks. Task 3.2 parses `eslint:` and `stylelint:` cells.
 
-- [ ] **Step 1: Frontmatter `description`** — keep the trigger, add NOT clauses: "NOT `audit-component` (that is the whole production audit and calls this skill for Stencil rules). NOT `token-creation` (token and colour rules). NOT `accessibility-compliance` (WCAG)."
+- [x] **Step 1: Frontmatter `description`** — keep the trigger, add NOT clauses: "NOT `audit-component` (that is the whole production audit and calls this skill for Stencil rules). NOT `token-creation` (token and colour rules). NOT `accessibility-compliance` (WCAG)."
 
-- [ ] **Step 2: `## Run contract`** — input: one component name. Steps, in order:
+- [x] **Step 2: `## Run contract`** — input: one component name. Steps, in order:
   1. `node scripts/audit/run-all.mjs <component> --only 02,14,16 --json --out <scratch>/stencil.json`
   2. Read the envelope; quote each script's `summary` counts in the report — a report without them did not run step 1.
   3. `yarn lint` scoped output for the component's files, when the change touched TSX/CSS; for a form-associated component (`grep -l "formAssociated: true" <component tsx>` matches — the combined `run-all` envelope does not carry the contract), also `node --test scripts/__tests__/form-associated-contract.spec.mjs`.
   4. Judge only the `manual` rows of the rule index against the component source.
   5. Report: script findings grouped by code, then manual findings as `file:line — rule id — why`, then "not checked" with reasons.
 
-- [ ] **Step 3: `## Rule index`** — written in Task 2.3 Step 3 (after the references settle which rules survive); here add the heading and one sentence pointing at it. The table: one table, columns `Area | Rule | enforced-by | Code or reference`, one row per rule kept in the references after Task 2.3. Only `manual` rows carry a reference link. No "Key rule count" column (D8).
+- [x] **Step 3: `## Rule index`** — written in Task 2.3 Step 3 (after the references settle which rules survive); here add the heading and one sentence pointing at it. The table: one table, columns `Area | Rule | enforced-by | Code or reference`, one row per rule kept in the references after Task 2.3. Only `manual` rows carry a reference link. No "Key rule count" column (D8).
 
-- [ ] **Step 4: `## Failure modes`** — rows: reading a tool error as "0 results" (the old `rg` lookahead lines); applying an old-prefix name (`cor*`); treating `shadow: { delegatesFocus: true }` as a violation; demanding `formStateRestoreCallback` on a submitter; citing an anti-pattern by number instead of code; judging from memory without step 1's envelope.
+- [x] **Step 4: `## Failure modes`** — rows: reading a tool error as "0 results" (the old `rg` lookahead lines); applying an old-prefix name (`cor*`); treating `shadow: { delegatesFocus: true }` as a violation; demanding `formStateRestoreCallback` on a submitter; citing an anti-pattern by number instead of code; judging from memory without step 1's envelope.
 
-- [ ] **Step 5: `## Self-check`** — checklist: envelope counts quoted; every finding carries a code or a `manual` rule id; no rule judged that has an automated `enforced-by`.
+- [x] **Step 5: `## Self-check`** — checklist: envelope counts quoted; every finding carries a code or a `manual` rule id; no rule judged that has an automated `enforced-by`.
 
-- [ ] **Step 6: `## Out of scope`** — hydrate/SSR output targets and declarative shadow DOM (the project builds no hydrate output: `stencil.config.ts`), slot fixes for `scoped` components (every component uses shadow DOM), testing (see `TESTING.md`), tokens, Figma, WCAG, Storybook configuration.
+- [x] **Step 6: `## Out of scope`** — hydrate/SSR output targets and declarative shadow DOM (the project builds no hydrate output: `stencil.config.ts`), slot fixes for `scoped` components (every component uses shadow DOM), testing (see `TESTING.md`), tokens, Figma, WCAG, Storybook configuration.
 
-- [ ] **Step 7: Delete** the Top-10 table, §3 grep commands, the "Key rule count" column, `yarn build` before commit (use "the narrowest check: `yarn lint`, `yarn test`"), and every Romanian word (`reflectarea`, `cu`, `decoratori`).
+- [x] **Step 7: Delete** the Top-10 table, §3 grep commands, the "Key rule count" column, `yarn build` before commit (use "the narrowest check: `yarn lint`, `yarn test`"), and every Romanian word (`reflectarea`, `cu`, `decoratori`).
 
-- [ ] **Step 8: Verify and commit**
+- [x] **Step 8: Verify and commit**
 
 ```bash
 grep -nE "\(\?[!=<]|\bcor[A-Z]|\bCor[A-Z]|HTMLCor|reflectarea|decoratori|Key rule count" .claude/skills/stencil-compliance/SKILL.md   # → no output
