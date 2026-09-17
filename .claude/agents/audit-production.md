@@ -129,7 +129,7 @@ Verify `mud-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
 9. Private methods and refs
 10. `render()` — always last
 
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties not reflectable via attributes. See [`stencil-compliance/references/decorators.md#watch`](../skills/stencil-compliance/references/decorators.md#watch).
+**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
 ### 1.2.1 + 1.2.2 Lifecycle Cleanup + Reactivity Mutation
 

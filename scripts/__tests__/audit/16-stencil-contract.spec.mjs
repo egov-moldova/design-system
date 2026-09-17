@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
 import { checkSource, RULES } from '../../audit/16-stencil-contract.mjs';
+
+const SCRIPT = new URL('../../audit/16-stencil-contract.mjs', import.meta.url);
 
 function tsx(source) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 's16-'));
@@ -126,5 +129,15 @@ export class P {
     assert.deepEqual(codes(cmp('this.items.map(i => <li>{i}</li>)')), ['STENCIL-MAP-KEY']);
     assert.deepEqual(codes(cmp('this.items.map(i => { return (<li>{i}</li>); })')), ['STENCIL-MAP-KEY']);
     assert.deepEqual(codes(cmp('this.items.map(i => <li key={i}>{i}</li>)')), []);
+  });
+
+  it('reports a component it cannot find instead of passing it as clean', () => {
+    const run = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-doesnotexist', '--json'], { encoding: 'utf8' });
+    const envelope = JSON.parse(run.stdout);
+    assert.deepEqual(
+      envelope.findings.map(f => f.code),
+      ['STRUCTURE-NOT-FOUND'],
+    );
+    assert.notEqual(run.status, 0);
   });
 });

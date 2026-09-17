@@ -1380,7 +1380,7 @@ git commit -m "test(skills): tie stencil-compliance to its scripts, lint config 
 
 ### Task 4.2: Issue text for the form-associated boolean bug
 
-- [x] **Step 1:** Draft the issue in the style of #86 (title: "Form-associated boolean props defaulting to true cannot be disabled from HTML") with: the runtime lines `internal/client/index.js:2352-2353`, every `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` finding from Task 1.2 Step 6 (five on `18c3aae`, Decision 5), a reproduction (`<mud-search-input clearable="false">` renders the clear button), and the fix direction (invert to a default-`false` prop, a breaking API change). Save it to the scratch directory and hand it to Dan; Dan files it.
+- [x] **Step 1:** Draft the issue in the style of #86 (title: "Form-associated boolean props defaulting to true cannot be disabled from HTML") with: the runtime lines `internal/client/index.js:2352-2353`, every `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` finding from Task 1.2 Step 6 (five on `18c3aae`, Decision 5), a reproduction (`<mud-search-input clearable="false">` renders the clear button), and the fix direction (invert to a default-`false` prop, a breaking API change). Save it to the scratch directory and hand it to Dan; Dan files it. (Superseded by the Decision 5 correction: the reproduction is `el.clearable = "false"` on the property; the markup attribute gives `false`.)
 
 ---
 

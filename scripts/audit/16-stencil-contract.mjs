@@ -241,7 +241,16 @@ async function main() {
     : [resolveComponentPaths(args.component)];
   const findings = [];
   for (const target of targets) {
-    if (!target.found || !target.exists.tsx) continue;
+    if (!target.found || !target.exists.tsx) {
+      findings.push(
+        finding({
+          severity: 'error',
+          code: 'STRUCTURE-NOT-FOUND',
+          message: `Component "${target.name ?? target.input}" not found (no .tsx to check).`,
+        }),
+      );
+      continue;
+    }
     findings.push(...checkSource(target.paths.tsx, target.name));
   }
   const result = buildResult({
