@@ -556,24 +556,12 @@ surfaces an unexpected change; otherwise trust the envelope.
 
 ## Phase 10: Stencil Compliance Deep Pass
 
-The `audit-component --deep` invocation in Phase 1 already covers the 14-section Stencil rule pass. This phase surfaces the findings explicitly in the production report under their own header so reviewers see them grouped.
-
-Sections audited (delegated to [`stencil-compliance`](../skills/stencil-compliance/SKILL.md)):
-
-1. `@Component` decorator options
-2. `@Prop()` (mutability, reflection, types, defaults)
-3. `@State()` (mutation patterns)
-4. `@Event()` / `@Listen()` (composed, cancelable, target)
-5. `@Method()` (async / Promise contract)
-6. Lifecycle hooks (cleanup, async patterns)
-7. `<Host>` & `@Element()` (declarative pattern)
-8. JSX / Templating (keys, refs, event handlers)
-9. CSS / Styling (`::part`, `:host`, tokens)
-10. Form-Associated (full callback set)
-11. Reactive Data (no direct mutation)
-12. Serialization (when complex props)
-13. Functional Components (if used)
-14. Public API (imports, `readTask`/`writeTask`)
+The `audit-component --deep` invocation in Phase 1 already covers
+[`stencil-compliance`](../skills/stencil-compliance/SKILL.md)'s
+[Run contract](../skills/stencil-compliance/SKILL.md#run-contract), judged against its
+[Rule index](../skills/stencil-compliance/SKILL.md#rule-index). This phase surfaces the
+findings explicitly in the production report under their own header so reviewers see
+them grouped.
 
 For component-level deep audit (interactive), invoke `/audit-component @mud-<name> --deep`.
 

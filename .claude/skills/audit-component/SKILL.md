@@ -23,7 +23,7 @@ The audit runs in three layers. Each layer has a distinct responsibility, runtim
 
 - `componentName` (required): `mud-<name>` — folder name in `src/components/` or `src/hidden/`
 - Optional flags:
-  - `--deep` — also invoke [`stencil-compliance`](../stencil-compliance/SKILL.md) full rule pass + [`accessibility-compliance`](../accessibility-compliance/SKILL.md) deep audit (via `/audit-accessibility`)
+  - `--deep` — also invoke [`stencil-compliance`](../stencil-compliance/SKILL.md)'s [Run contract](../stencil-compliance/SKILL.md#run-contract) + [`accessibility-compliance`](../accessibility-compliance/SKILL.md) deep audit (via `/audit-accessibility`)
   - `--e2e` — include Phase 5b E2E test audit (default: unit-only). For future when E2E tests are mandated.
   - `--fast` — skip Wave 3 (browser scripts) AND skip L2. Used by `pre-pr-check` for sub-30s pre-commit pass.
   - `--ci` — skip Wave C AND skip L2 (auto-set when `process.env.CI` is truthy).
@@ -72,7 +72,7 @@ Wave 3 — Browser Verification (skipped if --fast)
                           │
                           ▼
 Optional Deep Pass (if --deep)
-   ├─ Full stencil-compliance pass (load all reference files)
+   ├─ stencil-compliance Run contract (see stencil-compliance/SKILL.md#run-contract)
    └─ Invoke /audit-accessibility (full 9-step WCAG audit)
                           │
                           ▼
@@ -144,7 +144,7 @@ The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
 | id | script | covers |
 |----|--------|--------|
 | 01 | `01-component-structure.mjs` | required + optional files, tokens file, hidden/components location |
-| 02 | `02-stencil-antipatterns.mjs` | 20 patterns from anti-patterns.md (inline styles, mutations, lifecycle leak, etc.) |
+| 02 | `02-stencil-antipatterns.mjs` | patterns from anti-patterns.md (inline styles, mutations, lifecycle leak, etc.) |
 | 03 | `03-git-hygiene.mjs` | branch naming, conventional commits, forbidden staged paths |
 | 04 | `04-jsdoc-completeness.mjs` | component class + per-prop / per-event / per-method JSDoc |
 | 05 | `05-story-exports.mjs` | enumerates stories, computes Storybook ids, coverage vs Default/AllVariants/AllSizes/States |
@@ -219,17 +219,22 @@ Dispatch in a SINGLE message with multiple parallel tool calls.
 
 ### Anti-Pattern detection
 
-Use Fast Path script `02-stencil-antipatterns.mjs` — 20 patterns (CSS + TSX)
+Use Fast Path script `02-stencil-antipatterns.mjs` (CSS + TSX)
 run in parallel internally. Reference catalogue:
 [`stencil-compliance/references/anti-patterns.md`](../stencil-compliance/references/anti-patterns.md).
 
 Pattern codes consumed from `findingsByTool.antipatterns`:
-`ANTIPATTERN-001-INLINE-STYLE`, `002-HOST-CLASSLIST`, `003-METHOD-NON-ASYNC`,
+`ANTIPATTERN-001-INLINE-STYLE`, `002-HOST-CLASSLIST`,
 `004-EVENTEMITTER-UNTYPED`, `005-ARRAY-MUTATION`, `007-LIFECYCLE-LEAK`,
-`010-SETFORMVALUE-1ARG`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`, `018-TRANSITION-ALL`,
+`010-SETFORMVALUE-1ARG`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`,
 `019-RAW-HEX`, `020-PALETTE-IN-CSS`, `021-RAW-SVG`, `023-CLASSNAME`,
-`025-EVENT-PREFIX`, `026-PROP-CONTENT-SLOT-FALLBACK`, `IMPORTANT`, `RAW-PIXELS`,
+`025-EVENT-PREFIX`, `026-PROP-CONTENT-SLOT-FALLBACK`, `HOST-DISPLAY`, `RAW-PIXELS`,
 `SECURITY-INNERHTML`, `TS-ANY`, `TS-IGNORE`.
+
+`@Method()` async, `!important` and `transition: all` are no longer
+`02-stencil-antipatterns.mjs` codes — they are enforced by `yarn lint`
+(`@stencil/async-methods`, `declaration-no-important`,
+`declaration-property-value-disallowed-list`).
 
 ### Bash (parallel)
 
@@ -355,7 +360,7 @@ Cross-reference Wave 1 grep results.
 - **Wave 2** is reasoning over Wave 1 data — no new I/O needed (except `stencil-compliance` Skill invocation if `--deep`).
 - **Wave 3** browser calls are sequential within a single MCP Playwright session (one browser instance), but `yarn audit:contrast` runs in parallel via Bash.
 - `--fast` flag skips Wave 3 entirely (sub-30s pre-commit pass).
-- `--deep` adds full `stencil-compliance` (~5s additional) and full `/audit-accessibility` (~30s additional with deep MCP navigation).
+- `--deep` adds `stencil-compliance`'s Run contract (~5s additional) and full `/audit-accessibility` (~30s additional with deep MCP navigation).
 
 ---
 
@@ -371,7 +376,7 @@ When invoked headlessly, the skill returns the Final Report string. The orchestr
 
 ## Related References
 
-- [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md) — full Stencil rule catalog (14 sections)
+- [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md) — Stencil rule catalog, see its [Run contract](../stencil-compliance/SKILL.md#run-contract) and [Rule index](../stencil-compliance/SKILL.md#rule-index)
 - [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA companion
 - [`token-creation/SKILL.md`](../token-creation/SKILL.md) — token-tier rules
 - [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific component patterns

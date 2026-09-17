@@ -58,20 +58,13 @@ Cross-reference [`stencil-compliance/references/decorators.md`](../../stencil-co
 
 ### 2.3 Stencil Decorator Audit (delegates to `stencil-compliance`)
 
-Apply the Top-10 quick rules from [`stencil-compliance/SKILL.md`](../../stencil-compliance/SKILL.md#2-top-10-must-check-rules-quick-audit):
+Run `yarn audit:antipatterns <component>` and `yarn audit:stencil-contract <component>`
+(the scripts behind `stencil-compliance`'s [Run contract](../../stencil-compliance/SKILL.md#run-contract)),
+then judge the remaining `manual` rows from its
+[Rule index](../../stencil-compliance/SKILL.md#rule-index) against the component source.
+Do not restate the rules here.
 
-- **Q1** `@Component`: `tag` starts with `mud-`, `shadow: true`, never `scoped: true`
-- **Q2** All `@Method()` async / `Promise<T>` (verified by Wave 1 grep)
-- **Q3** `EventEmitter<T>` non-empty type (verified by Wave 1 grep)
-- **Q4** Events that escape shadow DOM use `composed: true` (default; flag if overridden to false unintentionally)
-- **Q5** No direct mutations (verified by Wave 1 grep)
-- **Q6** Lifecycle cleanup pair (Phase 2.4)
-- **Q7** No `this.host.classList` (verified by Wave 1 grep)
-- **Q8** Form-associated has full callback set (Phase 2.5)
-- **Q9** `setFormValue(value, state)` 2-arg (verified by Wave 1 grep)
-- **Q10** Definite-assignment `!` on decorated fields
-
-If `--deep`: invoke `stencil-compliance` skill and run full 14-section pass; report findings under "Deep Stencil Audit".
+If `--deep`: invoke the `stencil-compliance` skill and run its full Run contract; report findings under "Deep Stencil Audit".
 
 ### 2.4 Lifecycle Cleanup Audit
 
@@ -140,7 +133,7 @@ Determine which CSS pattern applies and verify it's used consistently:
 - State via host class: `:host(.is-focused) .container { ... }`
 
 **Common CSS checks**:
-- `:host { display: ...; }` set (Anti-Pattern #17)
+- `:host { display: ...; }` set (`ANTIPATTERN-HOST-DISPLAY`)
 - Transitions: explicit properties (NOT `all`)
 - PostCSS nesting uses `&` correctly
 - No `!important` without justification

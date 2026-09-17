@@ -219,7 +219,7 @@ export class Cor<Name> {
 
 **Required pattern:** declarative `<Host class={getHostClasses()}>` driven by a private `getHostClasses(): string` method.
 
-**Forbidden:** `this.host.classList.add()` / `.remove()` / `.toggle()` in lifecycle hooks or event handlers (anti-pattern #26 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md)).
+**Forbidden:** `this.host.classList.add()` / `.remove()` / `.toggle()` in lifecycle hooks or event handlers (anti-pattern #26 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md), detected by `ANTIPATTERN-002-HOST-CLASSLIST`).
 
 ```tsx
 // ✓ Correct

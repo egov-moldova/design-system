@@ -97,7 +97,7 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 ### Deep Stencil Audit (if --deep)
 - Section 1 @Component: ...
 - Section 2 @Prop: ...
-- ... (14 sections)
+- ... (see `stencil-compliance/SKILL.md`'s Rule index)
 
 ### E2E Audit (if --e2e)
 - Test file present: yes/no
