@@ -10,13 +10,16 @@
  *
  * - Palette primitives are excluded: component CSS never references them
  *   (AGENTS.md rule 5).
- * - With `component` and `components` (the names under
- *   `tokens/core/components/`), tokens owned by another component are
- *   excluded. A token belongs to the longest component name it starts with,
- *   so `--button-group-*` is not a `button` token.
- * - Candidates are ranked: the component's own tokens (including its private
- *   `--_*` properties) before semantic ones, and within each, names that carry
- *   the property's words (`gap`, `border` + `radius`, `background`) first.
+ * - With `own` (the custom properties the element's component CSS references,
+ *   from `referencedTokens`) and `components` (the names under
+ *   `tokens/core/components/`), a token owned by a component is kept only if
+ *   that CSS references it. Ownership is not the name prefix alone:
+ *   mud-text-input's CSS uses `--input-*` tokens. A token belongs to the
+ *   longest component name it starts with, so `--button-group-*` is not a
+ *   `button` token.
+ * - Candidates are ranked: tokens the CSS references before semantic ones, and
+ *   within each, names that carry the property's words (`gap`, `border` +
+ *   `radius`, `background`) first.
  *
  * Several names for one value are all listed — the computed style cannot say
  * which one the CSS used. Pure — no DOM, no filesystem.
@@ -48,6 +51,11 @@ export function propertyWords(prop) {
   return words.includes('background') ? words.filter(w => w !== 'color') : words;
 }
 
+/** Custom properties a stylesheet reads through `var()` — the tokens its component actually uses. Pure. */
+export function referencedTokens(cssText) {
+  return new Set([...String(cssText ?? '').matchAll(/var\(\s*(--[A-Za-z0-9_-]+)/g)].map(m => m[1]));
+}
+
 /** The component a token belongs to (longest matching name), or null for a semantic token. */
 export function tokenOwner(name, components = []) {
   let owner = null;
@@ -61,24 +69,20 @@ export function matchTokens(
   prop,
   value,
   vars,
-  { tolerance = 0.01, limit = TOKEN_MATCH_LIMIT, component = null, components = [] } = {},
+  { tolerance = 0.01, limit = TOKEN_MATCH_LIMIT, own = null, components = [] } = {},
 ) {
   const v = String(value ?? '').trim();
   if (!v) return [];
-  const own = component ? component.replace(/^mud-/, '') : null;
   const words = propertyWords(prop);
   const rank = name => {
     const segments = name.replace(/^--_?/, '').split('-');
-    const isOwn = name.startsWith('--_') || (own !== null && tokenOwner(name, components) === own);
+    const isOwn = own !== null && own.has(name);
     const named = words.every(w => segments.includes(w));
     return (isOwn ? 0 : 2) + (named ? 0 : 1);
   };
   return Object.entries(vars ?? {})
     .filter(([name, raw]) => !EXCLUDED.test(name) && typeof raw === 'string' && raw.trim() !== '')
-    .filter(([name]) => {
-      const owner = own === null ? null : tokenOwner(name, components);
-      return owner === null || owner === own;
-    })
+    .filter(([name]) => own === null || own.has(name) || tokenOwner(name, components) === null)
     .filter(([, raw]) => sameKind(prop, raw.trim(), v) && compareStyleValue(prop, raw.trim(), v, { tolerance }).pass)
     .map(([name]) => ({ name, rank: rank(name) }))
     .sort((a, b) => a.rank - b.rank || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))

@@ -11,6 +11,7 @@ import {
   formatTokens,
   matchTokens,
   propertyWords,
+  referencedTokens,
   tokenOwner,
 } from '../../audit/lib/token-match.mjs';
 
@@ -96,8 +97,21 @@ describe('token-match: component scope and ranking', () => {
     assert.equal(tokenOwner('--spacing-8', components), null);
   });
 
-  it("excludes other components' tokens and ranks own, then named, then semantic", () => {
-    assert.deepEqual(matchTokens('rowGap', '8px', scoped, { component: 'mud-date-picker', components }), [
+  const own = referencedTokens(
+    '.a { gap: var(--_container-gap); padding: var(--date-picker-container-padding, 0); }\n' +
+      ':host { --_container-gap: var(--date-picker-header-gap); }',
+  );
+
+  it('reads the custom properties a stylesheet references, not the ones it defines', () => {
+    assert.deepEqual([...own].sort(), [
+      '--_container-gap',
+      '--date-picker-container-padding',
+      '--date-picker-header-gap',
+    ]);
+  });
+
+  it('excludes tokens owned by a component the CSS never references, and ranks own, then named, then semantic', () => {
+    assert.deepEqual(matchTokens('rowGap', '8px', scoped, { own, components }), [
       '--_container-gap',
       '--date-picker-header-gap',
       '--date-picker-container-padding',
@@ -106,7 +120,16 @@ describe('token-match: component scope and ranking', () => {
     ]);
   });
 
-  it('keeps every value match when no component is given', () => {
+  it('keeps a token named after another component when the CSS references it', () => {
+    const vars = { '--input-container-height-md': '48px', '--text-input-gap': '48px', '--size-48': '48px' };
+    const inputOwn = referencedTokens('.control { height: var(--input-container-height-md); }');
+    assert.deepEqual(matchTokens('boxHeight', '48px', vars, { own: inputOwn, components: ['input', 'text-input'] }), [
+      '--input-container-height-md',
+      '--size-48',
+    ]);
+  });
+
+  it('keeps every value match when no scope is given', () => {
     assert.equal(matchTokens('rowGap', '8px', scoped).length, 7);
   });
 

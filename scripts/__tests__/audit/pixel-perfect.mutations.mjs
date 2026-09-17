@@ -60,8 +60,8 @@ const MUTATIONS = [
   },
   {
     file: 'scripts/audit/lib/token-match.mjs',
-    from: 'return owner === null || owner === own;',
-    to: 'return true;',
+    from: 'own === null || own.has(name) || tokenOwner(name, components) === null',
+    to: 'true',
     spec: 'scripts/__tests__/audit/token-match.spec.mjs',
   },
 ];
@@ -73,6 +73,10 @@ function runSpec(dir, spec) {
 function sandbox() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pp-mutations-'));
   fs.cpSync(path.join(ROOT, 'scripts'), path.join(dir, 'scripts'), { recursive: true });
+  // 15-style-parity.spec lists the real component token files.
+  fs.cpSync(path.join(ROOT, 'tokens', 'core', 'components'), path.join(dir, 'tokens', 'core', 'components'), {
+    recursive: true,
+  });
   // figma-manifest.spec loads the real manifests, so they travel with the scripts.
   fs.cpSync(path.join(ROOT, 'src', 'components'), path.join(dir, 'src', 'components'), {
     recursive: true,
