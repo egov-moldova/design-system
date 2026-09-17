@@ -511,7 +511,8 @@ function compare({ referencePath, screenshotPath, diffPath, align, background, m
   };
 }
 
-function findingsFor(label, themed, scale, opts) {
+/** Findings for one compared state. Pure — exported for tests. */
+export function findingsFor(label, themed, scale, opts) {
   const out = [];
   const masked = themed.maskedPixels > 0 ? ` (${themed.maskedPixels} px masked)` : '';
   if (themed.maskedPixels > 0) {
@@ -556,6 +557,18 @@ function findingsFor(label, themed, scale, opts) {
     );
   } else if (themed.status === 'UNKNOWN' && themed.error) {
     out.push(finding({ severity: 'info', code: 'PIXEL-DIFF-SKIPPED', message: `${label}: ${themed.error}` }));
+  } else if (themed.status === 'UNKNOWN') {
+    // The diff ran but had no pixel left to compare (every pixel masked). A state that
+    // compared nothing must not read as verified, the same rule as PIXEL-NO-REFERENCE.
+    out.push(
+      finding({
+        severity: 'error',
+        code: 'PIXEL-NOTHING-COMPARED',
+        file,
+        message: `${label}: the manifest masks every pixel of the capture — nothing was compared.`,
+        fix: 'Narrow the state mask to the mock-data elements, or set "pixel": false and rely on style parity.',
+      }),
+    );
   }
   return out;
 }

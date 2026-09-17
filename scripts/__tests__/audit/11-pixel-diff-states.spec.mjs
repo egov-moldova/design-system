@@ -14,6 +14,7 @@ import { afterEach, describe, it } from 'node:test';
 
 import {
   classifyDiff,
+  findingsFor,
   kebabCase,
   pickReferencePath,
   DEFAULT_PASS,
@@ -133,5 +134,44 @@ describe('11-pixel-diff-states: pickReferencePath', () => {
   it('kebab-cases story names when looking up files', () => {
     const dir = tempFigmaDir(['all-variants-table.png']);
     assert.equal(pickReferencePath(dir, 'AllVariantsTable', 'light'), path.join(dir, 'all-variants-table.png'));
+  });
+});
+
+describe('11-pixel-diff-states: findingsFor', () => {
+  const opts = { warnThreshold: 2 };
+  const codes = themed => findingsFor('s', { diffImagePath: null, ...themed }, 2, opts).map(f => [f.code, f.severity]);
+
+  it('reports a masked FAIL with the masked count in the message', () => {
+    const out = findingsFor('s', { status: 'FAIL', diffPercent: 5, maskedPixels: 12, diffImagePath: null }, 2, opts);
+    assert.deepEqual(
+      out.map(f => [f.code, f.severity]),
+      [
+        ['PIXEL-MASKED', 'info'],
+        ['PIXEL-DIFF-FAIL', 'error'],
+      ],
+    );
+    assert.match(out[1].message, /\(12 px masked\)/);
+  });
+
+  it('leaves the masked note out when nothing was masked', () => {
+    const out = findingsFor('s', { status: 'WARNING', diffPercent: 1, maskedPixels: 0, diffImagePath: null }, 2, opts);
+    assert.deepEqual(
+      out.map(f => f.code),
+      ['PIXEL-DIFF-WARNING'],
+    );
+    assert.doesNotMatch(out[0].message, /masked/);
+  });
+
+  it('turns a comparison of nothing into an error, never a clean pass', () => {
+    assert.deepEqual(codes({ status: 'UNKNOWN', diffPercent: null, maskedPixels: 400 }), [
+      ['PIXEL-MASKED', 'info'],
+      ['PIXEL-NOTHING-COMPARED', 'error'],
+    ]);
+  });
+
+  it('keeps a tooling error as a skipped note', () => {
+    assert.deepEqual(codes({ status: 'UNKNOWN', diffPercent: null, maskedPixels: 0, error: 'visual-diff crashed' }), [
+      ['PIXEL-DIFF-SKIPPED', 'info'],
+    ]);
   });
 });

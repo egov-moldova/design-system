@@ -61,4 +61,26 @@ describe('state-page: maskRects', () => {
       [{ x: 20, y: 20, width: 40, height: 20 }],
     );
   });
+
+  it('clips boxes to the capture and drops boxes outside it', () => {
+    const clip = { x: 100, y: 50, width: 200, height: 100 };
+    assert.deepEqual(
+      maskRects(
+        [
+          { x: 90, y: 140, width: 30, height: 30 },
+          { x: 100, y: 200, width: 50, height: 10 },
+        ],
+        clip,
+        1,
+      ),
+      [{ x: 0, y: 90, width: 20, height: 10 }],
+    );
+  });
+
+  it('rounds the start down and the end up, so edge pixels stay masked', () => {
+    assert.deepEqual(
+      maskRects([{ x: 10.3, y: 0, width: 5.2, height: 1 }], { x: 0, y: 0, width: 100, height: 100 }, 2),
+      [{ x: 20, y: 0, width: 11, height: 2 }],
+    );
+  });
 });

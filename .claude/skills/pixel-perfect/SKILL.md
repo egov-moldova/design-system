@@ -156,6 +156,7 @@ Without a manifest the script falls back to story mode (`--figma-dir` with one `
 | Pixel difference within thresholds | script — `11-pixel-diff-states` | `PIXEL-DIFF-WARNING`, `PIXEL-DIFF-FAIL` |
 | A reference exists for every pixel state | script — `11-pixel-diff-states` | `PIXEL-NO-REFERENCE` |
 | Masked regions are disclosed | script — `11-pixel-diff-states` | `PIXEL-MASKED` |
+| A masked state still compares pixels | script — `11-pixel-diff-states` | `PIXEL-NOTHING-COMPARED` |
 | Capture succeeded | script — `11-pixel-diff-states` | `PIXEL-CAPTURE-FAILED`, `PIXEL-DIFF-SKIPPED` |
 | Story mode (no manifest) | script — `11-pixel-diff-states` | `PIXEL-NO-REFERENCES`, `PIXEL-NO-STORIES` |
 | Values are copied from Figma, never inferred | model — steps 1–2 | — |

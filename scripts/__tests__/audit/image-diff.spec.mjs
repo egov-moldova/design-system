@@ -188,6 +188,39 @@ describe('visual-diff CLI: status', () => {
     assert.ok(out.diffPercent > 2, `expected a FAIL-band percent, got ${out.diffPercent}`);
     assert.equal(out.status, classifyDiff(out.diffPercent).status);
   });
+
+  function pair(dir) {
+    const a = path.join(dir, 'a.png');
+    const b = path.join(dir, 'b.png');
+    fs.writeFileSync(a, PNG.sync.write(image(10, 10, [255, 255, 255, 255])));
+    fs.writeFileSync(b, PNG.sync.write(image(10, 10, [0, 0, 0, 255])));
+    return [a, b];
+  }
+
+  it('refuses --masks that is not a JSON array', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const [a, b] = pair(dir);
+    const res = spawnSync(process.execPath, [SCRIPT, '--figma', a, '--browser', b, '--masks', '{}'], {
+      encoding: 'utf8',
+    });
+    assert.equal(res.status, 2);
+    assert.match(res.stderr, /--masks must be a JSON array/);
+  });
+
+  it('exits 1 with UNKNOWN when the masks cover every pixel', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const [a, b] = pair(dir);
+    const masks = JSON.stringify([{ x: 0, y: 0, width: 10, height: 10 }]);
+    const res = spawnSync(
+      process.execPath,
+      [SCRIPT, '--figma', a, '--browser', b, '--masks', masks, '--output', path.join(dir, 'd.png')],
+      { encoding: 'utf8' },
+    );
+    const out = JSON.parse(res.stdout);
+    assert.equal(out.status, 'UNKNOWN');
+    assert.equal(out.maskedPixels, 100);
+    assert.equal(res.status, 1);
+  });
 });
 
 describe('image-diff: masks', () => {

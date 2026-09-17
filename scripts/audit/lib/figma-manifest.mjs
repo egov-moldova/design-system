@@ -54,6 +54,7 @@
  * - `mask` (state or defaults) lists selectors painted with the page
  *   background on both images before the pixel diff — for mock data such as
  *   dates. Masked pixels are reported; style parity still checks the elements.
+ *   A state's `"mask": []` opts out of `defaults.mask`.
  * - `figma.skip` lists Figma variants the manifest deliberately does not cover,
  *   each with a reason; `figma-refs --check` reports every other uncovered one.
  * - Styles accept any computed-style property plus `boxWidth`, `boxHeight`
@@ -267,9 +268,9 @@ function validateCommon(obj, where, errors) {
     }
   }
   if (obj.mask !== undefined) {
-    const ok =
-      Array.isArray(obj.mask) && obj.mask.length > 0 && obj.mask.every(s => typeof s === 'string' && s.length > 0);
-    if (!ok) errors.push(`${where}.mask must be a non-empty array of selectors`);
+    // An empty list is valid: it lets a state opt out of defaults.mask.
+    const ok = Array.isArray(obj.mask) && obj.mask.every(s => typeof s === 'string' && s.length > 0);
+    if (!ok) errors.push(`${where}.mask must be an array of selectors`);
   }
 }
 

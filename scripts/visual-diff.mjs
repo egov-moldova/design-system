@@ -22,8 +22,9 @@
  *   --masks      JSON array of {x, y, width, height} in capture pixels, painted with the
  *                background on both images before the diff (mock data). Reported as maskedPixels.
  *
- * Exit codes: 0 PASS/WARNING · 1 FAIL (diff >= 2%) · 2 usage error or unreadable
- * input (these were 1 before; 11-pixel-diff-states distinguishes them).
+ * Exit codes: 0 PASS/WARNING · 1 FAIL, or UNKNOWN when masks leave no pixel to
+ * compare · 2 usage error or unreadable input (11-pixel-diff-states distinguishes
+ * 2 from a result).
  *
  * Output (JSON to stdout):
  *   { figma, browser, dimensions, diffPixels, maskedPixels, totalPixels, diffPercent, status, align, background, sizeMismatch, outputPath }
@@ -121,4 +122,4 @@ const result = {
 };
 
 console.log(JSON.stringify(result, null, 2));
-process.exit(status === 'FAIL' ? 1 : 0);
+process.exit(status === 'FAIL' || status === 'UNKNOWN' ? 1 : 0);

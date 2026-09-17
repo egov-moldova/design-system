@@ -236,7 +236,17 @@ describe('figma-manifest: mask', () => {
 
   it('rejects a mask that is not a list of selectors', () => {
     const errors = validateManifest(manifest([{ name: 'a', node: '1:2', mask: 'mud-x .date' }]));
-    assert.ok(errors.some(e => /mask must be a non-empty array of selectors/.test(e)));
+    assert.ok(errors.some(e => /mask must be an array of selectors/.test(e)));
+    const empty = validateManifest(manifest([{ name: 'a', node: '1:2', mask: [''] }]));
+    assert.ok(empty.some(e => /mask must be an array of selectors/.test(e)));
+  });
+
+  it('lets a state opt out of the defaults mask with an empty list', () => {
+    const m = manifest([{ name: 'a', node: '1:2', mask: [] }], {
+      defaults: { story: 'molecules-date-picker--default', mask: ['mud-x .day-cell'] },
+    });
+    assert.deepEqual(validateManifest(m), []);
+    assert.deepEqual(resolveState(m, m.states[0], 'mud-x').mask, []);
   });
 });
 
