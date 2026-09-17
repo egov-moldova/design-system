@@ -199,20 +199,21 @@ export const PATTERNS = [
     severity: 'warning',
     scope: 'css',
     ruleScope: 'project',
-    regex: /\b(\d+)px\b/,
+    regex: /(?<![\d.])(\d+(?:\.\d+)?)px\b/,
     message: 'Hardcoded pixel value — should use a spacing/sizing token.',
     fix: 'Replace with var(--spacing-*) or var(--size-*); allow 0px and 1px (borders/resets) only.',
     filter: ({ match, line }) => {
       const num = Number(match[1]);
-      if (num === 0 || num === 1) return false;
+      if (num <= 1) return false;
       const trimmed = line.trim();
       if (trimmed.startsWith('/*') || trimmed.startsWith('*')) return false;
-      // No token scale covers these: breakpoint conditions, the literal fallback of a
-      // token reference, arithmetic inside calc(), and sub-pixel hairlines (`0.5px`).
+      // No token scale covers these: breakpoint conditions (including a condition continued on
+      // the next line), the literal fallback of a token reference, arithmetic inside calc(), and
+      // sub-pixel hairlines (`0.5px`, already excluded by the `<= 1` test above).
       if (/^@(media|container)\b/.test(trimmed)) return false;
+      if (/^(and|or|not)?\s*\((min|max)-(width|height)\s*:/.test(trimmed)) return false;
       const before = line.slice(0, match.index);
       if (/var\(\s*--[\w-]+\s*,\s*-?$/.test(before)) return false;
-      if (/\b0\.$/.test(before)) return false;
       if (isInsideCalc(before)) return false;
       return true;
     },
@@ -467,12 +468,25 @@ export const FILE_CHECKS = [
     ruleScope: 'stencil',
     check: (content, ctx) => {
       const css = stripCssBlockComments(content);
-      // Only the bare `:host { … }` rule sets the element's default display;
-      // `:host(...)` state rules may legitimately omit it.
-      const m = css.match(/(^|[};])\s*:host\s*\{([^}]*)\}/);
-      if (!m) return [];
-      if (/(^|;|\{)\s*display\s*:/.test(m[2])) return [];
-      const line = css.slice(0, m.index + m[0].indexOf(':host')).split('\n').length;
+      // Only a bare `:host { … }` rule sets the element's default display; `:host(...)` state
+      // rules may omit it. A stylesheet may split the bare rule into several blocks, and a block may
+      // nest rules (postcss-nested), so every bare block is read with its nested rules removed.
+      const blocks = [...css.matchAll(/(^|[};])\s*:host\s*\{/g)].map(m => {
+        const open = m.index + m[0].length;
+        let depth = 1;
+        let end = open;
+        while (end < css.length && depth > 0) {
+          if (css[end] === '{') depth++;
+          else if (css[end] === '}') depth--;
+          end++;
+        }
+        let body = css.slice(open, end - 1);
+        while (/\{[^{}]*\}/.test(body)) body = body.replace(/\{[^{}]*\}/g, ';');
+        return { at: m.index + m[0].indexOf(':host'), body };
+      });
+      if (!blocks.length) return [];
+      if (blocks.some(b => /(^|;|\{)\s*display\s*:/.test(b.body))) return [];
+      const line = css.slice(0, blocks[0].at).split('\n').length;
       return [
         finding({
           severity: 'warning',

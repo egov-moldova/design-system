@@ -233,6 +233,29 @@ export class P {
     assert.equal(envelope.meta.filesScanned, 1);
   });
 
+  it('recognises a submitter by its requestSubmit call, not by text in a comment', () => {
+    const cmp = body => `@Component({ tag: 'mud-probe', shadow: true, formAssociated: true })
+export class P {
+  @AttachInternals() internals!: ElementInternals;
+  formResetCallback() {}
+  formDisabledCallback() {}
+  ${body}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(codes(cmp('onClick() { this.internals?.form?.requestSubmit(); }')), []);
+    assert.deepEqual(codes(cmp('// calls internals.form?.requestSubmit( elsewhere\n  onClick() {}')), [
+      'STENCIL-FORM-CALLBACKS',
+    ]);
+  });
+
+  it('ignores a stray semicolon after render()', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  render() { return <Host />; };
+}`;
+    assert.deepEqual(codes(src), []);
+  });
+
   it('reports a component it cannot find instead of passing it as clean', () => {
     const run = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-doesnotexist', '--json'], { encoding: 'utf8' });
     const envelope = JSON.parse(run.stdout);

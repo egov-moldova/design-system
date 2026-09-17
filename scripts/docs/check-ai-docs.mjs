@@ -686,16 +686,18 @@ function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
 // The component prefix was renamed; a `cor`-prefixed name in agent docs is stale, in every
 // spelling a doc uses: camel/Pascal identifiers, kebab tags and custom properties
 // (`cor-button`, `--cor-color`), and the prefix named as a word (`cor` prefix).
-// `src/legacy` still ships `cor-*` components, so a line citing that path is exempt.
+// `src/legacy` still ships `cor-*` components, so a match inside a `src/legacy/…` path is exempt.
 // `Corlab` / `corlab-` (lowercase after the prefix) is the vendor name and does not match.
 // Placeholder spellings (`Cor<Name>`, `cor<Component>`, `HTMLCor${Name}Element`) count too.
-const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z<]|\b[Cc]or\$\{|HTMLCor[A-Z<$]|\bcor-[a-z]|`cor`|\bcor\s+prefix/g;
+const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z<]|\b[Cc]or\$\{|HTMLCor[A-Z<$]|\bcor-[a-z]|`[Cc]or`|\b[Cc]or\s+prefix/g;
+const LEGACY_PATH = /src\/legacy\/[^\s`)]*/g;
 
 function checkStalePrefix(relPath, lines) {
   const hits = [];
   lines.forEach((line, i) => {
-    if (line.includes('src/legacy')) return;
+    const legacy = [...line.matchAll(LEGACY_PATH)].map(m => [m.index, m.index + m[0].length]);
     for (const m of line.matchAll(STALE_PREFIX)) {
+      if (legacy.some(([start, end]) => m.index >= start && m.index < end)) continue;
       hits.push(
         makeHit(relPath, i + 1, 'stale-prefix', `retired component prefix in \`${m[0]}…\`; use the mud prefix`),
       );
@@ -713,7 +715,12 @@ function checkStalePrefix(relPath, lines) {
 // and the Grep tool is ripgrep-backed. Named groups `(?<name>` are supported.
 // PCRE is enabled by `--pcre2`, `--perl-regexp`, or a short-flag group containing `P` (`-oP`).
 const LOOKAROUND = /\(\?(?:[=!]|<[=!])/;
-const PCRE2_FLAG = /(?:^|\s)(?:--pcre2|--perl-regexp|-[A-Za-z]*P[A-Za-z]*)(?:\s|$)/;
+const PCRE2_FLAG = /(?:^|\s)(?:--pcre2|--perl-regexp|--engine[= ](?:pcre2|auto)|-[A-Za-z]*P[A-Za-z]*)(?:\s|$)/;
+// A line may chain several commands; each one needs its own PCRE flag.
+const commandsOf = text => text.split(/\s\|\s|&&|\|\||;\s/);
+const needsPcre = text => commandsOf(text).some(cmd => LOOKAROUND.test(cmd) && !PCRE2_FLAG.test(cmd));
+// A JS regex literal in a code span (`/(?<=\d)px/`) is not a grep pattern.
+const JS_REGEX_LITERAL = /^\/.+\/[dgimsuvy]*$/;
 // Only shell fences hold grep commands; a JS/TS sample's regex literal may use lookarounds.
 const SHELL_FENCE_LANGS = new Set(['', 'bash', 'sh', 'shell', 'zsh', 'console']);
 
@@ -733,14 +740,14 @@ function checkLookaround(relPath, lines) {
     if (inFence) {
       // Each command is judged on its own; a `\` continuation carries its flags to the next line.
       const pcre = continuesPcre || PCRE2_FLAG.test(line);
-      if (shellFence && LOOKAROUND.test(line) && !pcre) {
+      if (shellFence && LOOKAROUND.test(line) && (continuesPcre ? false : needsPcre(line))) {
         hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
       }
       continuesPcre = pcre && /\\\s*$/.test(line);
       return;
     }
     for (const span of findCodeSpans(line)) {
-      if (LOOKAROUND.test(span.content) && !PCRE2_FLAG.test(span.content)) {
+      if (!JS_REGEX_LITERAL.test(span.content.trim()) && needsPcre(span.content)) {
         hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
         break;
       }
@@ -753,8 +760,13 @@ function checkLookaround(relPath, lines) {
 // Rule: stencil-version
 // ---------------------------------------------------------------------------
 
-// Prose (`Stencil 4.46`) and package spellings (`@stencil/core` `~4.46.0`, `@stencil/core@4.46`).
-const STENCIL_CLAIMS = [/\bStencil\s+`?v?(\d+)(?:\.(\d+|x))?/gi, /@stencil\/core`?(?:@|\s+)?`?[~^]?v?(\d+)\.(\d+|x)/gi];
+// Prose (`Stencil 4.46`, `Stencil >= 4.46`, `Stencil (4.46)`), table rows (`| Stencil | ~4.46.0 |`) and
+// package spellings (`@stencil/core` `~4.46.0`, `@stencil/core@4.46`, `"@stencil/core": "~4.46.0"`).
+const STENCIL_PROSE_CLAIMS = [
+  /\bStencil\s+[`(]?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)(?:\.(\d+|x))?/gi,
+  /\bStencil\s*\|\s*`?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)\.(\d+|x)/gi,
+];
+const STENCIL_PACKAGE_CLAIM = /@stencil\/core[`"]?(?:@|:?\s*)[`"]?\s*(?:[~^]|>=?)?v?(\d+)\.(\d+|x)/gi;
 
 function pinnedMajorMinor(pkg, name) {
   const range = pkg.dependencies?.[name] ?? pkg.devDependencies?.[name];
@@ -770,8 +782,9 @@ function checkStencilVersion(relPath, lines, pin) {
       inFence = !inFence;
       return;
     }
-    if (inFence) return;
-    const claims = STENCIL_CLAIMS.flatMap(re => [...line.matchAll(re)]);
+    // Inside a fence only the package spelling is a claim (a manifest or install command).
+    const patterns = inFence ? [STENCIL_PACKAGE_CLAIM] : [...STENCIL_PROSE_CLAIMS, STENCIL_PACKAGE_CLAIM];
+    const claims = patterns.flatMap(re => [...line.matchAll(re)]);
     for (const m of claims) {
       if (Number(m[1]) !== pin.major) continue; // another major is a forward or history reference
       // `4.x` is a vague claim; a minor above the pin claims an API this repo does not have.

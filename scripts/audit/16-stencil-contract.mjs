@@ -205,10 +205,20 @@ export function checkSource(tsxPath, componentName) {
   }
 
   const methodNames = new Set(classNode.members.map(getMemberName).filter(Boolean));
-  const classText = classNode.getText(sourceFile);
 
   if (contract.formAssociated) {
-    const isSubmitter = /\binternals\.form\?*\.requestSubmit\(/.test(classText);
+    // A submitter calls `this.internals.form.requestSubmit()` (any optional-chaining spelling).
+    let isSubmitter = false;
+    const unwrap = n => (n && ts.isNonNullExpression(n) ? n.expression : n);
+    walk(classNode, node => {
+      if (!ts.isCallExpression(node)) return;
+      const call = unwrap(node.expression);
+      if (!ts.isPropertyAccessExpression(call) || call.name.text !== 'requestSubmit') return;
+      const form = unwrap(call.expression);
+      if (!ts.isPropertyAccessExpression(form) || form.name.text !== 'form') return;
+      const internals = unwrap(form.expression);
+      if (ts.isPropertyAccessExpression(internals) && internals.name.text === 'internals') isSubmitter = true;
+    });
     const required = [
       'formResetCallback',
       'formDisabledCallback',
@@ -250,7 +260,8 @@ export function checkSource(tsxPath, componentName) {
     highest = Math.max(highest, rank);
   }
   const renderIndex = classNode.members.findIndex(m => getMemberName(m) === 'render');
-  const afterRender = renderIndex === -1 ? undefined : classNode.members[renderIndex + 1];
+  const afterRender =
+    renderIndex === -1 ? undefined : classNode.members.slice(renderIndex + 1).find(m => !ts.isSemicolonClassElement(m));
   if (afterRender) {
     add(
       'STENCIL-MEMBER-ORDER',

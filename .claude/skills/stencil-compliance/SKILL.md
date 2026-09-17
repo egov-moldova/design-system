@@ -11,17 +11,19 @@ they can; you judge only the `manual` rows of the [rule index](#rule-index).
 
 Project overlays in [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) and
 [`src/components/_agents/component-structure.md`](../../../src/components/_agents/component-structure.md)
-(`mud-` prefix, member order, `@Watch` rule, host classes) win where they are stricter than Stencil's docs.
+(`mud-` prefix, member order, `@Watch` rule, host classes) win over Stencil's docs, whether stricter or looser.
 
 ## Run contract
 
 Input: one component name (`mud-<name>`).
 
 1. Run the scripts:
-   `node scripts/audit/run-all.mjs <component> --only 02,14,16 --json --out <scratch>/stencil.json`
+   `node scripts/audit/run-all.mjs <component> --only 02,04,14,16 --json --out <scratch>/stencil.json`
 2. Read the envelope. Quote each script's `summary` counts (`results[].summary`) in the report — a report
-   without them did not run step 1.
-3. When the change touched TSX or CSS, run `yarn lint` and keep the output for the component's files.
+   without them did not run step 1. Script 14 contributes only its own findings (e.g. a file with no
+   component class); its extracted contract is not in the combined envelope.
+3. When the change touched TSX or CSS, run `yarn lint` and keep the output for the component's files; when
+   it did not, the `eslint:`/`stylelint:` rows are covered by the CI lint gate — say so in the report.
    For a form-associated component (`grep -l "formAssociated: true" <component tsx>` matches — the
    combined `run-all` envelope does not carry the contract), also run
    `node --test scripts/__tests__/form-associated-contract.spec.mjs`.
@@ -38,7 +40,7 @@ Input: one component name (`mud-<name>`).
 ## Rule index
 
 One row per rule kept in the references. `enforced-by` is exactly one of `compiler`, `tsc`,
-`eslint:<rule id>`, `stylelint:<rule id>`, `script-02:<code>`, `script-16:<code>`,
+`eslint:<rule id>`, `stylelint:<rule id>`, `script-02:<code>`, `script-04:<code>`, `script-16:<code>`,
 `manual`. Only `manual` rows link a reference; automated rows name the code their tool emits.
 
 | Area | Rule | enforced-by | Code or reference |
@@ -61,10 +63,11 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Prop | P7: A prop with neither a default nor `?` needs `!` under `strict` | `tsc` | — |
 | @Prop | P8: On a form-associated component, a boolean prop does not default to `true`: a string `"false"` assigned to the property parses as `true` there, so a consumer that sets the property from a template string cannot turn it off (HTML attributes are coerced to a boolean first) | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` | `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
 | @Prop | P9: Enum props import their values from `mud-<name>.enums.ts` or a union type | `manual` | [decorators P9](references/decorators.md#prop) |
-| @Prop | P10: Every `@Prop()` has JSDoc; a prop with a default documents it | `manual` | [decorators P10](references/decorators.md#prop) |
+| @Prop | P10: Every `@Prop()` has JSDoc | `script-04:JSDOC-PROP-MISSING` | `JSDOC-PROP-MISSING` |
 | @Prop | P11: Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual` | [decorators P11](references/decorators.md#prop) |
 | @Prop | P12: Props are public (no `private`/`protected` modifier) | `eslint:@stencil/props-must-be-public` | — |
 | @Prop | P13: Prop names are camelCase; the attribute is derived as kebab-case | `manual` | [decorators P13](references/decorators.md#prop) |
+| @Prop | P14: A prop with a default documents it with `@default` | `script-04:JSDOC-PROP-DEFAULT-TAG` | `JSDOC-PROP-DEFAULT-TAG` |
 | @State | S1: `@State()` only for values that change render output | `manual` | [decorators S1](references/decorators.md#state) |
 | @State | S2: Refs, timers and IDs are plain fields, never `@State()` | `manual` | [decorators S2](references/decorators.md#state) |
 | @State | S3: A value `render()` can compute is not stored in state | `manual` | [decorators S3](references/decorators.md#state) |
@@ -141,10 +144,10 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Form-Associated | F9: Custom states for `:host(:state(invalid))` are declared in `@AttachInternals({ states: { … } })` | `manual` | [form-reactivity F9](references/form-reactivity.md#form-associated) |
 | Reactive | R2: Objects are reassigned with spread; `obj.x = y`, `obj['x'] = y`, `delete obj.x`, `arr[i] = y` do not re-render | `manual` | [form-reactivity R2](references/form-reactivity.md#reactive) |
 | Reactive | R3: `@Watch` fires on assignment, not on mutation | `manual` | [form-reactivity R3](references/form-reactivity.md#reactive) |
-| Reactive | R4: A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render (`:3830-3835`); mirror the value into a `@State` rather than calling `forceUpdate()` | `manual` | [form-reactivity R4](references/form-reactivity.md#reactive) |
-| Serialization | SE1: No `reflect: true` on an object or array prop without a serializer — a complex value is never written to an attribute (`:2545`) | `manual` | [form-reactivity SE1](references/form-reactivity.md#serialization) |
-| Serialization | SE2: A `@PropSerialize` method returns a string, or `null` to remove the attribute; `false` also removes it, `true` writes `""` (`:2537-2550`) | `manual` | [form-reactivity SE2](references/form-reactivity.md#serialization) |
-| Serialization | SE3: `@PropSerialize` output reaches the attribute only when the prop also has `reflect: true`: the serializer runs for reflected components (`:3551`) and its value is written only by the reflect loop over `ReflectAttr` props (`:3093-3097`, `:3870-3871`) | `manual` | [form-reactivity SE3](references/form-reactivity.md#serialization) |
+| Reactive | R4: A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render; mirror the value into a `@State` rather than calling `forceUpdate()` | `manual` | [form-reactivity R4](references/form-reactivity.md#reactive) |
+| Serialization | SE1: No `reflect: true` on an object or array prop without a serializer — a complex value is never written to an attribute | `manual` | [form-reactivity SE1](references/form-reactivity.md#serialization) |
+| Serialization | SE2: A `@PropSerialize` method returns a string, or `null` to remove the attribute; `false` also removes it, `true` writes `""` | `manual` | [form-reactivity SE2](references/form-reactivity.md#serialization) |
+| Serialization | SE3: `@PropSerialize` output reaches the attribute only when the prop also has `reflect: true`: the serializer runs for reflected components and its value is written only by the reflect loop over `ReflectAttr` props | `manual` | [form-reactivity SE3](references/form-reactivity.md#serialization) |
 | Serialization | SE4: `@AttrDeserialize` never throws on bad input — wrap `JSON.parse` and fall back | `manual` | [form-reactivity SE4](references/form-reactivity.md#serialization) |
 | Serialization | SE5: The serialized format is documented in the prop's JSDoc | `manual` | [form-reactivity SE5](references/form-reactivity.md#serialization) |
 | Functional | FC1: PascalCase name — JSX treats a lowercase name as a native tag | `manual` | [functional-api FC1](references/functional-api.md#functional) |

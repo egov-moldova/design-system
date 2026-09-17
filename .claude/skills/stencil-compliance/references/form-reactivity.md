@@ -132,7 +132,7 @@ A render is scheduled when a `@Prop` or `@State` is **assigned**. In-place mutat
 | --- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | R2  | Objects are reassigned with spread; `obj.x = y`, `obj['x'] = y`, `delete obj.x`, `arr[i] = y` do not re-render          | `manual`                                   |
 | R3  | `@Watch` fires on assignment, not on mutation                                                                         | `manual`                                   |
-| R4  | A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render (`:3830-3835`); mirror the value into a `@State` rather than calling `forceUpdate()` | `manual`                                   |
+| R4  | A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render; mirror the value into a `@State` rather than calling `forceUpdate()` | `manual`                                   |
 
 Array mutation is [`decorators.md` S4](decorators.md#state); `forceUpdate()` is [`lifecycle-host.md` LC6](lifecycle-host.md#lifecycle).
 
@@ -161,11 +161,14 @@ in Stencil 4.38; no component here uses them.
 
 | #   | Rule                                                                                                                                                                  | enforced-by |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| SE1 | No `reflect: true` on an object or array prop without a serializer — a complex value is never written to an attribute (`:2545`)                                       | `manual`    |
-| SE2 | A `@PropSerialize` method returns a string, or `null` to remove the attribute; `false` also removes it, `true` writes `""` (`:2537-2550`)                              | `manual`    |
-| SE3 | `@PropSerialize` output reaches the attribute only when the prop also has `reflect: true`: the serializer runs for reflected components (`:3551`) and its value is written only by the reflect loop over `ReflectAttr` props (`:3093-3097`, `:3870-3871`) | `manual`    |
+| SE1 | No `reflect: true` on an object or array prop without a serializer — a complex value is never written to an attribute                                       | `manual`    |
+| SE2 | A `@PropSerialize` method returns a string, or `null` to remove the attribute; `false` also removes it, `true` writes `""`                              | `manual`    |
+| SE3 | `@PropSerialize` output reaches the attribute only when the prop also has `reflect: true`: the serializer runs for reflected components and its value is written only by the reflect loop over `ReflectAttr` props | `manual`    |
 | SE4 | `@AttrDeserialize` never throws on bad input — wrap `JSON.parse` and fall back                                                                                        | `manual`    |
 | SE5 | The serialized format is documented in the prop's JSDoc                                                                                                               | `manual`    |
+
+Runtime evidence (`node_modules/@stencil/core/internal/client/index.js`, 4.45.0): R4 `:3830-3835`; SE1 `:2545`; SE2 `:2537-2550`;
+SE3 `:3551`, `:3093-3097`, `:3870-3871`.
 
 ```ts
 @Prop({ reflect: true }) config?: Config;

@@ -655,3 +655,64 @@ describe('stale-prefix rule: placeholder spellings', () => {
     );
   });
 });
+
+describe('docs checker rules: remaining spellings', () => {
+  it('lookaround: skips a JS regex literal span, accepts --engine pcre2, judges each piped command', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md': ['`/(?<=\\d)px/`', '`rg --engine pcre2 "a(?=b)"`', '`find -P . | rg "(?=y)"`'].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[3, 'lookaround']],
+    );
+  });
+
+  it('stale-prefix: flags capitalised word forms, and exempts only the legacy path token', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Use the `Cor` prefix.\n\nThe Cor prefix is retired.\n\nLegacy tags live under src/legacy/cor-accordion while new code uses corButton.\n\nLegacy tags live under src/legacy/cor-accordion.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+
+  it('stencil-version: reads range, parenthesised, JSON and table spellings, and package claims in fences', () => {
+    const pkg = JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+    const root = makeFixture({
+      'package.json': pkg,
+      '_agents/x.md':
+        [
+          'Needs Stencil >= 4.50.',
+          'Needs Stencil ^4.50.',
+          'Needs Stencil (4.50).',
+          '| Stencil | `~4.50.0` |',
+          '```json',
+          '"@stencil/core": "~4.50.0"',
+          '```',
+          '| Stencil | `~4.45.0` |',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [2, 'stencil-version'],
+        [3, 'stencil-version'],
+        [4, 'stencil-version'],
+        [6, 'stencil-version'],
+      ],
+    );
+  });
+});

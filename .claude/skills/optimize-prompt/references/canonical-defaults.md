@@ -22,7 +22,7 @@ These defaults are auto-injected by [`SKILL.md`](../SKILL.md) into every spec, s
 
 ## 2. Focus ring
 
-Always rendered on `:focus-visible`, **never** on `:focus`. Forbidden: `outline: none` without an explicit replacement (anti-pattern #14 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md)).
+Always rendered on `:focus-visible`, **never** on `:focus`. Forbidden: `outline: none` without an explicit replacement (visible `:focus-visible` ring — [`accessibility-compliance`](../../accessibility-compliance/SKILL.md)).
 
 ```css
 :focus-visible {
@@ -52,9 +52,9 @@ Tooltip / popover:    100ms ease-out         (--motion-duration-quick, --motion-
 ```
 
 **Forbidden:**
-- `transition: all` — list exact properties (anti-pattern #19)
+- `transition: all` — list exact properties (`stylelint:declaration-property-value-disallowed-list`)
 - Hardcoded ms values in CSS — always token references
-- Missing `prefers-reduced-motion` fallback (anti-pattern #20)
+- Missing `prefers-reduced-motion` fallback (anti-pattern #20 in [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md), accessibility)
 
 **Required for every animated/transitioned component:**
 
@@ -279,7 +279,7 @@ Components opt into shapes via `shape` prop (atom-interactive only typically).
 
 When a component has `disabled: boolean`:
 - `@Prop({ reflect: true }) disabled: boolean = false;`
-- Render `aria-disabled={String(this.disabled)}` on host (per anti-pattern #12 corollary)
+- Render `aria-disabled={String(this.disabled)}` on host (ARIA states reflect reality — [`accessibility-compliance`](../../accessibility-compliance/SKILL.md))
 - CSS: `:host([disabled]) { pointer-events: none; cursor: not-allowed; opacity: <token>; }` — opacity via token, never hardcoded
 - For form-associated: `disabled` also blocks `setFormValue` calls
 

@@ -3,11 +3,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
+import { createRequire } from 'node:module';
 import { ESLint } from 'eslint';
+import stylelint from 'stylelint';
+
+import { isDocScope } from '../docs/check-ai-docs.mjs';
 
 import { PATTERNS, FILE_CHECKS } from '../audit/02-stencil-antipatterns.mjs';
 import { GROUP_ORDER, RULES } from '../audit/16-stencil-contract.mjs';
 
+const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SKILL = path.join(ROOT, '.claude/skills/stencil-compliance');
 const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
@@ -53,17 +58,44 @@ describe('stencil-compliance skill ↔ scripts', () => {
     });
     assert.deepEqual(off, []);
 
-    // A rule set to `{}`, `[]`, `false` or `null` is present but enforces nothing.
-    const stylelint = JSON.parse(read('.stylelintrc.json')).rules;
-    const enabled = v =>
-      v === true ||
-      (Array.isArray(v)
-        ? v.length > 0 && v[0] !== null && v[0] !== false
-        : v !== null && typeof v === 'object' && Object.keys(v).length > 0);
+    // The resolved config (extends included): `[primary, secondary?]` when set, `null` when off.
+    // A primary of `false`, `{}` or `[]` is present but enforces nothing.
+    const resolved = await stylelint.resolveConfig(path.join(ROOT, 'src/components/mud-button/mud-button.css'));
+    const enabled = v => {
+      const primary = Array.isArray(v) ? v[0] : v;
+      if (primary === undefined || primary === null || primary === false) return false;
+      if (Array.isArray(primary)) return primary.length > 0;
+      if (typeof primary === 'object') return Object.keys(primary).length > 0;
+      return true;
+    };
     assert.deepEqual(
-      styleRules.filter(r => !enabled(stylelint[r])),
+      styleRules.filter(r => !enabled(resolved?.rules?.[r])),
       [],
     );
+  });
+
+  it('every script-04 enforced-by cell names a code script 04 emits', () => {
+    const cells = [...skillText().matchAll(/`script-04:([A-Z0-9-]+)`/g)].map(m => m[1]);
+    assert.ok(cells.length > 0, 'no `script-04:<code>` cells found');
+    const source = read('scripts/audit/04-jsdoc-completeness.mjs');
+    assert.deepEqual(
+      cells.filter(code => !source.includes(`code: '${code}'`)),
+      [],
+    );
+  });
+
+  it('every audit code cited anywhere in the agent docs exists in a registry', () => {
+    const known = new Set(registry.map(r => r.code));
+    const { execFileSync } = require('node:child_process');
+    const files = execFileSync('git', ['ls-files', '*.md'], { cwd: ROOT, encoding: 'utf8' })
+      .split('\n')
+      .filter(f => f && isDocScope(f) && !f.startsWith('.claude/plans/'));
+    assert.ok(files.length > 0, 'no doc-scope files listed');
+    const unknown = [];
+    for (const f of files) {
+      for (const code of read(f).match(CODE) ?? []) if (!known.has(code)) unknown.push(`${f}: ${code}`);
+    }
+    assert.deepEqual(unknown, []);
   });
 
   it('the rule index repeats each reference row exactly, and every reference row is indexed', () => {

@@ -23,9 +23,9 @@ Required vs optional file list lives in
 error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
 `STRUCTURE-UNGRADUATED` (info, hidden-folder marker).
 
-**TSX member order**: defined once, in [`component-structure.md` § TSX Class Member Order](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
+**TSX member order**: defined once, in [`component-structure.md` § TSX Class Member Order](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
-**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
+**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
 ### 2.2 TypeScript Strict Mode Audit
 

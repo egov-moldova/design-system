@@ -250,6 +250,23 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     );
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 0);
   });
+
+  it('reads every bare :host rule, including nested blocks, before reporting a missing display', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(hostDisplay(':host {\n  --a: 1px;\n}\n\n:host {\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  &:hover {\n    color: red;\n  }\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  &:hover {\n    display: none;\n  }\n}\n'), 1);
+  });
+
+  it('reports a decimal pixel value whole, and skips a continued @media condition', () => {
+    const px = content =>
+      scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS');
+    assert.equal(px('.foo { border-width: 1.5px; }').length, 1);
+    assert.equal(px('@media (min-width: 640px)\n  and (max-width: 1024px) {').length, 0);
+  });
 });
 
 describe('02-stencil-antipatterns: file-level checks', () => {

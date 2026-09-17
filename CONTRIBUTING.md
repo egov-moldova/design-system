@@ -194,7 +194,7 @@ MUD uses a three-tier design token hierarchy (**palette → semantic → compone
 
 ## Coding Standards
 
-- **TypeScript / Stencil**: strict mode, no `any` escapes. See [`AGENTS.md`](AGENTS.md) and the `stencil-compliance` guidance for decorator usage, lifecycle rules, and the 25 documented anti-patterns.
+- **TypeScript / Stencil**: strict mode, no `any` escapes. See [`AGENTS.md`](AGENTS.md) and the `stencil-compliance` skill for decorator usage, lifecycle rules, and the documented anti-patterns.
 - **Formatting**: Prettier + ESLint (`yarn format` auto-fixes both). CSS is linted with Stylelint (`stylelint-config-standard` + `stylelint-declaration-strict-value` — no hardcoded colors, tokens only).
 - **Design tokens over hardcoded values** — any color, spacing, or typography value in component CSS must resolve to a token. `yarn lint.colors` catches hardcoded hex/rgb values.
 - **Accessibility is not optional** — every component must meet WCAG 2.1 AA. See the accessibility contract in `TESTING.md` and the `accessibility-compliance` reference.

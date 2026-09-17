@@ -69,7 +69,7 @@ src/components/mud-[name]/
 
 ## Quick Reference — TSX Member Order
 
-Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
+Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (report-only) (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
 ---
 
@@ -77,7 +77,7 @@ Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_a
 
 Every `mud-*` component conforms to the [`stencil-compliance` skill](../../.claude/skills/stencil-compliance/SKILL.md).
 
-Run `yarn audit:antipatterns <component>` and `yarn audit:stencil-contract <component>` first; the skill says what remains for judgment.
+Follow the skill's [Run contract](../../.claude/skills/stencil-compliance/SKILL.md#run-contract): scripts first, then only what they leave for judgment.
 
 ---
 
