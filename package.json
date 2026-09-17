@@ -439,7 +439,10 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "src/**/*.json",
         "*.ts",
+        "*.mjs",
+        "*.d.mts",
         "tsconfig.json"
       ],
       "output": [],
