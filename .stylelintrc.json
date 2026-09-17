@@ -35,7 +35,7 @@
     "comment-whitespace-inside": null,
     "declaration-no-important": true,
     "declaration-property-value-disallowed-list": {
-      "transition": ["/\\ball\\b/"],
+      "transition": ["/(?<![\\w-])all(?![\\w-])/"],
       "transition-property": ["all"]
     }
   }

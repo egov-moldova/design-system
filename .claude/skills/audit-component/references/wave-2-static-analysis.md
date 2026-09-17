@@ -155,7 +155,7 @@ Read `.stories.ts` (already loaded) and verify:
 - CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
 - `component: 'mud-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
-- `title` follows atomic hierarchy: `Atoms/MudName`, `Molecules/MudName`, etc.
+- `title` follows atomic hierarchy without the prefix: `Atoms/Badge`, `Molecules/Accordion Item`, etc.
 - No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
 
 **Type-safety anti-patterns** (flag any of these):

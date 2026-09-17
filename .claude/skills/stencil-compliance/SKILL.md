@@ -21,7 +21,9 @@ Input: one component name (`mud-<name>`).
    `node scripts/audit/run-all.mjs <component> --only 02,04,14,16 --json --out <scratch>/stencil.json`
 2. Read the envelope. Quote each script's `summary` counts (`results[].summary`) in the report — a report
    without them did not run step 1. Script 14 contributes only its own findings (e.g. a file with no
-   component class); its extracted contract is not in the combined envelope.
+   component class); its extracted contract is not in the combined envelope. A sub-component name
+   (`mud-tab`) resolves to its own file; a folder name makes script 16 check every component file in
+   the folder. In `run-all`, script 16 is report-only: its errors are counted but never block.
 3. When the change touched TSX or CSS, run `yarn lint` and keep the output for the component's files; when
    it did not, the `eslint:`/`stylelint:` rows are covered by the CI lint gate — say so in the report.
    For a form-associated component (`grep -l "formAssociated: true" <component tsx>` matches — the
@@ -103,13 +105,14 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Lifecycle | LC6: No `forceUpdate()` — it masks a reactivity bug | `script-02:ANTIPATTERN-013-FORCEUPDATE` | `ANTIPATTERN-013-FORCEUPDATE` |
 | Lifecycle | LC7: Light-DOM children present in the markup are readable in `componentWillLoad`; children appended after load reach the component only through `slotchange` | `manual` | [lifecycle-host LC7](references/lifecycle-host.md#lifecycle) |
 | Lifecycle | LC8: Consumer code awaits `el.componentOnReady()` before calling a `@Method` | `manual` | [lifecycle-host LC8](references/lifecycle-host.md#lifecycle) |
-| Host | H1: `render()` returns `<Host>` at its root | `eslint:@stencil/render-returns-host` | — |
+| Host | H1: `render()` does not return an array of siblings | `eslint:@stencil/render-returns-host` | — |
 | Host | H2: Host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove` | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` | `ANTIPATTERN-002-HOST-CLASSLIST` |
 | Host | H3: No inline `style={…}` in JSX, on `<Host>` or elsewhere — use classes and CSS custom properties | `script-02:ANTIPATTERN-001-INLINE-STYLE` | `ANTIPATTERN-001-INLINE-STYLE` |
 | Host | H4: ARIA on the host goes through `<Host role=… aria-…>` | `manual` | [lifecycle-host H4](references/lifecycle-host.md#host) |
 | Host | H5: Exactly one `<Host>` per render | `manual` | [lifecycle-host H5](references/lifecycle-host.md#host) |
 | Host | H6: `<Host>` is virtual — it renders no element of its own | `manual` | [lifecycle-host H6](references/lifecycle-host.md#host) |
 | Host | H7: An imperative host class change reported by script 02 is kept only for an external event that does not re-render (component-structure.md § When to Use `classList` Manipulation) | `manual` | [lifecycle-host H7](references/lifecycle-host.md#host) |
+| Host | H8: `render()` returns `<Host>` at its root | `manual` | [lifecycle-host H8](references/lifecycle-host.md#host) |
 | Host element | HE1: The field is named `host` | `manual` | [lifecycle-host HE1](references/lifecycle-host.md#host-element) |
 | Host element | HE2: Use it for DOM APIs only: `getBoundingClientRect`, `closest`, `matches`, `querySelector` on light DOM | `manual` | [lifecycle-host HE2](references/lifecycle-host.md#host-element) |
 | Host element | HE3: No `@Element()` that the class never reads | `manual` | [lifecycle-host HE3](references/lifecycle-host.md#host-element) |

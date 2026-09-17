@@ -20,6 +20,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import {
@@ -90,9 +91,13 @@ function walk(node, visit) {
   ts.forEachChild(node, child => walk(child, visit));
 }
 
+// A validation fallback runs in the watcher itself, under a real condition: an `if` between the
+// write and the watcher body, with no nested function in between (a deferred write re-triggers
+// the watcher later) and a condition that is not a literal `true`.
 function isInsideIf(node, stopAt) {
   for (let p = node.parent; p && p !== stopAt; p = p.parent) {
-    if (ts.isIfStatement(p)) return true;
+    if (ts.isFunctionLike(p)) return false;
+    if (ts.isIfStatement(p)) return p.expression.kind !== ts.SyntaxKind.TrueKeyword;
   }
   return false;
 }
@@ -196,7 +201,21 @@ export function checkSource(tsxPath, componentName) {
       }),
     );
 
-  if (!contract.shadow) {
+  // Shadow DOM is decidable only from literal options; `@Component(OPTS)` or `shadow: SHADOW` is skipped.
+  const componentCall = getDecorators(classNode).find(d => getDecoratorName(d) === 'Component')?.expression;
+  const options = componentCall && ts.isCallExpression(componentCall) ? componentCall.arguments[0] : undefined;
+  const shadowProp =
+    options && ts.isObjectLiteralExpression(options)
+      ? options.properties.find(p => ts.isPropertyAssignment(p) && p.name.getText(sourceFile) === 'shadow')
+      : undefined;
+  const shadowDecidable =
+    options &&
+    ts.isObjectLiteralExpression(options) &&
+    (!shadowProp ||
+      shadowProp.initializer.kind === ts.SyntaxKind.TrueKeyword ||
+      shadowProp.initializer.kind === ts.SyntaxKind.FalseKeyword ||
+      ts.isObjectLiteralExpression(shadowProp.initializer));
+  if (shadowDecidable && !contract.shadow) {
     add(
       'STENCIL-SHADOW-REQUIRED',
       classNode,
@@ -244,7 +263,7 @@ export function checkSource(tsxPath, componentName) {
   }
 
   let highest = -1;
-  let reported = false;
+  let reported;
   for (const member of classNode.members) {
     const group = memberGroup(member);
     if (!group) continue;
@@ -255,14 +274,14 @@ export function checkSource(tsxPath, componentName) {
         member,
         `\`${getMemberName(member)}\` (${group}) is declared after a later member group; order is ${GROUP_ORDER.join(' → ')}.`,
       );
-      reported = true;
+      reported = member;
     }
     highest = Math.max(highest, rank);
   }
   const renderIndex = classNode.members.findIndex(m => getMemberName(m) === 'render');
   const afterRender =
     renderIndex === -1 ? undefined : classNode.members.slice(renderIndex + 1).find(m => !ts.isSemicolonClassElement(m));
-  if (afterRender) {
+  if (afterRender && afterRender !== reported) {
     add(
       'STENCIL-MEMBER-ORDER',
       afterRender,
@@ -342,30 +361,34 @@ export function checkSource(tsxPath, componentName) {
 // Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
 // file in that folder, sub-components included (`mud-header-nav-item.tsx`); a sub-component
 // name resolves to its own file in whichever component folder holds it.
-function componentFiles(name) {
-  const isComponentFile = file =>
+export function isComponentFile(file) {
+  return (
     /\.tsx$/.test(file) &&
     !/\.(spec|e2e|stories)\.tsx$/.test(file) &&
-    /@Component\(/.test(fs.readFileSync(file, 'utf8'));
+    fs.existsSync(file) &&
+    /@Component\(/.test(fs.readFileSync(file, 'utf8'))
+  );
+}
+
+function componentFiles(name) {
   const target = resolveComponentPaths(name);
-  if (target.found) {
-    return fs
-      .readdirSync(target.root)
-      .map(entry => path.join(target.root, entry))
-      .filter(isComponentFile)
-      .sort();
-  }
-  for (const component of listAllComponents()) {
-    const file = path.join(component.root, `${name}.tsx`);
-    if (fs.existsSync(file) && isComponentFile(file)) return [file];
-  }
-  return [];
+  if (!target.found) return [];
+  if (target.subComponent) return isComponentFile(target.paths.tsx) ? [target.paths.tsx] : [];
+  return fs
+    .readdirSync(target.root)
+    .map(entry => path.join(target.root, entry))
+    .filter(isComponentFile)
+    .sort();
 }
 
 async function main() {
   const args = parseAuditArgs({ toolName: TOOL, usage: USAGE });
   const t0 = Date.now();
-  const targets = args.all ? listAllComponents().map(c => c.name) : [args.component];
+  const targets = args.all
+    ? listAllComponents().map(c => c.name)
+    : args.changed
+      ? listChangedComponents()
+      : [args.component];
   const findings = [];
   let filesScanned = 0;
   for (const name of targets) {
@@ -385,7 +408,7 @@ async function main() {
   }
   const result = buildResult({
     tool: TOOL,
-    target: args.all ? 'all' : (targets[0] ?? null),
+    target: args.all ? 'all' : args.changed ? 'changed' : (targets[0] ?? null),
     findings,
     meta: {
       durationMs: Date.now() - t0,

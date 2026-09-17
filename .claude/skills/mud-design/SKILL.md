@@ -76,6 +76,7 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `MudTabs` + `MudTab` | Tablist with ARIA + keyboard + overflow handling. | Top-level page nav, sub-section switching, detail-view tabs. Use one `MudTabs` per group; nest panels via named slots `panel-{value}`. |
 | `MudBreadcrumb` + `MudBreadcrumbItem` | Hierarchical trail with separators + responsive collapse. | Multi-level pages: List → Detail → Edit. |
 | `MudPagination` | Page navigator with prev/next + sibling/boundary controls. | Tables and lists with paged data. Connect to your data loader. |
+| `MudStepper` | Multi-step progress tracker (horizontal or vertical; compact rail on narrow widths). | Multi-step forms and long-running multi-stage jobs. |
 
 ### Display
 
@@ -100,6 +101,10 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `MudTooltip` | Hover / focus tooltip with position + size + variant. | Affordance hints. Use sparingly — if information is mandatory, use a real label. |
 | `MudModal` | Modal dialog with sizes, variants, destructive flag, multiple slots. | Save confirmations. Destructive confirms. Justification prompts. |
 | `MudCookieBanner` | Opinionated cookie / consent banner. | Public surfaces that need statutory consent. Don't roll your own. |
+| `MudInlineMessage` | In-context feedback: coloured leading icon plus a short text line, no surface. | Row-level errors and hints next to an input or field. |
+| `MudInfoBox` | Inline callout that highlights a key message within the page flow. | Announcements, explanations or alerts that belong to the content. |
+| `MudToast` | Fixed-width toast with icon, optional heading and message. | Save confirmations and transient status after an action. |
+| `MudBanner` | Full-width, top-of-page system message. | System-wide notices (maintenance, outages) that persist until dismissed. |
 
 ### Chrome (page-level)
 

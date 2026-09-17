@@ -86,6 +86,19 @@ export function resolveComponentPaths(componentName) {
       break;
     }
   }
+  // A sub-component (`mud-tab`) has no folder of its own: it lives as `<name>.tsx` inside
+  // another component's folder (`mud-tabs/`). Resolve it there, flagged, so callers can
+  // scan that one component instead of reporting it missing.
+  let subComponent = false;
+  if (!matched) {
+    for (const component of listAllComponents()) {
+      if (isFileSafe(path.join(component.root, `${name}.tsx`))) {
+        matched = { location: component.location, root: component.root };
+        subComponent = true;
+        break;
+      }
+    }
+  }
 
   if (!matched) {
     return {
@@ -122,6 +135,7 @@ export function resolveComponentPaths(componentName) {
     name,
     bare,
     location: matched.location, // 'components' | 'hidden'
+    subComponent,
     root,
     paths,
     exists,

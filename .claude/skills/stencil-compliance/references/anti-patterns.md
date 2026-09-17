@@ -14,10 +14,6 @@ Project rules are not Stencil rules. Tokens, colours, raw pixels and `any`: see
 Rules enforced by ESLint or stylelint are the rule-index rows whose `enforced-by` starts with `eslint:` or
 `stylelint:` ([`SKILL.md` § Rule index](../SKILL.md#rule-index)).
 
--------------------------------------------- | ------------------------------------------------------ |
-| `@Method()` is `async` or returns a Promise  | `eslint:@stencil/async-methods`                        |
-| No `!important` without a disable comment    | `stylelint:declaration-no-important`                   |
-| No `transition: all`                         | `stylelint:declaration-property-value-disallowed-list` |
 
 ---
 
@@ -196,7 +192,9 @@ does when it binds the property from a template string — leaves `mud-search-in
 HTML attribute `clearable="false"` is not affected: `attributeChangedCallback` coerces it to
 `false` first (`:3854-3856`).
 
-**Fix**: invert the prop so its default is `false` (a breaking API change — decide it per component).
+**Fix**: consumers set the property to a boolean (`el.clearable = false`), never the string `"false"`.
+Inverting the prop does not help — a string `"false"` also turns a default-`false` prop on. Removing the
+parse itself is a runtime change (a patch to `@stencil/core`), outside this skill; see [`version-delta.md`](version-delta.md).
 
 ---
 

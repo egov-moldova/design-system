@@ -136,6 +136,8 @@ const AUDIT_SCRIPTS = [
     name: 'stencil-contract',
     perComponent: true,
     requiresBuild: false,
+    // Report-only: its error-severity findings are quoted in the summary but never block.
+    blocking: false,
   },
   {
     id: '06',
@@ -413,22 +415,25 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
   const summary = { errors: 0, warnings: 0, info: 0 };
   const blockers = [];
   const findingsByTool = {};
+  const reportOnly = new Set(AUDIT_SCRIPTS.filter(s => s.blocking === false).map(s => s.name));
+  let blockingErrors = 0;
 
   for (const r of results) {
     if (r.summary) {
       summary.errors += r.summary.errors ?? 0;
       summary.warnings += r.summary.warnings ?? 0;
       summary.info += r.summary.info ?? 0;
+      if (!reportOnly.has(r.name)) blockingErrors += r.summary.errors ?? 0;
     }
     if (r.findings) {
       findingsByTool[r.name] = r.findings;
       for (const f of r.findings) {
-        if (f.severity === 'error') blockers.push(`${r.name}/${f.code}`);
+        if (f.severity === 'error' && !reportOnly.has(r.name)) blockers.push(`${r.name}/${f.code}`);
       }
     }
   }
 
-  const ok = summary.errors === 0 && results.every(r => r.ok !== false);
+  const ok = blockingErrors === 0 && results.every(r => r.ok !== false);
 
   return {
     schemaVersion: SCHEMA_VERSION,

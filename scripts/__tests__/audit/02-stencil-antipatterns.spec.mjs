@@ -267,6 +267,31 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     assert.equal(px('.foo { border-width: 1.5px; }').length, 1);
     assert.equal(px('@media (min-width: 640px)\n  and (max-width: 1024px) {').length, 0);
   });
+
+  it('reads only top-level bare :host rules, including selector lists, and reports a stylesheet with none', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(
+      hostDisplay(
+        ':host {\n  gap: 1rem;\n}\n\n@media (max-width: 640px) {\n  .a {\n    color: red;\n  }\n  :host {\n    display: none;\n  }\n}\n',
+      ),
+      1,
+    );
+    assert.equal(hostDisplay(':host,\n:host([hidden]) {\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host(.open) {\n  display: flex;\n}\n'), 1);
+  });
+
+  it('does not read digits inside a custom-property name, and skips min()/max()/clamp() and media continuations', () => {
+    const px = content =>
+      scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length;
+    assert.equal(px('.foo { --size-x2px: 2px; }'), 1);
+    assert.equal(px('.foo { width: min(100%, 480px); }'), 0);
+    assert.equal(px('.foo { width: clamp(12px, 2vw, 24px); }'), 0);
+    assert.equal(px('@media screen\n  and (width <= 1024px) {'), 0);
+    assert.equal(px('@media print\n  and (min-width: 1024px) {'), 0);
+  });
 });
 
 describe('02-stencil-antipatterns: file-level checks', () => {

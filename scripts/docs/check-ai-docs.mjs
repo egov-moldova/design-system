@@ -716,11 +716,37 @@ function checkStalePrefix(relPath, lines) {
 // PCRE is enabled by `--pcre2`, `--perl-regexp`, or a short-flag group containing `P` (`-oP`).
 const LOOKAROUND = /\(\?(?:[=!]|<[=!])/;
 const PCRE2_FLAG = /(?:^|\s)(?:--pcre2|--perl-regexp|--engine[= ](?:pcre2|auto)|-[A-Za-z]*P[A-Za-z]*)(?:\s|$)/;
-// A line may chain several commands; each one needs its own PCRE flag.
-const commandsOf = text => text.split(/\s\|\s|&&|\|\||;\s/);
+// A line may chain several commands; each one needs its own PCRE flag. Separators inside quotes
+// (`rg --pcre2 'foo | (?<=x)bar'`) belong to the pattern, not to the shell.
+function commandsOf(text) {
+  const commands = [];
+  let quote = null;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch;
+      continue;
+    }
+    const separator = text.slice(i).match(/^(?:\s\|\s|&&|\|\||;\s)/);
+    if (separator) {
+      commands.push(text.slice(start, i));
+      start = i + separator[0].length;
+      i = start - 1;
+    }
+  }
+  commands.push(text.slice(start));
+  return commands;
+}
 const needsPcre = text => commandsOf(text).some(cmd => LOOKAROUND.test(cmd) && !PCRE2_FLAG.test(cmd));
-// A JS regex literal in a code span (`/(?<=\d)px/`) is not a grep pattern.
-const JS_REGEX_LITERAL = /^\/.+\/[dgimsuvy]*$/;
+// A code span is a grep pattern only when it holds a grep command or its line names grep (a
+// "Grep `…`" table cell); `new RegExp('(?<![\\d.])px')` or `/(?<=\\d)px/` is JavaScript.
+const GREP_COMMAND = /(?:^|[\s|;&(])(?:rg|grep|git\s+grep)\s/;
+const NAMES_GREP = /\b(?:grep|rg)\b/i;
 // Only shell fences hold grep commands; a JS/TS sample's regex literal may use lookarounds.
 const SHELL_FENCE_LANGS = new Set(['', 'bash', 'sh', 'shell', 'zsh', 'console']);
 
@@ -728,26 +754,33 @@ function checkLookaround(relPath, lines) {
   const hits = [];
   let inFence = false;
   let shellFence = false;
-  let continuesPcre = false;
+  // A fenced command continued with `\` is judged as one command, whichever line carries the flag.
+  let pending = [];
+  const judge = () => {
+    const joined = pending.map(p => p.text.replace(/\\\s*$/, ' ')).join(' ');
+    const at = pending.find(p => LOOKAROUND.test(p.text));
+    if (at && needsPcre(joined)) {
+      hits.push(makeHit(relPath, at.line, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
+    }
+    pending = [];
+  };
   lines.forEach((line, i) => {
     const fence = line.match(/^\s*(?:```|~~~)\s*([\w-]*)/);
     if (fence) {
+      if (pending.length) judge();
       inFence = !inFence;
       shellFence = inFence && SHELL_FENCE_LANGS.has(fence[1].toLowerCase());
-      continuesPcre = false;
       return;
     }
     if (inFence) {
-      // Each command is judged on its own; a `\` continuation carries its flags to the next line.
-      const pcre = continuesPcre || PCRE2_FLAG.test(line);
-      if (shellFence && LOOKAROUND.test(line) && (continuesPcre ? false : needsPcre(line))) {
-        hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
-      }
-      continuesPcre = pcre && /\\\s*$/.test(line);
+      if (!shellFence) return;
+      pending.push({ text: line, line: i + 1 });
+      if (!/\\\s*$/.test(line)) judge();
       return;
     }
     for (const span of findCodeSpans(line)) {
-      if (!JS_REGEX_LITERAL.test(span.content.trim()) && needsPcre(span.content)) {
+      const grepContext = GREP_COMMAND.test(span.content) || NAMES_GREP.test(line.slice(0, span.start));
+      if (grepContext && needsPcre(span.content)) {
         hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
         break;
       }

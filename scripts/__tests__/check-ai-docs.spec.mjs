@@ -716,3 +716,25 @@ describe('docs checker rules: remaining spellings', () => {
     );
   });
 });
+
+describe('lookaround rule: quoting, continuations and non-grep spans', () => {
+  it('keeps a quoted alternation whole, reads a continued command, and skips a span that is not a grep', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          "`rg --pcre2 'foo | (?<=x)bar' src`",
+          '```bash',
+          "rg '(?<=x)y' \\",
+          '  --pcre2 src',
+          '```',
+          "`new RegExp('(?<![\\d.])px')`",
+          '| Q2 | Grep `a(?!b)` |',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[7, 'lookaround']],
+    );
+  });
+});

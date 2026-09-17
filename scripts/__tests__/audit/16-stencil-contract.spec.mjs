@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { checkSource, RULES } from '../../audit/16-stencil-contract.mjs';
+import { checkSource, isComponentFile, RULES } from '../../audit/16-stencil-contract.mjs';
 
 const SCRIPT = new URL('../../audit/16-stencil-contract.mjs', import.meta.url);
 
@@ -254,6 +254,77 @@ export class P {
   render() { return <Host />; };
 }`;
     assert.deepEqual(codes(src), []);
+  });
+
+  it('checks the changed components under --changed instead of a component named "null"', () => {
+    const run = spawnSync(process.execPath, [SCRIPT.pathname, '--changed', '--json'], { encoding: 'utf8' });
+    const envelope = JSON.parse(run.stdout);
+    assert.deepEqual(
+      envelope.findings.filter(f => /"null"/.test(f.message)),
+      [],
+    );
+    assert.notEqual(run.status, 2);
+  });
+
+  it('does not decide shadow DOM when the option is not a literal', () => {
+    assert.deepEqual(
+      codes(`const OPTS = { tag: 'mud-probe', shadow: true };
+@Component(OPTS) export class P { render() { return <Host />; } }`),
+      [],
+    );
+    assert.deepEqual(
+      codes(`const SHADOW = true;
+@Component({ tag: 'mud-probe', shadow: SHADOW }) export class P { render() { return <Host />; } }`),
+      [],
+    );
+  });
+
+  it('reports a decorated member after render() once', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  render() { return <Host />; }
+  @Prop() late: string = '';
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER']);
+  });
+
+  it('reports only the first group-order violation in a class', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @State() b = 0;
+  @Prop() a: string = '';
+  @Listen('keydown') k() {}
+  @Watch('a') w() {}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER']);
+  });
+
+  it('does not exempt a literal write inside a nested callback or an always-true if', () => {
+    const cmp = body => `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop({ mutable: true }) size: string = 'md';
+  ${body}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(
+      codes(cmp(`@Watch('size') v(n: string) { if (n) { setTimeout(() => { this.size = 'md'; }); } }`)),
+      ['STENCIL-WATCH-WRITES-WATCHED'],
+    );
+    assert.deepEqual(codes(cmp(`@Watch('size') v() { if (true) this.size = 'md'; }`)), [
+      'STENCIL-WATCH-WRITES-WATCHED',
+    ]);
+  });
+
+  it('only treats a .tsx declaring @Component as a component file', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 's16-files-'));
+    const component = path.join(dir, 'mud-probe.tsx');
+    const helper = path.join(dir, 'mud-probe-helpers.tsx');
+    fs.writeFileSync(component, "@Component({ tag: 'mud-probe', shadow: true }) export class P {}");
+    fs.writeFileSync(helper, 'export const Row = () => <li />;');
+    assert.equal(isComponentFile(component), true);
+    assert.equal(isComponentFile(helper), false);
+    assert.equal(isComponentFile(path.join(dir, 'mud-probe.spec.tsx')), false);
   });
 
   it('reports a component it cannot find instead of passing it as clean', () => {

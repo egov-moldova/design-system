@@ -24,12 +24,12 @@ All Stencil decorator properties MUST use `!` (definite assignment assertion). S
 
 ```typescript
 // ✅ CORRECT
-@Element() host!: HTMLElement;
+@Element() host!: HTMLMudButtonElement;
 @Event() mudChange!: EventEmitter<boolean>;
 @AttachInternals() internals!: ElementInternals;
 
 // ❌ WRONG — "Property has no initializer"
-@Element() host: HTMLElement;
+@Element() host: HTMLMudButtonElement;
 ```
 
 **Applies to**: `@Element()`, `@Event()`, `@AttachInternals()`
@@ -147,7 +147,7 @@ declare module '<package-name>';
 ## Quick Reference
 
 ```typescript
-@Element() host!: HTMLElement;
+@Element() host!: HTMLMudButtonElement;
 @Event() mudChange!: EventEmitter<T>;
 @AttachInternals() internals!: ElementInternals;
 const render = (args: any) => /*html*/ `...`;

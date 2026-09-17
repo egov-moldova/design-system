@@ -84,6 +84,27 @@ describe('stencil-compliance skill ↔ scripts', () => {
     );
   });
 
+  it('every script-02/script-16 enforced-by cell names a code that script emits', () => {
+    const own = {
+      '02': new Set([...PATTERNS, ...FILE_CHECKS].map(r => r.code)),
+      '16': new Set(RULES.map(r => r.code)),
+    };
+    const cells = [...skillText().matchAll(/`script-(02|16):([A-Z0-9-]+)`/g)];
+    assert.ok(cells.length > 0, 'no script-02/script-16 cells found');
+    assert.deepEqual(
+      cells.filter(([, script, code]) => !own[script].has(code)).map(m => m[0]),
+      [],
+    );
+  });
+
+  it('the transition rule flags the `all` keyword, not a custom property ending in -all', async () => {
+    const lint = async code =>
+      (
+        await stylelint.lint({ code, codeFilename: path.join(ROOT, 'src/components/mud-button/probe.css') })
+      ).results[0].warnings.filter(w => w.rule === 'declaration-property-value-disallowed-list').length;
+    assert.equal(await lint('.a { transition: all 1s; }\n'), 1);
+    assert.equal(await lint('.a { transition: var(--motion-transition-all); }\n'), 0);
+  });
   it('every audit code cited anywhere in the agent docs exists in a registry', () => {
     const known = new Set(registry.map(r => r.code));
     const { execFileSync } = require('node:child_process');

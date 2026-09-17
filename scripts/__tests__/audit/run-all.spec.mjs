@@ -113,6 +113,21 @@ describe('run-all: aggregate', () => {
     assert.equal(combined.ok, true);
   });
 
+  it("does not turn a report-only script's errors into blockers", () => {
+    const results = [
+      makeResult({
+        id: '16',
+        name: 'stencil-contract',
+        summary: { errors: 2, warnings: 0, info: 0 },
+        findings: [{ severity: 'error', code: 'STENCIL-WATCH-ASYNC' }],
+      }),
+    ];
+    const combined = aggregate({ targetArg: 'mud-icon', results, durationMs: 100 });
+    assert.deepEqual(combined.blockers, []);
+    assert.equal(combined.ok, true);
+    assert.equal(combined.summary.errors, 2);
+  });
+
   it('ok=false when any script crashed (ok: false from runScript)', () => {
     const results = [
       makeResult({ id: '01', name: 'structure', ok: false, summary: { errors: 0, warnings: 0, info: 0 } }),

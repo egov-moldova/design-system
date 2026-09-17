@@ -199,7 +199,8 @@ export const PATTERNS = [
     severity: 'warning',
     scope: 'css',
     ruleScope: 'project',
-    regex: /(?<![\d.])(\d+(?:\.\d+)?)px\b/,
+    // Not inside a name (`--size-x2px`, `--space-2px`); a negative value (`-2px`) still counts.
+    regex: /(?<![\w.])(?<!\w-)(\d+(?:\.\d+)?)px\b/,
     message: 'Hardcoded pixel value — should use a spacing/sizing token.',
     fix: 'Replace with var(--spacing-*) or var(--size-*); allow 0px and 1px (borders/resets) only.',
     filter: ({ match, line }) => {
@@ -211,7 +212,13 @@ export const PATTERNS = [
       // the next line), the literal fallback of a token reference, arithmetic inside calc(), and
       // sub-pixel hairlines (`0.5px`, already excluded by the `<= 1` test above).
       if (/^@(media|container)\b/.test(trimmed)) return false;
-      if (/^(and|or|not)?\s*\((min|max)-(width|height)\s*:/.test(trimmed)) return false;
+      if (
+        /^(?:(?:and|or|not|only)\s+)?(?:(?:screen|print|all)\s+(?:and\s+)?)?\(\s*(?:(?:min|max)-)?(?:width|height)\s*[:<>=]/.test(
+          trimmed,
+        )
+      ) {
+        return false;
+      }
       const before = line.slice(0, match.index);
       if (/var\(\s*--[\w-]+\s*,\s*-?$/.test(before)) return false;
       if (isInsideCalc(before)) return false;
@@ -468,25 +475,39 @@ export const FILE_CHECKS = [
     ruleScope: 'stencil',
     check: (content, ctx) => {
       const css = stripCssBlockComments(content);
-      // Only a bare `:host { … }` rule sets the element's default display; `:host(...)` state
-      // rules may omit it. A stylesheet may split the bare rule into several blocks, and a block may
-      // nest rules (postcss-nested), so every bare block is read with its nested rules removed.
-      const blocks = [...css.matchAll(/(^|[};])\s*:host\s*\{/g)].map(m => {
-        const open = m.index + m[0].length;
-        let depth = 1;
-        let end = open;
-        while (end < css.length && depth > 0) {
-          if (css[end] === '{') depth++;
-          else if (css[end] === '}') depth--;
-          end++;
+      // Only a top-level rule whose selector list includes a bare `:host` sets the element's
+      // default display: `:host(...)` state rules and a `:host` nested in `@media` do not. The
+      // bare rule may be split into several blocks and may nest rules (postcss-nested), so every
+      // such block is read with its nested rules removed. No bare rule at all leaves it inline.
+      const blocks = [];
+      let depth = 0;
+      let selectorStart = 0;
+      for (let i = 0; i < css.length; i++) {
+        const ch = css[i];
+        if (ch === '{') {
+          const selector = css.slice(selectorStart, i);
+          if (depth === 0 && selector.split(',').some(part => part.trim() === ':host')) {
+            let inner = 1;
+            let end = i + 1;
+            while (end < css.length && inner > 0) {
+              if (css[end] === '{') inner++;
+              else if (css[end] === '}') inner--;
+              end++;
+            }
+            let body = css.slice(i + 1, end - 1);
+            while (/\{[^{}]*\}/.test(body)) body = body.replace(/\{[^{}]*\}/g, ';');
+            blocks.push({ at: selectorStart + Math.max(0, selector.search(/\S/)), body });
+          }
+          depth++;
+        } else if (ch === '}') {
+          depth--;
+          if (depth === 0) selectorStart = i + 1;
+        } else if (ch === ';' && depth === 0) {
+          selectorStart = i + 1;
         }
-        let body = css.slice(open, end - 1);
-        while (/\{[^{}]*\}/.test(body)) body = body.replace(/\{[^{}]*\}/g, ';');
-        return { at: m.index + m[0].indexOf(':host'), body };
-      });
-      if (!blocks.length) return [];
+      }
       if (blocks.some(b => /(^|;|\{)\s*display\s*:/.test(b.body))) return [];
-      const line = css.slice(0, blocks[0].at).split('\n').length;
+      const line = blocks.length ? css.slice(0, blocks[0].at).split('\n').length : 1;
       return [
         finding({
           severity: 'warning',
@@ -606,9 +627,9 @@ export function stripCssBlockComments(content) {
  */
 function isInsideCalc(before) {
   const stack = [];
-  for (const m of before.matchAll(/(calc)?\(|\)/g)) {
+  for (const m of before.matchAll(/\b(calc|min|max|clamp)?\(|\)/g)) {
     if (m[0] === ')') stack.pop();
-    else stack.push(m[1] === 'calc');
+    else stack.push(m[1] !== undefined);
   }
   return stack.includes(true);
 }
