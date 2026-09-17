@@ -99,6 +99,6 @@ Per component: drop string props, update render to plain `<slot>`, update storie
 
 - Detector: `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK` in [02-stencil-antipatterns.mjs](../../scripts/audit/02-stencil-antipatterns.mjs)
 - Pattern doc: [_agents/slot-patterns.md](../../src/components/_agents/slot-patterns.md)
-- Audit Wave reference: [audit-component/SKILL.md](../../.claude/skills/audit-component/SKILL.md) Wave 2.8
+- Audit Wave reference: [audit-component/references/wave-2-static-analysis.md](../../.claude/skills/audit-component/references/wave-2-static-analysis.md) §2.8
 - Reference impls to copy from: [cor-button](../../src/components/cor-button/cor-button.tsx), [cor-service-button](../../src/components/cor-service-button/cor-service-button.tsx)
 - Conversation that surfaced this: cor-checkbox audit on 2026-05-27

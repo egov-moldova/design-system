@@ -145,7 +145,7 @@ If the gap is genuine:
 
 ## Reference (per-component deep dives)
 
-For deeper guidance on individual components — variant tradeoffs, accessibility contracts, edge cases — see [`reference/`](reference/) (per-component pages will be added as patterns emerge).
+For deeper guidance on individual components — variant tradeoffs, accessibility contracts, edge cases — a `reference/` directory will be added here as per-component pages emerge; none exist yet.
 
 ## Maintenance
 

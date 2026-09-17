@@ -27,6 +27,7 @@
  *         "name": "day-cell-hover",
  *         "node": "489:9029",
  *         "html": "<mud-date-picker …></mud-date-picker>",
+ *         "props": { "mud-date-picker": { "disabledDates": ["2025-01-08"] } },
  *         "theme": "light",
  *         "pixel": false,
  *         "interaction": [{ "type": "hover", "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']" }],
@@ -40,6 +41,9 @@
  *     ]
  *   }
  *
+ * - `props` assigns JS properties after the fixture renders — for props that
+ *   have no attribute form (arrays, objects). Keys are light-DOM selectors;
+ *   every match gets the values.
  * - `interaction` is one step or a list of steps: hover | focus | press | click.
  * - `pixel: false` keeps a state out of the screenshot diff and reference
  *   export (e.g. a single cell whose Figma component has a different canvas),
@@ -141,6 +145,17 @@ export function validateManifest(manifest) {
     if (state.html !== undefined && typeof state.html !== 'string') {
       errors.push(`${where}.html must be a string`);
     }
+    if (state.props !== undefined) {
+      if (!state.props || typeof state.props !== 'object' || Array.isArray(state.props)) {
+        errors.push(`${where}.props must be an object of { selector: { property: value } }`);
+      } else {
+        for (const [selector, values] of Object.entries(state.props)) {
+          if (!values || typeof values !== 'object' || Array.isArray(values)) {
+            errors.push(`${where}.props["${selector}"] must be an object of property values`);
+          }
+        }
+      }
+    }
     if (state.theme !== undefined && !THEMES.includes(state.theme)) {
       errors.push(`${where}.theme must be one of ${THEMES.join(', ')}`);
     }
@@ -217,6 +232,7 @@ export function resolveState(manifest, state, componentName) {
     pixel: isPixelState(state),
     story: state.story ?? d.story,
     html: state.html ?? null,
+    props: state.props ?? null,
     theme: state.theme ?? 'light',
     clock: state.clock ?? d.clock ?? null,
     viewport: state.viewport ?? d.viewport ?? { width: 1280, height: 900 },

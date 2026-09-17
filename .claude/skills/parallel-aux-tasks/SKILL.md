@@ -161,7 +161,7 @@ Main orchestrator:
 
 ## Verification
 
-Before claiming the parallel phase complete, the orchestrator runs `verification-before-completion` and confirms:
+Before claiming the parallel phase complete, the orchestrator runs `superpowers:verification-before-completion` and confirms:
 
 - ✅ Every subagent returned a report (no crashes, no timeouts).
 - ✅ All `critical` findings have been addressed (fix applied + re-verified).
@@ -171,17 +171,17 @@ Before claiming the parallel phase complete, the orchestrator runs `verification
 
 ## Generated-file safety in parallel worktrees
 
-When N worktrees (3-5 per Cline Kanban session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
+When N parallel worktrees (3-5 per session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
 
 These paths are governed by:
 
 - `.gitattributes` `merge=ours` -> cross-branch merges silently keep the current branch's version (no conflict markers).
-- `.husky/pre-commit` GENERATED_PATTERNS block -> auto-unstages these paths so a stray `git add -A` is harmless.
-- `.github/workflows/ci.yml` `Validate (PR)` job -> rebuilds and `git diff --exit-code` verifies the committed snapshot matches a fresh build. This is the single canonical regeneration point.
+- `.husky/pre-push` -> runs `yarn build`, then fails the push if the rebuilt generated files differ from the committed copy. No hook unstages anything — staging discipline is manual.
+- `.github/workflows/ci.yml` `Tokens validation` job -> rebuilds and runs the same stale-check the pre-push hook runs. This is the canonical regeneration point.
 
-**Subagent contract:** subagents must NEVER add these paths to commits. If a subagent reports "regenerated N files" it is informational only — the pre-commit hook will discard them before they enter history. Subagents must NEVER hand-edit `components.d.ts` or any other auto-generated file.
+**Subagent contract:** subagents must NEVER stage these paths from an incidental local `yarn build`/`yarn sp.build` unless the regeneration is the actual, intended output of their own task. If a subagent reports "regenerated N files" as a side effect, that is informational only — the controller must NOT stage those paths (no hook discards them; an unrelated staged copy will pass `git add <specific paths>` and enter history as-is, and `.husky/pre-push` only catches it at push time). Subagents must NEVER hand-edit `components.d.ts` or any other auto-generated file.
 
-If you see conflict markers (`<<<<<<<`) in any of these files locally, treat it as a bug in the merge driver setup — run `node scripts/git/setup-merge-drivers.mjs` and `git check-attr merge -- src/components.d.ts` (expect `merge: ours`). See `AGENTS.md` -> "Merge driver for auto-generated files".
+If you see conflict markers (`<<<<<<<`) in any of these files locally, treat it as a bug in the merge driver setup — run `node scripts/git/setup-merge-drivers.mjs` and `git config --get merge.ours.driver` (expect `true`). See `_agents/generated-files.md`.
 
 ## Failure modes
 

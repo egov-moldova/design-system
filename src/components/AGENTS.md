@@ -16,13 +16,13 @@
 |------|---------------|--------------|
 | `_agents/form-associated.md` | Stencil doc checks, `formAssociated: true` pattern, ElementInternals API | **When building form elements** (input, select, textarea, checkbox, radio) |
 | `_agents/slot-patterns.md` | Slot validation guards, shared constants, no-boolean-props rule, CSS `:empty` vs slot detection | **When designing slot APIs or validating slotted elements** |
-| `_agents/component-structure.md` | File layout per component, TSX class member order, `@Watch` rule, stenciljs skill corrections | **When scaffolding a new component** |
+| `_agents/component-structure.md` | File layout per component, TSX class member order, `@Watch` rule, common Stencil mistake corrections | **When scaffolding a new component** |
 
 ### Styling & Stories
 
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
-| `_agents/css-architecture.md` | Pattern A (slotted `::slotted(*)`), Pattern B (internal DOM), key CSS rules, stencil-atomic corrections | **When writing component CSS** |
+| `_agents/css-architecture.md` | Pattern A (slotted `::slotted(*)`), Pattern B (internal DOM), key CSS rules, common CSS/slot mistake corrections | **When writing component CSS** |
 | `_agents/storybook-stories.md` | CSF3 format, shared render functions, grid comparison stories, docs generator, storybook corrections | **When writing `.stories.ts` files** |
 
 ### Composition & Testing
@@ -30,21 +30,24 @@
 | File | What It Covers | When to Load |
 |------|---------------|--------------|
 | `_agents/composition-interactive.md` | Organism/template section mapping, interactive component states & behaviors table | **When building molecules, organisms, or interactive components** |
-| `_agents/e2e-testing.md` | Shadow DOM `>>>` combinator, `page.evaluate()` patterns, test skeleton, decision matrix | **When writing E2E tests** |
+| `_agents/testing.md` | Spec tests with Vitest + `@stencil/vitest`: run commands, spec template, coverage rules, `RenderResult` API, reaching 100% branches | **Before writing any `*.spec.tsx`** |
+| `_agents/e2e-testing.md` | Browser tests against shadow roots: Playwright shadow-piercing locators, `page.evaluate()` with `shadowRoot`, custom-event listeners, decision matrix | **When writing E2E tests** |
+| `_agents/a11y-testing.md` | WCAG 2.1 AA in three layers: structural contract in `.spec.tsx`, axe via Storybook `addon-a11y`, browser-driven axe via Playwright MCP; coverage matrix per component type | **When writing accessibility assertions or running an accessibility audit** |
 
 ---
 
 ## Cross-References to Root `_agents/`
 
-These topics have their **canonical location** in the root `_agents/` folder:
+These topics have their **canonical location** in the root `_agents/` folder
+(paths below are relative to this file):
 
 | Topic | Canonical File | Summary |
 |-------|---------------|---------|
-| TypeScript strict mode (7 rules) | `_agents/typescript-strict.md` | `!` assertions, `Record<>`, `?? ''`, `import type` |
-| Shadow DOM dual selectors | `_agents/shadow-dom-patterns.md` | `::slotted()` + direct child for slot defaults |
-| Anti-patterns (25 rules) | `_agents/anti-patterns.md` | All forbidden patterns |
-| Pixel-perfect QA | `_agents/pixel-perfect-qa.md` + `pixel-perfect` skill | Figma state manifest (`test/<name>.figma.json`), style parity, screenshot diff |
-| Token-CSS validation | `_agents/pre-implementation.md` | camelCase → kebab-case verification |
+| TypeScript strict mode (7 rules) | `../../_agents/typescript-strict.md` | `!` assertions, `Record<>`, `?? ''`, `import type` |
+| Shadow DOM dual selectors | `../../_agents/shadow-dom-patterns.md` | `::slotted()` + direct child for slot defaults |
+| Anti-patterns (25 rules) | `../../_agents/anti-patterns.md` | All forbidden patterns |
+| Pixel-perfect QA | `../../_agents/pixel-perfect-qa.md` + `pixel-perfect` skill | Figma state manifest (`test/<name>.figma.json`), style parity, screenshot diff |
+| Token-CSS validation | `../../_agents/pre-implementation.md` | camelCase → kebab-case verification |
 
 ---
 

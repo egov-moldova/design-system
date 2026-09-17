@@ -2,7 +2,7 @@
 
 ## Scope
 
-File structure per component, TSX class member order, @Watch rule, and stenciljs skill corrections. **Read when scaffolding a new component.**
+File structure per component, TSX class member order, @Watch rule, and common Stencil mistake corrections. **Read when scaffolding a new component.**
 
 ## Contents
 
@@ -73,11 +73,7 @@ watchValue(newValue: string) {
 
 ## TypeScript Strict Mode
 
-**Canonical rules in `_agents/typescript-strict.md` (root).** Key reminders:
-
-- All `@Element()` / `@Event()` / `@AttachInternals()` → use `!` assertion
-- Object maps → `Record<string, T>` annotation
-- Optional chaining → always `?? ''` or `?? fallback`
+Decorator properties use `!`, object maps use `Record<>`, optional chains use `??`. Full rules: `_agents/typescript-strict.md` (root, canonical).
 
 ---
 
@@ -169,7 +165,7 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 
 ## Common Stencil Component Mistakes
 
-| Skill Says | Correct |
+| Model assumes | Correct |
 | --- | --- |
 | `my-component` prefix | Always **`mud-*`** prefix |
 | `@Prop({ reflect: true })` "use sparingly" | **Reflect most props** — variant, size, disabled, etc. |
@@ -177,5 +173,5 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 | No token integration | Always use CSS custom properties from tokens |
 | No `::slotted()` patterns | Use `::slotted(*)` for slot-based components |
 | No `:host([attr])` patterns | Use `:host([variant='x'])`, `:host([size='y'])` |
-| Generic `@Event() itemSelected` | Use `cor` prefix: `@Event() mudButtonClick` |
+| Generic `@Event() itemSelected` | Use `mud` prefix: `@Event() mudButtonClick` |
 | No slot validation | Use `invalidSlottedTag()` from `src/utils/` |

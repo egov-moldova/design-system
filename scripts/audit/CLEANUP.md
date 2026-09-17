@@ -41,7 +41,7 @@ off as they pass.
 | [`.claude/agents/a11y-verifier.md`](../../.claude/agents/a11y-verifier.md) | `When to escalate to manual MCP-driven steps` | Same reasoning as pixel-perfect; once Playwright is universal the install-hint branch never fires | Composite-widget keyboard sequences (Tab/Arrow/Escape) still need MCP because script captures static tree; this section MUST stay until 09 grows interaction-driving | KEEP for now — script doesn't fully replace interactive keyboard testing | n/a |
 | [`.claude/commands/pre-pr-check.md`](../../.claude/commands/pre-pr-check.md) | `Wave 5a` MCP fallback block | `12-console-errors.mjs` handles the standard navigate + capture flow | A team without Playwright loses the fallback | (1) + (2); also confirm CI runs `12-console-errors` against `--changed` | `git show` |
 | [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md) | Phase 3.3 MCP `getComputedStyle` snippet at the bottom | `10-contrast-pairs.mjs` is the canonical way; the MCP one-liner becomes a curiosity | A reviewer wants a one-off check on a specific selector | KEEP — useful as a 3-line reference for debugging single elements | n/a |
-| [`.claude/skills/audit-component/SKILL.md`](../../.claude/skills/audit-component/SKILL.md) | Wave 1 Bash port-probe section + Wave 3 manual MCP loop | Both replaced by `12-console-errors` / `09-a11y-tree` plus orchestrator's automatic Storybook port check via `lib/storybook-helpers.mjs` | Storybook starts on a non-6007 port (Cline Kanban worktree scenario) and the auto-probe misses; manual fallback gives an out | KEEP the port-probe; consider deleting only the manual MCP loop | n/a |
+| [`.claude/skills/audit-component/SKILL.md`](../../.claude/skills/audit-component/SKILL.md) | Wave 1 Bash port-probe section + Wave 3 manual MCP loop | Both replaced by `12-console-errors` / `09-a11y-tree` plus orchestrator's automatic Storybook port check via `lib/storybook-helpers.mjs` | Storybook starts on a non-6007 port (parallel worktree scenario) and the auto-probe misses; manual fallback gives an out | KEEP the port-probe; consider deleting only the manual MCP loop | n/a |
 
 **Pattern**: keep any fallback that addresses a real, persistent edge case
 (custom Storybook port, single-selector contrast debug, interactive keyboard
@@ -66,11 +66,11 @@ testing). Delete fallbacks that only existed because the scripts didn't.
 
 | Path | What to revisit | When |
 |------|---|---|
-| [`AGENTS.md`](../../AGENTS.md) (root) | Add a short "Audit suite" pointer under `Automation — Slash Commands & Subagents` (currently only mentions slash commands / subagents / skills, not the `scripts/audit/` orchestrator) | When (1) gate passes |
+| [`CLAUDE.md`](../../CLAUDE.md) (root) | Add a short "Audit suite" pointer under `Automation — Slash Commands & Subagents` (currently only mentions slash commands / subagents / skills, not the `scripts/audit/` orchestrator) | When (1) gate passes |
 | [`src/components/AGENTS.md`](../../src/components/AGENTS.md) | If it references the legacy grep gates anywhere, update to point at `node scripts/audit/02-stencil-antipatterns.mjs` | When (1) gate passes |
 | [`.claude/commands/README.md`](../../.claude/commands/README.md) | Document that `/pre-pr-check` now delegates to `scripts/audit/run-all.mjs` under the hood | When (1) gate passes |
 | [`.claude/agents/README.md`](../../.claude/agents/README.md) | Same for `integration-checker`, `a11y-verifier`, `pixel-perfect-verifier`, `audit-production` | When (1) gate passes |
-| [`.claude/plans/claude-code-automation-improvements-implementation-plan,prompt.md`](../../.claude/plans/claude-code-automation-improvements-implementation-plan,prompt.md) | Marked as completed (still useful as historical context — DO NOT delete) | n/a |
+| [`.claude/plans/_archive/claude-code-automation-improvements-implementation-plan,prompt.md`](../../.claude/plans/_archive/claude-code-automation-improvements-implementation-plan,prompt.md) | Completed and archived (still useful as historical context — DO NOT delete) | n/a |
 
 ---
 
@@ -202,8 +202,8 @@ reports/
 │                                       fallback sections removed per table 1)
 ├── commands/                         (slimmed: pre-pr-check — Wave 1 fallback grep
 │                                       gates removed)
-├── skills/audit-component/SKILL.md   (slimmed: Wave 1 grep list + 2.1 file tree
-│                                       + 2.4 lifecycle audit replaced with script refs)
+├── skills/audit-component/           (slimmed: Wave 1 grep list + references/wave-2-static-analysis.md
+│                                       §2.1 file tree + §2.4 lifecycle audit replaced with script refs)
 └── (everything else unchanged)
 
 .github/workflows/ci.yml              (audit:all + regression-check now hard gates)

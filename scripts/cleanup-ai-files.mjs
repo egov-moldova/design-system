@@ -11,14 +11,18 @@ const projectRoot = path.resolve(__dirname, '..');
 
 // Hardcoded paths to delete (relative to project root)
 const pathsToDelete = [
-  '.specs/',
   '.claude/',
   '.vscode/',
   '_agents/',
   'tokens/_agents/',
+  'src/components/_agents/',
   'AGENTS.md',
   'tokens/AGENTS.md',
   'src/components/AGENTS.md',
+  // Each CLAUDE.md only imports the AGENTS.md above; left behind, its imports dangle.
+  'CLAUDE.md',
+  'tokens/CLAUDE.md',
+  'src/components/CLAUDE.md',
   '.stencil/',
   '.wireit/',
   'coverage/',

@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
 import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
 

@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { FILE_ITEM_STATES } from './mud-file-item.types';
 import { FILE_GLYPH_SRC } from './mud-file-item.glyph';

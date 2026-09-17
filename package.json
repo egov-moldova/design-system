@@ -57,7 +57,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
@@ -77,6 +76,7 @@
     "lint": "wireit",
     "lint.js": "wireit",
     "lint.css": "wireit",
+    "lint.format": "wireit",
     "lint.css.fix": "stylelint \"src/**/*.css\" --fix --allow-empty-input",
     "lint.colors": "node scripts/hardcoded-colors.mjs",
     "sp.build": "wireit",
@@ -90,7 +90,8 @@
     "test.watch": "vitest --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
-    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "test:scripts": "wireit",
+    "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
     "check": "wireit",
     "check.ci": "wireit",
@@ -341,7 +342,7 @@
       ]
     },
     "lint.js": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0 && prettier --check .",
+      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -355,43 +356,25 @@
       ]
     },
     "format.fix": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/**/*.css",
-        "eslint.config.mjs",
-        ".prettierrc.json",
-        ".prettierignore"
-      ],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write . --cache --cache-strategy content"
+    },
+    "lint.format": {
+      "command": "prettier --check . --cache --cache-strategy content"
     },
     "check": {
       "command": "yarn check.verify",
       "dependencies": [
         "format.fix"
-      ],
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
       ]
     },
     "check.ci": {
-      "command": "yarn check.verify",
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "yarn check.verify"
     },
     "lint": {
       "dependencies": [
         "lint.js",
-        "lint.css"
+        "lint.css",
+        "lint.format"
       ]
     },
     "check.verify": {
@@ -399,13 +382,24 @@
       "dependencies": [
         "typecheck",
         "lint",
-        "test"
+        "test",
+        "test:scripts",
+        "docs:check"
       ],
       "files": [],
       "output": [],
       "packageLocks": [
         "yarn.lock"
       ]
+    },
+    "test:scripts": {
+      "command": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "docs:check": {
+      "command": "node scripts/docs/check-ai-docs.mjs"
     },
     "lint.css": {
       "command": "stylelint \"src/**/*.css\" --allow-empty-input",
@@ -450,6 +444,10 @@
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "src/**/*.json",
+        "*.ts",
+        "*.mjs",
+        "*.d.mts",
         "tsconfig.json"
       ],
       "output": [],

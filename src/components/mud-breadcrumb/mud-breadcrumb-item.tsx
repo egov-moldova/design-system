@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 
 import { BREADCRUMB_TRUNCATE_AT } from './mud-breadcrumb.types';
 

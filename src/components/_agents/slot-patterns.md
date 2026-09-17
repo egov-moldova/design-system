@@ -40,7 +40,7 @@ render() {
 import { VALID_HELPER_TEXT_TAGS, VALID_ICON_SLOT_TAGS } from '../shared.constants';
 ```
 
-**Available** (from `src/components/shared.constants.ts`):
+**Available** (from `src/legacy/shared.constants.ts`):
 - `VALID_HELPER_TEXT_TAGS` — `['span', 'small', 'div', 'p']`
 - `VALID_ICON_SLOT_TAGS` — `['mud-icon']`
 

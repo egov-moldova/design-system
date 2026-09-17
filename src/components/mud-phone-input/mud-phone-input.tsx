@@ -1,16 +1,5 @@
-import {
-  AttachInternals,
-  Component,
-  Element,
-  Event,
-  EventEmitter,
-  Host,
-  Listen,
-  Prop,
-  State,
-  Watch,
-  h,
-} from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { PHONE_FLAGS } from './mud-phone-input.flags';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';

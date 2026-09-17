@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import {
   DATE_PICKER_BREAKPOINTS,
@@ -425,7 +426,9 @@ export class MudDatePicker {
 
   @Listen('keydown')
   handleHostKeyDown(ev: KeyboardEvent) {
-    const target = ev.target as HTMLElement | null;
+    // A host listener sees `ev.target` retargeted to the host; the day cell is
+    // the first node of the composed path.
+    const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
     const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
     if (!dayCell) return;
     const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;

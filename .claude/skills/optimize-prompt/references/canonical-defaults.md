@@ -249,7 +249,7 @@ Examples:
 - `--mud-button-primary-background-hover`
 - `--mud-input-icon-color-focus`
 
-**Forbidden:** ALL-CAPS, camelCase, or `--Button-...` (no `mud-` prefix). Validated by `yarn lint.tokens`.
+**Forbidden:** ALL-CAPS, camelCase, or `--Button-...` (no `mud-` prefix). Validated by `yarn tokens.lint`.
 
 ---
 

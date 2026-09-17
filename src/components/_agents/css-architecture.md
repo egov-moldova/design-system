@@ -95,7 +95,7 @@ Use when the component renders its own internal markup.
 
 ## Common CSS / Slot-Architecture Mistakes
 
-| Skill Says | Correct |
+| Model assumes | Correct |
 | --- | --- |
 | `:host(.button--primary) .button` | `:host([variant='primary']) ::slotted(*)` |
 | `:host(.button--small) .button` | `:host([size='sm']) ::slotted(*)` |

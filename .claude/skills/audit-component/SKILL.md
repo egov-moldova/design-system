@@ -126,8 +126,9 @@ node scripts/audit/run-all.mjs <componentName> --ci --json
 
 ### Step 2 — Run Layer 2 (MCP browser checks) — local only
 
-If `envelope.meta.layer2Required === true`, AI MUST execute Layer 2:
-- §BX — Mandatory browser checklist (BX1–BX7) — see section further down.
+If `envelope.meta.layer2Required === true`, AI MUST execute Layer 2 — see
+[`references/layer-2-browser-checklists.md`](references/layer-2-browser-checklists.md):
+- §BX — Mandatory browser checklist (BX1–BX7).
 - §CX — Archetype-specific checklist — dispatch on `envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`.
 - §DX — Discretionary observations (optional, AI-driven).
 
@@ -135,7 +136,7 @@ If `envelope.meta.layer2Required === false` (CI, `--fast`, `--no-browser`): skip
 
 ### Step 3 — Cross-layer synthesis (Layer 3)
 
-Always runs. Correlate L1 + L2 findings, escalate severity for compound defects (e.g., "missing accessible name in L1's a11y-tree AND contrast fail in L1's contrast-pairs AND Tab cannot reach the element in L2 BX2 → CRITICAL"), then emit the Check Matrix + Verdict per the **Final Report** section below.
+Always runs. Correlate L1 + L2 findings, escalate severity for compound defects (e.g., "missing accessible name in L1's a11y-tree AND contrast fail in L1's contrast-pairs AND Tab cannot reach the element in L2 BX2 → CRITICAL"), then emit the Check Matrix + Verdict per [`references/report-template.md`](references/report-template.md).
 
 The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
 (schemaVersion 1.0.0). Per-script details:
@@ -176,11 +177,22 @@ The orchestrator hands you raw findings; you still own:
    Critical in the report when correlated with security/form-association/data
    loss risk.
 4. **Final synthesis** — produce the pass/fail matrix + categorized issue
-   lists + recommendations in the format under "Final Report" below.
+   lists + recommendations in the format in
+   [`references/report-template.md`](references/report-template.md).
 
-The manual detail in Waves 1–3 below remains as a fallback when the
-orchestrator is unavailable (CI without Node, fresh checkout before
-`yarn install`, etc.).
+The manual detail in Wave 1, [`references/wave-2-static-analysis.md`](references/wave-2-static-analysis.md)
+and Wave 3 remains as a fallback when the orchestrator is unavailable (CI
+without Node, fresh checkout before `yarn install`, etc.).
+
+---
+
+## References — load on demand
+
+| File | Covers | Load when |
+| --- | --- | --- |
+| [references/wave-2-static-analysis.md](references/wave-2-static-analysis.md) | Wave 2 static-analysis checks §2.1–§2.10: structural audit, TypeScript strict mode, Stencil decorator delegation, lifecycle cleanup, form-associated callbacks, token compliance, CSS architecture pattern, slot validation, story coverage, test coverage | Running Wave 2 of a full audit, or interpreting the Layer 1 envelope's static-analysis findings |
+| [references/layer-2-browser-checklists.md](references/layer-2-browser-checklists.md) | Layer 2 AI MCP browser checks: §BX mandatory checklist (BX1–BX7), §CX archetype-specific checklist, §DX discretionary observations | `envelope.meta.layer2Required === true` (Fast Path Step 2), or the manual Wave 3 fallback needs the adaptive browser checks |
+| [references/report-template.md](references/report-template.md) | Final Report skeleton: Check Matrix, matrix rules, verdict rules, Critical/High/Medium/Low issue categories, Cross-Script Synthesis, Recommendations | Producing the Final Report in Layer 3 (cross-layer synthesis), after Wave 3 / Layer 2 / the Security & Performance Spot-Check have run |
 
 ---
 
@@ -203,7 +215,7 @@ Dispatch in a SINGLE message with multiple parallel tool calls.
 ### Reference Reads (parallel — for cross-comparison)
 
 - `src/components/mud-button/mud-button.tsx`
-- `src/components/mud-input/mud-input.tsx`
+- `src/components/mud-text-input/mud-text-input.tsx`
 
 ### Anti-Pattern detection
 
@@ -245,269 +257,6 @@ start `yarn sp.dev.watch` in background and wait ~10s for the port to open
 before continuing to Wave 3 / browser scripts. Never silently skip browser
 checks — either start Storybook, or explicitly mark the run as `--fast` and
 note it in the matrix (`Storybook: skipped (not running)`).
-
----
-
-## Wave 2: Static Analysis (uses Wave 1 outputs)
-
-### 2.1 Structural Audit
-
-**File structure** — covered by Fast Path script `01-component-structure.mjs`.
-Required vs optional file list lives in
-[`scripts/audit/01-component-structure.mjs`](../../../scripts/audit/01-component-structure.mjs)
-(`REQUIRED_KINDS` + `OPTIONAL_KINDS`). Consume `findingsByTool.structure`:
-error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
-`STRUCTURE-UNGRADUATED` (info, hidden-folder marker).
-
-**TSX member order** (must match exactly — see `src/components/AGENTS.md` and [`stencil-compliance/references/decorators.md`](../stencil-compliance/references/decorators.md#member-order-project-specific-overlay)):
-
-1. `@Prop({ reflect: true })` — JSDoc, defaults, enum types
-2. `@State()` — internal reactive state
-3. `@Element()` — host element ref
-4. `@AttachInternals()` — form internals (form elements only)
-5. `@Event()` — custom events with `cor` prefix
-6. Private fields (refs, IDs) — NOT decorated
-7. `@Watch()` — prop watchers (rule below)
-8. `@Listen()` — DOM event listeners
-9. Lifecycle (`connectedCallback` → `componentWillLoad` → `componentDidLoad` → `componentDidUpdate` → `disconnectedCallback`)
-10. Private methods
-11. `render()` — always last
-
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties (e.g., `inputElement.indeterminate`, `inputElement.checked`).
-
-### 2.2 TypeScript Strict Mode Audit
-
-Cross-reference [`stencil-compliance/references/decorators.md`](../stencil-compliance/references/decorators.md):
-
-- All `@Element()` properties use `!` assertion: `@Element() host!: HTMLCorXElement;`
-- All `@Event()` properties use `!` assertion: `@Event() corChange!: EventEmitter<T>;`
-- All `@AttachInternals()` use `!` assertion
-- Element type uses generated `HTMLCorXElement` (not bare `HTMLElement`)
-- Object maps have explicit `Record<string, T>` annotations
-- Optional chaining uses nullish coalescing: `?.tagName?.toLowerCase() ?? ''`
-- Story render functions have typed args
-- No implicit `any` (also caught by lint)
-- Optional props use `?`: `@Prop() width?: string | number;`
-- `import type { ... }` for type-only imports
-
-`yarn lint` result already in hand from Wave 1.
-
-### 2.3 Stencil Decorator Audit (delegates to `stencil-compliance`)
-
-Apply the Top-10 quick rules from [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md#2-top-10-must-check-rules-quick-audit):
-
-- **Q1** `@Component`: `tag` starts with `mud-`, `shadow: true`, never `scoped: true`
-- **Q2** All `@Method()` async / `Promise<T>` (verified by Wave 1 grep)
-- **Q3** `EventEmitter<T>` non-empty type (verified by Wave 1 grep)
-- **Q4** Events that escape shadow DOM use `composed: true` (default; flag if overridden to false unintentionally)
-- **Q5** No direct mutations (verified by Wave 1 grep)
-- **Q6** Lifecycle cleanup pair (Phase 2.4)
-- **Q7** No `this.host.classList` (verified by Wave 1 grep)
-- **Q8** Form-associated has full callback set (Phase 2.5)
-- **Q9** `setFormValue(value, state)` 2-arg (verified by Wave 1 grep)
-- **Q10** Definite-assignment `!` on decorated fields
-
-If `--deep`: invoke `stencil-compliance` skill and run full 14-section pass; report findings under "Deep Stencil Audit".
-
-### 2.4 Lifecycle Cleanup Audit
-
-Covered by Fast Path script `02-stencil-antipatterns.mjs` —
-`ANTIPATTERN-007-LIFECYCLE-LEAK` (paired observer/timer + disconnectedCallback
-check). Cross-reference [`stencil-compliance/references/lifecycle-host.md#lifecycle`](../stencil-compliance/references/lifecycle-host.md#lifecycle).
-
-Judgment that stays here: when `connectedCallback` IS present but doesn't
-look safe-on-re-attach (resource re-allocated without checking if already
-allocated), the script doesn't catch it — review manually.
-
-### 2.5 Form-Associated Audit (if applicable)
-
-Cross-reference [`stencil-compliance/references/form-reactivity.md#form-associated`](../stencil-compliance/references/form-reactivity.md#form-associated).
-
-For components with `formAssociated: true`:
-
-- `@AttachInternals() internals!: ElementInternals` present
-- `formResetCallback()` resets value + `internals.setFormValue('')` + `internals.setValidity({})`
-- `formDisabledCallback(disabled: boolean)` updates `this.disabled`
-- `formStateRestoreCallback(state, mode)` handles BOTH modes (`'restore'`, `'autocomplete'`)
-- Optional `formAssociatedCallback(form)` if component stores form reference
-- `internals.setFormValue(value, state)` — TWO arguments (Wave 1 grep)
-- `internals.setValidity(flags, message?, anchor?)` — anchor element when applicable
-- Native validity flags copied (`valueMissing`, `patternMismatch`, `tooLong`, etc.)
-
-Failure on any item → **Critical** in report.
-
-### 2.6 Token Compliance Audit
-
-Read `tokens/core/components/<bareName>.tokens.json` (already loaded from Wave 1) and verify:
-
-- All tokens reference existing core tokens with `{token.path}` syntax (DTCG `$value` / `$type`)
-- No hardcoded hex/px values in token VALUES (palette is the only place hex is allowed)
-- Naming convention: `--{component}-{element}-{property}-{scale/state}` — scale/state MUST be last
-  - PASS: `--label-font-size-md`, `--input-border-color-focus`, `--button-primary-background-hover`
-  - FAIL: `--label-md-font-size`, `--input-focus-border-color`
-- **Root key is the component name** (`"button"`, `"input"`) — NOT a `"components"` wrapper
-
-Verify generated CSS variables exist after `yarn tokens.build`:
-
-```powershell
-Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "--<bareName>-" | Select-Object -First 20
-```
-
-```bash
-grep "--<bareName>-" dist/mud/tokens/core.tokens.css | head -n 20
-```
-
-For deeper token validation delegate to `/token-validator` agent.
-
-### 2.7 CSS Architecture Pattern Audit
-
-Cross-reference [`stencil-compliance/references/jsx-styling.md#styling`](../stencil-compliance/references/jsx-styling.md#styling).
-
-Determine which CSS pattern applies and verify it's used consistently:
-
-**Pattern A — Slot-based (mud-button style)**:
-- Uses `::slotted(*)` for styling slot children
-- Uses `:host([variant='x'])`, `:host([size='y'])` attribute selectors
-- Pseudo-states on slotted: `::slotted(*:hover:not(:disabled))`
-
-**Pattern B — Internal DOM (mud-input style)**:
-- Uses `:host` CSS variables for size mapping
-- Internal `.container`, `.input-wrapper` classes
-- State via host class: `:host(.is-focused) .container { ... }`
-
-**Common CSS checks**:
-- `:host { display: ...; }` set (Anti-Pattern #17)
-- Transitions: explicit properties (NOT `all`)
-- PostCSS nesting uses `&` correctly
-- No `!important` without justification
-- No `*` universal selectors outside `::slotted(*)`
-- Disabled sets `pointer-events: none` and `cursor: not-allowed`
-
-### 2.8 Slot Validation Audit
-
-For components with `<slot>`:
-
-- Implements `invalidSlottedTag()` validation if tag restrictions apply
-- `::slotted(*)` CSS rules for slot content styling (Pattern A)
-- Story demonstrates slot usage with realistic content
-- JSDoc documents expected slot content
-- **Slot-first content rule** — slot fallback children must NOT be a JSX
-  expression that mirrors a `@Prop()` value. If the component declares a
-  string `@Prop()` (e.g. `label`) AND renders it inside a slot
-  (`<slot>{this.label}</slot>` or `<slot>{labelText}</slot>`), the prop and
-  the slot are two ways to set the same content — flag as
-  **MEDIUM**. Reference components: `mud-button`, `mud-service-button` keep
-  `label` ARIA-only; visible content lives exclusively in the slot.
-  Detected automatically as `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`.
-
-Cross-reference `src/components/_agents/slot-patterns.md`.
-
-### 2.9 Story Coverage Check
-
-Read `.stories.ts` (already loaded) and verify:
-
-**Format**:
-- CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
-- `component: 'mud-<name>'` is string tag name (not JS reference)
-- `render` function with HTML template strings (`/*html*/` prefix)
-- `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
-- No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
-
-**Type-safety anti-patterns** (flag any of these):
-- `STORY-MISSING-GENERIC` — `Meta` or `StoryObj` used without a generic type parameter (bare `Meta` resolves to `Meta<any>` and disables every type check the pattern is supposed to provide). Required form: `Meta<Args>` and `StoryObj<Args>`.
-- `STORY-ESLINT-DISABLE-WRAP` — `/* eslint-disable */` wrapping the `Meta, StoryObj` import. The only reason for it is unused imports, which means the generic was forgotten. Fix the generic and drop the wrapper.
-- `STORY-ARGS-ANY` — `render: (args: any) => ...` or any `(args: any)` callback in stories. Typed args param required.
-- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
-- `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
-- `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
-- `STORY-COMPOSITE-NO-CODE-OVERRIDE` — story with `controls: { disable: true }` AND a helper-laden `render` (template-string `.map(...)`, local `cellStyle` constants, etc.) AND no `parameters.docs.source.code` override. The global `'code'` mode then captures the demo-chrome render output verbatim, exposing wrapper divs and `${LOOP.map(...)}` template guts as the "consumer-ready" snippet. Provide a static `code` with one clean `<mud-component …></mud-component>` per variation. See `src/components/mud-logo/mud-logo.stories.ts` for the canonical example.
-
-**Spec-file anti-patterns** (flag any of these in Wave 2.10):
-- `SPEC-LEGACY-NEWSPECPAGE` — `import { newSpecPage } from '@stencil/core/testing';`. Retired Jest harness. Must use `import { render, ... } from '@stencil/vitest';`.
-- `SPEC-MISSING-SOURCE-IMPORT` — no side-effect `import '../<componentName>';` line. Without it `stencilVitestPlugin` cannot compile the source on-the-fly and coverage v8 reports 0%. **Critical** — silent regression for coverage.
-- `SPEC-JEST-AXE-IMPORT` — `import ... from 'jest-axe';`. Axe runs against mock-doc nodes fail; visual axe is delegated to Storybook addon-a11y. Replace with structural WCAG contract assertions.
-- `SPEC-MANUAL-EVENT-SPY` — `vi.fn()` + `root.addEventListener('cor...', spy)` where `spyOnEvent('cor...')` from the `RenderResult` would do the same with `{ length, lastEvent, events }` accessors. Prefer the destructured spy.
-
-**Required stories**:
-- `Default` — basic usage with default props
-- `AllVariants` — grid showing all variant values
-- `AllSizes` — grid showing all size values (if size prop exists)
-- `States` — default, hover, disabled, focus, (loading/error if applicable)
-- Slot variations — with/without content, named slots
-- Edge cases — long text, empty content, icon-only
-
-**ArgTypes completeness** — each `@Prop()` has:
-- `argTypes` entry with `control` type
-- `options` array for enum props
-- `description` text
-- `table.defaultValue` if prop has default
-
-**Story styling — design tokens preferred (warning, not error)**:
-- `STORY-RAW-VALUE` — inline `style="..."` attributes containing raw `#hex` colors, raw `Npx` values (except `0` and `1px` for borders), or `var(--palette-*)` references. Prefer semantic tokens (`var(--spacing-X)`, `var(--color-background-*-*)`, `var(--font-size-X)`, `var(--border-radius-X)`). Exceptions: preview-stability widths (`width: 200px`) and grid label-gutters (`grid-template-columns: 80px ...`) are legitimate.
-
-### 2.10 Test Coverage Check
-
-#### 2.10.1 Unit Tests (DEFAULT — always audited)
-
-Read `test/<componentName>.spec.tsx` (already loaded from Wave 1) and verify:
-
-- Uses `render(<mud-x ... />)` from `@stencil/vitest` (the Jest-era `newSpecPage` was retired)
-- **MANDATORY** side-effect source import: `import '../<componentName>';` is present as the first non-vitest import. Without it `stencilVitestPlugin` cannot compile the source on-the-fly and coverage v8 will report 0% for the TSX. Flag missing import as **High** — silent coverage regressions otherwise. See `src/components/_agents/testing.md` → Coverage rules.
-- At least 1 smoke test (renders without throwing)
-- Props tested: each `@Prop` reflected to host attribute and JSX output
-- Events tested: each `@Event` emitted with correct payload via `spyOnEvent('eventName')` (NOT manual `addEventListener` + `vi.fn()`)
-- States tested: internal state transitions (where applicable)
-- Slot content renders correctly
-- Disabled state blocks interaction
-- ARIA attributes present in rendered DOM
-- Form-associated specific:
-  - `formResetCallback` resets value + validity
-  - `formDisabledCallback` updates `disabled`
-  - `formStateRestoreCallback` restores state
-  - `internals.setFormValue` called on change with both args
-  - `internals.setValidity` reflects required/pattern/etc.
-
-##### Coverage gate (Wave 2.10.1.a)
-
-Run a one-off coverage check on the component:
-
-```bash
-yarn vitest --project spec --coverage --run --reporter=verbose 2>&1 | tail -40
-```
-
-Inspect the summary row for `src/components/<componentName>/<componentName>.tsx`. Expected:
-
-- **File missing from the summary table** → 100% on all four metrics (v8 hides perfect rows) → **PASS**.
-- Statements ≥ 80, Branches ≥ 70, Functions ≥ 80, Lines ≥ 80 → **PASS**.
-- **0 / 0 / 0 / 0** → side-effect source import is missing → flag **Critical**; the spec is exercising a black-box dist bundle, not the source.
-- **Branches stuck at exactly 50% (1/2)** while statements/functions/lines are 100% → the Stencil-injected `registerHost !== false` guard isn't being hit. Flag **Low** with the canonical fix: add the boilerplate test below + a hidden `CoverageGuard` story. Recipe documented in [`src/components/_agents/testing.md`](../../../src/components/_agents/testing.md) → "Reaching 100% Branches".
-  ```ts
-  it('constructs without registering a host when registerHost=false', () => {
-    const Ctor = customElements.get('mud-<name>') as unknown as new (registerHost: boolean) => unknown;
-    expect(Ctor).toBeTruthy();
-    const instance = new Ctor(false);
-    expect(instance).toBeTruthy();
-  });
-  ```
-- Below threshold but non-zero (and not the 50%-branches signature) → flag **Medium** + list uncovered line numbers from the report.
-
-**If `test/<componentName>.spec.tsx` does NOT exist** → **High** severity (not Critical for current repo state, since not all components have unit tests yet). Recommend creation.
-
-#### 2.10.2 E2E Tests (GATED on `--e2e` flag)
-
-Default: skip and emit `INFO: E2E audit disabled (use --e2e to enable)`.
-
-When `--e2e` flag set:
-- Read `test/<componentName>.e2e.ts` (loaded from Wave 1)
-- Uses `newE2EPage({ html: '<mud-x ...></mud-x>' })`
-- Smoke test: hydration class present (`page.find('mud-x.hydrated')`)
-- Prop reflection: attributes verified via `page.find('mud-x').getAttribute('variant')`
-- Event spies: `page.spyOnEvent('corChange')` with await for emission
-- Focus/blur: `page.evaluate(() => document.querySelector('mud-x')?.focus())`
-- Shadow DOM access: `page.find('mud-x >>> .target')` combinator
-- Form-associated: form submission produces correct FormData
-
-Cross-reference `src/components/_agents/e2e-testing.md`.
 
 ---
 
@@ -572,131 +321,11 @@ mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.
 
 ---
 
-## Layer 2 — AI MCP browser checks (BX mandatory + CX archetypal + DX discretionary)
-
-This is the **adaptive** layer that scripts cannot cover. It runs once L1 is done,
-locally only (skipped when `meta.layer2Required === false`). Three sections,
-parsed in order: **BX → CX → DX**. AI tracks per-section results in the
-Check Matrix at the end of the report.
-
-**Pre-conditions:**
-- L1 envelope in hand (read `meta.contract.archetype.value` to pick the CX block).
-- Storybook reachable on `:6007` (Step 0 already ensured this).
-- MCP Playwright (`mcp__playwright__browser_*`) available. If the first
-  `browser_navigate` fails, mark all BX rows ⏭️ with reason `mcp-unavailable`
-  and verdict `Review — Layer 2 deferred`. Do NOT silently skip.
-
-**Browser session policy:** open ONE session via `browser_navigate` for BX1
-and reuse it across BX2–BX7 + CX + DX. Re-navigate only when changing story.
-
-### §BX — Mandatory Browser Checklist
-
-6 mandatory items + 1 conditional. Earlier items gate later ones — if BX1 fails
-(no hydration), do NOT continue; mark BX2–BX7 ⏭️ with reason `BX1 gate`.
-
-```text
-BX1 — Hydration + first paint
-  mcp__playwright__browser_navigate({ url: storyUrl(componentName, 'default') })
-  mcp__playwright__browser_wait_for({ time: 1 })
-  mcp__playwright__browser_snapshot()
-  PASS: snapshot contains mud-<name> with class `hydrated` and ≥1 child node
-  FAIL: BLOCK (verdict "Block — incomplete audit"; no point running BX2–BX7)
-  Fallback: if no Default story exists, navigate to the FIRST story id from
-            envelope.findingsByTool['story-exports'].
-
-BX2 — Tab order reaches every focusable element
-  Walk the interactive census from L1 (envelope.findingsByTool['a11y-tree'][...]
-  meta-snapshot.light.interactive[]). For each element:
-    mcp__playwright__browser_press_key({ key: 'Tab' })
-    mcp__playwright__browser_evaluate({ function: "() => ({ tag: document.activeElement?.tagName, id: document.activeElement?.id, role: document.activeElement?.getAttribute('role') })" })
-  PASS: every census element receives focus in DOM order; Shift+Tab walks back
-  FAIL: CRITICAL — keyboard trap, skipped element, or wrong order (WCAG 2.1.1)
-  N/A: archetype === CONTAINER AND census.length === 0
-
-BX3 — Focus-visible ring on every focusable element
-  For each focused element from BX2:
-    mcp__playwright__browser_evaluate({ function: "() => { const s = getComputedStyle(document.activeElement); return { outlineWidth: s.outlineWidth, outlineColor: s.outlineColor, boxShadow: s.boxShadow }; }" })
-  PASS: outlineWidth !== '0px' OR boxShadow contains a focus token (non-'none')
-  FAIL: CRITICAL — invisible focus (WCAG 2.4.7)
-  N/A: same as BX2
-
-BX4 — Escape / activation (conditional)
-  Runs only when archetype ∈ {OVERLAY} OR contract has @Method matching /^(open|close|toggle)$/
-  - Open the overlay (set prop via browser_evaluate or click trigger)
-  - mcp__playwright__browser_press_key({ key: 'Escape' })
-  - browser_snapshot() and verify:
-      • overlay no longer visible (open prop flipped OR display:none)
-      • focus returned to the trigger element
-  FAIL: CRITICAL (WCAG 2.1.2 — no keyboard trap)
-  Skip: archetype not in list → row renders as ➖ N/A
-
-BX5 — Light + dark structural diff
-  Snapshot light:
-    mcp__playwright__browser_snapshot({ filename: 'bx5-light.snapshot.yml' })
-  Toggle dark:
-    mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
-  Snapshot dark, then compare DOM structure (element count + tag set), NOT pixels
-  PASS: identical element tree across themes
-  FAIL: HIGH — dark mode loses an element OR throws a console error
-  (Pixel-level diff is pixel-perfect-verifier's job; this is the cheap gate.)
-
-BX6 — Console-error sweep
-  mcp__playwright__browser_console_messages({ level: 'error' })
-  PASS: zero errors across BX1–BX5
-  FAIL: any error → escalate severity of all BX failures to CRITICAL
-        (a console error during a checked action means the component is
-         silently broken in that scenario)
-
-BX7 — Form submission round-trip (conditional: archetype === FORM only)
-  mcp__playwright__browser_evaluate({ function: "/* inject <form>; set value via component API; dispatch submit; read FormData */" })
-  PASS: FormData carries the expected key + value; internals.setFormValue
-        called with TWO args (name, state) — never just one
-  FAIL: CRITICAL — missing key, wrong value, or 1-arg setFormValue
-  Skip: archetype !== FORM → ➖ N/A
-```
-
-**BX exit rules**
-
-- All applicable BX items MUST be done (✅ / ❌) or marked ⏭️ with explicit reason.
-- If any BX item is skipped without `--fast` / `--ci` / `mcp-unavailable` reason → verdict = **"Block — incomplete audit"**.
-- If BX6 reports an error AND any other BX failed → all BX failures upgrade to **CRITICAL**.
-
-### §CX — Archetype-specific checklist
-
-Read `contract.archetype.value` from `envelope.findingsByTool['component-contract'][...meta.contract]` (or from the script-14 stand-alone envelope under `meta.contract.archetype`). Run **only the row for that archetype**.
-
-If `archetype.confidence === 'low'`: AI MUST flag this in the matrix as INFO and may switch to a different CX block if observation contradicts the heuristic (note the override in the report).
-
-| Archetype | CX1 | CX2 | CX3 | CX4 |
-|---|---|---|---|---|
-| **FORM** | `internals.validity` reflects required/pattern (set invalid input, read `aria-invalid` + validity state) | `formResetCallback` resets value + `setValidity({})` (trigger reset on parent form) | `formStateRestoreCallback` serialize → restore → assert equal (dump + restore via API) | Label association: `aria-labelledby` resolves to existing element OR `<label for=>` matches host id |
-| **STATUS** | `aria-live` correct for severity: `polite` for status/loading, `assertive` for alert | Animation respects `prefers-reduced-motion` (toggle media query via `browser_evaluate`, re-check `animation-duration`) | Dismiss path (if any): close button has accessible name AND Esc closes | ➖ N/A |
-| **OVERLAY** | Focus trap inside when open (Tab from last focusable cycles to first, not outside) — CRITICAL on fail | Backdrop click closes (if `closeOnBackdrop` prop or similar) | `aria-modal="true"` AND `role ∈ {dialog, alertdialog}` on the rendered overlay | Body scroll locked while open (read `document.body.style.overflow`) |
-| **ACTION** | Click handler fires the `@Event()` from script 14 (attach listener via `browser_evaluate`, click, assert) | Disabled state blocks BOTH click AND keyboard (Space/Enter) | Loading state (if prop) disables interaction AND sets `aria-busy="true"` | Icon-only variant has `aria-label` (cross-ref script-09 finding) |
-| **CONTAINER** | Slotted content layout doesn't overflow at 320px viewport (`browser_resize`, snapshot, check clipping) | Light + dark token usage parity (cross-ref `tokens.validate` envelope — every token defined in one theme is defined in the other) | `:empty` slot rendering correct (clear slot content via `browser_evaluate`, snapshot for graceful empty state) | ➖ N/A |
-
-**CX exit rules**
-
-- CX must run all applicable checks for the matched archetype. Skipped CX → verdict = **"Review — partial"** (UNLESS BX failed first, in which case "Block").
-- CX failures default to **HIGH** severity; OVERLAY CX1 (focus trap) is **CRITICAL** because a missing focus trap is a compound a11y/security defect.
-
-### §DX — Discretionary observations (AI initiative)
-
-Always **INFO** in the matrix; never blocks. AI adds these based on what it observes:
-
-- `prefers-reduced-motion`: toggle media query, verify animations honor it.
-- Document direction RTL: set `dir='rtl'` via `browser_evaluate`, re-snapshot, eyeball mirror issues.
-- Viewport stress: `mcp__playwright__browser_resize` to 320 / 768 / 1280, snapshot at each.
-- High-contrast mode: toggle `forced-colors` media query (if supported), snapshot.
-- **AI ad-hoc**: any story or interaction the AI deems worth verifying beyond BX/CX — e.g., "Stories include a `LongLabel` variant; I verified text-overflow behavior at narrow widths." Log each ad-hoc DX explicitly in the report so reviewers see what was covered.
-
----
-
 ## Security & Performance Spot-Check
 
 Cross-reference Wave 1 grep results.
 
-**Security** — reject from [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md):
+**Security** — reject from [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md):
 
 - Inline styles in TSX (CSP violation)
 - `innerHTML` assignment without sanitization (XSS)
@@ -717,134 +346,6 @@ Cross-reference Wave 1 grep results.
 - CSS `transition: all` NOT used
 - No large inline SVGs — use `mud-icon`
 - No large external dependencies
-
----
-
-## Final Report
-
-The report has two complementary parts: a **machine-readable matrix** (every
-check + status, generated mostly from `findingsByTool`) and the
-**human-readable narrative** (categorized issues + recommendations) that
-follows. The matrix lets the user see at a glance which dimensions passed and
-which need attention; the narrative explains the "why" and what to do.
-
-```text
-## Audit Report: <componentName>
-**Flags**: <list active flags, e.g. --deep, --e2e, --ci>
-**Storybook**: <reused | started | skipped (--fast) | skipped (not running)>
-**Orchestrator**: <run-all.mjs ran in Xms | unavailable, manual fallback used>
-**Archetype**: <FORM | STATUS | OVERLAY | ACTION | CONTAINER> (source: <heuristic|override>, confidence: <high|medium|low>)
-**Layer 2**: <executed | skipped (--ci) | skipped (--fast) | skipped (mcp-unavailable)>
-
-### Check Matrix
-
-Symbols: ✅ pass · ⚠️ warnings only · ❌ errors · ⏭️ skipped · ➖ N/A
-Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendations) I = Information/Observations (non-blocking)
-
-| # | Category                         | Status | E | W | I | Source             |
-|---|----------------------------------|--------|---|---|---|--------------------|
-| 01 | Component structure             |  ✅    | 0 | 0 | 0 | script 01          |
-| 02 | Stencil anti-patterns           |  ❌    | 2 | 3 | 0 | script 02          |
-| 03 | Git hygiene                     |  ✅    | 0 | 0 | 1 | script 03          |
-| 04 | JSDoc completeness              |  ⚠️    | 0 | 4 | 0 | script 04          |
-| 05 | Story exports / coverage        |  ⚠️    | 0 | 1 | 0 | script 05          |
-| 06 | Unit-test coverage              |  ✅    | 0 | 0 | 0 | script 06          |
-| 07 | Integration usage               |  ✅    | 0 | 0 | 2 | script 07          |
-| 08 | Bundle size                     |  ✅    | 0 | 0 | 0 | script 08          |
-| 09 | Accessibility tree (light+dark) |  ⚠️    | 0 | 2 | 0 | script 09 + AI ARIA |
-| 10 | Contrast pairs (light+dark)     |  ❌    | 1 | 0 | 0 | script 10          |
-| 11 | Pixel diff vs Figma             |  ⏭️    | – | – | – | no Figma state manifest |
-| 12 | Console errors                  |  ✅    | 0 | 0 | 0 | script 12          |
-| 13 | Token diff                      |  ✅    | 0 | 0 | 0 | script 13          |
-| 14 | Component contract              |  ✅    | 0 | 0 | 0 | script 14          |
-| 15 | Style parity vs Figma           |  ⏭️    | – | – | – | no Figma state manifest |
-| BX1 | L2: Hydration + first paint    |  ✅    | – | – | – | MCP browser_snapshot |
-| BX2 | L2: Tab order on focusables    |  ✅    | – | – | – | MCP browser_press_key |
-| BX3 | L2: Focus-visible ring         |  ✅    | – | – | – | MCP browser_evaluate |
-| BX4 | L2: Escape / activation         |  ➖    | – | – | – | archetype not OVERLAY |
-| BX5 | L2: Light + dark structural    |  ✅    | – | – | – | MCP snapshot ×2 |
-| BX6 | L2: Console error sweep         |  ✅    | – | – | – | MCP browser_console_messages |
-| BX7 | L2: Form submission round-trip  |  ➖    | – | – | – | archetype !== FORM |
-| CX  | L2: Archetype-specific (<TYPE>)|  ✅    | – | – | – | see CX sub-bullets |
-| DX  | L2: Discretionary observations |  ✅    | – | – | – | informational |
-| —  | TypeScript strict (AI)          |  ✅    | – | – | – | yarn lint          |
-| —  | CSS architecture pattern (AI)   |  ✅    | – | – | – | manual review      |
-| —  | Form-associated callbacks (AI)  |  ➖    | – | – | – | non-form component |
-| —  | Security & performance (AI)     |  ✅    | – | – | – | spot-check         |
-| —  | Deep Stencil pass (if --deep)   |  ⏭️    | – | – | – | flag absent        |
-| —  | E2E coverage (if --e2e)         |  ⏭️    | – | – | – | flag absent        |
-
-**CX sub-rows** (rendered inline under the CX row, one per check that ran for the matched archetype):
-- CX1 ...
-- CX2 ...
-- CX3 ...
-- CX4 ... (or ➖ N/A)
-
-**Roll-up**: ✅ X · ⚠️ Y · ❌ Z · ⏭️ N skipped · ➖ M N/A
-**Verdict**: <Ready to merge | Review — partial | Block — critical fixes required | Block — incomplete audit>
-
-### Summary
-- Total checks: <X> · Pass: <a> · Warning: <b> · Fail: <c> · Skipped: <d>
-- Highest severity: <Critical | High | Medium | Low | None>
-
-### Critical Issues (must fix before merge)
-1. <code> in <file:line> — <message> — fix: <hint>
-
-### High Issues (fix before merge)
-1. ...
-
-### Medium Issues (fix soon)
-1. ...
-
-### Low Issues (nice to have)
-1. ...
-
-### Cross-Script Synthesis
-- <e.g. "Element <button class='primary'> fails both 09 (no accessible name)
-   and 10 (contrast 3.8:1 < 4.5:1) in dark mode" — single defect, two
-   citations, escalated to Critical>
-
-### Deep Stencil Audit (if --deep)
-- Section 1 @Component: ...
-- Section 2 @Prop: ...
-- ... (14 sections)
-
-### E2E Audit (if --e2e)
-- Test file present: yes/no
-- Tests passing: X/Y
-- ...
-
-### Recommendations
-1. ...
-
-### Pipeline timing
-- Orchestrator wall-clock: ~Xms (from `meta.totalDurationMs`)
-- AI-judgment phase:       ~Ys
-- Total report time:       ~Zs
-```
-
-**Rules for the matrix**
-
-- Drive every L1 numbered row (01–15) from `findingsByTool[<name>]` — counts come from the per-script `summary` block.
-- L2 rows (BX1–BX7, CX, DX) come from the AI session record — ✅ if the MCP call succeeded and the assertion passed; ❌ if assertion failed; ⏭️ if step was attempted and aborted (with reason); ➖ if step was N/A for the archetype.
-- Status mapping for L1:
-  - `❌` if `summary.errors > 0`
-  - `⚠️` if `summary.errors === 0 && summary.warnings > 0`
-  - `✅` if `summary.errors === 0 && summary.warnings === 0`
-  - `⏭️` if the script was filtered out (`--no-browser`, `--ci`, `--skip`, missing prerequisite like `--figma-dir`)
-- AI-only rows (no script equivalent) use `–` for count columns and state the source as `manual review`, `yarn lint`, etc.
-- Always emit the matrix even when the orchestrator was unavailable — populate from manual Wave 1–3 results + whatever L2 was attempted.
-
-**Verdict rules** (the verdict line at the top — apply in order, first matching rule wins):
-
-1. **"Block — critical fixes required"** — ANY of: L1 row `❌` (errors), L2 BX row `❌`, L2 CX row `❌`. Reason wins regardless of completeness state.
-2. **"Block — incomplete audit"** — L1 clean BUT any BX row is ⏭️ for a non-flag reason (e.g., `mcp-unavailable` without `--fast`/`--ci`/`env.CI`).
-3. **"Review — partial"** — L1 clean + all BX ✅/➖ but some CX checks skipped or warning-level.
-4. **"Ready to merge"** — L1 clean (no ❌) + all BX ✅/➖ + all applicable CX ✅.
-
-The verdict ALWAYS prioritizes real Layer-1 errors over Layer-2 completeness — an incomplete L2 cannot mask a script-level fail.
-
-Present the report. **Do NOT auto-fix** — wait for the user to choose which issues to address.
 
 ---
 
@@ -874,4 +375,4 @@ When invoked headlessly, the skill returns the Final Report string. The orchestr
 - [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA companion
 - [`token-creation/SKILL.md`](../token-creation/SKILL.md) — token-tier rules
 - [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific component patterns
-- [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md) — project anti-pattern list
+- [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) — project anti-pattern list

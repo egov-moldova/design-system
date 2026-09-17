@@ -32,7 +32,7 @@ function lint(...roots) {
 const leaf = { $value: '{spacing.4}', $type: 'dimension' };
 
 describe('tokens-lint — key naming', () => {
-  it('accepts camelCase compound keys, as .specs/TOKEN-ARCHITECTURE.md §4 prescribes', () => {
+  it('accepts camelCase compound keys, as tokens/_agents/naming-conventions.md prescribes', () => {
     const root = tokenRoot({ header: { megaMenu: { optionFontFamily: leaf, iconColor: leaf } } });
     const { status, keys } = lint(root);
     assert.deepEqual(keys, []);

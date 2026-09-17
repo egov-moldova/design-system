@@ -494,7 +494,7 @@ async function writeCombined(combined, args) {
     process.stdout.write(`${C.gray('CI mode detected — Layer 2 (MCP browser checks) skipped.')}\n`);
   } else if (combined.meta.layer2Required) {
     process.stdout.write(
-      `${C.bold('Next:')} run Layer 2 — see .claude/skills/audit-component/SKILL.md §BX (mandatory MCP browser checks) + §CX (archetype-specific).\n`,
+      `${C.bold('Next:')} run Layer 2 — see .claude/skills/audit-component/references/layer-2-browser-checklists.md §BX (mandatory MCP browser checks) + §CX (archetype-specific).\n`,
     );
   }
   process.stdout.write('\n');

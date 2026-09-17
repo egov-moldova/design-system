@@ -2,114 +2,32 @@
 
 ## Scope
 
-Feedback loop to improve AGENTS.md accuracy and prevent recurring issues. **Read when encountering repeated issues or proposing documentation changes.**
+Feedback loop to improve AGENTS.md accuracy and prevent recurring issues. **Read when
+encountering repeated issues or proposing documentation changes.**
 
 ---
 
-## When to Trigger Improvement Analysis
+## The rule
 
-1. **Multiple fix iterations** (3+ rounds) for the same visual property
-2. **Recurring pattern of mistakes** across different components
-3. **Missing validation step** that would have caught an issue earlier
-4. **Ambiguous or incomplete guidance** that led to incorrect implementation
-5. **New pattern or technique** discovered during implementation
-6. **User correction** that reveals a gap in the workflow
+When the same component needs a **third fix on the same behavior**, that is not another bug —
+it is a missing rule. Two things happen in the same PR:
 
----
+1. **Add a regression test for the contract**, not just a fix for the symptom — as done for
+   issue #10 (form-associated `name` reflection, PR #15) and issue #17 (accordion-item
+   `disabled` reflection, PR #24).
+2. **Record the missing rule** in the relevant `_agents/*.md` file, so the next agent reads it
+   before making the same mistake a fourth time.
 
-## Improvement Analysis Process
+## Where the rule goes
 
-### Step 1: Document the Issue
+| Category | Target File |
+|---|---|
+| Token/CSS validation | `_agents/pre-implementation.md` |
+| State extraction | `_agents/state-extraction.md` |
+| Shadow DOM pattern | `_agents/shadow-dom-patterns.md` |
+| Figma extraction | `_agents/figma-extraction.md` |
+| Environment/build | `_agents/environment-commands.md` |
+| Component structure or Stencil mistake | `src/components/_agents/component-structure.md` |
+| Token naming or hierarchy | `tokens/_agents/naming-conventions.md` |
 
-```markdown
-## Workflow Gap Analysis — [Date]
-
-**Component**: `mud-[name]`
-**Issue Type**: [Visual Bug | Process Gap | Missing Validation | Pattern Discovery]
-
-### What Went Wrong
-- [Issue description]
-- [Number of fix iterations]
-- [Root cause]
-
-### Why It Happened
-- [Which section was followed]
-- [What guidance was missing]
-
-### What Would Have Prevented It
-- [Specific check or validation]
-- [New section or enhancement needed]
-
-### Proposed Enhancement
-- **File**: `_agents/[file].md`
-- **Change Type**: [New Section | Enhancement | Checklist Addition | Example]
-- **Content**: [Exact text to add]
-```
-
-### Step 2: Categorize
-
-| Category | Example | Target File |
-|---|---|---|
-| Token/CSS Validation | CSS variable naming mismatch | `_agents/pre-implementation.md` |
-| State Extraction | Missing selected state properties | `_agents/state-extraction.md` |
-| Shadow DOM Pattern | Slot styling not working | `_agents/shadow-dom-patterns.md` |
-| Figma Extraction | Incomplete property extraction | `_agents/figma-extraction.md` |
-| Pre-Build Validation | Token not built before testing | `_agents/environment-commands.md` |
-| Typography | Font-weight changes in states | `_agents/state-extraction.md` |
-
-### Step 3: Present to User
-
-```markdown
-## Task Complete + Workflow Improvement
-
-### Implementation Summary
-[Per-component summary]
-
-### 🔄 Improvement Identified
-**Issue**: [Brief description]
-**Impact**: [How many fix iterations]
-**Recommended Enhancement**: [Specific file + content]
-**Would you like me to implement this?**
-```
-
----
-
-## Common Improvement Patterns
-
-### Pattern 1: Pre-Build Validation Gaps
-
-**Symptom**: Visual bugs discovered only after screenshots
-**Solution**: Add validation step before visual QA
-**Target**: `.claude/skills/pixel-perfect/SKILL.md` — Step 0 (preflight) or the manifest `expect` entries
-
-### Pattern 2: Incomplete State Extraction
-
-**Symptom**: Multiple rounds adding missing states
-**Solution**: Comprehensive upfront state matrix
-**Target**: `_agents/state-extraction.md`
-
-### Pattern 3: Shadow DOM Styling Gaps
-
-**Symptom**: Styles work for slotted but not default elements
-**Solution**: Dual selector pattern
-**Target**: `_agents/shadow-dom-patterns.md`
-
-### Pattern 4: Token Naming Mismatches
-
-**Symptom**: CSS variables resolve to `rgba(0, 0, 0, 0)`
-**Root Cause**: `"components"` wrapper in token JSON or camelCase in CSS
-**Target**: `_agents/pre-implementation.md` + `tokens/_agents/naming-conventions.md`
-
----
-
-## Implementation Workflow
-
-When user approves:
-
-1. Identify target `_agents/*.md` file
-2. Draft exact content
-3. Add maintaining existing structure
-4. Update cross-references if needed
-5. Commit: `docs: enhance _agents/[file].md - [description]`
-
-**Always ask user before implementing** — present analysis and wait for approval.
+If none fits, the new rule earns its own file and an index row in the nearest `AGENTS.md`.

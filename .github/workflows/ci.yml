@@ -21,6 +21,9 @@ jobs:
       - name: Run lint
         run: yarn lint
 
+      - name: Check AI docs against the repo
+        run: yarn docs:check
+
   typecheck:
     name: Typecheck
     timeout-minutes: 10
@@ -61,6 +64,17 @@ jobs:
       # rather than on a disagreement.
       - name: Build
         run: yarn build
+
+      # Generated files merge with `merge=ours` (.gitattributes), so a stale
+      # copy merges silently; only regenerating it shows the difference. Same
+      # check as .husky/pre-push, which a push can skip.
+      - name: Verify generated files are committed
+        run: |
+          STALE=$(git status --porcelain -- src/components.d.ts 'src/components/*/readme.md' 'src/hidden/*/readme.md')
+          if [ -n "$STALE" ]; then
+            printf 'Generated files differ from the commit; run yarn build and commit them:\n%s\n' "$STALE"
+            exit 1
+          fi
 
       - name: Run token script tests
         run: yarn test:scripts

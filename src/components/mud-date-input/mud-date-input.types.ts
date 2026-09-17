@@ -22,11 +22,23 @@ export type DateInputBreakpoint = (typeof DATE_INPUT_BREAKPOINTS)[number];
  */
 export type DateInputSegment = 'DD' | 'MM' | 'YYYY' | null;
 
+/**
+ * Built-in validation result, checked segment by segment as the user types.
+ * - `day` — a complete day segment outside 01–31.
+ * - `month` — a complete month segment outside 01–12.
+ * - `year` — a complete year outside the allowed years (`min` / `max`, else 1900–2100).
+ * - `date` — a complete date that does not exist (e.g. `31/02/2025`).
+ * - `range` — a complete, real date outside `min` / `max`.
+ */
+export type DateInputValidationError = 'day' | 'month' | 'year' | 'date' | 'range';
+
 export interface DateInputChangeDetail {
   /** Display value matching the configured `format`, e.g. `15/04/2025`. */
   value: string;
   /** Canonical ISO `YYYY-MM-DD`. `null` when the value is incomplete or invalid. */
   isoValue: string | null;
+  /** Built-in validation error for the current value, or `null` when it has none. */
+  error: DateInputValidationError | null;
 }
 
 export interface DateInputTypingDetail extends DateInputChangeDetail {

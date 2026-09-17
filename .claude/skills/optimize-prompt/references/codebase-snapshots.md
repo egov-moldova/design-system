@@ -81,7 +81,7 @@ When [`token-mapping-table.md`](token-mapping-table.md) emits its tables, cite t
 | `VALID_NOTIFICATION_ACTION_TAGS` | `mud-button` | notification action slot |
 | `VALID_NOTIFICATION_CLOSE_TAGS` | `mud-icon` | notification close-icon override |
 
-**Caveat:** When `src/legacy/shared.constants.ts` moves to `src/utils/shared.constants.ts` (likely future refactor), update the Read target. The constant table above is the stable contract — re-verify the file location on each upgrade.
+**Caveat:** If `src/legacy/shared.constants.ts` moves to a new location (a possible future refactor), update the Read target. The constant table above is the stable contract — re-verify the file location on each upgrade.
 
 ---
 
@@ -202,7 +202,7 @@ Run against the composed draft from Step 3:
 
 **V1 special case** — Build Order entries: if a `mud-X` appears in the draft AND in `## Build Order`, V1 passes. This allows specs to legitimately reference unbuilt dependencies as long as the build order is explicit.
 
-**V2 special case** — `--mode=new` defines new tokens that don't exist yet. V2 validates the **format** of the path (regex match), not its existence in `tokenInventory`. Existence checking happens at execution time via `yarn lint.tokens`.
+**V2 special case** — `--mode=new` defines new tokens that don't exist yet. V2 validates the **format** of the path (regex match), not its existence in `tokenInventory`. Existence checking happens at execution time via `yarn tokens.lint`.
 
 ---
 
@@ -299,12 +299,12 @@ Phase 4 (future): consider caching `tokenInventory` and `slotConstants` for the 
 
 ## Maintenance
 
-When a new token category appears (e.g., `tokens/core/motion.tokens.json` is added):
+When a new token category appears (e.g., `tokens/core/<category>.tokens.json` is added):
 1. Add a new lookup row to the catalog
 2. Add a corresponding validator (V-something) in Step 1.5
 3. Update the parallel snapshot block in § Step 0.5
 
-When `shared.constants.ts` moves (likely → `src/utils/shared.constants.ts`):
+When `src/legacy/shared.constants.ts` moves to a new location:
 1. Update the Read target in § 3
 2. Update the known constants table if exports change
 3. Re-verify the file location in this doc by running `Glob`

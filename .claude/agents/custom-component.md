@@ -1,13 +1,17 @@
 ---
 name: custom-component
 description: Create a new Stencil web component from user-described requirements when no Figma design exists. Clarifies dimensions, colors, states, and behavior before building. Use for utility/internal components.
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, Skill
 model: sonnet
 ---
 
 # Custom Component (No Figma)
 
 Create a Stencil component from user-described requirements. No Figma reference — user drives the spec.
+
+Runs on `sonnet`, one tier below `new-component`'s `opus`: there is no Figma extraction to
+interpret and no token diff against a design source to reconcile — the spec comes from the
+user directly, so the harder judgment calls `new-component` needs do not apply here.
 
 ## Step 1: Environment Check
 
@@ -52,12 +56,7 @@ Identify component type:
 - Data display (table, list, card)
 - Layout (grid, container, section)
 
-Read relevant Stencil docs via Context7:
-
-```text
-mcp__context7__resolve-library-id({ libraryName: "stenciljs" })
-mcp__context7__get-library-docs({ context7CompatibleLibraryID: "...", topic: "<specific question>" })
-```
+Check current library documentation for the relevant Stencil topic.
 
 Topics to query as needed:
 
@@ -100,7 +99,7 @@ Create `tokens/core/components/<name>.tokens.json`:
 4. Token references: NEVER use `{palette.*}`. Always use semantic `{color.*}`:
    - PASS: `{ "$value": "{color.neutral.text.weak}", "$type": "color" }`
    - FAIL: `{ "$value": "{palette.ui.gray.9}" }`
-5. DTCG format: `$value` / `$type` (Style Dictionary v4)
+5. DTCG format: `$value` / `$type` (Style Dictionary 5)
 6. Build: `yarn tokens.build`
 
 Validation checklist before Step 6:
@@ -118,11 +117,11 @@ Reference documentation:
 
 Follow file structure and CSS patterns from `src/components/AGENTS.md`.
 
-TypeScript strict mode (MANDATORY):
+TypeScript strict mode:
 
-- `!` on all decorator properties: `@Element() host!: HTMLElement;`, `@Event() corChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
-- `Record<string, T>` for object maps (size/variant lookups)
-- `?? ''` after optional chaining
+- `!` on all decorator properties (MANDATORY): `@Element() host!: HTMLElement;`, `@Event() corChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
+- `Record<string, T>` for object maps (size/variant lookups) — SHOULD, not MUST; inference already covers a literal map, the annotation documents intent for index lookups
+- `?? ''` after optional chaining (MANDATORY)
 
 Host class management (MANDATORY for interactive components):
 
@@ -168,7 +167,7 @@ mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-m
 
 ## Step 9: Verification
 
-Invoke `verification-before-completion` skill.
+Invoke `superpowers:verification-before-completion` skill.
 
 ```bash
 yarn lint
@@ -184,7 +183,7 @@ yarn sp.build
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Return to Main Agent
 

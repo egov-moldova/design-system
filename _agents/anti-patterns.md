@@ -12,8 +12,8 @@ Complete list of forbidden patterns. **Read before writing component code.**
 2. **Inline styles in TSX** — breaks theming, violates CSP
 3. **Use `!important`** — never; use proper specificity and token fallbacks. Shadow DOM prevents conflicts
 4. **Round Figma values** — use exact dimensions (`48px` not `50px`). NO rounding
-5. **Palette token as CSS fallback** — `var(--token, var(--palette-ui-gray-9))` is forbidden. Use semantic `--color-*` tokens. See `tokens/_agents/semantic-tokens.md`
-6. **Direct palette token in CSS** — `var(--palette-ui-gray-13)` is forbidden. Use `var(--color-neutral-text-default)` or component token wrapper
+5. **Palette token as CSS fallback** — `var(--token, var(--palette-ui-gray-9))` is forbidden (`yarn lint.colors` fails on it). Use semantic `--color-*` tokens. See `tokens/_agents/semantic-tokens.md`
+6. **Direct palette token in CSS** — `var(--palette-ui-gray-13)` is forbidden (`yarn lint.colors` fails on it). Use `var(--color-neutral-text-default)` or component token wrapper
 7. **Skip `yarn tokens.build`** after token changes — CSS vars won't update
 8. **Skip build entirely** — use targeted commands per `_agents/environment-commands.md` during dev; full `yarn build` for final QA
 
@@ -21,14 +21,14 @@ Complete list of forbidden patterns. **Read before writing component code.**
 
 9. **Direct DOM manipulation** outside `componentDidLoad` / event handlers
 10. **`any` type in TypeScript** — use proper interfaces. Exception: Storybook stories may use `(args: any)` as a fallback, but prefer a component-specific args type when practical. See `_agents/typescript-strict.md`
-11. **Modify or manually stage auto-generated files** — `src/components.d.ts`, `src/components/*/readme.md`, `src/hidden/*/readme.md`, `.storybook/custom-elements.json`, `tokens/generated/**`. Never hand-edit; never `git add` them. The `.husky/pre-commit` hook auto-unstages, `.gitattributes` `merge=ours` auto-resolves cross-branch conflicts, and CI `Validate (PR)` job rebuilds + verifies. If you see conflict markers, run `yarn build` and continue. See `AGENTS.md` → "Merge driver for auto-generated files"
+11. **Hand-edit auto-generated files** — `src/components.d.ts`, `src/components/*/readme.md`, `src/hidden/*/readme.md`, `.storybook/custom-elements.json`, `tokens/generated/**`. Never hand-edit them; `src/components.d.ts` and the `readme.md` files ARE committed, staged explicitly (never via `git add -A`), together with the change that regenerates them. `.gitattributes` `merge=ours` auto-resolves cross-branch conflicts, `.husky/pre-push` fails a push carrying a stale copy, and CI's `Tokens validation` job rebuilds + verifies. If you see conflict markers, run `yarn build` and continue. See `AGENTS.md` → "Merge driver for auto-generated files" → `_agents/generated-files.md`
 12. **Boolean props for slot control** — never use boolean props to control slot rendering/visibility. Use CSS `:empty` or slot detection. See `src/components/_agents/slot-patterns.md`
 13. **Missing `!` on decorator properties** — `@Element()`, `@Event()`, `@AttachInternals()` MUST have `!`. See `_agents/typescript-strict.md`
 14. **Implicit `any` in story renders** — never leave render args untyped. Use `(args: ComponentArgs) =>` (preferred) or `(args: any) =>` (fallback). See `_agents/typescript-strict.md`
 15. **Optional chaining without `??`** — must use `?? ''`. See `_agents/typescript-strict.md`
-16. **Untyped object maps** — use `Record<string, T>`. See `_agents/typescript-strict.md`
-17. **Inline slot validation constants** — use shared constants from `src/components/shared.constants.ts`
-18. **Shadow DOM `element.find()` in E2E** — use `page.find('mud-input >>> input')`. See `src/components/_agents/e2e-testing.md`
+16. **Untyped object maps** — SHOULD use `Record<string, T>`; not MUST, since inference already covers a literal map — the annotation documents intent for index lookups. See `_agents/typescript-strict.md`
+17. **Inline slot validation constants** — use shared constants from `src/legacy/shared.constants.ts`
+18. **Light-DOM queries into a shadow root in browser tests** — `document.querySelector('mud-text-input input')` returns `null`; use Playwright's shadow-piercing `page.locator('mud-text-input input')`, or `shadowRoot` inside `page.evaluate()`. See `src/components/_agents/e2e-testing.md`
 26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`
 
 ## Design Fidelity

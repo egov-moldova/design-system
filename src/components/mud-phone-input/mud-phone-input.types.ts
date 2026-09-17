@@ -1,3 +1,5 @@
+import type { h } from '@stencil/core';
+
 export const PHONE_INPUT_SIZES = ['md', 'lg'] as const;
 export const PHONE_INPUT_VARIANTS = ['default', 'warning', 'destructive', 'success'] as const;
 export const PHONE_INPUT_TYPES = ['local', 'international'] as const;
@@ -41,7 +43,7 @@ export interface PhoneCountry {
   /** Inclusive maximum digit count of the local segment. */
   maxLen: number;
   /** Inline SVG renderer for the country flag glyph. */
-  flag: () => ReturnType<typeof import('@stencil/core').h>;
+  flag: () => ReturnType<typeof h>;
 }
 
 export interface PhoneInputChangeDetail {

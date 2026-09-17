@@ -7,7 +7,7 @@
  *  - storyUrl                 — build iframe URL for a Storybook story id
  *  - inferStoryId             — best-effort `<category>-<bare>--<exportName>` builder
  *
- * Worktree-aware: callers may pass `port` (e.g. 6008 when a Cline Kanban
+ * Worktree-aware: callers may pass `port` (e.g. 6008 when a parallel git
  * worktree runs Storybook on a custom port). Defaults keep single-checkout
  * workflows simple.
  */

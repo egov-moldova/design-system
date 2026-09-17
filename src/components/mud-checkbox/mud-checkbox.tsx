@@ -1,4 +1,5 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';

@@ -110,7 +110,7 @@ rg "innerHTML\s*=" src/components --type ts
 | `prefers-reduced-motion` (CSS) | [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) §5 | WCAG SC 2.3.3 |
 | Token validation (3-tier hierarchy) | [`token-creation/SKILL.md`](../token-creation/SKILL.md) | 3-tier rule precedes CSS audit |
 | Component scaffolding | [`src/components/_agents/component-structure.md`](../../../src/components/_agents/component-structure.md) | Member order is the project-specific overlay |
-| Anti-patterns (project-specific) | [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md) | 25 forbidden patterns; complements Stencil docs |
+| Anti-patterns (project-specific) | [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) | 25 forbidden patterns; complements Stencil docs |
 
 ---
 
@@ -143,11 +143,11 @@ Update reference files accordingly and bump the "Aligned with" line at the top o
 ## 7. Out-of-Scope (Not Covered Here)
 
 - **Build configuration** — `stencil.config.ts` (output targets, plugins) — see [`stencil.config.ts`](../../../stencil.config.ts) directly
-- **Testing infrastructure** — see `vitest.config.mts`, `vitest-setup.ts`, `_agents/e2e-testing.md`, audit-component Phase 5
+- **Testing infrastructure** — see `vitest.config.mts`, `vitest-setup.ts`, `src/components/_agents/e2e-testing.md`, audit-component Phase 5
 - **Design tokens** — see `token-creation` skill
 - **Figma extraction** — see `new-component` agent
 - **WCAG 2.1 AA** — see `accessibility-compliance` skill (referenced where overlap)
-- **Storybook configuration** — see `.storybook/main.mjs`, `_agents/storybook-stories.md`
+- **Storybook configuration** — see `.storybook/main.mjs`, `src/components/_agents/storybook-stories.md`
 
 ---
 

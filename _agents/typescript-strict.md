@@ -8,7 +8,7 @@ All TypeScript strict mode rules for components and stories. **Canonical locatio
 
 - Rule 1: Definite Assignment for Decorators (`!` on `@Element`, `@Event`, `@AttachInternals`)
 - Rule 2: Story Render Function Types (typed args)
-- Rule 3: Explicit `Record<>` for Object Maps
+- Rule 3: `Record<>` for Object Maps (SHOULD)
 - Rule 4: Nullish Coalescing for Optional Chaining (`?? ''`)
 - Rule 5: Optional Props vs Required Props
 - Rule 6: Type-Only Imports (`import type`)
@@ -58,9 +58,12 @@ const renderComponent = args => /*html*/ `...`;
 
 ---
 
-## Rule 3: Explicit Record<> for Object Maps
+## Rule 3: Record<> for Object Maps (SHOULD)
 
-Object literals used as maps MUST have `Record<string, T>` type annotations.
+Object literals used as maps SHOULD have `Record<string, T>` type annotations.
+Not MUST: TypeScript's inference is sound for a literal map, so the annotation
+adds no safety there — it documents intent for the index lookups that read the
+map elsewhere, which is why it stays a SHOULD rather than a silent drop.
 
 ```typescript
 // ✅ CORRECT
@@ -107,6 +110,8 @@ const tag = this.host.firstElementChild?.tagName?.toLowerCase();
 
 Use `type` keyword for type-only imports/exports.
 
+Imports are enforced: `yarn lint` fails on a value import used only as a type (`@typescript-eslint/consistent-type-imports`, autofixable with `eslint --fix`). `export type` stays a convention.
+
 ```typescript
 // ✅ CORRECT
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
@@ -133,7 +138,7 @@ declare module '<package-name>';
 
 - [ ] All `@Element()` / `@Event()` / `@AttachInternals()` have `!`
 - [ ] Story render functions have typed args (`(args: ComponentArgs)` preferred; `(args: any)` allowed)
-- [ ] Object maps have `Record<string, T>` annotations
+- [ ] Object maps use `Record<string, T>` annotations where practical (SHOULD, not MUST)
 - [ ] Optional chaining uses `?? ''` or `?? fallback`
 - [ ] Type-only imports use `import type { ... }`
 - [ ] No implicit `any` types (`yarn lint`)

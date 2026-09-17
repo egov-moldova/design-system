@@ -66,9 +66,9 @@ const CONVENTIONAL_RE = new RegExp(`^(${CONVENTIONAL_TYPES.join('|')})(\\([^)]+\
 // Branch naming convention. type/mud-name[-desc]  OR  type/desc-without-cor
 const BRANCH_RE = /^(feat|fix|refactor|redesign|test|docs|chore|build|ci|perf|style)\/[a-z0-9][a-z0-9-]*$/;
 
-// Paths that MUST NOT appear in the diff or in staged files
-// (project's pre-commit hook already auto-unstages these — failure here means
-// the hook was bypassed with --no-verify).
+// Paths that MUST NOT appear in the diff or in staged files. No hook unstages
+// them: staging is explicit, and the build and cache paths are git-ignored, so a
+// hit on one of those means it was force-added (`git add -f`).
 const FORBIDDEN_PATH_PATTERNS = [
   { pattern: /^dist\//, code: 'GIT-STAGED-DIST', message: 'Build output `dist/` should not be committed.' },
   { pattern: /^loader\//, code: 'GIT-STAGED-LOADER', message: 'Build output `loader/` should not be committed.' },
@@ -225,9 +225,7 @@ export function checkForbiddenPaths(files, kind) {
             file,
             message: `${rule.message} (${kind})`,
             fix:
-              kind === 'staged'
-                ? 'Run `git reset HEAD <file>` to unstage; investigate why pre-commit hook did not auto-unstage.'
-                : undefined,
+              kind === 'staged' ? 'Run `git reset HEAD <file>` to unstage, and stage explicit paths only.' : undefined,
           }),
         );
         break;

@@ -71,23 +71,21 @@
   white-space: nowrap;
 }
 
+/* Figma draws the mandatory mark as the 12/asterisk icon (2975:10179). The
+   label keeps its colour when the field is disabled (184:866). */
 .required-mark {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
   inline-size: var(--date-input-label-required-mark-size);
   block-size: var(--date-input-label-required-mark-size);
   color: var(--date-input-label-required-mark-color);
-  font-weight: var(--date-input-control-font-weight);
-  line-height: 1;
 }
 
-:host(.is-disabled) .label {
-  color: var(--date-input-label-color-disabled);
-}
-
-:host(.is-disabled) .required-mark {
-  color: var(--date-input-label-color-disabled);
+/* The mark (12px) sits below mud-icon's smallest `size` (16), so the icon's own
+   box is overridden here; without it the 16px icon overflows the 12px mark. */
+.required-mark mud-icon {
+  inline-size: var(--date-input-label-required-mark-size);
+  block-size: var(--date-input-label-required-mark-size);
 }
 
 :host(:not(.has-label)) .label {
@@ -96,12 +94,17 @@
 
 /* ---------- Control row ---------- */
 
+/* Figma strokes sit inside the frame without moving its content, while a CSS
+   border adds to the padding — subtract it so content starts 16 / 12px in.
+   `relative` anchors the calendar popover to the field, not to the helper
+   text below it. */
 .control {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--_gap);
   block-size: var(--_height);
-  padding-inline: var(--_padding-inline);
+  padding-inline: calc(var(--_padding-inline) - var(--_border-width-default));
   background-color: var(--_bg);
   border: var(--_border-width-default) solid var(--_border-color);
   border-radius: var(--_radius);
@@ -292,27 +295,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--_icon-size);
-  block-size: var(--_icon-size);
-  color: var(--date-input-icon-color-default);
+  inline-size: var(--date-input-clear-button-size);
+  block-size: var(--date-input-clear-button-size);
+  color: var(--date-input-clear-button-icon-color);
   appearance: none;
-  background: transparent;
+  background-color: var(--date-input-clear-button-background-default);
   border: 0;
   padding: 0;
   margin: 0;
   cursor: pointer;
-  border-radius: var(--border-radius-4);
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
+  border-radius: var(--date-input-clear-button-border-radius);
+  transition: background-color var(--_transition-duration) var(--_transition-easing);
 }
 
 .clear-button:hover {
-  background-color: color-mix(in srgb, currentcolor 12%, transparent);
+  background-color: var(--date-input-clear-button-background-hover);
 }
 
 .clear-button:active {
-  background-color: color-mix(in srgb, currentcolor 20%, transparent);
+  background-color: var(--date-input-clear-button-background-active);
 }
 
 .clear-button:focus-visible {
@@ -326,8 +327,9 @@
 
 .picker-popover {
   position: absolute;
-  inset-block-start: 100%;
-  inset-inline-start: 0;
+  /* Offsets are from the padding box: step past the border to the outer edge. */
+  inset-block-start: calc(100% + var(--_border-width-default));
+  inset-inline-start: calc(-1 * var(--_border-width-default));
   z-index: 10;
   margin-block-start: var(--spacing-4);
   display: block;
@@ -393,7 +395,8 @@
 /* ---------- prefers-reduced-motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .control {
+  .control,
+  .clear-button {
     transition: none;
   }
 }

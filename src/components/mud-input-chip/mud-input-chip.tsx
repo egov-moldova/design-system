@@ -1,4 +1,5 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from './mud-input-chip.types';
 import type {

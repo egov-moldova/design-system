@@ -11,6 +11,8 @@ COPY web-components/package.json ./web-components/
 COPY react/package.json ./react/
 # yarn.lock resolves patched packages from these files, so the install fails without them
 COPY .yarn/patches ./.yarn/patches
+# react's postinstall runs scripts/git/install-hooks.mjs; with no .git it exits 0, but it must exist
+COPY scripts/git ./scripts/git
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner

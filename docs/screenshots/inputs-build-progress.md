@@ -2,7 +2,7 @@
 
 Tracking the sequential build of every input variant from the
 Unified Design System of the Republic of Moldova (Figma file
-`doJ7tDY0PlQ0PqMgbpFVIC`) into `@egovmd/mud`.
+`doJ7tDY0PlQ0PqMgbpFVIC`) into `@egov-moldova/mud`.
 
 All work lands on branch `docs/bootstrap-engineering-design-context`
 and updates PR https://github.com/corlab-org/age-design/pull/5.
@@ -524,7 +524,7 @@ border / focus ring / label / helper / error — see `mud-text-input`) and the
 drop-zone affordance (dashed border, brand-tint background on `is-drag-over`,
 brand-blue solid border on `is-focused`). All other surfaces (typography
 scale, spacing, semantic colors, dark-mode mappings) came from the canonical
-sources: `DESIGN.md`, `.impeccable/design.json`, the existing token bundles,
+sources: `DESIGN.md`, the existing token bundles,
 and the `mud-text-input` / `mud-date-input` patterns on disk.
 
 Future agent runs: if a Figma node-id for either component_set is rediscovered,
@@ -642,7 +642,7 @@ borderRadius.6, medium-weight label) follows the `mud-button` neutral
 variant's tinting cues (read via `git show origin/feat/mud-button:...`
 without switching branches per the prompt constraint). Romanian copy
 follows PRODUCT.md voice (verbs over nouns, second-person formal
-implied). Validated against `DESIGN.md`, `.impeccable/design.json`, and
+implied). Validated against `DESIGN.md` and
 the on-disk `mud-text-input` / `mud-file-input` / `mud-file-item` /
 `mud-select` / `mud-button` implementations. If the
 component_set's node-id becomes reachable later, re-run pixel-perfect
@@ -707,7 +707,7 @@ mud-select provides the combobox + listbox + keyboard contract; the
 country-trigger / divider / dial-code layout follows ITU-T E.164 + WAI-ARIA
 combobox conventions. The Moldova-first audience (PRODUCT.md) drove the
 defaults: MD as `defaultCountry`, Romanian display names + Romanian error
-copy. Validated against `DESIGN.md`, `.impeccable/design.json`, and the
+copy. Validated against `DESIGN.md` and the
 on-disk `mud-text-input` / `mud-select` / `mud-date-input` /
 `mud-numeric-input` implementations. If the component_set's node-id
 becomes reachable later, re-run pixel-perfect comparison and log diff
@@ -762,8 +762,7 @@ followed the established pattern (see prior failure-log entries): mud-text-input
 provides the canonical input-family visual contract; the stacked stepper
 affordance (chevron-up over chevron-bottom inside the right edge of the
 control, each ~50% of the input height) follows the task brief and standard
-spinbutton conventions. Validated against `DESIGN.md`,
-`.impeccable/design.json`, and the on-disk `mud-text-input` / `mud-select`
+spinbutton conventions. Validated against `DESIGN.md` and the on-disk `mud-text-input` / `mud-select`
 (chevron pattern) / `mud-search-input-rectangular` (trailing affordance
 pattern) implementations. If the component_set's node-id becomes reachable
 later, re-run pixel-perfect comparison and log diff results here.
@@ -800,7 +799,7 @@ followed the established pattern (see prior failure log entries): the
 sibling `mud-search-input-rectangular` provided the 1:1 behavioural and
 visual template, and the silhouette delta (border-radius full, +4px
 padding-inline at each size to balance the curve) follows the task brief's
-heuristic. Validated against `DESIGN.md`, `.impeccable/design.json`, and
+heuristic. Validated against `DESIGN.md` and
 the on-disk rectangular implementation. If the component_set's node-id
 becomes reachable later, re-run pixel-perfect comparison and log diff
 results here.
@@ -835,7 +834,7 @@ provides the canonical input-family visual contract, and the affordance
 specifics (leading search icon, trailing × clear) match
 the documented design-system search pattern (`mdi:magnify` /
 `mdi:close-circle` semantics, render-as-`role="searchbox"`). Validated
-against `DESIGN.md`, `.impeccable/design.json`, and the mud-text-input on-disk
+against `DESIGN.md` and the mud-text-input on-disk
 implementation. If the component_set's node-id becomes reachable later,
 re-run pixel-perfect comparison and log diff results here.
 

@@ -147,7 +147,7 @@ Every Token Mapping section ends with:
 ```
 **Token file:** `tokens/core/components/<name>.tokens.json` (DTCG format, $value + $type)
 **Build:** `yarn tokens.build` regenerates `dist/cor.css` from the JSON source.
-**Validation:** `yarn lint.tokens` checks naming regex; `yarn tokens.validate` checks contrast.
+**Validation:** `yarn tokens.lint` checks naming regex; `yarn tokens.validate` checks contrast.
 ```
 
 Replace `<name>` with the component name (without `mud-` prefix). E.g., `tokens/core/components/button.tokens.json`.

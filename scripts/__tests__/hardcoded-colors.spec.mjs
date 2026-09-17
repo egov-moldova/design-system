@@ -17,7 +17,10 @@ afterEach(() => {
 function lint(files, extraArgs = []) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'hardcoded-colors-'));
   tempDirs.push(root);
-  for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(root, name), content);
+  for (const [name, content] of Object.entries(files)) {
+    fs.mkdirSync(path.dirname(path.join(root, name)), { recursive: true });
+    fs.writeFileSync(path.join(root, name), content);
+  }
   const out = path.join(root, 'report.json');
   const args = [SCRIPT, '--root', root, '--out', out, '--no-color', ...extraArgs];
   const run = spawnSync(process.execPath, args, { encoding: 'utf8' });
@@ -168,5 +171,35 @@ describe('hardcoded-colors — file-level exemption', () => {
   it('does not honour the directive when it only appears inside a string', () => {
     const { issues } = lint({ 'a.ts': "const s = 'hardcoded-colors-disable-file -- nope';\nconst c = '#abcdef';\n" });
     assert.deepEqual(issues, [{ file: 'a.ts', line: 2, value: '#abcdef' }]);
+  });
+});
+
+describe('palette primitives in component CSS', () => {
+  it('flags var(--palette-*) in a stylesheet', () => {
+    const { status, issues } = lint({ 'components/button.css': ':host { color: var(--palette-blue-500); }\n' });
+    assert.equal(status, 1);
+    assert.deepEqual(issues, [{ file: 'button.css', line: 1, value: '--palette-blue-500' }]);
+  });
+
+  it('classifies by the path under --root, not by the directories above it', () => {
+    const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'hardcoded-colors-'));
+    tempDirs.push(parent);
+    const root = path.join(parent, 'components', 'design-system', 'src');
+    fs.mkdirSync(path.join(root, 'global'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'global', 'tokens.css'), ':root { --a: var(--palette-blue-500); }\n');
+    const out = path.join(parent, 'report.json');
+    const run = spawnSync(process.execPath, [SCRIPT, '--root', root, '--out', out, '--no-color'], { encoding: 'utf8' });
+    assert.equal(run.status, 0);
+    assert.deepEqual(JSON.parse(fs.readFileSync(out, 'utf8')).issues, []);
+  });
+
+  it('passes semantic tokens, comments, token stylesheets and legacy stylesheets', () => {
+    const { status, issues } = lint({
+      'components/button.css': ':host { color: var(--color-text-primary); } /* var(--palette-blue-500) */\n',
+      'global/tokens.css': ':root { --color-text-primary: var(--palette-blue-500); }\n',
+      'legacy/cor-table/old.css': ':host { color: var(--palette-blue-500); }\n',
+    });
+    assert.equal(status, 0);
+    assert.deepEqual(issues, []);
   });
 });

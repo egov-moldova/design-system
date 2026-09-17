@@ -2,14 +2,16 @@
 # AGE Design System — Git attributes for auto-generated files
 # =============================================================================
 #
-# Why: parallel agent worktrees (Cline Kanban + .claude orchestrators) each
-# rebuild and regenerate the tracked files below independently per branch.
+# Why: parallel agent worktrees each rebuild and regenerate the tracked files
+# below independently per branch.
 # Without `merge=ours`, every PR merge would produce conflict markers even
 # though the canonical resolution is deterministic — just re-run `yarn build`.
 #
-# The built-in `merge=ours` strategy keeps the current branch's version on
-# merge. The CI "Validate (PR)" job rebuilds and verifies no stale content,
-# so merge silence is safe.
+# `merge=ours` keeps the current branch's version on merge. It is not a
+# built-in driver: `scripts/git/setup-merge-drivers.mjs` (run on `yarn install`)
+# registers `merge.ours.driver`; without it git merges these files as text.
+# Merge silence is safe because `.husky/pre-push` and the CI "Tokens validation"
+# job rebuild and fail when a tracked generated file differs from the build.
 #
 # `linguist-generated=true` collapses these files in GitHub PR diffs.
 # -----------------------------------------------------------------------------
@@ -28,9 +30,9 @@ src/hidden/*/readme.md                                        merge=ours linguis
 tokens/generated/**                                           merge=ours linguist-generated=true
 
 # =============================================================================
-# Cross-platform line endings — Windows + Unix worktrees coexist on this repo
-# (.claude/kanban/worktree-init.{ps1,sh} spin up both). LF for shell scripts,
-# CRLF for PowerShell. Everything else: auto-detect, normalize to LF in repo.
+# Cross-platform line endings — Windows + Unix contributors coexist on this
+# repo. LF for shell scripts, CRLF for PowerShell. Everything else:
+# auto-detect, normalize to LF in repo.
 # =============================================================================
 * text=auto eol=lf
 *.ps1 text eol=crlf
