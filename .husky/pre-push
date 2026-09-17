@@ -1,4 +1,10 @@
-# Everything CI checks, before it reaches CI.
+# The build, generated-files and check.verify gates CI runs, before a push reaches it.
+# CI alone runs the token and colour lints, the dependency audit and the Docker build.
+
+# Git exports the repository location to every hook. A test that builds a scratch repo would
+# inherit it and commit into this repository instead; git finds this one from the cwd anyway.
+# Same list as scripts/git/env.mjs, asserted by scripts/__tests__/git-hooks.spec.mjs.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES GIT_NAMESPACE GIT_PREFIX
 
 # Build first: it regenerates the tracked generated files, and the script
 # tests in check.verify read .storybook/custom-elements.json from it.
