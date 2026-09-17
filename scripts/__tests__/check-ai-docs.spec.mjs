@@ -782,6 +782,36 @@ describe('mcp-server rule', () => {
     );
   });
 
+  it('flags wildcard grants, skill allowed-tools and fenced tool calls', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.mcp.json': mcp,
+      '.claude/skills/s/SKILL.md':
+        [
+          '---',
+          'name: s',
+          'allowed-tools: mcp__ghost__*, mcp__figma__*',
+          '---',
+          '',
+          '```text',
+          'mcp__figma-mcp__download_figma_images({ nodes: [] })',
+          'mcp__playwright__browser_click({})',
+          '```',
+          'Prose mcp__ghost__run outside code.',
+        ].join('\n') + '\n',
+      'AGENTS.md': '`.claude/skills/s/SKILL.md`\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root })
+        .filter(h => h.ruleId === 'mcp-server')
+        .map(h => [h.file, h.line]),
+      [
+        ['.claude/skills/s/SKILL.md', 3],
+        ['.claude/skills/s/SKILL.md', 7],
+      ],
+    );
+  });
+
   it('is silent without .mcp.json', () => {
     const root = makeFixture({
       'package.json': pkgJson(),

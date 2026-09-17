@@ -36,8 +36,9 @@
  *                     `--pcre2`/`-P`; ripgrep's default engine rejects it.
  *   stencil-version — a `Stencil 4.x` claim, or a minor above the
  *                     `@stencil/core` pin, for the pinned major.
- *   mcp-server     — an `mcp__<server>__<tool>` name, in agent frontmatter
- *                     `tools:` or a doc code span, whose server `.mcp.json`
+ *   mcp-server     — an `mcp__<server>__<tool>` name (a `*` wildcard included),
+ *                     in frontmatter `tools:`/`allowed-tools:`, a doc code
+ *                     span or a fenced code block, whose server `.mcp.json`
  *                     does not configure.
  *
  * Exit codes: 0 clean, 1 one or more hits, 2 internal error (e.g. an
@@ -921,7 +922,8 @@ function enginesMajor(pkg) {
 // Rule: mcp-server
 // ---------------------------------------------------------------------------
 
-const MCP_TOOL_RE = /\bmcp__([a-z0-9-]+)__[a-z0-9_]+/gi;
+const MCP_TOOL_RE = /\bmcp__([a-z0-9-]+)__[a-z0-9_*]+/gi;
+const FENCE_RE = /^\s*(```|~~~)/;
 
 function mcpServers(root) {
   const text = readIfExists(root, '.mcp.json');
@@ -931,9 +933,15 @@ function mcpServers(root) {
 
 function checkMcpServers(relPath, lines, servers) {
   const hits = [];
+  let inFence = false;
   lines.forEach((line, i) => {
-    const frontmatterTools = relPath.startsWith('.claude/agents/') && /^tools:/.test(line);
-    const segments = frontmatterTools ? [line] : findCodeSpans(line).map(sp => sp.content);
+    if (FENCE_RE.test(line)) {
+      inFence = !inFence;
+      return;
+    }
+    // Tool-call examples live in fences with no backticks on the line, and grants in frontmatter.
+    const wholeLine = inFence || /^(allowed-)?tools:/.test(line);
+    const segments = wholeLine ? [line] : findCodeSpans(line).map(sp => sp.content);
     for (const segment of segments) {
       for (const m of segment.matchAll(MCP_TOOL_RE)) {
         if (!servers.has(m[1])) {
