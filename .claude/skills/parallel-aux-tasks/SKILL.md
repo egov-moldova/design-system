@@ -78,13 +78,15 @@ The orchestrator reads `--write-mode` from its invocation argument (default: `pa
 Snapshot tracked changes before dispatching, so a write by a read-only leg is visible afterwards:
 
 ```bash
-# aux-write-check — before the parallel dispatch
-git status --porcelain=v1 > "${TMPDIR:-/tmp}/aux-before.txt"
-# after every leg has reported: lines that are new or changed since the snapshot, minus the writer legs' own files
-git status --porcelain=v1 | diff "${TMPDIR:-/tmp}/aux-before.txt" - | grep '^>' | grep -v -E '\.stories\.ts$|\.spec\.tsx$'
+# aux-write-check — before the parallel dispatch; NAME is the component (e.g. mud-button).
+# The snapshot lives in this worktree's git dir: it survives between commands and no other worktree shares it.
+git status --porcelain=v1 --untracked-files=all > "$(git rev-parse --git-dir)/aux-before-$NAME.txt"
+# after every leg has reported: status lines that are new or changed, minus the writer legs' own two files
+git status --porcelain=v1 --untracked-files=all | diff "$(git rev-parse --git-dir)/aux-before-$NAME.txt" - | grep '^>' \
+  | grep -v -F -e "src/components/$NAME/$NAME.stories.ts" -e "src/components/$NAME/test/$NAME.spec.tsx"
 ```
 
-The check sees a file whose status line changes (new, deleted, first modification). It does not see a second edit to a file the orchestrator had already modified before the dispatch.
+In `read-only` mode drop the last `grep`: no leg may write. The check sees a file whose status line changes (new, deleted, first modification), including files inside a new component folder. It does not see a second edit to a file the orchestrator had already modified before the dispatch.
 
 The orchestrator dispatches subagents using the `Agent` tool with multiple parallel tool calls in a SINGLE message. Example:
 

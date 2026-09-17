@@ -23,9 +23,9 @@ Verify a `mud-*` component against Figma with evidence, not impressions. This is
 | Step | What | Command / tool |
 |---|---|---|
 | 0 | Preflight | Storybook, Playwright browser, Figma access |
-| 1 | Extract the design; check coverage | Figma node data for the component set and every state; then `node scripts/audit/figma-refs.mjs <name> --check --json` (uncovered variants, gone nodes, stale references) |
+| 1 | Extract the design | Figma node data for the component set and every state |
 | 2 | Write or update the manifest | `src/components/<name>/test/<name>.figma.json` |
-| 3 | Export Figma references | `node scripts/audit/figma-refs.mjs <name>` |
+| 3 | Export Figma references, then check coverage | `node scripts/audit/figma-refs.mjs <name>`, then `node scripts/audit/figma-refs.mjs <name> --check --json` (uncovered variants, gone nodes, stale references) — both need the manifest |
 | 4 | Exact style parity | `node scripts/audit/15-style-parity.mjs <name> --json` |
 | 5 | Screenshot diff | `node scripts/audit/11-pixel-diff-states.mjs <name> --json` |
 | 6 | Judge each finding | drift / not in design / design question / tooling limit |
@@ -102,7 +102,7 @@ Authoring rules:
 - **Styles**: any computed property (`backgroundColor`, `borderTopLeftRadius`, `rowGap`, `boxShadow`, `fontFamily`…) plus `boxWidth` / `boxHeight` (border box) and `textContent`. Use longhands (`borderTopWidth`, not `border`).
 - **`note`** records an interpretation — e.g. how a Figma effect maps to CSS. Anything you had to interpret belongs in a note.
 - **`shared`** holds expectation lists several states repeat; a state lists `{ "use": "<key>" }` in `expect`. Each expanded entry cites its own `node` or the using state's node. Only byte-identical entries share a block — entries that cite different nodes stay per state.
-- **`mask`** (state or defaults) lists selectors painted with the page background on both images before the pixel diff — for mock data such as dates. Masked pixels are reported; style parity still checks the elements.
+- **`mask`** (state or defaults) lists selectors painted with the page background on both images before the pixel diff — for mock data such as dates. Masked pixels are reported; style parity still checks the elements. A state's `"mask": []` opts out of `defaults.mask`; a mask target that matches nothing, or has no layout box, fails the capture.
 - **`figma.skip`** lists Figma variants the manifest deliberately does not cover, each with a reason; `figma-refs --check` reports every other uncovered one.
 - A manifest is source: it is reviewed with the component and changes when the design does.
 
@@ -113,7 +113,7 @@ node scripts/audit/figma-refs.mjs mud-x                  # REST with FIGMA_TOKEN
 node scripts/audit/figma-refs.mjs mud-x --check --json   # coverage and freshness, exports nothing
 ```
 
-The export writes `.audit-figma/mud-x/<state>.png` and `export.json` (the Figma file version). `--check` reports `FIGMA-REFERENCE-STALE` when the file changed since that export — the version is per file, so any edit to the file triggers it. No token → exit 1 with `FIGMA-NO-TOKEN`. References are git-ignored and re-exported when the design changes.
+The export writes `.audit-figma/mud-x/<state>.png` and `export.json` (the Figma file version); run `--check` after it. `--check` reports `FIGMA-REFERENCE-STALE` when the file changed since that export — the version is per file, so any edit to the file triggers it — and `FIGMA-COVERAGE-UNKNOWN` when no cited node belongs to a component set, so "0 uncovered" would mean unchecked. Only an error (`FIGMA-NODE-GONE`) makes `--check` exit 1. No token → exit 1 with `FIGMA-NO-TOKEN`. References are git-ignored and re-exported when the design changes.
 
 ## Step 4 — Style parity
 
@@ -123,7 +123,7 @@ node scripts/audit/15-style-parity.mjs mud-x --json
 
 Findings: `STYLE-MISMATCH` (Figma value vs rendered value, node cited), `STYLE-UNEXPECTED-ELEMENT` (an `absent` target rendered), `STYLE-TARGET-NOT-FOUND` (element missing or stale selector), `STYLE-STATE-FAILED` (fixture or interaction broke). Tolerance: 0.01px by default; colours, radii, spacing and shadows are exact.
 
-Each `STYLE-MISMATCH` check carries `observedTokens` (tokens resolving to the rendered value) and `expectedTokens` (tokens resolving to the Figma value), limited to the component's own tokens and semantic ones, own first. Several names mean the computed style cannot say which one the CSS used — read the component CSS. `none` on the Figma side means no token has that value: a token is missing, or the design is off-scale.
+Each `STYLE-MISMATCH` check carries `observedTokens` (tokens resolving to the rendered value) and `expectedTokens` (tokens resolving to the Figma value), limited to tokens the CSS of the innermost `mud-*` element in the target references plus semantic ones, referenced first. Several names mean the computed style cannot say which one the CSS used — read the component CSS. `none` on the Figma side means no token has that value: a token is missing, or the design is off-scale.
 
 ## Step 5 — Screenshot diff
 
@@ -135,7 +135,7 @@ node scripts/audit/11-pixel-diff-states.mjs mud-x --json
 - `PIXEL-SIZE-MISMATCH` comes first: a height difference of +46px is a whole element (a footer), not anti-aliasing.
 - For `WARNING` / `FAIL`, `Read` the diff image (`.audit-screenshots/<name>/<state>.diff.png`) — red is content that differs, green is anti-aliasing.
 - Thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `scripts/audit/lib/image-diff.mjs` — PASS below the first, WARNING (judge) below the second, FAIL at or above it.
-- Mock data (dates, avatars): add a `mask` to the state. Masked pixels are reported (`PIXEL-MASKED`, `maskedPixels`) and left out of the percentage, so a mask never dilutes a difference elsewhere.
+- Mock data (dates, avatars): add a `mask` to the state. Masked pixels are reported (`PIXEL-MASKED`, `maskedPixels`) and left out of the percentage, so a mask never dilutes a difference elsewhere. A mask that leaves nothing to compare is `PIXEL-NOTHING-COMPARED`, an error.
 
 Without a manifest the script falls back to story mode (`--figma-dir` with one `<story>.png` per story export) — use it only for quick checks.
 
@@ -178,7 +178,12 @@ Accessibility still wins over a Figma value that fails WCAG 2.1 AA — but check
 
 ## Step 7 — Report
 
-The first line is the verdict: **FAIL** if any error finding; **INCOMPLETE** if anything is under Not verified; **WARN** if any warning; **PASS** otherwise. A report whose scripts did not run is INCOMPLETE, never PASS.
+The first line is the verdict, first match wins:
+
+1. **FAIL** — any error finding other than the three that mean "not verified" below.
+2. **INCOMPLETE** — `FIGMA-NO-TOKEN`, `PIXEL-NO-REFERENCE` or `PIXEL-NOTHING-COMPARED`, or anything else under Not verified. A report whose scripts did not run is INCOMPLETE, never PASS.
+3. **WARN** — any warning (including `FIGMA-COVERAGE-UNKNOWN`).
+4. **PASS** — otherwise.
 
 ```markdown
 **Verdict: FAIL | INCOMPLETE | WARN | PASS**
@@ -186,7 +191,7 @@ The first line is the verdict: **FAIL** if any error finding; **INCOMPLETE** if 
 ## Pixel-perfect: mud-x — against Figma <file>/<node>
 
 Evidence: manifest `src/components/mud-x/test/mud-x.figma.json` (N states), style parity P/Q properties, pixel diff R states.
-Coverage: <missing> uncovered variants, <gone> gone nodes, references <stale>.
+Coverage: <missing> uncovered variants (<sets> component sets; unknown if 0), <skipped> skipped, <gone> gone nodes, references <stale>.
 
 ### Drift
 | State | Element | Property | Figma (node) | Rendered | Tokens | Fix |

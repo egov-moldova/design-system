@@ -109,7 +109,7 @@ Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, 
 
 A refactor SHOULD NOT change the visual or API. The reports should be all-PASS:
 
-- `pixel-perfect-verifier`: Verdict PASS or WARN against the existing manifest; no manifest → `manifest-missing`, and the before/after screenshots of Step 5 are the regression check
+- `pixel-perfect-verifier`: Verdict PASS or WARN against the existing manifest; INCOMPLETE (no `FIGMA_TOKEN`, nothing compared) is reported as not verified, not as a regression; no manifest → `manifest-missing`, and the before/after screenshots of Step 5 are the regression check
 - `a11y-verifier`: no new violations vs pre-refactor
 - `integration-checker`: no stale callsites (unless approved breaking change in Step 3.5)
 

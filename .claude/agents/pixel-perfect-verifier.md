@@ -27,11 +27,11 @@ There is no threshold input: pass and warn thresholds live in `scripts/audit/lib
 
 ## Procedure
 
-1. **Preflight** (skill step 0). Storybook on 6007, Playwright browser installed, the official Figma MCP authenticated. Abort with the matching failure mode below if any is missing — do not start or stop Storybook yourself.
+1. **Preflight** (skill step 0). Storybook on 6007 and the Playwright browser installed — abort with the matching failure mode below if either is missing; do not start or stop Storybook yourself. `FIGMA_TOKEN` is needed for references; the official Figma MCP only when the manifest is missing or a state must be read from Figma.
 2. **Manifest** — `src/components/<name>/test/<name>.figma.json`.
-   - Exists → `node scripts/audit/figma-refs.mjs <name> --check --json` and report every `FIGMA-*` finding (uncovered variants, gone nodes, stale references).
+   - Exists → continue.
    - Missing → return `manifest-missing` with the list of Figma variants (name + node id) from `mcp__figma__get_metadata`. **Do not draft values**: a manifest value must be copied from Figma by whoever writes it, and `src/` is the orchestrator's.
-3. **References** — `node scripts/audit/figma-refs.mjs <name>` (REST with `FIGMA_TOKEN`). No token → it reports `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
+3. **References, then coverage** — `node scripts/audit/figma-refs.mjs <name>` (REST with `FIGMA_TOKEN`), then `node scripts/audit/figma-refs.mjs <name> --check --json`; report every `FIGMA-*` finding. No token → `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
 4. **Style parity** — `node scripts/audit/15-style-parity.mjs <name> --json`.
 5. **Screenshot diff** — `node scripts/audit/11-pixel-diff-states.mjs <name> --json`. `Read` the diff image of every `WARNING` / `FAIL` state; handle `PIXEL-SIZE-MISMATCH` before percentages.
 6. **Judge** each finding (skill step 6): drift / not in design / design question / tooling limit. Token names come from the `STYLE-MISMATCH` row (`observedTokens`, `expectedTokens`); report them as given and do not guess a token the row does not name.
@@ -42,7 +42,7 @@ Negative claims — "this element is not in the Figma node", "this value appears
 
 ## Report
 
-The first line is the verdict, by the skill's rule: **FAIL** if any error finding; **INCOMPLETE** if anything is under Not verified; **WARN** if any warning; **PASS** otherwise.
+The first line is the verdict, by the rule in the skill's step 7 (not-verified codes make it INCOMPLETE, not FAIL).
 
 ```text
 Verdict: FAIL | INCOMPLETE | WARN | PASS
@@ -51,7 +51,7 @@ Verdict: FAIL | INCOMPLETE | WARN | PASS
 
 ### Evidence
 - Manifest: <path> (<N> states; <M> pixel states)
-- Coverage: <missing> uncovered variants, <gone> gone nodes, references <stale>
+- Coverage: <missing> uncovered variants (<sets> component sets; unknown if 0), <skipped> skipped, <gone> gone nodes, references <stale>
 - Style parity: <checked> properties, <failed> failed
 - Pixel diff: <states> states — PASS <a> · WARNING <b> · FAIL <c>
 
@@ -88,7 +88,7 @@ Verdict: FAIL | INCOMPLETE | WARN | PASS
 |---|---|---|
 | `Playwright browser is not installed on this machine` | browser binary missing | `playwright-browser-missing` — `npx playwright install chromium-headless-shell` |
 | `Storybook not reachable on port 6007` | dev server not running | `environment-not-ready` |
-| `mcp__figma__*` calls fail | official Figma MCP not authenticated (`/mcp`) and no `FIGMA_TOKEN` | `figma-unavailable` — stop; do not verify from memory |
+| `mcp__figma__*` calls fail while the manifest is missing | official Figma MCP not authenticated (`/mcp`) | `figma-unavailable` — stop; do not verify from memory |
 | No `src/components/<name>/test/<name>.figma.json` | no manifest yet | `manifest-missing` — list the Figma variants (name + node id); draft no values |
 | `PIXEL-MANIFEST-INVALID` / `STYLE-MANIFEST-INVALID` | manifest schema | `manifest-invalid` + the validation messages |
 | `STYLE-STATE-FAILED` / `PIXEL-CAPTURE-FAILED` with a Storybook 404 or unknown story id | story renamed or missing | `story-not-found` — report the ids from `node scripts/audit/05-story-exports.mjs <name> --json` |

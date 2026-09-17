@@ -25,15 +25,17 @@ const DOCS = [
 const emitted = new Set(
   SCRIPTS.flatMap(f => [...read(f).matchAll(/code: '((?:STYLE|PIXEL|FIGMA)-[A-Z-]+)'/g)].map(m => m[1])),
 );
-const cited = new Set([...read(DOCS[0]).matchAll(/`((?:STYLE|PIXEL|FIGMA)-[A-Z-]+)`/g)].map(m => m[1]));
+const codesIn = doc => [...read(doc).matchAll(/`((?:STYLE|PIXEL|FIGMA)-[A-Z-]+)`/g)].map(m => m[1]);
+const cited = new Set(codesIn(DOCS[0]));
+const citedAnywhere = new Set(DOCS.flatMap(codesIn));
 
 describe('pixel-perfect skill parity', () => {
   it('indexes every emitted code', () => {
     assert.deepEqual([...emitted].filter(c => !cited.has(c)).sort(), []);
   });
 
-  it('cites no code the scripts do not emit', () => {
-    assert.deepEqual([...cited].filter(c => !emitted.has(c)).sort(), []);
+  it('cites no code the scripts do not emit, in the skill, the agent or the QA doc', () => {
+    assert.deepEqual([...citedAnywhere].filter(c => !emitted.has(c)).sort(), []);
   });
 
   it('names only script paths that exist', () => {
