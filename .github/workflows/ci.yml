@@ -62,7 +62,7 @@ jobs:
       # scripts/__tests__/storybook-manifest.spec.mjs checks it against the
       # component readmes. Without this step that spec fails on a missing file
       # rather than on a disagreement.
-      - name: Build components
+      - name: Build
         run: yarn build
 
       # Generated files merge with `merge=ours` (.gitattributes), so a stale
