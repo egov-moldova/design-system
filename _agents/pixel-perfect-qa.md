@@ -8,9 +8,9 @@ The procedure lives in the `pixel-perfect` skill — [`.claude/skills/pixel-perf
 
 ## The loop
 
-1. Preflight — Storybook on 6007, `npx playwright install chromium-headless-shell` once, a working Figma route
+1. Preflight — Storybook on 6007, `npx playwright install chromium-headless-shell` once, `FIGMA_TOKEN` for references, the official Figma MCP for design extraction
 2. Extract every variant and state from the Figma component set
-3. Write the Figma state manifest — `src/components/<name>/test/<name>.figma.json`
+3. Write the Figma state manifest — `src/components/<name>/test/<name>.figma.json` — then `node scripts/audit/figma-refs.mjs <name> --check` (uncovered variants, gone nodes, stale references)
 4. Export references — `node scripts/audit/figma-refs.mjs <name>`
 5. Exact style parity — `node scripts/audit/15-style-parity.mjs <name> --json`
 6. Screenshot diff — `node scripts/audit/11-pixel-diff-states.mjs <name> --json`
@@ -21,11 +21,11 @@ The procedure lives in the `pixel-perfect` skill — [`.claude/skills/pixel-perf
 
 ## Tolerances
 
-**Zero tolerance** — checked by `15-style-parity`: colours, border radius, spacing, dimensions, borders, shadows, opacity, typography values.
+**Zero tolerance** — computed values, checked by `15-style-parity`: colours, border radius, spacing, dimensions, borders, shadows, opacity, typography (font size, weight, family, `lineHeight`).
 
-**Rendering tolerance** — judged on the diff image: font kerning ±2px, line height ±1px, anti-aliasing ±0.5px.
+**Rendering tolerance** — glyph pixels only, judged on the diff image: kerning ±2px, glyph baseline ±1px, anti-aliasing ±0.5px. A computed `lineHeight` that differs from Figma is a zero-tolerance mismatch, not rendering.
 
-**Pixel diff**: < 0.5% PASS · < 2% WARNING (inspect the diff image) · ≥ 2% FAIL.
+**Pixel diff** thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `scripts/audit/lib/image-diff.mjs` (PASS below the first, WARNING below the second — inspect the diff image — FAIL at or above it). Masked pixels are left out of the percentage.
 
 Never round a Figma value and never hardcode one in CSS — trace it to a token (`AGENTS.md` rules 2 and 5).
 
@@ -44,6 +44,8 @@ The manifest needs one state per Figma state the component has:
 | Dark theme | `"theme": "dark"` with a reference exported from the dark Figma frame |
 | Breakpoints | fixture width or `viewport` |
 | Elements the design does not have | `expect: [{ "target": "…", "absent": true }]` |
+| Mock data (dates, avatars) | `mask: [selector]` — reported (`PIXEL-MASKED`), not hidden |
+| Variant deliberately not covered | `figma.skip: [{ "node": "…", "reason": "…" }]` |
 
 ## Responsive (molecules and organisms)
 
