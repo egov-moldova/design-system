@@ -1,143 +1,92 @@
-# Top 25 Stencil Anti-Patterns (Cu Fix-uri)
+# Stencil Anti-Patterns
 
-**Aligned with:** Stencil 4.x and project conventions (`src/components/AGENTS.md`).
+Load when a script finding needs its fix, or when reviewing code for the Stencil rules the audit
+scripts detect. Each section is headed by the code the script emits; cite that code, never a number.
 
-Each anti-pattern lists: detection grep, why it fails, and the fix. Used by `audit-component` Wave 1 grep gates and by `pre-pr-check` Wave 1 fast checks.
+- `ANTIPATTERN-*` codes come from `yarn audit:antipatterns <component>` (script 02).
+- `STENCIL-*` codes come from `yarn audit:stencil-contract <component>` (script 16, report-only).
+
+Project rules (tokens, colours, raw pixels, icons, `any`, security) are not Stencil rules: see
+[`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) and the
+[`token-creation`](../../token-creation/SKILL.md) skill.
+
+Rules enforced by lint, not by a script:
+
+| Rule                                         | enforced-by                                            |
+| -------------------------------------------- | ------------------------------------------------------ |
+| `@Method()` is `async` or returns a Promise  | `eslint:@stencil/async-methods`                        |
+| No `!important` without a disable comment    | `stylelint:declaration-no-important`                   |
+| No `transition: all`                         | `stylelint:declaration-property-value-disallowed-list` |
 
 ---
 
-## #1 — Inline `style={{...}}` on JSX elements
+## ANTIPATTERN-001-INLINE-STYLE — inline `style={…}` in JSX
 
-**Detect**: `rg "style=\{" src/components --type ts`
+**Why**: bypasses design tokens, breaks a strict CSP, and cannot be overridden by consumers.
 
-**Why**: Bypasses design tokens, breaks CSP, untestable, impossible to override.
-
-**Fix**: Use CSS classes + `:host([attr])` selectors + CSS variables.
+**Fix**: classes, `:host([attr])` selectors and CSS custom properties.
 
 ```tsx
 // ❌
-<div style={{ color: 'red', padding: '8px' }} />
+<div style={{ color: 'red' }} />
 // ✅
 <div class="error" />
-/* CSS */
-.error { color: var(--color-text-error); padding: var(--spacing-sm); }
 ```
 
 ---
 
-## #2 — Imperative `this.host.classList.add/remove()`
+## ANTIPATTERN-002-HOST-CLASSLIST — imperative `this.host.classList.*`
 
-**Detect**: `rg "this\.host\.classList\.(add|remove|toggle)" src/components --type ts`
+**Why**: the next render overwrites or races the manual class; state is invisible to `render()`.
 
-**Why**: Race conditions with re-renders, bypasses virtual DOM, untestable.
+**Fix**: declarative `<Host class={…}>` —
+[`component-structure.md` § Host Class Management](../../../../src/components/_agents/component-structure.md).
 
-**Fix**: Declarative `<Host class={...}>` with `getHostClasses()` helper.
-
-```ts
+```tsx
 // ❌
 componentDidUpdate() {
-  if (this.open) this.host.classList.add('is-open');
-  else this.host.classList.remove('is-open');
+  this.host.classList.toggle('is-open', this.open);
 }
 
 // ✅
-private getHostClasses(): string {
-  return [this.open && 'is-open', this.disabled && 'is-disabled']
-    .filter(Boolean).join(' ');
-}
 render() {
-  return <Host class={this.getHostClasses()}>{/* ... */}</Host>;
+  return <Host class={{ 'is-open': this.open }}>…</Host>;
 }
 ```
 
 ---
 
-## #3 — `@Method()` without `async` or `Promise<T>`
+## ANTIPATTERN-004-EVENTEMITTER-UNTYPED — bare `EventEmitter`
 
-**Detect**: `rg "@Method\(\)\s+\w+\([^)]*\)\s*:\s*(?!Promise|void)" src/components --type ts`
-
-**Why**: Stencil docs §methods require Promise-returning methods for cross-bundle and Web Worker compatibility. Build fails.
-
-**Fix**: Always `async` or explicit `Promise<T>`.
+**Why**: the payload becomes `any`; consumers lose `event.detail` typing.
 
 ```ts
 // ❌
-@Method() focus(): void { this.inputElement?.focus(); }
-
+@Event() mudChange!: EventEmitter;
 // ✅
-@Method() async focus(): Promise<void> { this.inputElement?.focus(); }
+@Event() mudChange!: EventEmitter<{ value: string }>;
 ```
 
 ---
 
-## #4 — Bare `EventEmitter` without payload type
+## ANTIPATTERN-005-ARRAY-MUTATION — in-place array mutation
 
-**Detect**: `rg "EventEmitter(?!<)" src/components --type ts`
-
-**Why**: Loses type safety on consumer side, breaks `event.detail` autocompletion.
-
-**Fix**: Always type the payload.
+**Why**: reactivity is triggered by assignment; `push`/`splice`/`sort` assign nothing, so no render.
 
 ```ts
 // ❌
-@Event() corChange!: EventEmitter;
-
+this.items.push(item);
 // ✅
-@Event() corChange!: EventEmitter<{ value: string; valid: boolean }>;
+this.items = [...this.items, item];
 ```
 
 ---
 
-## #5 — Direct mutation of `@Prop`/`@State` arrays
+## ANTIPATTERN-007-LIFECYCLE-LEAK — timers or observers without `disconnectedCallback`
 
-**Detect**: `rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components --type ts`
-
-**Why**: Stencil reactivity is reference-based — mutations don't trigger re-render.
-
-**Fix**: Reassign with spread / map / filter.
+**Why**: timers keep firing and observers keep the element alive after it is removed.
 
 ```ts
-// ❌
-this.items.push(newItem);
-
-// ✅
-this.items = [...this.items, newItem];
-```
-
----
-
-## #6 — Direct mutation of `@Prop`/`@State` objects
-
-**Detect**: manual review of `this.<reactive>.x = ...` assignments
-
-**Why**: Same as #5 — reference doesn't change.
-
-**Fix**: Spread.
-
-```ts
-// ❌
-this.config.theme = 'dark';
-
-// ✅
-this.config = { ...this.config, theme: 'dark' };
-```
-
----
-
-## #7 — Missing `disconnectedCallback` cleanup
-
-**Detect**: pair-grep: file uses `setInterval`/`setTimeout`/`addEventListener` (manual) / `*Observer` AND has no `disconnectedCallback`
-
-**Why**: Memory leak — timers keep firing, observers keep holding the element after detach.
-
-**Fix**: Pair every `connectedCallback` resource with cleanup.
-
-```ts
-// ❌
-connectedCallback() {
-  this.timer = setInterval(() => this.tick(), 1000);
-}
-
 // ✅
 connectedCallback() {
   this.timer = setInterval(() => this.tick(), 1000);
@@ -147,375 +96,156 @@ disconnectedCallback() {
 }
 ```
 
-> Or use `@Listen` for window/document listeners — Stencil auto-cleans those.
+A `@Listen` listener needs no cleanup; the runtime removes it.
 
 ---
 
-## #8 — Reflecting complex props (object/array)
+## ANTIPATTERN-010-SETFORMVALUE-1ARG — `setFormValue(value)` with one argument
 
-**Detect**: manual review of `@Prop({ reflect: true }) <name>: <ObjectType>;`
-
-**Why**: Stencil docs §serialization: complex types serialize awkwardly as strings; consumer must JSON.stringify.
-
-**Fix**: Don't reflect; either drop `reflect` or use `@PropSerialize`/`@AttrDeserialize`.
-
-```ts
-// ❌
-@Prop({ reflect: true }) config: Config;
-
-// ✅
-@Prop() config?: Config;
-
-// ✅ (SSR scenario)
-@Prop() config?: Config;
-@PropSerialize('config') ser(v) { return JSON.stringify(v); }
-@AttrDeserialize('config') des(s) { try { return JSON.parse(s); } catch { return undefined; } }
-```
-
----
-
-## #9 — Boolean prop without `= false` default
-
-**Detect**: `rg "@Prop\([^)]*\)\s+\w+:\s*boolean\s*;" src/components --type ts`
-
-**Why**: Stencil's HTML attribute parsing: omitted = `undefined`, not `false`. Components break with logical checks like `if (this.disabled)`.
-
-**Fix**: Always default to `false`.
-
-```ts
-// ❌
-@Prop() disabled: boolean;
-
-// ✅
-@Prop({ reflect: true }) disabled: boolean = false;
-```
-
----
-
-## #10 — `setFormValue(value)` with one argument
-
-**Detect**: `rg "setFormValue\([^,)]+\)" src/components --type ts`
-
-**Why**: Without the second `state` argument, browser autofill / bfcache restoration loses the value.
-
-**Fix**: Always pass both.
+**Why**: without the `state` argument the browser cannot restore the control (autofill, back/forward cache).
 
 ```ts
 // ❌
 this.internals.setFormValue(this.value);
-
 // ✅
 this.internals.setFormValue(this.value, this.value);
-// or with explicit FormData
-this.internals.setFormValue(formData, this.value);
 ```
 
 ---
 
-## #11 — `formAssociated: true` without `@AttachInternals()`
+## ANTIPATTERN-013-FORCEUPDATE — `forceUpdate()`
 
-**Detect**: pair-grep within a file: `formAssociated:\s*true` and absence of `@AttachInternals`
+**Why**: re-renders without a state change, which hides a value that should be `@State`.
 
-**Why**: Stencil throws at build. Component cannot interact with the form.
-
-**Fix**: Always pair.
-
-```ts
-@Component({ tag: 'mud-input', formAssociated: true })
-export class CorInput {
-  @AttachInternals() internals!: ElementInternals;   // ← REQUIRED
-}
-```
+**Fix**: store the value in a `@State` and assign it.
 
 ---
 
-## #12 — `@Watch` for side-effect cascades
+## ANTIPATTERN-014-SHOULDUPDATE — `componentShouldUpdate`
 
-**Detect**: manual review — `@Watch` updating other `@State`/`@Prop` values
+**Why**: skipping renders by hand masks a reactivity bug and drifts from the state it guards.
 
-**Why**: Causes re-render loops, makes data flow opaque. Use lifecycle methods or computed values in `render()`.
-
-**Fix**: Move derived values into `render()` or use `componentWillRender`.
-
-```ts
-// ❌
-@Watch('size')
-watchSize() { this.height = this.size === 'lg' ? 64 : 40; }
-
-// ✅ — compute in render
-render() {
-  const height = this.size === 'lg' ? 64 : 40;
-  return <Host style-height={height}>...</Host>;  // or use CSS variable mapping
-}
-```
+**Fix**: remove it; react to a specific change with `@Watch('prop')`.
 
 ---
 
-## #13 — `forceUpdate()` not justified
+## ANTIPATTERN-023-CLASSNAME — `className=`
 
-**Detect**: `rg "forceUpdate\(" src/components --type ts`
-
-**Why**: Bypasses reactivity, suggests state should be `@State` or watcher pattern needed.
-
-**Fix**: Verify it's for native attribute watching or imperative external state. Add a comment explaining why. Otherwise, refactor to use `@State`.
-
----
-
-## #14 — `componentShouldUpdate` for prop watching
-
-**Detect**: `rg "componentShouldUpdate" src/components --type ts`
-
-**Why**: Stencil docs explicit: unreliable; use `@Watch('propName')` instead.
-
-**Fix**: Switch to `@Watch`.
-
-```ts
-// ❌
-componentShouldUpdate(newVal: any, oldVal: any, prop: string) {
-  if (prop === 'size' && newVal === oldVal) return false;
-  return true;
-}
-
-// ✅
-@Watch('size')
-watchSize(newVal: string, oldVal: string) {
-  if (newVal === oldVal) return;
-  // … react
-}
-```
-
----
-
-## #15 — `componentDidUpdate` setting state without guard
-
-**Detect**: manual review
-
-**Why**: Infinite loop — state change triggers `componentDidUpdate`, which sets state, which triggers re-render…
-
-**Fix**: Always dirty-check.
-
-```ts
-// ❌
-componentDidUpdate() {
-  this.derived = this.computeDerived();
-}
-
-// ✅
-componentDidUpdate() {
-  const next = this.computeDerived();
-  if (this.derived !== next) this.derived = next;
-}
-```
-
----
-
-## #16 — Reading host children in `componentWillLoad`
-
-**Detect**: `rg "componentWillLoad" src/components --type ts -A 20 | rg "this\.host\.(children|querySelectorAll|querySelector)"`
-
-**Why**: Slot content not yet projected. `host.querySelectorAll('[slot=...]')` returns 0 or stale results.
-
-**Fix**: Move to `componentDidLoad`.
-
-```ts
-// ❌
-componentWillLoad() {
-  this.hasSummary = this.host.querySelectorAll('[slot=summary]').length > 0;
-}
-
-// ✅
-componentDidLoad() {
-  this.hasSummary = this.host.querySelectorAll('[slot=summary]').length > 0;
-}
-```
-
----
-
-## #17 — `:host` without `display:`
-
-**Detect**: read CSS — verify `:host { display: ...; }` is set
-
-**Why**: Custom elements default to `display: inline`. Most components need `block`, `inline-flex`, `flex`, etc.
-
-**Fix**: Always set `display` explicitly on `:host`.
-
-```css
-/* ❌ */
-:host { color: var(--color-text); }
-
-/* ✅ */
-:host {
-  display: inline-flex;
-  color: var(--color-text);
-}
-```
-
----
-
-## #18 — `transition: all`
-
-**Detect**: `rg "transition:\s*all" src/components --type css`
-
-**Why**: Animates EVERY property, including ones you didn't intend; perf cost; clashes with `prefers-reduced-motion`.
-
-**Fix**: List properties explicitly.
-
-```css
-/* ❌ */
-.button { transition: all 250ms; }
-
-/* ✅ */
-.button { transition: background-color 150ms ease-in-out, transform 150ms ease-in-out; }
-```
-
----
-
-## #19 — Hardcoded colors in CSS
-
-**Detect**: `rg "#[0-9a-fA-F]{3,8}" src/components --type css`
-
-**Why**: Breaks theming, no dark-mode support, fails contrast audits.
-
-**Fix**: Use semantic tokens.
-
-```css
-/* ❌ */
-.button { background: #1976d2; }
-
-/* ✅ */
-.button { background: var(--color-background-brand-default); }
-```
-
----
-
-## #20 — Palette tokens in component CSS
-
-**Detect**: `rg "var\(--palette-" src/components --type css`
-
-**Why**: Skips the semantic tier — when palette changes, component breaks; no theming flexibility.
-
-**Fix**: Use `--color-*` semantic tokens; if missing, add semantic alias.
-
-```css
-/* ❌ */
-.button { background: var(--palette-blue-500); }
-
-/* ✅ */
-.button { background: var(--color-background-brand-default); }
-```
-
----
-
-## #21 — Inline SVG instead of `mud-icon`
-
-**Detect**: `rg "<svg" src/components --type ts` (in TSX renders, excluding `mud-icon` itself)
-
-**Why**: Doesn't follow token-based sizing/coloring, balloons bundle size, harder to maintain.
-
-**Fix**: Use `<mud-icon name="..." />`.
-
----
-
-## #22 — Boolean props for slot control (`iconLeft`, `showLabel`, …)
-
-**Detect**: ESLint `no-restricted-syntax` rule (already configured in `.eslintrc.js`)
-
-**Why**: API noise — slot detection via CSS `:empty` or `slotchange` handlers is cleaner.
-
-**Fix**: Use slots + `::slotted(*)` / `:empty` CSS detection.
-
-```ts
-// ❌
-@Prop() iconLeft: boolean = false;
-@Prop() iconRight: boolean = false;
-
-// ✅
-<Host>
-  <slot name="icon-left" />
-  <slot />
-  <slot name="icon-right" />
-</Host>
-// CSS handles empty slots via ::slotted() and :empty
-```
-
----
-
-## #23 — `className` instead of `class`
-
-**Detect**: `rg "className=" src/components --type ts`
-
-**Why**: React-ism. Stencil uses native HTML `class`.
-
-**Fix**: Rename.
+**Why**: React syntax; Stencil JSX uses the native `class` attribute.
 
 ```tsx
 // ❌
-<div className="container">
-
+<div className="container" />
 // ✅
-<div class="container">
+<div class="container" />
 ```
 
 ---
 
-## #24 — Slot rendering without validation
+## ANTIPATTERN-025-EVENT-PREFIX — event field without the `mud` prefix
 
-**Detect**: `<slot ` present but no call to `invalidSlottedTag(...)` in render
-
-**Why**: Allows arbitrary slot content that may break styling or accessibility.
-
-**Fix**: Use `invalidSlottedTag()` utility for tag restrictions; document allowed slot content in JSDoc.
-
-```ts
-// ✅
-render() {
-  if (invalidSlottedTag(this.host, 'mud-icon', { slotName: 'icon' })) {
-    return null;  // or fallback
-  }
-  return <Host><slot name="icon" /></Host>;
-}
-```
-
-See `src/components/_agents/slot-patterns.md`.
-
----
-
-## #25 — Custom event name without `cor` prefix
-
-**Detect**: `rg "@Event\(\)\s+(?!cor[A-Z])" src/components --type ts`
-
-**Why**: Clashes with native or other-library events; breaks the design system's contract.
-
-**Fix**: Always `cor` + PascalCase.
+**Why**: an unprefixed name (`change`) collides with native and third-party events.
 
 ```ts
 // ❌
 @Event() change!: EventEmitter<string>;
-@Event() itemSelected!: EventEmitter<Item>;
-
 // ✅
-@Event() corChange!: EventEmitter<string>;
-@Event() corItemSelected!: EventEmitter<Item>;
+@Event() mudChange!: EventEmitter<string>;
 ```
 
 ---
 
-## Quick Grep Reference (paste in terminal)
+## ANTIPATTERN-HOST-DISPLAY — `:host` without `display`
 
-```bash
-# Run all anti-pattern greps at once
-echo "=== #1 inline styles ==="; rg "style=\{" src/components --type ts -c
-echo "=== #2 host.classList ==="; rg "this\.host\.classList\.(add|remove|toggle)" src/components --type ts -c
-echo "=== #3 non-async @Method ==="; rg "@Method\(\)\s+\w+\([^)]*\)\s*:\s*(?!Promise|void)" src/components --type ts -c
-echo "=== #4 bare EventEmitter ==="; rg "EventEmitter(?!<)" src/components --type ts -c
-echo "=== #5 array mutations ==="; rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components --type ts -c
-echo "=== #13 forceUpdate ==="; rg "forceUpdate\(" src/components --type ts -c
-echo "=== #14 componentShouldUpdate ==="; rg "componentShouldUpdate" src/components --type ts -c
-echo "=== #18 transition all ==="; rg "transition:\s*all" src/components --type css -c
-echo "=== #19 hardcoded colors ==="; rg "#[0-9a-fA-F]{3,8}" src/components --type css -c
-echo "=== #20 palette tokens ==="; rg "var\(--palette-" src/components --type css -c
-echo "=== #23 className ==="; rg "className=" src/components --type ts -c
-echo "=== #25 events without cor prefix ==="; rg "@Event\(\)\s+(?!cor[A-Z])" src/components --type ts -c
+**Why**: a custom element defaults to `display: inline`, which breaks sizing and layout.
+
+```css
+/* ✅ */
+:host {
+  display: inline-flex;
+}
 ```
 
-All greps should return 0 for a clean codebase.
+---
+
+## STENCIL-SHADOW-REQUIRED — shadow DOM not enabled
+
+**Why**: every `mud-*` component relies on shadow encapsulation for its styles and slots.
+
+**Fix**: `shadow: true`, or an options object such as `shadow: { delegatesFocus: true }`. Both pass.
+
+---
+
+## STENCIL-FORM-CALLBACKS — form-associated component missing a callback
+
+**Why**: without `formResetCallback` the control ignores `form.reset()`; without
+`formDisabledCallback` it ignores a disabled `<fieldset>`; without `formStateRestoreCallback` a value
+control loses restored state.
+
+**Fix**: add the missing callbacks. A submitter (calls `this.internals.form?.requestSubmit()`) needs
+only the first two — [`form-reactivity.md`](form-reactivity.md#form-associated).
+
+---
+
+## STENCIL-FORM-BOOLEAN-DEFAULT-TRUE — boolean prop defaulting to `true` on a form-associated component
+
+**Why**: on a form-associated component the attribute string `"false"` parses as `true`
+(`internal/client/index.js:2352-2353`), so `<mud-search-input clearable="false">` cannot turn the
+prop off from HTML.
+
+**Fix**: invert the prop so its default is `false` (a breaking API change — decide it per component).
+
+---
+
+## STENCIL-MEMBER-ORDER — decorator groups out of order
+
+**Why**: the canonical order makes a class scannable and keeps reviews diffable.
+
+**Fix**: reorder to
+[`component-structure.md` § TSX Class Member Order](../../../../src/components/_agents/component-structure.md).
+
+---
+
+## STENCIL-WATCH-ASYNC — async `@Watch` method
+
+**Why**: the runtime calls a watcher without awaiting it (`internal/client/index.js:3602-3605`); a later change can finish before an earlier one.
+
+**Fix**: keep the watcher synchronous and hand the async work to a method that guards against stale
+results.
+
+---
+
+## STENCIL-WATCH-WRITES-WATCHED — watcher writes its watched prop
+
+**Why**: a computed write to the watched prop re-enters the watcher and hides the consumer's value.
+
+**Fix**: only a literal fallback inside an `if` (validation) may write the watched prop —
+[`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md).
+
+```ts
+// ✅ validation fallback
+@Watch('size')
+validateSize(next: RadioSize) {
+  if (!RADIO_SIZES.includes(next)) this.size = 'md';
+}
+
+// ❌ computed write
+@Watch('currentPage')
+onCurrentPageChange(next: number) {
+  this.currentPage = this.clampPage(next);
+}
+```
+
+---
+
+## STENCIL-MAP-KEY — keyless element returned from `.map()`
+
+**Why**: without a `key` the renderer reuses nodes by position, so reordering or removing an item
+moves state and focus onto the wrong element.
+
+```tsx
+// ❌
+{this.items.map(item => <li>{item.label}</li>)}
+// ✅
+{this.items.map(item => <li key={item.id}>{item.label}</li>)}
+```

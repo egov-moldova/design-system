@@ -954,7 +954,7 @@ git commit -m "docs(skills): turn stencil-compliance into a script-first run pro
 - Consumes: Task 0.2 results; `RULES` codes; `ruleScope` from Task 1.1.
 - Produces: `version-delta.md` with a heading `## Stencil 4.45` (exactly `## Stencil <major>.<minor>` of the pin — Task 3.2 asserts it) and an API table in `functional-api.md` under `### Public API` whose first column holds each exported name in backticks (Task 3.2 parses it).
 
-- [ ] **Step 1: Per-file edits** (each row is a required edit; every `enforced-by` value below is written in the cell grammar Task 2.2 defines, e.g. `eslint:@stencil/single-export`, `script-02:ANTIPATTERN-025-EVENT-PREFIX`):
+- [x] **Step 1: Per-file edits** (each row is a required edit; every `enforced-by` value below is written in the cell grammar Task 2.2 defines, e.g. `eslint:@stencil/single-export`, `script-02:ANTIPATTERN-025-EVENT-PREFIX`):
 
 | File | Edit |
 | --- | --- |
@@ -966,9 +966,9 @@ git commit -m "docs(skills): turn stencil-compliance into a script-first run pro
 | `functional-api.md` | Delete `### Testing utilities` (link `TESTING.md`). FC9 → "a component file exports only its class", `eslint:@stencil/single-export`. Replace the API list with `### Public API`: one row per name exported by `node_modules/@stencil/core/internal/stencil-core/index.d.ts` (`export { … }` and `export type { … }`), columns `Name | Kind | Use here`. Delete "getElement is legacy". `jsx`/`jsxs` → one sentence: automatic JSX runtime entry `@stencil/core/jsx-runtime`, not used by this project's `h` pragma |
 | `anti-patterns.md` | Keep only `ruleScope: 'stencil'` rules, each headed by its code (`## ANTIPATTERN-002-HOST-CLASSLIST — …`). Project rules (`019`, `020`, `021`, RAW-PIXELS, TS-ANY, …) → one line linking `_agents/anti-patterns.md` and `token-creation`. `#12` fix without `<Host style-…>`. Identical ❌/✅ "method reference" pair → fix or delete. `.eslintrc.js` → `eslint.config.mjs`. Delete "Quick Grep Reference" |
 
-- [ ] **Step 1b: Fill `SKILL.md` `## Rule index`** (Task 2.2 Step 3's table) from the references as edited in Step 1: one row per rule that survived, `enforced-by` in the Task 2.2 grammar.
+- [x] **Step 1b: Fill `SKILL.md` `## Rule index`** (Task 2.2 Step 3's table) from the references as edited in Step 1: one row per rule that survived, `enforced-by` in the Task 2.2 grammar.
 
-- [ ] **Step 2: Write `version-delta.md`** with these sections, each fact carrying its source:
+- [x] **Step 2: Write `version-delta.md`** with these sections, each fact carrying its source:
 
 ```markdown
 # Stencil version delta
@@ -990,7 +990,7 @@ stenciljs.com documents 4.43 as its default version.
 - Stencil 5 is in beta with no migration guide. Re-read when a 5.0.0 stable ships.
 ```
 
-- [ ] **Step 3: Verify and commit**
+- [x] **Step 3: Verify and commit**
 
 ```bash
 grep -rnE "\(\?[!=<]|\bcor[A-Z]|\bCor[A-Z]|HTMLCor|mud-(input|toggle|radio-button|combobox)([^-a-z]|$)|\.eslintrc|reflectarea|Cu Fix" .claude/skills/stencil-compliance   # → no output
@@ -1425,6 +1425,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - Task 1.1 Step 4: `ANTIPATTERN-RAW-PIXELS` over `--all` → 27 (was 84), equal to the hand-counted "other" group.
 - Task 1.2 Step 6: `node scripts/audit/16-stencil-contract.mjs --all --json` → exit 1, `componentsScanned` 46 · MEMBER-ORDER 20 · MAP-KEY 10 · FORM-BOOLEAN-DEFAULT-TRUE 5 (exactly Decision 5's props) · WATCH-ASYNC 3 (`mud-icon.tsx:86,92`, `mud-logo.tsx:68`) · WATCH-WRITES-WATCHED 1 (`mud-pagination.tsx:163`) · FORM-CALLBACKS 0 (neither `mud-button` nor `mud-service-button`). Equal to § Measured. Every hit opened: the 20 MEMBER-ORDER hits each show a group out of `component-structure.md:35-46` order in the class's member sequence (19 × `@Watch`/`@Listen` or `@State` after a later group, `mud-separator.tsx` `@Element` before `@Prop`); the 10 MAP-KEY roots carry no `key` (none within 40 lines of the `.map(`). 0 false positives.
 - Task 1.3 Step 1: gate held without re-running the tools — `git diff --quiet c4b3214 HEAD -- src eslint.config.mjs .stylelintrc.json` → exit 0, so no input to either count changed since Task 0.1. Step 2: `mud-stepper.tsx:128` and `mud-tooltip.tsx:747` pass the host to DOM APIs typed `Element`; the narrowed type is not assignable there (its `ariaLabel?: string` conflicts with `Element.ariaLabel: string | null`, the #88 names), so both casts follow `mud-cookie-banner.tsx:164` (`this.host as unknown as Element`) — type-only. Step 4: the two stylelint rules, probed on a scratch CSS file inside `src/`, fire on `!important`, `transition: all` and `transition-property: all`, and not on `allow`.
+- Task 2.3: committed before Task 2.2 — the rewritten `SKILL.md` links `references/version-delta.md`, so the references commit must land first for each commit to pass the docs checker. The Task 3.2 parity spec, run from a scratch copy against the rewritten skill, passed 7/7 before either commit. Facts checked while writing: stenciljs.com version selector defaults to v4.43; `npm view @stencil/core dist-tags` → `latest: 4.45.0`, `beta: 5.0.0-beta.12`; the Yarn patch touches only `compiler/stencil.js`; watchers are invoked without `await` (`internal/client/index.js:3602-3605`); a native-attribute `@Watch` runs from `attributeChangedCallback` (`:3830-3835`); script 14 extracts `tag` but does not check its prefix (C2 is `manual`).
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan
