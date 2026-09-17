@@ -1,7 +1,7 @@
 ---
 name: pixel-perfect-verifier
 description: Read-only pixel-perfect verification subagent. Follows the `pixel-perfect` skill — runs exact computed-style parity and Pixelmatch screenshot diffs of a `mud-*` component against its Figma state manifest (every state, including hover / focus / press and open views), and returns a report of drift, elements with no design behind them, design questions and anything it could not verify, each citing a Figma node. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
-tools: Read, Glob, Grep, Bash, Skill, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__playwright__browser_hover, mcp__playwright__browser_click, mcp__playwright__browser_resize, mcp__figma__get_design_context, mcp__figma__get_metadata, mcp__figma__get_screenshot, mcp__figma-mcp__get_figma_data, mcp__figma-mcp__download_figma_images, mcp__image-compare__compare_images
+tools: Read, Glob, Grep, Bash, Skill, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__playwright__browser_hover, mcp__playwright__browser_click, mcp__playwright__browser_resize, mcp__figma__get_design_context, mcp__figma__get_metadata, mcp__figma__get_screenshot, mcp__image-compare__compare_images
 model: sonnet
 ---
 
@@ -16,24 +16,25 @@ Read-only subagent. Verifies a component against Figma and reports; the orchestr
 Required:
 
 - `componentName` — e.g. `mud-button`
-- `figmaUrl` or `figmaNodeId` (+ file key) — the component set or frame to verify against
+- `figmaUrl` (preferred — carries the file key and the node) or `figmaNodeId`, read together with the manifest's `figma.fileKey`
 
 Optional:
 
 - `storybookBaseUrl` — default `http://localhost:6007`
-- `acceptThreshold` — default `0.5` (% pixel diff for PASS)
 - `statesToVerify` — subset of manifest state names (default: all)
+
+There is no threshold input: pass and warn thresholds live in `scripts/audit/lib/image-diff.mjs` (`DEFAULT_PASS`, `DEFAULT_WARN`).
 
 ## Procedure
 
-1. **Preflight** (skill step 0). Storybook on 6007, Playwright browser installed, a working Figma route. Abort with the matching failure mode below if any is missing — do not start or stop Storybook yourself.
+1. **Preflight** (skill step 0). Storybook on 6007, Playwright browser installed, the official Figma MCP authenticated. Abort with the matching failure mode below if any is missing — do not start or stop Storybook yourself.
 2. **Manifest** — `src/components/<name>/test/<name>.figma.json`.
-   - Exists → validate it covers every state in the Figma node (skill step 1). Missing states are a finding (`manifest-incomplete`), listed with their node ids.
-   - Missing → extract the design (skill step 1) and **return a draft manifest in the report** under "Draft manifest". Do not write it: `src/` is the orchestrator's.
-3. **References** — `node scripts/audit/figma-refs.mjs <name>`. Without `FIGMA_TOKEN`, run the `mcp__figma-mcp__download_figma_images` call it prints. `.audit-figma/` is git-ignored scratch output, not source.
+   - Exists → `node scripts/audit/figma-refs.mjs <name> --check --json` and report every `FIGMA-*` finding (uncovered variants, gone nodes, stale references).
+   - Missing → return `manifest-missing` with the list of Figma variants (name + node id) from `mcp__figma__get_metadata`. **Do not draft values**: a manifest value must be copied from Figma by whoever writes it, and `src/` is the orchestrator's.
+3. **References** — `node scripts/audit/figma-refs.mjs <name>` (REST with `FIGMA_TOKEN`). No token → it reports `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
 4. **Style parity** — `node scripts/audit/15-style-parity.mjs <name> --json`.
 5. **Screenshot diff** — `node scripts/audit/11-pixel-diff-states.mjs <name> --json`. `Read` the diff image of every `WARNING` / `FAIL` state; handle `PIXEL-SIZE-MISMATCH` before percentages.
-6. **Judge** each finding (skill step 6): drift / not in design / design question / tooling limit. Name the controlling token when the drift is a value (`--date-picker-day-cell-today-hover-background` → should map to `color.background.base.default-hover`).
+6. **Judge** each finding (skill step 6): drift / not in design / design question / tooling limit. Token names come from the `STYLE-MISMATCH` row (`observedTokens`, `expectedTokens`); report them as given and do not guess a token the row does not name.
 
 When a script cannot express a state (a gesture, a timing-dependent view), drive it with `mcp__playwright__browser_*` and compare with `mcp__image-compare__compare_images`, and say in the report which states were checked that way.
 
@@ -41,16 +42,21 @@ Negative claims — "this element is not in the Figma node", "this value appears
 
 ## Report
 
+The first line is the verdict, by the skill's rule: **FAIL** if any error finding; **INCOMPLETE** if anything is under Not verified; **WARN** if any warning; **PASS** otherwise.
+
 ```text
+Verdict: FAIL | INCOMPLETE | WARN | PASS
+
 ## Pixel-Perfect Report: mud-<name> — Figma <fileKey>/<node>
 
 ### Evidence
 - Manifest: <path> (<N> states; <M> pixel states)
+- Coverage: <missing> uncovered variants, <gone> gone nodes, references <stale>
 - Style parity: <checked> properties, <failed> failed
 - Pixel diff: <states> states — PASS <a> · WARNING <b> · FAIL <c>
 
 ### Drift
-| State | Element | Property | Figma (node) | Rendered | Controlling token / file |
+| State | Element | Property | Figma (node) | Rendered | Tokens (rendered → Figma value) | File |
 
 ### Not in design
 | State | Element | Figma node without it | Question for design |
@@ -59,18 +65,15 @@ Negative claims — "this element is not in the Figma node", "this value appears
 - <Figma contradicts itself / undefined state, with both nodes>
 
 ### Not verified
-- <state or property> — <why: mock data, no Figma access, unreachable state>
-
-### Draft manifest (only when none exists)
-<json>
+- <state or property> — <why: mock data, no FIGMA_TOKEN, unreachable state>
 
 ### Suggested fixes (read-only — orchestrator applies)
 1. <token → CSS → TSX, most upstream first>
 
 ### Acceptance
 - [ ] 0 STYLE-MISMATCH and 0 STYLE-UNEXPECTED-ELEMENT (or each one accepted as a design question)
-- [ ] Every pixel state < acceptThreshold% or explained under Not verified
-- [ ] Every Figma state present in the manifest
+- [ ] Every pixel state PASS, or its WARNING explained, or listed under Not verified
+- [ ] 0 FIGMA-NODE-GONE; every FIGMA-STATE-MISSING added as a state or skipped with a reason
 ```
 
 ## Constraints
@@ -85,8 +88,12 @@ Negative claims — "this element is not in the Figma node", "this value appears
 |---|---|---|
 | `Playwright browser is not installed on this machine` | browser binary missing | `playwright-browser-missing` — `npx playwright install chromium-headless-shell` |
 | `Storybook not reachable on port 6007` | dev server not running | `environment-not-ready` |
-| No Figma route works (OAuth not done, no Framelink server, no token) | Figma access | `figma-unavailable` — stop; do not verify from memory |
+| `mcp__figma__*` calls fail | official Figma MCP not authenticated (`/mcp`) and no `FIGMA_TOKEN` | `figma-unavailable` — stop; do not verify from memory |
+| No `src/components/<name>/test/<name>.figma.json` | no manifest yet | `manifest-missing` — list the Figma variants (name + node id); draft no values |
 | `PIXEL-MANIFEST-INVALID` / `STYLE-MANIFEST-INVALID` | manifest schema | `manifest-invalid` + the validation messages |
+| `STYLE-STATE-FAILED` / `PIXEL-CAPTURE-FAILED` with a Storybook 404 or unknown story id | story renamed or missing | `story-not-found` — report the ids from `node scripts/audit/05-story-exports.mjs <name> --json` |
 | `STYLE-STATE-FAILED: interaction target not found` | stale selector or state not reachable | `manifest-stale` — propose the corrected selector |
+| `PIXEL-NO-REFERENCE` or `FIGMA-NO-TOKEN` | references not exported | `references-missing` — pixel states go under Not verified |
+| `FIGMA-NODE-GONE` | the manifest cites a node deleted from Figma | `figma-node-gone` — stop; the manifest must be re-sourced |
 | `PIXEL-SIZE-MISMATCH` on every state by the same amount | an extra / missing element (footer, border) | drift, not tooling |
 | Diff > 50% on every state | wrong node or wrong fixture | `reference-mismatch` — verify inputs |
