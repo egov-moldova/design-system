@@ -1245,7 +1245,7 @@ git commit -m "feat(docs): fail the docs checker on retired prefixes, lookaround
 **Interfaces:**
 - Consumes: `PATTERNS`, `FILE_CHECKS` (with `ruleScope`) from `02-stencil-antipatterns.mjs`; `RULES` from `16-stencil-contract.mjs`; `version-delta.md` heading; `functional-api.md` `### Public API` table; `eslint.config.mjs`; `.stylelintrc.json`.
 
-- [ ] **Step 1: Write the spec**
+- [x] **Step 1: Write the spec**
 
 ```js
 import assert from 'node:assert/strict';
@@ -1347,13 +1347,13 @@ Before relying on the `resolutions` key: `grep -n '"resolutions"' package.json` 
 at `package.json:39-40`; if the block is named differently, read that name. Before the ESLint
 import: the spec runs under `node --test` from the repo root, where `eslint` is a devDependency.
 
-- [ ] **Step 2: Run** `node --test scripts/__tests__/stencil-compliance-skill.spec.mjs` → PASS. Each failure is a Phase 2 omission; fix the doc, not the spec.
+- [x] **Step 2: Run** `node --test scripts/__tests__/stencil-compliance-skill.spec.mjs` → PASS. Each failure is a Phase 2 omission; fix the doc, not the spec.
 
-- [ ] **Step 3: Mutation check** (proves each assertion can fail; revert each change with the Edit tool, never `git checkout`): (a) add `` `ANTIPATTERN-NOPE` `` to `version-delta.md` → test 1 fails; (b) rename `## Stencil 4.45` → `## Stencil 4.44` → heading test fails; (c) delete one `### Public API` row → API test fails; (d) change one `` `eslint:@stencil/single-export` `` cell to `` `eslint:@stencil/strict-mutable` `` → lint test fails; (e) change one `` `stylelint:declaration-no-important` `` cell to `` `stylelint:color-no-hex` `` → lint test fails; (f) delete one `stencil`-scoped code's only citation from the skill → "every stencil-scoped registry code is cited" fails; (g) in a scratch copy of the spec, point the patch assertion at `/OneOf3_SENTINEL/` → patch test fails; (h) same for the boolean-parsing regex (`"false_SENTINEL"`) → parsing test fails. (c') add a `` | `NotExported` | … | `` row → API test fails in the other direction; (g') in a scratch copy of `package.json`, change the resolution key's range → patch test fails. Restore each and re-run → PASS.
+- [x] **Step 3: Mutation check** (proves each assertion can fail; revert each change with the Edit tool, never `git checkout`): (a) add `` `ANTIPATTERN-NOPE` `` to `version-delta.md` → test 1 fails; (b) rename `## Stencil 4.45` → `## Stencil 4.44` → heading test fails; (c) delete one `### Public API` row → API test fails; (d) change one `` `eslint:@stencil/single-export` `` cell to `` `eslint:@stencil/strict-mutable` `` → lint test fails; (e) change one `` `stylelint:declaration-no-important` `` cell to `` `stylelint:color-no-hex` `` → lint test fails; (f) delete one `stencil`-scoped code's only citation from the skill → "every stencil-scoped registry code is cited" fails; (g) in a scratch copy of the spec, point the patch assertion at `/OneOf3_SENTINEL/` → patch test fails; (h) same for the boolean-parsing regex (`"false_SENTINEL"`) → parsing test fails. (c') add a `` | `NotExported` | … | `` row → API test fails in the other direction; (g') in a scratch copy of `package.json`, change the resolution key's range → patch test fails. Restore each and re-run → PASS.
 
 Then add the spec's path to `references/version-delta.md` ("the skill parity spec" → `` `scripts/__tests__/stencil-compliance-skill.spec.mjs` ``) — it exists now, so the docs checker's `path` rule passes.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 npx prettier --write scripts/__tests__/stencil-compliance-skill.spec.mjs
@@ -1428,6 +1428,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - Task 2.3: committed before Task 2.2 — the rewritten `SKILL.md` links `references/version-delta.md`, so the references commit must land first for each commit to pass the docs checker. The Task 3.2 parity spec, run from a scratch copy against the rewritten skill, passed 7/7 before either commit. Facts checked while writing: stenciljs.com version selector defaults to v4.43; `npm view @stencil/core dist-tags` → `latest: 4.45.0`, `beta: 5.0.0-beta.12`; the Yarn patch touches only `compiler/stencil.js`; watchers are invoked without `await` (`internal/client/index.js:3602-3605`); a native-attribute `@Watch` runs from `attributeChangedCallback` (`:3830-3835`); script 14 extracts `tag` but does not check its prefix (C2 is `manual`).
 - Task 2.4 (implementer subagent): 8 files edited; `output-templates.md` and `must-enforce-checklist.md` had no matching claim. Left for follow-up, not in this task's rules: `optimize-prompt/references/canonical-defaults.md:25,55,57,282` cite `_agents/anti-patterns.md` #14, #19, #20, #12 for rules those items do not state; `.claude/agents/audit-production.md:132` still restates the pre-Decision-2 `@Watch` rule.
 - Task 3.1 Step 3: sweep found 72 hits (70 `stale-prefix`, 2 `stencil-version`, 0 `lookaround`) in 16 files. 66 rename pairs over 14 files applied by `mechanical-worker` after an existence check per new name; placeholders (`MudName`, `mudX`, `HTMLMudXElement`, `MudButtonArgs`) kept as placeholders; `CorInput` → `MudTextInput`, `CorSelectInput` → `MudSelect`; `CorCard` is prose proposing a new component (renamed, not deleted); catalog rows `CorNotification` and `CorProgressTracker` deleted (no component). The worker also moved `cor<PascalComponent>` → `mud<PascalComponent>` in `canonical-defaults.md:141` (same line, outside its list; kept). The two `Stencil 4.x` claims (`optimize-prompt/SKILL.md:3`, `INTEGRATION.md:417`) now say `Stencil`.
+- Task 3.2: `node --test scripts/__tests__/stencil-compliance-skill.spec.mjs` → 7/7. Mutation check (anchored substitutions, restores asserted byte-equal, sentinel variants in a temporary spec copy; TAP names the failing test): a → "every code the skill cites exists"; b → "version-delta.md carries a section"; c and c' → "public API table matches … both ways"; d and e → "every eslint:/stylelint: enforced-by cell names a rule that is enabled"; f (all `STENCIL-MAP-KEY` citations removed) → "every stencil-scoped registry code is cited"; g and g' → "the local Yarn patch still applies"; h → "form-associated boolean parsing". 10/10 killed by the intended assertion; baseline 7/7 after restore.
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan
