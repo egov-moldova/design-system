@@ -19,7 +19,7 @@ Storybook on port 6007.
 **Issue:** [#87](https://github.com/egov-moldova/design-system/issues/87). Base: `origin/main` at `c4b3214` or later
 (PR #77, #80 and #83 are merged there).
 
-**Reviewed:** preflight 2026-09-17 at `c4b3214` — leg 1 (decision quality) FORTIFY, 2 above-bar findings folded; leg 2
+**Reviewed:** preflight c4b3214 — 2026-09-17; leg 1 (decision quality) FORTIFY, 2 above-bar findings folded; leg 2
 (tool blast radius, retention) RETHINK, 2 above-bar findings folded, 1 beyond-bar rejected with reason (§ Review log).
 
 **Spec:** issue #87 (scope items 1–7 and "Done when") plus the in-session analysis of 2026-09-17 — restated in full in
@@ -48,7 +48,7 @@ no change).
 | F6 | Diff thresholds 0.5 / 2.0 live in three code/doc places; `visual-diff.mjs` classifies on its own copy | `scripts/visual-diff.mjs:94-96`; `scripts/audit/11-pixel-diff-states.mjs:81-82`; `_agents/pixel-perfect-qa.md:28`; `SKILL.md:132` | fix — Task 1.1, 3.1, 3.3 |
 | F7 | A `STYLE-MISMATCH` row says Figma value vs rendered value but not which token; the agent is told to name it by hand | `15-style-parity.mjs:230`; `pixel-perfect-verifier.md:36` | fix — Tasks 1.4, 2.1 |
 | F8 | "Manifest covers every Figma state" is checked by the model | `pixel-perfect-verifier.md:31`; `SKILL.md:55` | fix — Tasks 2.3, 3.1 |
-| F9 | Identical `expect` blocks repeated across states: 5 of 37 (date-picker), 16 of 57 (date-input), 10 of 32 (table) | the three manifests; no reuse construct in `scripts/audit/lib/figma-manifest.mjs` | fix — Tasks 1.2, 1.3 |
+| F9 | Identical `expect` blocks repeated across states: 4 of 37 (date-picker), 2 of 57 (date-input), 5 of 32 (table) extra copies, byte-identical including the cited node (corrected in Task 1.3; the pre-execution 5 / 16 / 10 ignored the node, and entries that cite different nodes cannot share a block) | the three manifests; no reuse construct in `scripts/audit/lib/figma-manifest.mjs` | fix — Tasks 1.2, 1.3 |
 | F10 | States with mock data (dates, avatars) "cannot reach PASS" and stay not verified | `SKILL.md:132`; no mask in the manifest schema | fix — Tasks 1.2, 2.2 |
 | F11 | References are git-ignored and carry no Figma version, so a stale export diffs silently | `figma-refs.mjs:113` writes PNGs only | fix — Task 2.3 |
 | F12 | Report has no single verdict line; "Not verified" can read as a pass | `pixel-perfect-verifier.md:42-74`; `SKILL.md:147-165` | fix — Tasks 3.1, 3.2 |
@@ -292,9 +292,9 @@ snippet, and record the shape. Any exit code 2 in Step 2 → stop and return to 
 **Interfaces:**
 - Produces: `DEFAULT_PASS = 0.5`, `DEFAULT_WARN = 2.0`, `classifyDiff(diffPercent, { passThreshold, warnThreshold }) → { status: 'PASS'|'WARNING'|'FAIL'|'UNKNOWN', requiresReview: boolean }` exported from `lib/image-diff.mjs`; `11-pixel-diff-states.mjs` keeps exporting `classifyDiff`.
 
-- [ ] **Step 1: Read the current `classifyDiff` body** (`11-pixel-diff-states.mjs:84-95`) and copy it verbatim into the move in Step 3 — its `UNKNOWN` branch for a non-number percent must survive unchanged.
+- [x] **Step 1: Read the current `classifyDiff` body** (`11-pixel-diff-states.mjs:84-95`) and copy it verbatim into the move in Step 3 — its `UNKNOWN` branch for a non-number percent must survive unchanged.
 
-- [ ] **Step 2: Write the failing spec** (append to `image-diff.spec.mjs`; add `classifyDiff, DEFAULT_PASS, DEFAULT_WARN` to its import)
+- [x] **Step 2: Write the failing spec** (append to `image-diff.spec.mjs`; add `classifyDiff, DEFAULT_PASS, DEFAULT_WARN` to its import)
 
 ```js
 describe('image-diff: classifyDiff', () => {
@@ -330,12 +330,12 @@ describe('visual-diff CLI: status', () => {
 
 Add to the spec's imports: `import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import { spawnSync } from 'node:child_process'; import { fileURLToPath } from 'node:url';` and `const SCRIPT = fileURLToPath(new URL('../../visual-diff.mjs', import.meta.url));`.
 
-- [ ] **Step 3: Run it to verify it fails**
+- [x] **Step 3: Run it to verify it fails**
 
 Run: `node --test scripts/__tests__/audit/image-diff.spec.mjs`
 Expected: FAIL — `classifyDiff` is not exported by `lib/image-diff.mjs`.
 
-- [ ] **Step 4: Move the function**
+- [x] **Step 4: Move the function**
 
 In `lib/image-diff.mjs`, after `WHITE`:
 
@@ -361,12 +361,12 @@ In `scripts/visual-diff.mjs`, import `classifyDiff` beside `diffImages` and repl
 const { status } = classifyDiff(diff.diffPercent);
 ```
 
-- [ ] **Step 5: Run the suite**
+- [x] **Step 5: Run the suite**
 
 Run: `node --test "scripts/__tests__/audit/*.spec.mjs"`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 npx prettier --write scripts/audit/lib/image-diff.mjs scripts/audit/11-pixel-diff-states.mjs scripts/visual-diff.mjs scripts/__tests__/audit/image-diff.spec.mjs
@@ -395,7 +395,7 @@ EOF
   - `figma.skip: [{ "node": "<id>", "reason": "<text>" }]` — Figma variants intentionally not covered.
 - Produces: `resolveState(...)` returns `mask: string[]` and `expect` with `use` entries expanded (each expanded entry cites `e.node ?? state.node`).
 
-- [ ] **Step 1: Write the failing specs** (append; reuse the spec's `manifest()` helper)
+- [x] **Step 1: Write the failing specs** (append; reuse the spec's `manifest()` helper)
 
 ```js
 describe('figma-manifest: shared blocks', () => {
@@ -450,12 +450,12 @@ describe('figma-manifest: figma.skip', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify they fail**
+- [x] **Step 2: Run to verify they fail**
 
 Run: `node --test scripts/__tests__/audit/figma-manifest.spec.mjs`
 Expected: FAIL on every new case.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `validateManifest`, inside the `manifest.figma !== undefined` block:
 
@@ -536,12 +536,12 @@ Add to the header doc comment, after the `pixel: false` bullet:
  *   each with a reason; `figma-refs --check` reports every other uncovered one.
 ```
 
-- [ ] **Step 4: Run the suite**
+- [x] **Step 4: Run the suite**
 
 Run: `node --test "scripts/__tests__/audit/*.spec.mjs"`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 npx prettier --write scripts/audit/lib/figma-manifest.mjs scripts/__tests__/audit/figma-manifest.spec.mjs
@@ -560,7 +560,7 @@ EOF
 - Modify: `src/components/mud-date-input/test/mud-date-input.figma.json`
 - Modify: `src/components/mud-table/test/mud-table.figma.json`
 
-- [ ] **Step 1: List the duplicated blocks**
+- [x] **Step 1: List the duplicated blocks**
 
 ```bash
 node -e '
@@ -574,11 +574,11 @@ for (const c of ["mud-date-input", "mud-table"]) {
 }'
 ```
 
-- [ ] **Step 2: Move each repeated block into `shared`** under a key named after what it checks (e.g. `header-cell-base`), and replace every occurrence with `{ "use": "<key>" }`. A block that carries an explicit `node` keeps it. Order inside each state's `expect` does not change.
+- [x] **Step 2: Move each repeated block into `shared`** under a key named after what it checks (e.g. `header-cell-base`), and replace every occurrence with `{ "use": "<key>" }`. A block that carries an explicit `node` keeps it. Order inside each state's `expect` does not change.
 
-- [ ] **Step 3: Prove equivalence** — acceptance-bar `row-6` → no `FAILED` line for any manifest (this also re-proves Task 1.2 left `mud-date-picker` unchanged); `row-7` → `0` for both. Record line counts before/after in § Measured (`git show origin/main:<path> | wc -l` vs `wc -l <path>`).
+- [x] **Step 3: Prove equivalence** — acceptance-bar `row-6` → no `FAILED` line for any manifest (this also re-proves Task 1.2 left `mud-date-picker` unchanged); `row-7` → `0` for both. Record line counts before/after in § Measured (`git show origin/main:<path> | wc -l` vs `wc -l <path>`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 npx prettier --write src/components/mud-date-input/test/mud-date-input.figma.json src/components/mud-table/test/mud-table.figma.json
@@ -605,7 +605,7 @@ EOF
   - `attributeTokens(prop, figmaValue, renderedValue, vars, opts) → { expectedTokens: string[], observedTokens: string[] }`.
   - `formatTokens(tokens | null) → string` — `''` for null, else ` · tokens: rendered = a, b; Figma value = none`.
 
-- [ ] **Step 1: Write the failing spec**
+- [x] **Step 1: Write the failing spec**
 
 ```js
 /**
@@ -671,12 +671,12 @@ describe('token-match: attributeTokens + formatTokens', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `node --test scripts/__tests__/audit/token-match.spec.mjs`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```js
 /**
@@ -731,12 +731,12 @@ export function formatTokens(tokens) {
 }
 ```
 
-- [ ] **Step 4: Run the spec**
+- [x] **Step 4: Run the spec**
 
 Run: `node --test scripts/__tests__/audit/token-match.spec.mjs`
 Expected: PASS. If the shadow case fails because `compareStyleValue` needs the Figma string on the `expected` side, keep the token as `expected` (as written) and fix the fixture string to the exact form `parseShadow` accepts — do not loosen `sameKind`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 npx prettier --write scripts/audit/lib/token-match.mjs scripts/__tests__/audit/token-match.spec.mjs
@@ -1770,6 +1770,23 @@ STYLE-MISMATCH 31 · STYLE-UNEXPECTED-ELEMENT 7 · every pixel FAIL pairs with P
 
 Pixel-state counts agree with the pre-execution `pixel:false` counts (15−9, 27−4, 11−2). The date-picker drift is
 pre-existing component work, not in scope.
+
+Task 1.3, measured 2026-09-17 (decision by Dan: migrate byte-identical duplicates only):
+
+```derived id=task-1.3
+$ extra copies per manifest (exact JSON / ignoring node and note)
+mud-date-picker 4 / 5 · mud-date-input 2 / 16 · mud-table 5 / 10
+$ migration
+mud-date-input 2 shared blocks, 4 use entries · mud-table 5 shared blocks, 10 use entries
+$ row-6
+mud-date-input ok · mud-date-picker ok · mud-table ok
+$ row-7
+mud-date-input 0 · mud-table 0
+$ wc -l (origin/main → branch)
+mud-date-input 888 → 880 · mud-table 1185 → 1170
+$ 15-style-parity after migration
+mud-date-input checked 272 failed 0 · mud-table checked 118 failed 0 (= Task 0.2 baseline)
+```
 
 ## Not verified by this plan
 
