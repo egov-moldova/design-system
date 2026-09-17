@@ -7,7 +7,7 @@ description: Use when checking that a `mud-*` component matches its Figma design
 
 Verify a `mud-*` component against Figma with evidence, not impressions. This is the procedure behind the "Pixel-Perfect" rule in `AGENTS.md`; the `pixel-perfect-verifier` agent runs it read-only, and `new-component` / `redesign-component` / `refactor-component` call that agent.
 
-**Not for** cloning an external website or screenshot into code — that is the `clone-ui` skill.
+**Not for** cloning an external website or screenshot into code.
 
 ## Principles
 
@@ -23,7 +23,7 @@ Verify a `mud-*` component against Figma with evidence, not impressions. This is
 | Step | What | Command / tool |
 |---|---|---|
 | 0 | Preflight | Storybook, Playwright browser, Figma access |
-| 1 | Extract the design | Figma node data for the component set and every state |
+| 1 | Extract the design; check coverage | Figma node data for the component set and every state; then `node scripts/audit/figma-refs.mjs <name> --check --json` (uncovered variants, gone nodes, stale references) |
 | 2 | Write or update the manifest | `src/components/<name>/test/<name>.figma.json` |
 | 3 | Export Figma references | `node scripts/audit/figma-refs.mjs <name>` |
 | 4 | Exact style parity | `node scripts/audit/15-style-parity.mjs <name> --json` |
@@ -40,15 +40,14 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:6007/   # 200, else: y
 npx playwright install chromium-headless-shell                     # once per Playwright version
 ```
 
-Figma access — use the first that works:
+Figma access — two routes, each for its own steps:
 
-| Route | Tools | Notes |
+| Route | Tools | Used for |
 |---|---|---|
-| Official Figma MCP | `mcp__figma__get_design_context`, `mcp__figma__get_metadata`, `mcp__figma__get_screenshot`, `mcp__figma__get_variable_defs` | Needs OAuth (`/mcp` in an interactive session). Screenshots come back inline, not as files. |
-| Framelink Figma MCP | `mcp__figma-mcp__get_figma_data`, `mcp__figma-mcp__download_figma_images` | Node data as YAML; writes PNGs to disk — the reference route for step 3. |
-| Figma REST API | `FIGMA_TOKEN` env var | `figma-refs.mjs` downloads references directly. |
+| Official Figma MCP | `mcp__figma__get_design_context`, `mcp__figma__get_metadata`, `mcp__figma__get_screenshot`, `mcp__figma__get_variable_defs` | Design extraction (step 1). Needs OAuth (`/mcp` in an interactive session). Screenshots come back inline, not as files. |
+| Figma REST API | `FIGMA_TOKEN` env var (a `file_content:read` personal access token, kept in your shell, never in a file) | References (step 3) and `figma-refs --check`. |
 
-If no route works, **stop** and tell the user. Do not verify from memory or from a screenshot pasted earlier in the conversation without saying so.
+No official Figma MCP → you cannot extract the design: **stop** and tell the user. No `FIGMA_TOKEN` → references cannot be exported: style parity still runs, the pixel diff reports `PIXEL-NO-REFERENCE`, and the report lists the pixel states under Not verified. Do not verify from memory or from a screenshot pasted earlier in the conversation without saying so.
 
 ## Step 1 — Extract the design
 
@@ -102,15 +101,19 @@ Authoring rules:
 - **Selectors** are Playwright CSS and pierce shadow roots: `mud-x .control` reaches `.control` inside `mud-x`.
 - **Styles**: any computed property (`backgroundColor`, `borderTopLeftRadius`, `rowGap`, `boxShadow`, `fontFamily`…) plus `boxWidth` / `boxHeight` (border box) and `textContent`. Use longhands (`borderTopWidth`, not `border`).
 - **`note`** records an interpretation — e.g. how a Figma effect maps to CSS. Anything you had to interpret belongs in a note.
+- **`shared`** holds expectation lists several states repeat; a state lists `{ "use": "<key>" }` in `expect`. Each expanded entry cites its own `node` or the using state's node. Only byte-identical entries share a block — entries that cite different nodes stay per state.
+- **`mask`** (state or defaults) lists selectors painted with the page background on both images before the pixel diff — for mock data such as dates. Masked pixels are reported; style parity still checks the elements.
+- **`figma.skip`** lists Figma variants the manifest deliberately does not cover, each with a reason; `figma-refs --check` reports every other uncovered one.
 - A manifest is source: it is reviewed with the component and changes when the design does.
 
 ## Step 3 — Figma references
 
 ```bash
-node scripts/audit/figma-refs.mjs mud-x          # REST with FIGMA_TOKEN, else prints the MCP call
+node scripts/audit/figma-refs.mjs mud-x                  # REST with FIGMA_TOKEN; writes PNGs + export.json
+node scripts/audit/figma-refs.mjs mud-x --check --json   # coverage and freshness, exports nothing
 ```
 
-Without a token the script prints a ready `mcp__figma-mcp__download_figma_images` call (file key, `.audit-figma/mud-x`, scale, node → file names). Run it as printed. References are git-ignored and re-exported when the design changes.
+The export writes `.audit-figma/mud-x/<state>.png` and `export.json` (the Figma file version). `--check` reports `FIGMA-REFERENCE-STALE` when the file changed since that export — the version is per file, so any edit to the file triggers it. No token → exit 1 with `FIGMA-NO-TOKEN`. References are git-ignored and re-exported when the design changes.
 
 ## Step 4 — Style parity
 
@@ -119,6 +122,8 @@ node scripts/audit/15-style-parity.mjs mud-x --json
 ```
 
 Findings: `STYLE-MISMATCH` (Figma value vs rendered value, node cited), `STYLE-UNEXPECTED-ELEMENT` (an `absent` target rendered), `STYLE-TARGET-NOT-FOUND` (element missing or stale selector), `STYLE-STATE-FAILED` (fixture or interaction broke). Tolerance: 0.01px by default; colours, radii, spacing and shadows are exact.
+
+Each `STYLE-MISMATCH` check carries `observedTokens` (tokens resolving to the rendered value) and `expectedTokens` (tokens resolving to the Figma value), limited to the component's own tokens and semantic ones, own first. Several names mean the computed style cannot say which one the CSS used — read the component CSS. `none` on the Figma side means no token has that value: a token is missing, or the design is off-scale.
 
 ## Step 5 — Screenshot diff
 
@@ -129,9 +134,34 @@ node scripts/audit/11-pixel-diff-states.mjs mud-x --json
 - Captures at scale 2 with the element's own shadow bleed, flattens the transparent Figma export onto the page background, aligns top-left.
 - `PIXEL-SIZE-MISMATCH` comes first: a height difference of +46px is a whole element (a footer), not anti-aliasing.
 - For `WARNING` / `FAIL`, `Read` the diff image (`.audit-screenshots/<name>/<state>.diff.png`) — red is content that differs, green is anti-aliasing.
-- Thresholds: < 0.5% PASS, < 2% WARNING (judge), ≥ 2% FAIL. States with mock data (dates, avatars) cannot reach PASS; rely on step 4 for them and say so.
+- Thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `scripts/audit/lib/image-diff.mjs` — PASS below the first, WARNING (judge) below the second, FAIL at or above it.
+- Mock data (dates, avatars): add a `mask` to the state. Masked pixels are reported (`PIXEL-MASKED`, `maskedPixels`) and left out of the percentage, so a mask never dilutes a difference elsewhere.
 
 Without a manifest the script falls back to story mode (`--figma-dir` with one `<story>.png` per story export) — use it only for quick checks.
+
+## Rule index
+
+| Rule | Enforced by | Codes |
+| --- | --- | --- |
+| Manifest is well-formed; every expectation cites a node | script — `scripts/audit/lib/figma-manifest.mjs` | `STYLE-MANIFEST-INVALID`, `PIXEL-MANIFEST-INVALID` |
+| No manifest → nothing verified | script — `15-style-parity` | `STYLE-NO-MANIFEST` |
+| Every Figma variant has a state or a skip reason | script — `figma-refs --check` | `FIGMA-STATE-MISSING` |
+| Cited nodes exist | script — `figma-refs --check` | `FIGMA-NODE-GONE` |
+| References match the current file | script — `figma-refs --check` | `FIGMA-REFERENCE-STALE` |
+| References can be exported | script — `figma-refs` | `FIGMA-NO-TOKEN` |
+| Exact computed values, tokens named | script — `15-style-parity` | `STYLE-MISMATCH` |
+| No element without a design | script — `15-style-parity` | `STYLE-UNEXPECTED-ELEMENT` |
+| Target renders; state reachable | script — `15-style-parity` | `STYLE-TARGET-NOT-FOUND`, `STYLE-STATE-FAILED` |
+| Canvas size matches | script — `11-pixel-diff-states` | `PIXEL-SIZE-MISMATCH` |
+| Pixel difference within thresholds | script — `11-pixel-diff-states` | `PIXEL-DIFF-WARNING`, `PIXEL-DIFF-FAIL` |
+| A reference exists for every pixel state | script — `11-pixel-diff-states` | `PIXEL-NO-REFERENCE` |
+| Masked regions are disclosed | script — `11-pixel-diff-states` | `PIXEL-MASKED` |
+| Capture succeeded | script — `11-pixel-diff-states` | `PIXEL-CAPTURE-FAILED`, `PIXEL-DIFF-SKIPPED` |
+| Story mode (no manifest) | script — `11-pixel-diff-states` | `PIXEL-NO-REFERENCES`, `PIXEL-NO-STORIES` |
+| Values are copied from Figma, never inferred | model — steps 1–2 | — |
+| Drift vs not in design vs design question vs tooling limit | model — step 6 | — |
+| A WARNING diff image is explained | model — step 5 | — |
+| Figma contradicts itself → design question | model — step 6 | — |
 
 ## Step 6 — Judge each finding
 
@@ -146,13 +176,18 @@ Accessibility still wins over a Figma value that fails WCAG 2.1 AA — but check
 
 ## Step 7 — Report
 
+The first line is the verdict: **FAIL** if any error finding; **INCOMPLETE** if anything is under Not verified; **WARN** if any warning; **PASS** otherwise. A report whose scripts did not run is INCOMPLETE, never PASS.
+
 ```markdown
+**Verdict: FAIL | INCOMPLETE | WARN | PASS**
+
 ## Pixel-perfect: mud-x — against Figma <file>/<node>
 
 Evidence: manifest `src/components/mud-x/test/mud-x.figma.json` (N states), style parity P/Q properties, pixel diff R states.
+Coverage: <missing> uncovered variants, <gone> gone nodes, references <stale>.
 
 ### Drift
-| State | Element | Property | Figma (node) | Rendered | Fix |
+| State | Element | Property | Figma (node) | Rendered | Tokens | Fix |
 
 ### Not in design
 | State | Element | Figma node without it | Question |
