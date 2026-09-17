@@ -223,13 +223,10 @@ Use Fast Path script `02-stencil-antipatterns.mjs` (CSS + TSX)
 run in parallel internally. Reference catalogue:
 [`stencil-compliance/references/anti-patterns.md`](../stencil-compliance/references/anti-patterns.md).
 
-Pattern codes consumed from `findingsByTool.antipatterns`:
-`ANTIPATTERN-001-INLINE-STYLE`, `002-HOST-CLASSLIST`,
-`004-EVENTEMITTER-UNTYPED`, `005-ARRAY-MUTATION`, `007-LIFECYCLE-LEAK`,
-`010-SETFORMVALUE-1ARG`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`,
-`019-RAW-HEX`, `020-PALETTE-IN-CSS`, `021-RAW-SVG`, `023-CLASSNAME`,
-`025-EVENT-PREFIX`, `026-PROP-CONTENT-SLOT-FALLBACK`, `HOST-DISPLAY`, `RAW-PIXELS`,
-`SECURITY-INNERHTML`, `TS-ANY`, `TS-IGNORE`.
+Pattern codes consumed from `findingsByTool.antipatterns` are the `code` fields of
+`PATTERNS` and `FILE_CHECKS` in
+[`02-stencil-antipatterns.mjs`](../../../scripts/audit/02-stencil-antipatterns.mjs); print them with
+`node -e "import('./scripts/audit/02-stencil-antipatterns.mjs').then(m => console.log([...m.PATTERNS, ...m.FILE_CHECKS].map(p => p.code).join('\\n')))"`.
 
 `@Method()` async, `!important` and `transition: all` are no longer
 `02-stencil-antipatterns.mjs` codes — they are enforced by `yarn lint`

@@ -62,11 +62,12 @@ Reference: <https://stenciljs.com/docs/api>. Tests import from `@stencil/vitest`
 | #    | Rule                                                                                                                                                   | enforced-by                             |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
 | API1 | Component code imports from `@stencil/core`, never from `@stencil/core/internal/…` (only `stencil.config.ts` does, for the `Config` type that declares `buildDocs`) | `manual`                                |
-| API2 | No `forceUpdate()`                                                                                                                                     | `script-02:ANTIPATTERN-013-FORCEUPDATE` |
 | API3 | Asset URLs come from `getAssetPath()`, never a hard-coded `/assets/…` path                                                                             | `manual`                                |
 | API4 | `setAssetPath()` belongs to consumer apps and tests, not components                                                                                    | `manual`                                |
 | API5 | Batched DOM reads and writes go through `readTask()` / `writeTask()`                                                                                   | `manual`                                |
 | API6 | Consumers call `componentOnReady()` on the element; components never override it                                                                       | `manual`                                |
+
+No `forceUpdate()`: [`lifecycle-host.md` LC6](lifecycle-host.md#lifecycle).
 
 The automatic JSX runtime entry `@stencil/core/jsx-runtime` exists, but this project compiles JSX
 with the `h` pragma (`tsconfig.json` `jsxFactory`), so it is not used.

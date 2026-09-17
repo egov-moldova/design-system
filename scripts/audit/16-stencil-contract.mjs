@@ -50,7 +50,17 @@ export const RULES = [
 const severityOf = code => RULES.find(r => r.code === code).severity;
 
 // Canonical group order: src/components/_agents/component-structure.md "Member Order".
-const GROUP_ORDER = ['Prop', 'State', 'Element', 'AttachInternals', 'Event', 'Watch', 'Listen', 'lifecycle', 'render'];
+export const GROUP_ORDER = [
+  'Prop',
+  'State',
+  'Element',
+  'AttachInternals',
+  'Event',
+  'Watch',
+  'Listen',
+  'lifecycle',
+  'render',
+];
 const LIFECYCLE = new Set([
   'connectedCallback',
   'disconnectedCallback',
@@ -88,6 +98,10 @@ function isInsideIf(node, stopAt) {
 const isLiteral = n =>
   ts.isStringLiteral(n) ||
   ts.isNumericLiteral(n) ||
+  (ts.isPrefixUnaryExpression(n) &&
+    (n.operator === ts.SyntaxKind.MinusToken || n.operator === ts.SyntaxKind.PlusToken) &&
+    ts.isNumericLiteral(n.operand)) ||
+  (ts.isIdentifier(n) && n.text === 'undefined') ||
   ts.isNoSubstitutionTemplateLiteral(n) ||
   n.kind === ts.SyntaxKind.TrueKeyword ||
   n.kind === ts.SyntaxKind.FalseKeyword ||
@@ -110,9 +124,21 @@ function jsxRootLacksKey(body) {
   return !attrs.properties.some(p => ts.isJsxAttribute(p) && p.name.getText() === 'key');
 }
 
+// The callback body of `.map(cb)`: an inline function, or a class member passed as `this.name`.
+function mapCallbackBody(fn, classNode) {
+  if (!fn) return undefined;
+  if (ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) return fn.body;
+  if (!ts.isPropertyAccessExpression(fn) || fn.expression.kind !== ts.SyntaxKind.ThisKeyword) return undefined;
+  const member = classNode.members.find(m => getMemberName(m) === fn.name.text);
+  if (member && ts.isMethodDeclaration(member)) return member.body;
+  const init = member && ts.isPropertyDeclaration(member) ? member.initializer : undefined;
+  return init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init)) ? init.body : undefined;
+}
+
 export function checkSource(tsxPath, componentName) {
-  const { contract } = extractContractFromTsx(tsxPath, componentName);
-  if (!contract) return [];
+  const { contract, findings: contractFindings } = extractContractFromTsx(tsxPath, componentName);
+  // No component class: nothing was checked, so pass on script 14's finding rather than report clean.
+  if (!contract) return contractFindings;
   const sourceFile = createSourceFile(tsxPath);
   const classNode = getComponentClass(sourceFile);
   const file = relativeToRepo(tsxPath);
@@ -152,7 +178,9 @@ export function checkSource(tsxPath, componentName) {
     }
     for (const prop of contract.props) {
       // An unannotated `@Prop() clearable = true` has type null and is still boolean.
-      if ((prop.type === 'boolean' || prop.type === null) && prop.default === 'true') {
+      const types = prop.type === null ? ['boolean'] : prop.type.split('|').map(t => t.trim());
+      const isBoolean = types.filter(t => t !== 'undefined' && t !== 'null').join('|') === 'boolean';
+      if (isBoolean && prop.default === 'true') {
         const member = classNode.members.find(m => getMemberName(m) === prop.name);
         add(
           'STENCIL-FORM-BOOLEAN-DEFAULT-TRUE',
@@ -178,6 +206,15 @@ export function checkSource(tsxPath, componentName) {
       reported = true;
     }
     highest = Math.max(highest, rank);
+  }
+  const renderIndex = classNode.members.findIndex(m => getMemberName(m) === 'render');
+  const afterRender = renderIndex === -1 ? undefined : classNode.members[renderIndex + 1];
+  if (afterRender) {
+    add(
+      'STENCIL-MEMBER-ORDER',
+      afterRender,
+      `\`${getMemberName(afterRender)}\` is declared after render(); render() is always last.`,
+    );
   }
 
   for (const member of classNode.members) {
@@ -225,9 +262,8 @@ export function checkSource(tsxPath, componentName) {
   walk(classNode, node => {
     if (!ts.isCallExpression(node) || !ts.isPropertyAccessExpression(node.expression)) return;
     if (node.expression.name.text !== 'map') return;
-    const fn = node.arguments[0];
-    if (!fn || !(ts.isArrowFunction(fn) || ts.isFunctionExpression(fn))) return;
-    if (jsxRootLacksKey(fn.body)) add('STENCIL-MAP-KEY', node, 'JSX element returned from `.map()` has no `key`.');
+    const body = mapCallbackBody(node.arguments[0], classNode);
+    if (body && jsxRootLacksKey(body)) add('STENCIL-MAP-KEY', node, 'JSX element returned from `.map()` has no `key`.');
   });
 
   return out;

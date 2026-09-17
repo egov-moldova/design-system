@@ -10,7 +10,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 
 1. **Hardcoded values in CSS** — always use `var(--token-name)` or `var(--token, var(--fallback))`
 2. **Inline styles in TSX** — breaks theming, violates CSP
-3. **Use `!important`** — never; use proper specificity and token fallbacks. Shadow DOM prevents conflicts
+3. **Use `!important`** — use proper specificity and token fallbacks; shadow DOM prevents conflicts. The only exception is a load-bearing declaration carrying `/* stylelint-disable-next-line declaration-no-important */` and a comment saying why (`stylelint:declaration-no-important`)
 4. **Round Figma values** — use exact dimensions (`48px` not `50px`). NO rounding
 5. **Palette token as CSS fallback** — `var(--token, var(--palette-ui-gray-9))` is forbidden (`yarn lint.colors` fails on it). Use semantic `--color-*` tokens. See `tokens/_agents/semantic-tokens.md`
 6. **Direct palette token in CSS** — `var(--palette-ui-gray-13)` is forbidden (`yarn lint.colors` fails on it). Use `var(--color-neutral-text-default)` or component token wrapper

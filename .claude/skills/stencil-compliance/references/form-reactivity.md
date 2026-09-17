@@ -39,8 +39,9 @@ Two kinds exist:
 | F5  | `formStateRestoreCallback(state, mode)` handles a string state and ignores what it cannot restore                                                          | `manual`                                      |
 | F6  | `setFormValue(value, state)` is called with both arguments, so the browser can restore the state                                                          | `script-02:ANTIPATTERN-010-SETFORMVALUE-1ARG` |
 | F7  | `setValidity(flags, message, anchor)`: a flag set to `true` comes with a non-empty message, and the anchor is the internal focusable control               | `manual`                                      |
-| F8  | A boolean prop does not default to `true` — a string `"false"` assigned to the property parses as `true` on a form-associated component (`:2352-2353`); HTML attributes are coerced to a boolean first (`:3854-3856`)                  | `script-16:STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` |
 | F9  | Custom states for `:host(:state(invalid))` are declared in `@AttachInternals({ states: { … } })`                                                           | `manual`                                      |
+
+A boolean prop on a form-associated component does not default to `true`: [`decorators.md` P8](decorators.md#prop).
 
 Every form-associated component also reflects its `name` prop; that invariant is asserted by
 `scripts/__tests__/form-associated-contract.spec.mjs` (run it for any form-associated change).
@@ -129,11 +130,11 @@ A render is scheduled when a `@Prop` or `@State` is **assigned**. In-place mutat
 
 | #   | Rule                                                                                                                  | enforced-by                                |
 | --- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| R1  | Arrays are reassigned, never mutated (`push`, `pop`, `shift`, `unshift`, `splice`, `sort`, `reverse`)                  | `script-02:ANTIPATTERN-005-ARRAY-MUTATION` |
 | R2  | Objects are reassigned with spread; `obj.x = y`, `obj['x'] = y`, `delete obj.x`, `arr[i] = y` do not re-render          | `manual`                                   |
 | R3  | `@Watch` fires on assignment, not on mutation                                                                         | `manual`                                   |
 | R4  | A `@Watch` on a native attribute that is not a prop (`@Watch('aria-label')`) runs from `attributeChangedCallback` and does not re-render (`:3830-3835`); mirror the value into a `@State` rather than calling `forceUpdate()` | `manual`                                   |
-| R5  | No `forceUpdate()`                                                                                                    | `script-02:ANTIPATTERN-013-FORCEUPDATE`    |
+
+Array mutation is [`decorators.md` S4](decorators.md#state); `forceUpdate()` is [`lifecycle-host.md` LC6](lifecycle-host.md#lifecycle).
 
 What a watcher may write: [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md).
 

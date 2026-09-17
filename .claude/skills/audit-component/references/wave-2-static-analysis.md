@@ -23,21 +23,9 @@ Required vs optional file list lives in
 error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
 `STRUCTURE-UNGRADUATED` (info, hidden-folder marker).
 
-**TSX member order** (must match exactly — see `src/components/AGENTS.md` and [`stencil-compliance/references/decorators.md`](../../stencil-compliance/references/decorators.md#member-order-project-specific-overlay)):
+**TSX member order**: defined once, in [`component-structure.md` § TSX Class Member Order](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`).
 
-1. `@Prop({ reflect: true })` — JSDoc, defaults, enum types
-2. `@State()` — internal reactive state
-3. `@Element()` — host element ref
-4. `@AttachInternals()` — form internals (form elements only)
-5. `@Event()` — custom events with `cor` prefix
-6. Private fields (refs, IDs) — NOT decorated
-7. `@Watch()` — prop watchers (rule below)
-8. `@Listen()` — DOM event listeners
-9. Lifecycle (`connectedCallback` → `componentWillLoad` → `componentDidLoad` → `componentDidUpdate` → `disconnectedCallback`)
-10. Private methods
-11. `render()` — always last
-
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties (e.g., `inputElement.indeterminate`, `inputElement.checked`).
+**`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
 ### 2.2 TypeScript Strict Mode Audit
 

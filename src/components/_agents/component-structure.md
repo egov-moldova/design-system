@@ -186,7 +186,7 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 | --- | --- |
 | `my-component` prefix | Always **`mud-*`** prefix |
 | `@Prop({ reflect: true })` "use sparingly" | **Reflect most props** — variant, size, disabled, etc. |
-| Member order: Element → State → Props | `@Prop` → `@State` → `@Element` → `@AttachInternals` → `@Event` → `@Watch` → `@Listen` → Lifecycle → Private → `render()` |
+| Member order: Element → State → Props | The order in [§ TSX Class Member Order](#tsx-class-member-order) |
 | No token integration | Always use CSS custom properties from tokens |
 | No `::slotted()` patterns | Use `::slotted(*)` for slot-based components |
 | No `:host([attr])` patterns | Use `:host([variant='x'])`, `:host([size='y'])` |

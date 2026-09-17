@@ -570,3 +570,70 @@ describe('stencil-version rule', () => {
     );
   });
 });
+
+describe('stale-prefix rule: kebab and prose spellings', () => {
+  it('flags kebab tags, custom properties and the prefix named as a word, but not legacy paths or the vendor', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Render `<cor-button>`.\n\nSet `--cor-color-primary`.\n\nName events with the `cor` prefix.\n\nLegacy tags live under src/legacy/cor-accordion.\n\nVisit corlab-docs.example.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+});
+
+describe('lookaround rule: flags and fences', () => {
+  it('accepts grouped and long PCRE flags, judges each fenced command alone, and skips non-shell fences', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          '`grep -oP "a(?=b)" f`',
+          '`rg --perl-regexp "a(?=b)"`',
+          '```bash',
+          "rg -P 'a(?=b)' src",
+          "rg 'c(?!d)' src",
+          '```',
+          '```js',
+          'const re = /foo(?=bar)/;',
+          '```',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [[5, 'lookaround']],
+    );
+  });
+});
+
+describe('stencil-version rule: case and package spellings', () => {
+  const pkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+
+  it('flags an upper-case X and package-spelled claims above the pin, not the pin itself', () => {
+    const root = makeFixture({
+      'package.json': pkg(),
+      '_agents/x.md':
+        'Built for Stencil 4.X.\n\nNeeds `@stencil/core` `~4.46.0`.\n\nPinned: `@stencil/core` `~4.45.0`.\n\nInstall @stencil/core@4.47.1.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [3, 'stencil-version'],
+        [7, 'stencil-version'],
+      ],
+    );
+  });
+});

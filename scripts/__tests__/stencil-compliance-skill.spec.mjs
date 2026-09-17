@@ -6,7 +6,7 @@ import { describe, it } from 'node:test';
 import { ESLint } from 'eslint';
 
 import { PATTERNS, FILE_CHECKS } from '../audit/02-stencil-antipatterns.mjs';
-import { RULES } from '../audit/16-stencil-contract.mjs';
+import { GROUP_ORDER, RULES } from '../audit/16-stencil-contract.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SKILL = path.join(ROOT, '.claude/skills/stencil-compliance');
@@ -53,11 +53,64 @@ describe('stencil-compliance skill ↔ scripts', () => {
     });
     assert.deepEqual(off, []);
 
+    // A rule set to `{}`, `[]`, `false` or `null` is present but enforces nothing.
     const stylelint = JSON.parse(read('.stylelintrc.json')).rules;
+    const enabled = v =>
+      v === true ||
+      (Array.isArray(v)
+        ? v.length > 0 && v[0] !== null && v[0] !== false
+        : v !== null && typeof v === 'object' && Object.keys(v).length > 0);
     assert.deepEqual(
-      styleRules.filter(r => !stylelint[r]),
+      styleRules.filter(r => !enabled(stylelint[r])),
       [],
     );
+  });
+
+  it('the rule index repeats each reference row exactly, and every reference row is indexed', () => {
+    // Reference rows: | ID | rule | `enforced-by` |   Index rows: | Area | ID: rule | `enforced-by` | ref |
+    const norm = t => t.replace(/\s+/g, ' ').trim();
+    const references = new Map();
+    for (const f of fs.readdirSync(path.join(SKILL, 'references'))) {
+      const text = fs.readFileSync(path.join(SKILL, 'references', f), 'utf8');
+      for (const m of text.matchAll(/^\|\s*([A-Z]+\d+)\s*\|\s*(.+?)\s*\|\s*`([^`]+)`\s*\|\s*$/gm)) {
+        assert.ok(!references.has(m[1]), `rule id ${m[1]} is defined in more than one reference table`);
+        references.set(m[1], { rule: norm(m[2]), enforcedBy: m[3] });
+      }
+    }
+    const skill = fs.readFileSync(path.join(SKILL, 'SKILL.md'), 'utf8');
+    const index = new Map();
+    for (const m of skill.matchAll(/^\|[^|\n]+\|\s*([A-Z]+\d+):\s*(.+?)\s*\|\s*`([^`]+)`\s*\|.*\|\s*$/gm)) {
+      index.set(m[1], { rule: norm(m[2]), enforcedBy: m[3], row: m[0] });
+    }
+    assert.ok(references.size > 0 && index.size > 0, 'no rule rows parsed — check the table grammar');
+    assert.deepEqual(
+      [...references.keys()].filter(id => !index.has(id)).sort(),
+      [],
+      'reference rows missing from the index',
+    );
+    // An index-only row must point at the canonical project doc it stands for.
+    assert.deepEqual(
+      [...index]
+        .filter(([id, r]) => !references.has(id) && !r.row.includes('component-structure.md'))
+        .map(([id]) => id),
+      [],
+      'index rows with no reference row and no canonical link',
+    );
+    assert.deepEqual(
+      [...references]
+        .filter(([id, r]) => index.get(id).rule !== r.rule || index.get(id).enforcedBy !== r.enforcedBy)
+        .map(([id]) => id),
+      [],
+      'index rows whose text or enforced-by differs from the reference',
+    );
+  });
+
+  it('script 16 member order matches the canonical decorator order', () => {
+    const doc = read('src/components/_agents/component-structure.md');
+    const section = doc.split(/^## TSX Class Member Order$/m)[1].split(/^#{2,3} /m)[0];
+    const documented = [...section.matchAll(/^\d+\.\s+`@(\w+)\(/gm)].map(m => m[1]);
+    assert.ok(documented.length > 0, 'no decorators parsed from the member-order list');
+    assert.deepEqual(GROUP_ORDER.slice(0, documented.length), documented);
   });
 });
 
@@ -65,6 +118,13 @@ describe('stencil-compliance skill ↔ installed Stencil', () => {
   const pkg = JSON.parse(read('package.json'));
   const stencilRange = pkg.dependencies?.['@stencil/core'] ?? pkg.devDependencies?.['@stencil/core'];
   const [, major, minor] = stencilRange.match(/(\d+)\.(\d+)/);
+
+  it('version-delta.md states the pinned range package.json declares', () => {
+    const delta = fs.readFileSync(path.join(SKILL, 'references/version-delta.md'), 'utf8');
+    const pinned = delta.match(/^Pinned: `@stencil\/core` `([^`]+)`/m);
+    assert.ok(pinned, 'no "Pinned:" line in version-delta.md');
+    assert.equal(pinned[1], stencilRange);
+  });
 
   it('version-delta.md carries a section for the pinned major.minor', () => {
     const delta = fs.readFileSync(path.join(SKILL, 'references/version-delta.md'), 'utf8');

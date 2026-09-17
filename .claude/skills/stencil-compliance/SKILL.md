@@ -104,7 +104,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Lifecycle | LC7: Light-DOM children present in the markup are readable in `componentWillLoad`; children appended after load reach the component only through `slotchange` | `manual` | [lifecycle-host LC7](references/lifecycle-host.md#lifecycle) |
 | Lifecycle | LC8: Consumer code awaits `el.componentOnReady()` before calling a `@Method` | `manual` | [lifecycle-host LC8](references/lifecycle-host.md#lifecycle) |
 | Host | H1: `render()` returns `<Host>` at its root | `eslint:@stencil/render-returns-host` | — |
-| Host | H2: Host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove` | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` | `ANTIPATTERN-002-HOST-CLASSLIST` |
+| Host | H2: State-driven host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove`; an imperative class change is only for an external event that does not re-render | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` | `ANTIPATTERN-002-HOST-CLASSLIST` |
 | Host | H3: No inline `style={…}` in JSX, on `<Host>` or elsewhere — use classes and CSS custom properties | `script-02:ANTIPATTERN-001-INLINE-STYLE` | `ANTIPATTERN-001-INLINE-STYLE` |
 | Host | H4: ARIA on the host goes through `<Host role=… aria-…>` | `manual` | [lifecycle-host H4](references/lifecycle-host.md#host) |
 | Host | H5: Exactly one `<Host>` per render | `manual` | [lifecycle-host H5](references/lifecycle-host.md#host) |
@@ -159,9 +159,10 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Public API | API4: `setAssetPath()` belongs to consumer apps and tests, not components | `manual` | [functional-api API4](references/functional-api.md#public-api) |
 | Public API | API5: Batched DOM reads and writes go through `readTask()` / `writeTask()` | `manual` | [functional-api API5](references/functional-api.md#public-api) |
 | Public API | API6: Consumers call `componentOnReady()` on the element; components never override it | `manual` | [functional-api API6](references/functional-api.md#public-api) |
-| @Watch | W1: what a watcher may do — [`component-structure.md` § @Watch Rule](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-WATCH-ASYNC` | `STENCIL-WATCH-ASYNC` |
-| @Watch | W2: a watcher writes its watched prop only as a literal validation fallback | `script-16:STENCIL-WATCH-WRITES-WATCHED` | `STENCIL-WATCH-WRITES-WATCHED` |
-| Member order | MO1: decorator groups in the canonical order — [`component-structure.md` § TSX Class Member Order](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-MEMBER-ORDER` | `STENCIL-MEMBER-ORDER` |
+| @Watch | W1: a watcher is not `async` — [`component-structure.md` § @Watch Rule](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-WATCH-ASYNC` | `STENCIL-WATCH-ASYNC` |
+| @Watch | W2: a watcher writes its watched prop only as a literal validation fallback — [`component-structure.md` § @Watch Rule](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-WATCH-WRITES-WATCHED` | `STENCIL-WATCH-WRITES-WATCHED` |
+| @Watch | W3: a literal write inside an `if` is a genuine validation fallback, and the watcher does only what the allowlist names | `manual` | [component-structure @Watch Rule](../../../src/components/_agents/component-structure.md) |
+| Member order | MO1: decorator groups follow the canonical order and `render()` is last — [`component-structure.md` § TSX Class Member Order](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-MEMBER-ORDER` | `STENCIL-MEMBER-ORDER` |
 
 ## Failure modes
 

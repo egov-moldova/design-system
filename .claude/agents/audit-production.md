@@ -116,18 +116,7 @@ needed; just confirm the script reported `errors: 0`.
 
 ### 1.2 TSX Member Order
 
-Verify `mud-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
-
-1. `@Prop({ reflect: true })` — public props (with JSDoc, defaults, enums)
-2. `@State()` — internal reactive state
-3. `@Element()` — host element reference
-4. `@AttachInternals()` — form internals (form elements only)
-5. `@Event()` — custom events
-6. `@Watch()` — prop watchers (rule below)
-7. `@Listen()` — DOM event listeners
-8. Lifecycle: `componentWillLoad` → `componentDidLoad` → `componentDidUpdate`
-9. Private methods and refs
-10. `render()` — always last
+Member order is defined once, in [`component-structure.md` § TSX Class Member Order](../../src/components/_agents/component-structure.md), and checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`).
 
 **`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 
@@ -163,8 +152,10 @@ Mechanical part covered by Fast Path scripts:
 - `14-component-contract` exposes the full prop list with types + defaults
 
 Judgment that STAYS here: are enum props using the right enum type? Do
-booleans default to `false` (project convention, not script-enforced)? Is
-`@Watch()` used only for syncing native DOM properties (not state cascades)?
+booleans default to `false` (project convention; on a form-associated component
+`STENCIL-FORM-BOOLEAN-DEFAULT-TRUE` reports it)? Is a literal write to the watched
+prop inside an `if` really a validation fallback (the one `@Watch` question the
+script leaves to review — [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md))?
 
 ### 1.5 Slot Validation
 

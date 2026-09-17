@@ -25,10 +25,11 @@ Reference: <https://stenciljs.com/docs/templating-jsx>.
 | J7  | `attr:` / `prop:` prefixes force an attribute or a property write (`<input prop:checked={…}>`); rare               | `manual`                                     |
 | J8  | A JSX node stored in a variable is not rendered twice — use a render function                                      | `manual`                                     |
 | J9  | No `innerHTML` assignment                                                                                          | `script-02:ANTIPATTERN-SECURITY-INNERHTML`   |
-| J10 | No inline `style={…}`                                                                                              | `script-02:ANTIPATTERN-001-INLINE-STYLE`     |
 | J11 | `class=`, never React's `className=`                                                                               | `script-02:ANTIPATTERN-023-CLASSNAME`        |
 | J12 | `render()` is pure: no DOM writes, no state writes                                                                 | `manual`                                     |
 | J13 | Icons render through `<mud-icon name="…">`, not inline `<svg>`                                                     | `script-02:ANTIPATTERN-021-RAW-SVG`          |
+
+No inline `style={…}`: [`lifecycle-host.md` H3](lifecycle-host.md#host).
 
 ```tsx
 // ✅ Keyed list

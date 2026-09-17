@@ -69,16 +69,7 @@ src/components/mud-[name]/
 
 ## Quick Reference — TSX Member Order
 
-1. `@Prop({ reflect: true })` — public props
-2. `@State()` — internal state
-3. `@Element()` — host reference
-4. `@AttachInternals()` — form internals
-5. `@Event()` — custom events
-6. `@Watch()` — prop watchers (restricted use)
-7. `@Listen()` — DOM listeners
-8. Lifecycle methods
-9. Private methods
-10. `render()` — always last
+Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`).
 
 ---
 

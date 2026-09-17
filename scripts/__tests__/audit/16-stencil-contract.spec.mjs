@@ -131,6 +131,56 @@ export class P {
     assert.deepEqual(codes(cmp('this.items.map(i => <li key={i}>{i}</li>)')), []);
   });
 
+  it('flags a keyless element returned by a member passed to .map()', () => {
+    const cmp = member => `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop() items: string[] = [];
+  ${member}
+  render() { return <Host>{this.items.map(this.renderItem)}</Host>; }
+}`;
+    assert.deepEqual(codes(cmp('private renderItem = (i: string) => <li>{i}</li>;')), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('private renderItem(i: string) { return <li>{i}</li>; }')), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('private renderItem = (i: string) => <li key={i}>{i}</li>;')), []);
+  });
+
+  it('flags a member declared after render()', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  render() { return <Host>{this.glyph()}</Host>; }
+  private glyph() { return <span />; }
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-MEMBER-ORDER']);
+  });
+
+  it('treats a negative number or undefined as a literal validation fallback', () => {
+    const cmp = body => `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop({ mutable: true }) max?: number = 10;
+  ${body}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(
+      codes(cmp(`@Watch('max') v(n?: number) { if (n !== undefined && n < 0) { this.max = -1; } }`)),
+      [],
+    );
+    assert.deepEqual(codes(cmp(`@Watch('max') v(n?: number) { if (Number.isNaN(n)) { this.max = undefined; } }`)), []);
+  });
+
+  it('flags a boolean | undefined prop defaulting to true on a form-associated component', () => {
+    const src = `@Component({ tag: 'mud-probe', shadow: true, formAssociated: true })
+export class P {
+  @Prop() clearable: boolean | undefined = true;
+  @AttachInternals() internals!: ElementInternals;
+  formResetCallback() {} formDisabledCallback() {} formStateRestoreCallback() {}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(codes(src), ['STENCIL-FORM-BOOLEAN-DEFAULT-TRUE']);
+  });
+
+  it('passes on the contract finding when the file has no component class', () => {
+    assert.deepEqual(codes('export const helper = () => 1;'), ['CONTRACT-NO-COMPONENT-CLASS']);
+  });
+
   it('reports a component it cannot find instead of passing it as clean', () => {
     const run = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-doesnotexist', '--json'], { encoding: 'utf8' });
     const envelope = JSON.parse(run.stdout);
