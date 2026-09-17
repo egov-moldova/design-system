@@ -25,8 +25,8 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
     assert.equal(new Set(ids).size, ids.length);
   });
 
-  it('Wave A has 7 scripts (the no-build-required ones)', () => {
-    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'A').length, 7);
+  it('Wave A has 8 scripts (the no-build-required ones)', () => {
+    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'A').length, 8);
   });
 
   it('Wave B has 3 scripts (build/coverage/token-export-dependent)', () => {

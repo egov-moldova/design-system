@@ -122,6 +122,7 @@
     "audit:bundle-size": "node scripts/audit/08-bundle-size.mjs",
     "audit:token-diff": "node scripts/audit/13-token-diff.mjs",
     "audit:contract": "node scripts/audit/14-component-contract.mjs",
+    "audit:stencil-contract": "node scripts/audit/16-stencil-contract.mjs",
     "audit:a11y-tree": "node scripts/audit/09-a11y-tree.mjs",
     "audit:contrast-pairs": "node scripts/audit/10-contrast-pairs.mjs",
     "audit:pixel-diff": "node scripts/audit/11-pixel-diff-states.mjs",

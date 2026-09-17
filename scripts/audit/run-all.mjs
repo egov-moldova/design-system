@@ -14,6 +14,7 @@
  *     05-story-exports
  *     07-integration-usage
  *     14-component-contract
+ *     16-stencil-contract
  *
  *   Wave B (parallel, depend on existing build artifacts):
  *     06-test-coverage         (reads coverage/coverage-summary.json)
@@ -77,7 +78,8 @@ Options:
 Script ids:
   Wave A (fast, no browser, no build):
     01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
-    05 story-exports, 07 integration-usage, 14 component-contract
+    05 story-exports, 07 integration-usage, 14 component-contract,
+    16 stencil-contract
   Wave B (depends on existing build artifacts):
     06 test-coverage, 08 bundle-size, 13 token-diff
   Wave C (browser; needs Storybook + Playwright):
@@ -124,6 +126,14 @@ const AUDIT_SCRIPTS = [
     wave: 'A',
     file: '14-component-contract.mjs',
     name: 'component-contract',
+    perComponent: true,
+    requiresBuild: false,
+  },
+  {
+    id: '16',
+    wave: 'A',
+    file: '16-stencil-contract.mjs',
+    name: 'stencil-contract',
     perComponent: true,
     requiresBuild: false,
   },

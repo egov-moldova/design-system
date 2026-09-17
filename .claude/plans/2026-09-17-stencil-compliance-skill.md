@@ -418,7 +418,7 @@ git commit -m "feat(audit): tag antipattern rules by owner and check :host displ
 - Consumes: `extractContractFromTsx(tsxPath, componentName) → { findings, contract, componentName }` from `14-component-contract.mjs:142` (`contract.shadow: boolean`, `contract.formAssociated: boolean`, `contract.props[]: { name, type, default, … }`); `createSourceFile`, `getComponentClass`, `getDecorators`, `getDecoratorName`, `getMemberName`, `getLineNumber` from `lib/ts-parser.mjs`; `parseAuditArgs`, `defaultUsage` from `lib/cli-args.mjs`; `resolveComponentPaths`, `listAllComponents`, `relativeToRepo` from `lib/component-paths.mjs`; `buildResult`, `emit`, `finding` from `lib/json-output.mjs`; `EXIT_INTERNAL`, `exitCodeFromSummary` from `lib/exit-codes.mjs`.
 - Produces: `export const RULES` — array of `{ code, severity, ruleScope: 'stencil' }`; `export function checkSource(tsxPath, componentName) → finding[]`; codes `STENCIL-SHADOW-REQUIRED`, `STENCIL-FORM-CALLBACKS`, `STENCIL-FORM-BOOLEAN-DEFAULT-TRUE`, `STENCIL-MEMBER-ORDER`, `STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`, `STENCIL-MAP-KEY`. Task 3.2 reads `RULES`.
 
-- [ ] **Step 1: Write the failing spec**
+- [x] **Step 1: Write the failing spec**
 
 `scripts/__tests__/audit/16-stencil-contract.spec.mjs`:
 
@@ -529,12 +529,12 @@ export class P {
 });
 ```
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `node --test scripts/__tests__/audit/16-stencil-contract.spec.mjs`
 Expected: FAIL — `Cannot find module '…/scripts/audit/16-stencil-contract.mjs'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 `scripts/audit/16-stencil-contract.mjs`:
 
@@ -763,12 +763,12 @@ export { TOOL };
 
 Before relying on `target.paths.tsx` / `target.exists.tsx` / `target.found`, confirm the shape at `scripts/audit/lib/component-paths.mjs:70` (`resolveComponentPaths`); script 02 reads the same fields at `02-stencil-antipatterns.mjs:555-559`.
 
-- [ ] **Step 4: Run the spec to verify it passes**
+- [x] **Step 4: Run the spec to verify it passes**
 
 Run: `node --test scripts/__tests__/audit/16-stencil-contract.spec.mjs`
 Expected: PASS, 7 tests.
 
-- [ ] **Step 5: Register in `run-all.mjs`** — add after the `14` entry and list `16 stencil-contract` in the Wave A line of the header comment:
+- [x] **Step 5: Register in `run-all.mjs`** — add after the `14` entry and list `16 stencil-contract` in the Wave A line of the header comment:
 
 ```js
   {
@@ -785,7 +785,7 @@ Add `16 stencil-contract` to the USAGE "Script ids" block (`:79-81`). In `script
 
 Run: `node --test scripts/__tests__/audit/run-all.spec.mjs` → PASS; `node scripts/audit/run-all.mjs mud-button --only 16 --json | head -20` → envelope containing `stencil-contract`.
 
-- [ ] **Step 6: Measure on the real components (tolerance 0 false positives)**
+- [x] **Step 6: Measure on the real components (tolerance 0 false positives)**
 
 ```bash
 node scripts/audit/16-stencil-contract.mjs --all --json > /tmp/s16.json; echo "exit $?"
@@ -804,7 +804,7 @@ reported; a false positive is a classifier bug — add a spec case for it and fi
 Record the per-code counts
 under "Measured".
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 node --test "scripts/__tests__/**/*.spec.mjs"
@@ -1423,6 +1423,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - #16/EL6 "host children are not available in `componentWillLoad`": **false for markup.** Probe (built with `yarn dx:stencil:once`, served from the repo root, Playwright console), `this.host.children.length` inside `componentWillLoad`: case 1 parser-inserted markup → `1`; case 2 element appended empty, child appended after `componentOnReady()` → `0`; case 3 markup via `innerHTML` on a connected container → `1`. Light-DOM children present in the markup are readable in `componentWillLoad`; children added after load reach the component only through `slotchange`. Temporary `componentWillLoad` removed (`git diff --quiet -- src/components/mud-accordion` → exit 0), `probe.html` deleted.
 - Task 1.1 Step 3: `ANTIPATTERN-HOST-DISPLAY` over `--all` → 0. Independent check (brace-balanced body of the first bare `:host` rule, nested rules removed, in each of the 55 `src/components/*/*.css`) → every file declares `display`; the 0 is not a miss.
 - Task 1.1 Step 4: `ANTIPATTERN-RAW-PIXELS` over `--all` → 27 (was 84), equal to the hand-counted "other" group.
+- Task 1.2 Step 6: `node scripts/audit/16-stencil-contract.mjs --all --json` → exit 1, `componentsScanned` 46 · MEMBER-ORDER 20 · MAP-KEY 10 · FORM-BOOLEAN-DEFAULT-TRUE 5 (exactly Decision 5's props) · WATCH-ASYNC 3 (`mud-icon.tsx:86,92`, `mud-logo.tsx:68`) · WATCH-WRITES-WATCHED 1 (`mud-pagination.tsx:163`) · FORM-CALLBACKS 0 (neither `mud-button` nor `mud-service-button`). Equal to § Measured. Every hit opened: the 20 MEMBER-ORDER hits each show a group out of `component-structure.md:35-46` order in the class's member sequence (19 × `@Watch`/`@Listen` or `@State` after a later group, `mud-separator.tsx` `@Element` before `@Prop`); the 10 MAP-KEY roots carry no `key` (none within 40 lines of the `.map(`). 0 false positives.
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan
