@@ -67,7 +67,7 @@ Phased verification gates, common troubleshooting, change-scope and docs-audienc
 | Problem | Cause | Solution |
 | --- | --- | --- |
 | Component blank in Storybook | Stencil not built | `yarn build` or ensure `yarn sp.dev.watch` running |
-| Story missing from sidebar | Wrong `title` or extension | Verify `title: 'Atoms/CorButton'`, file ends `.stories.ts` |
+| Story missing from sidebar | Wrong `title` or extension | Verify `title: 'Atoms/MudButton'`, file ends `.stories.ts` |
 | Token CSS var has no effect | Token not built or wrong name | `yarn tokens.build`, check `--var-name` in `dist/mud/tokens/*.css` |
 | `::slotted(*)` not applying | Content not direct child | Ensure slotted element is direct child of `<mud-*>` |
 | Figma extraction returns empty | Wrong node ID or deeply nested | Try parent node ID, verify with `mcp__figma__get_screenshot` first |

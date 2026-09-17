@@ -43,10 +43,10 @@ error codes `STRUCTURE-MISSING-REQUIRED` / `STRUCTURE-MISSING-TOKENS` /
 
 Cross-reference [`stencil-compliance/references/decorators.md`](../../stencil-compliance/references/decorators.md):
 
-- All `@Element()` properties use `!` assertion: `@Element() host!: HTMLCorXElement;`
+- All `@Element()` properties use `!` assertion: `@Element() host!: HTMLMudXElement;`
 - All `@Event()` properties use `!` assertion: `@Event() mudChange!: EventEmitter<T>;`
 - All `@AttachInternals()` use `!` assertion
-- Element type uses generated `HTMLCorXElement` (not bare `HTMLElement`)
+- Element type uses generated `HTMLMudXElement` (not bare `HTMLElement`)
 - Object maps have explicit `Record<string, T>` annotations
 - Optional chaining uses nullish coalescing: `?.tagName?.toLowerCase() ?? ''`
 - Story render functions have typed args
@@ -167,7 +167,7 @@ Read `.stories.ts` (already loaded) and verify:
 - CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
 - `component: 'mud-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
-- `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
+- `title` follows atomic hierarchy: `Atoms/MudName`, `Molecules/MudName`, etc.
 - No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
 
 **Type-safety anti-patterns** (flag any of these):

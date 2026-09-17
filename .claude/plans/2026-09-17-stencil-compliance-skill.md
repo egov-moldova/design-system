@@ -1043,7 +1043,7 @@ git commit -m "docs(agents): point audit consumers at the stencil-compliance run
 - Consumes: `isDocScope`, `isNodeVersionScope`, `findCodeSpans`, `makeHit`, `dependencyMajor`-style reading of `pkg`.
 - Produces: rule IDs `stale-prefix`, `lookaround`, `stencil-version`.
 
-- [ ] **Step 1: Write the failing specs** (append to `check-ai-docs.spec.mjs`, reusing its `makeFixture`/`pkgJson`):
+- [x] **Step 1: Write the failing specs** (append to `check-ai-docs.spec.mjs`, reusing its `makeFixture`/`pkgJson`):
 
 ```js
 describe('stale-prefix rule', () => {
@@ -1108,7 +1108,7 @@ different major ("Stencil 5 is in beta"), a lower minor ("Stencil 4.38 added …
 
 Run: `node --test scripts/__tests__/check-ai-docs.spec.mjs` → FAIL on the three new describes.
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 ```js
 // ---------------------------------------------------------------------------
@@ -1215,7 +1215,7 @@ Wire into `checkAiDocs`:
 Add the three rules to the header list (`:13-40`). Run: `node --test scripts/__tests__/check-ai-docs.spec.mjs` → PASS.
 
 
-- [ ] **Step 3: Sweep the repo**
+- [x] **Step 3: Sweep the repo**
 
 ```bash
 node scripts/docs/check-ai-docs.mjs | grep -E "\[(stale-prefix|lookaround|stencil-version)\]" > /tmp/sweep.txt; wc -l < /tmp/sweep.txt
@@ -1228,7 +1228,7 @@ not exist gets the real name instead (e.g. `CorInput` → `MudTextInput`, `CorSe
 `stencil-version` hits outside the skill are edited by hand. Re-run until the checker prints
 `check-ai-docs: clean`.
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```bash
 npx prettier --write scripts/docs/check-ai-docs.mjs scripts/__tests__/check-ai-docs.spec.mjs
@@ -1427,6 +1427,7 @@ Task 0.2, read from `node_modules/@stencil/core/internal/client/index.js` (4.45.
 - Task 1.3 Step 1: gate held without re-running the tools — `git diff --quiet c4b3214 HEAD -- src eslint.config.mjs .stylelintrc.json` → exit 0, so no input to either count changed since Task 0.1. Step 2: `mud-stepper.tsx:128` and `mud-tooltip.tsx:747` pass the host to DOM APIs typed `Element`; the narrowed type is not assignable there (its `ariaLabel?: string` conflicts with `Element.ariaLabel: string | null`, the #88 names), so both casts follow `mud-cookie-banner.tsx:164` (`this.host as unknown as Element`) — type-only. Step 4: the two stylelint rules, probed on a scratch CSS file inside `src/`, fire on `!important`, `transition: all` and `transition-property: all`, and not on `allow`.
 - Task 2.3: committed before Task 2.2 — the rewritten `SKILL.md` links `references/version-delta.md`, so the references commit must land first for each commit to pass the docs checker. The Task 3.2 parity spec, run from a scratch copy against the rewritten skill, passed 7/7 before either commit. Facts checked while writing: stenciljs.com version selector defaults to v4.43; `npm view @stencil/core dist-tags` → `latest: 4.45.0`, `beta: 5.0.0-beta.12`; the Yarn patch touches only `compiler/stencil.js`; watchers are invoked without `await` (`internal/client/index.js:3602-3605`); a native-attribute `@Watch` runs from `attributeChangedCallback` (`:3830-3835`); script 14 extracts `tag` but does not check its prefix (C2 is `manual`).
 - Task 2.4 (implementer subagent): 8 files edited; `output-templates.md` and `must-enforce-checklist.md` had no matching claim. Left for follow-up, not in this task's rules: `optimize-prompt/references/canonical-defaults.md:25,55,57,282` cite `_agents/anti-patterns.md` #14, #19, #20, #12 for rules those items do not state; `.claude/agents/audit-production.md:132` still restates the pre-Decision-2 `@Watch` rule.
+- Task 3.1 Step 3: sweep found 72 hits (70 `stale-prefix`, 2 `stencil-version`, 0 `lookaround`) in 16 files. 66 rename pairs over 14 files applied by `mechanical-worker` after an existence check per new name; placeholders (`MudName`, `mudX`, `HTMLMudXElement`, `MudButtonArgs`) kept as placeholders; `CorInput` → `MudTextInput`, `CorSelectInput` → `MudSelect`; `CorCard` is prose proposing a new component (renamed, not deleted); catalog rows `CorNotification` and `CorProgressTracker` deleted (no component). The worker also moved `cor<PascalComponent>` → `mud<PascalComponent>` in `canonical-defaults.md:141` (same line, outside its list; kept). The two `Stencil 4.x` claims (`optimize-prompt/SKILL.md:3`, `INTEGRATION.md:417`) now say `Stencil`.
 - B3: `parsePropertyValue` form-associated boolean branch `:2352-2353` (`return propValue === "" || !!propValue`, so `"false"` → `true`); call sites `:3545` (`setValue`) and `:3728` (attribute setter).
 
 ## Not verified by this plan

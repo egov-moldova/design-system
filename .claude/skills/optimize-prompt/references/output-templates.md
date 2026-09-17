@@ -58,7 +58,7 @@ For brand-new components without an existing implementation.
 ### Events
 | name | payload type | trigger |
 |------|--------------|---------|
-| corX | <Component><Action>Detail (exported from <name>.types.ts) | <when> |
+| mudX | <Component><Action>Detail (exported from <name>.types.ts) | <when> |
 
 ### Slots
 | name | required | empty-detection | allowed tags |
@@ -103,7 +103,7 @@ For brand-new components without an existing implementation.
 - Pixel-perfect against Figma nodes <list>, all states + sizes + variants in both light and dark mode
 
 ### Functional
-- <interaction list — clicks fire corX, keyboard activates, focus visible, etc.>
+- <interaction list — clicks fire mudX, keyboard activates, focus visible, etc.>
 
 ### A11y (WCAG 2.1 AA)
 (auto-injected block per canonical-defaults.md § 5)

@@ -25,7 +25,7 @@ All Stencil decorator properties MUST use `!` (definite assignment assertion). S
 ```typescript
 // ✅ CORRECT
 @Element() host!: HTMLElement;
-@Event() corChange!: EventEmitter<boolean>;
+@Event() mudChange!: EventEmitter<boolean>;
 @AttachInternals() internals!: ElementInternals;
 
 // ❌ WRONG — "Property has no initializer"
@@ -45,9 +45,9 @@ Prefer a component-specific `Args` type/interface when practical. Use `(args: an
 
 ```typescript
 // ✅ PREFERRED
-type CorButtonArgs = { label: string };
-const renderComponent = (args: CorButtonArgs) => /*html*/ `<mud-button>${args.label}</mud-button>`;
-export const Default = { render: (args: CorButtonArgs) => /*html*/ `...` };
+type MudButtonArgs = { label: string };
+const renderComponent = (args: MudButtonArgs) => /*html*/ `<mud-button>${args.label}</mud-button>`;
+export const Default = { render: (args: MudButtonArgs) => /*html*/ `...` };
 
 // ✅ ACCEPTABLE FALLBACK
 const renderComponentFallback = (args: any) => /*html*/ `<mud-button>${args.label}</mud-button>`;
@@ -148,7 +148,7 @@ declare module '<package-name>';
 
 ```typescript
 @Element() host!: HTMLElement;
-@Event() corChange!: EventEmitter<T>;
+@Event() mudChange!: EventEmitter<T>;
 @AttachInternals() internals!: ElementInternals;
 const render = (args: any) => /*html*/ `...`;
 const map: Record<string, number> = { ... };

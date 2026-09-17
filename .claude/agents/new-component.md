@@ -130,7 +130,7 @@ Follow `src/components/AGENTS.md` directly.
 
 Project-specific requirements:
 
-- `!` on all decorator props: `@Element() host!: HTMLElement`, `@Event() corChange!: EventEmitter<T>`
+- `!` on all decorator props: `@Element() host!: HTMLElement`, `@Event() mudChange!: EventEmitter<T>`
 - `Record<string, T>` for size/variant maps
 - `?? ''` after optional chaining
 

@@ -498,3 +498,75 @@ describe('review fixes', () => {
     }
   });
 });
+
+describe('stale-prefix rule', () => {
+  it('flags every spelling of the retired prefix in doc scope', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'Emit `corChange`.\n\nExtends `CorInput`.\n\nType `HTMLCorButtonElement`.\n\nJSX `onCorToggle`.\n\nCorlab is the vendor.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [
+        ['_agents/x.md', 1, 'stale-prefix'],
+        ['_agents/x.md', 3, 'stale-prefix'],
+        ['_agents/x.md', 5, 'stale-prefix'],
+        ['_agents/x.md', 7, 'stale-prefix'],
+      ],
+    );
+  });
+
+  it('ignores plans', () => {
+    const root = makeFixture({ 'package.json': pkgJson(), '.claude/plans/p.md': 'Grep for `corChange`.\n' });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});
+
+describe('lookaround rule', () => {
+  it('flags a lookaround inside a code span unless the span enables PCRE2', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        [
+          '| Q2 | Grep `@Method\\(\\)\\s+(?!async)` |',
+          '`rg "foo(?=bar)"`',
+          '`rg --pcre2 "foo(?!bar)"`',
+          '`rg -P "(?<!a)b"`',
+          '`rg "(?<name>ab)c"`',
+          'Prose (?!x) outside code.',
+        ].join('\n') + '\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'lookaround'],
+        [2, 'lookaround'],
+      ],
+    );
+  });
+});
+
+describe('stencil-version rule', () => {
+  const pkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { '@stencil/core': '~4.45.0' },
+    });
+
+  it('flags a Stencil version claim that differs from the pinned major.minor', () => {
+    const root = makeFixture({
+      'package.json': pkg(),
+      '_agents/x.md':
+        'Built for Stencil 4.x.\n\nNeeds Stencil 4.46.\n\nStencil 4.45 is pinned.\n\nStencil 5 is in beta.\n\nStencil 4.38 added serializers.\n\nThe Stencil 4 harness was retired.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stencil-version'],
+        [3, 'stencil-version'],
+      ],
+    );
+  });
+});

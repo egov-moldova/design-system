@@ -138,7 +138,7 @@ For **layout** archetype:
 
 ## 7. Event naming + payload
 
-**Canonical event name format:** `cor<PascalComponent><PascalAction>`. Examples: `corClick`, `corChange`, `corOpen`, `corClose`, `corSelect`, `corDismiss`, `corNavigate`.
+**Canonical event name format:** `mud<PascalComponent><PascalAction>`. Examples: `mudClick`, `mudChange`, `mudOpen`, `mudClose`, `mudSelect`, `mudDismiss`, `mudNavigate`.
 
 **Payload type MUST be exported** from `<component>.types.ts` as `<Component><Action>Detail`. Even single-value payloads use a typed interface, not raw `string` / `number`.
 
@@ -150,7 +150,7 @@ export interface ButtonClickDetail {
 }
 
 // mud-button.tsx
-@Event({ composed: true, bubbles: true }) corClick!: EventEmitter<ButtonClickDetail>;
+@Event({ composed: true, bubbles: true }) mudClick!: EventEmitter<ButtonClickDetail>;
 ```
 
 **Opt-out:** native events (`click`, `change`, `input`) when the component is Pattern A and the slotted element bubbles them naturally. Document the choice in API → Events.

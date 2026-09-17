@@ -30,6 +30,12 @@
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
  *                     baked into `.claude/settings.json`.
+ *   stale-prefix   — a retired `cor`/`Cor`/`HTMLCor`/`onCor` component identifier
+ *                     in doc scope; the prefix is `mud`.
+ *   lookaround     — a lookahead/lookbehind in a code span or fence without
+ *                     `--pcre2`/`-P`; ripgrep's default engine rejects it.
+ *   stencil-version — a `Stencil 4.x` claim, or a minor above the
+ *                     `@stencil/core` pin, for the pinned major.
  *
  * Exit codes: 0 clean, 1 one or more hits, 2 internal error (e.g. an
  * unreadable or malformed package.json).
@@ -674,6 +680,105 @@ function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: stale-prefix
+// ---------------------------------------------------------------------------
+
+// The component prefix was renamed; a `cor`-prefixed identifier in agent docs is stale.
+// `src/legacy` still defines `Cor*` classes; agent docs do not document it.
+// `Corlab` (lowercase after the prefix) is the vendor name and does not match.
+const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z]|HTMLCor[A-Z]/g;
+
+function checkStalePrefix(relPath, lines) {
+  const hits = [];
+  lines.forEach((line, i) => {
+    for (const m of line.matchAll(STALE_PREFIX)) {
+      hits.push(
+        makeHit(relPath, i + 1, 'stale-prefix', `retired component prefix in \`${m[0]}…\`; use the mud prefix`),
+      );
+      break;
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
+// Rule: lookaround
+// ---------------------------------------------------------------------------
+
+// ripgrep's default engine rejects lookahead/lookbehind ("regex parse error"),
+// and the Grep tool is ripgrep-backed. Named groups `(?<name>` are supported.
+const LOOKAROUND = /\(\?(?:[=!]|<[=!])/;
+const PCRE2_FLAG = /(?:^|\s)(?:--pcre2|-P)(?:\s|$)/;
+
+function checkLookaround(relPath, lines) {
+  const hits = [];
+  let inFence = false;
+  let fenceHasPcre = false;
+  lines.forEach((line, i) => {
+    if (/^\s*(```|~~~)/.test(line)) {
+      inFence = !inFence;
+      fenceHasPcre = false;
+      return;
+    }
+    if (inFence) {
+      if (PCRE2_FLAG.test(line)) fenceHasPcre = true;
+      if (LOOKAROUND.test(line) && !fenceHasPcre && !PCRE2_FLAG.test(line)) {
+        hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
+      }
+      return;
+    }
+    for (const span of findCodeSpans(line)) {
+      if (LOOKAROUND.test(span.content) && !PCRE2_FLAG.test(span.content)) {
+        hits.push(makeHit(relPath, i + 1, 'lookaround', 'lookaround needs `--pcre2`; ripgrep rejects it'));
+        break;
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
+// Rule: stencil-version
+// ---------------------------------------------------------------------------
+
+const STENCIL_CLAIM = /\bStencil\s+v?(\d+)(?:\.(\d+|x))?/gi;
+
+function pinnedMajorMinor(pkg, name) {
+  const range = pkg.dependencies?.[name] ?? pkg.devDependencies?.[name];
+  const m = typeof range === 'string' ? range.match(/(\d+)\.(\d+)/) : null;
+  return m ? { major: Number(m[1]), minor: Number(m[2]) } : null;
+}
+
+function checkStencilVersion(relPath, lines, pin) {
+  const hits = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    if (inFence) return;
+    for (const m of line.matchAll(STENCIL_CLAIM)) {
+      if (Number(m[1]) !== pin.major) continue; // another major is a forward or history reference
+      // `4.x` is a vague claim; a minor above the pin claims an API this repo does not have.
+      // A lower minor ("Stencil 4.38 added …") and a bare major are history, not claims.
+      if (m[2] === 'x' || (m[2] !== undefined && Number(m[2]) > pin.minor)) {
+        hits.push(
+          makeHit(
+            relPath,
+            i + 1,
+            'stencil-version',
+            `Stencil ${m[0].replace(/^Stencil\s+/i, '')} claim does not match pinned ${pin.major}.${pin.minor}`,
+          ),
+        );
+        break;
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: package-name
 // ---------------------------------------------------------------------------
 
@@ -752,6 +857,7 @@ export function checkAiDocs({ root }) {
   const sdMajor = dependencyMajor(pkg, 'style-dictionary');
   const agentSlash = agentSlashPattern(root);
   const yarnNames = knownYarnNames(root, pkg);
+  const stencilPin = pinnedMajorMinor(pkg, '@stencil/core');
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -783,6 +889,9 @@ export function checkAiDocs({ root }) {
     if (needsDocScope) hits.push(...checkDocOrphan(relPath, root));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkStalePrefix(relPath, lines));
+    if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkLookaround(relPath, lines));
+    if (needsNodeVersion && stencilPin) hits.push(...checkStencilVersion(relPath, lines, stencilPin));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
     if (needsSettingsPath) hits.push(...checkSettingsPath(relPath, lines));

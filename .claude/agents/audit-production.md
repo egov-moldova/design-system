@@ -350,7 +350,7 @@ Verify:
 - `component: 'mud-[name]'` (string tag, NOT JS reference)
 - `render` function with HTML template strings
 - `/*html*/` prefix for IDE syntax highlighting
-- `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
+- `title` follows atomic hierarchy: `Atoms/MudName`, `Molecules/MudName`, etc.
 - No `tags: ['autodocs']`
 
 ### 4.3 ArgTypes Completeness
