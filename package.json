@@ -36,8 +36,16 @@
   ],
   "resolutions": {
     "undici-types": "~7.19.0",
-    "@stencil/postcss/postcss": "^8.5.28",
-    "@stencil/core@npm:~4.45.0": "patch:@stencil/core@npm%3A4.45.0#~/.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch"
+    "@stencil/core@npm:~4.45.0": "patch:@stencil/core@npm%3A4.45.0#~/.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch",
+    "axios": "1.18.0",
+    "form-data": "4.0.6",
+    "brace-expansion@npm:^1.0.0": "1.1.18",
+    "browserslist": "4.28.7",
+    "fast-uri": "3.1.6",
+    "js-yaml": "4.3.2",
+    "postcss": "8.5.18",
+    "tar": "7.5.21",
+    "undici": "6.27.0"
   },
   "files": [
     "dist/",
