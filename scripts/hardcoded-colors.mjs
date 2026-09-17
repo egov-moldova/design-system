@@ -547,10 +547,10 @@ async function processFile(filePath) {
 
     // AGENTS.md rule 5: component CSS references component/semantic tokens, never palette
     // primitives. Only stylesheets under a `components/` directory are component CSS: a
-    // token stylesheet may define semantic tokens from palette ones, and `legacy/` predates
-    // the rule.
-    const segments = filePath.split(path.sep);
-    if (isCss && segments.includes('components') && !segments.includes('legacy')) {
+    // token stylesheet may define semantic tokens from palette ones, and `src/legacy/`, which
+    // predates the rule, sits outside `components/`.
+    const segments = path.relative(ROOT, filePath).split(path.sep);
+    if (isCss && segments.includes('components')) {
       const re = RE_PALETTE_VAR();
       let m;
       while ((m = re.exec(line)) !== null) {
