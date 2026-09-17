@@ -68,10 +68,7 @@ function documentedNames(section, heading) {
       line
         .split('|')[1]
         .trim()
-        // Stencil marks a prop with no default as `` `name` _(required)_ ``; the
-        // marker is not part of the name the manifest carries.
-        .replace(/\s*_\(required\)_$/, '')
-        .replace(/^`"?|"?`$/g, ''),
+        .replace(/^`"?([^`]+?)"?`.*$/, '$1'),
     );
 }
 
