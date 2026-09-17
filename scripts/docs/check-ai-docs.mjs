@@ -688,7 +688,8 @@ function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
 // (`cor-button`, `--cor-color`), and the prefix named as a word (`cor` prefix).
 // `src/legacy` still ships `cor-*` components, so a line citing that path is exempt.
 // `Corlab` / `corlab-` (lowercase after the prefix) is the vendor name and does not match.
-const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z]|HTMLCor[A-Z]|\bcor-[a-z]|`cor`|\bcor\s+prefix/g;
+// Placeholder spellings (`Cor<Name>`, `cor<Component>`, `HTMLCor${Name}Element`) count too.
+const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z<]|\b[Cc]or\$\{|HTMLCor[A-Z<$]|\bcor-[a-z]|`cor`|\bcor\s+prefix/g;
 
 function checkStalePrefix(relPath, lines) {
   const hits = [];

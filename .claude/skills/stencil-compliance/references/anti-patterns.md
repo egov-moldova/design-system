@@ -6,14 +6,15 @@ scripts detect. Each section is headed by the code the script emits; cite that c
 - `ANTIPATTERN-*` codes come from `yarn audit:antipatterns <component>` (script 02).
 - `STENCIL-*` codes come from `yarn audit:stencil-contract <component>` (script 16, report-only).
 
-Project rules (tokens, colours, raw pixels, icons, `any`, security) are not Stencil rules: see
+Project rules are not Stencil rules. Tokens, colours, raw pixels and `any`: see
 [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) and the
-[`token-creation`](../../token-creation/SKILL.md) skill.
+[`token-creation`](../../token-creation/SKILL.md) skill. Icons (`ANTIPATTERN-021-RAW-SVG`) and unsanitized
+`innerHTML` (`ANTIPATTERN-SECURITY-INNERHTML`) carry their fix in the script finding.
 
-Rules enforced by lint, not by a script:
+Rules enforced by ESLint or stylelint are the rule-index rows whose `enforced-by` starts with `eslint:` or
+`stylelint:` ([`SKILL.md` § Rule index](../SKILL.md#rule-index)).
 
-| Rule                                         | enforced-by                                            |
-| -------------------------------------------- | ------------------------------------------------------ |
+-------------------------------------------- | ------------------------------------------------------ |
 | `@Method()` is `async` or returns a Promise  | `eslint:@stencil/async-methods`                        |
 | No `!important` without a disable comment    | `stylelint:declaration-no-important`                   |
 | No `transition: all`                         | `stylelint:declaration-property-value-disallowed-list` |

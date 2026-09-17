@@ -148,5 +148,5 @@ For deeper guidance on individual components — variant tradeoffs, accessibilit
 ## Maintenance
 
 - Update this skill whenever AGE ships a new component or significantly changes an existing one.
-- Don't let it drift — when a `Cor<New>` lands in `src/components/`, add a row in the appropriate category table.
+- Don't let it drift — when a `Mud<New>` lands in `src/components/`, add a row in the appropriate category table.
 - When a consumer-side composite is promoted to AGE, remove its row from the consumer's Gaps section and link to the AGE PR.

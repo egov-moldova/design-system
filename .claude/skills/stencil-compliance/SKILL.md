@@ -30,13 +30,15 @@ Input: one component name (`mud-<name>`).
 5. Report: script findings grouped by code; then manual findings as `file:line — rule id — why`; then
    "not checked" with a reason for each skipped row.
 
-`script-16` is report-only: its findings are real but do not fail CI. Fixes for every code:
-[`references/anti-patterns.md`](references/anti-patterns.md).
+`script-16` is report-only: its findings are real but do not fail CI. Fixes for Stencil codes:
+[`references/anti-patterns.md`](references/anti-patterns.md); project codes (tokens, colours, raw pixels, icons,
+`innerHTML`, `any`) carry their fix in the finding, with the rules in
+[`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md).
 
 ## Rule index
 
 One row per rule kept in the references. `enforced-by` is exactly one of `compiler`, `tsc`,
-`eslint:<rule id>`, `stylelint:<rule id>`, `script-02:<code>`, `script-14`, `script-16:<code>`,
+`eslint:<rule id>`, `stylelint:<rule id>`, `script-02:<code>`, `script-16:<code>`,
 `manual`. Only `manual` rows link a reference; automated rows name the code their tool emits.
 
 | Area | Rule | enforced-by | Code or reference |
@@ -51,11 +53,9 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Component | C8: `assetsDirs: ['assets']` only when the component bundles static assets, read through `getAssetPath()` | `manual` | [decorators C8](references/decorators.md#component) |
 | @Component | C9: `shadow: { delegatesFocus: true }` on components that wrap a focusable control, so focusing the host focuses it | `manual` | [decorators C9](references/decorators.md#component) |
 | @Component | C10: `shadow: { slotAssignment: 'manual' }` only for components that assign slots imperatively | `manual` | [decorators C10](references/decorators.md#component) |
-| @Component | C11: `formAssociated: true` on components that submit a value with a form, paired with `@AttachInternals()` | `manual` | [decorators C11](references/decorators.md#component) |
 | @Prop | P1: Props that drive styling use `reflect: true` so `:host([variant='primary'])` selectors match | `manual` | [decorators P1](references/decorators.md#prop) |
 | @Prop | P2: A prop the component itself assigns declares `mutable: true` | `manual` | [decorators P2](references/decorators.md#prop) |
 | @Prop | P3: No `mutable: true` on a prop the component never assigns | `manual` | [decorators P3](references/decorators.md#prop) |
-| @Prop | P4: No `reflect: true` on object or array props — a complex value is never written to an attribute | `manual` | [decorators P4](references/decorators.md#prop) |
 | @Prop | P5: `attribute: 'custom-name'` only when the default kebab-case name is wrong | `manual` | [decorators P5](references/decorators.md#prop) |
 | @Prop | P6: Optional props use `?`: `@Prop() width?: string;` | `manual` | [decorators P6](references/decorators.md#prop) |
 | @Prop | P7: A prop with neither a default nor `?` needs `!` under `strict` | `tsc` | — |
@@ -64,12 +64,11 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Prop | P10: Every `@Prop()` has JSDoc; a prop with a default documents it | `manual` | [decorators P10](references/decorators.md#prop) |
 | @Prop | P11: Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual` | [decorators P11](references/decorators.md#prop) |
 | @Prop | P12: Props are public (no `private`/`protected` modifier) | `eslint:@stencil/props-must-be-public` | — |
+| @Prop | P13: Prop names are camelCase; the attribute is derived as kebab-case | `manual` | [decorators P13](references/decorators.md#prop) |
 | @State | S1: `@State()` only for values that change render output | `manual` | [decorators S1](references/decorators.md#state) |
 | @State | S2: Refs, timers and IDs are plain fields, never `@State()` | `manual` | [decorators S2](references/decorators.md#state) |
 | @State | S3: A value `render()` can compute is not stored in state | `manual` | [decorators S3](references/decorators.md#state) |
 | @State | S4: Arrays are reassigned, never mutated in place (`push`, `splice`, `sort`, …) | `script-02:ANTIPATTERN-005-ARRAY-MUTATION` | `ANTIPATTERN-005-ARRAY-MUTATION` |
-| @State | S5: Objects are reassigned with spread, never mutated through a property (`obj.x = y`) | `manual` | [decorators S5](references/decorators.md#state) |
-| @State | S6: No state write in `componentDidUpdate` without a guard — every write schedules a render | `manual` | [decorators S6](references/decorators.md#state) |
 | @State | S7: State is not exposed to consumers; use a `@Prop` or an `@Event` | `manual` | [decorators S7](references/decorators.md#state) |
 | @State | S8: Every `@State()` has an initial value (or `!`) under `strict` | `tsc` | — |
 | @Event / @Listen | E1: Event fields are `mud` + PascalCase (`mudChange`, `mudAccordionToggle`) | `script-02:ANTIPATTERN-025-EVENT-PREFIX` | `ANTIPATTERN-025-EVENT-PREFIX` |
@@ -92,9 +91,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Method | M6: A method mirroring a built-in (`focus`, `blur`) keeps its name and signature | `manual` | [decorators M6](references/decorators.md#method) |
 | @Element | EL1: Typed with the generated element interface: `@Element() host!: HTMLMudBadgeElement;` | `eslint:@stencil/element-type` | — |
 | @Element | EL2: `!` on the field | `tsc` | — |
-| @AttachInternals | AI1: Requires `formAssociated: true` on `@Component` | `manual` | [decorators AI1](references/decorators.md#attachinternals) |
 | @AttachInternals | AI2: `!` on the field: `@AttachInternals() internals!: ElementInternals;` | `tsc` | — |
-| @AttachInternals | AI3: Initial custom states for `:host(:state(name))` go in `@AttachInternals({ states: { invalid: false } })` | `manual` | [decorators AI3](references/decorators.md#attachinternals) |
 | Lifecycle | LC1: A component using `setInterval`, `setTimeout`, `addEventListener`, `ResizeObserver`, `MutationObserver` or `IntersectionObserver` cleans up in `disconnectedCallback()` | `script-02:ANTIPATTERN-007-LIFECYCLE-LEAK` | `ANTIPATTERN-007-LIFECYCLE-LEAK` |
 | Lifecycle | LC2: `connectedCallback` runs on every re-attach; one-time setup is guarded or lives in `componentWillLoad` | `manual` | [lifecycle-host LC2](references/lifecycle-host.md#lifecycle) |
 | Lifecycle | LC3: A Promise returned from `componentWillLoad` delays the first render until it settles — only for data the first paint needs | `manual` | [lifecycle-host LC3](references/lifecycle-host.md#lifecycle) |
@@ -104,11 +101,12 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Lifecycle | LC7: Light-DOM children present in the markup are readable in `componentWillLoad`; children appended after load reach the component only through `slotchange` | `manual` | [lifecycle-host LC7](references/lifecycle-host.md#lifecycle) |
 | Lifecycle | LC8: Consumer code awaits `el.componentOnReady()` before calling a `@Method` | `manual` | [lifecycle-host LC8](references/lifecycle-host.md#lifecycle) |
 | Host | H1: `render()` returns `<Host>` at its root | `eslint:@stencil/render-returns-host` | — |
-| Host | H2: State-driven host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove`; an imperative class change is only for an external event that does not re-render | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` | `ANTIPATTERN-002-HOST-CLASSLIST` |
+| Host | H2: Host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove` | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` | `ANTIPATTERN-002-HOST-CLASSLIST` |
 | Host | H3: No inline `style={…}` in JSX, on `<Host>` or elsewhere — use classes and CSS custom properties | `script-02:ANTIPATTERN-001-INLINE-STYLE` | `ANTIPATTERN-001-INLINE-STYLE` |
 | Host | H4: ARIA on the host goes through `<Host role=… aria-…>` | `manual` | [lifecycle-host H4](references/lifecycle-host.md#host) |
 | Host | H5: Exactly one `<Host>` per render | `manual` | [lifecycle-host H5](references/lifecycle-host.md#host) |
 | Host | H6: `<Host>` is virtual — it renders no element of its own | `manual` | [lifecycle-host H6](references/lifecycle-host.md#host) |
+| Host | H7: An imperative host class change reported by script 02 is kept only for an external event that does not re-render (component-structure.md § When to Use `classList` Manipulation) | `manual` | [lifecycle-host H7](references/lifecycle-host.md#host) |
 | Host element | HE1: The field is named `host` | `manual` | [lifecycle-host HE1](references/lifecycle-host.md#host-element) |
 | Host element | HE2: Use it for DOM APIs only: `getBoundingClientRect`, `closest`, `matches`, `querySelector` on light DOM | `manual` | [lifecycle-host HE2](references/lifecycle-host.md#host-element) |
 | Host element | HE3: No `@Element()` that the class never reads | `manual` | [lifecycle-host HE3](references/lifecycle-host.md#host-element) |
@@ -120,19 +118,19 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | JSX | J6: Refs: `ref={el => (this.inputElement = el)}` | `manual` | [jsx-styling J6](references/jsx-styling.md#jsx) |
 | JSX | J7: `attr:` / `prop:` prefixes force an attribute or a property write (`<input prop:checked={…}>`); rare | `manual` | [jsx-styling J7](references/jsx-styling.md#jsx) |
 | JSX | J8: A JSX node stored in a variable is not rendered twice — use a render function | `manual` | [jsx-styling J8](references/jsx-styling.md#jsx) |
-| JSX | J9: No `innerHTML` assignment | `script-02:ANTIPATTERN-SECURITY-INNERHTML` | `ANTIPATTERN-SECURITY-INNERHTML` |
 | JSX | J11: `class=`, never React's `className=` | `script-02:ANTIPATTERN-023-CLASSNAME` | `ANTIPATTERN-023-CLASSNAME` |
 | JSX | J12: `render()` is pure: no DOM writes, no state writes | `manual` | [jsx-styling J12](references/jsx-styling.md#jsx) |
-| JSX | J13: Icons render through `<mud-icon name="…">`, not inline `<svg>` | `script-02:ANTIPATTERN-021-RAW-SVG` | `ANTIPATTERN-021-RAW-SVG` |
 | Styling | ST1: The bare `:host { }` rule declares `display` (a custom element defaults to `inline`) | `script-02:ANTIPATTERN-HOST-DISPLAY` | `ANTIPATTERN-HOST-DISPLAY` |
 | Styling | ST2: Custom properties meant for consumers are declared on `:host` | `manual` | [jsx-styling ST2](references/jsx-styling.md#styling) |
 | Styling | ST3: Attribute variants use `:host([variant='primary'])`; state classes use `:host(.is-open)` | `manual` | [jsx-styling ST3](references/jsx-styling.md#styling) |
 | Styling | ST4: `::slotted()` matches only top-level slotted elements, never default content rendered inside the shadow root | `manual` | [jsx-styling ST4](references/jsx-styling.md#styling) |
 | Styling | ST5: `::part(name)` is an opt-in styling API; `exportparts` forwards a nested component's parts | `manual` | [jsx-styling ST5](references/jsx-styling.md#styling) |
-| Styling | ST6: No `!important`; a load-bearing exception carries `/* stylelint-disable-next-line declaration-no-important */` and a comment saying why | `stylelint:declaration-no-important` | — |
+| Styling | ST6: No `!important` unless the line above carries `/* stylelint-disable-next-line declaration-no-important */` | `stylelint:declaration-no-important` | — |
 | Styling | ST7: No `transition: all` / `transition-property: all` — list the properties | `stylelint:declaration-property-value-disallowed-list` | — |
 | Styling | ST8: `prefers-reduced-motion` is handled once, in `src/assets/css/base/html.css` | `manual` | [jsx-styling ST8](references/jsx-styling.md#styling) |
 | Styling | ST9: Global tokens (`:root` in `dist/mud/tokens/*.css`) inherit into shadow roots | `manual` | [jsx-styling ST9](references/jsx-styling.md#styling) |
+| Styling | ST10: One conceptual element is not styled through both `::slotted()` and an internal class | `manual` | [jsx-styling ST10](references/jsx-styling.md#styling) |
+| Styling | ST11: A load-bearing `!important` disable comment is accompanied by a comment saying why | `manual` | [jsx-styling ST11](references/jsx-styling.md#styling) |
 | Form-Associated | F1: `formAssociated: true` in `@Component()` and `@AttachInternals() internals!: ElementInternals;` | `manual` | [form-reactivity F1](references/form-reactivity.md#form-associated) |
 | Form-Associated | F2: `formResetCallback` and `formDisabledCallback` on every form-associated component; `formStateRestoreCallback` on every value control (not on a submitter) | `script-16:STENCIL-FORM-CALLBACKS` | `STENCIL-FORM-CALLBACKS` |
 | Form-Associated | F3: `formResetCallback` restores the value captured at load and republishes it with `setFormValue` | `manual` | [form-reactivity F3](references/form-reactivity.md#form-associated) |
@@ -163,6 +161,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Watch | W2: a watcher writes its watched prop only as a literal validation fallback — [`component-structure.md` § @Watch Rule](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-WATCH-WRITES-WATCHED` | `STENCIL-WATCH-WRITES-WATCHED` |
 | @Watch | W3: a literal write inside an `if` is a genuine validation fallback, and the watcher does only what the allowlist names | `manual` | [component-structure @Watch Rule](../../../src/components/_agents/component-structure.md) |
 | Member order | MO1: decorator groups follow the canonical order and `render()` is last — [`component-structure.md` § TSX Class Member Order](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-MEMBER-ORDER` | `STENCIL-MEMBER-ORDER` |
+| Member order | MO2: lifecycle methods (item 8, in `componentWillLoad` → `componentDidLoad` → `componentDidUpdate` order) precede private members (item 9) — [`component-structure.md` § TSX Class Member Order](../../../src/components/_agents/component-structure.md) | `manual` | [component-structure member order](../../../src/components/_agents/component-structure.md) |
 
 ## Failure modes
 

@@ -118,11 +118,12 @@ Reference: <https://stenciljs.com/docs/host-element>.
 | #   | Rule                                                                                                  | enforced-by                              |
 | --- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------- |
 | H1  | `render()` returns `<Host>` at its root                                                               | `eslint:@stencil/render-returns-host`    |
-| H2  | State-driven host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove`; an imperative class change is only for an external event that does not re-render | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` |
+| H2 | Host classes are declarative (`<Host class={hostClasses}>`), never `this.host.classList.add/remove` | `script-02:ANTIPATTERN-002-HOST-CLASSLIST` |
 | H3  | No inline `style={…}` in JSX, on `<Host>` or elsewhere — use classes and CSS custom properties         | `script-02:ANTIPATTERN-001-INLINE-STYLE` |
 | H4  | ARIA on the host goes through `<Host role=… aria-…>`                                                   | `manual`                                 |
 | H5  | Exactly one `<Host>` per render                                                                       | `manual`                                 |
 | H6  | `<Host>` is virtual — it renders no element of its own                                                | `manual`                                 |
+| H7 | An imperative host class change reported by script 02 is kept only for an external event that does not re-render (component-structure.md § When to Use `classList` Manipulation) | `manual` |
 
 The class pattern is defined once, in
 [`component-structure.md` § Host Class Management](../../../../src/components/_agents/component-structure.md);

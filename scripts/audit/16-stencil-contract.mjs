@@ -15,6 +15,8 @@
  *   node scripts/audit/16-stencil-contract.mjs --all --json
  */
 import ts from 'typescript';
+import fs from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
@@ -107,21 +109,64 @@ const isLiteral = n =>
   n.kind === ts.SyntaxKind.FalseKeyword ||
   n.kind === ts.SyntaxKind.NullKeyword;
 
-function jsxRootLacksKey(body) {
-  let expr = body;
-  if (ts.isBlock(body)) {
-    const ret = body.statements.find(ts.isReturnStatement);
-    expr = ret?.expression;
-  }
+const hasKey = element => {
+  const attrs = ts.isJsxElement(element) ? element.openingElement.attributes : element.attributes;
+  return attrs.properties.some(p => ts.isJsxAttribute(p) && p.name.getText() === 'key');
+};
+
+// The body of a class member callable as `this.name`: a method, or a property holding a function.
+function memberBody(classNode, name) {
+  const member = classNode.members.find(m => getMemberName(m) === name);
+  if (member && ts.isMethodDeclaration(member)) return member.body;
+  const init = member && ts.isPropertyDeclaration(member) ? member.initializer : undefined;
+  return init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init)) ? init.body : undefined;
+}
+
+// Every value a function body can return: an arrow's expression body, or each `return` in a
+// block (returns inside nested functions belong to those functions).
+function returnedExpressions(body) {
+  if (!body) return [];
+  if (!ts.isBlock(body)) return [body];
+  const out = [];
+  const visit = node => {
+    if (ts.isFunctionLike(node)) return;
+    if (ts.isReturnStatement(node) && node.expression) out.push(node.expression);
+    ts.forEachChild(node, visit);
+  };
+  ts.forEachChild(body, visit);
+  return out;
+}
+
+// The JSX elements an expression can evaluate to, through parentheses, `?:`, logical operators,
+// array literals and calls to a class member (`this.renderRow(i)`, two levels deep). A fragment,
+// `null` or any other value yields nothing, so it is never reported.
+function jsxRoots(expr, classNode, depth = 0) {
   while (expr && ts.isParenthesizedExpression(expr)) expr = expr.expression;
-  if (!expr) return false;
-  const attrs = ts.isJsxElement(expr)
-    ? expr.openingElement.attributes
-    : ts.isJsxSelfClosingElement(expr)
-      ? expr.attributes
-      : null;
-  if (!attrs) return false;
-  return !attrs.properties.some(p => ts.isJsxAttribute(p) && p.name.getText() === 'key');
+  if (!expr) return [];
+  if (ts.isJsxElement(expr) || ts.isJsxSelfClosingElement(expr)) return [expr];
+  if (ts.isConditionalExpression(expr)) {
+    return [...jsxRoots(expr.whenTrue, classNode, depth), ...jsxRoots(expr.whenFalse, classNode, depth)];
+  }
+  if (ts.isBinaryExpression(expr)) {
+    const op = expr.operatorToken.kind;
+    if (op === ts.SyntaxKind.AmpersandAmpersandToken) return jsxRoots(expr.right, classNode, depth);
+    if (op === ts.SyntaxKind.BarBarToken || op === ts.SyntaxKind.QuestionQuestionToken) {
+      return [...jsxRoots(expr.left, classNode, depth), ...jsxRoots(expr.right, classNode, depth)];
+    }
+    return [];
+  }
+  if (ts.isArrayLiteralExpression(expr)) return expr.elements.flatMap(e => jsxRoots(e, classNode, depth));
+  if (
+    depth < 2 &&
+    ts.isCallExpression(expr) &&
+    ts.isPropertyAccessExpression(expr.expression) &&
+    expr.expression.expression.kind === ts.SyntaxKind.ThisKeyword
+  ) {
+    return returnedExpressions(memberBody(classNode, expr.expression.name.text)).flatMap(e =>
+      jsxRoots(e, classNode, depth + 1),
+    );
+  }
+  return [];
 }
 
 // The callback body of `.map(cb)`: an inline function, or a class member passed as `this.name`.
@@ -129,10 +174,7 @@ function mapCallbackBody(fn, classNode) {
   if (!fn) return undefined;
   if (ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) return fn.body;
   if (!ts.isPropertyAccessExpression(fn) || fn.expression.kind !== ts.SyntaxKind.ThisKeyword) return undefined;
-  const member = classNode.members.find(m => getMemberName(m) === fn.name.text);
-  if (member && ts.isMethodDeclaration(member)) return member.body;
-  const init = member && ts.isPropertyDeclaration(member) ? member.initializer : undefined;
-  return init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init)) ? init.body : undefined;
+  return memberBody(classNode, fn.name.text);
 }
 
 export function checkSource(tsxPath, componentName) {
@@ -229,32 +271,45 @@ export function checkSource(tsxPath, componentName) {
         .filter(a => a && ts.isStringLiteral(a))
         .map(a => a.text),
     );
-    const isThisWatched = target =>
-      ts.isPropertyAccessExpression(target) &&
-      target.expression.kind === ts.SyntaxKind.ThisKeyword &&
-      watched.has(target.name.text);
+    // `this.size` or `this['size']`; returns the prop name when it is a watched one.
+    const watchedName = target => {
+      if (!target || target.expression?.kind !== ts.SyntaxKind.ThisKeyword) return undefined;
+      const name = ts.isPropertyAccessExpression(target)
+        ? target.name.text
+        : ts.isElementAccessExpression(target) && ts.isStringLiteralLike(target.argumentExpression)
+          ? target.argumentExpression.text
+          : undefined;
+      return watched.has(name) ? name : undefined;
+    };
     walk(member.body, node => {
-      let target = null;
+      let written;
       let plainLiteralAssign = false;
       if (
         ts.isBinaryExpression(node) &&
         node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
         node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
       ) {
-        target = node.left;
+        written = watchedName(node.left);
         plainLiteralAssign = node.operatorToken.kind === ts.SyntaxKind.EqualsToken && isLiteral(node.right);
+        // Destructuring assignment: `[this.size] = …`, `({ size: this.size } = …)`.
+        if (!written && (ts.isArrayLiteralExpression(node.left) || ts.isObjectLiteralExpression(node.left))) {
+          walk(node.left, n => {
+            written ??= watchedName(n);
+          });
+          plainLiteralAssign = false;
+        }
       } else if (
         (ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
         (node.operator === ts.SyntaxKind.PlusPlusToken || node.operator === ts.SyntaxKind.MinusMinusToken)
       ) {
-        target = node.operand;
+        written = watchedName(node.operand);
       }
-      if (!target || !isThisWatched(target)) return;
+      if (!written) return;
       if (plainLiteralAssign && isInsideIf(node, member.body)) return; // validation fallback (Decision 2)
       add(
         'STENCIL-WATCH-WRITES-WATCHED',
         node,
-        `@Watch method writes the watched prop \`${target.name.text}\` outside a validation fallback.`,
+        `@Watch method writes the watched prop \`${written}\` outside a validation fallback.`,
       );
     });
   }
@@ -262,38 +317,71 @@ export function checkSource(tsxPath, componentName) {
   walk(classNode, node => {
     if (!ts.isCallExpression(node) || !ts.isPropertyAccessExpression(node.expression)) return;
     if (node.expression.name.text !== 'map') return;
-    const body = mapCallbackBody(node.arguments[0], classNode);
-    if (body && jsxRootLacksKey(body)) add('STENCIL-MAP-KEY', node, 'JSX element returned from `.map()` has no `key`.');
+    const roots = returnedExpressions(mapCallbackBody(node.arguments[0], classNode)).flatMap(e =>
+      jsxRoots(e, classNode),
+    );
+    if (roots.some(root => !hasKey(root))) {
+      add('STENCIL-MAP-KEY', node, 'JSX element returned from `.map()` has no `key`.');
+    }
   });
 
   return out;
 }
 
+// Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
+// file in that folder, sub-components included (`mud-header-nav-item.tsx`); a sub-component
+// name resolves to its own file in whichever component folder holds it.
+function componentFiles(name) {
+  const isComponentFile = file =>
+    /\.tsx$/.test(file) &&
+    !/\.(spec|e2e|stories)\.tsx$/.test(file) &&
+    /@Component\(/.test(fs.readFileSync(file, 'utf8'));
+  const target = resolveComponentPaths(name);
+  if (target.found) {
+    return fs
+      .readdirSync(target.root)
+      .map(entry => path.join(target.root, entry))
+      .filter(isComponentFile)
+      .sort();
+  }
+  for (const component of listAllComponents()) {
+    const file = path.join(component.root, `${name}.tsx`);
+    if (fs.existsSync(file) && isComponentFile(file)) return [file];
+  }
+  return [];
+}
+
 async function main() {
   const args = parseAuditArgs({ toolName: TOOL, usage: USAGE });
   const t0 = Date.now();
-  const targets = args.all
-    ? listAllComponents().map(c => resolveComponentPaths(c.name))
-    : [resolveComponentPaths(args.component)];
+  const targets = args.all ? listAllComponents().map(c => c.name) : [args.component];
   const findings = [];
-  for (const target of targets) {
-    if (!target.found || !target.exists.tsx) {
+  let filesScanned = 0;
+  for (const name of targets) {
+    const files = componentFiles(name);
+    if (!files.length) {
       findings.push(
         finding({
           severity: 'error',
           code: 'STRUCTURE-NOT-FOUND',
-          message: `Component "${target.name ?? target.input}" not found (no .tsx to check).`,
+          message: `Component "${name}" not found (no @Component .tsx to check).`,
         }),
       );
       continue;
     }
-    findings.push(...checkSource(target.paths.tsx, target.name));
+    for (const file of files) findings.push(...checkSource(file, path.basename(file, '.tsx')));
+    filesScanned += files.length;
   }
   const result = buildResult({
     tool: TOOL,
-    target: args.all ? 'all' : (targets[0]?.name ?? null),
+    target: args.all ? 'all' : (targets[0] ?? null),
     findings,
-    meta: { durationMs: Date.now() - t0, componentsScanned: targets.length, rulesEvaluated: RULES.length },
+    meta: {
+      durationMs: Date.now() - t0,
+      componentsScanned: targets.length,
+      filesScanned,
+      rulesEvaluated: RULES.length,
+    },
   });
   await emit(result, args);
   process.exit(exitCodeFromSummary(result.summary));

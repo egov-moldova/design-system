@@ -637,3 +637,21 @@ describe('stencil-version rule: case and package spellings', () => {
     );
   });
 });
+
+describe('stale-prefix rule: placeholder spellings', () => {
+  it('flags Cor<Name>, cor<Component> and template-literal forms', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md':
+        'export class Cor<Name> {\n\nEvent naming cor<Component><Action>.\n\nType HTMLCor${Name}Element.\n\nExport Mud<X>CustomEvent.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
+      [
+        [1, 'stale-prefix'],
+        [3, 'stale-prefix'],
+        [5, 'stale-prefix'],
+      ],
+    );
+  });
+});

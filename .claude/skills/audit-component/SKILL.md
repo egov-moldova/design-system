@@ -221,7 +221,7 @@ Dispatch in a SINGLE message with multiple parallel tool calls.
 
 Use Fast Path script `02-stencil-antipatterns.mjs` (CSS + TSX)
 run in parallel internally. Reference catalogue:
-[`stencil-compliance/references/anti-patterns.md`](../stencil-compliance/references/anti-patterns.md).
+[`stencil-compliance/references/anti-patterns.md`](../stencil-compliance/references/anti-patterns.md) for Stencil codes, [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) for project codes.
 
 Pattern codes consumed from `findingsByTool.antipatterns` are the `code` fields of
 `PATTERNS` and `FILE_CHECKS` in

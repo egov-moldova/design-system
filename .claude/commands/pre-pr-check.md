@@ -89,7 +89,7 @@ node scripts/audit/02-stencil-antipatterns.mjs --changed --json
 node scripts/audit/03-git-hygiene.mjs --json
 ```
 
-For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
+Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md); project codes (tokens, colours, icons, `innerHTML`, `any`): [`_agents/anti-patterns.md`](../../_agents/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
 
 **Verify after Wave 1 results land**:
 

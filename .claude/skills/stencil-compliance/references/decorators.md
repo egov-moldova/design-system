@@ -4,9 +4,7 @@ Load when writing or reviewing a `@Component`, `@Prop`, `@State`, `@Event`, `@Li
 `@Element` or `@AttachInternals` declaration. The installed version and its deltas live in
 [`version-delta.md`](version-delta.md).
 
-`enforced-by` names what decides the rule: a tool (`compiler`, `tsc`, `eslint:<rule>`,
-`stylelint:<rule>`), an audit script (`script-02:<code>`, `script-14`, `script-16:<code>`), or
-`manual` — the only rows the skill asks you to judge.
+`enforced-by` grammar: [`SKILL.md` § Rule index](../SKILL.md#rule-index); only `manual` rows are judged by hand.
 
 Sections:
 
@@ -38,7 +36,8 @@ Reference: <https://stenciljs.com/docs/component>.
 | C8  | `assetsDirs: ['assets']` only when the component bundles static assets, read through `getAssetPath()`                               | `manual`                             |
 | C9  | `shadow: { delegatesFocus: true }` on components that wrap a focusable control, so focusing the host focuses it                     | `manual`                             |
 | C10 | `shadow: { slotAssignment: 'manual' }` only for components that assign slots imperatively                                           | `manual`                             |
-| C11 | `formAssociated: true` on components that submit a value with a form, paired with `@AttachInternals()`                              | `manual`                             |
+
+Pairing `formAssociated: true` with `@AttachInternals()`: [`form-reactivity.md` F1](form-reactivity.md#form-associated).
 
 Which components are form-associated is a command, not a list:
 `grep -rl 'formAssociated: true' src/components --include='*.tsx'`.
@@ -65,7 +64,6 @@ Reference: <https://stenciljs.com/docs/properties>.
 | P1  | Props that drive styling use `reflect: true` so `:host([variant='primary'])` selectors match                                              | `manual`                                      |
 | P2  | A prop the component itself assigns declares `mutable: true`                                                                              | `manual`                                      |
 | P3  | No `mutable: true` on a prop the component never assigns                                                                                  | `manual`                                      |
-| P4  | No `reflect: true` on object or array props — a complex value is never written to an attribute                                            | `manual`                                      |
 | P5  | `attribute: 'custom-name'` only when the default kebab-case name is wrong                                                                 | `manual`                                      |
 | P6  | Optional props use `?`: `@Prop() width?: string;`                                                                                         | `manual`                                      |
 | P7  | A prop with neither a default nor `?` needs `!` under `strict`                                                                            | `tsc`                                         |
@@ -74,6 +72,9 @@ Reference: <https://stenciljs.com/docs/properties>.
 | P10 | Every `@Prop()` has JSDoc; a prop with a default documents it                                                                             | `manual`                                      |
 | P11 | Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual`                                      |
 | P12 | Props are public (no `private`/`protected` modifier)                                                                                      | `eslint:@stencil/props-must-be-public`        |
+| P13 | Prop names are camelCase; the attribute is derived as kebab-case | `manual` |
+
+Reflecting an object or array prop: [`form-reactivity.md` SE1](form-reactivity.md#serialization).
 
 ### How attribute values reach a prop
 
@@ -104,9 +105,7 @@ validateSize(next: RadioSize) {
 
 ### Project overlays
 
-- No boolean props that control slot rendering (`showIcon`, `hasIcon`, …). Use slot detection or CSS
-  `:empty` — [`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md).
-- Prop names are camelCase; the attribute is derived as kebab-case.
+- No boolean props that control slot rendering (`showIcon`, `hasIcon`, …) — a project rule, [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) #12, whose known names `eslint.config.mjs` restricts through `no-restricted-syntax`. Use slot detection or CSS `:empty` — [`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md).
 
 ---
 
@@ -120,10 +119,10 @@ Reference: <https://stenciljs.com/docs/state>.
 | S2  | Refs, timers and IDs are plain fields, never `@State()`                                   | `manual`                                 |
 | S3  | A value `render()` can compute is not stored in state                                     | `manual`                                 |
 | S4  | Arrays are reassigned, never mutated in place (`push`, `splice`, `sort`, …)                | `script-02:ANTIPATTERN-005-ARRAY-MUTATION` |
-| S5  | Objects are reassigned with spread, never mutated through a property (`obj.x = y`)        | `manual`                                 |
-| S6  | No state write in `componentDidUpdate` without a guard — every write schedules a render   | `manual`                                 |
 | S7  | State is not exposed to consumers; use a `@Prop` or an `@Event`                           | `manual`                                 |
 | S8  | Every `@State()` has an initial value (or `!`) under `strict`                             | `tsc`                                    |
+
+Object mutation: [`form-reactivity.md` R2](form-reactivity.md#reactive). Guarded writes in `componentDidUpdate`: [`lifecycle-host.md` LC4](lifecycle-host.md#lifecycle).
 
 ```ts
 // ✅ Reassign
@@ -244,9 +243,11 @@ Reference: <https://stenciljs.com/docs/attach-internals>. Full rules:
 
 | #   | Rule                                                                                                    | enforced-by |
 | --- | ------------------------------------------------------------------------------------------------------- | ----------- |
-| AI1 | Requires `formAssociated: true` on `@Component`                                                         | `manual`    |
 | AI2 | `!` on the field: `@AttachInternals() internals!: ElementInternals;`                                    | `tsc`       |
-| AI3 | Initial custom states for `:host(:state(name))` go in `@AttachInternals({ states: { invalid: false } })` | `manual`    |
+
+---
+
+Custom states (`@AttachInternals({ states })`): [`form-reactivity.md` F9](form-reactivity.md#form-associated). The `formAssociated: true` pairing: F1.
 
 ---
 

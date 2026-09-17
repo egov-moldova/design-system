@@ -116,7 +116,7 @@ needed; just confirm the script reported `errors: 0`.
 
 ### 1.2 TSX Member Order
 
-Member order is defined once, in [`component-structure.md` § TSX Class Member Order](../../src/components/_agents/component-structure.md), and checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`).
+Member order is defined once, in [`component-structure.md` § TSX Class Member Order](../../src/components/_agents/component-structure.md), and checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
 **`@Watch()` rule**: defined once, in [`component-structure.md` § @Watch Rule](../../src/components/_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`).
 

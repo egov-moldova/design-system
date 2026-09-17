@@ -168,7 +168,7 @@ Every form-associated component MUST declare:
   shadow: true,
   formAssociated: true,  // ← mandatory
 })
-export class Cor<Name> {
+export class Mud<Name> {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop({ reflect: true }) value: string = '';

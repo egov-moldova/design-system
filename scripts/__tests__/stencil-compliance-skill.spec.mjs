@@ -80,6 +80,7 @@ describe('stencil-compliance skill ↔ scripts', () => {
     const skill = fs.readFileSync(path.join(SKILL, 'SKILL.md'), 'utf8');
     const index = new Map();
     for (const m of skill.matchAll(/^\|[^|\n]+\|\s*([A-Z]+\d+):\s*(.+?)\s*\|\s*`([^`]+)`\s*\|.*\|\s*$/gm)) {
+      assert.ok(!index.has(m[1]), `rule id ${m[1]} appears more than once in the rule index`);
       index.set(m[1], { rule: norm(m[2]), enforcedBy: m[3], row: m[0] });
     }
     assert.ok(references.size > 0 && index.size > 0, 'no rule rows parsed — check the table grammar');

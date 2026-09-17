@@ -59,7 +59,7 @@ Use this template; populate from the JSON envelopes above:
 
 ### Exports
 - Component registered via stencil.config.ts (implicit) / explicit re-export: <yes/no from 14>
-- Auto-generated `Cor<X>CustomEvent` exported in src/index.ts: <yes/no from 07.exports.customEventType>
+- Auto-generated `Mud<X>CustomEvent` exported in src/index.ts: <yes/no from 07.exports.customEventType>
 - Types re-exported (if `.types.ts` exists): <list from contract>
 - Enums re-exported (if `.enums.ts` exists): <list>
 

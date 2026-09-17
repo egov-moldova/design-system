@@ -181,6 +181,58 @@ export class P {
     assert.deepEqual(codes('export const helper = () => 1;'), ['CONTRACT-NO-COMPONENT-CLASS']);
   });
 
+  it('follows every returned shape of a .map() callback to its JSX roots', () => {
+    const cmp = (map, extra = '') => `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop() items: string[] = [];
+  ${extra}
+  render() { return <Host>{${map}}</Host>; }
+}`;
+    const keyed = 'private row(i: string) { return <li key={i}>{i}</li>; }';
+    const keyless = 'private row(i: string) { return <li>{i}</li>; }';
+    assert.deepEqual(codes(cmp('this.items.map(i => this.row(i))', keyless)), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('this.items.map(i => this.row(i))', keyed)), []);
+    assert.deepEqual(codes(cmp('this.items.map(i => (i ? <li key={i}>{i}</li> : <li>{i}</li>))')), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('this.items.map(i => i && <li>{i}</li>)')), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('this.items.map(i => [<dt key={i}>{i}</dt>, <dd>{i}</dd>])')), ['STENCIL-MAP-KEY']);
+    assert.deepEqual(codes(cmp('this.items.map(i => { if (!i) return null; return <li>{i}</li>; })')), [
+      'STENCIL-MAP-KEY',
+    ]);
+    assert.deepEqual(codes(cmp('this.items.map(i => { if (!i) return null; return <li key={i}>{i}</li>; })')), []);
+  });
+
+  it('treats an element-access or destructuring write to the watched prop as a write', () => {
+    const cmp = body => `@Component({ tag: 'mud-probe', shadow: true })
+export class P {
+  @Prop({ mutable: true }) size: string = 'md';
+  ${body}
+  render() { return <Host />; }
+}`;
+    assert.deepEqual(codes(cmp(`@Watch('size') v(next: string) { this['size'] = next.trim(); }`)), [
+      'STENCIL-WATCH-WRITES-WATCHED',
+    ]);
+    assert.deepEqual(codes(cmp(`@Watch('size') v(next: string) { [this.size] = [next.trim()]; }`)), [
+      'STENCIL-WATCH-WRITES-WATCHED',
+    ]);
+    assert.deepEqual(codes(cmp(`@Watch('size') v(next: string) { ({ size: this.size } = { size: next.trim() }); }`)), [
+      'STENCIL-WATCH-WRITES-WATCHED',
+    ]);
+  });
+
+  it('checks every component file in a folder, and resolves a sub-component by its own name', () => {
+    const all = JSON.parse(
+      spawnSync(process.execPath, [SCRIPT.pathname, '--all', '--json'], { encoding: 'utf8' }).stdout,
+    );
+    assert.ok(all.meta.filesScanned > all.meta.componentsScanned, 'sub-component files are scanned');
+    const sub = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-header-nav-item', '--json'], { encoding: 'utf8' });
+    const envelope = JSON.parse(sub.stdout);
+    assert.deepEqual(
+      envelope.findings.filter(f => f.code === 'STRUCTURE-NOT-FOUND'),
+      [],
+    );
+    assert.equal(envelope.meta.filesScanned, 1);
+  });
+
   it('reports a component it cannot find instead of passing it as clean', () => {
     const run = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-doesnotexist', '--json'], { encoding: 'utf8' });
     const envelope = JSON.parse(run.stdout);

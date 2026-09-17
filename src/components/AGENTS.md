@@ -69,7 +69,7 @@ src/components/mud-[name]/
 
 ## Quick Reference — TSX Member Order
 
-Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`).
+Defined once, in [`_agents/component-structure.md` § TSX Class Member Order](_agents/component-structure.md); checked by `yarn audit:stencil-contract` (`STENCIL-MEMBER-ORDER`: decorator groups and `render()` last; the rest is a review question).
 
 ---
 

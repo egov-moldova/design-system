@@ -24,12 +24,14 @@ Reference: <https://stenciljs.com/docs/templating-jsx>.
 | J6  | Refs: `ref={el => (this.inputElement = el)}`                                                                       | `manual`                                     |
 | J7  | `attr:` / `prop:` prefixes force an attribute or a property write (`<input prop:checked={…}>`); rare               | `manual`                                     |
 | J8  | A JSX node stored in a variable is not rendered twice — use a render function                                      | `manual`                                     |
-| J9  | No `innerHTML` assignment                                                                                          | `script-02:ANTIPATTERN-SECURITY-INNERHTML`   |
 | J11 | `class=`, never React's `className=`                                                                               | `script-02:ANTIPATTERN-023-CLASSNAME`        |
 | J12 | `render()` is pure: no DOM writes, no state writes                                                                 | `manual`                                     |
-| J13 | Icons render through `<mud-icon name="…">`, not inline `<svg>`                                                     | `script-02:ANTIPATTERN-021-RAW-SVG`          |
 
 No inline `style={…}`: [`lifecycle-host.md` H3](lifecycle-host.md#host).
+
+Script 02 also reports two project rules on JSX, owned outside this skill: no unsanitized `innerHTML`
+(`ANTIPATTERN-SECURITY-INNERHTML`) and icons through `<mud-icon>` instead of inline `<svg>`
+(`ANTIPATTERN-021-RAW-SVG`). Their fix text comes with the finding.
 
 ```tsx
 // ✅ Keyed list
@@ -92,10 +94,12 @@ Reference: <https://stenciljs.com/docs/styling>.
 | ST3  | Attribute variants use `:host([variant='primary'])`; state classes use `:host(.is-open)`                        | `manual`                                                  |
 | ST4  | `::slotted()` matches only top-level slotted elements, never default content rendered inside the shadow root   | `manual`                                                  |
 | ST5  | `::part(name)` is an opt-in styling API; `exportparts` forwards a nested component's parts                     | `manual`                                                  |
-| ST6  | No `!important`; a load-bearing exception carries `/* stylelint-disable-next-line declaration-no-important */` and a comment saying why | `stylelint:declaration-no-important`                      |
+| ST6 | No `!important` unless the line above carries `/* stylelint-disable-next-line declaration-no-important */` | `stylelint:declaration-no-important` |
 | ST7  | No `transition: all` / `transition-property: all` — list the properties                                        | `stylelint:declaration-property-value-disallowed-list`    |
 | ST8  | `prefers-reduced-motion` is handled once, in `src/assets/css/base/html.css`                                     | `manual`                                                  |
 | ST9  | Global tokens (`:root` in `dist/mud/tokens/*.css`) inherit into shadow roots                                    | `manual`                                                  |
+| ST10 | One conceptual element is not styled through both `::slotted()` and an internal class | `manual` |
+| ST11 | A load-bearing `!important` disable comment is accompanied by a comment saying why | `manual` |
 
 Colour, spacing and token-tier rules are project rules, not Stencil rules: see
 [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) and the
@@ -123,7 +127,7 @@ Colour, spacing and token-tier rules are project rules, not Stencil rules: see
 }
 ```
 
-Don't style one conceptual element through both `::slotted()` and an internal class.
+Don't style one conceptual element through both `::slotted()` and an internal class (ST10).
 
 ### Slot default content — dual selectors
 
