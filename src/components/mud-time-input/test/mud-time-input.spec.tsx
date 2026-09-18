@@ -240,6 +240,24 @@ describe('mud-time-input', () => {
       expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(helper?.getAttribute('id'));
     });
 
+    it('shows a helper that is only slotted, with no helper-text', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-time-input label="x">
+          <span slot="helper">Format</span>
+        </mud-time-input>,
+      );
+      const hidden = root!.shadowRoot!.querySelector<HTMLSlotElement>('.helper-slot slot[name="helper"]');
+      expect(queryAssistive(root)).toBeNull();
+      // mock-doc does not fire slotchange on assignment the way a browser does;
+      // a dispatched one reaches the JSX-bound handler.
+      hidden!.dispatchEvent(new Event('slotchange'));
+      await waitForChanges();
+      const helper = root?.shadowRoot?.querySelector('.assistive-helper');
+      expect(helper?.querySelector('slot[name="helper"]')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.helper-slot')).toBeNull();
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(helper?.getAttribute('id'));
+    });
+
     it('suppresses the built-in error while disabled', async () => {
       const { root } = await render(<mud-time-input label="x" value="25" disabled></mud-time-input>);
       expect(queryAssistive(root)).toBeNull();

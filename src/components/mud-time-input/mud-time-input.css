@@ -364,6 +364,12 @@
   min-inline-size: 0;
 }
 
+/* The helper slot stays in the tree while there is no helper, so content
+   slotted into it still fires slotchange; it shows once moved into .assistive. */
+.helper-slot {
+  display: none;
+}
+
 .assistive-error {
   gap: var(--time-input-assistive-gap-error);
   color: var(--time-input-assistive-color-error);
