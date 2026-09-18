@@ -108,6 +108,17 @@ describe('mud-time-input', () => {
       expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
     });
 
+    it('moves the host aria-label onto the field and keeps it in sync', async () => {
+      const { root } = await render(<mud-time-input aria-label="Ora sosirii"></mud-time-input>);
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Ora sosirii');
+      if (typeof MutationObserver === 'undefined') return;
+      root?.setAttribute('aria-label', 'Ora plecării');
+      await flush();
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Ora plecării');
+    });
+
     it('marks the host has-label only with a visible label', async () => {
       const labelled = await render(<mud-time-input label="x"></mud-time-input>);
       expect(labelled.root?.classList.contains('has-label')).toBe(true);

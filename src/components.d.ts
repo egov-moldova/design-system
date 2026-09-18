@@ -3435,12 +3435,10 @@ export namespace Components {
      * that keeps the unfilled segments visible while the user types. The clock
      * button opens `mud-time-picker` (Figma Time frame 13807:8471).
      * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
      */
     interface MudTimeInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
         /**
           * Accessible label for the clear (×) button.
           * @default 'Șterge'
@@ -5443,6 +5441,8 @@ declare global {
      * that keeps the unfilled segments visible while the user types. The clock
      * button opens `mud-time-picker` (Figma Time frame 13807:8471).
      * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
      */
     interface HTMLMudTimeInputElement extends Components.MudTimeInput, HTMLStencilElement {
         addEventListener<K extends keyof HTMLMudTimeInputElementEventMap>(type: K, listener: (this: HTMLMudTimeInputElement, ev: MudTimeInputCustomEvent<HTMLMudTimeInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -9422,12 +9422,10 @@ declare namespace LocalJSX {
      * that keeps the unfilled segments visible while the user types. The clock
      * button opens `mud-time-picker` (Figma Time frame 13807:8471).
      * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
      */
     interface MudTimeInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
         /**
           * Accessible label for the clear (×) button.
           * @default 'Șterge'
@@ -10400,7 +10398,6 @@ declare namespace LocalJSX {
         "helperText": string;
         "errorText": string;
         "placeholder": string;
-        "ariaLabel": string;
         "clearable": boolean;
         "clearLabel": string;
         "triggerLabel": string;
@@ -11268,6 +11265,8 @@ declare module "@stencil/core" {
              * that keeps the unfilled segments visible while the user types. The clock
              * button opens `mud-time-picker` (Figma Time frame 13807:8471).
              * @element mud-time-input
+             * Without a visible label, name the field with `aria-label` on the element; it
+             * is moved onto the internal control.
              */
             "mud-time-input": LocalJSX.IntrinsicElements["mud-time-input"] & JSXBase.HTMLAttributes<HTMLMudTimeInputElement>;
             /**

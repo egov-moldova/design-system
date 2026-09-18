@@ -48,6 +48,9 @@ const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
  *
  * @element mud-time-input
  *
+ * Without a visible label, name the field with `aria-label` on the element; it
+ * is moved onto the internal control.
+ *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when an error message is shown.
  */
@@ -129,12 +132,6 @@ export class MudTimeInput {
   @Prop() placeholder?: string;
 
   /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
-  /**
    * Shows a trailing clear (×) button while the field holds a value (Figma
    * `👁️ Clear Button` axis). Never shown while empty, disabled or read-only.
    * @default false
@@ -173,6 +170,12 @@ export class MudTimeInput {
   @State() private validationError: TimeInputValidationError | null = null;
   /** Set when a form submit found the required field empty; cleared once it holds a value. */
   @State() private requiredShown: boolean = false;
+  /**
+   * The host's `aria-label`, moved onto the internal control. Read from the
+   * attribute rather than declared as a prop, which would shadow
+   * `HTMLElement.ariaLabel` (#88).
+   */
+  @State() private hostAriaLabel?: string;
 
   @Element() host!: HTMLMudTimeInputElement;
 
@@ -207,6 +210,7 @@ export class MudTimeInput {
   private readonly errorId = `mud-time-input-error-${this.instanceId}`;
   private readonly pickerId = `time-input-picker-${this.instanceId}`;
   private initialValue: string = '';
+  private ariaLabelObserver?: MutationObserver;
   /** Set when the picker opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
 
@@ -303,6 +307,19 @@ export class MudTimeInput {
     this.host.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.focus();
   }
 
+  connectedCallback() {
+    this.captureAriaLabel();
+    // Keep a later `aria-label` change in sync; removing it re-fires with no attribute.
+    if (typeof MutationObserver === 'undefined') return;
+    this.ariaLabelObserver = new MutationObserver(() => this.captureAriaLabel());
+    this.ariaLabelObserver.observe(this.host, { attributes: true, attributeFilter: ['aria-label'] });
+  }
+
+  disconnectedCallback() {
+    this.ariaLabelObserver?.disconnect();
+    this.ariaLabelObserver = undefined;
+  }
+
   componentWillLoad() {
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
@@ -339,6 +356,17 @@ export class MudTimeInput {
   /** Whether focus is on the field, its buttons or anything in its popover. */
   private hasFocusWithin(): boolean {
     return document.activeElement === this.host || Boolean(this.host.shadowRoot?.activeElement);
+  }
+
+  /**
+   * Move the host's `aria-label` onto the internal control: the host has no
+   * role, so a name left on it would not be exposed.
+   */
+  private captureAriaLabel() {
+    const value = this.host.getAttribute('aria-label');
+    if (value === null) return;
+    this.hostAriaLabel = value.trim() || undefined;
+    this.host.removeAttribute('aria-label');
   }
 
   private readonly togglePicker = (ev: MouseEvent) => {
@@ -624,7 +652,7 @@ export class MudTimeInput {
               inputMode="numeric"
               spellcheck={false}
               maxLength={TIME_MASK.pattern.length}
-              aria-label={!this.hasVisibleLabel() ? this.ariaLabel : undefined}
+              aria-label={!this.hasVisibleLabel() ? this.hostAriaLabel : undefined}
               aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
               aria-describedby={this.describedBy()}
               aria-invalid={isInvalid ? 'true' : null}
