@@ -16,7 +16,7 @@ import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputLocale, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -61,7 +61,7 @@ export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputLocale, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -799,25 +799,10 @@ export namespace Components {
          */
         "breakpoint": DateInputBreakpoint;
         /**
-          * Accessible label for the clear (×) button.
-          * @default 'Șterge'
-         */
-        "clearLabel": string;
-        /**
           * Shows a trailing clear (×) button while the field holds a value, wiping the entry in one click. Matches the Figma `clearButton` axis shown in the Focus / Filled states. The button never appears while the field is empty, disabled, or read-only. Opt-in, mirroring the Figma boolean axis.
           * @default false
          */
         "clearable": boolean;
-        /**
-          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
-          * @default 'Introduceți o dată validă'
-         */
-        "dateErrorText": string;
-        /**
-          * Message shown when a complete day segment is outside 01–31.
-          * @default 'Ziua trebuie să fie între 01 și 31'
-         */
-        "dayErrorText": string;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -845,6 +830,7 @@ export namespace Components {
           * Plain-text label. Use the `label` slot for richer content.
          */
         "label"?: string;
+        "locale": DateInputLocale;
         /**
           * Inclusive upper bound in ISO `YYYY-MM-DD`. The validator rejects entries above this date with an `out-of-range` error.
          */
@@ -854,28 +840,13 @@ export namespace Components {
          */
         "min"?: string;
         /**
-          * Message shown when a complete month segment is outside 01–12.
-          * @default 'Luna trebuie să fie între 01 și 12'
-         */
-        "monthErrorText": string;
-        /**
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
         /**
-          * Accessible name of the calendar dialog.
-          * @default 'Selectează data'
-         */
-        "pickerLabel": string;
-        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
-        /**
-          * Message shown when a complete date is outside `min` / `max`.
-          * @default 'Data este în afara intervalului permis'
-         */
-        "rangeErrorText": string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -901,11 +872,6 @@ export namespace Components {
           * @default 'default'
          */
         "variant": DateInputVariant;
-        /**
-          * Message shown when a complete year is outside the allowed years.
-          * @default 'Introduceți un an valid'
-         */
-        "yearErrorText": string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -1227,7 +1193,7 @@ export namespace Components {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
+          * @default HEADER_DEFAULT_LANGUAGES
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -1284,7 +1250,7 @@ export namespace Components {
         "languageLabel": string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
+          * @default HEADER_DEFAULT_LANGUAGES
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -5366,8 +5332,7 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K]?: never };
-    type OneOf3<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
+    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
 
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
@@ -6139,25 +6104,10 @@ declare namespace LocalJSX {
          */
         "breakpoint"?: DateInputBreakpoint;
         /**
-          * Accessible label for the clear (×) button.
-          * @default 'Șterge'
-         */
-        "clearLabel"?: string;
-        /**
           * Shows a trailing clear (×) button while the field holds a value, wiping the entry in one click. Matches the Figma `clearButton` axis shown in the Focus / Filled states. The button never appears while the field is empty, disabled, or read-only. Opt-in, mirroring the Figma boolean axis.
           * @default false
          */
         "clearable"?: boolean;
-        /**
-          * Message shown when a complete date does not exist (e.g. `31/02/2025`).
-          * @default 'Introduceți o dată validă'
-         */
-        "dateErrorText"?: string;
-        /**
-          * Message shown when a complete day segment is outside 01–31.
-          * @default 'Ziua trebuie să fie între 01 și 31'
-         */
-        "dayErrorText"?: string;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -6189,6 +6139,7 @@ declare namespace LocalJSX {
           * Plain-text label. Use the `label` slot for richer content.
          */
         "label"?: string;
+        "locale": DateInputLocale;
         /**
           * Inclusive upper bound in ISO `YYYY-MM-DD`. The validator rejects entries above this date with an `out-of-range` error.
          */
@@ -6197,11 +6148,6 @@ declare namespace LocalJSX {
           * Inclusive lower bound in ISO `YYYY-MM-DD`. The validator rejects entries below this date with an `out-of-range` error.
          */
         "min"?: string;
-        /**
-          * Message shown when a complete month segment is outside 01–12.
-          * @default 'Luna trebuie să fie între 01 și 12'
-         */
-        "monthErrorText"?: string;
         /**
           * Form-control `name`. Used during form submission.
          */
@@ -6227,19 +6173,9 @@ declare namespace LocalJSX {
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
-          * Accessible name of the calendar dialog.
-          * @default 'Selectează data'
-         */
-        "pickerLabel"?: string;
-        /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
         "placeholder"?: string;
-        /**
-          * Message shown when a complete date is outside `min` / `max`.
-          * @default 'Data este în afara intervalului permis'
-         */
-        "rangeErrorText"?: string;
         /**
           * Renders the field read-only. The control remains focusable and copyable.
           * @default false
@@ -6265,11 +6201,6 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: DateInputVariant;
-        /**
-          * Message shown when a complete year is outside the allowed years.
-          * @default 'Introduceți un an valid'
-         */
-        "yearErrorText"?: string;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -6635,7 +6566,7 @@ declare namespace LocalJSX {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
+          * @default HEADER_DEFAULT_LANGUAGES
          */
         "languages"?: readonly HeaderLanguage[];
         /**
@@ -6700,7 +6631,7 @@ declare namespace LocalJSX {
         "languageLabel"?: string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
+          * @default HEADER_DEFAULT_LANGUAGES
          */
         "languages"?: readonly HeaderLanguage[];
         /**
@@ -9439,13 +9370,7 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
         "clearable": boolean;
-        "clearLabel": string;
-        "pickerLabel": string;
-        "dayErrorText": string;
-        "monthErrorText": string;
-        "yearErrorText": string;
-        "dateErrorText": string;
-        "rangeErrorText": string;
+        "locale": DateInputLocale;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;
@@ -9962,7 +9887,7 @@ declare namespace LocalJSX {
         "mud-checkbox": Omit<MudCheckbox, keyof MudCheckboxAttributes> & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes]?: MudCheckbox[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `attr:${K}`]?: MudCheckboxAttributes[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `prop:${K}`]?: MudCheckbox[K] };
         "mud-chip": Omit<MudChip, keyof MudChipAttributes> & { [K in keyof MudChip & keyof MudChipAttributes]?: MudChip[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `attr:${K}`]?: MudChipAttributes[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `prop:${K}`]?: MudChip[K] };
         "mud-cookie-banner": Omit<MudCookieBanner, keyof MudCookieBannerAttributes> & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes]?: MudCookieBanner[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `attr:${K}`]?: MudCookieBannerAttributes[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `prop:${K}`]?: MudCookieBanner[K] };
-        "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] };
+        "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] } & OneOf<"locale", MudDateInput["locale"], MudDateInputAttributes["locale"]>;
         "mud-date-picker": Omit<MudDatePicker, keyof MudDatePickerAttributes> & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes]?: MudDatePicker[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `attr:${K}`]?: MudDatePickerAttributes[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `prop:${K}`]?: MudDatePicker[K] };
         "mud-file-input": Omit<MudFileInput, keyof MudFileInputAttributes> & { [K in keyof MudFileInput & keyof MudFileInputAttributes]?: MudFileInput[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `attr:${K}`]?: MudFileInputAttributes[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `prop:${K}`]?: MudFileInput[K] };
         "mud-file-item": Omit<MudFileItem, keyof MudFileItemAttributes> & { [K in keyof MudFileItem & keyof MudFileItemAttributes]?: MudFileItem[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `attr:${K}`]?: MudFileItemAttributes[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `prop:${K}`]?: MudFileItem[K] };
@@ -9972,7 +9897,7 @@ declare namespace LocalJSX {
         "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
-        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf3<"name", MudIcon["name"], MudIconAttributes["name"]>;
+        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf<"name", MudIcon["name"], MudIconAttributes["name"]>;
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
@@ -9997,7 +9922,7 @@ declare namespace LocalJSX {
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
         "mud-stepper": Omit<MudStepper, keyof MudStepperAttributes> & { [K in keyof MudStepper & keyof MudStepperAttributes]?: MudStepper[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `attr:${K}`]?: MudStepperAttributes[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `prop:${K}`]?: MudStepper[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
-        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf3<"value", MudTab["value"], MudTabAttributes["value"]>;
+        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
         "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
