@@ -761,6 +761,9 @@ export class MudDateInput {
   };
 
   private onHelperSlotChange = (ev: Event) => {
+    // The helper slot moves between the hidden holder and the helper row. The
+    // slot just removed also fires slotchange, now empty; it must not win.
+    if (!(ev.target as Node).isConnected) return;
     this.hasHelperSlot = this.slotHasContent(ev);
   };
 
@@ -1089,7 +1092,13 @@ export class MudDateInput {
               <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
-        ) : null}
+        ) : (
+          // With no helper yet the slot still has to be in the tree, or content
+          // slotted into it never fires slotchange and never shows.
+          <span class="helper-slot">
+            <slot name="helper" onSlotchange={this.onHelperSlotChange} />
+          </span>
+        )}
       </Host>
     );
   }
