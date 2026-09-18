@@ -167,6 +167,16 @@ describe('mud-time-picker', () => {
       expect(queryOption(root, 'minutes', 15)?.getAttribute('aria-disabled')).toBe('true');
     });
 
+    it('moves the minute tab stop off a minute the new hour disables', async () => {
+      const { root } = await render(<mud-time-picker value="10:15" max="17:10"></mud-time-picker>);
+      queryOption(root, 'minutes', 40)?.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      queryOption(root, 'hours', 17)?.click();
+      await flush();
+      expect(queryOption(root, 'minutes', 40)?.getAttribute('tabindex')).toBe('-1');
+      expect(queryColumn(root, 'minutes')?.querySelector('[tabindex="0"]')?.textContent).toBe('00');
+    });
+
     it('puts the tab stop on the first enabled option', async () => {
       const { root } = await render(<mud-time-picker min="09:30"></mud-time-picker>);
       expect(queryColumn(root, 'hours')?.querySelector('[tabindex="0"]')?.textContent).toBe('09');

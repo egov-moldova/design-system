@@ -14,12 +14,13 @@ const VISIBLE_ROWS = 7;
 
 const pad = (n: number): string => String(n).padStart(2, '0');
 
-/** Minutes since midnight of a valid `HH:MM`, else `null`. */
+/** Hours and minutes of a valid `HH:MM`, else `null`. */
 function parseTime(value: string | undefined | null): { hours: number; minutes: number } | null {
   const match = TIME_RE.exec(value ?? '');
   return match ? { hours: Number(match[1]), minutes: Number(match[2]) } : null;
 }
 
+/** Minutes since midnight of a valid `HH:MM`, else `null`. */
 function minuteOfDay(value: string | undefined | null): number | null {
   const time = parseTime(value);
   return time ? time.hours * 60 + time.minutes : null;
@@ -180,7 +181,8 @@ export class MudTimePicker {
   private tabStop(column: TimePickerColumn): number {
     const focused = column === 'hours' ? this.focusedHour : this.focusedMinute;
     const selected = column === 'hours' ? this.hours : this.minutes;
-    if (focused !== null) return focused;
+    // A newly picked hour can put the focused minute out of bounds.
+    if (focused !== null && !this.isDisabled(column, focused)) return focused;
     if (selected !== null && !this.isDisabled(column, selected)) return selected;
     return this.nextEnabled(column, -1, 1);
   }
@@ -239,6 +241,7 @@ export class MudTimePicker {
           const disabled = this.isDisabled(column, n);
           return (
             <div
+              key={`${column}-${n}`}
               class={{
                 'option': true,
                 'is-selected': isSelected,
@@ -273,8 +276,10 @@ export class MudTimePicker {
         <div class="columns" part="columns">
           {this.renderColumn('hours')}
           <div class="separator" part="separator" aria-hidden="true">
-            {Array.from({ length: VISIBLE_ROWS }, () => (
-              <span class="separator-cell">:</span>
+            {Array.from({ length: VISIBLE_ROWS }, (_, row) => (
+              <span key={row} class="separator-cell">
+                :
+              </span>
             ))}
           </div>
           {this.renderColumn('minutes')}
