@@ -249,6 +249,34 @@
       "expect": [{ "target": "mud-date-picker [part='month-dropdown']", "styles": { "backgroundColor": "#D9D9D9" } }]
     },
     {
+      "name": "year-dropdown-hover",
+      "node": "524:2618",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "hover", "target": "mud-date-picker [part='year-dropdown']" },
+      "expect": [
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "styles": { "backgroundColor": "#F5F5F5", "boxHeight": "40px", "borderTopLeftRadius": "4px" },
+          "note": "Year chip I524:2618;229:5115;229:5108."
+        }
+      ]
+    },
+    {
+      "name": "year-dropdown-active",
+      "node": "524:2821",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "press", "target": "mud-date-picker [part='year-dropdown']" },
+      "expect": [
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "styles": { "backgroundColor": "#D9D9D9" },
+          "note": "Year chip I524:2821;229:5115;229:5108."
+        }
+      ]
+    },
+    {
       "name": "month-picker",
       "node": "524:1973",
       "pixel": false,
