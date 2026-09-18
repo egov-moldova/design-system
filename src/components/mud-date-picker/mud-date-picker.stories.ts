@@ -238,7 +238,7 @@ export const Docked: Story = {
   name: 'Docked',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;">
-      <mud-date-input label="Selectează data" value="23/05/2026"></mud-date-input>
+      <mud-date-input locale="ro-RO" label="Selectează data" value="23/05/2026"></mud-date-input>
       <div style="margin-top: var(--spacing-4);">
         <mud-date-picker mode="single" breakpoint="docked" value="2026-05-23" locale="ro-RO"></mud-date-picker>
       </div>
@@ -259,7 +259,7 @@ export const ComposedWithDateInput: Story = {
   name: 'ComposedWithDateInput',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;" id="composed-host">
-      <mud-date-input id="composed-input" label="Selectează data" placeholder="ZZ/LL/AAAA"></mud-date-input>
+      <mud-date-input locale="ro-RO" id="composed-input" label="Selectează data" placeholder="ZZ/LL/AAAA"></mud-date-input>
       <div style="margin-top: var(--spacing-8);">
         <mud-date-picker id="composed-picker" mode="single" breakpoint="desktop" locale="ro-RO"></mud-date-picker>
       </div>
