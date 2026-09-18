@@ -87,7 +87,9 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
 
 ## Decision
 
-- Range: **A** (`mode`). It matches the existing picker contract.
+- Range: **A** (`mode`) at first, then replaced by `type="default|advanced|date-range"`, the three
+  types the Date Picker page names (470:32035, user decision 2026-09-18). `type` also replaces a
+  short-lived `header-style` prop; neither was released.
 - Time split: **A** — `mud-time-input` + `mud-time-picker` (user decision, 2026-09-18).
 - Date-picker drift: **fix all 38 findings in this branch** (user decision). This includes the
   standalone picker: the Today footer no longer renders by default.
@@ -97,7 +99,7 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
   the picked hour (user report, 2026-09-18 — focus bounced back to the minutes). Picking a minute
   commits and closes (user decision).
 
-### Range contract (A)
+### Range contract (`type="date-range"`)
 
 - `value` holds the display string `DD/MM/YYYY - DD/MM/YYYY` (separator ` - `, per `483:5708`);
   the form value is that string, as in single mode.
@@ -108,7 +110,7 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
   with an `order-error-text` prop. `min` / `max` bound both ends.
 - Events: `DateInputChangeDetail` gains `isoStart` / `isoEnd` (`null` until valid); in range mode
   `isoValue` is the ISO 8601 interval `YYYY-MM-DD/YYYY-MM-DD`. Single mode is unchanged.
-- Picker: `mode="range"`, start/end passed through. The field value changes only when both ends
+- Picker: `mode="range"` on the inner `mud-date-picker`, start/end passed through. The field value changes only when both ends
   are picked; the popover then closes (selection-based dismissal). Outside click or Escape
   mid-selection closes without changing the value (Dismissal section).
 
@@ -161,8 +163,34 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
       and 1.36:1 → on-color tokens) and focus lost to `<body>` on Escape from the month / year
       view (the day grid now always keeps one tab stop). Verified with a real Escape key press.
 
-Suite: `vitest --project spec` 54 files, 2113 tests. Spec line coverage: time-picker 100%,
-time-input 96%, date-input 92%, date-picker 89%.
+- [x] `mud-date-picker` year navigation: the year is reachable from the month view (chip and
+      title), 20px navigation chevrons (Figma), year chip hover / pressed states in the manifest.
+- [x] `mud-date-input` `type`: `default` (title header), `advanced` (month / year chips),
+      `date-range`; Types story and manifest states `type-default-open` (487:7732),
+      `type-advanced-open` (487:7753), `breakpoint-mobile-picker` (797:37061).
+- [x] `/audit-component --deep` findings (all four components), each its own commit:
+      - dark `text.danger.default` → `palette.red.400` (5.98:1 on `#1e1e1e`), new contrast pairs;
+      - required fields: `valueMissing` validity, a required message on `invalid`, errors
+        announced through a polite live region (both inputs);
+      - the popover closes when focus leaves the field and its popover (both inputs);
+      - `mud-time-input` reads `aria-label` from the host instead of an `ariaLabel` prop;
+      - stencil-contract / antipattern / story warnings on all four components;
+      - `mud-time-input` manifest masks the mock field text (4 borderline states now pass).
+- [x] Slotted helper: a helper given only through `slot="helper"` never showed in either input
+      (the slot rendered only once the helper was known). The slot now stays in the tree in a
+      hidden holder; a removed slot's empty `slotchange` is ignored. Verified in the browser.
+- [x] `web-components` demo: pages for `mud-time-input` and `mud-time-picker`, date-input Types,
+      date-picker `today-shortcut` and `header-style="dropdown"`; a time-picker story inside a
+      time input.
+
+Final `run-all` (L1, Storybook running): 0 errors on all four components. Remaining warnings are
+false positives: `A11Y-MISSING-ACCESSIBLE-NAME` on the date-input / time-input host (every field
+gets it — the script counts the role-less host; the input inside is named) and
+`ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA` on date-input (see Decisions). `yarn build` leaves the
+generated files unchanged; `yarn validate.package` 18/18; `yarn audit:contrast` 23 pass.
+
+Suite: `vitest --project spec` 54 files, 2150 tests. Spec line coverage (at the first PR push):
+time-picker 100%, time-input 96%, date-input 92%, date-picker 89%.
 
 ## Decisions made during implementation
 
@@ -182,6 +210,10 @@ time-input 96%, date-input 92%, date-picker 89%.
   laid out like Figma's mock January 2025.
 - `mud-time-input` has a `trigger-label` prop (the clock button's name); `mud-date-input` still
   hard-codes "Deschide calendarul" and `locale="ro-RO"`.
+- `mud-date-input` keeps its `ariaLabel` prop: moving it to a host-attribute read (as
+  `mud-time-input` now does) is a breaking change tracked in #88.
+- The `ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA` warning on `mud-date-input` is a false positive:
+  the flagged `return null` is in the `toIsoDate` helper, not in `render()`.
 
 ## Not verified
 
@@ -193,9 +225,9 @@ time-input 96%, date-input 92%, date-picker 89%.
   over a grid that runs to 2031 (#70).
 - `figma-refs --check`: no `FIGMA_TOKEN` here; the new references were exported at 2x through
   the Figma MCP instead (`.audit-figma/`, git-ignored), so no `export.json` version stamp.
-- The `web-components` demo has no pages for the time components or the range mode yet.
-- Dark-mode error text: `color.text.danger.default` (`#f04438`) on `#1e1e1e` is 4.44:1, under
-  4.5:1 — a semantic token shared by every field (`mud-text-input`, `mud-date-input`,
-  `mud-time-input`), left for design.
+- Dark-mode error text is fixed in `tokens/core.dark/color.tokens.json` only. A Tokenhaus sync
+  overwrites that file, so the Figma variable needs the same change (`palette.red.400`).
+- The slotted-helper bug exists in `mud-text-input`, `mud-textarea`, `mud-select`,
+  `mud-phone-input` and `mud-numeric-input` too; not changed here (outside this branch's scope).
 - Range start picked: no live announcement asks for the end date (SC 4.1.3 advisory); the title
   region only announces navigation.
