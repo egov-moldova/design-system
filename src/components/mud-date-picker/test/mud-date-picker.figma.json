@@ -251,10 +251,17 @@
     {
       "name": "month-picker",
       "node": "524:1973",
+      "pixel": false,
       "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
       "interaction": [{ "type": "click", "target": "mud-date-picker [part='month-dropdown']" }],
       "expect": [
-        { "target": "mud-date-picker .header", "absent": true, "note": "Month Picker variant has no .picker-header." },
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "node": "602:4076",
+          "styles": { "textContent": "2025" },
+          "note": "The Month Picker variant (524:1973) draws no header, but the Behavior text 602:4076 says tapping the year label within the month view opens the year view; without it the year is unreachable from the month view. The header keeps the year chip, so this state is style-only (pixel: false). Design question."
+        },
+        { "target": "mud-date-picker [part='month-dropdown']", "absent": true },
         { "target": "mud-date-picker .footer", "absent": true },
         {
           "target": "mud-date-picker .month-grid",

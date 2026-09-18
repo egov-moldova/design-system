@@ -403,6 +403,19 @@ describe('mud-date-picker', () => {
       expect(root?.shadowRoot?.querySelector('[part="month-cell"]')).toBeTruthy();
     });
 
+    it('titles the month view with its year and pages it by year', async () => {
+      const { root } = await render(<mud-date-picker value="2026-05-15"></mud-date-picker>);
+      queryTitle(root)?.click();
+      await flush();
+      expect(queryTitle(root)?.textContent).toBe('2026');
+      const next = root?.shadowRoot?.querySelectorAll<HTMLButtonElement>('.nav-button')[1];
+      expect(next?.getAttribute('aria-label')).toBe('2027');
+      next?.click();
+      await flush();
+      expect(queryTitle(root)?.textContent).toBe('2027');
+      expect(root?.shadowRoot?.querySelector('[part="month-cell"]')).toBeTruthy();
+    });
+
     it('clicking the title again opens the year picker', async () => {
       const { root } = await render(<mud-date-picker value="2026-05-15"></mud-date-picker>);
       const title = queryTitle(root);
@@ -538,7 +551,7 @@ describe('mud-date-picker', () => {
       expect(root?.shadowRoot?.querySelectorAll('.dropdown-trigger').length).toBe(2);
     });
 
-    it('opens the month grid, without a header, from the month dropdown chip', async () => {
+    it('opens the month grid from the month chip, keeping only the year chip in the header', async () => {
       const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
       const monthChip = root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="month-dropdown"]');
       // mock-doc keeps no activeElement: record which element focus() was called on.
@@ -546,11 +559,30 @@ describe('mud-date-picker', () => {
       monthChip?.click();
       await flush();
       expect(root?.shadowRoot?.querySelector('.month-grid')).toBeTruthy();
-      // Figma Month Picker (524:1973) has no .picker-header.
-      expect(root?.shadowRoot?.querySelector('.header')).toBeNull();
+      // "Tapping the year label within the month view transitions to a year
+      // selection view" (Figma 602:4076): the year chip stays, the month chip goes.
+      expect(root?.shadowRoot?.querySelector('[part="month-dropdown"]')).toBeNull();
+      expect(root?.shadowRoot?.querySelector('[part="year-dropdown"]')?.textContent).toBe('2026');
       // The chip left the DOM, so focus moves to the selected month.
       expect((focus.mock.contexts.at(-1) as HTMLElement | undefined)?.textContent).toBe('Mai');
       focus.mockRestore();
+    });
+
+    it('the year chip of the month view opens the years, and a year picked there returns to the months', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="month-dropdown"]')?.click();
+      await flush();
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="year-dropdown"]')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.year-grid')).toBeTruthy();
+      root?.shadowRoot?.querySelectorAll<HTMLButtonElement>('[part="year-cell"]')[3]?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.month-grid')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('[part="year-dropdown"]')?.textContent).toBe('2023');
+      root?.shadowRoot?.querySelectorAll<HTMLButtonElement>('[part="month-cell"]')[0]?.click();
+      await flush();
+      expect(queryCells(root).length).toBe(42);
+      expect(root?.shadowRoot?.querySelector('[part="month-dropdown"]')?.textContent).toBe('Ianuarie');
     });
 
     it('returns to the day view after picking a year from the year chip', async () => {

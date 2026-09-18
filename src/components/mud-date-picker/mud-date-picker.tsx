@@ -197,6 +197,8 @@ export class MudDatePicker {
    * cell).
    */
   private focusOnRender: string | null = null;
+  /** Where picking a year from the year chip leads back to: the view the chip was in. */
+  private yearChipReturn: DatePickerView = 'days';
 
   componentWillLoad() {
     this.captureAriaLabel();
@@ -580,14 +582,24 @@ export class MudDatePicker {
     const yearBase = this.yearGridBase();
     const decadeLabel = (base: number) => `${base}-${base + YEARS_PER_PAGE_STEP}`;
     const isYears = this.view === 'years';
-    const onPrev = () => (isYears ? this.goToYear(-YEARS_PER_PAGE_STEP) : this.goToMonth(-1));
-    const onNext = () => (isYears ? this.goToYear(YEARS_PER_PAGE_STEP) : this.goToMonth(1));
+    const isMonths = this.view === 'months';
+    // The arrows page by decade in the year view, by year in the month view
+    // and by month in the day view.
+    const step = isYears ? YEARS_PER_PAGE_STEP : 1;
+    const onPrev = () => (isYears || isMonths ? this.goToYear(-step) : this.goToMonth(-1));
+    const onNext = () => (isYears || isMonths ? this.goToYear(step) : this.goToMonth(1));
     const monthAria = (delta: number) =>
       new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
         new Date(Date.UTC(this.viewYear, this.viewMonth + delta, 1)),
       );
-    const prevAria = isYears ? decadeLabel(yearBase - YEARS_PER_PAGE_STEP) : monthAria(-1);
-    const nextAria = isYears ? decadeLabel(yearBase + YEARS_PER_PAGE_STEP) : monthAria(1);
+    const navAria = (direction: 1 | -1) =>
+      isYears
+        ? decadeLabel(yearBase + direction * YEARS_PER_PAGE_STEP)
+        : isMonths
+          ? String(this.viewYear + direction)
+          : monthAria(direction);
+    const prevAria = navAria(-1);
+    const nextAria = navAria(1);
     return (
       <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
@@ -597,7 +609,9 @@ export class MudDatePicker {
           ? this.renderHeaderTitle(decadeLabel(yearBase))
           : this.headerStyle === 'dropdown'
             ? this.renderHeaderDropdowns()
-            : this.renderHeaderTitle(monthYear)}
+            : // The month view titles its year, the label Figma's Behavior text
+              // (602:4076) taps to reach the year view.
+              this.renderHeaderTitle(isMonths ? String(this.viewYear) : monthYear)}
         <button type="button" class="nav-button" part="nav-button" aria-label={nextAria} onClick={onNext}>
           <mud-icon name="chevron-right-small" size={20}></mud-icon>
         </button>
@@ -628,27 +642,33 @@ export class MudDatePicker {
     );
     return (
       <div class="header-dropdowns" part="header-dropdowns" id={this.titleId}>
-        {/* Each chip swaps the day grid for its own view, and the chips leave
-            the DOM with it (the Month Picker 524:1973 has no header; the year
-            view shows the decade title), so `switchView` re-homes focus. */}
-        <button
-          type="button"
-          class="dropdown-trigger"
-          part="month-dropdown"
-          aria-haspopup="grid"
-          aria-expanded="false"
-          onClick={() => this.switchView('months')}
-        >
-          <span class="dropdown-label">{monthName}</span>
-          <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
-        </button>
+        {/* Each chip swaps the grid for its own view and the chip it came from
+            leaves the DOM, so `switchView` re-homes focus. The month view keeps
+            only the year chip: "Tapping the year label within the month view
+            transitions to a year selection view" (Figma 602:4076). */}
+        {this.view === 'months' ? null : (
+          <button
+            type="button"
+            class="dropdown-trigger"
+            part="month-dropdown"
+            aria-haspopup="grid"
+            aria-expanded="false"
+            onClick={() => this.switchView('months')}
+          >
+            <span class="dropdown-label">{monthName}</span>
+            <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
+          </button>
+        )}
         <button
           type="button"
           class="dropdown-trigger"
           part="year-dropdown"
           aria-haspopup="grid"
           aria-expanded="false"
-          onClick={() => this.switchView('years')}
+          onClick={() => {
+            this.yearChipReturn = this.view === 'months' ? 'months' : 'days';
+            this.switchView('years');
+          }}
         >
           <span class="dropdown-label">{this.viewYear}</span>
           <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
@@ -779,8 +799,8 @@ export class MudDatePicker {
               onClick={() => {
                 this.viewYear = year;
                 // The title cycles days → months → years, so it continues to the
-                // months; the year chip was a shortcut and returns to the days.
-                this.switchView(this.headerStyle === 'dropdown' ? 'days' : 'months');
+                // months; the year chip returns to the view it was opened from.
+                this.switchView(this.headerStyle === 'dropdown' ? this.yearChipReturn : 'months');
                 this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
               }}
             >
@@ -825,12 +845,10 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
-    // The Month Picker variant (524:1973) — reached from the month chip — has no header.
-    const showHeader = !(this.view === 'months' && this.headerStyle === 'dropdown');
     return (
       <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
-        {showHeader ? this.renderHeader() : null}
+        {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}
         {this.view === 'months' ? this.renderMonthGrid() : null}
         {this.view === 'years' ? this.renderYearGrid() : null}
