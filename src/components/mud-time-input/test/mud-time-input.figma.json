@@ -1,5 +1,5 @@
 {
-  "$comment": "Figma state manifest for mud-time-input — values copied from the time-input component set (13810:9195) and the Time frame (13807:8471). The set mirrors date-input (184:823); icon colours match mud-date-input's exported SVGs. Medium destructive and non-default Medium states are style-only (pixel: false) — Large covers the pixels.",
+  "$comment": "Figma state manifest for mud-time-input — values copied from the time-input component set (13810:9195) and the Time frame (13807:8471). The set mirrors date-input (184:823); icon colours match mud-date-input's exported SVGs. Medium destructive and non-default Medium states are style-only (pixel: false) — Large covers the pixels. Masks cover mock data only: the field text in the focus and filled states (Figma's Filled state reads HH:MM and its focus caret is a '|' glyph that shifts the text); style parity still checks the field.",
   "component": "mud-time-input",
   "figma": {
     "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
@@ -156,6 +156,7 @@
     {
       "name": "lg-default-focus",
       "node": "13810:9232",
+      "mask": ["mud-time-input .field"],
       "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\"></mud-time-input></div>",
       "interaction": {
         "type": "focus",
@@ -234,6 +235,7 @@
     {
       "name": "lg-default-filled",
       "node": "13810:9256",
+      "mask": ["mud-time-input .field"],
       "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" value=\"11:15\"></mud-time-input></div>",
       "expect": [
         {
@@ -503,6 +505,7 @@
     {
       "name": "lg-destructive-focus",
       "node": "13810:9364",
+      "mask": ["mud-time-input .field"],
       "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
       "interaction": {
         "type": "focus",
@@ -581,6 +584,7 @@
     {
       "name": "lg-destructive-filled",
       "node": "13810:9344",
+      "mask": ["mud-time-input .field"],
       "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\" value=\"11:15\"></mud-time-input></div>",
       "expect": [
         {
