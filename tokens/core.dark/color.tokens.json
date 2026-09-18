@@ -330,7 +330,7 @@
       },
       "danger": {
         "default": {
-          "$value": "{palette.red.500}",
+          "$value": "{palette.red.400}",
           "$type": "color"
         },
         "on-secondary": {
