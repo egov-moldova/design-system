@@ -32,8 +32,8 @@ function minuteOfDay(value: string | undefined | null): number | null {
  *
  * The selected value of the column being edited is solid (`.day-cell` Active);
  * the other column's selected value is tinted (`.day-cell` Middle). Picking an
- * hour moves on to the minutes; picking a minute completes the time and fires
- * `mudChange`.
+ * hour moves on to the minutes while no minute is chosen, and stays on the hour
+ * when one is; picking a minute completes the time and fires `mudChange`.
  *
  * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
  * column, Home / End jump to its ends, Left / Right switch columns, Enter or
@@ -118,8 +118,7 @@ export class MudTimePicker {
         const other: TimePickerColumn = column === 'hours' ? 'minutes' : 'hours';
         if ((ev.key === 'ArrowRight') !== (column === 'hours')) return;
         ev.preventDefault();
-        this.activeColumn = other;
-        this.focusColumnOnRender = other;
+        this.editColumn(other);
         return;
       }
       case 'Enter':
@@ -187,6 +186,18 @@ export class MudTimePicker {
     return this.nextEnabled(column, -1, 1);
   }
 
+  /**
+   * Make `column` the one being edited and focus its tab stop after the next
+   * render. The tab stop is fixed here, in the event handler, so the focus that
+   * lands during `componentDidRender` changes no state mid-render.
+   */
+  private editColumn(column: TimePickerColumn) {
+    this.activeColumn = column;
+    if (column === 'hours') this.focusedHour = this.tabStop('hours');
+    else this.focusedMinute = this.tabStop('minutes');
+    this.focusColumnOnRender = column;
+  }
+
   private moveFocus(column: TimePickerColumn, n: number) {
     if (column === 'hours') this.focusedHour = n;
     else this.focusedMinute = n;
@@ -200,15 +211,20 @@ export class MudTimePicker {
       this.focusedHour = n;
       // A minute that the new hour puts out of bounds cannot stay selected.
       if (this.minutes !== null && this.isDisabled('minutes', this.minutes)) this.minutes = null;
-      this.activeColumn = 'minutes';
-      this.focusColumnOnRender = 'minutes';
+      if (this.minutes === null) {
+        // First pass: move on to the minutes.
+        this.editColumn('minutes');
+      } else {
+        // Re-editing a complete time: stay on the hour just picked (the state
+        // Figma draws, 13810:9450) instead of pulling focus away to the minutes.
+        this.activeColumn = 'hours';
+      }
       return;
     }
     this.minutes = n;
     this.focusedMinute = n;
     if (this.hours === null) {
-      this.activeColumn = 'hours';
-      this.focusColumnOnRender = 'hours';
+      this.editColumn('hours');
       return;
     }
     const value = `${pad(this.hours)}:${pad(n)}`;

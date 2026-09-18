@@ -3540,8 +3540,8 @@ export namespace Components {
      * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
      * The selected value of the column being edited is solid (`.day-cell` Active);
      * the other column's selected value is tinted (`.day-cell` Middle). Picking an
-     * hour moves on to the minutes; picking a minute completes the time and fires
-     * `mudChange`.
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
      * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
      * column, Home / End jump to its ends, Left / Right switch columns, Enter or
      * Space picks the focused option.
@@ -5456,8 +5456,8 @@ declare global {
      * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
      * The selected value of the column being edited is solid (`.day-cell` Active);
      * the other column's selected value is tinted (`.day-cell` Middle). Picking an
-     * hour moves on to the minutes; picking a minute completes the time and fires
-     * `mudChange`.
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
      * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
      * column, Home / End jump to its ends, Left / Right switch columns, Enter or
      * Space picks the focused option.
@@ -9541,8 +9541,8 @@ declare namespace LocalJSX {
      * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
      * The selected value of the column being edited is solid (`.day-cell` Active);
      * the other column's selected value is tinted (`.day-cell` Middle). Picking an
-     * hour moves on to the minutes; picking a minute completes the time and fires
-     * `mudChange`.
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
      * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
      * column, Home / End jump to its ends, Left / Right switch columns, Enter or
      * Space picks the focused option.
@@ -11253,8 +11253,8 @@ declare module "@stencil/core" {
              * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
              * The selected value of the column being edited is solid (`.day-cell` Active);
              * the other column's selected value is tinted (`.day-cell` Middle). Picking an
-             * hour moves on to the minutes; picking a minute completes the time and fires
-             * `mudChange`.
+             * hour moves on to the minutes while no minute is chosen, and stays on the hour
+             * when one is; picking a minute completes the time and fires `mudChange`.
              * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
              * column, Home / End jump to its ends, Left / Right switch columns, Enter or
              * Space picks the focused option.

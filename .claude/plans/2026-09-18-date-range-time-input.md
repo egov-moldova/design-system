@@ -93,7 +93,9 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
   standalone picker: the Today footer no longer renders by default.
 - Time-panel selection: the selected value of the column being edited is solid (Figma `Active`,
   `158:400`); the other column's selected value is tinted (Figma `Middle`, `159:901`). Picking an
-  hour moves focus to the minutes; picking a minute commits and closes (user decision).
+  hour moves focus to the minutes while no minute is chosen; re-editing a complete time stays on
+  the picked hour (user report, 2026-09-18 — focus bounced back to the minutes). Picking a minute
+  commits and closes (user decision).
 
 ### Range contract (A)
 

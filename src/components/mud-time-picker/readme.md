@@ -12,8 +12,8 @@ Time picker — an hour column and a minute column, the dropdown of
 
 The selected value of the column being edited is solid (`.day-cell` Active);
 the other column's selected value is tinted (`.day-cell` Middle). Picking an
-hour moves on to the minutes; picking a minute completes the time and fires
-`mudChange`.
+hour moves on to the minutes while no minute is chosen, and stays on the hour
+when one is; picking a minute completes the time and fires `mudChange`.
 
 Keyboard: each column is a listbox with one tab stop. Up / Down move within a
 column, Home / End jump to its ends, Left / Right switch columns, Enter or
