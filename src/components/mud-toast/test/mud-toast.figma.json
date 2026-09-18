@@ -1,0 +1,816 @@
+{
+  "$comment": "Figma state manifest for mud-toast — values copied from the toast component set (75:425: Style Info/Success/Warning/Error × Content w/ Heading/Text-only) and the Toast Message documentation frame (560:18464: Variations, States). Hover (575:32778) is identical to default apart from the cursor overlay, so it has no state. Icon glyph colours are not in the node data — the pixel diff covers them.",
+  "component": "mud-toast",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-toast--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-toast",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "info-heading",
+      "node": "75:424",
+      "html": "<mud-toast variant=\"info\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "75:424",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "16px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#0058D2"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "75:415",
+          "styles": {
+            "columnGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:19942",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "75:416",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "75:417",
+          "styles": {
+            "boxWidth": "258px",
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .heading",
+          "node": "100:798",
+          "styles": {
+            "rowGap": "6px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "75:418",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.18px",
+            "color": "#FFFFFF"
+          },
+          "note": "Desktop/Heading/H5 letterSpacing -0.01em at 18px = -0.18px."
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "75:419",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "75:420",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "info-text-only",
+      "node": "77:534",
+      "html": "<mud-toast variant=\"info\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:534",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#0058D2",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:535",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:19941",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:536",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:878",
+          "styles": {
+            "rowGap": "4px"
+          }
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "77:539",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF",
+            "boxWidth": "258px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "77:534",
+          "absent": true,
+          "note": "Content=Text-only has no heading layer."
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "77:540",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "success-heading",
+      "node": "75:426",
+      "html": "<mud-toast variant=\"success\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "75:426",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "16px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#039855"
+          },
+          "note": "Figma fills Success with #039855. toast.tokens.json darkens it to positive.default-hover (#027948) for white-text contrast — a deliberate a11y deviation, reported, not silently accepted."
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "75:427",
+          "styles": {
+            "columnGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20008",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "75:428",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:807",
+          "styles": {
+            "boxWidth": "258px",
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .heading",
+          "node": "100:808",
+          "styles": {
+            "rowGap": "6px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "100:809",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.18px",
+            "color": "#FFFFFF"
+          },
+          "note": "Desktop/Heading/H5 letterSpacing -0.01em at 18px = -0.18px."
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:810",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "75:432",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "success-text-only",
+      "node": "77:542",
+      "html": "<mud-toast variant=\"success\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:542",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#039855",
+            "alignItems": "center"
+          },
+          "note": "Figma fills Success with #039855. toast.tokens.json darkens it to positive.default-hover (#027948) for white-text contrast — a deliberate a11y deviation, reported, not silently accepted."
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:543",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20007",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:544",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:883",
+          "styles": {
+            "rowGap": "4px"
+          }
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:884",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF",
+            "boxWidth": "258px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "77:542",
+          "absent": true,
+          "note": "Content=Text-only has no heading layer."
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "77:548",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-heading",
+      "node": "77:438",
+      "html": "<mud-toast variant=\"warning\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:438",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "16px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#FEC84B"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:439",
+          "styles": {
+            "columnGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20018",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:440",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:815",
+          "styles": {
+            "boxWidth": "258px",
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .heading",
+          "node": "100:816",
+          "styles": {
+            "rowGap": "6px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "100:817",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.18px",
+            "color": "#121212"
+          },
+          "note": "Desktop/Heading/H5 letterSpacing -0.01em at 18px = -0.18px."
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:818",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "574:30072",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-text-only",
+      "node": "77:550",
+      "html": "<mud-toast variant=\"warning\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:550",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#FEC84B",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:551",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20017",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:552",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:911",
+          "styles": {
+            "rowGap": "4px"
+          }
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:912",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212",
+            "boxWidth": "258px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "77:550",
+          "absent": true,
+          "note": "Content=Text-only has no heading layer."
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "77:556",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "error-heading",
+      "node": "77:448",
+      "html": "<mud-toast variant=\"error\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:448",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "16px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#D92D20"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:449",
+          "styles": {
+            "columnGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20028",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:450",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:823",
+          "styles": {
+            "boxWidth": "258px",
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast .heading",
+          "node": "100:824",
+          "styles": {
+            "rowGap": "6px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "100:825",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.18px",
+            "color": "#FFFFFF"
+          },
+          "note": "Desktop/Heading/H5 letterSpacing -0.01em at 18px = -0.18px."
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:826",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "77:454",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "error-text-only",
+      "node": "77:558",
+      "html": "<mud-toast variant=\"error\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "77:558",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "borderBottomRightRadius": "8px",
+            "backgroundColor": "#D92D20",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .main",
+          "node": "77:559",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "565:20027",
+          "styles": {
+            "paddingTop": "2px",
+            "paddingRight": "2px",
+            "paddingBottom": "2px",
+            "paddingLeft": "2px"
+          }
+        },
+        {
+          "target": "mud-toast .icon mud-icon",
+          "node": "77:560",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "100:939",
+          "styles": {
+            "rowGap": "4px"
+          }
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "100:940",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF",
+            "boxWidth": "258px"
+          }
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "77:558",
+          "absent": true,
+          "note": "Content=Text-only has no heading layer."
+        },
+        {
+          "target": "mud-toast .close-icon",
+          "node": "77:564",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "info-heading-link",
+      "node": "564:19801",
+      "html": "<mud-toast variant=\"info\" title-text=\"Message heading\">We inform you about service changes.<mud-link slot=\"actions\" href=\"#\" variant=\"white\">Click here</mud-link></mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .content",
+          "note": "Layer I564:19801;75:417 (text column). ",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-toast mud-link .label",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#FFFFFF"
+          },
+          "note": "Layer I564:19801;100:784;564:19464 — link Style=White, Desktop/Body/Default."
+        }
+      ]
+    },
+    {
+      "name": "info-heading-no-close",
+      "node": "564:19814",
+      "html": "<mud-toast variant=\"info\" closable=\"false\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .close",
+          "node": "564:19814",
+          "absent": true,
+          "note": "👁️ Close = false hides 16/cross-large."
+        },
+        {
+          "target": "mud-toast",
+          "node": "564:19814",
+          "styles": {
+            "boxWidth": "350px",
+            "paddingBottom": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "info-text-only-link",
+      "node": "567:28777",
+      "html": "<mud-toast variant=\"info\">We inform you about service changes.<mud-link slot=\"actions\" href=\"#\" variant=\"white\">Click here</mud-link></mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .content",
+          "note": "Layer I567:28777;100:878 (text column). ",
+          "styles": {
+            "rowGap": "4px"
+          }
+        },
+        {
+          "target": "mud-toast",
+          "node": "567:28777",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "alignItems": "center"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-heading-close-focus",
+      "node": "575:32853",
+      "html": "<mud-toast variant=\"warning\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-toast .close"
+      },
+      "expect": [
+        {
+          "target": "mud-toast .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px",
+            "borderTopLeftRadius": "0px",
+            "boxShadow": "0px 0px 0px 1px #FFFFFF, 0px 0px 0px 3px #3379DB"
+          },
+          "note": "Layer I575:32853;574:30072. Figma draws Focus Ring/Small on the 16×16 cross-large glyph itself (stacked spreads rendered white-inside-blue, see skill gotcha). The Target Sizes section (578:33213) separately asks for a 32×32 pointer target, so the button keeps that size and the ring sits on .close-icon."
+        }
+      ]
+    }
+  ]
+}
