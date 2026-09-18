@@ -533,6 +533,10 @@ export class MudDatePicker {
    */
   private switchView(next: DatePickerView, focus?: string) {
     this.view = next;
+    // Fix the day that will take focus now, in the event handler: the focus
+    // lands during componentDidRender, where changing `focusedIso` would be a
+    // state change mid-render.
+    if (next === 'days' && !focus) this.focusedIso = this.dayTabStop(this.buildDayGrid());
     this.focusOnRender = focus ?? (next === 'days' ? 'button.day-cell[tabindex="0"]' : '.picker-cell.is-selected');
   }
 
