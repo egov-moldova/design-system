@@ -14,7 +14,7 @@ type DatePickerArgs = {
   max: string;
   disabledDates: string;
   locale: string;
-  hideTodayShortcut: boolean;
+  todayShortcut: boolean;
   firstDayOfWeek: number;
 };
 
@@ -33,7 +33,7 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
     ${args.disabledDates ? `disabled-dates='${args.disabledDates}'` : ''}
     locale="${args.locale}"
     first-day-of-week="${args.firstDayOfWeek}"
-    ${args.hideTodayShortcut ? 'hide-today-shortcut' : ''}
+    ${args.todayShortcut ? 'today-shortcut' : ''}
   ></mud-date-picker>
 `;
 
@@ -67,7 +67,11 @@ const meta: Meta<DatePickerArgs> = {
     disabledDates: { control: 'text', description: 'JSON-encoded array of ISO dates to disable.' },
     locale: { control: 'text', description: 'BCP-47 locale tag (e.g. ro-RO, en-US).' },
     firstDayOfWeek: { control: 'number', description: '0=Sunday, 1=Monday (default).' },
-    hideTodayShortcut: { control: 'boolean' },
+    todayShortcut: {
+      control: 'boolean',
+      description: 'Show the "Today" quick-jump shortcut. Not part of the Figma spec, so off by default.',
+      table: { defaultValue: { summary: 'false' } },
+    },
   },
 };
 
@@ -89,7 +93,7 @@ export const Default: Story = {
     disabledDates: '',
     locale: 'ro-RO',
     firstDayOfWeek: 1,
-    hideTodayShortcut: false,
+    todayShortcut: false,
   },
 };
 
