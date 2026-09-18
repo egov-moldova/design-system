@@ -4,10 +4,20 @@
       "width": { "$value": "350px", "$type": "dimension" },
       "paddingTop": { "$value": "{spacing.12}", "$type": "dimension" },
       "paddingBottom": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBottomTextOnly": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Content=Text-only (77:534) pads 12px on every side; w/ Heading (75:424) keeps 16px at the bottom."
+      },
       "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
       "gap": { "$value": "{spacing.16}", "$type": "dimension" },
       "contentGap": { "$value": "{spacing.8}", "$type": "dimension" },
       "stackGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "stackGapTextOnly": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Content=Text-only message-to-link gap (100:878)."
+      },
       "headingGap": { "$value": "{spacing.6}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
@@ -46,7 +56,17 @@
         "$comment": "40px target under `pointer: coarse` for touch ease-of-use."
       },
       "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" }
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+      "focusRingWidth": {
+        "$value": "{borderWidth.3}",
+        "$type": "dimension",
+        "$comment": "Figma 'Focus Ring/Small' blue spread = 3, drawn on the 16px glyph (575:32853)."
+      },
+      "focusRingOffset": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension",
+        "$comment": "Figma 'Focus Ring/Small' white halo spread = 1."
+      }
     },
     "info": {
       "background": { "$value": "{color.background.brand.default}", "$type": "color" },
