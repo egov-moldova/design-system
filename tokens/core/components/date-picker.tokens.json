@@ -118,13 +118,13 @@
         "color": { "$value": "{color.text.base.default}", "$type": "color" }
       },
       "selected": {
-        "$comment": "Selected cell text sits on a saturated brand background — semantic `base.default-on-color` resolves to black which fails contrast (~3:1). Use the inverse text token (white) for WCAG 1.4.3 AA. Matches Figma 470:32032.",
+        "$comment": "Selected cell text sits on a saturated brand background — semantic `base.default-on-color` resolves to black which fails contrast (~3:1). Use the inverse on-color text token: white in light and dark (`base-inverse.default` turns #121212 in dark, 2.96:1). Matches Figma 470:32032.",
         "background": { "$value": "{color.background.brand.default}", "$type": "color" },
-        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
       },
       "selectedHover": {
         "background": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
-        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
       },
       "today": {
         "color": { "$value": "{color.text.brand.default}", "$type": "color" },
@@ -141,9 +141,9 @@
       "inRange": {
         "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
         "color": {
-          "$value": "{color.text.base.default}",
+          "$value": "{color.text.base.default-on-color}",
           "$type": "color",
-          "$comment": "#121212 per Figma .day-cell Middle 159:901."
+          "$comment": "#121212 per Figma .day-cell Middle 159:901. The on-color token stays dark in dark mode, where brand.secondary stays a light tint (base.default turns white: 1.36:1)."
         }
       },
       "outsideMonth": {
