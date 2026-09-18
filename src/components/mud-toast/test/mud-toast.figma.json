@@ -990,6 +990,112 @@
           "note": "Layer I575:32853;574:30072. Figma draws Focus Ring/Small on the 16×16 cross-large glyph itself (stacked spreads rendered white-inside-blue, see skill gotcha). The Target Sizes section (578:33213) separately asks for a 32×32 pointer target, so the button keeps that size and the ring sits on .close-icon."
         }
       ]
+    },
+    {
+      "name": "info-text-only-no-close",
+      "node": "567:28789",
+      "html": "<mud-toast variant=\"info\" closable=\"false\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .close",
+          "node": "567:28789",
+          "absent": true,
+          "note": "heading-none: close-none."
+        },
+        {
+          "target": "mud-toast",
+          "node": "567:28789",
+          "styles": {
+            "boxWidth": "350px",
+            "boxHeight": "52px",
+            "paddingBottom": "12px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-heading-no-close",
+      "node": "567:28608",
+      "html": "<mud-toast variant=\"warning\" closable=\"false\" title-text=\"Message heading\">We inform you about service changes.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .close",
+          "node": "567:28608",
+          "absent": true,
+          "note": "Dismissal › auto-dismissive: no close button."
+        },
+        {
+          "target": "mud-toast .content",
+          "node": "567:28608",
+          "styles": {
+            "boxWidth": "290px"
+          },
+          "note": "Layer I567:28608;100:815 is fill: 350 − 24 padding − 28 icon − 8 gap."
+        }
+      ]
+    },
+    {
+      "name": "warning-heading-link-close",
+      "node": "567:28648",
+      "html": "<mud-toast variant=\"warning\" title-text=\"Message heading\">We inform you about service changes.<mud-link slot=\"actions\" href=\"#\" variant=\"strict\">Click here</mud-link></mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast mud-link .label",
+          "node": "567:28648",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#121212"
+          },
+          "note": "Dismissal › manually-dismissive: layer I567:28648;100:819, link Style=Strict."
+        },
+        {
+          "target": "mud-toast",
+          "node": "567:28648",
+          "styles": {
+            "boxHeight": "112px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-truncation-heading",
+      "node": "578:33581",
+      "html": "<mud-toast variant=\"warning\" closable=\"false\" title-text=\"Your session is about to expire due to inactivity. Save your changes or continue your activity to stay signed in.\">For your security, we’ll automatically log you out in 2 minutes. </mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .title",
+          "node": "578:33581",
+          "styles": {
+            "boxHeight": "78px",
+            "textOverflow": "ellipsis"
+          },
+          "note": "Truncation › heading: the heading layer (I578:33581;100:817) renders 3 lines of 26px and ends in an ellipsis."
+        },
+        {
+          "target": "mud-toast",
+          "node": "578:33581",
+          "styles": {
+            "boxHeight": "152px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "warning-truncation-body",
+      "node": "578:33542",
+      "html": "<mud-toast variant=\"warning\" closable=\"false\" title-text=\"Your session has expired\">For your security, we’ll automatically log you out in 2 minutes. Save your changes or continue your activity to stay signed in.</mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast .body",
+          "node": "578:33542",
+          "styles": {
+            "boxHeight": "60px",
+            "boxWidth": "290px"
+          },
+          "note": "Truncation › body: 3 lines of 20px in the fill column (layer I578:33542;100:818)."
+        }
+      ]
     }
   ]
 }
