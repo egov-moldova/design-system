@@ -1,5 +1,5 @@
 {
-  "dateInput": {
+  "timeInput": {
     "field": {
       "gap": { "$value": "{spacing.8}", "$type": "dimension" }
     },
@@ -7,7 +7,7 @@
       "offset": {
         "$value": "{spacing.8}",
         "$type": "dimension",
-        "$comment": "Gap between the field and the calendar — Figma 487:7774 (date-range type)."
+        "$comment": "Gap between the field and the time picker — Figma Time frame 13810:9448."
       }
     },
     "container": {
@@ -55,7 +55,7 @@
         "default": {
           "$value": "{color.text.base.secondary}",
           "$type": "color",
-          "$comment": "Per Figma date-input (184:866, 6173:4470): the label keeps this colour in the Disabled state too."
+          "$comment": "Per Figma time-input (13810:9278, 13810:9286): the label keeps this colour in the Disabled state too."
         }
       },
       "requiredMark": {

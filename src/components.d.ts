@@ -16,7 +16,7 @@ import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -48,6 +48,8 @@ import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+import { TimeInputChangeDetail, TimeInputSize, TimeInputTypingDetail, TimeInputVariant } from "./components/mud-time-input/mud-time-input.types";
+import { TimePickerChangeDetail } from "./components/mud-time-picker/mud-time-picker.types";
 import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
@@ -61,7 +63,7 @@ export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -93,6 +95,8 @@ export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+export { TimeInputChangeDetail, TimeInputSize, TimeInputTypingDetail, TimeInputVariant } from "./components/mud-time-input/mud-time-input.types";
+export { TimePickerChangeDetail } from "./components/mud-time-picker/mud-time-picker.types";
 export { ToastVariant } from "./components/mud-toast/mud-toast.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
@@ -863,6 +867,11 @@ export namespace Components {
          */
         "name"?: string;
         /**
+          * `type="date-range"`: message shown when the end date is before the start date.
+          * @default 'Data de sfârșit trebuie să fie după data de început'
+         */
+        "orderErrorText": string;
+        /**
           * Accessible name of the calendar dialog.
           * @default 'Selectează data'
          */
@@ -887,10 +896,20 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți data'
+         */
+        "requiredErrorText": string;
+        /**
           * Visual size rung.
           * @default 'md'
          */
         "size": DateInputSize;
+        /**
+          * The date-input type of the Figma Date Picker page (Types, 470:32035): - `default` — one date; the calendar has a "Month Year" title. - `advanced` — one date; the calendar has month and year dropdown chips. - `date-range` — a start and an end date in one field   (`18/01/2025 - 22/01/2025`); the value changes once both ends are picked.  The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'default'
+         */
+        "type": DateInputType;
         /**
           * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
           * @default ''
@@ -949,7 +968,8 @@ export namespace Components {
          */
         "headerStyle": DatePickerHeaderStyle;
         /**
-          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * Hide the "Today" quick-jump shortcut.
+          * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set, this still wins over `todayShortcut`.
           * @default false
          */
         "hideTodayShortcut": boolean;
@@ -983,6 +1003,11 @@ export namespace Components {
           * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
          */
         "rangeStart"?: string;
+        /**
+          * Show the "Today" quick-jump shortcut under the grid. Off by default: no date-picker variant in the Figma spec (159:904) has it.
+          * @default false
+         */
+        "todayShortcut": boolean;
         /**
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
@@ -3404,6 +3429,162 @@ export namespace Components {
         "variant": TextareaVariant;
     }
     /**
+     * Time Input — segment-masked `HH:MM` entry with an hour / minute picker.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM, like `mud-date-input`, and overlays a ghost format hint
+     * that keeps the unfilled segments visible while the user types. The clock
+     * button opens `mud-time-picker` (Figma Time frame 13807:8471).
+     * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
+     */
+    interface MudTimeInput {
+        /**
+          * Accessible label for the clear (×) button.
+          * @default 'Șterge'
+         */
+        "clearLabel": string;
+        /**
+          * Shows a trailing clear (×) button while the field holds a value (Figma `👁️ Clear Button` axis). Never shown while empty, disabled or read-only.
+          * @default false
+         */
+        "clearable": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Message shown when a complete hour segment is outside 00–23.
+          * @default 'Ora trebuie să fie între 00 și 23'
+         */
+        "hourErrorText": string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Latest accepted time, `HH:MM` inclusive. Later entries get a `range` error.
+         */
+        "max"?: string;
+        /**
+          * Earliest accepted time, `HH:MM` inclusive. Earlier entries get a `range` error.
+         */
+        "min"?: string;
+        /**
+          * Message shown when a complete minute segment is outside 00–59.
+          * @default 'Minutele trebuie să fie între 00 și 59'
+         */
+        "minuteErrorText": string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Accessible name of the picker dialog.
+          * @default 'Selectează ora'
+         */
+        "pickerLabel": string;
+        /**
+          * Placeholder shown when the control is empty. Defaults to `HH:MM`.
+         */
+        "placeholder"?: string;
+        /**
+          * Message shown when a complete time is outside `min` / `max`.
+          * @default 'Ora este în afara intervalului permis'
+         */
+        "rangeErrorText": string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți ora'
+         */
+        "requiredErrorText": string;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": TimeInputSize;
+        /**
+          * Accessible label for the clock button that opens the picker.
+          * @default 'Deschide selectorul de oră'
+         */
+        "triggerLabel": string;
+        /**
+          * Current display value, `HH:MM` (24-hour). Reflects to the host attribute; typing rewrites it, so consumers can read it back at any time.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": TimeInputVariant;
+    }
+    /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface MudTimePicker {
+        /**
+          * Accessible name of the hour column.
+          * @default 'Ore'
+         */
+        "hoursLabel": string;
+        /**
+          * Accessible name of the picker.
+          * @default 'Selectează ora'
+         */
+        "label": string;
+        /**
+          * Latest selectable time, `HH:MM` inclusive.
+         */
+        "max"?: string;
+        /**
+          * Earliest selectable time, `HH:MM` inclusive.
+         */
+        "min"?: string;
+        /**
+          * Accessible name of the minute column.
+          * @default 'Minute'
+         */
+        "minutesLabel": string;
+        /**
+          * Selected time, `HH:MM` (24-hour). Updated when a time is completed.
+         */
+        "value"?: string;
+    }
+    /**
      * Toast — semantic toast message (350px filled surface, 8px radius).
      * Matches the Figma `toast` component (page "Messaging (Notification)"):
      * a leading icon, an optional bold heading, the message body (default slot),
@@ -3701,6 +3882,14 @@ export interface MudTextInputCustomEvent<T> extends CustomEvent<T> {
 export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTextareaElement;
+}
+export interface MudTimeInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudTimeInputElement;
+}
+export interface MudTimePickerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudTimePickerElement;
 }
 export interface MudToastCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -5238,6 +5427,66 @@ declare global {
         prototype: HTMLMudTextareaElement;
         new (): HTMLMudTextareaElement;
     };
+    interface HTMLMudTimeInputElementEventMap {
+        "mudInput": TimeInputTypingDetail;
+        "mudChange": TimeInputChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
+        "mudClear": void;
+    }
+    /**
+     * Time Input — segment-masked `HH:MM` entry with an hour / minute picker.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM, like `mud-date-input`, and overlays a ghost format hint
+     * that keeps the unfilled segments visible while the user types. The clock
+     * button opens `mud-time-picker` (Figma Time frame 13807:8471).
+     * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
+     */
+    interface HTMLMudTimeInputElement extends Components.MudTimeInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTimeInputElementEventMap>(type: K, listener: (this: HTMLMudTimeInputElement, ev: MudTimeInputCustomEvent<HTMLMudTimeInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTimeInputElementEventMap>(type: K, listener: (this: HTMLMudTimeInputElement, ev: MudTimeInputCustomEvent<HTMLMudTimeInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudTimeInputElement: {
+        prototype: HTMLMudTimeInputElement;
+        new (): HTMLMudTimeInputElement;
+    };
+    interface HTMLMudTimePickerElementEventMap {
+        "mudChange": TimePickerChangeDetail;
+    }
+    /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface HTMLMudTimePickerElement extends Components.MudTimePicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTimePickerElementEventMap>(type: K, listener: (this: HTMLMudTimePickerElement, ev: MudTimePickerCustomEvent<HTMLMudTimePickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTimePickerElementEventMap>(type: K, listener: (this: HTMLMudTimePickerElement, ev: MudTimePickerCustomEvent<HTMLMudTimePickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudTimePickerElement: {
+        prototype: HTMLMudTimePickerElement;
+        new (): HTMLMudTimePickerElement;
+    };
     interface HTMLMudToastElementEventMap {
         "mudClose": void;
     }
@@ -5361,6 +5610,8 @@ declare global {
         "mud-tag": HTMLMudTagElement;
         "mud-text-input": HTMLMudTextInputElement;
         "mud-textarea": HTMLMudTextareaElement;
+        "mud-time-input": HTMLMudTimeInputElement;
+        "mud-time-picker": HTMLMudTimePickerElement;
         "mud-toast": HTMLMudToastElement;
         "mud-tooltip": HTMLMudTooltipElement;
     }
@@ -6227,6 +6478,11 @@ declare namespace LocalJSX {
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
+          * `type="date-range"`: message shown when the end date is before the start date.
+          * @default 'Data de sfârșit trebuie să fie după data de început'
+         */
+        "orderErrorText"?: string;
+        /**
           * Accessible name of the calendar dialog.
           * @default 'Selectează data'
          */
@@ -6251,10 +6507,20 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți data'
+         */
+        "requiredErrorText"?: string;
+        /**
           * Visual size rung.
           * @default 'md'
          */
         "size"?: DateInputSize;
+        /**
+          * The date-input type of the Figma Date Picker page (Types, 470:32035): - `default` — one date; the calendar has a "Month Year" title. - `advanced` — one date; the calendar has month and year dropdown chips. - `date-range` — a start and an end date in one field   (`18/01/2025 - 22/01/2025`); the value changes once both ends are picked.  The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'default'
+         */
+        "type"?: DateInputType;
         /**
           * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
           * @default ''
@@ -6313,7 +6579,8 @@ declare namespace LocalJSX {
          */
         "headerStyle"?: DatePickerHeaderStyle;
         /**
-          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * Hide the "Today" quick-jump shortcut.
+          * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set, this still wins over `todayShortcut`.
           * @default false
          */
         "hideTodayShortcut"?: boolean;
@@ -6355,6 +6622,11 @@ declare namespace LocalJSX {
           * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
          */
         "rangeStart"?: string;
+        /**
+          * Show the "Today" quick-jump shortcut under the grid. Off by default: no date-picker variant in the Figma spec (159:904) has it.
+          * @default false
+         */
+        "todayShortcut"?: boolean;
         /**
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
@@ -9144,6 +9416,190 @@ declare namespace LocalJSX {
         "variant"?: TextareaVariant;
     }
     /**
+     * Time Input — segment-masked `HH:MM` entry with an hour / minute picker.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM, like `mud-date-input`, and overlays a ghost format hint
+     * that keeps the unfilled segments visible while the user types. The clock
+     * button opens `mud-time-picker` (Figma Time frame 13807:8471).
+     * @element mud-time-input
+     * Without a visible label, name the field with `aria-label` on the element; it
+     * is moved onto the internal control.
+     */
+    interface MudTimeInput {
+        /**
+          * Accessible label for the clear (×) button.
+          * @default 'Șterge'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows a trailing clear (×) button while the field holds a value (Figma `👁️ Clear Button` axis). Never shown while empty, disabled or read-only.
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Message shown when a complete hour segment is outside 00–23.
+          * @default 'Ora trebuie să fie între 00 și 23'
+         */
+        "hourErrorText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Latest accepted time, `HH:MM` inclusive. Later entries get a `range` error.
+         */
+        "max"?: string;
+        /**
+          * Earliest accepted time, `HH:MM` inclusive. Earlier entries get a `range` error.
+         */
+        "min"?: string;
+        /**
+          * Message shown when a complete minute segment is outside 00–59.
+          * @default 'Minutele trebuie să fie între 00 și 59'
+         */
+        "minuteErrorText"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudBlur"?: (event: MudTimeInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed — on `change` (blur), a picker selection or the clear button.
+         */
+        "onMudChange"?: (event: MudTimeInputCustomEvent<TimeInputChangeDetail>) => void;
+        /**
+          * Fires when the user empties the field via the clear (×) button.
+         */
+        "onMudClear"?: (event: MudTimeInputCustomEvent<void>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudFocus"?: (event: MudTimeInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current display value; `detail.isoValue` is the `HH:MM` time when complete and valid, otherwise `null`. `detail.segment` is the segment under the caret.
+         */
+        "onMudInput"?: (event: MudTimeInputCustomEvent<TimeInputTypingDetail>) => void;
+        /**
+          * Accessible name of the picker dialog.
+          * @default 'Selectează ora'
+         */
+        "pickerLabel"?: string;
+        /**
+          * Placeholder shown when the control is empty. Defaults to `HH:MM`.
+         */
+        "placeholder"?: string;
+        /**
+          * Message shown when a complete time is outside `min` / `max`.
+          * @default 'Ora este în afara intervalului permis'
+         */
+        "rangeErrorText"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți ora'
+         */
+        "requiredErrorText"?: string;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: TimeInputSize;
+        /**
+          * Accessible label for the clock button that opens the picker.
+          * @default 'Deschide selectorul de oră'
+         */
+        "triggerLabel"?: string;
+        /**
+          * Current display value, `HH:MM` (24-hour). Reflects to the host attribute; typing rewrites it, so consumers can read it back at any time.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: TimeInputVariant;
+    }
+    /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes while no minute is chosen, and stays on the hour
+     * when one is; picking a minute completes the time and fires `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface MudTimePicker {
+        /**
+          * Accessible name of the hour column.
+          * @default 'Ore'
+         */
+        "hoursLabel"?: string;
+        /**
+          * Accessible name of the picker.
+          * @default 'Selectează ora'
+         */
+        "label"?: string;
+        /**
+          * Latest selectable time, `HH:MM` inclusive.
+         */
+        "max"?: string;
+        /**
+          * Earliest selectable time, `HH:MM` inclusive.
+         */
+        "min"?: string;
+        /**
+          * Accessible name of the minute column.
+          * @default 'Minute'
+         */
+        "minutesLabel"?: string;
+        /**
+          * Fires when a time is complete — a minute is picked while an hour is set.
+         */
+        "onMudChange"?: (event: MudTimePickerCustomEvent<TimePickerChangeDetail>) => void;
+        /**
+          * Selected time, `HH:MM` (24-hour). Updated when a time is completed.
+         */
+        "value"?: string;
+    }
+    /**
      * Toast — semantic toast message (350px filled surface, 8px radius).
      * Matches the Figma `toast` component (page "Messaging (Notification)"):
      * a leading icon, an optional bold heading, the message body (default slot),
@@ -9424,6 +9880,7 @@ declare namespace LocalJSX {
         "variant": DateInputVariant;
         "size": DateInputSize;
         "format": DateInputFormat;
+        "type": DateInputType;
         "breakpoint": DateInputBreakpoint;
         "disabled": boolean;
         "required": boolean;
@@ -9446,6 +9903,8 @@ declare namespace LocalJSX {
         "yearErrorText": string;
         "dateErrorText": string;
         "rangeErrorText": string;
+        "orderErrorText": string;
+        "requiredErrorText": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;
@@ -9459,6 +9918,7 @@ declare namespace LocalJSX {
         "locale": string;
         "label": string;
         "firstDayOfWeek": number;
+        "todayShortcut": boolean;
         "hideTodayShortcut": boolean;
         "viewDate": string;
     }
@@ -9923,6 +10383,38 @@ declare namespace LocalJSX {
         "showCounter": boolean;
         "ariaLabel": string;
     }
+    interface MudTimeInputAttributes {
+        "variant": TimeInputVariant;
+        "size": TimeInputSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "min": string;
+        "max": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "placeholder": string;
+        "clearable": boolean;
+        "clearLabel": string;
+        "triggerLabel": string;
+        "pickerLabel": string;
+        "hourErrorText": string;
+        "minuteErrorText": string;
+        "rangeErrorText": string;
+        "requiredErrorText": string;
+    }
+    interface MudTimePickerAttributes {
+        "value": string;
+        "min": string;
+        "max": string;
+        "label": string;
+        "hoursLabel": string;
+        "minutesLabel": string;
+    }
     interface MudToastAttributes {
         "variant": ToastVariant;
         "closable": boolean;
@@ -10003,6 +10495,8 @@ declare namespace LocalJSX {
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
         "mud-text-input": Omit<MudTextInput, keyof MudTextInputAttributes> & { [K in keyof MudTextInput & keyof MudTextInputAttributes]?: MudTextInput[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `attr:${K}`]?: MudTextInputAttributes[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `prop:${K}`]?: MudTextInput[K] };
         "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
+        "mud-time-input": Omit<MudTimeInput, keyof MudTimeInputAttributes> & { [K in keyof MudTimeInput & keyof MudTimeInputAttributes]?: MudTimeInput[K] } & { [K in keyof MudTimeInput & keyof MudTimeInputAttributes as `attr:${K}`]?: MudTimeInputAttributes[K] } & { [K in keyof MudTimeInput & keyof MudTimeInputAttributes as `prop:${K}`]?: MudTimeInput[K] };
+        "mud-time-picker": Omit<MudTimePicker, keyof MudTimePickerAttributes> & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes]?: MudTimePicker[K] } & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes as `attr:${K}`]?: MudTimePickerAttributes[K] } & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes as `prop:${K}`]?: MudTimePicker[K] };
         "mud-toast": Omit<MudToast, keyof MudToastAttributes> & { [K in keyof MudToast & keyof MudToastAttributes]?: MudToast[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `attr:${K}`]?: MudToastAttributes[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `prop:${K}`]?: MudToast[K] };
         "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
@@ -10764,6 +11258,30 @@ declare module "@stencil/core" {
              * @element mud-textarea
              */
             "mud-textarea": LocalJSX.IntrinsicElements["mud-textarea"] & JSXBase.HTMLAttributes<HTMLMudTextareaElement>;
+            /**
+             * Time Input — segment-masked `HH:MM` entry with an hour / minute picker.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM, like `mud-date-input`, and overlays a ghost format hint
+             * that keeps the unfilled segments visible while the user types. The clock
+             * button opens `mud-time-picker` (Figma Time frame 13807:8471).
+             * @element mud-time-input
+             * Without a visible label, name the field with `aria-label` on the element; it
+             * is moved onto the internal control.
+             */
+            "mud-time-input": LocalJSX.IntrinsicElements["mud-time-input"] & JSXBase.HTMLAttributes<HTMLMudTimeInputElement>;
+            /**
+             * Time picker — an hour column and a minute column, the dropdown of
+             * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+             * The selected value of the column being edited is solid (`.day-cell` Active);
+             * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+             * hour moves on to the minutes while no minute is chosen, and stays on the hour
+             * when one is; picking a minute completes the time and fires `mudChange`.
+             * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+             * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+             * Space picks the focused option.
+             * @element mud-time-picker
+             */
+            "mud-time-picker": LocalJSX.IntrinsicElements["mud-time-picker"] & JSXBase.HTMLAttributes<HTMLMudTimePickerElement>;
             /**
              * Toast — semantic toast message (350px filled surface, 8px radius).
              * Matches the Figma `toast` component (page "Messaging (Notification)"):

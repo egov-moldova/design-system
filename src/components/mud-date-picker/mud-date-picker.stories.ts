@@ -14,7 +14,7 @@ type DatePickerArgs = {
   max: string;
   disabledDates: string;
   locale: string;
-  hideTodayShortcut: boolean;
+  todayShortcut: boolean;
   firstDayOfWeek: number;
 };
 
@@ -33,7 +33,7 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
     ${args.disabledDates ? `disabled-dates='${args.disabledDates}'` : ''}
     locale="${args.locale}"
     first-day-of-week="${args.firstDayOfWeek}"
-    ${args.hideTodayShortcut ? 'hide-today-shortcut' : ''}
+    ${args.todayShortcut ? 'today-shortcut' : ''}
   ></mud-date-picker>
 `;
 
@@ -67,7 +67,11 @@ const meta: Meta<DatePickerArgs> = {
     disabledDates: { control: 'text', description: 'JSON-encoded array of ISO dates to disable.' },
     locale: { control: 'text', description: 'BCP-47 locale tag (e.g. ro-RO, en-US).' },
     firstDayOfWeek: { control: 'number', description: '0=Sunday, 1=Monday (default).' },
-    hideTodayShortcut: { control: 'boolean' },
+    todayShortcut: {
+      control: 'boolean',
+      description: 'Show the "Today" quick-jump shortcut. Not part of the Figma spec, so off by default.',
+      table: { defaultValue: { summary: 'false' } },
+    },
   },
 };
 
@@ -89,7 +93,7 @@ export const Default: Story = {
     disabledDates: '',
     locale: 'ro-RO',
     firstDayOfWeek: 1,
-    hideTodayShortcut: false,
+    todayShortcut: false,
   },
 };
 
@@ -312,6 +316,12 @@ export const RomanianLocale: Story = {
         story:
           'All weekday + month names come from `Intl.DateTimeFormat` — switching the `locale` prop swaps the language without code changes. Romanian (ro-RO) starts weeks on Monday; en-US on Sunday.',
       },
+      source: {
+        code: [
+          '<mud-date-picker value="2026-05-23" locale="ro-RO"></mud-date-picker>',
+          '<mud-date-picker value="2026-05-23" locale="en-US" first-day-of-week="0"></mud-date-picker>',
+        ].join('\n'),
+      },
     },
   },
 };
@@ -343,7 +353,15 @@ export const EdgeCases: Story = {
     docs: {
       description: {
         story:
-          'Calendar edge cases — leap-year February 29, non-leap February 28, and the December→January and year-boundary transitions. The grid always renders 6 rows; out-of-month days appear muted.',
+          'Calendar edge cases — leap-year February 29, non-leap February 28, and the December→January and year-boundary transitions. The grid always renders 6 rows; out-of-month days are inactive (Figma `.day-cell` Inactive) — the arrow keys still cross into the next month.',
+      },
+      source: {
+        code: [
+          '<mud-date-picker value="2024-02-29"></mud-date-picker>',
+          '<mud-date-picker value="2026-02-28"></mud-date-picker>',
+          '<mud-date-picker value="2026-12-31"></mud-date-picker>',
+          '<mud-date-picker value="2027-01-01"></mud-date-picker>',
+        ].join('\n'),
       },
     },
   },

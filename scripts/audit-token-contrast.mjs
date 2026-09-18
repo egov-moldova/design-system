@@ -179,6 +179,22 @@ const PAIRS = [
     threshold: 4.5,
   },
   {
+    // Error messages under form fields (date-input, time-input, text-input, …).
+    name: 'text.danger.default on background.base.default',
+    fg: 'color.text.danger.default',
+    bg: 'color.background.base.default',
+    type: 'text-normal',
+    threshold: 4.5,
+  },
+  {
+    // Tinted cells of the date and time pickers (range middle, the other column's selection).
+    name: 'text.base.default-on-color on background.brand.secondary',
+    fg: 'color.text.base.default-on-color',
+    bg: 'color.background.brand.secondary',
+    type: 'text-normal',
+    threshold: 4.5,
+  },
+  {
     name: 'text.danger.on-secondary on background.danger.secondary',
     fg: 'color.text.danger.on-secondary',
     bg: 'color.background.danger.secondary',

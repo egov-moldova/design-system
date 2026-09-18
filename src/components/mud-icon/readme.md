@@ -64,6 +64,7 @@ missing, the available one is rendered and a warning is logged.
  - [mud-tabs](../mud-tabs)
  - [mud-text-input](../mud-text-input)
  - [mud-textarea](../mud-textarea)
+ - [mud-time-input](../mud-time-input)
  - [mud-toast](../mud-toast)
 
 ### Graph
@@ -101,6 +102,7 @@ graph TD;
   mud-tabs --> mud-icon
   mud-text-input --> mud-icon
   mud-textarea --> mud-icon
+  mud-time-input --> mud-icon
   mud-toast --> mud-icon
   style mud-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```

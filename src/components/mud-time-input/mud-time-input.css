@@ -1,51 +1,51 @@
 :host {
-  --_height: var(--date-input-container-height-md);
-  --_padding-inline: var(--date-input-container-padding-inline-md);
-  --_gap: var(--date-input-container-gap-md);
-  --_radius: var(--date-input-container-border-radius);
-  --_border-width-default: var(--date-input-container-border-width-default);
-  --_border-width-emphasized: var(--date-input-container-border-width-emphasized);
-  --_focus-ring-width: var(--date-input-container-focus-ring-width);
-  --_transition-duration: var(--date-input-container-transition-duration);
-  --_transition-easing: var(--date-input-container-transition-timing-function);
+  --_height: var(--time-input-container-height-md);
+  --_padding-inline: var(--time-input-container-padding-inline-md);
+  --_gap: var(--time-input-container-gap-md);
+  --_radius: var(--time-input-container-border-radius);
+  --_border-width-default: var(--time-input-container-border-width-default);
+  --_border-width-emphasized: var(--time-input-container-border-width-emphasized);
+  --_focus-ring-width: var(--time-input-container-focus-ring-width);
+  --_transition-duration: var(--time-input-container-transition-duration);
+  --_transition-easing: var(--time-input-container-transition-timing-function);
 
-  --_control-font-size: var(--date-input-control-font-size-md);
-  --_control-line-height: var(--date-input-control-line-height-md);
-  --_icon-size: var(--date-input-icon-size-md);
+  --_control-font-size: var(--time-input-control-font-size-md);
+  --_control-line-height: var(--time-input-control-line-height-md);
+  --_icon-size: var(--time-input-icon-size-md);
 
-  --_bg: var(--date-input-default-background-default);
-  --_text: var(--date-input-default-text-default);
-  --_text-placeholder: var(--date-input-default-text-placeholder);
-  --_border-color: var(--date-input-default-border-default);
-  --_border-color-hover: var(--date-input-default-border-hover);
-  --_border-color-focus: var(--date-input-default-border-focus);
-  --_focus-ring-color: var(--date-input-default-focus-ring);
+  --_bg: var(--time-input-default-background-default);
+  --_text: var(--time-input-default-text-default);
+  --_text-placeholder: var(--time-input-default-text-placeholder);
+  --_border-color: var(--time-input-default-border-default);
+  --_border-color-hover: var(--time-input-default-border-hover);
+  --_border-color-focus: var(--time-input-default-border-focus);
+  --_focus-ring-color: var(--time-input-default-focus-ring);
 
   display: flex;
   flex-direction: column;
-  /* `relative` so the absolutely-positioned calendar popover anchors below the
+  /* `relative` so the absolutely-positioned picker popover anchors below the
      field instead of escaping to the document body. */
   position: relative;
-  gap: var(--date-input-field-gap);
+  gap: var(--time-input-field-gap);
   inline-size: 100%;
-  font-family: var(--date-input-control-font-family);
+  font-family: var(--time-input-control-font-family);
   color: var(--_text);
 }
 
 :host([size='lg']) {
-  --_height: var(--date-input-container-height-lg);
-  --_padding-inline: var(--date-input-container-padding-inline-lg);
-  --_gap: var(--date-input-container-gap-lg);
-  --_control-font-size: var(--date-input-control-font-size-lg);
-  --_control-line-height: var(--date-input-control-line-height-lg);
-  --_icon-size: var(--date-input-icon-size-lg);
+  --_height: var(--time-input-container-height-lg);
+  --_padding-inline: var(--time-input-container-padding-inline-lg);
+  --_gap: var(--time-input-container-gap-lg);
+  --_control-font-size: var(--time-input-control-font-size-lg);
+  --_control-line-height: var(--time-input-control-line-height-lg);
+  --_icon-size: var(--time-input-icon-size-lg);
 }
 
 :host(.variant-destructive) {
-  --_border-color: var(--date-input-destructive-border-default);
-  --_border-color-hover: var(--date-input-destructive-border-hover);
-  --_border-color-focus: var(--date-input-destructive-border-focus);
-  --_focus-ring-color: var(--date-input-destructive-focus-ring);
+  --_border-color: var(--time-input-destructive-border-default);
+  --_border-color-hover: var(--time-input-destructive-border-hover);
+  --_border-color-focus: var(--time-input-destructive-border-focus);
+  --_focus-ring-color: var(--time-input-destructive-focus-ring);
 }
 
 /* ---------- Label ---------- */
@@ -53,12 +53,12 @@
 .label {
   display: flex;
   align-items: center;
-  gap: var(--date-input-label-gap);
-  font-family: var(--date-input-label-font-family);
-  font-size: var(--date-input-label-font-size);
-  line-height: var(--date-input-label-line-height);
-  font-weight: var(--date-input-label-font-weight);
-  color: var(--date-input-label-color-default);
+  gap: var(--time-input-label-gap);
+  font-family: var(--time-input-label-font-family);
+  font-size: var(--time-input-label-font-size);
+  line-height: var(--time-input-label-line-height);
+  font-weight: var(--time-input-label-font-weight);
+  color: var(--time-input-label-color-default);
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -76,16 +76,16 @@
 .required-mark {
   display: inline-flex;
   flex-shrink: 0;
-  inline-size: var(--date-input-label-required-mark-size);
-  block-size: var(--date-input-label-required-mark-size);
-  color: var(--date-input-label-required-mark-color);
+  inline-size: var(--time-input-label-required-mark-size);
+  block-size: var(--time-input-label-required-mark-size);
+  color: var(--time-input-label-required-mark-color);
 }
 
 /* The mark (12px) sits below mud-icon's smallest `size` (16), so the icon's own
    box is overridden here; without it the 16px icon overflows the 12px mark. */
 .required-mark mud-icon {
-  inline-size: var(--date-input-label-required-mark-size);
-  block-size: var(--date-input-label-required-mark-size);
+  inline-size: var(--time-input-label-required-mark-size);
+  block-size: var(--time-input-label-required-mark-size);
 }
 
 :host(:not(.has-label)) .label {
@@ -96,7 +96,7 @@
 
 /* Figma strokes sit inside the frame without moving its content, while a CSS
    border adds to the padding — subtract it so content starts 16 / 12px in.
-   `relative` anchors the calendar popover to the field, not to the helper
+   `relative` anchors the picker popover to the field, not to the helper
    text below it. */
 .control {
   position: relative;
@@ -127,7 +127,7 @@
   inset: 0;
   border-radius: calc(var(--_radius) - var(--_border-width-default));
   pointer-events: none;
-  /* Above `.native` (z-index 1), below the calendar popover (z-index 10). */
+  /* Above `.native` (z-index 1), below the picker popover (z-index 10). */
   z-index: 2;
   transition: box-shadow var(--_transition-duration) var(--_transition-easing);
 }
@@ -160,12 +160,12 @@
    the browser autofilled the field. Driving the vars keeps every surface --
    control background, autofill fill and text -- on one source of truth. */
 :host(.is-disabled) {
-  --_bg: var(--date-input-default-background-disabled);
-  --_text: var(--date-input-default-text-disabled);
+  --_bg: var(--time-input-default-background-disabled);
+  --_text: var(--time-input-default-text-disabled);
 }
 
 :host(.is-disabled) .control {
-  border-color: var(--date-input-default-border-disabled);
+  border-color: var(--time-input-default-border-disabled);
   cursor: not-allowed;
 }
 
@@ -195,12 +195,12 @@
   font-family: inherit;
   font-size: var(--_control-font-size);
   line-height: var(--_control-line-height);
-  font-weight: var(--date-input-control-font-weight);
+  font-weight: var(--time-input-control-font-weight);
   outline: none;
   appearance: none;
   -webkit-appearance: none;
   /* Caret blends the placeholder remnant pattern in focus; brand-blue caret to match Figma "|" marker */
-  caret-color: var(--date-input-control-caret-color);
+  caret-color: var(--time-input-control-caret-color);
   /* Inherit ink color; ghost overlay below renders the placeholder remnant when not empty. */
   position: relative;
   z-index: 1;
@@ -215,9 +215,9 @@
 }
 
 .native:disabled {
-  color: var(--date-input-default-text-disabled);
+  color: var(--time-input-default-text-disabled);
   cursor: not-allowed;
-  -webkit-text-fill-color: var(--date-input-default-text-disabled);
+  -webkit-text-fill-color: var(--time-input-default-text-disabled);
   caret-color: transparent;
 }
 
@@ -251,7 +251,7 @@
   font-family: inherit;
   font-size: var(--_control-font-size);
   line-height: var(--_control-line-height);
-  font-weight: var(--date-input-control-font-weight);
+  font-weight: var(--time-input-control-font-weight);
   white-space: pre;
   overflow: hidden;
   color: var(--_text-placeholder);
@@ -281,13 +281,13 @@
 }
 
 :host(.is-disabled) .ghost-remaining {
-  color: var(--date-input-default-text-disabled);
+  color: var(--time-input-default-text-disabled);
 }
 
 /* When the field is fully populated and not focused, the ghost is empty so it
    stays invisible behind the native value. */
 
-/* ---------- Trailing calendar icon ---------- */
+/* ---------- Trailing clock icon ---------- */
 
 .trailing-icon {
   display: inline-flex;
@@ -296,7 +296,7 @@
   flex-shrink: 0;
   inline-size: var(--_icon-size);
   block-size: var(--_icon-size);
-  color: var(--date-input-icon-color-default);
+  color: var(--time-input-icon-color-default);
   /* Reset native button chrome — the icon stands on its own. */
   appearance: none;
   background: transparent;
@@ -319,11 +319,11 @@
 }
 
 :host(.is-disabled) .trailing-icon {
-  color: var(--date-input-icon-color-disabled);
+  color: var(--time-input-icon-color-disabled);
 }
 
 /* ---------- Clear button (Figma "clearButton" — × on Focus / Filled) ----------
-   Sits just before the calendar trigger; styled as a sibling of the trailing
+   Sits just before the clock trigger; styled as a sibling of the trailing
    icon so the two trailing controls stay visually consistent. */
 
 .clear-button {
@@ -331,25 +331,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--date-input-clear-button-size);
-  block-size: var(--date-input-clear-button-size);
-  color: var(--date-input-clear-button-icon-color);
+  inline-size: var(--time-input-clear-button-size);
+  block-size: var(--time-input-clear-button-size);
+  color: var(--time-input-clear-button-icon-color);
   appearance: none;
-  background-color: var(--date-input-clear-button-background-default);
+  background-color: var(--time-input-clear-button-background-default);
   border: 0;
   padding: 0;
   margin: 0;
   cursor: pointer;
-  border-radius: var(--date-input-clear-button-border-radius);
+  border-radius: var(--time-input-clear-button-border-radius);
   transition: background-color var(--_transition-duration) var(--_transition-easing);
 }
 
 .clear-button:hover {
-  background-color: var(--date-input-clear-button-background-hover);
+  background-color: var(--time-input-clear-button-background-hover);
 }
 
 .clear-button:active {
-  background-color: var(--date-input-clear-button-background-active);
+  background-color: var(--time-input-clear-button-background-active);
 }
 
 .clear-button:focus-visible {
@@ -359,7 +359,7 @@
     0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
 }
 
-/* ---------- Calendar popover (mud-date-picker overlay) ---------- */
+/* ---------- Picker popover (mud-time-picker overlay) ---------- */
 
 .picker-popover {
   position: absolute;
@@ -367,27 +367,8 @@
   inset-block-start: calc(100% + var(--_border-width-default));
   inset-inline-start: calc(-1 * var(--_border-width-default));
   z-index: 10;
-  margin-block-start: var(--date-input-popover-offset);
+  margin-block-start: var(--time-input-popover-offset);
   display: block;
-}
-
-/* Mobile: the popover docks to the bottom of the viewport as a full-width
-   bottom sheet (the picker itself renders its `breakpoint="mobile"` chrome). */
-.picker-popover.is-mobile {
-  position: fixed;
-  inset-block-start: auto;
-  inset-block-end: 0;
-  inset-inline: 0;
-  z-index: 1001;
-  margin-block-start: 0;
-}
-
-/* Scrim behind the mobile bottom sheet. */
-.picker-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background-color: var(--color-background-alpha-overlay-dark);
 }
 
 /* ---------- Live region (screen readers only) ---------- */
@@ -409,12 +390,12 @@
 .assistive {
   display: flex;
   align-items: flex-start;
-  gap: var(--date-input-assistive-gap-default);
-  font-family: var(--date-input-assistive-font-family);
-  font-size: var(--date-input-assistive-font-size);
-  line-height: var(--date-input-assistive-line-height);
-  font-weight: var(--date-input-assistive-font-weight);
-  color: var(--date-input-assistive-color-default);
+  gap: var(--time-input-assistive-gap-default);
+  font-family: var(--time-input-assistive-font-family);
+  font-size: var(--time-input-assistive-font-size);
+  line-height: var(--time-input-assistive-line-height);
+  font-weight: var(--time-input-assistive-font-weight);
+  color: var(--time-input-assistive-color-default);
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -426,14 +407,14 @@
 }
 
 .assistive-error {
-  gap: var(--date-input-assistive-gap-error);
-  color: var(--date-input-assistive-color-error);
+  gap: var(--time-input-assistive-gap-error);
+  color: var(--time-input-assistive-color-error);
 }
 
 .assistive-icon {
   flex-shrink: 0;
-  inline-size: var(--date-input-assistive-icon-size);
-  block-size: var(--date-input-assistive-icon-size);
+  inline-size: var(--time-input-assistive-icon-size);
+  block-size: var(--time-input-assistive-icon-size);
   margin-block-start: 0;
 }
 

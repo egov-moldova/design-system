@@ -59,7 +59,8 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-switch', blurb: 'On/off toggle' },
       { tag: 'mud-select', blurb: 'Dropdown select (options prop)' },
       { tag: 'mud-segmented-control', blurb: 'Segmented selector (segments prop)' },
-      { tag: 'mud-date-input', blurb: 'Masked date field' },
+      { tag: 'mud-date-input', blurb: 'Masked date field — single / advanced / date range' },
+      { tag: 'mud-time-input', blurb: 'Masked HH:MM field with an hour / minute dropdown' },
       { tag: 'mud-phone-input', blurb: 'Country-aware phone field' },
     ],
   },
@@ -105,6 +106,7 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-receipt', blurb: 'Transaction receipt molecule' },
       { tag: 'mud-footer', blurb: 'Site footer (evo / simple)' },
       { tag: 'mud-date-picker', blurb: 'Calendar — single / range / multi' },
+      { tag: 'mud-time-picker', blurb: 'Hour / minute picker panel' },
     ],
   },
 ];

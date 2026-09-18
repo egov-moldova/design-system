@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-time-picker · @egov-moldova/mud-web-components</title>
+  </head>
+  <body data-component="mud-time-picker">
+    <main class="demo-main">
+      <section id="mud-time-picker" class="component-section">
+        <h2>&lt;mud-time-picker&gt;</h2>
+        <p class="label">
+          Renders inline (no trigger/popover) — <code>&lt;mud-time-input&gt;</code> opens it in a dropdown. Each column
+          is a listbox: Up / Down, Home / End, Left / Right between columns, Enter / Space to pick.
+        </p>
+
+        <div class="subsection">
+          <h3>Values</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <mud-time-picker></mud-time-picker>
+              <span class="label">no value</span>
+            </div>
+            <div class="cell">
+              <mud-time-picker value="11:15"></mud-time-picker>
+              <span class="label">value="11:15"</span>
+            </div>
+            <div class="cell">
+              <mud-time-picker value="23:59"></mud-time-picker>
+              <span class="label">last hour and minute</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <mud-time-picker value="09:00" min="08:30" max="17:15"></mud-time-picker>
+              <span class="label">min="08:30" max="17:15" · out-of-range options inactive</span>
+            </div>
+            <div class="cell">
+              <mud-time-picker
+                value="07:30"
+                label="Choose a time"
+                hours-label="Hours"
+                minutes-label="Minutes"
+              ></mud-time-picker>
+              <span class="label">custom accessible labels (en)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Events</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <mud-time-picker id="tp-events"></mud-time-picker>
+              <span class="label">pick an hour, then a minute</span>
+            </div>
+            <div class="cell">
+              <pre id="tp-log" style="margin: 0; min-width: 260px; min-height: 120px">mudChange log</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        const log = document.getElementById('tp-log');
+        document.getElementById('tp-events')?.addEventListener('mudChange', ev => {
+          if (log) log.textContent = `mudChange ${JSON.stringify(ev.detail)}\n${log.textContent}`;
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-time-input · @egov-moldova/mud-web-components</title>
+  </head>
+  <body data-component="mud-time-input">
+    <main class="demo-main">
+      <section id="mud-time-input" class="component-section">
+        <h2>&lt;mud-time-input&gt;</h2>
+        <p class="label">
+          24-hour <code>HH:MM</code> field. The clock button opens <code>&lt;mud-time-picker&gt;</code>; picking a
+          minute completes the time and closes it.
+        </p>
+
+        <div class="subsection">
+          <h3>Sizes &amp; variants</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input size="md" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input size="lg" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">lg</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input variant="destructive" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">variant=destructive</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States &amp; slots</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input label="Ora" placeholder="HH:MM"></mud-time-input>
+              </div>
+              <span class="label">empty (placeholder)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input label="Ora programării" helper-text="Între 08:00 și 17:00"></mud-time-input>
+              </div>
+              <span class="label">helper-text</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input clearable="" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">clearable</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input disabled="" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input readonly="" value="11:15" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input required="" label="Ora" placeholder="HH:MM"></mud-time-input>
+              </div>
+              <span class="label">required (asterisk)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input>
+                  <span slot="label">Ora sosirii</span>
+                  <span slot="helper">Format <code>HH:MM</code>, 24 de ore</span>
+                </mud-time-input>
+              </div>
+              <span class="label">label + helper slots</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input aria-label="Ora sosirii" value="09:30"></mud-time-input>
+              </div>
+              <span class="label">no visible label · aria-label</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input
+                  min="08:00"
+                  max="17:30"
+                  value="09:00"
+                  label="Program de lucru"
+                  helper-text="Orele din afara intervalului sunt inactive"
+                ></mud-time-input>
+              </div>
+              <span class="label">min/max bounds</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input min="08:00" max="17:30" value="19:45" label="Program de lucru"></mud-time-input>
+              </div>
+              <span class="label">out-of-range value</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input value="25:70" label="Ora"></mud-time-input>
+              </div>
+              <span class="label">invalid hour + minute</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input value="11:" label="Ora" helper-text="Continuă să completezi"></mud-time-input>
+              </div>
+              <span class="label">incomplete value</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 282px">
+                <mud-time-input
+                  invalid=""
+                  value="11:15"
+                  label="Ora"
+                  error-text="Ora selectată nu mai este disponibilă"
+                ></mud-time-input>
+              </div>
+              <span class="label">invalid + error-text</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Form &amp; events</h3>
+          <div class="row" style="align-items: flex-start">
+            <div class="cell">
+              <form
+                id="ti-form"
+                style="display: flex; flex-direction: column; gap: var(--spacing-16); max-width: 282px"
+              >
+                <mud-time-input id="ti-events" name="arrival" required="" label="Ora sosirii"></mud-time-input>
+                <button type="submit">Trimite</button>
+              </form>
+              <span class="label">required · submit an empty field to see the error</span>
+            </div>
+            <div class="cell">
+              <pre id="ti-log" style="margin: 0; min-width: 260px; min-height: 120px">mudChange / submit log</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        const log = document.getElementById('ti-log');
+        const write = line => {
+          if (log) log.textContent = `${line}\n${log.textContent}`;
+        };
+        document.getElementById('ti-events')?.addEventListener('mudChange', ev => {
+          write(`mudChange ${JSON.stringify(ev.detail)}`);
+        });
+        document.getElementById('ti-form')?.addEventListener('submit', ev => {
+          ev.preventDefault();
+          write(`submit arrival=${JSON.stringify(new FormData(ev.target).get('arrival'))}`);
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

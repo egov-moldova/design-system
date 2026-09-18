@@ -82,14 +82,21 @@
               <span class="label">min/max constrain navigation + disable out-of-range days</span>
             </div>
             <div class="cell">
+              <mud-date-picker id="dp-future" mode="single" value="2099-12-25" locale="ro-RO"></mud-date-picker>
+              <span class="label">far-future month (2099)</span>
+            </div>
+            <div class="cell">
+              <mud-date-picker mode="single" value="2026-05-15" locale="ro-RO" today-shortcut=""></mud-date-picker>
+              <span class="label">today-shortcut · "Azi" footer (off by default)</span>
+            </div>
+            <div class="cell">
               <mud-date-picker
-                id="dp-future"
                 mode="single"
-                value="2099-12-25"
+                value="2026-05-15"
                 locale="ro-RO"
-                hide-today-shortcut=""
+                header-style="dropdown"
               ></mud-date-picker>
-              <span class="label">far-future month (2099) · hide-today-shortcut</span>
+              <span class="label">header-style=dropdown · month and year chips</span>
             </div>
             <div class="cell">
               <mud-date-picker id="dp-disabled" mode="multi" locale="ro-RO"></mud-date-picker>
