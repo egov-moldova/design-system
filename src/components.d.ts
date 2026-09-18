@@ -949,7 +949,8 @@ export namespace Components {
          */
         "headerStyle": DatePickerHeaderStyle;
         /**
-          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * Hide the "Today" quick-jump shortcut.
+          * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set, this still wins over `todayShortcut`.
           * @default false
          */
         "hideTodayShortcut": boolean;
@@ -983,6 +984,11 @@ export namespace Components {
           * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
          */
         "rangeStart"?: string;
+        /**
+          * Show the "Today" quick-jump shortcut under the grid. Off by default: no date-picker variant in the Figma spec (159:904) has it.
+          * @default false
+         */
+        "todayShortcut": boolean;
         /**
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
@@ -6313,7 +6319,8 @@ declare namespace LocalJSX {
          */
         "headerStyle"?: DatePickerHeaderStyle;
         /**
-          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * Hide the "Today" quick-jump shortcut.
+          * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set, this still wins over `todayShortcut`.
           * @default false
          */
         "hideTodayShortcut"?: boolean;
@@ -6355,6 +6362,11 @@ declare namespace LocalJSX {
           * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
          */
         "rangeStart"?: string;
+        /**
+          * Show the "Today" quick-jump shortcut under the grid. Off by default: no date-picker variant in the Figma spec (159:904) has it.
+          * @default false
+         */
+        "todayShortcut"?: boolean;
         /**
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
@@ -9459,6 +9471,7 @@ declare namespace LocalJSX {
         "locale": string;
         "label": string;
         "firstDayOfWeek": number;
+        "todayShortcut": boolean;
         "hideTodayShortcut": boolean;
         "viewDate": string;
     }

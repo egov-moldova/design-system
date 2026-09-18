@@ -21,6 +21,10 @@ let datePickerInstanceCounter = 0;
 const MS_PER_DAY = 86_400_000;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Year view: 12 cells starting at a decade; the arrows page by a decade (Figma 524:1858). */
+const YEAR_GRID_SIZE = 12;
+const YEARS_PER_PAGE_STEP = 10;
+
 /** Parse a `YYYY-MM-DD` ISO date into a UTC `Date` or null if malformed. */
 function parseIso(iso: string | undefined | null): Date | null {
   if (!iso || !ISO_RE.test(iso)) return null;
@@ -145,7 +149,18 @@ export class MudDatePicker {
    */
   @Prop() firstDayOfWeek: number = 1;
 
-  /** Hide the "Today" quick-jump shortcut. Default keeps it visible. */
+  /**
+   * Show the "Today" quick-jump shortcut under the grid. Off by default: no
+   * date-picker variant in the Figma spec (159:904) has it.
+   * @default false
+   */
+  @Prop() todayShortcut: boolean = false;
+
+  /**
+   * Hide the "Today" quick-jump shortcut.
+   * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set,
+   * this still wins over `todayShortcut`.
+   */
   @Prop() hideTodayShortcut: boolean = false;
 
   /**
@@ -176,11 +191,28 @@ export class MudDatePicker {
   private readonly gridLabelId = `mud-date-picker-grid-${this.instanceId}`;
   private readonly titleId = `mud-date-picker-title-${this.instanceId}`;
   private todayIso = toIso(new Date());
+  /**
+   * Set when a view switch removes the control that had focus (a header chip,
+   * a month / year cell); `componentDidRender` moves focus into the new view.
+   */
+  private focusViewOnRender: boolean = false;
 
   componentWillLoad() {
     this.captureAriaLabel();
     this.syncViewFromValue();
     this.todayIso = toIso(new Date());
+  }
+
+  componentDidRender() {
+    if (!this.focusViewOnRender) return;
+    this.focusViewOnRender = false;
+    const root = this.host.shadowRoot;
+    const target =
+      this.view === 'days'
+        ? root?.querySelector<HTMLButtonElement>('button.day-cell[tabindex="0"]')
+        : (root?.querySelector<HTMLButtonElement>('.picker-cell.is-selected') ??
+          root?.querySelector<HTMLButtonElement>('.picker-cell'));
+    target?.focus();
   }
 
   private captureAriaLabel(): void {
@@ -429,6 +461,14 @@ export class MudDatePicker {
     // A host listener sees `ev.target` retargeted to the host; the day cell is
     // the first node of the composed path.
     const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
+    // Escape backs out of the month / year view first; only the day view lets
+    // it through to a host popover (mud-date-input closes on it).
+    if (ev.key === 'Escape' && this.view !== 'days') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this.switchView('days');
+      return;
+    }
     const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
     if (!dayCell) return;
     const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;
@@ -485,14 +525,19 @@ export class MudDatePicker {
         ev.preventDefault();
         this.selectDay(iso);
         return;
-      case 'Escape':
-        if (this.view !== 'days') {
-          ev.preventDefault();
-          this.view = 'days';
-        }
-        return;
     }
   };
+
+  /** Change view and move focus into it once rendered. */
+  private switchView(next: DatePickerView) {
+    this.view = next;
+    this.focusViewOnRender = true;
+  }
+
+  /** First year of the 12-cell year grid: the decade the view year falls in (Figma 524:1858). */
+  private yearGridBase(): number {
+    return Math.floor(this.viewYear / YEARS_PER_PAGE_STEP) * YEARS_PER_PAGE_STEP;
+  }
 
   private todayLabel(): string {
     // Localized "Today" label. We rely on Intl.RelativeTimeFormat for accuracy
@@ -511,25 +556,26 @@ export class MudDatePicker {
 
   private renderHeader() {
     const monthYear = this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
-    // Year view shows the visible decade range (e.g. "2016 - 2027") as the header
-    // label, per the Figma year-picker — not the single Month/Year title.
-    const yearBase = Math.floor(this.viewYear / 12) * 12;
-    const yearRange = `${yearBase} - ${yearBase + 11}`;
-    const onPrev = () => (this.view === 'years' ? this.goToYear(-12) : this.goToMonth(-1));
-    const onNext = () => (this.view === 'years' ? this.goToYear(12) : this.goToMonth(1));
-    const prevAria = new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-      new Date(Date.UTC(this.viewYear, this.viewMonth - 1, 1)),
-    );
-    const nextAria = new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-      new Date(Date.UTC(this.viewYear, this.viewMonth + 1, 1)),
-    );
+    // Year view titles the decade it starts at ("2020-2030"), per the Figma
+    // year picker 494:13301, whose 12-cell grid runs on to 2031.
+    const yearBase = this.yearGridBase();
+    const decadeLabel = (base: number) => `${base}-${base + YEARS_PER_PAGE_STEP}`;
+    const isYears = this.view === 'years';
+    const onPrev = () => (isYears ? this.goToYear(-YEARS_PER_PAGE_STEP) : this.goToMonth(-1));
+    const onNext = () => (isYears ? this.goToYear(YEARS_PER_PAGE_STEP) : this.goToMonth(1));
+    const monthAria = (delta: number) =>
+      new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+        new Date(Date.UTC(this.viewYear, this.viewMonth + delta, 1)),
+      );
+    const prevAria = isYears ? decadeLabel(yearBase - YEARS_PER_PAGE_STEP) : monthAria(-1);
+    const nextAria = isYears ? decadeLabel(yearBase + YEARS_PER_PAGE_STEP) : monthAria(1);
     return (
       <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
           <mud-icon name="chevron-left-small" size={20}></mud-icon>
         </button>
-        {this.view === 'years'
-          ? this.renderHeaderTitle(yearRange)
+        {isYears
+          ? this.renderHeaderTitle(decadeLabel(yearBase))
           : this.headerStyle === 'dropdown'
             ? this.renderHeaderDropdowns()
             : this.renderHeaderTitle(monthYear)}
@@ -563,27 +609,30 @@ export class MudDatePicker {
     );
     return (
       <div class="header-dropdowns" part="header-dropdowns" id={this.titleId}>
+        {/* Each chip swaps the day grid for its own view, and the chips leave
+            the DOM with it (the Month Picker 524:1973 has no header; the year
+            view shows the decade title), so `switchView` re-homes focus. */}
         <button
           type="button"
-          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'months' }}
+          class="dropdown-trigger"
           part="month-dropdown"
           aria-haspopup="grid"
-          aria-expanded={this.view === 'months' ? 'true' : 'false'}
-          onClick={() => (this.view = this.view === 'months' ? 'days' : 'months')}
+          aria-expanded="false"
+          onClick={() => this.switchView('months')}
         >
           <span class="dropdown-label">{monthName}</span>
-          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
+          <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
         </button>
         <button
           type="button"
-          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'years' }}
+          class="dropdown-trigger"
           part="year-dropdown"
           aria-haspopup="grid"
-          aria-expanded={this.view === 'years' ? 'true' : 'false'}
-          onClick={() => (this.view = this.view === 'years' ? 'days' : 'years')}
+          aria-expanded="false"
+          onClick={() => this.switchView('years')}
         >
           <span class="dropdown-label">{this.viewYear}</span>
-          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
+          <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
         </button>
       </div>
     );
@@ -618,7 +667,9 @@ export class MudDatePicker {
               const isSelected = this.isSelected(cell.iso);
               const isMiddle = this.isRangeMiddle(cell.iso);
               const endpoint = this.isRangeEndpoint(cell.iso);
-              const disabled = this.isDisabled(cell.iso);
+              // Spill-over days are inactive (Figma .day-cell Inactive 158:453);
+              // the arrow keys still cross into the next month.
+              const disabled = cell.outside || this.isDisabled(cell.iso);
               const isFocused = this.focusedIso === cell.iso;
               const classes = {
                 'day-cell': true,
@@ -647,7 +698,9 @@ export class MudDatePicker {
                     timeZone: 'UTC',
                   }).format(cell.date)}
                   disabled={disabled}
-                  onClick={() => this.selectDay(cell.iso)}
+                  onClick={() => {
+                    if (!disabled) this.selectDay(cell.iso);
+                  }}
                   onMouseEnter={() => (this.hoverIso = cell.iso)}
                   onMouseLeave={() => (this.hoverIso = null)}
                   onFocus={() => (this.focusedIso = cell.iso)}
@@ -678,7 +731,7 @@ export class MudDatePicker {
               aria-selected={isCurrent ? 'true' : 'false'}
               onClick={() => {
                 this.viewMonth = m;
-                this.view = 'days';
+                this.switchView('days');
                 this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
               }}
             >
@@ -691,10 +744,10 @@ export class MudDatePicker {
   }
 
   private renderYearGrid() {
-    const base = Math.floor(this.viewYear / 12) * 12;
+    const base = this.yearGridBase();
     return (
       <div class="year-grid" role="grid" aria-labelledby={this.titleId} part="year-grid">
-        {Array.from({ length: 12 }, (_, i) => {
+        {Array.from({ length: YEAR_GRID_SIZE }, (_, i) => {
           const year = base + i;
           const isCurrent = year === this.viewYear;
           return (
@@ -706,7 +759,9 @@ export class MudDatePicker {
               aria-selected={isCurrent ? 'true' : 'false'}
               onClick={() => {
                 this.viewYear = year;
-                this.view = 'months';
+                // The title cycles days → months → years, so it continues to the
+                // months; the year chip was a shortcut and returns to the days.
+                this.switchView(this.headerStyle === 'dropdown' ? 'days' : 'months');
                 this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
               }}
             >
@@ -719,7 +774,7 @@ export class MudDatePicker {
   }
 
   private renderFooter() {
-    if (this.hideTodayShortcut) return null;
+    if (!this.todayShortcut || this.hideTodayShortcut) return null;
     const today = this.todayLabel();
     const jumpToToday = () => {
       const now = new Date();
@@ -751,10 +806,12 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
+    // The Month Picker variant (524:1973) — reached from the month chip — has no header.
+    const showHeader = !(this.view === 'months' && this.headerStyle === 'dropdown');
     return (
       <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
-        {this.renderHeader()}
+        {showHeader ? this.renderHeader() : null}
         {this.view === 'days' ? this.renderDayGrid() : null}
         {this.view === 'months' ? this.renderMonthGrid() : null}
         {this.view === 'years' ? this.renderYearGrid() : null}

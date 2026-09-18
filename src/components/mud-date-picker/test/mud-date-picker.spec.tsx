@@ -441,20 +441,23 @@ describe('mud-date-picker', () => {
   });
 
   describe('today shortcut + footer', () => {
-    it('shows the Today shortcut by default', async () => {
+    it('hides the Today shortcut by default (no Figma variant has a footer)', async () => {
       const { root } = await render(<mud-date-picker></mud-date-picker>);
-      const todayButton = root?.shadowRoot?.querySelector('button.today-button');
-      expect(todayButton).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.footer')).toBeNull();
     });
 
-    it('hides the Today shortcut when hideTodayShortcut is set', async () => {
-      const { root } = await render(<mud-date-picker hideTodayShortcut></mud-date-picker>);
-      const todayButton = root?.shadowRoot?.querySelector('button.today-button');
-      expect(todayButton).toBeNull();
+    it('shows the Today shortcut when todayShortcut is set', async () => {
+      const { root } = await render(<mud-date-picker todayShortcut></mud-date-picker>);
+      expect(root?.shadowRoot?.querySelector('button.today-button')).toBeTruthy();
+    });
+
+    it('the deprecated hideTodayShortcut still wins over todayShortcut', async () => {
+      const { root } = await render(<mud-date-picker todayShortcut hideTodayShortcut></mud-date-picker>);
+      expect(root?.shadowRoot?.querySelector('button.today-button')).toBeNull();
     });
 
     it('clicking Today resets the view to the current month', async () => {
-      const { root } = await render(<mud-date-picker value="2020-01-15"></mud-date-picker>);
+      const { root } = await render(<mud-date-picker todayShortcut value="2020-01-15"></mud-date-picker>);
       const onMonthChange = vi.fn();
       root?.addEventListener('mudMonthChange', onMonthChange);
       const todayButton = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.today-button');
@@ -508,6 +511,18 @@ describe('mud-date-picker', () => {
       // Spillover into the next month should be present and marked outside.
       expect(cells?.classList.contains('is-outside')).toBe(true);
     });
+
+    it('renders spill-over days inactive (Figma .day-cell Inactive 158:453)', async () => {
+      const { root } = await render(<mud-date-picker value="2026-12-31"></mud-date-picker>);
+      const onChange = vi.fn();
+      root?.addEventListener('mudChange', onChange);
+      const spill = queryCellByIso(root, '2027-01-01');
+      expect(spill?.hasAttribute('disabled')).toBe(true);
+      expect(spill?.getAttribute('aria-disabled')).toBe('true');
+      spill?.click();
+      await flush();
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe('header style', () => {
@@ -523,13 +538,30 @@ describe('mud-date-picker', () => {
       expect(root?.shadowRoot?.querySelectorAll('.dropdown-trigger').length).toBe(2);
     });
 
-    it('opens the month grid from the month dropdown chip', async () => {
+    it('opens the month grid, without a header, from the month dropdown chip', async () => {
       const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
       const monthChip = root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="month-dropdown"]');
+      // mock-doc keeps no activeElement: record which element focus() was called on.
+      const focus = vi.spyOn(Object.getPrototypeOf(monthChip) as HTMLElement, 'focus');
       monthChip?.click();
       await flush();
       expect(root?.shadowRoot?.querySelector('.month-grid')).toBeTruthy();
-      expect(monthChip?.getAttribute('aria-expanded')).toBe('true');
+      // Figma Month Picker (524:1973) has no .picker-header.
+      expect(root?.shadowRoot?.querySelector('.header')).toBeNull();
+      // The chip left the DOM, so focus moves to the selected month.
+      expect((focus.mock.contexts.at(-1) as HTMLElement | undefined)?.textContent).toBe('Mai');
+      focus.mockRestore();
+    });
+
+    it('returns to the day view after picking a year from the year chip', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="year-dropdown"]')?.click();
+      await flush();
+      const cells = root?.shadowRoot?.querySelectorAll<HTMLButtonElement>('[part="year-cell"]');
+      cells?.[3]?.click();
+      await flush();
+      expect(queryCells(root).length).toBe(42);
+      expect(root?.shadowRoot?.querySelector('[part="year-dropdown"]')?.textContent).toBe('2023');
     });
 
     it('opens the year grid from the year dropdown chip', async () => {
@@ -538,10 +570,66 @@ describe('mud-date-picker', () => {
       yearChip?.click();
       await flush();
       expect(root?.shadowRoot?.querySelector('.year-grid')).toBeTruthy();
-      // Per the Figma, the year view collapses the month/year chips into a single
-      // decade-range header label (e.g. "2016 - 2027").
+      // Per the Figma year picker (494:13301), the year view collapses the
+      // month/year chips into the decade title.
       const title = root?.shadowRoot?.querySelector('button.title');
-      expect(title?.textContent).toMatch(/\d{4}\s*-\s*\d{4}/);
+      expect(title?.textContent).toBe('2020-2030');
+    });
+  });
+
+  describe('year view', () => {
+    const openYears = async (value: string) => {
+      const result = await render(<mud-date-picker value={value}></mud-date-picker>);
+      const title = queryTitle(result.root);
+      title?.click();
+      await flush();
+      title?.click();
+      await flush();
+      return result;
+    };
+    const yearLabels = (root: Element | undefined | null) =>
+      Array.from(root?.shadowRoot?.querySelectorAll('[part="year-cell"]') ?? []).map(cell => cell.textContent);
+
+    it('starts the 12-cell grid at the decade of the view year', async () => {
+      const { root } = await openYears('2025-01-11');
+      const years = yearLabels(root);
+      expect(years).toHaveLength(12);
+      expect(years[0]).toBe('2020');
+      expect(years[11]).toBe('2031');
+      expect(queryTitle(root)?.textContent).toBe('2020-2030');
+    });
+
+    it('pages by a decade with the arrows', async () => {
+      const { root } = await openYears('2025-01-11');
+      const [prev, next] = Array.from(root?.shadowRoot?.querySelectorAll<HTMLButtonElement>('.nav-button') ?? []);
+      expect(next?.getAttribute('aria-label')).toBe('2030-2040');
+      next?.click();
+      await flush();
+      expect(yearLabels(root)[0]).toBe('2030');
+      prev?.click();
+      await flush();
+      prev?.click();
+      await flush();
+      expect(yearLabels(root)[0]).toBe('2010');
+    });
+
+    it('Escape returns from the year view to the days and does not reach the page', async () => {
+      const { root } = await openYears('2025-01-11');
+      const onKeyDown = vi.fn();
+      document.addEventListener('keydown', onKeyDown);
+      const cell = root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="year-cell"]');
+      cell?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+      await flush();
+      document.removeEventListener('keydown', onKeyDown);
+      expect(queryCells(root).length).toBe(42);
+      expect(onKeyDown).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('range variant', () => {
+    it('marks the host with mode-range so the 6px row gap applies', async () => {
+      const { root } = await render(<mud-date-picker mode="range"></mud-date-picker>);
+      expect(root?.classList.contains('mode-range')).toBe(true);
     });
   });
 });

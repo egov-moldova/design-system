@@ -8,13 +8,26 @@
       },
       "padding": {
         "desktop": { "$value": "{spacing.12}", "$type": "dimension" },
-        "mobile": { "$value": "{spacing.16}", "$type": "dimension" },
+        "mobile": {
+          "$value": "{spacing.0}",
+          "$type": "dimension",
+          "$comment": "Figma bottom-sheet 797:37918 has no padding; its rows carry their own (see `sheet`)."
+        },
         "docked": { "$value": "{spacing.8}", "$type": "dimension" }
       },
       "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "rangeGap": {
+        "$value": "{spacing.6}",
+        "$type": "dimension",
+        "$comment": "Date Range Picker variant 159:905 uses a 6px gap (the single-date variant 157:4570 uses 8px)."
+      },
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
-      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderWidth": {
+        "$value": "{spacing.0}",
+        "$type": "dimension",
+        "$comment": "No date-picker variant in 159:904 has a stroke — the edge is Drop Shadow/300 only."
+      },
       "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
       "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
@@ -43,6 +56,28 @@
           "default": { "$value": "{color.icon.base.default}", "$type": "color" },
           "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
         }
+      },
+      "dropdown": {
+        "height": { "$value": "{spacing.40}", "$type": "dimension" },
+        "paddingStart": { "$value": "{spacing.6}", "$type": "dimension" },
+        "paddingEnd": { "$value": "{spacing.4}", "$type": "dimension" },
+        "gap": { "$value": "{spacing.4}", "$type": "dimension" },
+        "groupGap": { "$value": "{spacing.0}", "$type": "dimension" },
+        "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+        "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
+        "background": {
+          "hover": {
+            "$value": "{color.background.base.default-hover}",
+            "$type": "color",
+            "$comment": "#f5f5f5 per Figma 524:2324."
+          },
+          "active": {
+            "$value": "{color.background.base.default-active}",
+            "$type": "color",
+            "$comment": "#d9d9d9 per Figma 524:2471."
+          }
+        },
+        "$comment": "Month / year chips of the advanced header (.picker-header Year Switcher 229:5104, chip 229:5105)."
       }
     },
     "dayLabel": {
@@ -96,16 +131,24 @@
         "borderColor": { "$value": "{color.border.brand.default}", "$type": "color" }
       },
       "todayHover": {
-        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "background": {
+          "$value": "{color.background.base.default-hover}",
+          "$type": "color",
+          "$comment": "#f5f5f5 per Figma 489:9033 (current: hover)."
+        },
         "color": { "$value": "{color.text.brand.default}", "$type": "color" }
       },
       "inRange": {
         "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
-        "color": { "$value": "{color.text.brand.default}", "$type": "color" }
+        "color": {
+          "$value": "{color.text.base.default}",
+          "$type": "color",
+          "$comment": "#121212 per Figma .day-cell Middle 159:901."
+        }
       },
       "outsideMonth": {
-        "$comment": "Outside-month cells are still clickable (they navigate to that month), so they must meet WCAG 1.4.3 AA contrast. The disabled token would fail (2.12:1 vs white).",
-        "color": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+        "$comment": "Outside-month cells are inactive (Figma .day-cell Inactive 158:453): rendered disabled, so SC 1.4.3 does not apply (inactive UI components are exempt).",
+        "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
       },
       "disabled": {
         "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
@@ -117,20 +160,34 @@
       }
     },
     "yearGrid": {
-      "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "rowGap": { "$value": "{spacing.4}", "$type": "dimension", "$comment": "Figma 494:13302 / 494:13446." },
+      "columnGap": { "$value": "{spacing.0}", "$type": "dimension" },
       "cellHeight": { "$value": "{spacing.40}", "$type": "dimension" },
-      "cellBorderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" }
+      "cellBorderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" }
     },
     "monthGrid": {
-      "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "rowGap": { "$value": "{spacing.4}", "$type": "dimension", "$comment": "Figma 494:13302 / 494:13446." },
+      "columnGap": { "$value": "{spacing.0}", "$type": "dimension" },
       "cellHeight": { "$value": "{spacing.40}", "$type": "dimension" },
-      "cellBorderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" }
+      "cellBorderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" }
     },
     "dragHandle": {
       "width": { "$value": "{spacing.48}", "$type": "dimension" },
       "height": { "$value": "{spacing.4}", "$type": "dimension" },
-      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "background": {
+        "$value": "{color.border.base.default}",
+        "$type": "color",
+        "$comment": "#d9d9d9 per Figma 797:37920."
+      },
       "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
+    },
+    "sheet": {
+      "$comment": "Mobile bottom sheet rows (Figma 797:37918): drag-handle row, header, content slot.",
+      "gap": { "$value": "{spacing.0}", "$type": "dimension" },
+      "dragHandlePadding": { "$value": "{spacing.16}", "$type": "dimension" },
+      "headerPaddingInline": { "$value": "{spacing.20}", "$type": "dimension" },
+      "contentPaddingBlock": { "$value": "{spacing.24}", "$type": "dimension" },
+      "contentPaddingInline": { "$value": "{spacing.16}", "$type": "dimension" }
     }
   }
 }
