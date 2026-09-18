@@ -251,8 +251,7 @@
             "borderTopLeftRadius": "8px",
             "borderBottomRightRadius": "8px",
             "backgroundColor": "#039855"
-          },
-          "note": "Figma fills Success with #039855. toast.tokens.json darkens it to positive.default-hover (#027948) for white-text contrast — a deliberate a11y deviation, reported, not silently accepted."
+          }
         },
         {
           "target": "mud-toast .main",
@@ -367,8 +366,7 @@
             "borderBottomRightRadius": "8px",
             "backgroundColor": "#039855",
             "alignItems": "center"
-          },
-          "note": "Figma fills Success with #039855. toast.tokens.json darkens it to positive.default-hover (#027948) for white-text contrast — a deliberate a11y deviation, reported, not silently accepted."
+          }
         },
         {
           "target": "mud-toast .main",

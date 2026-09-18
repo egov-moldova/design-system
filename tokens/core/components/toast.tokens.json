@@ -82,9 +82,9 @@
     },
     "success": {
       "background": {
-        "$value": "{color.background.positive.default-hover}",
+        "$value": "{color.background.positive.default}",
         "$type": "color",
-        "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color text yields 3.73:1 against the lighter green (fails WCAG AA at the 14px body), but 5.48:1 against this rung. Figma's filled-success uses the lighter green; we darken it to keep the on-color text AA-compliant."
+        "$comment": "Figma's filled Success (75:426) is #039855, kept exactly by product decision. White 14px text on it is 3.73:1, below WCAG AA's 4.5:1; the earlier AA-safe rung was positive.default-hover (#027948, 5.48:1)."
       },
       "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
       "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
