@@ -139,28 +139,65 @@
     background-color var(--_transition-duration) var(--_transition-easing);
 }
 
+/* Emphasis ring overlay.
+   The inset ring that stands in for Figma's 2px border lives on this pseudo
+   element, not on `.control` itself: an autofilled `.native` paints an opaque
+   `-webkit-box-shadow` fill over the control's own background and would clip
+   the ring's top and bottom edges. The overlay paints after the native input,
+   so the ring stays whole. It spans the padding box (`inset: 0`), whose radius
+   is the control's minus the border it sits inside. */
+.control::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--_radius) - var(--_border-width-default));
+  pointer-events: none;
+  transition: box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
 :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
   border-color: var(--_border-color-hover);
-  /* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
+}
+
+/* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
+:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control::after {
   box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
     var(--_border-color-hover);
 }
 
 :host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
   border-color: var(--_border-color-focus);
-  box-shadow:
-    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
-    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+  /* The outer focus ring is drawn outside the control, where the native input
+     cannot reach it — it stays on `.control`. */
+  box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control::after {
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-focus);
 }
 
 :host(.is-readonly) .control {
-  background-color: var(--input-default-background-read-only);
   border-color: var(--input-default-border-read-only);
   cursor: default;
 }
 
+/* Disabled / read-only recolor the private vars rather than painting
+   `.control` directly: `.native:-webkit-autofill` fills the control with
+   `var(--_bg)` and tints text with `var(--_text)`, so a state that only
+   overrode `.control` would be repainted with the enabled colors as soon as
+   the browser autofilled the field. Driving the vars keeps every surface --
+   control background, autofill fill and text -- on one source of truth. */
+:host(.is-disabled) {
+  --_bg: var(--input-default-background-disabled);
+  --_text: var(--input-default-text-disabled);
+}
+
+:host(.is-readonly) {
+  --_bg: var(--input-default-background-read-only);
+}
+
 :host(.is-disabled) .control {
-  background-color: var(--input-default-background-disabled);
   border-color: var(--input-default-border-disabled);
   cursor: not-allowed;
 }
@@ -362,7 +399,8 @@
 /* ---------- prefers-reduced-motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .control {
+  .control,
+  .control::after {
     transition: none;
   }
 }
