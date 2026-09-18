@@ -1,0 +1,31 @@
+{
+  "cited": {
+    "version": "2399758890123564281",
+    "lastModified": "2026-09-16T09:26:19Z",
+    "nodes": {
+      "158:402": {
+        "document": { "id": "158:402", "type": "COMPONENT", "name": "State=Default", "children": [] },
+        "components": { "158:402": { "name": "State=Default", "componentSetId": "158:401" } }
+      },
+      "99999:1": null
+    }
+  },
+  "sets": {
+    "version": "2399758890123564281",
+    "nodes": {
+      "158:401": {
+        "document": {
+          "id": "158:401",
+          "type": "COMPONENT_SET",
+          "name": ".day-cell",
+          "children": [
+            { "id": "158:402", "type": "COMPONENT", "name": "State=Default" },
+            { "id": "158:404", "type": "COMPONENT", "name": "State=Hover" },
+            { "id": "158:406", "type": "COMPONENT", "name": "State=Selected" },
+            { "id": "158:499", "type": "FRAME", "name": "notes" }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -48,6 +48,15 @@
  * - `pixel: false` keeps a state out of the screenshot diff and reference
  *   export (e.g. a single cell whose Figma component has a different canvas),
  *   while its `expect` entries are still checked.
+ * - `shared` holds expectation lists several states repeat; a state lists
+ *   `{ "use": "<key>" }` in `expect`. Each expanded entry cites its own `node`
+ *   or the using state's node.
+ * - `mask` (state or defaults) lists selectors painted with the page
+ *   background on both images before the pixel diff — for mock data such as
+ *   dates. Masked pixels are reported; style parity still checks the elements.
+ *   A state's `"mask": []` opts out of `defaults.mask`.
+ * - `figma.skip` lists Figma variants the manifest deliberately does not cover,
+ *   each with a reason; `figma-refs --check` reports every other uncovered one.
  * - Styles accept any computed-style property plus `boxWidth`, `boxHeight`
  *   (border box) and `textContent` (trimmed).
  *
@@ -111,6 +120,30 @@ export function validateManifest(manifest) {
     if (manifest.figma?.scale !== undefined && !(Number(manifest.figma.scale) > 0)) {
       errors.push('figma.scale must be a positive number');
     }
+    if (manifest.figma?.skip !== undefined) {
+      if (!Array.isArray(manifest.figma.skip)) {
+        errors.push('figma.skip must be an array of { node, reason }');
+      } else {
+        manifest.figma.skip.forEach((s, i) => {
+          if (
+            typeof s?.node !== 'string' ||
+            !NODE_ID_RE.test(s.node) ||
+            typeof s?.reason !== 'string' ||
+            !s.reason.trim()
+          ) {
+            errors.push(`figma.skip[${i}] needs a node id and a reason`);
+          }
+        });
+      }
+    }
+  }
+  const shared = manifest.shared ?? {};
+  if (manifest.shared !== undefined && (typeof manifest.shared !== 'object' || Array.isArray(manifest.shared))) {
+    errors.push('shared must be an object of { key: expectations[] }');
+  }
+  for (const [key, list] of Object.entries(shared)) {
+    if (!STATE_NAME_RE.test(key)) errors.push(`shared["${key}"] key must be kebab-case`);
+    if (!Array.isArray(list) || list.length === 0) errors.push(`shared["${key}"] must be a non-empty array`);
   }
   if (!Array.isArray(states) || states.length === 0) {
     errors.push('states must be a non-empty array');
@@ -176,7 +209,20 @@ export function validateManifest(manifest) {
       if (!Array.isArray(state.expect)) {
         errors.push(`${where}.expect must be an array`);
       } else {
-        state.expect.forEach((e, j) => validateExpectation(e, `${where}.expect[${j}]`, state, errors));
+        state.expect.forEach((e, j) => {
+          const where2 = `${where}.expect[${j}]`;
+          if (e && e.use !== undefined) {
+            if (Object.keys(e).length !== 1) errors.push(`${where2}: a use entry cannot carry other fields`);
+            const list = shared[e.use];
+            if (!Array.isArray(list)) {
+              errors.push(`${where2}: use "${e.use}" names no shared block`);
+              return;
+            }
+            list.forEach((s, k) => validateExpectation(s, `${where2} → shared["${e.use}"][${k}]`, state, errors));
+            return;
+          }
+          validateExpectation(e, where2, state, errors);
+        });
       }
     }
   });
@@ -221,6 +267,11 @@ function validateCommon(obj, where, errors) {
       errors.push(`${where}.capture.bleed must be "auto" or a non-negative number`);
     }
   }
+  if (obj.mask !== undefined) {
+    // An empty list is valid: it lets a state opt out of defaults.mask.
+    const ok = Array.isArray(obj.mask) && obj.mask.every(s => typeof s === 'string' && s.length > 0);
+    if (!ok) errors.push(`${where}.mask must be an array of selectors`);
+  }
 }
 
 /** Merge a state over the manifest defaults into the options a capture needs. */
@@ -241,7 +292,10 @@ export function resolveState(manifest, state, componentName) {
       selector: state.capture?.selector ?? d.capture?.selector ?? componentName,
       bleed: state.capture?.bleed ?? d.capture?.bleed ?? 'auto',
     },
-    expect: (state.expect ?? []).map(e => ({ ...e, node: normalizeNodeId(e.node ?? state.node) })),
+    mask: state.mask ?? d.mask ?? [],
+    expect: (state.expect ?? [])
+      .flatMap(e => (e.use !== undefined ? (manifest.shared?.[e.use] ?? []) : [e]))
+      .map(e => ({ ...e, node: normalizeNodeId(e.node ?? state.node) })),
   };
 }
 

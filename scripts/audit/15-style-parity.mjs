@@ -29,10 +29,10 @@
  *   node scripts/audit/15-style-parity.mjs mud-date-picker --json
  */
 import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
-import { resolveComponentPaths, relativeToRepo } from './lib/component-paths.mjs';
+import { TOKENS_COMPONENTS_ROOT, resolveComponentPaths, relativeToRepo } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { DEFAULT_PORT, isStorybookReachable } from './lib/storybook-helpers.mjs';
@@ -40,6 +40,7 @@ import { launchBrowser, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HINT } from 
 import { loadManifest, manifestPathFor, resolveState } from './lib/figma-manifest.mjs';
 import { openState } from './lib/state-page.mjs';
 import { compareStyleValue } from './lib/style-values.mjs';
+import { attributeTokens, formatTokens, referencedTokens } from './lib/token-match.mjs';
 
 const TOOL = 'style-parity';
 
@@ -102,6 +103,57 @@ async function readStyles(page, selector, props) {
     },
     { props, pseudo: PSEUDO_PROPS },
   );
+}
+
+/** Tokens for one failing, non-pseudo check; null otherwise. Pure — exported for tests. */
+export function mismatchTokens(check, exp, actualValues, vars, opts = {}) {
+  if (check.pass || PSEUDO_PROPS.includes(check.prop)) return null;
+  return attributeTokens(check.prop, exp.styles[check.prop], actualValues[check.prop], vars, opts);
+}
+
+/** Component names that own tokens (`tokens/core/components/<name>.tokens.json`), used to scope token matches. */
+export function componentTokenNames() {
+  if (!existsSync(TOKENS_COMPONENTS_ROOT)) return [];
+  return readdirSync(TOKENS_COMPONENTS_ROOT)
+    .filter(f => f.endsWith('.tokens.json'))
+    .map(f => f.slice(0, -'.tokens.json'.length));
+}
+
+/**
+ * The component that renders a target: the innermost `mud-*` element the
+ * selector names, else the manifest's component. A checkbox inside a table row
+ * is styled by mud-checkbox's CSS, so its tokens are mud-checkbox's. Pure.
+ */
+export function targetComponent(selector, fallback) {
+  const tags = [...String(selector).matchAll(/(?:^|[\s>+~(,])(mud-[a-z0-9-]+)(?![a-z0-9-])/g)].map(m => m[1]);
+  return tags.length ? tags[tags.length - 1] : fallback;
+}
+
+const ownTokenCache = new Map();
+
+/** Tokens the component's own CSS references; null when that CSS cannot be found (matches stay unscoped). */
+function ownTokensFor(componentName) {
+  if (!ownTokenCache.has(componentName)) {
+    const resolved = resolveComponentPaths(componentName, { allowSubComponent: true });
+    const css = resolved.found && resolved.exists.css ? readFileSync(resolved.paths.css, 'utf8') : null;
+    ownTokenCache.set(componentName, css === null ? null : referencedTokens(css));
+  }
+  return ownTokenCache.get(componentName);
+}
+
+/** Every custom property the element sees, resolved. Read only when a check fails. */
+async function readCustomProperties(page, selector) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate(el => {
+      const cs = getComputedStyle(el);
+      const out = {};
+      for (let i = 0; i < cs.length; i++) {
+        if (cs[i].startsWith('--')) out[cs[i]] = cs.getPropertyValue(cs[i]).trim();
+      }
+      return out;
+    });
 }
 
 async function main() {
@@ -176,6 +228,7 @@ async function main() {
   let checked = 0;
   let browserHandle;
   let failure;
+  const components = componentTokenNames();
   try {
     browserHandle = await launchBrowser();
     for (const raw of manifest.states) {
@@ -185,6 +238,8 @@ async function main() {
       let session;
       try {
         session = await openState(browserHandle.browser, state, { baseUrl, scale });
+        // One read per element: ~2,800 properties cross the browser boundary each time.
+        const varsByTarget = new Map();
         for (const exp of state.expect) {
           if (exp.absent) {
             checked++;
@@ -218,16 +273,24 @@ async function main() {
             stateResult.checks.push({ target: exp.target, node: exp.node, missing: true });
             continue;
           }
-          for (const check of compareExpectation(exp.styles, actual, { tolerance })) {
+          const checks = compareExpectation(exp.styles, actual, { tolerance });
+          const needsVars = checks.some(c => !c.pass && !PSEUDO_PROPS.includes(c.prop));
+          if (needsVars && !varsByTarget.has(exp.target)) {
+            varsByTarget.set(exp.target, await readCustomProperties(session.page, exp.target));
+          }
+          const vars = varsByTarget.get(exp.target) ?? {};
+          const scope = { tolerance, own: ownTokensFor(targetComponent(exp.target, target.name)), components };
+          for (const check of checks) {
             checked++;
-            stateResult.checks.push({ target: exp.target, node: exp.node, ...check });
+            const tokens = mismatchTokens(check, exp, actual, vars, scope);
+            stateResult.checks.push({ target: exp.target, node: exp.node, ...check, ...(tokens ?? {}) });
             if (!check.pass) {
               findings.push(
                 finding({
                   severity: 'error',
                   code: 'STYLE-MISMATCH',
                   file: manifestRel,
-                  message: `${state.name} › ${exp.target} › ${check.prop}: Figma ${exp.node} = ${check.expected}, rendered ${check.actual}`,
+                  message: `${state.name} › ${exp.target} › ${check.prop}: Figma ${exp.node} = ${check.expected}, rendered ${check.actual}${formatTokens(tokens)}`,
                 }),
               );
             }

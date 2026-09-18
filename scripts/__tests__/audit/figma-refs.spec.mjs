@@ -1,12 +1,24 @@
 /**
- * Tests for scripts/audit/figma-refs.mjs — pure planning helpers. The network
- * route is exercised manually with a FIGMA_TOKEN.
+ * Tests for scripts/audit/figma-refs.mjs — pure planning and coverage helpers.
+ * The network route is exercised manually with a FIGMA_TOKEN; the coverage
+ * fixture is trimmed from a real /v1/files/:key/nodes response.
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { buildImagesUrl, figmaToken, mcpCall, planDownloads } from '../../audit/figma-refs.mjs';
+import {
+  buildImagesUrl,
+  buildNodesUrl,
+  checkCoverage,
+  checkFindings,
+  citedNodeIds,
+  componentSetIds,
+  figmaToken,
+  planDownloads,
+  staleness,
+} from '../../audit/figma-refs.mjs';
 
 const manifest = {
   figma: { fileKey: 'doJ7tDY0PlQ0PqMgbpFVIC', scale: 2 },
@@ -52,19 +64,72 @@ describe('figma-refs: buildImagesUrl', () => {
   });
 });
 
-describe('figma-refs: mcpCall', () => {
-  it('builds the download_figma_images call with a repo-relative path', () => {
-    const plan = planDownloads(manifest, { outDir: '/repo/.audit-figma/mud-date-picker' });
-    const call = mcpCall(manifest, plan, { outDir: '/repo/.audit-figma/mud-date-picker', scale: 2, repoRoot: '/repo' });
-    assert.equal(call.tool, 'mcp__figma-mcp__download_figma_images');
-    assert.deepEqual(call.input, {
-      fileKey: 'doJ7tDY0PlQ0PqMgbpFVIC',
-      localPath: path.join('.audit-figma', 'mud-date-picker'),
-      pngScale: 2,
-      nodes: [
-        { nodeId: '157:4570', fileName: 'date-picker.png' },
-        { nodeId: '524:1973', fileName: 'month-picker.png' },
-      ],
+const probe = JSON.parse(readFileSync(new URL('./__fixtures__/figma-nodes.json', import.meta.url), 'utf8'));
+const coverageManifest = {
+  figma: {
+    fileKey: 'doJ7tDY0PlQ0PqMgbpFVIC',
+    skip: [{ node: '158:406', reason: 'selected is covered by the date-picker state' }],
+  },
+  defaults: { story: 'molecules-date-picker--default' },
+  shared: { base: [{ target: 'x', styles: { color: '#000' }, node: '99999:1' }] },
+  states: [{ name: 'default', node: '158:402', expect: [{ use: 'base' }] }],
+};
+
+describe('figma-refs: citedNodeIds', () => {
+  it('collects state, expectation and shared nodes', () => {
+    assert.deepEqual(citedNodeIds(coverageManifest), ['158:402', '99999:1']);
+  });
+});
+
+describe('figma-refs: buildNodesUrl', () => {
+  it('requests depth 1 for de-duplicated ids', () => {
+    assert.equal(
+      buildNodesUrl('abc', ['1:2', '1:2', '3:4']),
+      'https://api.figma.com/v1/files/abc/nodes?ids=1%3A2%2C3%3A4&depth=1',
+    );
+  });
+});
+
+describe('figma-refs: coverage', () => {
+  it('finds component sets, gone nodes and uncovered variants, honouring skip', () => {
+    assert.deepEqual(componentSetIds(probe.cited), ['158:401']);
+    assert.deepEqual(checkCoverage(coverageManifest, probe.cited, probe.sets), {
+      version: '2399758890123564281',
+      lastModified: '2026-09-16T09:26:19Z',
+      gone: ['99999:1'],
+      missing: [{ setId: '158:401', setName: '.day-cell', node: '158:404', name: 'State=Hover' }],
     });
+  });
+});
+
+describe('figma-refs: staleness', () => {
+  it('distinguishes never exported, changed and current', () => {
+    assert.equal(staleness(null, '1'), 'never-exported');
+    assert.equal(staleness({ version: '1' }, '2'), 'changed');
+    assert.equal(staleness({ version: '2' }, '2'), 'none');
+  });
+});
+
+describe('figma-refs: checkFindings', () => {
+  const cov = { gone: [], missing: [{ setId: '1:1', setName: 'set', node: '1:2', name: 'State=Hover' }] };
+  const opts = { stale: 'none', setCount: 1, manifestRel: 'm.json', name: 'mud-x' };
+  const codes = (c, o) => checkFindings(c, { ...opts, ...o }).map(f => [f.code, f.severity]);
+
+  it('reports uncovered variants as warnings and gone nodes as errors', () => {
+    assert.deepEqual(codes({ ...cov, gone: ['9:9'] }), [
+      ['FIGMA-NODE-GONE', 'error'],
+      ['FIGMA-STATE-MISSING', 'warning'],
+    ]);
+  });
+
+  it('says coverage is unknown when no cited node reached a component set', () => {
+    assert.deepEqual(codes({ gone: [], missing: [] }, { setCount: 0 }), [['FIGMA-COVERAGE-UNKNOWN', 'warning']]);
+  });
+
+  it('reports never-exported and changed references', () => {
+    assert.deepEqual(codes({ gone: [], missing: [] }, { stale: 'never-exported' }), [
+      ['FIGMA-REFERENCE-STALE', 'warning'],
+    ]);
+    assert.match(checkFindings({ gone: [], missing: [] }, { ...opts, stale: 'changed' })[0].message, /file changed/);
   });
 });

@@ -759,3 +759,68 @@ describe('lookaround rule: quoting, continuations and non-grep spans', () => {
     );
   });
 });
+
+describe('mcp-server rule', () => {
+  const mcp = JSON.stringify({ mcpServers: { figma: {}, playwright: {} } });
+
+  it('flags a tool whose server .mcp.json does not configure, in agent frontmatter and in code spans', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.mcp.json': mcp,
+      '.claude/agents/README.md': '| Agent |\n| --- |\n| `v` |\n',
+      '.claude/agents/v.md':
+        '---\nname: v\ntools: Read, mcp__figma__get_metadata, mcp__figma-mcp__get_figma_data\n---\n\nUse `mcp__playwright__browser_click` or `mcp__ghost__run`.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root })
+        .filter(h => h.ruleId === 'mcp-server')
+        .map(h => [h.file, h.line]),
+      [
+        ['.claude/agents/v.md', 3],
+        ['.claude/agents/v.md', 6],
+      ],
+    );
+  });
+
+  it('flags wildcard grants, skill allowed-tools and fenced tool calls', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.mcp.json': mcp,
+      '.claude/skills/s/SKILL.md':
+        [
+          '---',
+          'name: s',
+          'allowed-tools: mcp__ghost__*, mcp__figma__*',
+          '---',
+          '',
+          '```text',
+          'mcp__figma-mcp__download_figma_images({ nodes: [] })',
+          'mcp__playwright__browser_click({})',
+          '```',
+          'Prose mcp__ghost__run outside code.',
+        ].join('\n') + '\n',
+      'AGENTS.md': '`.claude/skills/s/SKILL.md`\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root })
+        .filter(h => h.ruleId === 'mcp-server')
+        .map(h => [h.file, h.line]),
+      [
+        ['.claude/skills/s/SKILL.md', 3],
+        ['.claude/skills/s/SKILL.md', 7],
+      ],
+    );
+  });
+
+  it('is silent without .mcp.json', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '_agents/x.md': '`mcp__ghost__run`\n',
+      'AGENTS.md': '`_agents/x.md`\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).filter(h => h.ruleId === 'mcp-server'),
+      [],
+    );
+  });
+});

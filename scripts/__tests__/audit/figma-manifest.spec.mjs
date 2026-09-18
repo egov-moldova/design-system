@@ -185,3 +185,84 @@ describe('figma-manifest: committed manifests', () => {
     assert.deepEqual(errors, []);
   });
 });
+
+describe('figma-manifest: shared blocks', () => {
+  const shared = { 'cell-base': [{ target: 'mud-x .cell', styles: { borderRadius: '6px' } }] };
+
+  it('expands a use entry into the shared expectations, citing the state node', () => {
+    const m = manifest([{ name: 'hover', node: '1:2', expect: [{ use: 'cell-base' }] }], { shared });
+    assert.deepEqual(validateManifest(m), []);
+    assert.deepEqual(resolveState(m, m.states[0], 'mud-x').expect, [
+      { target: 'mud-x .cell', styles: { borderRadius: '6px' }, node: '1:2' },
+    ]);
+  });
+
+  it('rejects an unknown key and a use entry with other fields', () => {
+    const errors = validateManifest(
+      manifest([{ name: 'a', node: '1:2', expect: [{ use: 'nope' }, { use: 'cell-base', target: 'x' }] }], { shared }),
+    );
+    assert.ok(errors.some(e => /use "nope" names no shared block/.test(e)));
+    assert.ok(errors.some(e => /a use entry cannot carry other fields/.test(e)));
+  });
+
+  it('validates shared entries with the state that uses them', () => {
+    const bad = { broken: [{ target: 'mud-x .cell', styles: {} }] };
+    const errors = validateManifest(
+      manifest([{ name: 'a', node: '1:2', expect: [{ use: 'broken' }] }], { shared: bad }),
+    );
+    assert.ok(errors.some(e => /styles must be a non-empty object/.test(e)));
+  });
+});
+
+describe('figma-manifest: mask', () => {
+  it('resolves state mask over defaults mask, empty by default', () => {
+    const m = manifest(
+      [
+        { name: 'a', node: '1:2', mask: ['mud-x .date'] },
+        { name: 'b', node: '1:3' },
+      ],
+      {
+        defaults: { story: 'molecules-date-picker--default', mask: ['mud-x .avatar'] },
+      },
+    );
+    assert.deepEqual(validateManifest(m), []);
+    assert.deepEqual(resolveState(m, m.states[0], 'mud-x').mask, ['mud-x .date']);
+    assert.deepEqual(resolveState(m, m.states[1], 'mud-x').mask, ['mud-x .avatar']);
+    assert.deepEqual(
+      resolveState(manifest([{ name: 'c', node: '1:4' }]), { name: 'c', node: '1:4' }, 'mud-x').mask,
+      [],
+    );
+  });
+
+  it('rejects a mask that is not a list of selectors', () => {
+    const errors = validateManifest(manifest([{ name: 'a', node: '1:2', mask: 'mud-x .date' }]));
+    assert.ok(errors.some(e => /mask must be an array of selectors/.test(e)));
+    const empty = validateManifest(manifest([{ name: 'a', node: '1:2', mask: [''] }]));
+    assert.ok(empty.some(e => /mask must be an array of selectors/.test(e)));
+  });
+
+  it('lets a state opt out of the defaults mask with an empty list', () => {
+    const m = manifest([{ name: 'a', node: '1:2', mask: [] }], {
+      defaults: { story: 'molecules-date-picker--default', mask: ['mud-x .day-cell'] },
+    });
+    assert.deepEqual(validateManifest(m), []);
+    assert.deepEqual(resolveState(m, m.states[0], 'mud-x').mask, []);
+  });
+});
+
+describe('figma-manifest: figma.skip', () => {
+  it('accepts node + reason and rejects a missing reason', () => {
+    assert.deepEqual(
+      validateManifest(
+        manifest([{ name: 'a', node: '1:2' }], {
+          figma: { fileKey: 'abc123', skip: [{ node: '9:9', reason: 'Size=XL is not implemented' }] },
+        }),
+      ),
+      [],
+    );
+    const errors = validateManifest(
+      manifest([{ name: 'a', node: '1:2' }], { figma: { fileKey: 'abc123', skip: [{ node: '9:9' }] } }),
+    );
+    assert.ok(errors.some(e => /figma.skip\[0\] needs a node id and a reason/.test(e)));
+  });
+});

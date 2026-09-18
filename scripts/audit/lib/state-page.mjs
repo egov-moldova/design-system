@@ -143,7 +143,7 @@ async function interact(page, { type, target }) {
  *
  * @returns {Promise<{ path, box: {x,y,width,height}, bleed: {top,right,bottom,left} }>}
  */
-export async function captureState(page, { selector, bleed = 'auto' }, outputPath) {
+export async function captureState(page, { selector, bleed = 'auto', mask = [] }, outputPath) {
   const locator = page.locator(selector).first();
   if ((await locator.count()) === 0) throw new Error(`capture target not found: ${selector}`);
   await locator.scrollIntoViewIfNeeded();
@@ -158,8 +158,47 @@ export async function captureState(page, { selector, bleed = 'auto' }, outputPat
   }
 
   const clip = captureClip(box, ext, page.viewportSize());
+  const boxes = [];
+  for (const sel of mask) {
+    const all = page.locator(sel);
+    const n = await all.count();
+    if (n === 0) throw new Error(`mask target not found: ${sel}`);
+    for (let i = 0; i < n; i++) {
+      const b = await all.nth(i).boundingBox();
+      if (!b) throw new Error(`mask target has no layout box (hidden?): ${sel}`);
+      boxes.push(b);
+    }
+  }
+  const scale = await page.evaluate(() => window.devicePixelRatio);
   await page.screenshot({ path: outputPath, clip, animations: 'disabled', caret: 'hide', scale: 'device' });
-  return { path: outputPath, box, bleed: ext };
+  return { path: outputPath, box, bleed: ext, clip, maskRects: maskRects(boxes, clip, scale) };
+}
+
+/**
+ * Element boxes (CSS px, page) → rects in capture pixels relative to the clip.
+ * Each box is cut to the clip first: a masked element outside the capture would
+ * otherwise paint over reference-only canvas and erase real drift there. Edges
+ * round outward so a fractional box never leaves an unmasked pixel column.
+ * Pure — exported for tests.
+ */
+export function maskRects(boxes, clip, scale) {
+  const rects = [];
+  for (const b of boxes) {
+    const x0 = Math.max(b.x, clip.x);
+    const y0 = Math.max(b.y, clip.y);
+    const x1 = Math.min(b.x + b.width, clip.x + clip.width);
+    const y1 = Math.min(b.y + b.height, clip.y + clip.height);
+    if (x1 <= x0 || y1 <= y0) continue;
+    const left = Math.floor((x0 - clip.x) * scale);
+    const top = Math.floor((y0 - clip.y) * scale);
+    rects.push({
+      x: left,
+      y: top,
+      width: Math.ceil((x1 - clip.x) * scale) - left,
+      height: Math.ceil((y1 - clip.y) * scale) - top,
+    });
+  }
+  return rects;
 }
 
 /** Per-side bleed: how far any box-shadow inside the target paints past its box. */

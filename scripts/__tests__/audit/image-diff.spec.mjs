@@ -3,17 +3,28 @@
  * Pixelmatch wrapper used by scripts/visual-diff.mjs and 11-pixel-diff-states.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 
 import {
+  DEFAULT_PASS,
+  DEFAULT_WARN,
   alignOffset,
+  applyMasks,
+  classifyDiff,
   describeSizeMismatch,
   diffImages,
   flattenImage,
   padImage,
   parseHexColor,
 } from '../../audit/lib/image-diff.mjs';
+
+const SCRIPT = fileURLToPath(new URL('../../visual-diff.mjs', import.meta.url));
 
 /** Solid image; `fill(x, y)` may override individual pixels. */
 function image(width, height, rgba, fill) {
@@ -139,5 +150,129 @@ describe('image-diff: describeSizeMismatch', () => {
 
   it('returns null without a mismatch', () => {
     assert.equal(describeSizeMismatch(null, 2), null);
+  });
+});
+
+describe('image-diff: classifyDiff', () => {
+  it('bands on the shared defaults, with the lower bound exclusive', () => {
+    assert.equal(DEFAULT_PASS, 0.5);
+    assert.equal(DEFAULT_WARN, 2.0);
+    assert.equal(classifyDiff(0.49).status, 'PASS');
+    assert.equal(classifyDiff(0.5).status, 'WARNING');
+    assert.equal(classifyDiff(1.99).status, 'WARNING');
+    assert.equal(classifyDiff(2.0).status, 'FAIL');
+  });
+
+  it('is the function 11-pixel-diff-states exports', async () => {
+    const eleven = await import('../../audit/11-pixel-diff-states.mjs');
+    assert.equal(eleven.classifyDiff, classifyDiff);
+  });
+});
+
+describe('visual-diff CLI: status', () => {
+  it('reports the status classifyDiff gives for the measured percent', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const a = path.join(dir, 'a.png');
+    const b = path.join(dir, 'b.png');
+    fs.writeFileSync(a, PNG.sync.write(image(10, 10, [255, 255, 255, 255])));
+    fs.writeFileSync(
+      b,
+      PNG.sync.write(image(10, 10, [255, 255, 255, 255], (x, y) => (x < 3 && y < 3 ? [0, 0, 0, 255] : null))),
+    );
+    const res = spawnSync(
+      process.execPath,
+      [SCRIPT, '--figma', a, '--browser', b, '--output', path.join(dir, 'd.png')],
+      { encoding: 'utf8' },
+    );
+    const out = JSON.parse(res.stdout);
+    assert.ok(out.diffPercent > 2, `expected a FAIL-band percent, got ${out.diffPercent}`);
+    assert.equal(out.status, classifyDiff(out.diffPercent).status);
+  });
+
+  function pair(dir) {
+    const a = path.join(dir, 'a.png');
+    const b = path.join(dir, 'b.png');
+    fs.writeFileSync(a, PNG.sync.write(image(10, 10, [255, 255, 255, 255])));
+    fs.writeFileSync(b, PNG.sync.write(image(10, 10, [0, 0, 0, 255])));
+    return [a, b];
+  }
+
+  it('refuses --masks that is not a JSON array', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const [a, b] = pair(dir);
+    const res = spawnSync(process.execPath, [SCRIPT, '--figma', a, '--browser', b, '--masks', '{}'], {
+      encoding: 'utf8',
+    });
+    assert.equal(res.status, 2);
+    assert.match(res.stderr, /--masks must be a JSON array/);
+  });
+
+  it('exits 1 with UNKNOWN when the masks cover every pixel', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'visual-diff-'));
+    const [a, b] = pair(dir);
+    const masks = JSON.stringify([{ x: 0, y: 0, width: 10, height: 10 }]);
+    const res = spawnSync(
+      process.execPath,
+      [SCRIPT, '--figma', a, '--browser', b, '--masks', masks, '--output', path.join(dir, 'd.png')],
+      { encoding: 'utf8' },
+    );
+    const out = JSON.parse(res.stdout);
+    assert.equal(out.status, 'UNKNOWN');
+    assert.equal(out.maskedPixels, 100);
+    assert.equal(res.status, 1);
+  });
+});
+
+describe('image-diff: masks', () => {
+  it('paints a rect with the background and counts each pixel once', () => {
+    const img = image(4, 4, [0, 0, 0, 255]);
+    const n = applyMasks(
+      img,
+      [
+        { x: 0, y: 0, width: 2, height: 2 },
+        { x: 1, y: 1, width: 2, height: 2 },
+      ],
+      [255, 255, 255],
+    );
+    assert.equal(n, 7);
+    assert.deepEqual(pixel(img, 1, 1), [255, 255, 255, 255]);
+    assert.deepEqual(pixel(img, 3, 3), [0, 0, 0, 255]);
+  });
+
+  it('clips rects to the canvas', () => {
+    assert.equal(applyMasks(image(2, 2, [0, 0, 0, 255]), [{ x: 1, y: 1, width: 5, height: 5 }]), 1);
+  });
+
+  it('removes a difference inside the mask from the diff and reports the masked pixels', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(10, 10, [255, 255, 255, 255], (x, y) => (x < 2 && y < 2 ? [0, 0, 0, 255] : null));
+    assert.ok(diffImages(ref, cap).diffPixels > 0);
+    const r = diffImages(ref, cap, { masks: [{ x: 0, y: 0, width: 2, height: 2 }] });
+    assert.equal(r.diffPixels, 0);
+    assert.equal(r.maskedPixels, 4);
+  });
+
+  it('computes the percent over compared pixels only, so a mask cannot dilute it', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(10, 10, [255, 255, 255, 255], (x, y) => (x >= 8 && y >= 8 ? [0, 0, 0, 255] : null));
+    const r = diffImages(ref, cap, { masks: [{ x: 0, y: 0, width: 5, height: 10 }] });
+    assert.equal(r.maskedPixels, 50);
+    assert.ok(r.diffPixels > 0);
+    assert.equal(r.diffPercent, Number(((r.diffPixels / 50) * 100).toFixed(2)));
+  });
+
+  it('reports no percent when every pixel is masked', () => {
+    const r = diffImages(image(4, 4, [0, 0, 0, 255]), image(4, 4, [255, 255, 255, 255]), {
+      masks: [{ x: 0, y: 0, width: 4, height: 4 }],
+    });
+    assert.equal(r.diffPercent, null);
+    assert.equal(classifyDiff(r.diffPercent).status, 'UNKNOWN');
+  });
+
+  it('places capture-relative rects where a centred capture sits on the canvas', () => {
+    const ref = image(10, 10, [255, 255, 255, 255]);
+    const cap = image(6, 6, [255, 255, 255, 255], (x, y) => (x < 2 && y < 2 ? [0, 0, 0, 255] : null));
+    const r = diffImages(ref, cap, { align: 'center', masks: [{ x: 0, y: 0, width: 2, height: 2 }] });
+    assert.equal(r.diffPixels, 0);
   });
 });

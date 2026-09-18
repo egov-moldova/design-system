@@ -66,7 +66,7 @@ scripts/audit/
 ├── 11-pixel-diff-states.mjs         (Wave C — Playwright + Pixelmatch + Figma refs)
 ├── 12-console-errors.mjs            (Wave C — Playwright + Storybook)
 ├── 15-style-parity.mjs              (Wave C — Playwright + Figma state manifest)
-├── figma-refs.mjs                   — export Figma reference PNGs for a manifest (REST or MCP call)
+├── figma-refs.mjs                   — export Figma reference PNGs for a manifest (REST); --check for coverage and freshness
 └── run-all.mjs                      — orchestrator (parallel within wave, sequential across waves)
 
 scripts/scaffold/
@@ -168,7 +168,7 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 | `yarn audit:contrast-pairs <X>`    | run 10 (needs Storybook + Playwright) |
 | `yarn audit:pixel-diff <X>`        | run 11 (needs Storybook + Playwright + refs; `--figma-dir` in story mode) |
 | `yarn audit:style-parity <X>`      | run 15 (needs Storybook + Playwright + Figma state manifest) |
-| `yarn audit:figma-refs <X>`        | export Figma references for the manifest (FIGMA_TOKEN, else prints the MCP call) |
+| `yarn audit:figma-refs <X>`        | export Figma references for the manifest (needs FIGMA_TOKEN); `--check` reports coverage and freshness |
 | `yarn audit:console-errors <X>`    | run 12 (needs Storybook + Playwright) |
 | `yarn audit:all <X>`               | orchestrator (all waves) |
 | `yarn audit:all:no-browser <X>`    | orchestrator without Wave C |
@@ -270,17 +270,13 @@ preference at plan time: Playwright's built-in pixel compare has a wider
 error margin and misses subtle drift the team has historically caught with
 Pixelmatch.
 
-`scripts/visual-diff.mjs` exits 0 on PASS/WARNING, 1 on FAIL, and 2 on a usage
-error or unreadable image (that last case used to exit 1, which 11 read as a
-diff result).
+`scripts/visual-diff.mjs` exits 0 on PASS/WARNING, 1 on FAIL or on UNKNOWN (masks left
+nothing to compare), and 2 on a usage error or unreadable image.
 
-Thresholds (tune via `--pass-threshold` / `--warn-threshold`):
-
-| diff %        | status   | note                                     |
-|---------------|----------|------------------------------------------|
-| `< 0.5`       | PASS     | accepted (per project default)           |
-| `< 2.0`       | WARNING  | `requires-ai-review: true` — open diff   |
-| `>= 2.0`      | FAIL     | blocks merge                              |
+Thresholds live in `lib/image-diff.mjs` (`DEFAULT_PASS`, `DEFAULT_WARN`): PASS below the
+first, WARNING (`requires-ai-review: true` — open the diff) below the second, FAIL at or
+above it. Tune per run with `--pass-threshold` / `--warn-threshold`. Masked pixels are
+left out of the percentage and reported as `PIXEL-MASKED`.
 
 ## Figma verification — manifest, style parity, pixel diff
 

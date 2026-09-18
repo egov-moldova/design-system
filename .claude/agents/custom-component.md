@@ -139,17 +139,16 @@ Modes:
 - `--write-mode=parallel-write` (default): `story-writer` and `test-writer` write their files; verifiers report findings.
 - `--write-mode=read-only`: all subagents are read-only; main agent applies all writes after aggregation.
 
-Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set; pixel-perfect-verifier uses computed-style assertions only since there's no Figma reference):
+Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (the full-5 set without `pixel-perfect-verifier`: with no Figma node there is nothing for it to verify against — every manifest expectation must cite one):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaReferenceDir=<optional-folder-or-omit>, threshold=0.5")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
 Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>")
 Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
 Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=new")
 ```
 
-When all 5 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.
+When all 4 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.
 
 For story writing conventions and reference patterns, see `src/components/_agents/storybook-stories.md` (also used by `story-writer` subagent).
 

@@ -29,7 +29,7 @@ export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url
 
 const COMPONENTS_ROOT = path.join(REPO_ROOT, 'src', 'components');
 const HIDDEN_ROOT = path.join(REPO_ROOT, 'src', 'hidden');
-const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'components');
+export const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'components');
 
 /**
  * Normalize a user-provided component name. Accepts:

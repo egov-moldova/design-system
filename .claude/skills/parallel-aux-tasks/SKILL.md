@@ -26,12 +26,14 @@ This skill defines the **standard dispatch pattern** so all orchestrators behave
 | `new-component` | After Step 6 (Implement) and before Step 9 (Verification) | full-5 |
 | `redesign-component` | After Phase 5 (Core build update) and before Phase 7 (Aggregate fixes) | full-5 |
 | `refactor-component` | After Step 4 (Apply changes) and before Step 6 (Visual regression) | refactor-3 |
-| `custom-component` | After Step 7 (Implementation) and before Step 9 (Verification) | full-5 |
+| `custom-component` | After Step 7 (Implementation) and before Step 9 (Verification) | full-5 without `pixel-perfect-verifier` |
 | `modify-component` (variant add) | After variant CSS+TSX done, before final QA | modify-2 |
 
 ## Subagent sets
 
 ### full-5 (new + redesign + custom)
+
+`custom-component` dispatches this set without `pixel-perfect-verifier` (no Figma node to verify against).
 
 ```
 pixel-perfect-verifier   (read-only)
@@ -44,7 +46,7 @@ integration-checker      (read-only)
 ### refactor-3 (refactor, no new variants/sizes)
 
 ```
-pixel-perfect-verifier   (read-only)  — vs pre-refactor baseline
+pixel-perfect-verifier   (read-only)  — manifest checks; before/after screenshots stay with refactor-component Step 5
 a11y-verifier            (read-only)  — regression check
 integration-checker      (read-only)  — exports unchanged?
 ```
@@ -73,6 +75,19 @@ The orchestrator reads `--write-mode` from its invocation argument (default: `pa
 
 ## Dispatch pattern (single message, parallel)
 
+Snapshot tracked changes before dispatching, so a write by a read-only leg is visible afterwards:
+
+```bash
+# aux-write-check — before the parallel dispatch; NAME is the component (e.g. mud-button).
+# The snapshot lives in this worktree's git dir: it survives between commands and no other worktree shares it.
+git status --porcelain=v1 --untracked-files=all > "$(git rev-parse --git-dir)/aux-before-$NAME.txt"
+# after every leg has reported: status lines that are new or changed, minus the writer legs' own two files
+git status --porcelain=v1 --untracked-files=all | diff "$(git rev-parse --git-dir)/aux-before-$NAME.txt" - | grep '^>' \
+  | grep -v -F -e "src/components/$NAME/$NAME.stories.ts" -e "src/components/$NAME/test/$NAME.spec.tsx"
+```
+
+In `read-only` mode drop the last `grep`: no leg may write. The check sees a file whose status line changes (new, deleted, first modification), including files inside a new component folder. It does not see a second edit to a file the orchestrator had already modified before the dispatch.
+
 The orchestrator dispatches subagents using the `Agent` tool with multiple parallel tool calls in a SINGLE message. Example:
 
 ```
@@ -96,7 +111,7 @@ For each subagent, the orchestrator's prompt MUST include:
 3. **Figma reference**: node ID or URL when relevant (pixel-perfect, story-writer)
 4. **Component contract**: brief summary of props/slots/events (paste from TSX `@Prop()` declarations)
 5. **Write mode**: `parallel-write` or `read-only` (for writers only)
-6. **Acceptance criteria**: what counts as a pass (e.g., diff < 0.5%, zero a11y violations, coverage > 80%)
+6. **Acceptance criteria**: what counts as a pass (e.g., pixel-perfect verdict PASS, zero a11y violations, coverage > 80%)
 
 Each subagent's own agent file documents its specific I/O contract — this skill only describes how the orchestrator drives them.
 
@@ -164,6 +179,7 @@ Main orchestrator:
 Before claiming the parallel phase complete, the orchestrator runs `superpowers:verification-before-completion` and confirms:
 
 - ✅ Every subagent returned a report (no crashes, no timeouts).
+- ✅ Read-only legs wrote nothing: the second half of the `aux-write-check` block prints nothing.
 - ✅ All `critical` findings have been addressed (fix applied + re-verified).
 - ✅ All written files (`*.stories.ts`, `*.spec.tsx`) pass `yarn lint`.
 - ✅ `*.stories.ts` renders in Storybook (no console errors).

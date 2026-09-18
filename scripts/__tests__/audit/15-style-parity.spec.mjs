@@ -6,7 +6,14 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { PSEUDO_PROPS, absenceResult, compareExpectation } from '../../audit/15-style-parity.mjs';
+import {
+  PSEUDO_PROPS,
+  absenceResult,
+  compareExpectation,
+  componentTokenNames,
+  mismatchTokens,
+  targetComponent,
+} from '../../audit/15-style-parity.mjs';
 
 describe('15-style-parity: compareExpectation', () => {
   it('returns one check per property with normalised values', () => {
@@ -51,5 +58,44 @@ describe('15-style-parity: absenceResult', () => {
     assert.equal(check.pass, false);
     assert.equal(check.count, 1);
     assert.equal(message, 'default: rendered 1 × mud-x .footer, which Figma 157:4570 does not have');
+  });
+});
+
+describe('15-style-parity: mismatchTokens', () => {
+  const vars = { '--a': '#0058d2', '--b': '#0046a8' };
+  it('attributes a failing style check', () => {
+    const check = { prop: 'backgroundColor', pass: false };
+    const t = mismatchTokens(
+      check,
+      { styles: { backgroundColor: '#0046A8' } },
+      { backgroundColor: 'rgb(0, 88, 210)' },
+      vars,
+    );
+    assert.deepEqual(t, { expectedTokens: ['--b'], observedTokens: ['--a'] });
+  });
+  it('returns null for a passing check or a pseudo property', () => {
+    assert.equal(mismatchTokens({ prop: 'backgroundColor', pass: true }, { styles: {} }, {}, vars), null);
+    assert.equal(
+      mismatchTokens({ prop: 'boxWidth', pass: false }, { styles: { boxWidth: '1px' } }, { boxWidth: '2px' }, vars),
+      null,
+    );
+  });
+});
+
+describe('15-style-parity: token scope', () => {
+  it('scopes a target to the innermost mud-* element it selects', () => {
+    assert.equal(targetComponent('mud-table tbody tr td.td--selection mud-checkbox .box', 'mud-table'), 'mud-checkbox');
+    assert.equal(
+      targetComponent("mud-date-picker button.day-cell[data-iso='2025-01-08']", 'mud-date-picker'),
+      'mud-date-picker',
+    );
+    assert.equal(targetComponent('mud-x > mud-icon', 'mud-x'), 'mud-icon');
+    assert.equal(targetComponent('.mud-fake .inner', 'mud-x'), 'mud-x');
+  });
+
+  it('lists the component token files of this repo without their suffix', () => {
+    const names = componentTokenNames();
+    assert.ok(names.includes('date-picker'), 'date-picker.tokens.json should be listed');
+    assert.ok(names.every(n => !n.endsWith('.json')));
   });
 });

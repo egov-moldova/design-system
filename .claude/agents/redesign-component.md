@@ -206,7 +206,7 @@ If console errors → fix the TSX/CSS, then re-check. Component MUST render clea
 Dispatch all 5 subagents in a SINGLE message with parallel `Agent` tool calls (subagent_type values match the agent files):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=<componentName>, figmaNodeId=<figmaNodeId>, threshold=0.5")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=<componentName>, figmaUrl=<figma url with node-id>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=<componentName>")
 Agent(subagent_type="story-writer",           prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, atomicLevel=<atomicLevel>, writeMode=<writeMode>, figmaMetadata=<extracted-metadata>")
 Agent(subagent_type="test-writer",            prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, writeMode=<writeMode>")
@@ -271,7 +271,7 @@ mcp__playwright__browser_console_messages({ level: "error" })
 - [ ] Tests regenerated (parallel-write) OR drafted (read-only)
 
 ### Subagent reports
-- pixel-perfect-verifier: PASS (max diff: X%, all states < 0.5%)
+- pixel-perfect-verifier: Verdict <FAIL|INCOMPLETE|WARN|PASS> (<n> style mismatches, pixel PASS/WARNING/FAIL <a>/<b>/<c>, <m> uncovered variants)
 - a11y-verifier: PASS (0 critical, Y warnings)
 - story-writer: 6 stories, all render
 - test-writer: 14 tests, coverage Z%
