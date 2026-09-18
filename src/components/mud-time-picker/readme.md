@@ -47,6 +47,19 @@ Space picks the focused option.
 | `"separator"` |             |
 
 
+## Dependencies
+
+### Used by
+
+ - [mud-time-input](../mud-time-input)
+
+### Graph
+```mermaid
+graph TD;
+  mud-time-input --> mud-time-picker
+  style mud-time-picker fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
