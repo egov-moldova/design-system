@@ -425,4 +425,85 @@ describe('mud-time-input', () => {
       expect(picker.max).toBe('18:00');
     });
   });
+  describe('required + announcements', () => {
+    type Internals = { internals: { setValidity: (...args: unknown[]) => void } };
+    const stubValidity = (root: Element | null | undefined) => {
+      const setValidity = vi.fn();
+      (root as unknown as Internals).internals.setValidity = setValidity;
+      return setValidity;
+    };
+
+    it('reports valueMissing to the form while a required field is empty', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      const setValidity = stubValidity(root);
+      (root as HTMLMudTimeInputElement).required = true;
+      await flush();
+      expect(setValidity).toHaveBeenLastCalledWith({ valueMissing: true }, 'Introduceți ora', expect.anything());
+      (root as HTMLMudTimeInputElement).value = '09:30';
+      await flush();
+      expect(setValidity).toHaveBeenLastCalledWith({});
+    });
+
+    it('does not flag a disabled or read-only required field', async () => {
+      const { root } = await render(<mud-time-input label="x" required disabled></mud-time-input>);
+      const setValidity = stubValidity(root);
+      (root as unknown as { revalidate: () => void }).revalidate();
+      expect(setValidity).toHaveBeenLastCalledWith({});
+    });
+
+    it('shows the required message only after a submit found the field empty', async () => {
+      const { root } = await render(<mud-time-input label="x" required></mud-time-input>);
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+      expect(root?.classList.contains('is-invalid')).toBe(false);
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')?.textContent).toContain('Introduceți ora');
+      expect(root?.classList.contains('is-invalid')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('clears the required message once the field holds a value, and on form reset', async () => {
+      const { root } = await render(<mud-time-input label="x" required></mud-time-input>);
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      const native = queryNative(root)!;
+      native.value = '09';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+      (root as unknown as { handleInvalid: () => void; formResetCallback: () => void }).formResetCallback();
+      await flush();
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeTruthy();
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+    });
+
+    it('uses required-error-text', async () => {
+      const { root } = await render(
+        <mud-time-input label="x" required required-error-text="Obligatoriu"></mud-time-input>,
+      );
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')?.textContent).toContain('Obligatoriu');
+    });
+
+    it('announces the error through a polite status region, not twice', async () => {
+      const { root } = await render(<mud-time-input label="x" invalid error-text="Greșit"></mud-time-input>);
+      const live = root?.shadowRoot?.querySelector('.live-region');
+      expect(live?.getAttribute('role')).toBe('status');
+      expect(live?.getAttribute('aria-live')).toBe('polite');
+      expect(live?.textContent).toBe('Greșit');
+      const visible = root?.shadowRoot?.querySelector('.assistive-error');
+      expect(visible?.getAttribute('aria-hidden')).toBe('true');
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(visible?.getAttribute('id'));
+    });
+
+    it('keeps the status region empty without an error', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      expect(root?.shadowRoot?.querySelector('.live-region')?.textContent).toBe('');
+    });
+  });
 });

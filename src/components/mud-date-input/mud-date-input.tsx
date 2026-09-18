@@ -240,6 +240,12 @@ export class MudDateInput {
   @Prop({ attribute: 'order-error-text' }) orderErrorText: string =
     'Data de sfârșit trebuie să fie după data de început';
 
+  /**
+   * Message shown when a `required` field is empty and a form submit found it
+   * so. The same text is the form's validation message.
+   */
+  @Prop({ attribute: 'required-error-text' }) requiredErrorText: string = 'Introduceți data';
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -247,6 +253,8 @@ export class MudDateInput {
   @State() private pickerOpen: boolean = false;
   @State() private isMobileViewport: boolean = false;
   @State() private validationError: DateInputValidationError | null = null;
+  /** Set when a form submit found the required field empty; cleared once it holds a value. */
+  @State() private requiredShown: boolean = false;
 
   @Element() host!: HTMLMudDateInputElement;
 
@@ -399,6 +407,8 @@ export class MudDateInput {
   @Watch('max')
   @Watch('format')
   @Watch('type')
+  @Watch('required')
+  @Watch('disabled')
   revalidate() {
     this.updateValidation(this.value);
   }
@@ -425,6 +435,7 @@ export class MudDateInput {
   formResetCallback() {
     this.value = this.initialValue;
     this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.requiredShown = false;
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
@@ -446,6 +457,15 @@ export class MudDateInput {
     if (!path.includes(this.host)) {
       this.pickerOpen = false;
     }
+  }
+
+  /**
+   * A form submit (or `checkValidity()`) found the field invalid. When it is a
+   * required field left empty, show the required message under it.
+   */
+  @Listen('invalid')
+  handleInvalid(): void {
+    if (this.isValueMissing()) this.requiredShown = true;
   }
 
   /** Escape closes the popover and returns focus to the trailing-icon trigger. */
@@ -656,15 +676,24 @@ export class MudDateInput {
 
   private updateValidation(display: string) {
     this.validationError = display ? this.validate(display) : null;
+    if (!this.isValueMissing()) this.requiredShown = false;
     const message = this.validationError ? this.validationMessage(this.validationError) : '';
     // `setValidity` is missing in some test environments.
     if (typeof this.internals?.setValidity !== 'function') return;
+    const anchor = this.host.shadowRoot?.querySelector<HTMLInputElement>('.native') ?? undefined;
     if (message) {
-      const anchor = this.host.shadowRoot?.querySelector<HTMLInputElement>('.native') ?? undefined;
       this.internals.setValidity({ customError: true }, message, anchor);
+    } else if (this.isValueMissing()) {
+      // An empty required field blocks the form submit (SC 3.3.1).
+      this.internals.setValidity({ valueMissing: true }, this.requiredErrorText, anchor);
     } else {
       this.internals.setValidity({});
     }
+  }
+
+  /** A required, editable field with no value. */
+  private isValueMissing(): boolean {
+    return this.required && (this.value ?? '') === '' && !this.isInert() && !this.readonly;
   }
 
   private validationMessage(error: DateInputValidationError): string {
@@ -800,7 +829,11 @@ export class MudDateInput {
 
   /** Invalid when the consumer says so or the built-in validation fails. */
   private isInvalid(): boolean {
-    return this.invalid || (this.validationError !== null && !this.isInert());
+    return (
+      this.invalid ||
+      (this.validationError !== null && !this.isInert()) ||
+      (this.requiredShown && this.isValueMissing())
+    );
   }
 
   private resolvedVariant(): DateInputVariant {
@@ -819,6 +852,7 @@ export class MudDateInput {
     const consumer = this.errorText?.trim();
     if (this.invalid && consumer) return consumer;
     if (this.validationError && !this.isInert()) return this.validationMessage(this.validationError);
+    if (this.requiredShown && this.isValueMissing()) return this.requiredErrorText;
     return '';
   }
 
@@ -1005,8 +1039,15 @@ export class MudDateInput {
             : null}
         </div>
 
+        {/* Announces the error as it appears or changes (SC 4.1.3). The visible
+            error below is aria-hidden so it is not read twice; the field still
+            gets it as its description through aria-describedby. */}
+        <span class="live-region" role="status" aria-live="polite" aria-atomic="true">
+          {errorText}
+        </span>
+
         {this.hasErrorMessage() ? (
-          <div class="assistive assistive-error" id={this.errorId} part="error">
+          <div class="assistive assistive-error" id={this.errorId} part="error" aria-hidden="true">
             <mud-icon
               class="assistive-icon"
               name="circle-error"

@@ -896,6 +896,11 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți data'
+         */
+        "requiredErrorText": string;
+        /**
           * Visual size rung.
           * @default 'md'
          */
@@ -3514,6 +3519,11 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
+        /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți ora'
+         */
+        "requiredErrorText": string;
         /**
           * Visual size rung.
           * @default 'md'
@@ -6496,6 +6506,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
+        /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți data'
+         */
+        "requiredErrorText"?: string;
         /**
           * Visual size rung.
           * @default 'md'
@@ -9516,6 +9531,11 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * Message shown when a `required` field is empty and a form submit found it so. The same text is the form's validation message.
+          * @default 'Introduceți ora'
+         */
+        "requiredErrorText"?: string;
+        /**
           * Visual size rung.
           * @default 'md'
          */
@@ -9886,6 +9906,7 @@ declare namespace LocalJSX {
         "dateErrorText": string;
         "rangeErrorText": string;
         "orderErrorText": string;
+        "requiredErrorText": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;
@@ -10387,6 +10408,7 @@ declare namespace LocalJSX {
         "hourErrorText": string;
         "minuteErrorText": string;
         "rangeErrorText": string;
+        "requiredErrorText": string;
     }
     interface MudTimePickerAttributes {
         "value": string;
