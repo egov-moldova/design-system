@@ -2,12 +2,15 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { DATE_INPUT_FORMATS, DATE_INPUT_MODES, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
 import type { DateInputFormat, DateInputMode, DateInputSize, DateInputVariant } from './mud-date-input.types';
+import { DATE_PICKER_HEADER_STYLES } from '../mud-date-picker/mud-date-picker.types';
+import type { DatePickerHeaderStyle } from '../mud-date-picker/mud-date-picker.types';
 
 type DateInputArgs = {
   variant: DateInputVariant;
   size: DateInputSize;
   format: DateInputFormat;
   mode: DateInputMode;
+  headerStyle: DatePickerHeaderStyle;
   label: string;
   placeholder: string;
   value: string;
@@ -27,6 +30,7 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
     size="${args.size}"
     format="${args.format}"
     mode="${args.mode}"
+    header-style="${args.headerStyle}"
     label="${args.label}"
     placeholder="${args.placeholder}"
     value="${args.value}"
@@ -45,6 +49,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.format !== 'DD/MM/YYYY' ? `format="${args.format}"` : '',
     args.mode !== 'single' ? `mode="${args.mode}"` : '',
+    args.headerStyle !== 'title' ? `header-style="${args.headerStyle}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.placeholder ? `placeholder="${args.placeholder}"` : '',
     args.value ? `value="${args.value}"` : '',
@@ -88,6 +93,13 @@ const meta: Meta<DateInputArgs> = {
       description: 'One date, or a start and an end date in one field (`18/01/2025 - 22/01/2025`).',
       table: { defaultValue: { summary: 'single' } },
     },
+    headerStyle: {
+      control: 'inline-radio',
+      options: DATE_PICKER_HEADER_STYLES,
+      description:
+        'Desktop calendar header: `title` (Figma type `default`) or `dropdown` month and year chips (type `advanced`). The mobile bottom sheet always uses the chips.',
+      table: { defaultValue: { summary: 'title' } },
+    },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },
     value: { control: 'text' },
@@ -111,6 +123,7 @@ export const Default: Story = {
     size: 'lg',
     format: 'DD/MM/YYYY',
     mode: 'single',
+    headerStyle: 'title',
     label: 'Label',
     placeholder: '',
     value: '',
@@ -318,6 +331,40 @@ export const Validation: Story = {
           '<mud-date-input size="lg" label="Label" value="45"></mud-date-input>',
           '<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>',
           '<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const Types: Story = {
+  name: 'Types',
+  render: () =>
+    wrapTriple(
+      [
+        cell('default', /*html*/ `<mud-date-input size="lg" label="Label" value="11/01/2025"></mud-date-input>`),
+        cell(
+          'advanced',
+          /*html*/ `<mud-date-input size="lg" label="Label" header-style="dropdown" value="11/01/2025"></mud-date-input>`,
+        ),
+        cell(
+          'date-range',
+          /*html*/ `<mud-date-input size="lg" label="Label" mode="range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The three types of the Figma Date Picker page (470:32035) — open each calendar to compare. `default`: one "Month Year" title. `advanced` (`header-style="dropdown"`): month and year chips. `date-range` (`mode="range"`): a start and an end date. `header-style` and `mode` combine.',
+      },
+      source: {
+        code: [
+          '<mud-date-input size="lg" label="Label" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" header-style="dropdown" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" mode="range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },

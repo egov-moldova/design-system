@@ -683,6 +683,53 @@ describe('mud-date-input', () => {
     });
   });
 
+  describe('header style (Figma Types 470:32035: default / advanced)', () => {
+    const open = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+      return root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
+    };
+
+    it('defaults to the title header (type default) on desktop', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="desktop"></mud-date-input>);
+      expect(root?.getAttribute('header-style')).toBe('title');
+      expect((await open(root))?.headerStyle).toBe('title');
+    });
+
+    it('opens the advanced calendar with header-style="dropdown"', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" breakpoint="desktop" header-style="dropdown"></mud-date-input>,
+      );
+      expect((await open(root))?.headerStyle).toBe('dropdown');
+    });
+
+    it('works with the range mode', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" breakpoint="desktop" mode="range" header-style="dropdown"></mud-date-input>,
+      );
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('dropdown');
+      expect(picker?.mode).toBe('range');
+    });
+
+    it('keeps the chips on the mobile bottom sheet whatever the header style', async () => {
+      const { root } = await render(
+        <mud-date-input label="x" breakpoint="mobile" header-style="title"></mud-date-input>,
+      );
+      expect((await open(root))?.headerStyle).toBe('dropdown');
+    });
+
+    it('falls back to title for an unsupported header style', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<mud-date-input label="x"></mud-date-input>);
+      (root as HTMLMudDateInputElement).headerStyle = 'tabs' as unknown as 'title';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('header-style="tabs" is not supported'));
+      expect(root?.getAttribute('header-style')).toBe('title');
+      warn.mockRestore();
+    });
+  });
+
   describe('range mode (Figma Types → date-range, 483:5705)', () => {
     const type = async (root: Element | null | undefined, raw: string) => {
       const native = queryNative(root)!;

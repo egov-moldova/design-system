@@ -10,7 +10,8 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import type { DatePickerChangeDetail } from '../mud-date-picker/mud-date-picker.types';
+import { DATE_PICKER_HEADER_STYLES } from '../mud-date-picker/mud-date-picker.types';
+import type { DatePickerChangeDetail, DatePickerHeaderStyle } from '../mud-date-picker/mud-date-picker.types';
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
@@ -116,6 +117,15 @@ export class MudDateInput {
    * @default 'single'
    */
   @Prop({ reflect: true }) mode: DateInputMode = 'single';
+
+  /**
+   * Header of the desktop calendar — the Figma Types (470:32035): `title` is
+   * the `default` type (one "Month Year" title), `dropdown` the `advanced`
+   * type (month and year chips). The mobile bottom sheet always uses the chips,
+   * as in the Figma Breakpoints.
+   * @default 'title'
+   */
+  @Prop({ reflect: true, attribute: 'header-style' }) headerStyle: DatePickerHeaderStyle = 'title';
 
   /**
    * Calendar-popover placement. `auto` opens a desktop dropdown on wide
@@ -359,6 +369,18 @@ export class MudDateInput {
         )}. Falling back to "single".`,
       );
       this.mode = 'single';
+    }
+  }
+
+  @Watch('headerStyle')
+  validateHeaderStyle(next: DatePickerHeaderStyle) {
+    if (!DATE_PICKER_HEADER_STYLES.includes(next)) {
+      console.warn(
+        `[mud-date-input] header-style="${String(next)}" is not supported. Supported: ${DATE_PICKER_HEADER_STYLES.join(
+          ', ',
+        )}. Falling back to "title".`,
+      );
+      this.headerStyle = 'title';
     }
   }
 
@@ -979,7 +1001,7 @@ export class MudDateInput {
                   <mud-date-picker
                     mode={this.mode}
                     breakpoint={pickerBreakpoint}
-                    header-style={isMobilePopover ? 'dropdown' : 'title'}
+                    headerStyle={isMobilePopover ? 'dropdown' : this.headerStyle}
                     locale="ro-RO"
                     value={this.mode === 'single' ? (pickerDates[0] ?? undefined) : undefined}
                     rangeStart={this.mode === 'range' ? (pickerDates[0] ?? undefined) : undefined}

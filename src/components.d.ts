@@ -837,6 +837,11 @@ export namespace Components {
          */
         "format": DateInputFormat;
         /**
+          * Header of the desktop calendar — the Figma Types (470:32035): `title` is the `default` type (one "Month Year" title), `dropdown` the `advanced` type (month and year chips). The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'title'
+         */
+        "headerStyle": DatePickerHeaderStyle;
+        /**
           * Plain-text helper / hint shown below the control.
          */
         "helperText"?: string;
@@ -6418,6 +6423,11 @@ declare namespace LocalJSX {
          */
         "format"?: DateInputFormat;
         /**
+          * Header of the desktop calendar — the Figma Types (470:32035): `title` is the `default` type (one "Month Year" title), `dropdown` the `advanced` type (month and year chips). The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'title'
+         */
+        "headerStyle"?: DatePickerHeaderStyle;
+        /**
           * Plain-text helper / hint shown below the control.
          */
         "helperText"?: string;
@@ -9863,6 +9873,7 @@ declare namespace LocalJSX {
         "size": DateInputSize;
         "format": DateInputFormat;
         "mode": DateInputMode;
+        "headerStyle": DatePickerHeaderStyle;
         "breakpoint": DateInputBreakpoint;
         "disabled": boolean;
         "required": boolean;
