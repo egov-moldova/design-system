@@ -468,6 +468,28 @@ export class MudDateInput {
     if (this.isValueMissing()) this.requiredShown = true;
   }
 
+  /**
+   * Close the popover when focus leaves the field and its popover — Tab past
+   * the last control, or focus moved elsewhere on the page. A view switch
+   * inside the popover briefly drops focus before moving it on, so a focus
+   * loss with no destination is checked again two frames later.
+   */
+  @Listen('focusout')
+  handleFocusOut(ev: FocusEvent): void {
+    if (!this.pickerOpen) return;
+    const next = ev.relatedTarget as Node | null;
+    if (next && (next === this.host || this.host.contains(next))) return;
+    if (next) {
+      this.pickerOpen = false;
+      return;
+    }
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (this.pickerOpen && !this.hasFocusWithin()) this.pickerOpen = false;
+      }),
+    );
+  }
+
   /** Escape closes the popover and returns focus to the trailing-icon trigger. */
   @Listen('keydown')
   handlePopoverKeyDown(ev: KeyboardEvent): void {
@@ -476,6 +498,11 @@ export class MudDateInput {
     this.pickerOpen = false;
     const trigger = this.host.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
     trigger?.focus();
+  }
+
+  /** Whether focus is on the field, its buttons or anything in its popover. */
+  private hasFocusWithin(): boolean {
+    return document.activeElement === this.host || Boolean(this.host.shadowRoot?.activeElement);
   }
 
   /** Whether the field holds a start and an end date. */

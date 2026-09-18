@@ -506,4 +506,52 @@ describe('mud-time-input', () => {
       expect(root?.shadowRoot?.querySelector('.live-region')?.textContent).toBe('');
     });
   });
+  describe('closing when focus leaves', () => {
+    const frames = () => new Promise<void>(resolve => setTimeout(resolve, 80));
+    const focusOut = (root: Element | null | undefined, relatedTarget: EventTarget | null) => {
+      const ev = new FocusEvent('focusout', { bubbles: true, composed: true });
+      Object.defineProperty(ev, 'relatedTarget', { value: relatedTarget });
+      (root as unknown as { handleFocusOut: (e: FocusEvent) => void }).handleFocusOut(ev);
+    };
+    const open = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+    };
+
+    it('closes when focus moves to something outside the field', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      await open(root);
+      const outside = document.createElement('button');
+      document.body.appendChild(outside);
+      focusOut(root, outside);
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+      outside.remove();
+    });
+
+    it('stays open while focus moves inside the field and its popover', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      await open(root);
+      focusOut(root, root ?? null);
+      await frames();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeTruthy();
+    });
+
+    it('re-checks a focus loss with no destination two frames later', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      await open(root);
+      focusOut(root, null);
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeTruthy();
+      await frames();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+
+    it('ignores focus changes while closed', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      focusOut(root, null);
+      await frames();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+  });
 });

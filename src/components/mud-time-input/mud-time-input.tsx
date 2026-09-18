@@ -272,6 +272,28 @@ export class MudTimeInput {
     if (this.isValueMissing()) this.requiredShown = true;
   }
 
+  /**
+   * Close the popover when focus leaves the field and its popover — Tab past
+   * the last control, or focus moved elsewhere on the page. A view switch
+   * inside the popover briefly drops focus before moving it on, so a focus
+   * loss with no destination is checked again two frames later.
+   */
+  @Listen('focusout')
+  handleFocusOut(ev: FocusEvent): void {
+    if (!this.pickerOpen) return;
+    const next = ev.relatedTarget as Node | null;
+    if (next && (next === this.host || this.host.contains(next))) return;
+    if (next) {
+      this.pickerOpen = false;
+      return;
+    }
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (this.pickerOpen && !this.hasFocusWithin()) this.pickerOpen = false;
+      }),
+    );
+  }
+
   /** Escape closes the picker and returns focus to the clock button. */
   @Listen('keydown')
   handlePopoverKeyDown(ev: KeyboardEvent): void {
@@ -312,6 +334,11 @@ export class MudTimeInput {
       this.value = state;
       this.internals.setFormValue(state, state);
     }
+  }
+
+  /** Whether focus is on the field, its buttons or anything in its popover. */
+  private hasFocusWithin(): boolean {
+    return document.activeElement === this.host || Boolean(this.host.shadowRoot?.activeElement);
   }
 
   private readonly togglePicker = (ev: MouseEvent) => {
