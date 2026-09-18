@@ -10,12 +10,11 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import { DATE_PICKER_HEADER_STYLES } from '../mud-date-picker/mud-date-picker.types';
-import type { DatePickerChangeDetail, DatePickerHeaderStyle } from '../mud-date-picker/mud-date-picker.types';
+import type { DatePickerChangeDetail } from '../mud-date-picker/mud-date-picker.types';
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
-  DATE_INPUT_MODES,
+  DATE_INPUT_TYPES,
   DATE_INPUT_SIZES,
   DATE_INPUT_VARIANTS,
 } from './mud-date-input.types';
@@ -23,9 +22,9 @@ import type {
   DateInputBreakpoint,
   DateInputChangeDetail,
   DateInputFormat,
-  DateInputMode,
   DateInputSegment,
   DateInputSize,
+  DateInputType,
   DateInputTypingDetail,
   DateInputValidationError,
   DateInputVariant,
@@ -58,18 +57,21 @@ const FORMAT_SEGMENTS: Record<DateInputFormat, { separator: string; segments: Ma
   'YYYY-MM-DD': { separator: '-', segments: [YEAR, MONTH, DAY] },
 };
 
-/** One mask per format and mode: a date, or two dates joined by `RANGE_SEPARATOR`. */
+/** One date, or two for `type="date-range"`. */
+type MaskMode = 'single' | 'range';
+
+/** One mask per format and mask mode: a date, or two dates joined by `RANGE_SEPARATOR`. */
 const MASKS = Object.fromEntries(
   DATE_INPUT_FORMATS.map(format => {
     const { separator, segments } = FORMAT_SEGMENTS[format];
     const separators = segments.slice(1).map(() => separator);
-    const masks: Record<DateInputMode, SegmentMask<DateSegmentKind>> = {
+    const masks: Record<MaskMode, SegmentMask<DateSegmentKind>> = {
       single: createSegmentMask(segments, separators),
       range: createSegmentMask([...segments, ...segments], [...separators, RANGE_SEPARATOR, ...separators]),
     };
     return [format, masks];
   }),
-) as Record<DateInputFormat, Record<DateInputMode, SegmentMask<DateSegmentKind>>>;
+) as Record<DateInputFormat, Record<MaskMode, SegmentMask<DateSegmentKind>>>;
 
 /**
  * Date Input — segment-masked date entry molecule.
@@ -111,21 +113,16 @@ export class MudDateInput {
   @Prop({ reflect: true }) format: DateInputFormat = 'DD/MM/YYYY';
 
   /**
-   * What the field holds. `range` takes a start and an end date in one field
-   * (`18/01/2025 - 22/01/2025`) and opens the calendar in range mode; the value
-   * changes once both ends are picked.
-   * @default 'single'
+   * The date-input type of the Figma Date Picker page (Types, 470:32035):
+   * - `default` — one date; the calendar has a "Month Year" title.
+   * - `advanced` — one date; the calendar has month and year dropdown chips.
+   * - `date-range` — a start and an end date in one field
+   *   (`18/01/2025 - 22/01/2025`); the value changes once both ends are picked.
+   *
+   * The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+   * @default 'default'
    */
-  @Prop({ reflect: true }) mode: DateInputMode = 'single';
-
-  /**
-   * Header of the desktop calendar — the Figma Types (470:32035): `title` is
-   * the `default` type (one "Month Year" title), `dropdown` the `advanced`
-   * type (month and year chips). The mobile bottom sheet always uses the chips,
-   * as in the Figma Breakpoints.
-   * @default 'title'
-   */
-  @Prop({ reflect: true, attribute: 'header-style' }) headerStyle: DatePickerHeaderStyle = 'title';
+  @Prop({ reflect: true }) type: DateInputType = 'default';
 
   /**
    * Calendar-popover placement. `auto` opens a desktop dropdown on wide
@@ -239,7 +236,7 @@ export class MudDateInput {
   /** Message shown when a complete date is outside `min` / `max`. */
   @Prop({ attribute: 'range-error-text' }) rangeErrorText: string = 'Data este în afara intervalului permis';
 
-  /** `mode="range"`: message shown when the end date is before the start date. */
+  /** `type="date-range"`: message shown when the end date is before the start date. */
   @Prop({ attribute: 'order-error-text' }) orderErrorText: string =
     'Data de sfârșit trebuie să fie după data de început';
 
@@ -360,27 +357,15 @@ export class MudDateInput {
     }
   }
 
-  @Watch('mode')
-  validateMode(next: DateInputMode) {
-    if (!DATE_INPUT_MODES.includes(next)) {
+  @Watch('type')
+  validateType(next: DateInputType) {
+    if (!DATE_INPUT_TYPES.includes(next)) {
       console.warn(
-        `[mud-date-input] mode="${String(next)}" is not supported. Supported: ${DATE_INPUT_MODES.join(
+        `[mud-date-input] type="${String(next)}" is not supported. Supported: ${DATE_INPUT_TYPES.join(
           ', ',
-        )}. Falling back to "single".`,
+        )}. Falling back to "default".`,
       );
-      this.mode = 'single';
-    }
-  }
-
-  @Watch('headerStyle')
-  validateHeaderStyle(next: DatePickerHeaderStyle) {
-    if (!DATE_PICKER_HEADER_STYLES.includes(next)) {
-      console.warn(
-        `[mud-date-input] header-style="${String(next)}" is not supported. Supported: ${DATE_PICKER_HEADER_STYLES.join(
-          ', ',
-        )}. Falling back to "title".`,
-      );
-      this.headerStyle = 'title';
+      this.type = 'default';
     }
   }
 
@@ -413,7 +398,7 @@ export class MudDateInput {
   @Watch('min')
   @Watch('max')
   @Watch('format')
-  @Watch('mode')
+  @Watch('type')
   revalidate() {
     this.updateValidation(this.value);
   }
@@ -473,9 +458,14 @@ export class MudDateInput {
     trigger?.focus();
   }
 
-  /** The field's mask: one date, or two for `mode="range"`. */
+  /** Whether the field holds a start and an end date. */
+  private isRange(): boolean {
+    return this.type === 'date-range';
+  }
+
+  /** The field's mask: one date, or two for `type="date-range"`. */
   private mask(): SegmentMask<DateSegmentKind> {
-    return MASKS[this.format][this.mode];
+    return MASKS[this.format][this.isRange() ? 'range' : 'single'];
   }
 
   /** The mask of one date in the configured format. */
@@ -484,11 +474,11 @@ export class MudDateInput {
   }
 
   /**
-   * The dates in a display value: one in single mode; two in range mode, split
+   * The dates in a display value: one, or two for `type="date-range"`, split
    * at the range separator (the second is empty until typed).
    */
   private dateParts(display: string): string[] {
-    if (this.mode !== 'range') return [display];
+    if (!this.isRange()) return [display];
     const length = this.dateMask().pattern.length;
     return [display.slice(0, length), display.slice(length + RANGE_SEPARATOR.length)];
   }
@@ -547,7 +537,7 @@ export class MudDateInput {
 
   /** The display value a picker selection resolves to, or `''` while a range is half picked. */
   private pickedDisplay(detail: DatePickerChangeDetail): string {
-    if (this.mode === 'range') {
+    if (this.isRange()) {
       if (!detail.rangeStart || !detail.rangeEnd) return '';
       return this.fromIsoValue(detail.rangeStart) + RANGE_SEPARATOR + this.fromIsoValue(detail.rangeEnd);
     }
@@ -700,7 +690,7 @@ export class MudDateInput {
       const iso = this.toIsoDate(part);
       return iso && this.withinBounds(iso) ? iso : null;
     });
-    if (this.mode !== 'range') return { value, isoValue: first, error };
+    if (!this.isRange()) return { value, isoValue: first, error };
     const isoStart = first;
     const isoEnd = second ?? null;
     const isoValue = isoStart && isoEnd && error === null ? `${isoStart}/${isoEnd}` : null;
@@ -999,13 +989,13 @@ export class MudDateInput {
                   id={`date-input-picker-${this.instanceId}`}
                 >
                   <mud-date-picker
-                    mode={this.mode}
+                    mode={this.isRange() ? 'range' : 'single'}
                     breakpoint={pickerBreakpoint}
-                    headerStyle={isMobilePopover ? 'dropdown' : this.headerStyle}
+                    headerStyle={isMobilePopover || this.type === 'advanced' ? 'dropdown' : 'title'}
                     locale="ro-RO"
-                    value={this.mode === 'single' ? (pickerDates[0] ?? undefined) : undefined}
-                    rangeStart={this.mode === 'range' ? (pickerDates[0] ?? undefined) : undefined}
-                    rangeEnd={this.mode === 'range' ? (pickerDates[1] ?? undefined) : undefined}
+                    value={this.isRange() ? undefined : (pickerDates[0] ?? undefined)}
+                    rangeStart={this.isRange() ? (pickerDates[0] ?? undefined) : undefined}
+                    rangeEnd={this.isRange() ? (pickerDates[1] ?? undefined) : undefined}
                     min={this.min}
                     max={this.max}
                     onMudChange={this.handlePickerChange}

@@ -16,7 +16,7 @@ import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputMode, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -63,7 +63,7 @@ export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputMode, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -837,11 +837,6 @@ export namespace Components {
          */
         "format": DateInputFormat;
         /**
-          * Header of the desktop calendar — the Figma Types (470:32035): `title` is the `default` type (one "Month Year" title), `dropdown` the `advanced` type (month and year chips). The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
-          * @default 'title'
-         */
-        "headerStyle": DatePickerHeaderStyle;
-        /**
           * Plain-text helper / hint shown below the control.
          */
         "helperText"?: string;
@@ -863,11 +858,6 @@ export namespace Components {
          */
         "min"?: string;
         /**
-          * What the field holds. `range` takes a start and an end date in one field (`18/01/2025 - 22/01/2025`) and opens the calendar in range mode; the value changes once both ends are picked.
-          * @default 'single'
-         */
-        "mode": DateInputMode;
-        /**
           * Message shown when a complete month segment is outside 01–12.
           * @default 'Luna trebuie să fie între 01 și 12'
          */
@@ -877,7 +867,7 @@ export namespace Components {
          */
         "name"?: string;
         /**
-          * `mode="range"`: message shown when the end date is before the start date.
+          * `type="date-range"`: message shown when the end date is before the start date.
           * @default 'Data de sfârșit trebuie să fie după data de început'
          */
         "orderErrorText": string;
@@ -910,6 +900,11 @@ export namespace Components {
           * @default 'md'
          */
         "size": DateInputSize;
+        /**
+          * The date-input type of the Figma Date Picker page (Types, 470:32035): - `default` — one date; the calendar has a "Month Year" title. - `advanced` — one date; the calendar has month and year dropdown chips. - `date-range` — a start and an end date in one field   (`18/01/2025 - 22/01/2025`); the value changes once both ends are picked.  The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'default'
+         */
+        "type": DateInputType;
         /**
           * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
           * @default ''
@@ -6423,11 +6418,6 @@ declare namespace LocalJSX {
          */
         "format"?: DateInputFormat;
         /**
-          * Header of the desktop calendar — the Figma Types (470:32035): `title` is the `default` type (one "Month Year" title), `dropdown` the `advanced` type (month and year chips). The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
-          * @default 'title'
-         */
-        "headerStyle"?: DatePickerHeaderStyle;
-        /**
           * Plain-text helper / hint shown below the control.
          */
         "helperText"?: string;
@@ -6448,11 +6438,6 @@ declare namespace LocalJSX {
           * Inclusive lower bound in ISO `YYYY-MM-DD`. The validator rejects entries below this date with an `out-of-range` error.
          */
         "min"?: string;
-        /**
-          * What the field holds. `range` takes a start and an end date in one field (`18/01/2025 - 22/01/2025`) and opens the calendar in range mode; the value changes once both ends are picked.
-          * @default 'single'
-         */
-        "mode"?: DateInputMode;
         /**
           * Message shown when a complete month segment is outside 01–12.
           * @default 'Luna trebuie să fie între 01 și 12'
@@ -6483,7 +6468,7 @@ declare namespace LocalJSX {
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
-          * `mode="range"`: message shown when the end date is before the start date.
+          * `type="date-range"`: message shown when the end date is before the start date.
           * @default 'Data de sfârșit trebuie să fie după data de început'
          */
         "orderErrorText"?: string;
@@ -6516,6 +6501,11 @@ declare namespace LocalJSX {
           * @default 'md'
          */
         "size"?: DateInputSize;
+        /**
+          * The date-input type of the Figma Date Picker page (Types, 470:32035): - `default` — one date; the calendar has a "Month Year" title. - `advanced` — one date; the calendar has month and year dropdown chips. - `date-range` — a start and an end date in one field   (`18/01/2025 - 22/01/2025`); the value changes once both ends are picked.  The mobile bottom sheet always uses the chips, as in the Figma Breakpoints.
+          * @default 'default'
+         */
+        "type"?: DateInputType;
         /**
           * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
           * @default ''
@@ -9872,8 +9862,7 @@ declare namespace LocalJSX {
         "variant": DateInputVariant;
         "size": DateInputSize;
         "format": DateInputFormat;
-        "mode": DateInputMode;
-        "headerStyle": DatePickerHeaderStyle;
+        "type": DateInputType;
         "breakpoint": DateInputBreakpoint;
         "disabled": boolean;
         "required": boolean;

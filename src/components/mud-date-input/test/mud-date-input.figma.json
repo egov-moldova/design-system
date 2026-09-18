@@ -915,7 +915,7 @@
       "node": "487:7753",
       "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .header-dropdowns"],
       "clock": "2024-12-07T10:00:00Z",
-      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" header-style=\"dropdown\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" type=\"advanced\" value=\"11/12/2024\"></mud-date-input></div></div>",
       "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
       "capture": { "selector": ".type-frame", "bleed": "auto" },
       "expect": [
@@ -942,11 +942,35 @@
       "note": "Figma types 470:32035. The field reads 11/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json), and the calendar is Romanian (the field passes locale ro-RO), so the state renders December 2024."
     },
     {
+      "name": "breakpoint-mobile-picker",
+      "node": "797:37061",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .header-dropdowns"],
+      "clock": "2024-12-07T10:00:00Z",
+      "viewport": { "width": 430, "height": 932 },
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" type=\"advanced\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
+      "capture": { "selector": ".type-frame", "bleed": "auto" },
+      "expect": [
+        { "use": "control-lg-focus" },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "797:37063",
+          "styles": { "boxWidth": "320px", "rowGap": "8px", "borderTopWidth": "0px" }
+        },
+        {
+          "target": "mud-date-input .picker-backdrop",
+          "absent": true,
+          "note": "The anchored dropdown has no scrim; only the bottom sheet does (797:37918)."
+        }
+      ],
+      "note": "Figma Breakpoints 'mobile: picker': the dropdown anchored to the field on a phone, with the advanced (chips) header — breakpoint=\"desktop\" + type=\"advanced\" at a 430px (phone) viewport."
+    },
+    {
       "name": "date-range-open",
       "node": "487:7774",
       "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .title"],
       "clock": "2024-12-07T10:00:00Z",
-      "html": "<div class=\"range-frame\" style=\"width:320px;height:450px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" mode=\"range\" breakpoint=\"desktop\" value=\"18/12/2024 - 22/12/2024\"></mud-date-input></div></div>",
+      "html": "<div class=\"range-frame\" style=\"width:320px;height:450px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" type=\"date-range\" breakpoint=\"desktop\" value=\"18/12/2024 - 22/12/2024\"></mud-date-input></div></div>",
       "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
       "capture": { "selector": ".range-frame", "bleed": "auto" },
       "expect": [

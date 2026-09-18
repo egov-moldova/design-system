@@ -683,54 +683,52 @@ describe('mud-date-input', () => {
     });
   });
 
-  describe('header style (Figma Types 470:32035: default / advanced)', () => {
+  describe('type (Figma Types 470:32035: default / advanced / date-range)', () => {
     const open = async (root: Element | null | undefined) => {
       root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
       await flush();
       return root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
     };
 
-    it('defaults to the title header (type default) on desktop', async () => {
+    it('defaults to type="default": one date, calendar with the title header', async () => {
       const { root } = await render(<mud-date-input label="x" breakpoint="desktop"></mud-date-input>);
-      expect(root?.getAttribute('header-style')).toBe('title');
-      expect((await open(root))?.headerStyle).toBe('title');
+      expect(root?.getAttribute('type')).toBe('default');
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('title');
+      expect(picker?.mode).toBe('single');
     });
 
-    it('opens the advanced calendar with header-style="dropdown"', async () => {
-      const { root } = await render(
-        <mud-date-input label="x" breakpoint="desktop" header-style="dropdown"></mud-date-input>,
-      );
-      expect((await open(root))?.headerStyle).toBe('dropdown');
-    });
-
-    it('works with the range mode', async () => {
-      const { root } = await render(
-        <mud-date-input label="x" breakpoint="desktop" mode="range" header-style="dropdown"></mud-date-input>,
-      );
+    it('type="advanced" opens the calendar with the month and year chips', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="desktop" type="advanced"></mud-date-input>);
       const picker = await open(root);
       expect(picker?.headerStyle).toBe('dropdown');
+      expect(picker?.mode).toBe('single');
+    });
+
+    it('type="date-range" opens the range calendar with the title header', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="desktop" type="date-range"></mud-date-input>);
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('title');
       expect(picker?.mode).toBe('range');
     });
 
-    it('keeps the chips on the mobile bottom sheet whatever the header style', async () => {
-      const { root } = await render(
-        <mud-date-input label="x" breakpoint="mobile" header-style="title"></mud-date-input>,
-      );
+    it('keeps the chips on the mobile bottom sheet for every type', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="mobile" type="default"></mud-date-input>);
       expect((await open(root))?.headerStyle).toBe('dropdown');
     });
 
-    it('falls back to title for an unsupported header style', async () => {
+    it('falls back to default for an unsupported type', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-date-input label="x"></mud-date-input>);
-      (root as HTMLMudDateInputElement).headerStyle = 'tabs' as unknown as 'title';
+      (root as HTMLMudDateInputElement).type = 'range' as unknown as 'default';
       await flush();
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('header-style="tabs" is not supported'));
-      expect(root?.getAttribute('header-style')).toBe('title');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('type="range" is not supported'));
+      expect(root?.getAttribute('type')).toBe('default');
       warn.mockRestore();
     });
   });
 
-  describe('range mode (Figma Types → date-range, 483:5705)', () => {
+  describe('type="date-range" (Figma Types → date-range, 483:5705)', () => {
     const type = async (root: Element | null | undefined, raw: string) => {
       const native = queryNative(root)!;
       native.value = raw;
@@ -753,26 +751,15 @@ describe('mud-date-input', () => {
       return flush();
     };
 
-    it('reflects mode="range" and shows the two-date pattern as placeholder', async () => {
-      const { root } = await render(<mud-date-input label="x" mode="range"></mud-date-input>);
-      expect(root?.getAttribute('mode')).toBe('range');
+    it('shows the two-date pattern as placeholder', async () => {
+      const { root } = await render(<mud-date-input label="x" type="date-range"></mud-date-input>);
       const native = queryNative(root)!;
       expect(native.getAttribute('placeholder')).toBe('DD/MM/YYYY - DD/MM/YYYY');
       expect(native.maxLength).toBe(23);
     });
 
-    it('falls back to single for an unsupported mode', async () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const { root } = await render(<mud-date-input label="x"></mud-date-input>);
-      (root as HTMLMudDateInputElement).mode = 'multi' as unknown as 'single';
-      await flush();
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('mode="multi" is not supported'));
-      expect(root?.getAttribute('mode')).toBe('single');
-      warn.mockRestore();
-    });
-
     it('writes the range separator once the first date is complete', async () => {
-      const { root } = await render(<mud-date-input label="x" mode="range"></mud-date-input>);
+      const { root } = await render(<mud-date-input label="x" type="date-range"></mud-date-input>);
       const native = await type(root, '18012025');
       expect(native.value).toBe('18/01/2025 - ');
       await type(root, '1801202522012025');
@@ -780,7 +767,7 @@ describe('mud-date-input', () => {
     });
 
     it('pads a part-typed day of the second date on "/"', async () => {
-      const { root } = await render(<mud-date-input label="x" mode="range"></mud-date-input>);
+      const { root } = await render(<mud-date-input label="x" type="date-range"></mud-date-input>);
       const native = await type(root, '180120253');
       expect(native.value).toBe('18/01/2025 - 3');
       // mock-doc does not route KeyboardEvents through JSX listeners: call the
@@ -794,7 +781,7 @@ describe('mud-date-input', () => {
     });
 
     it('never pads the year of the first date', async () => {
-      const { root } = await render(<mud-date-input label="x" mode="range"></mud-date-input>);
+      const { root } = await render(<mud-date-input label="x" type="date-range"></mud-date-input>);
       const native = await type(root, '1801202');
       const ev = new KeyboardEvent('keydown', { key: '-', bubbles: true, cancelable: true });
       Object.defineProperty(ev, 'target', { value: native });
@@ -805,7 +792,7 @@ describe('mud-date-input', () => {
 
     it('reports the segment under the caret in the second date', async () => {
       const onInput = vi.fn();
-      const { root } = await render(<mud-date-input label="x" mode="range" onMudInput={onInput}></mud-date-input>);
+      const { root } = await render(<mud-date-input label="x" type="date-range" onMudInput={onInput}></mud-date-input>);
       await type(root, '1801202522');
       expect(onInput.mock.calls.at(-1)?.[0].detail.segment).toBe('MM');
     });
@@ -813,7 +800,12 @@ describe('mud-date-input', () => {
     it('emits the ISO interval with isoStart / isoEnd once both dates are valid', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input label="x" mode="range" value="18/01/2025 - 22/01/2025" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input
+          label="x"
+          type="date-range"
+          value="18/01/2025 - 22/01/2025"
+          onMudChange={onChange}
+        ></mud-date-input>,
       );
       queryNative(root)!.dispatchEvent(new Event('change', { bubbles: true }));
       await flush();
@@ -829,7 +821,7 @@ describe('mud-date-input', () => {
     it('keeps isoValue null while only the start is complete', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input label="x" mode="range" value="18/01/2025 - 2" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input label="x" type="date-range" value="18/01/2025 - 2" onMudChange={onChange}></mud-date-input>,
       );
       queryNative(root)!.dispatchEvent(new Event('change', { bubbles: true }));
       await flush();
@@ -844,7 +836,7 @@ describe('mud-date-input', () => {
 
     it('flags an end date before the start with the order error', async () => {
       const { root } = await render(
-        <mud-date-input label="x" mode="range" value="22/01/2025 - 18/01/2025"></mud-date-input>,
+        <mud-date-input label="x" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>,
       );
       await flush();
       expect(root?.classList.contains('is-invalid')).toBe(true);
@@ -855,7 +847,7 @@ describe('mud-date-input', () => {
       const { root } = await render(
         <mud-date-input
           label="x"
-          mode="range"
+          type="date-range"
           value="22/01/2025 - 18/01/2025"
           order-error-text="End before start"
         ></mud-date-input>,
@@ -866,7 +858,7 @@ describe('mud-date-input', () => {
 
     it('validates each date on its own: an impossible end date is a date error', async () => {
       const { root } = await render(
-        <mud-date-input label="x" mode="range" value="18/01/2025 - 31/02/2025"></mud-date-input>,
+        <mud-date-input label="x" type="date-range" value="18/01/2025 - 31/02/2025"></mud-date-input>,
       );
       await flush();
       expect(queryAssistive(root)?.textContent).toContain('Introduceți o dată validă');
@@ -874,7 +866,7 @@ describe('mud-date-input', () => {
 
     it('applies min / max to both dates', async () => {
       const { root } = await render(
-        <mud-date-input label="x" mode="range" max="2025-01-20" value="18/01/2025 - 22/01/2025"></mud-date-input>,
+        <mud-date-input label="x" type="date-range" max="2025-01-20" value="18/01/2025 - 22/01/2025"></mud-date-input>,
       );
       await flush();
       expect(queryAssistive(root)?.textContent).toContain('Data este în afara intervalului permis');
@@ -882,7 +874,12 @@ describe('mud-date-input', () => {
 
     it('opens the calendar in range mode with the typed dates', async () => {
       const { root } = await render(
-        <mud-date-input label="x" mode="range" breakpoint="desktop" value="18/01/2025 - 22/01/2025"></mud-date-input>,
+        <mud-date-input
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          value="18/01/2025 - 22/01/2025"
+        ></mud-date-input>,
       );
       await openPicker(root);
       const picker = root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
@@ -897,7 +894,7 @@ describe('mud-date-input', () => {
       const { root } = await render(
         <mud-date-input
           label="x"
-          mode="range"
+          type="date-range"
           breakpoint="desktop"
           value="18/01/2025 - 22/01/2025"
           onMudChange={onChange}
@@ -913,7 +910,7 @@ describe('mud-date-input', () => {
     it('fills the field, emits once and closes when both ends are picked', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input label="x" mode="range" breakpoint="desktop" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input label="x" type="date-range" breakpoint="desktop" onMudChange={onChange}></mud-date-input>,
       );
       await openPicker(root);
       await pickRange(root, '2025-01-18');
@@ -926,7 +923,12 @@ describe('mud-date-input', () => {
 
     it('closes on an outside click mid-selection without applying anything', async () => {
       const { root } = await render(
-        <mud-date-input label="x" mode="range" breakpoint="desktop" value="18/01/2025 - 22/01/2025"></mud-date-input>,
+        <mud-date-input
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          value="18/01/2025 - 22/01/2025"
+        ></mud-date-input>,
       );
       await openPicker(root);
       await pickRange(root, '2025-02-03');
@@ -939,7 +941,7 @@ describe('mud-date-input', () => {
     });
 
     it('draws the field focused while the calendar is open', async () => {
-      const { root } = await render(<mud-date-input label="x" mode="range" breakpoint="desktop"></mud-date-input>);
+      const { root } = await render(<mud-date-input label="x" type="date-range" breakpoint="desktop"></mud-date-input>);
       expect(root?.classList.contains('is-focused')).toBe(false);
       await openPicker(root);
       expect(root?.classList.contains('is-focused')).toBe(true);
