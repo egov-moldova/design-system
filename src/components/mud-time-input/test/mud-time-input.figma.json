@@ -1,0 +1,1515 @@
+{
+  "$comment": "Figma state manifest for mud-time-input — values copied from the time-input component set (13810:9195) and the Time frame (13807:8471). The set mirrors date-input (184:823); icon colours match mud-date-input's exported SVGs. Medium destructive and non-default Medium states are style-only (pixel: false) — Large covers the pixels.",
+  "component": "mud-time-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-input-time--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-time-input",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "lg-default-default",
+      "node": "13810:9196",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\"></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9196",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9198",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9200",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9202",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9203",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-default-hover",
+      "node": "13810:9214",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\"></mud-time-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-time-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9214",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9216",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9218",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#444444",
+            "boxShadow": "inset 0px 0px 0px 1px #444444"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9220",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9221",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-default-focus",
+      "node": "13810:9232",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\"></mud-time-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-time-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9232",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9234",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9236",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9239",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9242",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9239",
+          "styles": {
+            "caretColor": "#0058D2"
+          },
+          "note": "Caret '|' is #0058D2 (13810:9240)."
+        }
+      ]
+    },
+    {
+      "name": "lg-default-filled",
+      "node": "13810:9256",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" value=\"11:15\"></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9256",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9258",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9260",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9262",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9264",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-default-disabled",
+      "node": "13810:9276",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" disabled></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9276",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9278",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9280",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9282",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#B2B2B2"
+          },
+          "note": "Placeholder HH:MM is #B2B2B2."
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9283",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-default",
+      "node": "13810:9308",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9308",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9310",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9312",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9314",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9315",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-hover",
+      "node": "13810:9326",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-time-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9326",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9328",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9330",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9332",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9333",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-focus",
+      "node": "13810:9364",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-time-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9364",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9366",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9368",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9371",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9374",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9371",
+          "styles": {
+            "caretColor": "#0058D2"
+          },
+          "note": "Caret '|' is #0058D2 (13810:9240)."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-filled",
+      "node": "13810:9344",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\" value=\"11:15\"></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9344",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9346",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9348",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9350",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9352",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "lg-destructive-disabled",
+      "node": "13810:9292",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" variant=\"destructive\" disabled></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9292",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9294",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9296",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "48px",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9298",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#B2B2B2"
+          },
+          "note": "Placeholder HH:MM is #B2B2B2."
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9299",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-default-default",
+      "node": "13810:9205",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\"></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9205",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9207",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9209",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9211",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9212",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-default-hover",
+      "node": "13810:9223",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\"></mud-time-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-time-input .control"
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9223",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9225",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9227",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#444444",
+            "boxShadow": "inset 0px 0px 0px 1px #444444"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9229",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9230",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-default-focus",
+      "node": "13810:9244",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\"></mud-time-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-time-input .native"
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9244",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9246",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9248",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9251",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9254",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9251",
+          "styles": {
+            "caretColor": "#0058D2"
+          },
+          "note": "Caret '|' is #0058D2 (13810:9240)."
+        }
+      ]
+    },
+    {
+      "name": "md-default-filled",
+      "node": "13810:9266",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" value=\"11:15\"></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9266",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9268",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9270",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9272",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9274",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-default-disabled",
+      "node": "13810:9284",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" disabled></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9284",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9286",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9288",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9290",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#B2B2B2"
+          },
+          "note": "Placeholder HH:MM is #B2B2B2."
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9291",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive-default",
+      "node": "13810:9317",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9317",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9319",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9321",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9323",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9324",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive-hover",
+      "node": "13810:9335",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-time-input .control"
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9335",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9337",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9339",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20"
+          },
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9341",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9342",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive-focus",
+      "node": "13810:9376",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" variant=\"destructive\"></mud-time-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-time-input .native"
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9376",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9378",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9380",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+          },
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9383",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9386",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9383",
+          "styles": {
+            "caretColor": "#0058D2"
+          },
+          "note": "Caret '|' is #0058D2 (13810:9240)."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive-filled",
+      "node": "13810:9354",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" variant=\"destructive\" value=\"11:15\"></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9354",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9356",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9358",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D92D20",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9360",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9362",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#444444"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "md-destructive-disabled",
+      "node": "13810:9300",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"md\" label=\"Label\" variant=\"destructive\" disabled></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input",
+          "node": "13810:9300",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-input .label",
+          "node": "13810:9302",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        },
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9304",
+          "styles": {
+            "boxWidth": "282px",
+            "boxHeight": "40px",
+            "paddingLeft": "11px",
+            "paddingRight": "11px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+        },
+        {
+          "target": "mud-time-input .native",
+          "node": "13810:9306",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#B2B2B2"
+          },
+          "note": "Placeholder HH:MM is #B2B2B2."
+        },
+        {
+          "target": "mud-time-input .trailing-icon",
+          "node": "13810:9307",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive",
+          "absent": true,
+          "note": "👁️ Assistive Text defaults to false."
+        }
+      ]
+    },
+    {
+      "name": "error-text",
+      "node": "13810:9316",
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" invalid error-text=\"Error message displayed here\"></mud-time-input></div>",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-time-input .assistive",
+          "node": "13810:9316",
+          "styles": {
+            "columnGap": "4px",
+            "color": "#D92D20",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-time-input .assistive-icon",
+          "node": "13810:9316",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#D92D20"
+          },
+          "note": "Instance node I13810:9316;132:4114."
+        }
+      ]
+    },
+    {
+      "name": "clear-button",
+      "node": "13810:9263",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-time-input size=\"lg\" label=\"Label\" value=\"11:15\" clearable></mud-time-input></div>",
+      "expect": [
+        {
+          "target": "mud-time-input .clear-button",
+          "node": "13810:9263",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "time-open",
+      "node": "13810:9448",
+      "html": "<div class=\"time-frame\" style=\"width:282px;height:436px\"><mud-time-input size=\"lg\" label=\"Label\" value=\"11:15\"></mud-time-input></div>",
+      "interaction": [
+        {
+          "type": "click",
+          "target": "mud-time-input .trailing-icon"
+        }
+      ],
+      "capture": {
+        "selector": ".time-frame",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "target": "mud-time-input .control",
+          "node": "13810:9449",
+          "styles": {
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+          },
+          "note": "The field is drawn focused while its picker is open (13810:9449, State=Focus)."
+        },
+        {
+          "target": "mud-time-input mud-time-picker",
+          "node": "13810:9450",
+          "styles": {
+            "boxWidth": "202px",
+            "boxHeight": "352px"
+          }
+        },
+        {
+          "target": "mud-time-input mud-time-picker [role='option'][data-column='hours'][data-value='11']",
+          "node": "13810:9453",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-time-input mud-time-picker [role='option'][data-column='minutes'][data-value='15']",
+          "node": "13810:9499",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "color": "#121212"
+          }
+        }
+      ],
+      "note": "Figma's field shows the empty focused placeholder (|HH:MM) over a picker set to 11:15; the component shows the value it passes to the picker, so the field reads 11:15."
+    }
+  ]
+}
