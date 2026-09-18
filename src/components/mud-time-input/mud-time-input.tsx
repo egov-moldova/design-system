@@ -536,9 +536,8 @@ export class MudTimeInput {
       <Host class={hostClasses}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {this.label?.trim()}
-            </slot>
+            {this.hasLabelSlot ? null : this.label?.trim()}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -648,9 +647,8 @@ export class MudTimeInput {
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {this.helperText?.trim()}
-              </slot>
+              {this.hasHelperSlot ? null : this.helperText?.trim()}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}
