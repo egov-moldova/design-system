@@ -188,6 +188,18 @@
 ::slotted([slot='actions']) {
   color: inherit;
 }
+
+/* The toast surface keeps its saturated fill in both themes, while
+   mud-link's white / strict labels flip with the theme — in dark they
+   would read #121212 on blue. Tie the label to the toast's text colour:
+   white, or #121212 on warning, exactly Figma's Style=White / Strict
+   link (100:784, 100:819) in light. */
+::slotted(mud-link[slot='actions']) {
+  --_label: currentcolor;
+  --_label-hover: currentcolor;
+  --_label-active: currentcolor;
+  --_label-visited: currentcolor;
+}
 ::slotted(mud-button[slot='actions']) {
   --_label: currentcolor;
   --_label-hover: currentcolor;
