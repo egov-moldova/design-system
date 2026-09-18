@@ -875,6 +875,34 @@
           "note": "Not in Figma: a read-only field must not let the calendar change its value, so the trigger is disabled (unit test covers the click)."
         }
       ]
+    },
+    {
+      "name": "date-range-open",
+      "node": "487:7774",
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"range-frame\" style=\"width:320px;height:450px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" mode=\"range\" breakpoint=\"desktop\" value=\"18/12/2024 - 22/12/2024\"></mud-date-input></div></div>",
+      "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
+      "capture": { "selector": ".range-frame", "bleed": "auto" },
+      "expect": [
+        { "use": "control-lg-focus" },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "483:5709",
+          "styles": { "boxWidth": "320px", "rowGap": "6px", "borderTopWidth": "0px" }
+        },
+        {
+          "target": "mud-date-input mud-date-picker button.day-cell[data-iso='2024-12-18']",
+          "node": "159:897",
+          "styles": { "backgroundColor": "#0058D2", "color": "#FFFFFF", "borderTopRightRadius": "0px" }
+        },
+        {
+          "target": "mud-date-input mud-date-picker button.day-cell[data-iso='2024-12-20']",
+          "node": "159:901",
+          "styles": { "backgroundColor": "#E8F0FB", "color": "#121212" }
+        },
+        { "target": "mud-date-input mud-date-picker .footer", "absent": true }
+      ],
+      "note": "Figma's field reads 18/01/2025 - 22/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json); the state renders December 2024 so the calendars line up."
     }
   ]
 }

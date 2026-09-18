@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
-import type { DateInputFormat, DateInputSize, DateInputVariant } from './mud-date-input.types';
+import { DATE_INPUT_FORMATS, DATE_INPUT_MODES, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
+import type { DateInputFormat, DateInputMode, DateInputSize, DateInputVariant } from './mud-date-input.types';
 
 type DateInputArgs = {
   variant: DateInputVariant;
   size: DateInputSize;
   format: DateInputFormat;
+  mode: DateInputMode;
   label: string;
   placeholder: string;
   value: string;
@@ -25,6 +26,7 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
     variant="${args.variant}"
     size="${args.size}"
     format="${args.format}"
+    mode="${args.mode}"
     label="${args.label}"
     placeholder="${args.placeholder}"
     value="${args.value}"
@@ -42,6 +44,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
     args.variant !== 'default' ? `variant="${args.variant}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.format !== 'DD/MM/YYYY' ? `format="${args.format}"` : '',
+    args.mode !== 'single' ? `mode="${args.mode}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.placeholder ? `placeholder="${args.placeholder}"` : '',
     args.value ? `value="${args.value}"` : '',
@@ -79,6 +82,12 @@ const meta: Meta<DateInputArgs> = {
       description: 'Display format pattern.',
       table: { defaultValue: { summary: 'DD/MM/YYYY' } },
     },
+    mode: {
+      control: 'inline-radio',
+      options: DATE_INPUT_MODES,
+      description: 'One date, or a start and an end date in one field (`18/01/2025 - 22/01/2025`).',
+      table: { defaultValue: { summary: 'single' } },
+    },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },
     value: { control: 'text' },
@@ -101,6 +110,7 @@ export const Default: Story = {
     variant: 'default',
     size: 'lg',
     format: 'DD/MM/YYYY',
+    mode: 'single',
     label: 'Label',
     placeholder: '',
     value: '',
@@ -308,6 +318,39 @@ export const Validation: Story = {
           '<mud-date-input size="lg" label="Label" value="45"></mud-date-input>',
           '<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>',
           '<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const DateRange: Story = {
+  name: 'Date Range',
+  render: () =>
+    wrapTriple(
+      [
+        cell('empty', /*html*/ `<mud-date-input size="lg" label="Label" mode="range"></mud-date-input>`),
+        cell(
+          'filled',
+          /*html*/ `<mud-date-input size="lg" label="Label" mode="range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
+        ),
+        cell(
+          'order-error',
+          /*html*/ `<mud-date-input size="lg" label="Label" mode="range" value="22/01/2025 - 18/01/2025"></mud-date-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The Figma `date-range` type (Date Picker page, Types — 483:5705): one field holds the start and the end date. Typing writes ` - ` after the first date; the calendar opens in range mode and fills the field once both ends are picked — closing it half-way (outside click, Escape) changes nothing. An end date before the start is an `order` error (`order-error-text`). `mudChange` carries `isoStart`, `isoEnd` and the ISO 8601 interval in `isoValue` (`2025-01-18/2025-01-22`).',
+      },
+      source: {
+        code: [
+          '<mud-date-input size="lg" label="Label" mode="range"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" mode="range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },

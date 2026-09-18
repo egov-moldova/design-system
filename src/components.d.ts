@@ -16,7 +16,7 @@ import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputMode, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -61,7 +61,7 @@ export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputMode, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
@@ -854,6 +854,11 @@ export namespace Components {
          */
         "min"?: string;
         /**
+          * What the field holds. `range` takes a start and an end date in one field (`18/01/2025 - 22/01/2025`) and opens the calendar in range mode; the value changes once both ends are picked.
+          * @default 'single'
+         */
+        "mode": DateInputMode;
+        /**
           * Message shown when a complete month segment is outside 01–12.
           * @default 'Luna trebuie să fie între 01 și 12'
          */
@@ -862,6 +867,11 @@ export namespace Components {
           * Form-control `name`. Used during form submission.
          */
         "name"?: string;
+        /**
+          * `mode="range"`: message shown when the end date is before the start date.
+          * @default 'Data de sfârșit trebuie să fie după data de început'
+         */
+        "orderErrorText": string;
         /**
           * Accessible name of the calendar dialog.
           * @default 'Selectează data'
@@ -6204,6 +6214,11 @@ declare namespace LocalJSX {
          */
         "min"?: string;
         /**
+          * What the field holds. `range` takes a start and an end date in one field (`18/01/2025 - 22/01/2025`) and opens the calendar in range mode; the value changes once both ends are picked.
+          * @default 'single'
+         */
+        "mode"?: DateInputMode;
+        /**
           * Message shown when a complete month segment is outside 01–12.
           * @default 'Luna trebuie să fie între 01 și 12'
          */
@@ -6232,6 +6247,11 @@ declare namespace LocalJSX {
           * Fires on every keystroke. `detail.value` is the current display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`. `detail.segment` is the segment under the caret.
          */
         "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
+        /**
+          * `mode="range"`: message shown when the end date is before the start date.
+          * @default 'Data de sfârșit trebuie să fie după data de început'
+         */
+        "orderErrorText"?: string;
         /**
           * Accessible name of the calendar dialog.
           * @default 'Selectează data'
@@ -9436,6 +9456,7 @@ declare namespace LocalJSX {
         "variant": DateInputVariant;
         "size": DateInputSize;
         "format": DateInputFormat;
+        "mode": DateInputMode;
         "breakpoint": DateInputBreakpoint;
         "disabled": boolean;
         "required": boolean;
@@ -9458,6 +9479,7 @@ declare namespace LocalJSX {
         "yearErrorText": string;
         "dateErrorText": string;
         "rangeErrorText": string;
+        "orderErrorText": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;

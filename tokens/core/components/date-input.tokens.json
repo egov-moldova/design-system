@@ -3,6 +3,13 @@
     "field": {
       "gap": { "$value": "{spacing.8}", "$type": "dimension" }
     },
+    "popover": {
+      "offset": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Gap between the field and the calendar — Figma 487:7774 (date-range type)."
+      }
+    },
     "container": {
       "height": {
         "md": { "$value": "{spacing.40}", "$type": "dimension" },

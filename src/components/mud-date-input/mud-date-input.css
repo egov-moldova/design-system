@@ -367,7 +367,7 @@
   inset-block-start: calc(100% + var(--_border-width-default));
   inset-inline-start: calc(-1 * var(--_border-width-default));
   z-index: 10;
-  margin-block-start: var(--spacing-4);
+  margin-block-start: var(--date-input-popover-offset);
   display: block;
 }
 
