@@ -48,12 +48,12 @@
       "selected": {
         "$comment": "Selected value in the column being edited — .day-cell Active (158:400).",
         "background": { "$value": "{color.background.brand.default}", "$type": "color" },
-        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
       },
       "selectedInactive": {
         "$comment": "Selected value in the other column — .day-cell Middle (159:901).",
         "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
-        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
       },
       "disabled": {
         "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
