@@ -138,22 +138,48 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
 
 ## Tasks
 
-- [ ] `mud-date-picker`: in-range colour token, container border, footer hidden when hosted by
-      an input — verify `node scripts/audit/15-style-parity.mjs mud-date-picker` (range and
-      footer findings gone).
-- [ ] Extract `src/utils/segment-mask.ts` from `mud-date-input` with its own spec — verify
-      `yarn test` (date-input spec unchanged and green).
-- [ ] `mud-date-input` range: tokens (popover offset 8px), TSX, CSS, types — verify `yarn test`.
-- [ ] Range stories + spec cases (typing, order error, picker round-trip, dismissal) — verify
-      `yarn test` and `yarn lint`.
-- [ ] Extend `mud-date-input.figma.json` with the `date-range` state (`483:5708` / `483:5709`)
-      and the open popover — verify `node scripts/audit/15-style-parity.mjs mud-date-input`.
-- [ ] `mud-time-picker`: tokens, component, stories, spec, `figma.json` — verify
-      `yarn tokens.build`, `yarn test`, `node scripts/audit/15-style-parity.mjs mud-time-picker`.
-- [ ] `mud-time-input`: tokens, component, stories, spec, `figma.json` (all 20 variants of
-      `13810:9195`) — verify `yarn test`, style parity, `node scripts/audit/11-pixel-diff-states.mjs mud-time-input`.
-- [ ] Exports and integration — verify `yarn build` and `yarn validate.package`.
-- [ ] Accessibility — verify `yarn audit:contrast` and an axe pass on the new stories.
+- [x] `mud-date-picker`: all 38 findings — verified `15-style-parity mud-date-picker` (0 findings),
+      `11-pixel-diff-states mud-date-picker` (0 errors), date-picker spec (60 tests).
+- [x] Extract `src/utils/segment-mask.ts` from `mud-date-input` with its own spec — verified the
+      76 existing date-input specs pass unchanged; util spec 16 tests.
+- [x] `mud-date-input` range: tokens (popover offset 8px), TSX, CSS, types, stories, spec
+      (93 tests) — verified `yarn test`, `yarn lint`.
+- [x] `mud-date-input.figma.json` `date-range-open` state (`487:7774`) — style parity 0 findings,
+      pixel diff 0.77% (locale and mock dates).
+- [x] `mud-time-picker`: tokens, component, stories, spec (24 tests), `figma.json` — style parity
+      and pixel diff clean.
+- [x] `mud-time-input`: tokens, component, stories, spec (46 tests), `figma.json` (20 variants of
+      `13810:9195` + error text, clear button, open picker) — style parity clean, pixel diff 4
+      borderline states at 0.7% (Figma mock text `HH:MM`, caret drawn as a glyph).
+- [x] Exports and integration — `yarn build`, `yarn validate.package` (18/18 entrypoints).
+- [x] Stencil audits — `02-stencil-antipatterns` and `16-stencil-contract` clean for both time
+      components; `yarn audit:contrast` passes.
+- [x] Accessibility — axe + keyboard in the browser, light and dark, on the date-range,
+      date-picker and time stories. Fixed: dark-mode text on selected / in-range cells (2.96:1
+      and 1.36:1 → on-color tokens) and focus lost to `<body>` on Escape from the month / year
+      view (the day grid now always keeps one tab stop). Verified with a real Escape key press.
+
+Suite: `vitest --project spec` 54 files, 2113 tests. Spec line coverage: time-picker 100%,
+time-input 96%, date-input 92%, date-picker 89%.
+
+## Decisions made during implementation
+
+- Year view (Figma 524:1858): 12 cells from the decade start, title `2020-2030` as drawn, arrows
+  page by 10 years. The year chip returns to the day view after a pick; the title flow still goes
+  on to the months.
+- Spill-over days are inactive (Figma `.day-cell` Inactive, `#b2b2b2`): `disabled` +
+  `aria-disabled`, so the grey is exempt from SC 1.4.3. Before, they were clickable and `#757575`.
+- The Month Picker opened from the month chip has no header (524:1973); the title flow keeps it
+  so the year view stays reachable. Every view switch moves focus into the new view.
+- The today ring is a 1.5px inset box-shadow: Chromium 153 snaps `border-width` to whole CSS px
+  at every DPR. `mud-button`'s 1.5px outlined border renders 1px for the same reason (not fixed
+  here).
+- The field of both inputs is drawn focused while its popover is open (Figma draws it so);
+  focus itself moves into the popover (dialog pattern).
+- `mud-date-picker` manifest: full-calendar pixel states render December 2024, the real month
+  laid out like Figma's mock January 2025.
+- `mud-time-input` has a `trigger-label` prop (the clock button's name); `mud-date-input` still
+  hard-codes "Deschide calendarul" and `locale="ro-RO"`.
 
 ## Not verified
 
@@ -163,3 +189,11 @@ Build order: 2 → 4 → 3 → 5 → 6 (tokens first within each).
 - 12-hour (AM/PM) format: Figma shows 24h only.
 - Figma inconsistencies left for design: range variant gap 6px vs 8px; year title `2020-2030`
   over a grid that runs to 2031 (#70).
+- `figma-refs --check`: no `FIGMA_TOKEN` here; the new references were exported at 2x through
+  the Figma MCP instead (`.audit-figma/`, git-ignored), so no `export.json` version stamp.
+- The `web-components` demo has no pages for the time components or the range mode yet.
+- Dark-mode error text: `color.text.danger.default` (`#f04438`) on `#1e1e1e` is 4.44:1, under
+  4.5:1 — a semantic token shared by every field (`mud-text-input`, `mud-date-input`,
+  `mud-time-input`), left for design.
+- Range start picked: no live announcement asks for the end date (SC 4.1.3 advisory); the title
+  region only announces navigation.
