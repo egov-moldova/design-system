@@ -2,7 +2,7 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-toast';
 
-import { TOAST_VARIANTS } from '../mud-toast.types';
+import { TOAST_DISMISS_FALLBACK_MS, TOAST_VARIANTS } from '../mud-toast.types';
 
 const queryClose = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.close') ?? null) as HTMLButtonElement | null;
@@ -14,6 +14,11 @@ const queryTitle = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.title') ?? null) as HTMLElement | null;
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+
+/** Ends the close fade-out the way the browser does, with `animationend`. */
+const endFade = (root: Element | null | undefined, animationName = 'toast-dismiss'): void => {
+  root?.dispatchEvent(Object.assign(new Event('animationend'), { animationName }));
+};
 
 describe('mud-toast', () => {
   describe('defaults', () => {
@@ -106,6 +111,7 @@ describe('mud-toast', () => {
 
       queryClose(root)?.click();
       await flush();
+      endFade(root);
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
@@ -121,6 +127,7 @@ describe('mud-toast', () => {
       const ev = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
       (root as unknown as Instance).handleCloseKeyDown.call(root, ev);
       await flush();
+      endFade(root);
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
@@ -136,6 +143,7 @@ describe('mud-toast', () => {
       const ev = new KeyboardEvent('keydown', { key: ' ', bubbles: true });
       (root as unknown as Instance).handleCloseKeyDown.call(root, ev);
       await flush();
+      endFade(root);
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
@@ -151,6 +159,91 @@ describe('mud-toast', () => {
       const ev = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
       (root as unknown as Instance).handleCloseKeyDown.call(root, ev);
       await flush();
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('fades out before emitting mudClose (Figma Behavior › dismissal)', async () => {
+      const handler = vi.fn();
+      const { root, waitForChanges } = await render(
+        <mud-toast closable onMudClose={handler}>
+          Mesaj
+        </mud-toast>,
+      );
+
+      queryClose(root)?.click();
+      await waitForChanges();
+      expect(root?.classList.contains('is-dismissing')).toBe(true);
+      expect(handler).not.toHaveBeenCalled();
+
+      endFade(root, 'toast-appear');
+      expect(handler).not.toHaveBeenCalled();
+
+      endFade(root);
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores a second close while the fade-out runs', async () => {
+      const handler = vi.fn();
+      const { root } = await render(
+        <mud-toast closable onMudClose={handler}>
+          Mesaj
+        </mud-toast>,
+      );
+
+      queryClose(root)?.click();
+      queryClose(root)?.click();
+      await flush();
+      endFade(root);
+      endFade(root);
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('emits mudClose from the fallback timer when animationend never arrives', async () => {
+      const handler = vi.fn();
+      const { root } = await render(
+        <mud-toast closable onMudClose={handler}>
+          Mesaj
+        </mud-toast>,
+      );
+
+      queryClose(root)?.click();
+      await new Promise<void>(resolve => setTimeout(resolve, TOAST_DISMISS_FALLBACK_MS + 50));
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('emits mudClose at once under prefers-reduced-motion', async () => {
+      const original = window.matchMedia;
+      window.matchMedia = ((query: string) => ({
+        matches: query.includes('reduce'),
+      })) as unknown as typeof window.matchMedia;
+      try {
+        const handler = vi.fn();
+        const { root } = await render(
+          <mud-toast closable onMudClose={handler}>
+            Mesaj
+          </mud-toast>,
+        );
+
+        queryClose(root)?.click();
+        await flush();
+        expect(handler).toHaveBeenCalledTimes(1);
+        expect(root?.classList.contains('is-dismissing')).toBe(false);
+      } finally {
+        window.matchMedia = original;
+      }
+    });
+
+    it('drops a pending close when the toast is removed mid-fade', async () => {
+      const handler = vi.fn();
+      const { root } = await render(
+        <mud-toast closable onMudClose={handler}>
+          Mesaj
+        </mud-toast>,
+      );
+
+      queryClose(root)?.click();
+      root?.remove();
+      await new Promise<void>(resolve => setTimeout(resolve, TOAST_DISMISS_FALLBACK_MS + 50));
       expect(handler).not.toHaveBeenCalled();
     });
 

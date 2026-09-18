@@ -26,10 +26,18 @@
   font-weight: var(--toast-body-font-weight);
 
   /* Appearance: slide down from slightly above + fade in (Figma Behavior panel).
-     Plays once on mount; the dismiss/exit transition stays consumer-owned since
-     the atom cannot defer its own DOM removal. Disabled under reduced-motion. */
+     Plays once on mount. Disabled under reduced-motion. */
   animation: toast-appear var(--toast-container-appearance-duration) var(--toast-container-transition-timing-function)
     both;
+}
+
+/* Dismissal: fade out in place, no movement (Figma Behavior › dismissal,
+   567:28546). `mudClose` fires when it ends; the consumer then removes the
+   toast. */
+:host(.is-dismissing) {
+  pointer-events: none;
+  animation: toast-dismiss var(--toast-container-dismiss-duration) var(--toast-container-transition-timing-function)
+    forwards;
 }
 
 @keyframes toast-appear {
@@ -41,6 +49,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes toast-dismiss {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }
 
@@ -297,7 +315,8 @@
 /* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  :host {
+  :host,
+  :host(.is-dismissing) {
     animation: none;
   }
 }

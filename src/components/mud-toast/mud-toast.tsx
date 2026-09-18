@@ -1,8 +1,8 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS } from './mud-toast.types';
+import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS, TOAST_DISMISS_FALLBACK_MS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
 
 /**
@@ -15,7 +15,8 @@ import type { ToastVariant } from './mud-toast.types';
  *
  * Placement, vertical stacking and auto-dismiss are the consumer's
  * responsibility — this atom is just the surface. Its entrance animation
- * (slide-down + fade-in) plays once on mount.
+ * (slide-down + fade-in) plays once on mount; closing it fades it out in
+ * place before `mudClose` fires (Figma Behavior › dismissal).
  *
  * Pattern B (atom-display + interactive close): the close affordance lives
  * inside shadow DOM so it participates in tab order with a real
@@ -88,17 +89,32 @@ export class MudToast {
 
   @State() private hasIconStart: boolean = false;
   @State() private hasActions: boolean = false;
+  @State() private dismissing: boolean = false;
 
   @Element() host!: HTMLMudToastElement;
 
   /**
-   * Fires when the user activates the close button. Payload is `void` —
-   * the consumer is responsible for the dismiss animation / DOM removal.
+   * Fires once the close fade-out has finished (at once under
+   * `prefers-reduced-motion`). Payload is `void` — the consumer removes the
+   * toast from the DOM.
    */
   @Event() mudClose!: EventEmitter<void>;
 
+  private dismissTimer?: ReturnType<typeof setTimeout>;
+
+  /** Ends the close fade-out; the entrance animation ends here too and is ignored. */
+  @Listen('animationend')
+  onAnimationEnd(ev: AnimationEvent): void {
+    if (ev.animationName === 'toast-dismiss') this.finishDismiss();
+  }
+
   componentWillLoad(): void {
     this.detectSlots();
+  }
+
+  disconnectedCallback(): void {
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = undefined;
   }
 
   private detectSlots(): void {
@@ -129,15 +145,35 @@ export class MudToast {
 
   private handleCloseClick = (ev: MouseEvent) => {
     ev.stopPropagation();
-    this.mudClose.emit();
+    this.dismiss();
   };
 
   private handleCloseKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === 'Enter' || ev.key === ' ') {
       ev.preventDefault();
       ev.stopPropagation();
-      this.mudClose.emit();
+      this.dismiss();
     }
+  };
+
+  /** Fades the toast out, then emits `mudClose`; a second close is ignored. */
+  private dismiss(): void {
+    if (this.dismissing) return;
+    const reduceMotion =
+      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      this.mudClose.emit();
+      return;
+    }
+    this.dismissing = true;
+    this.dismissTimer = setTimeout(this.finishDismiss, TOAST_DISMISS_FALLBACK_MS);
+  }
+
+  private finishDismiss = () => {
+    if (this.dismissTimer === undefined) return;
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = undefined;
+    this.mudClose.emit();
   };
 
   private resolveIconName(): IconName {
@@ -163,6 +199,7 @@ export class MudToast {
       'has-actions': this.hasActions,
       'has-title': !!(this.titleText && this.titleText.trim().length > 0),
       'is-closable': this.closable,
+      'is-dismissing': this.dismissing,
     };
 
     return (

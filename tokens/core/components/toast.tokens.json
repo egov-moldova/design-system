@@ -25,6 +25,11 @@
         "$value": "250ms",
         "$type": "duration",
         "$comment": "Entrance animation (slide-down + fade-in) per the Figma Behavior panel."
+      },
+      "dismissDuration": {
+        "$value": "250ms",
+        "$type": "duration",
+        "$comment": "Close fade-out, in place (Figma Behavior › dismissal, 567:28546). Figma gives no duration; it mirrors the entrance."
       }
     },
     "icon": {
