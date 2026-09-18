@@ -48,6 +48,7 @@ import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+import { TimePickerChangeDetail } from "./components/mud-time-picker/mud-time-picker.types";
 import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
@@ -93,6 +94,7 @@ export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+export { TimePickerChangeDetail } from "./components/mud-time-picker/mud-time-picker.types";
 export { ToastVariant } from "./components/mud-toast/mud-toast.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
@@ -3420,6 +3422,47 @@ export namespace Components {
         "variant": TextareaVariant;
     }
     /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes; picking a minute completes the time and fires
+     * `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface MudTimePicker {
+        /**
+          * Accessible name of the hour column.
+          * @default 'Ore'
+         */
+        "hoursLabel": string;
+        /**
+          * Accessible name of the picker.
+          * @default 'Selectează ora'
+         */
+        "label": string;
+        /**
+          * Latest selectable time, `HH:MM` inclusive.
+         */
+        "max"?: string;
+        /**
+          * Earliest selectable time, `HH:MM` inclusive.
+         */
+        "min"?: string;
+        /**
+          * Accessible name of the minute column.
+          * @default 'Minute'
+         */
+        "minutesLabel": string;
+        /**
+          * Selected time, `HH:MM` (24-hour). Updated when a time is completed.
+         */
+        "value"?: string;
+    }
+    /**
      * Toast — semantic toast message (350px filled surface, 8px radius).
      * Matches the Figma `toast` component (page "Messaging (Notification)"):
      * a leading icon, an optional bold heading, the message body (default slot),
@@ -3717,6 +3760,10 @@ export interface MudTextInputCustomEvent<T> extends CustomEvent<T> {
 export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTextareaElement;
+}
+export interface MudTimePickerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudTimePickerElement;
 }
 export interface MudToastCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -5254,6 +5301,35 @@ declare global {
         prototype: HTMLMudTextareaElement;
         new (): HTMLMudTextareaElement;
     };
+    interface HTMLMudTimePickerElementEventMap {
+        "mudChange": TimePickerChangeDetail;
+    }
+    /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes; picking a minute completes the time and fires
+     * `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface HTMLMudTimePickerElement extends Components.MudTimePicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTimePickerElementEventMap>(type: K, listener: (this: HTMLMudTimePickerElement, ev: MudTimePickerCustomEvent<HTMLMudTimePickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTimePickerElementEventMap>(type: K, listener: (this: HTMLMudTimePickerElement, ev: MudTimePickerCustomEvent<HTMLMudTimePickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudTimePickerElement: {
+        prototype: HTMLMudTimePickerElement;
+        new (): HTMLMudTimePickerElement;
+    };
     interface HTMLMudToastElementEventMap {
         "mudClose": void;
     }
@@ -5377,6 +5453,7 @@ declare global {
         "mud-tag": HTMLMudTagElement;
         "mud-text-input": HTMLMudTextInputElement;
         "mud-textarea": HTMLMudTextareaElement;
+        "mud-time-picker": HTMLMudTimePickerElement;
         "mud-toast": HTMLMudToastElement;
         "mud-tooltip": HTMLMudTooltipElement;
     }
@@ -9176,6 +9253,51 @@ declare namespace LocalJSX {
         "variant"?: TextareaVariant;
     }
     /**
+     * Time picker — an hour column and a minute column, the dropdown of
+     * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+     * The selected value of the column being edited is solid (`.day-cell` Active);
+     * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+     * hour moves on to the minutes; picking a minute completes the time and fires
+     * `mudChange`.
+     * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+     * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+     * Space picks the focused option.
+     * @element mud-time-picker
+     */
+    interface MudTimePicker {
+        /**
+          * Accessible name of the hour column.
+          * @default 'Ore'
+         */
+        "hoursLabel"?: string;
+        /**
+          * Accessible name of the picker.
+          * @default 'Selectează ora'
+         */
+        "label"?: string;
+        /**
+          * Latest selectable time, `HH:MM` inclusive.
+         */
+        "max"?: string;
+        /**
+          * Earliest selectable time, `HH:MM` inclusive.
+         */
+        "min"?: string;
+        /**
+          * Accessible name of the minute column.
+          * @default 'Minute'
+         */
+        "minutesLabel"?: string;
+        /**
+          * Fires when a time is complete — a minute is picked while an hour is set.
+         */
+        "onMudChange"?: (event: MudTimePickerCustomEvent<TimePickerChangeDetail>) => void;
+        /**
+          * Selected time, `HH:MM` (24-hour). Updated when a time is completed.
+         */
+        "value"?: string;
+    }
+    /**
      * Toast — semantic toast message (350px filled surface, 8px radius).
      * Matches the Figma `toast` component (page "Messaging (Notification)"):
      * a leading icon, an optional bold heading, the message body (default slot),
@@ -9958,6 +10080,14 @@ declare namespace LocalJSX {
         "showCounter": boolean;
         "ariaLabel": string;
     }
+    interface MudTimePickerAttributes {
+        "value": string;
+        "min": string;
+        "max": string;
+        "label": string;
+        "hoursLabel": string;
+        "minutesLabel": string;
+    }
     interface MudToastAttributes {
         "variant": ToastVariant;
         "closable": boolean;
@@ -10038,6 +10168,7 @@ declare namespace LocalJSX {
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
         "mud-text-input": Omit<MudTextInput, keyof MudTextInputAttributes> & { [K in keyof MudTextInput & keyof MudTextInputAttributes]?: MudTextInput[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `attr:${K}`]?: MudTextInputAttributes[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `prop:${K}`]?: MudTextInput[K] };
         "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
+        "mud-time-picker": Omit<MudTimePicker, keyof MudTimePickerAttributes> & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes]?: MudTimePicker[K] } & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes as `attr:${K}`]?: MudTimePickerAttributes[K] } & { [K in keyof MudTimePicker & keyof MudTimePickerAttributes as `prop:${K}`]?: MudTimePicker[K] };
         "mud-toast": Omit<MudToast, keyof MudToastAttributes> & { [K in keyof MudToast & keyof MudToastAttributes]?: MudToast[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `attr:${K}`]?: MudToastAttributes[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `prop:${K}`]?: MudToast[K] };
         "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
@@ -10799,6 +10930,19 @@ declare module "@stencil/core" {
              * @element mud-textarea
              */
             "mud-textarea": LocalJSX.IntrinsicElements["mud-textarea"] & JSXBase.HTMLAttributes<HTMLMudTextareaElement>;
+            /**
+             * Time picker — an hour column and a minute column, the dropdown of
+             * `mud-time-input` (Figma Time frame 13807:8471, dropdown 13810:9450).
+             * The selected value of the column being edited is solid (`.day-cell` Active);
+             * the other column's selected value is tinted (`.day-cell` Middle). Picking an
+             * hour moves on to the minutes; picking a minute completes the time and fires
+             * `mudChange`.
+             * Keyboard: each column is a listbox with one tab stop. Up / Down move within a
+             * column, Home / End jump to its ends, Left / Right switch columns, Enter or
+             * Space picks the focused option.
+             * @element mud-time-picker
+             */
+            "mud-time-picker": LocalJSX.IntrinsicElements["mud-time-picker"] & JSXBase.HTMLAttributes<HTMLMudTimePickerElement>;
             /**
              * Toast — semantic toast message (350px filled surface, 8px radius).
              * Matches the Figma `toast` component (page "Messaging (Notification)"):
