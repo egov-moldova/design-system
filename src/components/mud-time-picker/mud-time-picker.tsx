@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, h, readTask, writeTask } from '@stencil/core';
 
 import type { TimePickerChangeDetail, TimePickerColumn } from './mud-time-picker.types';
 
@@ -60,10 +60,10 @@ export class MudTimePicker {
   @Prop() label: string = 'Selectează ora';
 
   /** Accessible name of the hour column. */
-  @Prop({ attribute: 'hours-label' }) hoursLabel: string = 'Ore';
+  @Prop() hoursLabel: string = 'Ore';
 
   /** Accessible name of the minute column. */
-  @Prop({ attribute: 'minutes-label' }) minutesLabel: string = 'Minute';
+  @Prop() minutesLabel: string = 'Minute';
 
   @State() private hours: number | null = null;
   @State() private minutes: number | null = null;
@@ -87,10 +87,39 @@ export class MudTimePicker {
     this.minutes = time?.minutes ?? null;
   }
 
-  @Listen('keydown')
-  handleKeyDown(ev: KeyboardEvent): void {
-    // A host listener sees the event retargeted to the host; the option is the
-    // first node of the composed path.
+  componentWillLoad() {
+    this.syncFromValue();
+  }
+
+  componentDidLoad() {
+    // Open with each selected value at the top of its column, as in Figma:
+    // measure first, then scroll, in batched DOM phases.
+    readTask(() => {
+      const offsets = (['hours', 'minutes'] as const).map(
+        column => [column, this.topOffset(column, column === 'hours' ? this.hours : this.minutes)] as const,
+      );
+      writeTask(() => {
+        for (const [column, offset] of offsets) {
+          const list = this.columnElement(column);
+          if (list && offset !== null) list.scrollTop = offset;
+        }
+      });
+    });
+  }
+
+  componentDidRender() {
+    if (!this.focusColumnOnRender) return;
+    const column = this.focusColumnOnRender;
+    this.focusColumnOnRender = null;
+    const option = this.host.shadowRoot?.querySelector<HTMLElement>(
+      `[role="option"][data-column="${column}"][tabindex="0"]`,
+    );
+    option?.focus();
+    option?.scrollIntoView?.({ block: 'nearest' });
+  }
+
+  /** Keyboard in a column; bound on each listbox, so the option is the event's first target. */
+  private handleKeyDown = (ev: KeyboardEvent): void => {
     const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
     const option = target?.closest?.('[role="option"]') as HTMLElement | null;
     if (!option) return;
@@ -127,28 +156,7 @@ export class MudTimePicker {
         this.pick(column, current);
         return;
     }
-  }
-
-  componentWillLoad() {
-    this.syncFromValue();
-  }
-
-  componentDidLoad() {
-    // Open with each selected value at the top of its column, as in Figma.
-    this.scrollToTop('hours', this.hours);
-    this.scrollToTop('minutes', this.minutes);
-  }
-
-  componentDidRender() {
-    if (!this.focusColumnOnRender) return;
-    const column = this.focusColumnOnRender;
-    this.focusColumnOnRender = null;
-    const option = this.host.shadowRoot?.querySelector<HTMLElement>(
-      `[role="option"][data-column="${column}"][tabindex="0"]`,
-    );
-    option?.focus();
-    option?.scrollIntoView?.({ block: 'nearest' });
-  }
+  };
 
   private options(column: TimePickerColumn): number[] {
     return column === 'hours' ? HOURS : MINUTES;
@@ -232,12 +240,17 @@ export class MudTimePicker {
     this.mudChange.emit({ value, hours: this.hours, minutes: n });
   }
 
-  private scrollToTop(column: TimePickerColumn, n: number | null) {
-    if (n === null) return;
-    const list = this.host.shadowRoot?.querySelector<HTMLElement>(`.column[data-column="${column}"]`);
+  private columnElement(column: TimePickerColumn): HTMLElement | null {
+    return this.host.shadowRoot?.querySelector<HTMLElement>(`.column[data-column="${column}"]`) ?? null;
+  }
+
+  /** Scroll offset that puts option `n` at the top of its column, or `null` when there is none. */
+  private topOffset(column: TimePickerColumn, n: number | null): number | null {
+    if (n === null) return null;
+    const list = this.columnElement(column);
     const option = list?.querySelector<HTMLElement>(`[role="option"][data-value="${n}"]`);
-    if (!list || !option) return;
-    list.scrollTop = option.offsetTop - list.offsetTop - parseFloat(getComputedStyle(list).paddingTop || '0');
+    if (!list || !option) return null;
+    return option.offsetTop - list.offsetTop - parseFloat(getComputedStyle(list).paddingTop || '0');
   }
 
   private renderColumn(column: TimePickerColumn) {
@@ -251,6 +264,7 @@ export class MudTimePicker {
         role="listbox"
         aria-label={column === 'hours' ? this.hoursLabel : this.minutesLabel}
         data-column={column}
+        onKeyDown={this.handleKeyDown}
       >
         {this.options(column).map(n => {
           const isSelected = n === selected;
