@@ -64,7 +64,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'The dropdown of the Figma Time frame (13810:9450). The selected value of the column being edited is solid; the other column’s selected value is tinted. Picking an hour moves on to the minutes; picking a minute fires `mudChange` with the complete time. Each column is a listbox with one tab stop — Up / Down, Home / End, Left / Right between columns, Enter or Space to pick.',
+          'The dropdown of the Figma Time frame (13810:9450). The selected value of the column being edited is solid; the other column’s selected value is tinted. Picking an hour moves on to the minutes while no minute is chosen, and stays on the hour when one is; picking a minute fires `mudChange` with the complete time. Each column is a listbox with one tab stop — Up / Down, Home / End, Left / Right between columns, Enter or Space to pick.',
       },
       source: {
         type: 'dynamic',

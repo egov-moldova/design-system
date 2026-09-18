@@ -97,15 +97,34 @@ describe('mud-time-picker', () => {
   });
 
   describe('picking', () => {
-    it('picking an hour moves on to the minutes without firing mudChange', async () => {
+    it('picking an hour with no minute yet moves on to the minutes without firing mudChange', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-time-picker value="11:15" onMudChange={onChange}></mud-time-picker>);
+      const { root } = await render(<mud-time-picker onMudChange={onChange}></mud-time-picker>);
       queryOption(root, 'hours', 13)?.click();
       await flush();
       expect(onChange).not.toHaveBeenCalled();
       expect(queryOption(root, 'hours', 13)?.classList.contains('is-selected')).toBe(true);
       expect(queryOption(root, 'hours', 13)?.classList.contains('is-active')).toBe(false);
-      expect(queryOption(root, 'minutes', 15)?.classList.contains('is-active')).toBe(true);
+      expect(queryColumn(root, 'minutes')?.classList.contains('is-active')).toBe(true);
+    });
+
+    it('re-picking the hour of a complete time stays on that hour', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(<mud-time-picker value="05:08" onMudChange={onChange}></mud-time-picker>);
+      // mock-doc keeps no activeElement: record which element focus() was called on.
+      const focus = vi.spyOn(Object.getPrototypeOf(queryOption(root, 'hours', 7)) as HTMLElement, 'focus');
+      queryOption(root, 'hours', 7)?.click();
+      await flush();
+      expect(onChange).not.toHaveBeenCalled();
+      expect(queryOption(root, 'hours', 7)?.classList.contains('is-active')).toBe(true);
+      expect(queryOption(root, 'minutes', 8)?.classList.contains('is-active')).toBe(false);
+      expect(queryOption(root, 'minutes', 8)?.classList.contains('is-selected')).toBe(true);
+      expect(focus).not.toHaveBeenCalled();
+      focus.mockRestore();
+      // The minute still completes the time.
+      queryOption(root, 'minutes', 8)?.click();
+      await flush();
+      expect(onChange.mock.calls[0][0].detail.value).toBe('07:08');
     });
 
     it('picking a minute completes the time and fires mudChange', async () => {
