@@ -122,9 +122,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#444444",
-            "boxShadow": "inset 0px 0px 0px 1px #444444"
+            "boxShadow": "none"
           },
-          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -193,9 +193,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#0058D2",
-            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+            "boxShadow": "0px 0px 0px 4px #CCDEF6"
           },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -471,9 +471,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#D92D20",
-            "boxShadow": "inset 0px 0px 0px 1px #D92D20"
+            "boxShadow": "none"
           },
-          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -542,9 +542,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#D92D20",
-            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+            "boxShadow": "0px 0px 0px 4px #FECDC9"
           },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -821,9 +821,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#444444",
-            "boxShadow": "inset 0px 0px 0px 1px #444444"
+            "boxShadow": "none"
           },
-          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -892,9 +892,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#0058D2",
-            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+            "boxShadow": "0px 0px 0px 4px #CCDEF6"
           },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -1173,9 +1173,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#D92D20",
-            "boxShadow": "inset 0px 0px 0px 1px #D92D20"
+            "boxShadow": "none"
           },
-          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke → 1px border + 1px inset shadow (keeps the box size of the 1px rest state). Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -1244,9 +1244,9 @@
             "borderTopLeftRadius": "8px",
             "backgroundColor": "#FFFFFF",
             "borderTopColor": "#D92D20",
-            "boxShadow": "inset 0px 0px 0px 1px #D92D20, 0px 0px 0px 4px #FECDC9"
+            "boxShadow": "0px 0px 0px 4px #FECDC9"
           },
-          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge."
+          "note": "Figma 2px stroke + Focus Ring/Large → 1px border + 1px inset shadow + 0 0 0 4px ring. Figma padding 16 / 12px with an inside stroke → CSS padding minus the 1px border, so content still starts 16 / 12px from the outer edge. #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input .native",
@@ -1484,9 +1484,9 @@
           "node": "13810:9449",
           "styles": {
             "borderTopColor": "#0058D2",
-            "boxShadow": "inset 0px 0px 0px 1px #0058D2, 0px 0px 0px 4px #CCDEF6"
+            "boxShadow": "0px 0px 0px 4px #CCDEF6"
           },
-          "note": "The field is drawn focused while its picker is open (13810:9449, State=Focus)."
+          "note": "The field is drawn focused while its picker is open (13810:9449, State=Focus). #90 moved the inset emphasis ring (Figma's 2px border) onto .control::after so an autofill fill cannot clip it; .control keeps only the outer focus ring. The script reads no pseudo-elements, so the inset ring is covered by the pixel diff."
         },
         {
           "target": "mud-time-input mud-time-picker",
