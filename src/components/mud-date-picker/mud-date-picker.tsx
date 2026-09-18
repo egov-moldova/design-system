@@ -1,12 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
-import {
-  DATE_PICKER_BREAKPOINTS,
-  DATE_PICKER_HEADER_STYLES,
-  DATE_PICKER_MODES,
-  DATE_PICKER_VIEWS,
-} from './mud-date-picker.types';
+import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type {
   DatePickerBreakpoint,
   DatePickerChangeDetail,
@@ -200,29 +195,6 @@ export class MudDatePicker {
   /** Where picking a year from the year chip leads back to: the view the chip was in. */
   private yearChipReturn: DatePickerView = 'days';
 
-  componentWillLoad() {
-    this.captureAriaLabel();
-    this.syncViewFromValue();
-    this.todayIso = toIso(new Date());
-  }
-
-  componentDidRender() {
-    const selector = this.focusOnRender;
-    if (!selector) return;
-    this.focusOnRender = null;
-    this.host.shadowRoot?.querySelector<HTMLElement>(selector)?.focus();
-  }
-
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.label && this.label.length > 0) {
-      this.resolvedAriaLabel = this.label;
-    }
-  }
-
   @Watch('label')
   syncLabel(next?: string): void {
     if (next && next.length > 0) this.resolvedAriaLabel = next;
@@ -277,6 +249,51 @@ export class MudDatePicker {
   @Watch('viewDate')
   handleViewDateChange() {
     this.syncViewFromValue();
+  }
+
+  @Listen('keydown')
+  handleHostKeyDown(ev: KeyboardEvent) {
+    // A host listener sees `ev.target` retargeted to the host; the day cell is
+    // the first node of the composed path.
+    const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
+    // Escape backs out of the month / year view first; only the day view lets
+    // it through to a host popover (mud-date-input closes on it).
+    if (ev.key === 'Escape' && this.view !== 'days') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      // Back to the control that opened the view: the chip, or the title.
+      const chip = this.view === 'months' ? 'month-dropdown' : 'year-dropdown';
+      this.switchView('days', this.headerStyle === 'dropdown' ? `[part="${chip}"]` : 'button.title');
+      return;
+    }
+    const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
+    if (!dayCell) return;
+    const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;
+    if (!iso) return;
+    this.handleDayKeyDown(ev, iso);
+  }
+
+  componentWillLoad() {
+    this.captureAriaLabel();
+    this.syncViewFromValue();
+    this.todayIso = toIso(new Date());
+  }
+
+  componentDidRender() {
+    const selector = this.focusOnRender;
+    if (!selector) return;
+    this.focusOnRender = null;
+    this.host.shadowRoot?.querySelector<HTMLElement>(selector)?.focus();
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
   }
 
   /** Move the visible month to whatever the selection (or today) implies. */
@@ -452,28 +469,6 @@ export class MudDatePicker {
       const node = this.host.shadowRoot?.querySelector<HTMLButtonElement>(`button.day-cell[data-iso="${iso}"]`);
       node?.focus();
     });
-  }
-
-  @Listen('keydown')
-  handleHostKeyDown(ev: KeyboardEvent) {
-    // A host listener sees `ev.target` retargeted to the host; the day cell is
-    // the first node of the composed path.
-    const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
-    // Escape backs out of the month / year view first; only the day view lets
-    // it through to a host popover (mud-date-input closes on it).
-    if (ev.key === 'Escape' && this.view !== 'days') {
-      ev.preventDefault();
-      ev.stopPropagation();
-      // Back to the control that opened the view: the chip, or the title.
-      const chip = this.view === 'months' ? 'month-dropdown' : 'year-dropdown';
-      this.switchView('days', this.headerStyle === 'dropdown' ? `[part="${chip}"]` : 'button.title');
-      return;
-    }
-    const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
-    if (!dayCell) return;
-    const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;
-    if (!iso) return;
-    this.handleDayKeyDown(ev, iso);
   }
 
   private handleDayKeyDown = (ev: KeyboardEvent, iso: string) => {
@@ -682,7 +677,7 @@ export class MudDatePicker {
     return (
       <div class="row day-labels" role="row" part="day-labels">
         {labels.map(label => (
-          <div class="day-label" role="columnheader" aria-label={label.long} part="day-label">
+          <div key={label.long} class="day-label" role="columnheader" aria-label={label.long} part="day-label">
             <span aria-hidden="true">{this.capitalize(label.short)}</span>
             <span class="visually-hidden">{label.long}</span>
           </div>
@@ -701,7 +696,7 @@ export class MudDatePicker {
       <div class="day-grid" role="grid" aria-labelledby={this.titleId} part="day-grid">
         {this.renderDayLabels()}
         {rows.map(row => (
-          <div class="row" role="row">
+          <div key={row[0].iso} class="row" role="row">
             {row.map(cell => {
               const isToday = cell.iso === today;
               const isSelected = this.isSelected(cell.iso);
@@ -723,6 +718,7 @@ export class MudDatePicker {
               const tabIndex = cell.iso === tabStop ? 0 : -1;
               return (
                 <button
+                  key={cell.iso}
                   type="button"
                   class={classes}
                   part="day-cell"
@@ -833,7 +829,6 @@ export class MudDatePicker {
   }
 
   render() {
-    if (!DATE_PICKER_VIEWS.includes(this.view)) this.view = 'days';
     const hostClasses = {
       [`mode-${this.mode}`]: true,
       [`breakpoint-${this.breakpoint}`]: true,
