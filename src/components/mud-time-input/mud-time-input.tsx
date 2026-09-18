@@ -120,13 +120,13 @@ export class MudTimeInput {
   @Prop() label?: string;
 
   /** Plain-text helper / hint shown below the control. */
-  @Prop({ attribute: 'helper-text' }) helperText?: string;
+  @Prop() helperText?: string;
 
   /**
    * Plain-text error message shown below the control when `invalid` is set.
    * When present it replaces `helperText` and pairs with the error icon.
    */
-  @Prop({ attribute: 'error-text' }) errorText?: string;
+  @Prop() errorText?: string;
 
   /** Placeholder shown when the control is empty. Defaults to `HH:MM`. */
   @Prop() placeholder?: string;
@@ -139,28 +139,28 @@ export class MudTimeInput {
   @Prop({ reflect: true }) clearable: boolean = false;
 
   /** Accessible label for the clear (×) button. */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+  @Prop() clearLabel: string = 'Șterge';
 
   /** Accessible label for the clock button that opens the picker. */
-  @Prop({ attribute: 'trigger-label' }) triggerLabel: string = 'Deschide selectorul de oră';
+  @Prop() triggerLabel: string = 'Deschide selectorul de oră';
 
   /** Accessible name of the picker dialog. */
-  @Prop({ attribute: 'picker-label' }) pickerLabel: string = 'Selectează ora';
+  @Prop() pickerLabel: string = 'Selectează ora';
 
   /** Message shown when a complete hour segment is outside 00–23. */
-  @Prop({ attribute: 'hour-error-text' }) hourErrorText: string = 'Ora trebuie să fie între 00 și 23';
+  @Prop() hourErrorText: string = 'Ora trebuie să fie între 00 și 23';
 
   /** Message shown when a complete minute segment is outside 00–59. */
-  @Prop({ attribute: 'minute-error-text' }) minuteErrorText: string = 'Minutele trebuie să fie între 00 și 59';
+  @Prop() minuteErrorText: string = 'Minutele trebuie să fie între 00 și 59';
 
   /** Message shown when a complete time is outside `min` / `max`. */
-  @Prop({ attribute: 'range-error-text' }) rangeErrorText: string = 'Ora este în afara intervalului permis';
+  @Prop() rangeErrorText: string = 'Ora este în afara intervalului permis';
 
   /**
    * Message shown when a `required` field is empty and a form submit found it
    * so. The same text is the form's validation message.
    */
-  @Prop({ attribute: 'required-error-text' }) requiredErrorText: string = 'Introduceți ora';
+  @Prop() requiredErrorText: string = 'Introduceți ora';
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
