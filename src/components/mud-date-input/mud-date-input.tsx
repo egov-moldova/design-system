@@ -186,13 +186,13 @@ export class MudDateInput {
   @Prop() label?: string;
 
   /** Plain-text helper / hint shown below the control. */
-  @Prop({ attribute: 'helper-text' }) helperText?: string;
+  @Prop() helperText?: string;
 
   /**
    * Plain-text error message shown below the control when `invalid` is set.
    * When present it replaces `helperText` and pairs with the error icon.
    */
-  @Prop({ attribute: 'error-text' }) errorText?: string;
+  @Prop() errorText?: string;
 
   /**
    * Placeholder shown when the control is empty. Defaults to the format
@@ -204,7 +204,7 @@ export class MudDateInput {
    * Accessible name. Mirrors to the internal control's `aria-label` when no
    * visible label is present.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   /**
    * Shows a trailing clear (×) button while the field holds a value, wiping the
@@ -216,35 +216,34 @@ export class MudDateInput {
   @Prop({ reflect: true }) clearable: boolean = false;
 
   /** Accessible label for the clear (×) button. */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+  @Prop() clearLabel: string = 'Șterge';
 
   /** Accessible name of the calendar dialog. */
-  @Prop({ attribute: 'picker-label' }) pickerLabel: string = 'Selectează data';
+  @Prop() pickerLabel: string = 'Selectează data';
 
   /** Message shown when a complete day segment is outside 01–31. */
-  @Prop({ attribute: 'day-error-text' }) dayErrorText: string = 'Ziua trebuie să fie între 01 și 31';
+  @Prop() dayErrorText: string = 'Ziua trebuie să fie între 01 și 31';
 
   /** Message shown when a complete month segment is outside 01–12. */
-  @Prop({ attribute: 'month-error-text' }) monthErrorText: string = 'Luna trebuie să fie între 01 și 12';
+  @Prop() monthErrorText: string = 'Luna trebuie să fie între 01 și 12';
 
   /** Message shown when a complete year is outside the allowed years. */
-  @Prop({ attribute: 'year-error-text' }) yearErrorText: string = 'Introduceți un an valid';
+  @Prop() yearErrorText: string = 'Introduceți un an valid';
 
   /** Message shown when a complete date does not exist (e.g. `31/02/2025`). */
-  @Prop({ attribute: 'date-error-text' }) dateErrorText: string = 'Introduceți o dată validă';
+  @Prop() dateErrorText: string = 'Introduceți o dată validă';
 
   /** Message shown when a complete date is outside `min` / `max`. */
-  @Prop({ attribute: 'range-error-text' }) rangeErrorText: string = 'Data este în afara intervalului permis';
+  @Prop() rangeErrorText: string = 'Data este în afara intervalului permis';
 
   /** `type="date-range"`: message shown when the end date is before the start date. */
-  @Prop({ attribute: 'order-error-text' }) orderErrorText: string =
-    'Data de sfârșit trebuie să fie după data de început';
+  @Prop() orderErrorText: string = 'Data de sfârșit trebuie să fie după data de început';
 
   /**
    * Message shown when a `required` field is empty and a form submit found it
    * so. The same text is the form's validation message.
    */
-  @Prop({ attribute: 'required-error-text' }) requiredErrorText: string = 'Introduceți data';
+  @Prop() requiredErrorText: string = 'Introduceți data';
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -297,37 +296,6 @@ export class MudDateInput {
   private handleViewportChange = (ev: MediaQueryListEvent | MediaQueryList) => {
     this.isMobileViewport = ev.matches;
   };
-
-  connectedCallback() {
-    // Resolve the `auto` breakpoint from the viewport and keep it in sync.
-    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-      this.mql = window.matchMedia(MOBILE_VIEWPORT_QUERY);
-      this.isMobileViewport = this.mql.matches;
-      this.mql.addEventListener('change', this.handleViewportChange);
-    }
-  }
-
-  disconnectedCallback() {
-    this.mql?.removeEventListener('change', this.handleViewportChange);
-    this.mql = undefined;
-    this.unlockPageScroll();
-  }
-
-  componentWillLoad() {
-    this.initialValue = this.value;
-    this.internals.setFormValue(this.value, this.value);
-    this.updateValidation(this.value);
-  }
-
-  componentDidRender() {
-    if (!this.focusPickerOnRender) return;
-    const picker = this.host.shadowRoot?.querySelector('mud-date-picker');
-    if (!picker) return;
-    this.focusPickerOnRender = false;
-    picker.componentOnReady?.().then(() => {
-      picker.shadowRoot?.querySelector<HTMLButtonElement>('button.day-cell[tabindex="0"]')?.focus();
-    });
-  }
 
   @Watch('variant')
   validateVariant(next: DateInputVariant) {
@@ -389,13 +357,6 @@ export class MudDateInput {
     }
   }
 
-  /** Effective picker placement once `auto` is resolved against the viewport. */
-  private resolvedBreakpoint(): 'desktop' | 'mobile' {
-    if (this.breakpoint === 'desktop') return 'desktop';
-    if (this.breakpoint === 'mobile') return 'mobile';
-    return this.isMobileViewport ? 'mobile' : 'desktop';
-  }
-
   @Watch('value')
   handleValueChange(next: string) {
     const value = next ?? '';
@@ -426,23 +387,6 @@ export class MudDateInput {
     if (this.resolvedBreakpoint() === 'mobile') this.lockPageScroll();
     // The picker is not rendered yet; componentDidRender moves focus once it is.
     this.focusPickerOnRender = true;
-  }
-
-  formDisabledCallback(disabled: boolean) {
-    this.fieldsetDisabled = disabled;
-  }
-
-  formResetCallback() {
-    this.value = this.initialValue;
-    this.internals.setFormValue(this.initialValue, this.initialValue);
-    this.requiredShown = false;
-  }
-
-  formStateRestoreCallback(state: string | File | FormData | null) {
-    if (typeof state === 'string') {
-      this.value = state;
-      this.internals.setFormValue(state, state);
-    }
   }
 
   /**
@@ -498,6 +442,61 @@ export class MudDateInput {
     this.pickerOpen = false;
     const trigger = this.host.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
     trigger?.focus();
+  }
+
+  connectedCallback() {
+    // Resolve the `auto` breakpoint from the viewport and keep it in sync.
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      this.mql = window.matchMedia(MOBILE_VIEWPORT_QUERY);
+      this.isMobileViewport = this.mql.matches;
+      this.mql.addEventListener('change', this.handleViewportChange);
+    }
+  }
+
+  disconnectedCallback() {
+    this.mql?.removeEventListener('change', this.handleViewportChange);
+    this.mql = undefined;
+    this.unlockPageScroll();
+  }
+
+  componentWillLoad() {
+    this.initialValue = this.value;
+    this.internals.setFormValue(this.value, this.value);
+    this.updateValidation(this.value);
+  }
+
+  componentDidRender() {
+    if (!this.focusPickerOnRender) return;
+    const picker = this.host.shadowRoot?.querySelector('mud-date-picker');
+    if (!picker) return;
+    this.focusPickerOnRender = false;
+    picker.componentOnReady?.().then(() => {
+      picker.shadowRoot?.querySelector<HTMLButtonElement>('button.day-cell[tabindex="0"]')?.focus();
+    });
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled;
+  }
+
+  formResetCallback() {
+    this.value = this.initialValue;
+    this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.requiredShown = false;
+  }
+
+  formStateRestoreCallback(state: string | File | FormData | null) {
+    if (typeof state === 'string') {
+      this.value = state;
+      this.internals.setFormValue(state, state);
+    }
+  }
+
+  /** Effective picker placement once `auto` is resolved against the viewport. */
+  private resolvedBreakpoint(): 'desktop' | 'mobile' {
+    if (this.breakpoint === 'desktop') return 'desktop';
+    if (this.breakpoint === 'mobile') return 'mobile';
+    return this.isMobileViewport ? 'mobile' : 'desktop';
   }
 
   /** Whether focus is on the field, its buttons or anything in its popover. */
@@ -941,9 +940,8 @@ export class MudDateInput {
       <Host class={hostClasses}>
         <label class="label" htmlFor={`date-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -1087,9 +1085,8 @@ export class MudDateInput {
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}
