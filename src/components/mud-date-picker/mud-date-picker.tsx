@@ -192,10 +192,11 @@ export class MudDatePicker {
   private readonly titleId = `mud-date-picker-title-${this.instanceId}`;
   private todayIso = toIso(new Date());
   /**
-   * Set when a view switch removes the control that had focus (a header chip,
-   * a month / year cell); `componentDidRender` moves focus into the new view.
+   * Selector of the control to focus after the next render — set when a view
+   * switch removes the control that had focus (a header chip, a month / year
+   * cell).
    */
-  private focusViewOnRender: boolean = false;
+  private focusOnRender: string | null = null;
 
   componentWillLoad() {
     this.captureAriaLabel();
@@ -204,15 +205,10 @@ export class MudDatePicker {
   }
 
   componentDidRender() {
-    if (!this.focusViewOnRender) return;
-    this.focusViewOnRender = false;
-    const root = this.host.shadowRoot;
-    const target =
-      this.view === 'days'
-        ? root?.querySelector<HTMLButtonElement>('button.day-cell[tabindex="0"]')
-        : (root?.querySelector<HTMLButtonElement>('.picker-cell.is-selected') ??
-          root?.querySelector<HTMLButtonElement>('.picker-cell'));
-    target?.focus();
+    const selector = this.focusOnRender;
+    if (!selector) return;
+    this.focusOnRender = null;
+    this.host.shadowRoot?.querySelector<HTMLElement>(selector)?.focus();
   }
 
   private captureAriaLabel(): void {
@@ -466,7 +462,9 @@ export class MudDatePicker {
     if (ev.key === 'Escape' && this.view !== 'days') {
       ev.preventDefault();
       ev.stopPropagation();
-      this.switchView('days');
+      // Back to the control that opened the view: the chip, or the title.
+      const chip = this.view === 'months' ? 'month-dropdown' : 'year-dropdown';
+      this.switchView('days', this.headerStyle === 'dropdown' ? `[part="${chip}"]` : 'button.title');
       return;
     }
     const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
@@ -528,10 +526,27 @@ export class MudDatePicker {
     }
   };
 
-  /** Change view and move focus into it once rendered. */
-  private switchView(next: DatePickerView) {
+  /**
+   * Change view and move focus once rendered — by default into the new view:
+   * its tab-stop day, or its selected month / year (the view year and month
+   * are always in their grids).
+   */
+  private switchView(next: DatePickerView, focus?: string) {
     this.view = next;
-    this.focusViewOnRender = true;
+    this.focusOnRender = focus ?? (next === 'days' ? 'button.day-cell[tabindex="0"]' : '.picker-cell.is-selected');
+  }
+
+  /**
+   * The day holding the grid's single tab stop: the focused day, else the
+   * selection, today, or the first enabled day — whichever is first in the
+   * visible month. The grid always keeps one, or focus would fall to <body>
+   * when neither today nor a focused day is in view.
+   */
+  private dayTabStop(cells: { iso: string; outside: boolean }[]): string | null {
+    const enabled = cells.filter(cell => !cell.outside && !this.isDisabled(cell.iso)).map(cell => cell.iso);
+    const selection = this.mode === 'range' ? this.rangeStart : Array.isArray(this.value) ? this.value[0] : this.value;
+    const candidate = [this.focusedIso, selection, this.todayIso].find(iso => iso && enabled.includes(iso));
+    return candidate ?? enabled[0] ?? null;
   }
 
   /** First year of the 12-cell year grid: the decade the view year falls in (Figma 524:1858). */
@@ -657,6 +672,7 @@ export class MudDatePicker {
     const rows: { iso: string; date: Date; outside: boolean }[][] = [];
     for (let i = 0; i < 6; i++) rows.push(cells.slice(i * 7, i * 7 + 7));
     const today = this.todayIso;
+    const tabStop = this.dayTabStop(cells);
     return (
       <div class="day-grid" role="grid" aria-labelledby={this.titleId} part="day-grid">
         {this.renderDayLabels()}
@@ -670,7 +686,6 @@ export class MudDatePicker {
               // Spill-over days are inactive (Figma .day-cell Inactive 158:453);
               // the arrow keys still cross into the next month.
               const disabled = cell.outside || this.isDisabled(cell.iso);
-              const isFocused = this.focusedIso === cell.iso;
               const classes = {
                 'day-cell': true,
                 'is-outside': cell.outside,
@@ -681,7 +696,7 @@ export class MudDatePicker {
                 'range-start': endpoint === 'start',
                 'range-end': endpoint === 'end',
               };
-              const tabIndex = isFocused || (!this.focusedIso && cell.iso === today && !cell.outside) ? 0 : -1;
+              const tabIndex = cell.iso === tabStop ? 0 : -1;
               return (
                 <button
                   type="button"

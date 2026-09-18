@@ -577,6 +577,59 @@ describe('mud-date-picker', () => {
     });
   });
 
+  describe('focus', () => {
+    // mock-doc keeps no activeElement: record which element focus() was called on.
+    const spyFocus = (root: Element | null | undefined) =>
+      vi.spyOn(
+        Object.getPrototypeOf(root?.shadowRoot?.querySelector('button') as HTMLButtonElement) as HTMLElement,
+        'focus',
+      );
+    const escape = (root: Element | null | undefined, from: Element | null | undefined) => {
+      const ev = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      Object.defineProperty(ev, 'composedPath', { value: () => [from] });
+      (root as unknown as { handleHostKeyDown: (e: KeyboardEvent) => void }).handleHostKeyDown(ev);
+    };
+
+    it('keeps one tab stop in the day grid when neither today nor a focused day is in view', async () => {
+      const { root } = await render(<mud-date-picker view-date="2020-03-01"></mud-date-picker>);
+      const stops = root?.shadowRoot?.querySelectorAll('button.day-cell[tabindex="0"]');
+      expect(stops).toHaveLength(1);
+      expect(stops?.[0]?.getAttribute('data-iso')).toBe('2020-03-01');
+    });
+
+    it('puts the tab stop on the selected day', async () => {
+      const { root } = await render(<mud-date-picker value="2020-03-17"></mud-date-picker>);
+      expect(root?.shadowRoot?.querySelector('button.day-cell[tabindex="0"]')?.getAttribute('data-iso')).toBe(
+        '2020-03-17',
+      );
+    });
+
+    it('Escape from the chip-opened month view returns focus to the month chip', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="month-dropdown"]')?.click();
+      await flush();
+      const focus = spyFocus(root);
+      escape(root, root?.shadowRoot?.querySelector('.picker-cell.is-selected'));
+      await flush();
+      expect((focus.mock.contexts.at(-1) as HTMLElement | undefined)?.getAttribute('part')).toBe('month-dropdown');
+      focus.mockRestore();
+    });
+
+    it('Escape from the title-opened year view returns focus to the title', async () => {
+      const { root } = await render(<mud-date-picker value="2026-05-15"></mud-date-picker>);
+      const title = queryTitle(root);
+      title?.click();
+      await flush();
+      title?.click();
+      await flush();
+      const focus = spyFocus(root);
+      escape(root, root?.shadowRoot?.querySelector('.picker-cell.is-selected'));
+      await flush();
+      expect((focus.mock.contexts.at(-1) as HTMLElement | undefined)?.classList.contains('title')).toBe(true);
+      focus.mockRestore();
+    });
+  });
+
   describe('year view', () => {
     const openYears = async (value: string) => {
       const result = await render(<mud-date-picker value={value}></mud-date-picker>);
