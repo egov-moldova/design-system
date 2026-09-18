@@ -603,7 +603,7 @@ export class MudDatePicker {
     return (
       <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
-          <mud-icon name="chevron-left-small" size={20}></mud-icon>
+          <mud-icon name="chevron-left" size={20}></mud-icon>
         </button>
         {isYears
           ? this.renderHeaderTitle(decadeLabel(yearBase))
@@ -613,7 +613,7 @@ export class MudDatePicker {
               // (602:4076) taps to reach the year view.
               this.renderHeaderTitle(isMonths ? String(this.viewYear) : monthYear)}
         <button type="button" class="nav-button" part="nav-button" aria-label={nextAria} onClick={onNext}>
-          <mud-icon name="chevron-right-small" size={20}></mud-icon>
+          <mud-icon name="chevron-right" size={20}></mud-icon>
         </button>
       </div>
     );
