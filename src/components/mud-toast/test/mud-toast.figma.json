@@ -46,6 +46,14 @@
         },
         {
           "target": "mud-toast .icon",
+          "node": "75:416",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
+        },
+        {
+          "target": "mud-toast .icon",
           "node": "565:19942",
           "styles": {
             "paddingTop": "2px",
@@ -106,8 +114,20 @@
           "node": "75:420",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -139,6 +159,14 @@
             "columnGap": "8px",
             "alignItems": "center"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:536",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -188,8 +216,20 @@
           "node": "77:540",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -220,6 +260,14 @@
           "styles": {
             "columnGap": "8px"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "75:428",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -283,8 +331,20 @@
           "node": "75:432",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -317,6 +377,14 @@
             "columnGap": "8px",
             "alignItems": "center"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:544",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -366,8 +434,20 @@
           "node": "77:548",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -397,6 +477,14 @@
           "styles": {
             "columnGap": "8px"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:440",
+          "styles": {
+            "color": "#B54708"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -460,8 +548,20 @@
           "node": "574:30072",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#444444"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -493,6 +593,14 @@
             "columnGap": "8px",
             "alignItems": "center"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:552",
+          "styles": {
+            "color": "#B54708"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -542,8 +650,20 @@
           "node": "77:556",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#444444"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -573,6 +693,14 @@
           "styles": {
             "columnGap": "8px"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:450",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -636,8 +764,20 @@
           "node": "77:454",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -669,6 +809,14 @@
             "columnGap": "8px",
             "alignItems": "center"
           }
+        },
+        {
+          "target": "mud-toast .icon",
+          "node": "77:560",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export; the mud-icon paints currentcolor."
         },
         {
           "target": "mud-toast .icon",
@@ -718,8 +866,20 @@
           "node": "77:564",
           "styles": {
             "boxWidth": "16px",
-            "boxHeight": "16px"
-          }
+            "boxHeight": "16px",
+            "color": "#FFFFFF"
+          },
+          "note": "Glyph fill from the node's SVG export."
+        },
+        {
+          "target": "mud-toast .close",
+          "node": "578:33213",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Target Sizes section: 32×32 pointer target, no hover surface (575:32778 = default)."
         }
       ]
     },
@@ -744,6 +904,25 @@
             "color": "#FFFFFF"
           },
           "note": "Layer I564:19801;100:784;564:19464 — link Style=White, Desktop/Body/Default."
+        }
+      ]
+    },
+    {
+      "name": "warning-heading-link",
+      "node": "77:438",
+      "pixel": false,
+      "html": "<mud-toast variant=\"warning\" title-text=\"Message heading\">We inform you about service changes.<mud-link slot=\"actions\" href=\"#\" variant=\"strict\">Click here</mud-link></mud-toast>",
+      "expect": [
+        {
+          "target": "mud-toast mud-link .label",
+          "node": "100:819",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#121212"
+          },
+          "note": "Warning uses link Style=Strict (564:19585); the layer is hidden by default (👁️ Link = false), so there is no pixel reference."
         }
       ]
     },
