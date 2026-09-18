@@ -1,5 +1,5 @@
 {
-  "$comment": "Figma state manifest for mud-date-input — values copied from the date-input component set (184:823), the Input: Date / Time page (470:31393: States 470:31407, Behavior 487:7779, Validation 489:8090, Assistive Text 470:31508, Edge Cases 470:31520) and text-input/.clear-button (142:4306). Icon colours come from exported SVGs. The time-input set (13810:9195) has no component in code.",
+  "$comment": "Figma state manifest for mud-date-input — values copied from the date-input component set (184:823), the Input: Date / Time page (470:31393: States 470:31407, Behavior 487:7779, Validation 489:8090, Assistive Text 470:31508, Edge Cases 470:31520) and text-input/.clear-button (142:4306). Icon colours come from exported SVGs. The time-input set (13810:9195) has no component in code. Masks cover mock data only: the field text (Figma's Filled state reads DD/MM/YYYY and its focus caret is a '|' glyph that shifts the text) and, in the open states, the calendar title / chips (Figma's mock January); style parity still checks those elements.",
   "component": "mud-date-input",
   "figma": {
     "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
@@ -156,6 +156,7 @@
     {
       "name": "lg-focus-empty",
       "node": "487:7825",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\"></mud-date-input></div>",
       "interaction": {
         "type": "focus",
@@ -183,6 +184,7 @@
     {
       "name": "lg-focus-date-populated",
       "node": "487:7841",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/\"></mud-date-input></div>",
       "interaction": {
         "type": "focus",
@@ -205,6 +207,7 @@
     {
       "name": "lg-focus-month-populated",
       "node": "488:7864",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/\"></mud-date-input></div>",
       "interaction": {
         "type": "focus",
@@ -224,6 +227,7 @@
     {
       "name": "lg-focus-populated",
       "node": "470:31420",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
       "interaction": {
         "type": "focus",
@@ -246,6 +250,7 @@
     {
       "name": "lg-filled",
       "node": "184:854",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
       "expect": [
         {
@@ -421,6 +426,7 @@
     {
       "name": "lg-destructive-focus-populated",
       "node": "470:31443",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid value=\"15/04/2025\"></mud-date-input></div>",
       "interaction": {
         "type": "focus",
@@ -447,6 +453,7 @@
     {
       "name": "lg-destructive-filled",
       "node": "184:902",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" invalid value=\"15/04/2025\"></mud-date-input></div>",
       "expect": [
         {
@@ -613,6 +620,7 @@
     {
       "name": "md-filled",
       "node": "6173:4459",
+      "mask": ["mud-date-input .field"],
       "html": "<div style=\"width:282px\"><mud-date-input size=\"md\" label=\"Label\" value=\"15/04/2025\"></mud-date-input></div>",
       "expect": [
         {
@@ -877,8 +885,66 @@
       ]
     },
     {
+      "name": "type-default-open",
+      "node": "487:7732",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .title"],
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
+      "capture": { "selector": ".type-frame", "bleed": "auto" },
+      "expect": [
+        { "use": "control-lg-focus" },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "470:32429",
+          "styles": { "boxWidth": "320px", "rowGap": "8px", "borderTopWidth": "0px" }
+        },
+        {
+          "target": "mud-date-input mud-date-picker .title",
+          "node": "470:32429",
+          "styles": { "fontSize": "16px", "lineHeight": "24px", "fontWeight": "500", "color": "#121212" },
+          "note": "Instance node I470:32429;158:570;158:544."
+        },
+        { "target": "mud-date-input mud-date-picker [part='month-dropdown']", "absent": true },
+        { "target": "mud-date-input mud-date-picker .footer", "absent": true }
+      ],
+      "note": "Figma types 470:32035. The field reads 11/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json), and the calendar is Romanian (the field passes locale ro-RO), so the state renders December 2024."
+    },
+    {
+      "name": "type-advanced-open",
+      "node": "487:7753",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .header-dropdowns"],
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" header-style=\"dropdown\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
+      "capture": { "selector": ".type-frame", "bleed": "auto" },
+      "expect": [
+        { "use": "control-lg-focus" },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "483:5952",
+          "styles": { "boxWidth": "320px", "rowGap": "8px", "borderTopWidth": "0px" }
+        },
+        {
+          "target": "mud-date-input mud-date-picker [part='month-dropdown']",
+          "node": "483:5952",
+          "styles": { "boxHeight": "40px", "paddingLeft": "6px", "paddingRight": "4px", "borderTopLeftRadius": "4px" },
+          "note": "Instance node I483:5952;229:5115 (.picker-header Year Switcher)."
+        },
+        {
+          "target": "mud-date-input mud-date-picker .header-dropdowns",
+          "node": "483:5952",
+          "styles": { "columnGap": "0px" }
+        },
+        { "target": "mud-date-input mud-date-picker .title", "absent": true },
+        { "target": "mud-date-input mud-date-picker .footer", "absent": true }
+      ],
+      "note": "Figma types 470:32035. The field reads 11/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json), and the calendar is Romanian (the field passes locale ro-RO), so the state renders December 2024."
+    },
+    {
       "name": "date-range-open",
       "node": "487:7774",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .title"],
       "clock": "2024-12-07T10:00:00Z",
       "html": "<div class=\"range-frame\" style=\"width:320px;height:450px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" mode=\"range\" breakpoint=\"desktop\" value=\"18/12/2024 - 22/12/2024\"></mud-date-input></div></div>",
       "interaction": [{ "type": "click", "target": "mud-date-input .trailing-icon" }],
