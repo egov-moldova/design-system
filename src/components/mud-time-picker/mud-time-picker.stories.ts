@@ -106,3 +106,24 @@ export const States: Story = {
     },
   },
 };
+
+export const InTimeInput: Story = {
+  name: 'In a time input',
+  render: () => /*html*/ `
+    <div style="padding: var(--spacing-24); max-width: 282px; min-height: 420px;">
+      <mud-time-input size="lg" label="Ora programării" value="11:15"></mud-time-input>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'How the picker is usually met: `mud-time-input` opens it 8px under the field from its clock button (Figma Time frame 13810:9448). Picking a minute writes the time into the field and closes the dropdown; Escape closes it and returns focus to the clock button.',
+      },
+      source: {
+        code: '<mud-time-input size="lg" label="Ora programării" value="11:15"></mud-time-input>',
+      },
+    },
+  },
+};
