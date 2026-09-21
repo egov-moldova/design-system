@@ -1,6 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
 
 import {
@@ -148,13 +149,13 @@ export class MudTooltip {
    */
   @Prop({ reflect: true }) showArrow: boolean = true;
 
-  /**
-   * Accessible name applied to the rendered bubble. Stripped from the host
-   * after ingestion; the value is forwarded to the bubble's `aria-label`.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   @State() private resolvedPosition: TooltipResolvedPosition = 'top';
+
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), forwarded
+   * to the rendered bubble's `aria-label`.
+   */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudTooltipElement;
 
@@ -238,6 +239,11 @@ export class MudTooltip {
   private resizeHandler: (() => void) | null = null;
   private documentClickHandler: ((event: MouseEvent) => void) | null = null;
   private documentKeydownHandler: ((event: KeyboardEvent) => void) | null = null;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
 
   componentWillLoad() {
     this.tooltipId = `mud-tooltip-${++tooltipIdCounter}`;
@@ -275,6 +281,7 @@ export class MudTooltip {
   }
 
   disconnectedCallback() {
+    this.stopAriaLabel?.();
     this.clearShowTimer();
     this.clearHideTimer();
     this.detachTriggerListeners();
@@ -802,7 +809,7 @@ export class MudTooltip {
           id={this.tooltipId}
           role="tooltip"
           aria-hidden={this.open ? 'false' : 'true'}
-          aria-label={this.ariaLabel}
+          aria-label={this.resolvedAriaLabel}
         >
           <div class="content">
             <slot>{this.content}</slot>

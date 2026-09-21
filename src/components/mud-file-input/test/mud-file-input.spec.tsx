@@ -570,6 +570,7 @@ describe('mud-file-input', () => {
       const btn = innerBtn(root);
       expect(btn?.getAttribute('aria-label')).toBe('Atașează');
       expect(btn?.getAttribute('aria-labelledby')).toBeNull();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('makes the inner choose-files button untabbable when disabled', async () => {

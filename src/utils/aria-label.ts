@@ -43,3 +43,42 @@ export const observeAriaLabel = (
   observer.observe(host, { attributes: true, attributeFilter: ['aria-label'] });
   return () => observer.disconnect();
 };
+
+export interface HostAriaLabel {
+  /** Re-applies the fallback; call it when an input to the fallback changes. */
+  update(): void;
+  /** Stops observing; call it from `disconnectedCallback`. */
+  stop(): void;
+}
+
+/**
+ * Names a host that carries its role itself: the consumer's `aria-label` stays on the host and
+ * wins; while there is none, the host gets `fallback()` (removed when that returns `undefined`).
+ *
+ * The component's own fallback writes are told apart from the consumer's by value, so a consumer
+ * label equal to the current fallback is treated as the fallback.
+ */
+export const nameHostWithFallback = (host: HTMLElement, fallback: () => string | undefined): HostAriaLabel => {
+  let consumer: string | undefined;
+  let applied: string | undefined;
+
+  const update = (): void => {
+    if (consumer !== undefined) return;
+    const text = fallback();
+    applied = text;
+    if (text === undefined) host.removeAttribute('aria-label');
+    else if (host.getAttribute('aria-label') !== text) host.setAttribute('aria-label', text);
+  };
+
+  const stop = observeAriaLabel(
+    host,
+    label => {
+      if (label !== undefined && label === applied) return;
+      consumer = label;
+      update();
+    },
+    { keepOnHost: true },
+  );
+
+  return { update, stop };
+};

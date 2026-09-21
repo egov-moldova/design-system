@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+### Changed — components read the native `aria-label` instead of an `ariaLabel` prop
+
+An `ariaLabel` prop shadowed the platform's own `HTMLElement.ariaLabel`, which Stencil and its
+ESLint plugin both flag as a reserved member name. These components no longer declare it and read
+the host's native `aria-label` attribute instead: `mud-avatar`, `mud-badge`, `mud-banner`,
+`mud-checkbox`, `mud-date-input`, `mud-file-input`, `mud-icon`, `mud-input-chip`, `mud-link`,
+`mud-logo`, `mud-menu`, `mud-numeric-input`, `mud-phone-input`, `mud-radio`, `mud-search-input`,
+`mud-segmented-control`, `mud-select`, `mud-separator`, `mud-sidebar`, `mud-stepper`,
+`mud-switch`, `mud-table`, `mud-tabs`, `mud-tag`, `mud-text-input`, `mud-textarea`, `mud-toast`
+and `mud-tooltip`.
+
+Where the name belongs to an inner element (a form control, a list, a landmark), the component
+moves it there and off the host, as before, and now also follows later changes to the attribute.
+
+**Migration:** HTML using `aria-label="…"` needs no change. Setting the property
+(`el.ariaLabel = '…'`) keeps working at runtime, because the browser reflects it to the attribute.
+What changes is the typing: `ariaLabel` is gone from `components.d.ts` and from the
+`@egov-moldova/mud-react` wrappers, so TSX that passes `ariaLabel={…}` stops compiling — pass
+`aria-label={…}` instead. Once moved off the host, the attribute is no longer there, so reading
+`el.ariaLabel` back returns `null`, and a label is cleared by setting it to an empty string.
+
 ### Removed — `mud-cookie-banner` and `mud-receipt`
 
 The cookie banner and the receipt card are product-level compositions, not building blocks, so

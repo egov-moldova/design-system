@@ -103,28 +103,28 @@ describe('mud-badge', () => {
     expect(root?.getAttribute('aria-label')).toBe('Notification');
   });
 
-  it('uses the visible count as the accessible name when no ariaLabel is set', async () => {
+  it('uses the visible count as the accessible name when no aria-label is set', async () => {
     const { root } = await render(<mud-badge count={3} />);
     expect(root?.getAttribute('aria-label')).toBe('3');
   });
 
-  it('falls back to "Notification" for dot type with no ariaLabel', async () => {
+  it('falls back to "Notification" for dot type with no aria-label', async () => {
     const { root } = await render(<mud-badge type="dot" />);
     expect(root?.getAttribute('aria-label')).toBe('Notification');
   });
 
-  it('falls back to "Notification" for numbered type with no count and no ariaLabel', async () => {
+  it('falls back to "Notification" for numbered type with no count and no aria-label', async () => {
     const { root } = await render(<mud-badge type="numbered" />);
     expect(root?.getAttribute('aria-label')).toBe('Notification');
   });
 
-  it('honors a custom ariaLabel override', async () => {
-    const { root } = await render(<mud-badge count={5} ariaLabel="5 unread messages" />);
+  it('honors a custom aria-label override', async () => {
+    const { root } = await render(<mud-badge count={5} aria-label="5 unread messages" />);
     expect(root?.getAttribute('aria-label')).toBe('5 unread messages');
   });
 
   it('exposes the WCAG-required live-status contract', async () => {
-    const { root } = await render(<mud-badge count={1} ariaLabel="1 notification" />);
+    const { root } = await render(<mud-badge count={1} aria-label="1 notification" />);
 
     expect(root?.getAttribute('role')).toBe('status');
     expect(root?.getAttribute('aria-live')).toBe('polite');

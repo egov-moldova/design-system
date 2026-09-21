@@ -1,6 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 
+import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
 import type { IconName } from '../mud-icon/mud-icon.types';
 import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';
 
@@ -35,6 +36,9 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  *
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+ * Set the native `aria-label` attribute on the host for the list landmark's
+ * accessible name; it defaults to `'Progress tracker'` (English) when absent —
+ * Romanian consumers can pass `'Pași'`.
  *
  * @element mud-stepper
  *
@@ -96,12 +100,6 @@ export class MudStepper {
    */
   @Prop() currentStep?: number;
 
-  /**
-   * Accessible name for the surrounding list landmark. Falls back to
-   * `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   /** True when the container is narrower than the auto-compact breakpoint. */
   @State() private isNarrow: boolean = false;
 
@@ -115,31 +113,30 @@ export class MudStepper {
   @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<StepperStepClickDetail>;
 
   private resizeObserver?: ResizeObserver;
+  private hostLabel?: HostAriaLabel;
 
   connectedCallback() {
     // Auto-switch a horizontal tracker to the compact dot rail when its
     // container is too narrow for the labels (the Figma mobile breakpoint).
     // Vertical never needs this — stacked labels don't collide.
-    if (typeof ResizeObserver === 'undefined') return;
-    this.resizeObserver = new ResizeObserver(entries => {
-      const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
-      if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
-    });
-    this.resizeObserver.observe(this.host as unknown as Element);
-  }
-
-  componentWillLoad() {
-    // Default accessible name for the host `role="list"`. Set imperatively (not
-    // via render) so it doesn't round-trip through the `ariaLabel` prop's native
-    // attribute reflection, which would warn "changed during rendering".
-    if (!this.ariaLabel) {
-      this.host.setAttribute('aria-label', 'Progress tracker');
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(entries => {
+        const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
+        if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
+      });
+      this.resizeObserver.observe(this.host as unknown as Element);
     }
+
+    // Default accessible name for the host `role="list"`. Consumer's own
+    // `aria-label` (attribute or native `ariaLabel` property) wins and stays on
+    // the host; while there is none, the host gets the fallback.
+    this.hostLabel = nameHostWithFallback(this.host, () => 'Progress tracker');
   }
 
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    this.hostLabel?.stop();
   }
 
   /**
@@ -308,10 +305,11 @@ export class MudStepper {
     // The list semantics live on the Host so the consumer-supplied `aria-label`
     // (which lands on the host element) names a real `role="list"` — a bare
     // custom-element host with `aria-label` and no role trips axe
-    // `aria-prohibited-attr`. The default name is applied in componentWillLoad
-    // (NOT here) because re-emitting `aria-label` through the vdom collides with
-    // the native `ariaLabel` reflection ("changed during rendering"). The inner
-    // <ol> is presentational; the <li> steps keep their explicit
+    // `aria-prohibited-attr`. The name (consumer's own, or the 'Progress tracker'
+    // fallback) is applied imperatively by `nameHostWithFallback` in
+    // `connectedCallback`, NOT here — binding `aria-label` through the vdom would
+    // collide with its own attribute writes ("changed during rendering"). The
+    // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
     return (
       <Host role="list" class={{ 'is-compact': compactMode }}>

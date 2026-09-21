@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputSize, InputType, InputVariant } from './mud-text-input.types';
@@ -567,5 +568,32 @@ export const EdgeCases: Story = {
         ].join('\n'),
       },
     },
+  },
+};
+
+/**
+ * No visible label: the accessible name comes from the native `aria-label` on the host, which
+ * the component moves onto its inner input. Setting the native `ariaLabel` property later
+ * reaches the input too — the browser reflects it to the attribute.
+ */
+export const AccessibleName: Story = {
+  name: 'Accessible Name (aria-label)',
+  render: () => /*html*/ `<mud-text-input aria-label="Căutare" placeholder="Caută servicii"></mud-text-input>`,
+  parameters: {
+    controls: { disable: true },
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('mud-text-input') as HTMLElement;
+    const input = (): HTMLInputElement | null | undefined => host.shadowRoot?.querySelector('input');
+
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Căutare'));
+    await expect(host.hasAttribute('aria-label')).toBe(false);
+
+    host.ariaLabel = 'Căutare servicii';
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Căutare servicii'));
+    await expect(host.hasAttribute('aria-label')).toBe(false);
+
+    host.setAttribute('aria-label', 'Caută');
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Caută'));
   },
 };

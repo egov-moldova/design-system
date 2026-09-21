@@ -257,6 +257,7 @@ describe('mud-tabs', () => {
       expect(track?.getAttribute('role')).toBe('tablist');
       expect(track?.getAttribute('aria-label')).toBe('Cont');
       expect(track?.getAttribute('aria-orientation')).toBe('horizontal');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('each mud-tab carries role="tab" and aria-selected', async () => {

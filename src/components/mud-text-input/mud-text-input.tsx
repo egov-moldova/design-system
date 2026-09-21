@@ -128,7 +128,7 @@ export class MudTextInput {
 
   /** Native `inputmode` hint forwarded to the internal control. */
   // The rule matches names case-insensitively; `inputmode` does not shadow `HTMLElement.inputMode` (#88).
-
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop() inputmode?: string;
 
   /** Native `pattern` regex forwarded to the internal control. */

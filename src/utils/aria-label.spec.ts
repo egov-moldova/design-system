@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@stencil/vitest';
 
-import { observeAriaLabel } from './aria-label';
+import { nameHostWithFallback, observeAriaLabel } from './aria-label';
 
 // The spec environment (mock-doc) has no MutationObserver, so these cover the read at call
 // time; the live path is exercised in a real browser by the component stories.
@@ -48,5 +48,44 @@ describe('observeAriaLabel', () => {
   it('returns a stop function that is safe without MutationObserver', () => {
     const stop = observeAriaLabel(host('x'), () => undefined);
     expect(() => stop()).not.toThrow();
+  });
+});
+
+describe('nameHostWithFallback', () => {
+  const host = (label?: string): HTMLElement => {
+    const el = document.createElement('div');
+    if (label !== undefined) el.setAttribute('aria-label', label);
+    return el;
+  };
+
+  it('keeps the consumer label on the host and does not apply the fallback', () => {
+    const el = host('Registration steps');
+    nameHostWithFallback(el, () => 'Progress tracker');
+    expect(el.getAttribute('aria-label')).toBe('Registration steps');
+  });
+
+  it('applies the fallback when the consumer gives no label', () => {
+    const el = host();
+    nameHostWithFallback(el, () => 'Progress tracker');
+    expect(el.getAttribute('aria-label')).toBe('Progress tracker');
+  });
+
+  it('follows a changed fallback on update and removes it when the fallback is undefined', () => {
+    const el = host();
+    let text: string | undefined = '3 notifications';
+    const label = nameHostWithFallback(el, () => text);
+    text = '4 notifications';
+    label.update();
+    expect(el.getAttribute('aria-label')).toBe('4 notifications');
+    text = undefined;
+    label.update();
+    expect(el.hasAttribute('aria-label')).toBe(false);
+  });
+
+  it('never overwrites a consumer label on update', () => {
+    const el = host('Ana Popescu');
+    const label = nameHostWithFallback(el, () => 'User avatar');
+    label.update();
+    expect(el.getAttribute('aria-label')).toBe('Ana Popescu');
   });
 });

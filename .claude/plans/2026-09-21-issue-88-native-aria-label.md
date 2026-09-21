@@ -6,6 +6,21 @@ No `mud-*` component declares a public member that shadows an `HTMLElement` prot
 and `@stencil/reserved-member-names` runs as `error`. Consumers keep naming components with the
 standard `aria-label` attribute or the native `ariaLabel` property.
 
+## Problem
+
+28 components declare `@Prop() ariaLabel`, which replaces `HTMLElement.prototype.ariaLabel` on
+their hosts; the Stencil compiler warns on every one, and `@stencil/reserved-member-names` has to
+stay off, so a new collision would go unnoticed.
+
+## Acceptance bar
+
+- `yarn eslint 'src/components/**/*.tsx'` reports 0 `@stencil/reserved-member-names` findings
+  with the rule at `error` (zero tolerance).
+- `yarn test` and `yarn lint` pass; `yarn build` passes and emits no reserved-public-name
+  warning.
+- In Chromium, a post-load `el.ariaLabel = …` and `setAttribute('aria-label', …)` both reach the
+  inner control (`yarn test.storybook`, `mud-text-input` Accessible Name story).
+
 ## Spec/issue link
 
 https://github.com/egov-moldova/design-system/issues/88

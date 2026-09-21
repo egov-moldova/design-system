@@ -2,6 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import type {
   TableColumn,
   TableHeaderStyle,
@@ -126,12 +127,9 @@ export class MudTable {
   @Prop({ attribute: 'row-id-field' }) rowIdField: string = 'id';
 
   /**
-   * Accessible label propagated to the rendered `<table>` element. Captured
-   * into `resolvedAriaLabel` on mount and the host attribute is stripped to
-   * avoid Stencil's auto-reflection loop.
+   * The host's `aria-label` (attribute or native `ariaLabel` property), propagated
+   * to the rendered `<table>` element.
    */
-  @Prop() ariaLabel?: string;
-
   @State() private resolvedAriaLabel?: string;
   @State() private headerCellSlotted: Set<string> = new Set();
 
@@ -174,33 +172,14 @@ export class MudTable {
     }
   }
 
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
   }
 
-  componentWillLoad() {
-    this.captureAriaLabel();
-  }
-
-  /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
-   */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   private getRowId(row: TableRowData, index: number): string {

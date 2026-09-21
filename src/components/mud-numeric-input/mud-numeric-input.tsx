@@ -10,6 +10,7 @@ import type {
   NumericInputStepDirection,
   NumericInputVariant,
 } from './mud-numeric-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let numericInputInstanceCounter = 0;
 
@@ -161,18 +162,12 @@ export class MudNumericInput {
   @Prop({ attribute: 'decrement-label' }) decrementLabel: string = 'Scade';
 
   /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Setting `aria-label` directly on the host also
-   * works — captured on connect into `resolvedAriaLabel` and stripped to
-   * avoid Stencil's attribute-observer / render-loop antipattern.
-   */
-  @Prop() ariaLabel?: string;
-
-  /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
-   * Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip
-   * pattern as `ariaLabel`.
+   * Maps to the native `aria-valuetext` on the spinbutton. Capture-and-strip
+   * pattern, same as the native `aria-label` attribute read via `observeAriaLabel`.
    */
+  // The rule matches names case-insensitively; `ariaValuetext` does not shadow `HTMLElement.ariaValueText` (#88).
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop() ariaValuetext?: string;
 
   /**
@@ -232,6 +227,10 @@ export class MudNumericInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private displayValue: string = '';
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * internal control when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaValuetext?: string;
 
@@ -267,23 +266,25 @@ export class MudNumericInput {
   private readonly counterId = `mud-numeric-input-counter-${this.instanceId}`;
   private initialValue: number | undefined;
   private nativeEl?: HTMLInputElement;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaAttrs();
+    this.captureAriaValuetext();
     this.initialValue = this.value;
     this.displayValue = this.formatForDisplay(this.value);
     this.syncFormValue(this.value);
     this.syncValidity();
   }
 
-  private captureAriaAttrs() {
-    const labelAttr = this.host.getAttribute('aria-label');
-    if (labelAttr && labelAttr.length > 0) {
-      this.resolvedAriaLabel = labelAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
+  private captureAriaValuetext() {
     const valueTextAttr = this.host.getAttribute('aria-valuetext');
     if (valueTextAttr && valueTextAttr.length > 0) {
       this.resolvedAriaValuetext = valueTextAttr;
@@ -291,13 +292,6 @@ export class MudNumericInput {
     } else if (this.ariaValuetext && this.ariaValuetext.length > 0) {
       this.resolvedAriaValuetext = this.ariaValuetext;
     }
-  }
-
-  @Watch('ariaLabel')
-  syncAriaLabelProp(next?: string) {
-    // Only override resolvedAriaLabel when the prop is actually set —
-    // captureAriaAttrs strips the attribute, which would otherwise null this out.
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('ariaValuetext')
