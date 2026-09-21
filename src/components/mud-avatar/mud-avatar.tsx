@@ -87,6 +87,11 @@ export class MudAvatar {
    */
   private hostLabel?: HostAriaLabel;
 
+  @Watch('src')
+  onSrcChange() {
+    this.imageFailed = false;
+  }
+
   connectedCallback() {
     this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
   }
@@ -97,11 +102,6 @@ export class MudAvatar {
 
   componentWillRender() {
     this.hostLabel?.update();
-  }
-
-  @Watch('src')
-  onSrcChange() {
-    this.imageFailed = false;
   }
 
   private handleImageError = () => {

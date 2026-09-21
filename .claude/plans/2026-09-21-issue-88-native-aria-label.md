@@ -9,8 +9,8 @@ standard `aria-label` attribute or the native `ariaLabel` property.
 ## Problem
 
 28 components declare `@Prop() ariaLabel`, which replaces `HTMLElement.prototype.ariaLabel` on
-their hosts; the Stencil compiler warns on every one, and `@stencil/reserved-member-names` has to
-stay off, so a new collision would go unnoticed.
+their hosts, and `@stencil/reserved-member-names` has to stay off, so a new collision would go
+unnoticed.
 
 ## Acceptance bar
 
@@ -32,8 +32,10 @@ which removed header/footer). `yarn eslint 'src/components/**/*.tsx' --rule
 '{"@stencil/reserved-member-names":"error"}'` → **31** violations: `ariaLabel` in 28 components,
 plus `itemId` (accordion-item), `inputmode` (text-input), `ariaValuetext` (numeric-input).
 
-Both the ESLint rule (`@stencil/eslint-plugin` 1.4.0) and the Stencil 4.45 compiler
-(`validatePublicName`) compare names lower-cased. Probed in Chromium: `HTMLElement.prototype` has
+The ESLint rule (`@stencil/eslint-plugin` 1.4.0) compares names lower-cased. The Stencil 4.45
+compiler runs the same kind of check (`validatePublicName`), but its reserved list has no `aria*`
+member (`node_modules/@stencil/core/compiler/stencil.js`), so the compiler never flagged these
+props — corrected after review; an earlier draft said it did. Probed in Chromium: `HTMLElement.prototype` has
 `ariaLabel`, `inputMode`, `ariaValueText`, and no `itemId`. So only `ariaLabel` is a real
 collision; the other three are case-insensitive matches that shadow nothing.
 
@@ -46,7 +48,7 @@ A custom element that does not declare `ariaLabel` reflects `el.ariaLabel = 'x'`
 | --- | --- |
 | 1. Rename (e.g. `accessibleLabel`) with a deprecation period | New concept; the collision stays until removal, so the rule stays off |
 | 2. Read the native `aria-label` attribute, no prop | Type-level break only (`ariaLabel` leaves `components.d.ts` and the React wrapper); runtime keeps both the attribute and the property path |
-| 3. Keep the names and document | Collision and 29 compiler warnings stay |
+| 3. Keep the names and document | Collision stays, and the lint rule stays off |
 
 Industry: Ionic (Stencil) reads host `aria-*`, strips it, forwards it inward and keeps it live
 with a `MutationObserver` (`core/src/utils/attribute-controller.ts`); Material Web delegates host

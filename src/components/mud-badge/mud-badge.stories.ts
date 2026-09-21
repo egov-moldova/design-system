@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { BADGE_SIZES as SIZES, BADGE_TYPES as TYPES, BADGE_VARIANTS as VARIANTS } from './mud-badge.types';
 import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
@@ -348,5 +349,31 @@ export const ComposedWithIcon: Story = {
 </span>`,
       },
     },
+  },
+};
+
+/**
+ * The host carries the `status` role, so it keeps the accessible name. With no `aria-label` the
+ * badge names itself from its count; the consumer's `aria-label` wins, even when it matches the
+ * current count, and removing it brings the count back.
+ */
+export const AccessibleName: Story = {
+  name: 'Accessible Name (aria-label)',
+  render: () => /*html*/ `<mud-badge count="3"></mud-badge>`,
+  parameters: {
+    controls: { disable: true },
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('mud-badge') as HTMLElement;
+
+    await waitFor(() => expect(host.getAttribute('aria-label')).toBe('3'));
+
+    host.setAttribute('aria-label', '3');
+    host.setAttribute('count', '4');
+    await waitFor(() => expect(host.shadowRoot?.textContent).toContain('4'));
+    await expect(host.getAttribute('aria-label')).toBe('3');
+
+    host.removeAttribute('aria-label');
+    await waitFor(() => expect(host.getAttribute('aria-label')).toBe('4'));
   },
 };

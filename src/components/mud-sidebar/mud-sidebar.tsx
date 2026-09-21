@@ -29,17 +29,17 @@ export class MudSidebar {
 
   private stopAriaLabel?: () => void;
 
+  @Watch('collapsed')
+  handleCollapsedChange(): void {
+    this.propagateCollapsed();
+  }
+
   connectedCallback(): void {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
   }
 
   disconnectedCallback(): void {
     this.stopAriaLabel?.();
-  }
-
-  @Watch('collapsed')
-  handleCollapsedChange(): void {
-    this.propagateCollapsed();
   }
 
   componentDidLoad(): void {

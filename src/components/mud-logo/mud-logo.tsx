@@ -49,16 +49,6 @@ export class MudLogo {
 
   private stopAriaLabel?: () => void;
 
-  connectedCallback() {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
-      keepOnHost: true,
-    });
-  }
-
-  disconnectedCallback() {
-    this.stopAriaLabel?.();
-  }
-
   /**
    * Emitted when an asset fails to load — either because the `name` is not
    * in the manifest (`'unknown'`) or because the SVG fetch failed
@@ -97,6 +87,16 @@ export class MudLogo {
       container.appendChild(this.svgElement.cloneNode(true));
     }
     this.lastAppendedSvg = this.svgElement;
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
+      keepOnHost: true,
+    });
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   private async loadSvg(): Promise<void> {

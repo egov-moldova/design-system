@@ -88,4 +88,37 @@ describe('nameHostWithFallback', () => {
     label.update();
     expect(el.getAttribute('aria-label')).toBe('Ana Popescu');
   });
+
+  it('keeps a consumer label that equals the current fallback when the fallback changes', () => {
+    const el = host('3 notifications');
+    let text = '3 notifications';
+    const label = nameHostWithFallback(el, () => text);
+    text = '4 notifications';
+    label.update();
+    expect(el.getAttribute('aria-label')).toBe('3 notifications');
+  });
+
+  it('treats an empty consumer label as none and applies the fallback', () => {
+    const el = host('');
+    nameHostWithFallback(el, () => 'Notification');
+    expect(el.getAttribute('aria-label')).toBe('Notification');
+  });
+
+  it('takes its own fallback off the host on stop, so a reconnect still follows the fallback', () => {
+    const el = host();
+    let text = '3';
+    const first = nameHostWithFallback(el, () => text);
+    first.stop();
+    expect(el.hasAttribute('aria-label')).toBe(false);
+    const second = nameHostWithFallback(el, () => text);
+    text = '4';
+    second.update();
+    expect(el.getAttribute('aria-label')).toBe('4');
+  });
+
+  it('leaves a consumer label on the host on stop', () => {
+    const el = host('Registration steps');
+    nameHostWithFallback(el, () => 'Progress tracker').stop();
+    expect(el.getAttribute('aria-label')).toBe('Registration steps');
+  });
 });

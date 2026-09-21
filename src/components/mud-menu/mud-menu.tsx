@@ -46,14 +46,6 @@ export class MudMenu {
 
   private stopAriaLabel?: () => void;
 
-  connectedCallback(): void {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-  }
-
-  disconnectedCallback(): void {
-    this.stopAriaLabel?.();
-  }
-
   /** Fired when any item is activated. */
   @Event({ eventName: 'mudSelect', bubbles: true, composed: true })
   mudSelect!: EventEmitter<MenuSelectDetail>;
@@ -114,6 +106,14 @@ export class MudMenu {
     }
     ev.preventDefault();
     this.focusItem(items[targetIndex]);
+  }
+
+  connectedCallback(): void {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback(): void {
+    this.stopAriaLabel?.();
   }
 
   componentDidLoad(): void {

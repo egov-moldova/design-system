@@ -79,16 +79,6 @@ export class MudIcon {
   private svgCacheKey: string = '';
   private stopAriaLabel?: () => void;
 
-  connectedCallback() {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
-      keepOnHost: true,
-    });
-  }
-
-  disconnectedCallback() {
-    this.stopAriaLabel?.();
-  }
-
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
       ev.preventDefault();
@@ -110,6 +100,16 @@ export class MudIcon {
 
   async componentWillLoad(): Promise<void> {
     await this.loadSvg();
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
+      keepOnHost: true,
+    });
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   componentWillRender() {
