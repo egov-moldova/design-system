@@ -73,24 +73,28 @@ describe('tokens-lint — key naming', () => {
     assert.equal(status, 1);
   });
 
-  it('suggests nesting at a digit segment, the one spelling that keeps the CSS variable', () => {
-    // `gap12` would build `--layout-gap12` and `max2Lines` `--layout-max2-lines`; nesting the digit
-    // segment (`gap: { 12 }`) builds the same variable as the kebab-case key.
-    const keys = ['gap-12', 'max-2-lines', 'padding-inline-100', 'font-size-2xl', 'foo-', 'max-2Lines'];
+  it('keeps a hyphen before a digit segment, which camelCase cannot carry', () => {
+    // `gap12` would build `--layout-gap12`, not `--layout-gap-12`.
+    const { keys } = lint(tokenRoot({ layout: { 'gap-12': leaf, 'paddingInline-100': leaf, 'max-2Lines': leaf } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('suggests a spelling that passes and builds the same CSS variable', () => {
+    const keys = ['max-2-lines', 'padding-inline-100', 'border-colour', 'padding-inline_x', 'gap_12', 'size_1_5'];
     const { report } = lint(tokenRoot({ layout: Object.fromEntries(keys.map(k => [k, leaf])) }));
     const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
     assert.deepEqual(suggestions, {
-      'error:gap-12': 'gap.12',
-      'error:max-2-lines': 'max.2.lines',
-      'error:padding-inline-100': 'paddingInline.100',
-      'error:font-size-2xl': 'fontSize.2xl',
-      'error:foo-': 'foo',
-      'error:max-2Lines': 'max.2.lines',
+      'error:max-2-lines': 'max-2Lines',
+      'error:padding-inline-100': 'paddingInline-100',
+      'error:border-colour': 'borderColour',
+      'error:padding-inline_x': 'paddingInlineX',
+      'warning:gap_12': 'gap-12',
+      'warning:size_1_5': 'size-1-5',
     });
-    const cssName = p => nameKebab.transform({ path: ['layout', ...p] }, {});
-    for (const issue of report.issues) {
-      assert.equal(cssName(issue.suggestion.split('.')), cssName([issue.key]), issue.key);
-    }
+    const cssName = key => nameKebab.transform({ path: ['layout', key] }, {});
+    for (const issue of report.issues) assert.equal(cssName(issue.suggestion), cssName(issue.key), issue.key);
+    const followed = lint(tokenRoot({ layout: Object.fromEntries(report.issues.map(i => [i.suggestion, leaf])) }));
+    assert.deepEqual(followed.keys, []);
   });
 
   it('does not report a hyphen-free key as kebab-case', () => {

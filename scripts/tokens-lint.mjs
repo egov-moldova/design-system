@@ -9,8 +9,9 @@
  * and package.json (build/config files, not token data).
  *
  * Naming rule: compound keys are camelCase (`optionFontFamily`), per tokens/AGENTS.md Critical
- * Rule 3 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase, mixes
- * kebab-case with camelCase (`option-fontFamily`), or is all-lowercase kebab-case (`padding-inline`).
+ * Rule 3 and tokens/_agents/naming-conventions.md. A hyphen is kept only before a digit segment
+ * (`paddingInline-100`). Errors: a key that starts uppercase, mixes kebab-case with camelCase
+ * (`option-fontFamily`), or has a hyphen before a letter (`padding-inline`).
  * Warnings: underscores, dots, spaces.
  * The files the Tokenhaus sync generates (GENERATED_FILES in lib/tokenhaus-generated-files.mjs) are
  * exempt from the kebab-case rule: they carry Figma variable names verbatim (`base-inverse`,
@@ -88,27 +89,15 @@ function colorize(text, color) {
   return `${color}${text}${RESET}`;
 }
 
-// camelCase compound keys are the documented convention.
-// A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
-const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
+// camelCase compound keys are the documented convention. A hyphen is kept only before a digit
+// segment (`paddingInline-100`, `borderWidth-1-5`): camelCase cannot carry that dash, since
+// name/kebab turns `gap12` into `gap12`, not `gap-12`.
+const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*(-[0-9][a-zA-Z0-9]*)*$/;
+// A key with uppercase letters is valid only in that form: no leading capital, no hyphen before a letter.
 const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
-// An all-lowercase kebab-case key. One that starts with a digit (`1-5`, a half step) has no
-// camelCase form, so it passes.
-const isKebab = key => key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key);
-
-// A spelling that builds the same CSS variable as the kebab-case key: letter segments join in
-// camelCase and a digit segment becomes a nesting level, since camelCase cannot carry the dash
-// before it (name/kebab turns `gap12` into `gap12`, but `gap: { "12": … }` into `gap-12`).
-// `padding-inline-100` → `paddingInline.100`, `max-2-lines` → `max.2.lines`.
-function nestedCamel(key) {
-  const levels = [];
-  for (const segment of toKebab(key).split('-').filter(Boolean)) {
-    const last = levels.length - 1;
-    if (/^[0-9]/.test(segment) || last < 0 || /^[0-9]/.test(levels[last])) levels.push(segment);
-    else levels[last] += segment[0].toUpperCase() + segment.slice(1);
-  }
-  return levels.join('.');
-}
+// A lowercase key with a hyphen before a letter (`padding-inline`, `max-2-lines`). One that starts
+// with a digit (`1-5`, a half step) has no camelCase form, so it passes.
+const isKebab = key => /^[a-z]/.test(key) && /-[a-z]/.test(key);
 
 // Files the Tokenhaus sync writes keep Figma's kebab-case variable names; see GENERATED_FILES.
 const isSyncGenerated = filePath => {
@@ -139,13 +128,12 @@ function toKebab(key) {
   s = s.replace(/([a-z0-9])([A-Z])/g, '$1-$2');
   s = s.replace(/([A-Z])([A-Z][a-z])/g, '$1-$2');
   s = s.replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
-  s = s.replace(/colour/g, 'color');
   return s;
 }
 
-// Suggestions follow the documented camelCase convention: `option-fontFamily` → `optionFontFamily`.
-// Dashes before digits stay (`1-5` is a half step, as in sizes.tokens.json), and a key that starts
-// with a digit cannot be lowerCamelCase, so it keeps its kebab-case form.
+// Suggestions follow the documented camelCase convention and build the same CSS variable as the
+// key: `option-fontFamily` → `optionFontFamily`, `padding-inline-100` → `paddingInline-100`.
+// Dashes before digits stay, and a key that starts with a digit keeps its kebab-case form.
 function toCamel(key) {
   const kebab = toKebab(key);
   return /^[0-9]/.test(kebab) ? kebab : kebab.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -293,7 +281,7 @@ function checkKey(key, keyPath, filePath, position, kebabAllowed) {
       file: filePath,
       jsonPath: keyPath.join('.'),
       key,
-      suggestion: kebab || (badCase && key.includes('-')) ? nestedCamel(key) : toCamel(key),
+      suggestion: toCamel(key),
       reason: reasonFor(key, kebab),
       severity,
       position: position || null,
