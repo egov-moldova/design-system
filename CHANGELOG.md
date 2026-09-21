@@ -100,6 +100,16 @@ and an unknown name still logs `[mud-icon] Icon not found` and renders nothing.
 **`mud-icon` no longer defaults `name` to `'check'`.** No `check` icon exists, so
 that default only ever rendered an empty icon; `name` is now required.
 
+### Fixed — the form-field focus halo in dark mode
+
+The soft halo around a focused form field kept its light-mode colours in dark mode, so it drew a
+bright pastel ring on the dark surface. `--focus-ring-color-halo-brand`, `-danger`, `-warning`
+and `-positive` now have dark values (`#00357e`, `#7a271a`, `#792e0d`, `#054f31`), and so do the
+component focus-ring variables built on them, which `mud-text-input`, `mud-textarea`,
+`mud-select`, `mud-date-input`, `mud-numeric-input`, `mud-phone-input`, `mud-search-input`,
+`mud-file-input` and `mud-input-chip` draw their halo from. Light mode is unchanged. A page that overrides these variables itself is not
+affected.
+
 ### Fixed — `mud-icon` no longer throws on names like `constructor`
 
 A `name` matching an `Object.prototype` member (`constructor`, `toString`,
