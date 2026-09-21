@@ -167,7 +167,13 @@
   align-self: stretch;
   align-items: center;
   margin: 0;
-  padding-block: var(--_padding-block);
+  /* Figma's 1px rule is an INSIDE stroke on the item frame (659:10907), so it
+     does not grow the row: the Default Desktop export is 996x128, not 129, and
+     mobile is 343x110. A CSS border does grow it, so the block-start padding
+     gives the border width back — content still starts a full
+     `--_padding-block` from the item's outer edge. Same treatment as
+     mud-time-input's inside stroke. */
+  padding-block: calc(var(--_padding-block) - var(--accordion-item-border-width)) var(--_padding-block);
   padding-inline: var(--_padding-inline);
 
   background: transparent;
