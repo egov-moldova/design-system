@@ -52,7 +52,7 @@
           "$value": "{color.text.base-inverse.default}",
           "$type": "color"
         },
-        "light-on-color": {
+        "lightOnColor": {
           "$value": "{color.text.base-inverse.on-color}",
           "$type": "color"
         }

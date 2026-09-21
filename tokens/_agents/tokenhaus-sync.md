@@ -40,7 +40,7 @@ node scripts/sync-tokens-from-tokenhaus.mjs --apply --dry-run     # preview dele
 yarn sync:tokens:apply                                            # real run
 ```
 
-`tokens/core/effects.tokens.json` (drop-shadow.100..500) must be authored manually before the clean break — otherwise the shadow palette is lost.
+`tokens/core/effects.tokens.json` (dropShadow.100..500) must be authored manually before the clean break — otherwise the shadow palette is lost.
 
 ## Flag reference
 

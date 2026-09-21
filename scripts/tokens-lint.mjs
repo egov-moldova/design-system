@@ -9,12 +9,13 @@
  * and package.json (build/config files, not token data).
  *
  * Naming rule: compound keys are camelCase (`optionFontFamily`), per tokens/AGENTS.md Critical
- * Rule 3 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase or mixes
- * kebab-case with camelCase (`option-fontFamily`). Warnings: underscores, dots, spaces.
- * All-lowercase kebab-case keys are NOT flagged, although TOKEN-ARCHITECTURE.md §11 lists them as
- * an anti-pattern: the files the Tokenhaus sync generates from Figma use them (`base-inverse`,
- * `blue-sky`), and flagging those would report keys the next sync writes back. This linter never
- * flagged them before either.
+ * Rule 3 and tokens/_agents/naming-conventions.md. A hyphen is kept only before a digit segment
+ * (`paddingInline-100`). Errors: a key that starts uppercase, mixes kebab-case with camelCase
+ * (`option-fontFamily`), or has a hyphen before a letter (`padding-inline`).
+ * Warnings: underscores, dots, spaces.
+ * The files the Tokenhaus sync generates (GENERATED_FILES in lib/tokenhaus-generated-files.mjs) are
+ * exempt from the kebab-case rule: they carry Figma variable names verbatim (`base-inverse`,
+ * `blue-sky`), and flagging them would report keys the next sync writes back.
  *
  * Usage:
  *   node scripts/tokens-lint.mjs
@@ -26,6 +27,8 @@
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+
+import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
 
 const argv = process.argv.slice(2);
 const ROOTS = [];
@@ -86,10 +89,21 @@ function colorize(text, color) {
   return `${color}${text}${RESET}`;
 }
 
-// camelCase compound keys are the documented convention; kebab-case keys (from Figma) are accepted too.
-// A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
-const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
+// camelCase compound keys are the documented convention. A hyphen is kept only before a digit
+// segment (`paddingInline-100`, `borderWidth-1-5`): camelCase cannot carry that dash, since
+// name/kebab turns `gap12` into `gap12`, not `gap-12`.
+const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*(-[0-9][a-zA-Z0-9]*)*$/;
+// A key with uppercase letters is valid only in that form: no leading capital, no hyphen before a letter.
 const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
+// A lowercase key with a hyphen before a letter (`padding-inline`, `max-2-lines`). One that starts
+// with a digit (`1-5`, a half step) has no camelCase form, so it passes.
+const isKebab = key => /^[a-z]/.test(key) && /-[a-z]/.test(key);
+
+// Files the Tokenhaus sync writes keep Figma's kebab-case variable names; see GENERATED_FILES.
+const isSyncGenerated = filePath => {
+  const posix = path.resolve(filePath).split(path.sep).join('/');
+  return GENERATED_FILES.some(file => posix.endsWith(`/${file}`));
+};
 
 // Exact keys exempted through --allow-list.
 const allowedSet = new Set();
@@ -114,22 +128,22 @@ function toKebab(key) {
   s = s.replace(/([a-z0-9])([A-Z])/g, '$1-$2');
   s = s.replace(/([A-Z])([A-Z][a-z])/g, '$1-$2');
   s = s.replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
-  s = s.replace(/colour/g, 'color');
   return s;
 }
 
-// Suggestions follow the documented camelCase convention: `option-fontFamily` → `optionFontFamily`.
-// Dashes before digits stay (`1-5` is a half step, as in sizes.tokens.json), and a key that starts
-// with a digit cannot be lowerCamelCase, so it keeps its kebab-case form.
+// Suggestions follow the documented camelCase convention and build the same CSS variable as the
+// key: `option-fontFamily` → `optionFontFamily`, `padding-inline-100` → `paddingInline-100`.
+// Dashes before digits stay, and a key that starts with a digit keeps its kebab-case form.
 function toCamel(key) {
   const kebab = toKebab(key);
   return /^[0-9]/.test(kebab) ? kebab : kebab.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-function reasonFor(key) {
+function reasonFor(key, kebab) {
   const reasons = [];
   if (hasBadCase(key))
     reasons.push('uppercase letters outside lowerCamelCase (leading capital or mixed with kebab-case)');
+  if (kebab) reasons.push('kebab-case outside the files the Tokenhaus sync generates');
   if (key.includes('.')) reasons.push('contains dot character (.)');
   if (key.includes('_')) reasons.push('contains underscore (_)');
   if (key.includes(' ')) reasons.push('contains space');
@@ -205,6 +219,7 @@ async function processFile(filePath) {
     return;
   }
 
+  const kebabAllowed = isSyncGenerated(filePath);
   // We'll scan the file text sequentially for keys as we traverse the parsed JSON.
   let searchPos = 0;
 
@@ -222,7 +237,7 @@ async function processFile(filePath) {
           // bump searchPos past this occurrence
           searchPos = foundIndex + key.length + 2; // +2 for the surrounding quotes
         }
-        checkKey(key, pathParts.concat(key), filePath, position);
+        checkKey(key, pathParts.concat(key), filePath, position, kebabAllowed);
         traverse(node[key], pathParts.concat(key));
       }
     } else if (Array.isArray(node)) {
@@ -249,16 +264,17 @@ function makeVscodeUri(filePath, pos) {
   return encodeURI(`vscode://file/${abs}:${pos.line}:${pos.column}`);
 }
 
-function checkKey(key, keyPath, filePath, position) {
+function checkKey(key, keyPath, filePath, position, kebabAllowed) {
   const badCase = hasBadCase(key);
+  const kebab = !kebabAllowed && isKebab(key);
   const hasDot = key.includes('.');
   const hasUnderscore = key.includes('_');
   const hasSpace = key.includes(' ');
-  const containsProblem = badCase || hasDot || hasUnderscore || hasSpace;
+  const containsProblem = badCase || kebab || hasDot || hasUnderscore || hasSpace;
   const isAllowed = allowedSet.has(key);
 
   if (containsProblem && !isAllowed) {
-    const severity = badCase ? 'error' : 'warning';
+    const severity = badCase || kebab ? 'error' : 'warning';
     const link = makeClickablePath(filePath, position);
     const vscodeLink = INCLUDE_VSCODE_LINK ? makeVscodeUri(filePath, position) : null;
     results.push({
@@ -266,7 +282,7 @@ function checkKey(key, keyPath, filePath, position) {
       jsonPath: keyPath.join('.'),
       key,
       suggestion: toCamel(key),
-      reason: reasonFor(key),
+      reason: reasonFor(key, kebab),
       severity,
       position: position || null,
       link,

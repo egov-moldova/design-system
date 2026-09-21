@@ -267,7 +267,6 @@ HTML attributes are strings. Several AGE components accept structured data via *
 
 - `<mud-select>` → `.options = [{ label, value }, …]`
 - `<mud-breadcrumb>` → `.items = [{ label, href }, …]`
-- `<mud-receipt>` → `.lineItems = [...]`
 
 For these, the attribute form (`options='[…]'`) does **not** work. You must wait for the custom element to upgrade, then assign the property:
 

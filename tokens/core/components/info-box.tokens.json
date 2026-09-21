@@ -51,7 +51,7 @@
         "icon": { "$value": "{color.icon.brand.default}", "$type": "color" },
         "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
       },
-      "info-moderate": {
+      "infoModerate": {
         "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
         "text": { "$value": "{color.text.base.default}", "$type": "color" },
         "icon": { "$value": "{color.icon.brand.default}", "$type": "color" },
@@ -81,7 +81,7 @@
         },
         "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
       },
-      "info-moderate": {
+      "infoModerate": {
         "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
         "text": { "$value": "{color.text.base.default}", "$type": "color" },
         "icon": {

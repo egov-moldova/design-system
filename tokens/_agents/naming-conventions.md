@@ -32,7 +32,7 @@ In token JSON files, compound properties **MUST** use camelCase:
     "icon": { 
       "color": { "value": "{color.neutral.icon.default}", "type": "color" }
     },
-    "badge-icon": {
+    "badgeIcon": {
       "color": { "value": "{color.system.warning.icon}", "type": "color" }
     }
   }
@@ -48,13 +48,15 @@ In token JSON files, compound properties **MUST** use camelCase:
 }
 ```
 
-**Why**: Style Dictionary converts `camelCase` → `kebab-case` during build. Writing kebab in JSON causes double-kebab in output.
+**Why**: Style Dictionary's `name/kebab` transform turns both `fontSize` and `font-size` into the same CSS variable, so the CSS does not decide it. One spelling per key keeps references (`{button.fontSize}`) guessable; two spellings for one concept make every reference a lookup.
 
 | JSON Key | Generated CSS Variable |
 |---|---|
 | `fontSize` | `--button-font-size` ✅ |
-| `font-size` | `--button-font-size` ⚠️ (works but non-standard in JSON) |
-| `font_size` | `--button-font_size` ❌ (underscore preserved) |
+| `font-size` | `--button-font-size` ❌ (same output, but `yarn tokens.lint` rejects it) |
+| `font_size` | `--button-font-size` ❌ (same output, but `yarn tokens.lint` warns on underscores) |
+
+**Exception — Figma variable names.** The files the Tokenhaus sync generates (`palette`, `color` light and dark, `font`, `sizes`; the list is `GENERATED_FILES` in `scripts/lib/tokenhaus-generated-files.mjs`) keep Figma's kebab-case names (`base-inverse`, `blue-sky`), because the next sync writes them back. Every other token file, including all of `tokens/core/components/`, is camelCase. A hyphen before a digit segment stays, because camelCase cannot carry it (`gap12` builds `--…-gap12`): `gap-12`, `paddingInline-100` and `borderWidth-1-5` are correct, and so is a key that starts with a digit (`1-5`, a half step). Only a hyphen before a letter is kebab-case. Verify: `yarn tokens.lint.all`.
 
 ---
 
@@ -104,7 +106,7 @@ JSON:
 
 ```json
 {
-  "select-item": {
+  "selectItem": {
     "label": {
       "color": {
         "default": { "value": "{color.neutral.text.weak}" },

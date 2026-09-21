@@ -142,7 +142,7 @@ export class MudFileInput {
    * captured on connect into `resolvedAriaLabel` and stripped to avoid
    * Stencil's attribute-observer / render-loop antipattern (same pattern as
    * mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb /
-   * mud-date-picker / mud-modal / mud-pagination / mud-receipt).
+   * mud-date-picker / mud-modal / mud-pagination).
    */
   @Prop() ariaLabel?: string;
 

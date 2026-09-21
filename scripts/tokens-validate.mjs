@@ -314,18 +314,35 @@ for (const [, t] of tokens) {
   for (const key of tokens.keys()) visit(key, []);
 }
 
-// Dark-mode parity (warning) — color.* tokens only
+// Dark-mode parity (warning). Every color.* token needs a dark override. So does any other
+// non-component colour that cannot follow the theme on its own: a hex literal or a direct palette
+// reference resolves to the same value in both modes (focusRing.color.halo, #75), while a reference
+// to a semantic token (`{color.border.brand.focus-ring}`) picks up that token's dark override.
 {
-  const lightColors = [...tokens.entries()].filter(([, t]) => t.mode === 'light' && t.path.startsWith('color.'));
-  for (const [, t] of lightColors) {
-    if (!tokens.has(`dark:${t.path}`)) {
+  // These look right in either theme: nothing to see, or the element's own text colour. Not
+  // `inherit`: a CSS-wide keyword in a custom property applies to the property itself, so
+  // `var(--x)` never receives it.
+  const THEME_NEUTRAL_KEYWORDS = new Set(['transparent', 'currentcolor']);
+  const isThemeNeutral = t => typeof t.$value === 'string' && THEME_NEUTRAL_KEYWORDS.has(t.$value.trim().toLowerCase());
+  const isThemeBlind = t => {
+    const refs = [...iterRefs(t.$value)];
+    return refs.length === 0 || refs.every(ref => ref.startsWith('palette.'));
+  };
+  const needsDark = t =>
+    t.mode === 'light' &&
+    !isThemeNeutral(t) &&
+    (t.path.startsWith('color.') || (t.tier === 'semantic' && t.$type === 'color' && isThemeBlind(t)));
+  for (const t of tokens.values()) {
+    if (needsDark(t) && !tokens.has(`dark:${t.path}`)) {
       push({
         severity: 'warning',
         code: 'dark-mode-missing',
         file: t.file,
         ...locateKey(t.source, t.path),
         jsonPath: t.path,
-        message: `Semantic color has no dark-mode override in tokens/core.dark/color.tokens.json.`,
+        message: t.path.startsWith('color.')
+          ? `Semantic color has no dark-mode override in tokens/core.dark/color.tokens.json.`
+          : `Colour resolves to the same value in both themes and has no dark-mode override under tokens/core.dark/.`,
       });
     }
   }

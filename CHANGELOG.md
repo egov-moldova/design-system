@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Removed — `mud-cookie-banner` and `mud-receipt`
+
+The cookie banner and the receipt card are product-level compositions, not building blocks, so
+they are no longer part of the library. The `mud-cookie-banner` and `mud-receipt` custom elements
+are gone, and so are their `--cookie-banner-*` and `--receipt-*` component tokens.
+`@egov-moldova/mud/loader` stops re-exporting `CookieBannerPosition`, `CookieBannerVariant`,
+`CookieCategory`, `CookieConsentDetail`, `ReceiptActionDetail`, `ReceiptParty`, `ReceiptService`,
+`ReceiptStatus`, `MudCookieBannerCustomEvent` and `MudReceiptCustomEvent`.
+`@egov-moldova/mud-web-components` registers this package's elements, so it stops defining both
+tags and loses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types.
+
+**Migration:** there is no replacement in this package. A page that renders `<mud-cookie-banner>`
+or `<mud-receipt>` keeps an element nothing defines after upgrading — no shadow content renders,
+and any children it holds show unstyled. TypeScript code stops compiling where it imports any name
+above, or uses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types or the tags
+in TSX. Compose the banner or the receipt in the application from the remaining components, or pin
+`@egov-moldova/mud` (and `@egov-moldova/mud-web-components`, if you use it) to exactly `1.1.9`
+until you do.
+
 ### Removed — `mud-tooltip` `title` and `description` slots
 
 The Figma tooltip (component set 210:3897) has a single text body and no title or description
@@ -80,6 +99,16 @@ and an unknown name still logs `[mud-icon] Icon not found` and renders nothing.
 
 **`mud-icon` no longer defaults `name` to `'check'`.** No `check` icon exists, so
 that default only ever rendered an empty icon; `name` is now required.
+
+### Fixed — the form-field focus halo in dark mode
+
+The soft halo around a focused form field kept its light-mode colours in dark mode, so it drew a
+bright pastel ring on the dark surface. `--focus-ring-color-halo-brand`, `-danger`, `-warning`
+and `-positive` now have dark values (`#00357e`, `#7a271a`, `#792e0d`, `#054f31`), and so do the
+component focus-ring variables built on them, which `mud-text-input`, `mud-textarea`,
+`mud-select`, `mud-date-input`, `mud-time-input`, `mud-numeric-input`, `mud-phone-input`,
+`mud-search-input`, `mud-file-input` and `mud-input-chip` draw their halo from. Light mode is unchanged. A page
+that overrides these variables itself is not affected.
 
 ### Fixed — `mud-icon` no longer throws on names like `constructor`
 

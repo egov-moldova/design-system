@@ -1,8 +1,8 @@
 {
-  "segmented-control": {
+  "segmentedControl": {
     "container": {
       "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-      "background-disabled": { "$value": "{color.background.disabled.default}", "$type": "color" },
+      "backgroundDisabled": { "$value": "{color.background.disabled.default}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
       "padding": { "$value": "{spacing.6}", "$type": "dimension" },
       "gap": { "$value": "{spacing.6}", "$type": "dimension" },

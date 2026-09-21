@@ -64,19 +64,6 @@ visual footprint stays untouched.
 | `"track"`   |             |
 
 
-## Dependencies
-
-### Used by
-
- - [mud-cookie-banner](../mud-cookie-banner)
-
-### Graph
-```mermaid
-graph TD;
-  mud-cookie-banner --> mud-switch
-  style mud-switch fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

@@ -55,7 +55,7 @@ Reference semantic tokens following the `color.{type}.{role}.{variant}` scheme �
 
 ### Critical Rules
 
-1. **No `"components"` wrapper** — the root key IS the component name
+1. **No `"components"` wrapper** — the root key IS the component name, in camelCase (`searchInput` in `search-input.tokens.json`); `yarn tokens.lint.all` rejects a kebab-case root
 2. **Always use `{token.path}` references** — never raw hex/px values in component tokens
 3. **Always include `"type"`** — valid types: `color`, `dimension`, `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `opacity`, `spacing`
 4. **camelCase** for compound property keys in JSON (`iconColor`, `optionFontFamily`) — Style Dictionary emits kebab-case CSS variables either way; see `tokens/_agents/naming-conventions.md`
