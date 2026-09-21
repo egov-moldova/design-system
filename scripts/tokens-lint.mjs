@@ -92,8 +92,11 @@ function colorize(text, color) {
 // A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
 const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
 const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
-// An all-lowercase kebab-case key that has a camelCase form. `1-5` (a half step) has none, so it passes.
-const isKebab = key => /^[a-z0-9-]+$/.test(key) && toCamel(key) !== key;
+// An all-lowercase kebab-case key. One that starts with a digit (`1-5`, a half step) has no
+// camelCase form, so it passes.
+const isKebab = key => key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key);
+// Digit segments join too (`gap-12` → `gap12`), unlike toCamel, which keeps `-1-5` for the warnings.
+const kebabToCamel = key => key.replace(/-+([a-z0-9])/g, (_, c) => c.toUpperCase());
 
 // Files the Tokenhaus sync writes keep Figma's kebab-case variable names; see GENERATED_FILES.
 const isSyncGenerated = filePath => {
@@ -278,7 +281,7 @@ function checkKey(key, keyPath, filePath, position, kebabAllowed) {
       file: filePath,
       jsonPath: keyPath.join('.'),
       key,
-      suggestion: toCamel(key),
+      suggestion: kebab ? kebabToCamel(key) : toCamel(key),
       reason: reasonFor(key, kebab),
       severity,
       position: position || null,
