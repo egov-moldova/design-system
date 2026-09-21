@@ -102,7 +102,7 @@
         },
         "color": {
           "default": { "$value": "{color.icon.base.default}", "$type": "color" },
-          "open": { "$value": "{color.icon.brand.default}", "$type": "color" },
+          "open": { "$value": "{color.icon.base.default}", "$type": "color" },
           "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
         }
       },

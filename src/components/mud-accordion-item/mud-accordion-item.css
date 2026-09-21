@@ -51,6 +51,13 @@
   margin-inline-end: var(--accordion-item-gap-icon, var(--spacing-8));
 }
 
+/* Open recolours the HEADING only. Figma's Expanded variants (659:10919 desktop,
+   1138:14724 mobile) turn the heading #0058D2 and leave the minus glyph at the
+   neutral #121212 — sampled from the 2x exports at the glyph centre, since the
+   API does not expose an IMAGE-SVG fill. `--accordion-item-trigger-color-open`
+   therefore resolves to the same neutral as the default; it is kept as a
+   declared override hook rather than dropped, because removing a published
+   custom property is a breaking change for anyone already setting it. */
 :host([open]) {
   --_heading-color: var(--accordion-item-heading-color-open);
   --_trigger-color: var(--accordion-item-trigger-color-open);
