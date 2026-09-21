@@ -10,7 +10,8 @@ rows, so `mud-tooltip` no longer has `title` / `description` slots, and the undo
 are gone with them.
 
 **Migration:** a child with `slot="title"` or `slot="description"` is no longer projected, so its
-text stops rendering. Put that text in the default slot (or the `content` prop) instead.
+text stops rendering and stops reaching screen readers; a tooltip that had text only in those slots
+now opens as an empty bubble. Put that text in the default slot instead.
 
 ### Removed — `mud-header` and `mud-footer`
 

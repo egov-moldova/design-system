@@ -21,7 +21,7 @@ import {
 let tooltipIdCounter = 0;
 
 /**
- * Tooltip — transient label, structured popover, or coach mark anchored to a
+ * Tooltip — transient label or coach mark anchored to a
  * trigger element.
  *
  * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
@@ -87,7 +87,9 @@ export class MudTooltip {
   @Prop({ reflect: true }) trigger: TooltipTrigger = 'hover';
 
   /**
-   * Convenience: tooltip body text. Used only when the default slot is empty.
+   * Convenience: tooltip body text. Rendered as the default slot's fallback, so
+   * only when the host has no default-slot nodes at all — whitespace between
+   * tags counts as a node.
    */
   @Prop() content?: string;
 
@@ -300,7 +302,11 @@ export class MudTooltip {
    */
   private getTooltipText(): string {
     const defaultText = Array.from(this.host.childNodes)
-      .filter(n => !(n as Element).slot)
+      // Text and unslotted elements only: framework comment markers (`<!--v-if-->`,
+      // `<!--?lit$…$-->`) would otherwise be read out. The attribute, not
+      // `Element.slot`: mock-doc has no `slot` accessor, so the property read let the
+      // trigger's text into the mirror under the spec runner.
+      .filter(n => n.nodeType === 3 || (n.nodeType === 1 && !(n as Element).hasAttribute('slot')))
       .map(n => n.textContent || '')
       .join(' ')
       .replace(/\s+/g, ' ')
@@ -742,11 +748,10 @@ export class MudTooltip {
   // ---------- Slot validation ----------
 
   private validateTriggerSlot(): string | null {
-    const el = this.host.querySelector('[slot="trigger"]');
+    const el = this.getSlottedTriggerEl();
     if (!el) return null;
     const tag = el.tagName.toLowerCase();
-    if (VALID_TRIGGER_TAGS.includes(tag)) return null;
-    return invalidSlottedTag(tag, VALID_TRIGGER_TAGS);
+    return VALID_TRIGGER_TAGS.includes(tag) ? null : invalidSlottedTag(tag, VALID_TRIGGER_TAGS);
   }
 
   private renderCloseButton() {

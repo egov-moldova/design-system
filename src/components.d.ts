@@ -3173,7 +3173,7 @@ export namespace Components {
         "variant": ToastVariant;
     }
     /**
-     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * Tooltip — transient label or coach mark anchored to a
      * trigger element.
      * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
      * bubble + arrow inside shadow DOM. Position is computed in JS against the
@@ -3193,7 +3193,7 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty.
+          * Convenience: tooltip body text. Rendered as the default slot's fallback, so only when the host has no default-slot nodes at all — whitespace between tags counts as a node.
          */
         "content"?: string;
         /**
@@ -4818,7 +4818,7 @@ declare global {
         "mudClose": TooltipCloseEventDetail;
     }
     /**
-     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * Tooltip — transient label or coach mark anchored to a
      * trigger element.
      * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
      * bubble + arrow inside shadow DOM. Position is computed in JS against the
@@ -8418,7 +8418,7 @@ declare namespace LocalJSX {
         "variant"?: ToastVariant;
     }
     /**
-     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * Tooltip — transient label or coach mark anchored to a
      * trigger element.
      * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
      * bubble + arrow inside shadow DOM. Position is computed in JS against the
@@ -8438,7 +8438,7 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty.
+          * Convenience: tooltip body text. Rendered as the default slot's fallback, so only when the host has no default-slot nodes at all — whitespace between tags counts as a node.
          */
         "content"?: string;
         /**
@@ -9893,7 +9893,7 @@ declare module "@stencil/core" {
              */
             "mud-toast": LocalJSX.IntrinsicElements["mud-toast"] & JSXBase.HTMLAttributes<HTMLMudToastElement>;
             /**
-             * Tooltip — transient label, structured popover, or coach mark anchored to a
+             * Tooltip — transient label or coach mark anchored to a
              * trigger element.
              * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
              * bubble + arrow inside shadow DOM. Position is computed in JS against the

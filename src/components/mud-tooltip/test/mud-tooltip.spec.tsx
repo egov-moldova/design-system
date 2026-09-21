@@ -217,6 +217,53 @@ describe('mud-tooltip', () => {
       expect(slotted?.getAttribute('aria-describedby')).toBe(bubbleId ?? '');
     });
 
+    it('mirrors the default-slot text into the described-by node', async () => {
+      const { root } = await render(
+        <mud-tooltip open>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          <span slot="title">Old title</span>
+          Codul are 13 cifre.
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Codul are 13 cifre.');
+    });
+
+    it('leaves framework comment markers out of the described-by node', async () => {
+      const { root } = await render(
+        <mud-tooltip>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          Ajutor
+        </mud-tooltip>,
+      );
+      root?.appendChild(document.createComment('v-if'));
+      (root as HTMLElement).setAttribute('open', '');
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Ajutor');
+    });
+
+    it('mirrors the content prop when the default slot is empty', async () => {
+      const { root } = await render(
+        <mud-tooltip open content="Detalii despre cont">
+          <button slot="trigger" type="button">
+            T
+          </button>
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Detalii despre cont');
+    });
+
     it('removes aria-describedby when the tooltip closes', async () => {
       const { root } = await render(
         <mud-tooltip open>
