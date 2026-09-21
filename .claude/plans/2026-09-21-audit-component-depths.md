@@ -529,7 +529,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Create: `scripts/__tests__/audit/__fixtures__/interaction/`
 - Modify: `scripts/audit/09-a11y-tree.mjs`
 - Modify: `scripts/__tests__/audit/09-a11y-tree.spec.mjs`
-- Read only: `scripts/audit/14-component-contract.mjs`
+- Modify: `scripts/audit/14-component-contract.mjs`
+- Modify: `scripts/__tests__/audit/14-component-contract.spec.mjs`
 - Read only: `.storybook/custom-elements.json`
 
 - [ ] `17-adapter-contract.mjs` in two parts (Design §4): source rules in Wave A calling 14's
@@ -539,6 +540,12 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   BX1, BX4, BX5, BX7; BX6 stays `12-console-errors`. Both apply reduced motion plus an injected
   `transition: none; animation: none` style in the document and every shadow root before
   sampling (Phase 0 results). Fixtures; run against 3 archetypes, 5 runs each, identical.
+- [ ] `14`'s slot extractor handles a dynamic `<slot name={…}>` (no spurious `default`) and the
+  slot forms it misses today (`mud-breadcrumb`'s `separator`), so 18 (CEM parity) raises no
+  false finding. Found by the Phase 3 live run of `17 --all --part cem` (`mud-radio`,
+  `mud-table`, `mud-breadcrumb`). Verify: `14-component-contract.spec.mjs` cases for both forms,
+  and `node scripts/audit/17-adapter-contract.mjs --all --part cem --json` reports no finding
+  that traces to the extractor.
 
 ### Phase 4 — skill rewrite
 **Executor**: opus, medium effort · wave 4
@@ -572,6 +579,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Modify: `.claude/skills/stencil-compliance/SKILL.md`
 - Modify: `.claude/skills/LOCAL-SETUP.md`
 - Modify: `scripts/__tests__/audit/callers.spec.mjs`
+- Modify: `scripts/audit/regression-check.mjs`
+- Modify: `scripts/audit/regression-baseline.mjs`
+- Modify: `scripts/__tests__/audit/regression-check.spec.mjs`
 
 - [ ] `pre-pr-check`, `audit-production`, `a11y-verifier`, `stencil-compliance`,
   `/audit-component`, `LOCAL-SETUP.md`, `commands/README.md`, `migrate-component`,
@@ -588,6 +598,11 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
     its exit code.
   Verify: `callers.spec.mjs` (the per-group assertions from the Acceptance bar) passes over the
   final files.
+- [ ] `regression-check.mjs` and `regression-baseline.mjs` spawn `run-all` without `--depth`, so
+  since Phase 2 they would run `standard` and build its prerequisites. Give both an explicit
+  depth that keeps a baseline comparable with a check run, and make a baseline record the depth
+  it was captured at; comparing across depths is refused. Verify: `regression-check.spec.mjs`
+  cases.
 
 ### Phase 6 — prove it
 **Executor**: session model, medium effort · wave 5
