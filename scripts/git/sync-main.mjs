@@ -28,7 +28,7 @@
  *            --no-fetch  --skip-build  --skip-checks  --help
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs as parseNodeArgs } from 'node:util';
@@ -420,6 +420,7 @@ export function main(argv = process.argv.slice(2), cwd = process.cwd()) {
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// realpath on both sides: Node resolves symlinks for import.meta.url but not for argv[1].
+if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
   process.exitCode = main();
 }

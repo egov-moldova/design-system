@@ -6,15 +6,17 @@
  * The file is git-ignored (every Stencil build rewrites it, and the package ships its own copy in
  * dist/types/), so a fresh clone or a CI checkout starts without it, and switching branches no
  * longer swaps it. It is rebuilt when it is missing, when it imports a component file that no
- * longer exists, or when a component tag on disk is absent from it. Otherwise nothing runs, which
- * keeps `yarn typecheck` on the pre-commit hook as fast as before.
+ * longer exists, or when a component tag on disk is absent from it. Otherwise nothing runs, so the
+ * pre-commit `yarn typecheck` costs what it did before; the first one after switching to a branch
+ * that adds or removes a component pays for one full build.
  *
- * The rebuild is `yarn build`, not a bare `stencil build`: wireit holds a cross-process lock on
- * `build`, so when `yarn check` runs this alongside its own `build` the two serialize instead of
- * writing dist/ at the same time, and wireit's record of `build` stays true.
+ * The rebuild is `yarn build`, not a bare `stencil build --dev`: wireit holds a cross-process lock
+ * on `build`, so when `yarn check` runs this alongside its own `build` the two serialize instead
+ * of writing dist/ at the same time, and wireit's record of `build` stays true. It also rewrites
+ * the tracked readmes, which on a consistent branch match what is committed.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,7 +48,9 @@ export function staleReason(src = SRC) {
   return null;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// realpath on both sides: Node resolves symlinks for import.meta.url but not for argv[1], so a
+// checkout reached through one (macOS /tmp -> /private/tmp) would otherwise skip the whole check.
+if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
   const reason = staleReason();
   if (reason) {
     console.log(`ensure-components-dts: ${reason}; running \`yarn build\``);
