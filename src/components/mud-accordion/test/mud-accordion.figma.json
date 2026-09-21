@@ -1,0 +1,91 @@
+{
+  "component": "mud-accordion",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "molecules-accordion--default",
+    "viewport": {
+      "width": 1280,
+      "height": 1000
+    },
+    "capture": {
+      "selector": "mud-accordion",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "default-desktop",
+      "node": "275:8285",
+      "html": "<div style=\"width:996px\"><mud-accordion breakpoint=\"desktop\"><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></mud-accordion></div>",
+      "expect": [
+        {
+          "target": "mud-accordion",
+          "node": "275:8285",
+          "styles": {
+            "display": "block",
+            "boxWidth": "996px",
+            "rowGap": "normal"
+          },
+          "note": "Figma's Breakpoint=Desktop component is a plain column with no padding and no gap: the items stack edge to edge and each one's own 1px top rule is the only divider."
+        },
+        {
+          "target": "mud-accordion mud-accordion-item:first-child",
+          "node": "275:8274",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxHeight": "128px"
+          },
+          "note": "Every .accordion-item instance in the set carries strokeWeight \"1px 0px 0px\", including the first, so the stack opens with a rule. Measured on the 2x export of 275:8285: rules at y=0, 128, 256, 384, 512."
+        },
+        {
+          "target": "mud-accordion mud-accordion-item:last-child",
+          "node": "674:4369",
+          "styles": {
+            "borderBottomWidth": "1px",
+            "borderBottomColor": "#D9D9D9"
+          },
+          "note": "Figma closes the stack with a `separator` instance (component 403:21601, Thickness=1: Thin / Style=Subtle) whose Line is a 1px #D9D9D9 centre-aligned stroke; the instance overrides the component's 2px block padding to 0. The component draws it as a border-block-end on the last item instead. Half of Figma's centred stroke falls outside the 640px stack (export 996x640.5); a CSS border sits fully inside, which is the closest Chromium can render."
+        }
+      ]
+    },
+    {
+      "name": "default-mobile",
+      "node": "1138:14818",
+      "html": "<div style=\"width:343px\"><mud-accordion breakpoint=\"mobile\"><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item><mud-accordion-item heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></mud-accordion></div>",
+      "expect": [
+        {
+          "target": "mud-accordion",
+          "node": "1138:14818",
+          "styles": {
+            "display": "block",
+            "boxWidth": "343px",
+            "rowGap": "normal"
+          }
+        },
+        {
+          "target": "mud-accordion mud-accordion-item:first-child",
+          "node": "1138:14819",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxHeight": "110px"
+          },
+          "note": "Measured on the 2x export of 1138:14818 (686x1101 -> 343x550.5): five 110px items."
+        },
+        {
+          "target": "mud-accordion mud-accordion-item:last-child",
+          "node": "1138:14824",
+          "styles": {
+            "borderBottomWidth": "1px",
+            "borderBottomColor": "#D9D9D9"
+          },
+          "note": "Same separator instance on the mobile variant."
+        }
+      ]
+    }
+  ]
+}

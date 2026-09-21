@@ -1,0 +1,423 @@
+{
+  "component": "mud-accordion-item",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "molecules-accordion-item--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-accordion-item",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "default-desktop",
+      "node": "659:10907",
+      "html": "<div style=\"width:996px\"><mud-accordion-item breakpoint=\"desktop\" heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "expect": [
+        {
+          "target": "mud-accordion-item",
+          "node": "659:10907",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopStyle": "solid",
+            "borderTopColor": "#D9D9D9",
+            "boxWidth": "996px"
+          },
+          "note": "Figma strokeWeight \"1px 0px 0px\" on the component frame. The stroke is INSIDE, so the Figma box stays 128px tall; a CSS border adds to it — see the boxHeight entry."
+        },
+        {
+          "target": "mud-accordion-item",
+          "node": "659:10907",
+          "styles": {
+            "boxHeight": "128px"
+          },
+          "note": "Measured on the 2x export of 659:10907 (1992x256 -> 996x128). Padding 32 + (heading 32 + gap 8 + supporting 24) + padding 32 = 128, with the 1px rule painted inside the top padding."
+        },
+        {
+          "target": "mud-accordion-item",
+          "node": "659:10908",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma paints the fill on the inner Container; the component paints it on the host, which covers the same box."
+        },
+        {
+          "target": "mud-accordion-item .header",
+          "node": "659:10908",
+          "styles": {
+            "paddingTop": "31px",
+            "paddingBottom": "32px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px"
+          },
+          "note": "Figma padding 32px with a 1px INSIDE stroke on the item frame -> CSS padding minus the border width, so content still starts 32px from the item's outer edge and the box stays 128px tall."
+        },
+        {
+          "target": "mud-accordion-item .header-row",
+          "node": "659:10908",
+          "styles": {
+            "columnGap": "12px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-accordion-item .text-group",
+          "node": "659:10909",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-accordion-item .heading",
+          "node": "659:10910",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "24px",
+            "lineHeight": "32px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.24px",
+            "color": "#121212"
+          },
+          "note": "Desktop/Heading/H3. Figma letterSpacing -0.01em at 24px = -0.24px."
+        },
+        {
+          "target": "mud-accordion-item .supporting",
+          "node": "659:10911",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#757575"
+          },
+          "note": "Desktop/Body/Default."
+        },
+        {
+          "target": "mud-accordion-item .trigger",
+          "node": "659:10912",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "color": "#121212"
+          },
+          "note": "button-text-circular Large, 48x48, no fill. Figma borderRadius 999px vs the token --border-radius-full 9999px: both clamp to a circle on a 48px box, so the radius is deliberately not asserted. The colour is sampled from the 2x export of 659:10907 at the glyph centre (996x128 -> x=972, y=64): solid #121212; the API does not expose an IMAGE-SVG fill."
+        },
+        {
+          "target": "mud-accordion-item .trigger-icon",
+          "node": "659:10912",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Nested icon node I659:10912;254:5762 inside the trigger instance. Icon 20/plus-small, 20x20. Its painted glyph measures 11.5x11.5 on the 2x export (x 966.25..977.75, i.e. 4.25 in from each edge of the 20px box) = endpoints at 5 and 15 with a 1.5px round-cap stroke."
+        },
+        {
+          "target": "mud-accordion-item .panel",
+          "node": "659:10907",
+          "styles": {
+            "display": "none"
+          },
+          "note": "Negative evidence: the Default variant has no Content Slot child. The panel stays in the DOM carrying `hidden`, so `absent` would misreport; `display: none` is the observable equivalent."
+        }
+      ]
+    },
+    {
+      "name": "hover-desktop",
+      "node": "659:10913",
+      "html": "<div style=\"width:996px\"><mud-accordion-item breakpoint=\"desktop\" heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-accordion-item .header-row"
+      },
+      "expect": [
+        {
+          "target": "mud-accordion-item",
+          "node": "659:10913",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxWidth": "996px",
+            "boxHeight": "128px"
+          },
+          "note": "Canvas measured on the 2x export of 659:10913 (1992x256)."
+        },
+        {
+          "target": "mud-accordion-item .header",
+          "node": "659:10914",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "paddingTop": "31px",
+            "paddingBottom": "32px",
+            "paddingLeft": "20px",
+            "paddingRight": "20px"
+          },
+          "note": "Hover insets the Container to 32px 20px and tints it. The 1px INSIDE stroke on the item frame comes off the block-start padding, so the CSS value is 31px and the box stays 128px tall."
+        },
+        {
+          "target": "mud-accordion-item .heading",
+          "node": "659:10916",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "24px",
+            "lineHeight": "32px"
+          },
+          "note": "Hover does not recolour the heading."
+        },
+        {
+          "target": "mud-accordion-item .supporting",
+          "node": "659:10917",
+          "styles": {
+            "color": "#757575"
+          }
+        },
+        {
+          "target": "mud-accordion-item .trigger",
+          "node": "659:10918",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "color": "#121212"
+          },
+          "note": "Colour sampled from the 2x export of 659:10913 at the glyph centre (x=952, y=64): solid #121212."
+        }
+      ]
+    },
+    {
+      "name": "expanded-desktop",
+      "node": "659:10919",
+      "pixel": false,
+      "html": "<div style=\"width:996px\"><mud-accordion-item breakpoint=\"desktop\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "expect": [
+        {
+          "target": "mud-accordion-item",
+          "node": "659:10920",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "In the Expanded variant the 1px rule moves from the component frame onto the header Container; the painted top edge is the same. The component keeps it on the host."
+        },
+        {
+          "target": "mud-accordion-item .header",
+          "node": "659:10920",
+          "styles": {
+            "paddingTop": "31px",
+            "paddingBottom": "32px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px"
+          },
+          "note": "Figma padding 32px with a 1px INSIDE stroke on the item frame -> CSS padding minus the border width, so content still starts 32px from the item's outer edge and the box stays 128px tall."
+        },
+        {
+          "target": "mud-accordion-item .header-row",
+          "node": "659:10920",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-accordion-item .text-group",
+          "node": "659:10921",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-accordion-item .heading",
+          "node": "659:10922",
+          "styles": {
+            "fontSize": "24px",
+            "lineHeight": "32px",
+            "fontWeight": "600",
+            "color": "#0058D2"
+          },
+          "note": "Expanded is the only variant that recolours the heading."
+        },
+        {
+          "target": "mud-accordion-item .supporting",
+          "node": "659:10923",
+          "styles": {
+            "color": "#757575"
+          },
+          "note": "Supporting text stays neutral while the heading turns brand."
+        },
+        {
+          "target": "mud-accordion-item .trigger",
+          "node": "659:10924",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "color": "#121212"
+          },
+          "note": "Colour sampled from the 2x export of 659:10919 at the minus glyph (996x324 -> x=972, y=64): solid #121212, no brand blue anywhere in the trigger column. The heading turns blue; the trigger does not."
+        }
+      ]
+    },
+    {
+      "name": "default-mobile",
+      "node": "1138:14712",
+      "html": "<div style=\"width:343px\"><mud-accordion-item breakpoint=\"mobile\" heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "expect": [
+        {
+          "target": "mud-accordion-item",
+          "node": "1138:14712",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "boxWidth": "343px",
+            "boxHeight": "110px"
+          },
+          "note": "Canvas measured on the 2x export of 1138:14712 (686x220 -> 343x110): padding 24 + (heading 30 + gap 8 + supporting 24) + padding 24."
+        },
+        {
+          "target": "mud-accordion-item",
+          "node": "1138:14713",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          }
+        },
+        {
+          "target": "mud-accordion-item .header",
+          "node": "1138:14713",
+          "styles": {
+            "paddingTop": "23px",
+            "paddingBottom": "24px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px"
+          },
+          "note": "Figma padding 24px with a 1px INSIDE stroke on the item frame -> CSS padding minus the border width, so content still starts 24px from the item's outer edge and the box stays 110px tall."
+        },
+        {
+          "target": "mud-accordion-item .header-row",
+          "node": "1138:14713",
+          "styles": {
+            "columnGap": "12px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-accordion-item .text-group",
+          "node": "1138:14714",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-accordion-item .heading",
+          "node": "1138:14715",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "22px",
+            "lineHeight": "30px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.22px",
+            "color": "#121212"
+          },
+          "note": "Mobile/Heading/H3. -0.01em at 22px = -0.22px."
+        },
+        {
+          "target": "mud-accordion-item .supporting",
+          "node": "1138:14716",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#757575"
+          },
+          "note": "Mobile/Body/Default is the same 16/24 as desktop."
+        },
+        {
+          "target": "mud-accordion-item .trigger",
+          "node": "1138:14717",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "color": "#121212"
+          },
+          "note": "The trigger does not shrink on mobile. Colour sampled from the 2x export of 1138:14712 at the glyph centre (x=319, y=55)."
+        },
+        {
+          "target": "mud-accordion-item .trigger-icon",
+          "node": "1138:14717",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Nested icon node I1138:14717;254:5762 inside the trigger instance. "
+        },
+        {
+          "target": "mud-accordion-item .panel",
+          "node": "1138:14712",
+          "styles": {
+            "display": "none"
+          },
+          "note": "The Default Mobile variant has no Content Slot child."
+        }
+      ]
+    },
+    {
+      "name": "expanded-mobile",
+      "node": "1138:14724",
+      "pixel": false,
+      "html": "<div style=\"width:343px\"><mud-accordion-item breakpoint=\"mobile\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "expect": [
+        {
+          "target": "mud-accordion-item",
+          "node": "1138:14725",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "As on desktop, the rule moves onto the header Container in the Expanded variant."
+        },
+        {
+          "target": "mud-accordion-item .header",
+          "node": "1138:14725",
+          "styles": {
+            "paddingTop": "23px",
+            "paddingBottom": "24px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px"
+          },
+          "note": "Figma padding 24px with a 1px INSIDE stroke on the item frame -> CSS padding minus the border width, so content still starts 24px from the item's outer edge and the box stays 110px tall."
+        },
+        {
+          "target": "mud-accordion-item .heading",
+          "node": "1138:14727",
+          "styles": {
+            "fontSize": "22px",
+            "lineHeight": "30px",
+            "color": "#0058D2"
+          }
+        },
+        {
+          "target": "mud-accordion-item .supporting",
+          "node": "1138:14728",
+          "styles": {
+            "color": "#757575"
+          }
+        },
+        {
+          "target": "mud-accordion-item .trigger",
+          "node": "1138:14729",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "color": "#121212"
+          },
+          "note": "Colour sampled from the 2x export of 1138:14724 at the minus glyph (x=319, y=55): solid #121212."
+        }
+      ]
+    }
+  ]
+}

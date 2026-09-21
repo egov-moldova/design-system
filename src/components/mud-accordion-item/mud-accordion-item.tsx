@@ -447,14 +447,20 @@ export class MudAccordionItem {
     // mud-chip / mud-tooltip.
     const triggerIcon = (
       <span class="trigger" aria-hidden="true">
+        {/* Endpoints at 5 and 15, not 4.25 and 15.75. `stroke-linecap: round` adds
+            half the stroke beyond each endpoint, so 10 + 1.5 paints an 11.5px glyph
+            — what Figma's 20/plus-small (3044:14513) and 20/minus-small
+            (3044:14511) measure on the 2x exports of 659:10907 and 659:10919:
+            solid from 4.25 to 15.75 of the 20px icon box, 1.5px thick. Endpoints
+            AT 4.25/15.75 painted 13px, one stroke too wide in each direction. */}
         <svg class="trigger-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-          <line x1="4.25" y1="10" x2="15.75" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           <line
             class="trigger-icon-vertical"
             x1="10"
-            y1="4.25"
+            y1="5"
             x2="10"
-            y2="15.75"
+            y2="15"
             stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
