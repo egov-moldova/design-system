@@ -13,6 +13,7 @@ import {
   pickDefaultStoryId,
   judgeTabOrder,
   judgeFocusRingVisible,
+  computeExpectedTabStops,
 } from '../../audit/09-a11y-tree.mjs';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
@@ -147,5 +148,97 @@ describe('09-a11y-tree: judgeFocusRingVisible (BX3, pure)', () => {
 
   it('returns null for a null step (nothing sampled)', () => {
     assert.equal(judgeFocusRingVisible(null), null);
+  });
+});
+
+describe('09-a11y-tree: computeExpectedTabStops (Finding 2 — BX2 census exclusions)', () => {
+  it('excludes the host-origin boundary marker', () => {
+    const census = [
+      { tag: 'mud-button', origin: 'host' },
+      { tag: 'button', origin: 'shadow' },
+    ];
+    const expected = computeExpectedTabStops(census);
+    assert.equal(expected.length, 1);
+    assert.equal(expected[0].tag, 'button');
+  });
+
+  it('excludes a disabled control', () => {
+    const census = [{ tag: 'button', origin: 'shadow', disabled: true }];
+    assert.deepEqual(computeExpectedTabStops(census), []);
+  });
+
+  it('excludes an element with tabindex="-1" (roving-tabindex group member)', () => {
+    const census = [{ tag: 'div', role: 'tab', origin: 'shadow', tabIndexAttr: '-1' }];
+    assert.deepEqual(computeExpectedTabStops(census), []);
+  });
+
+  it('excludes an <a> with no href', () => {
+    const census = [{ tag: 'a', origin: 'light', hasHref: false }];
+    assert.deepEqual(computeExpectedTabStops(census), []);
+  });
+
+  it('keeps an <a> that has an href', () => {
+    const census = [{ tag: 'a', origin: 'light', hasHref: true }];
+    assert.equal(computeExpectedTabStops(census).length, 1);
+  });
+
+  it('keeps only one radio per name group — the checked one', () => {
+    const census = [
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: false },
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: true },
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: false },
+    ];
+    const expected = computeExpectedTabStops(census);
+    assert.equal(expected.length, 1);
+    assert.equal(expected[0].checkedState, true);
+  });
+
+  it('keeps the first radio in a group when none is checked', () => {
+    const first = {
+      tag: 'input',
+      inputType: 'radio',
+      role: 'radio',
+      origin: 'shadow',
+      groupName: 'plan',
+      checkedState: false,
+    };
+    const second = {
+      tag: 'input',
+      inputType: 'radio',
+      role: 'radio',
+      origin: 'shadow',
+      groupName: 'plan',
+      checkedState: false,
+    };
+    const expected = computeExpectedTabStops([first, second]);
+    assert.equal(expected.length, 1);
+    assert.equal(expected[0], first);
+  });
+
+  it('excludes a hidden element (e.g. a closed overlay panel present but untabbable)', () => {
+    const census = [{ tag: 'button', origin: 'shadow', visible: false }];
+    assert.deepEqual(computeExpectedTabStops(census), []);
+  });
+
+  it('keeps a plain interactive element untouched', () => {
+    const census = [{ tag: 'button', origin: 'shadow', disabled: false, tabIndexAttr: null, hasHref: null }];
+    assert.equal(computeExpectedTabStops(census).length, 1);
+  });
+
+  // Regression proof for the finding: before this filter, a mud-button
+  // story's census (host + one shadow <button>) fed straight into
+  // judgeTabOrder unfiltered except for `origin !== 'host'`; a radio group's
+  // extra members had no exclusion at all and inflated the expected count
+  // past what Tab could ever reach — producing a false A11Y-BX2-TAB-ORDER-GAP.
+  it('a filtered radio-group census no longer trips judgeTabOrder when only one radio is walked', () => {
+    const rawCensus = [
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: true },
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: false },
+      { tag: 'input', inputType: 'radio', role: 'radio', origin: 'shadow', groupName: 'plan', checkedState: false },
+    ];
+    const tabWalk = [{ tag: 'input', role: 'radio' }];
+    assert.equal(judgeTabOrder(computeExpectedTabStops(rawCensus), tabWalk), null);
+    // Unfiltered, the same data would have flagged a gap (proves the old shape failed).
+    assert.notEqual(judgeTabOrder(rawCensus, tabWalk), null);
   });
 });

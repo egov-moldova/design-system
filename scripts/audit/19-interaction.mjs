@@ -34,6 +34,15 @@ import { analyzeStoriesFile } from './05-story-exports.mjs';
 
 const TOOL = 'interaction';
 
+/**
+ * `meta.checks` entry for a BX id that does not apply to this component —
+ * recorded with its reason rather than omitted, so a reader can tell "ran,
+ * nothing found" apart from "did not apply here".
+ */
+function notApplicable(reason) {
+  return { status: 'not-applicable', reason };
+}
+
 const USAGE = defaultUsage(
   '19-interaction',
   'Local-Playwright BX checks not covered elsewhere: BX1 hydration, BX4 escape/activation, BX5 light/dark structural diff, BX7 form round-trip.',
@@ -185,13 +194,17 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
     }
 
     // BX4 — escape / activation (conditional: OVERLAY archetype or an
-    // open/close/toggle @Method).
+    // open/close/toggle @Method). Not applicable to every component — record
+    // that in `checks.bx4` rather than omitting the key, so a reader can
+    // tell "ran, nothing found" apart from "did not apply here".
     if (isBx4Applicable(contract)) {
       const bx4Data = await runBx4(page, target.name, contract);
       checks.bx4 = bx4Data;
       const bx4Finding = judgeBx4Escape(bx4Data);
       if (bx4Finding) findings.push(finding(bx4Finding));
       await applyNoMotionStyle(page); // re-inject: BX4 may have rendered new shadow content.
+    } else {
+      checks.bx4 = notApplicable('component is not OVERLAY archetype and has no open/close/toggle @Method');
     }
 
     // BX5 — light + dark structural diff.
@@ -201,11 +214,15 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
     if (bx5Finding) findings.push(finding(bx5Finding));
 
     // BX7 — form submission round-trip (conditional: FORM archetype only).
+    // A further "no resolvable name" not-applicable case is decided live,
+    // inside runBx7, once the story's actual DOM state is known.
     if (isBx7Applicable(contract)) {
-      const bx7Data = await runBx7(page, target.name);
-      checks.bx7 = bx7Data;
+      const bx7Data = await runBx7(page, target.name, { isCheckable: isCheckableControl(contract) });
+      checks.bx7 = bx7Data.applicable === false ? notApplicable(bx7Data.reason) : bx7Data;
       const bx7Finding = judgeBx7FormRoundTrip(bx7Data);
       if (bx7Finding) findings.push(finding(bx7Finding));
+    } else {
+      checks.bx7 = notApplicable('component archetype is not FORM');
     }
   } finally {
     await context.close();
@@ -273,6 +290,23 @@ async function runBx4(page, componentName, contract) {
   );
   await page.waitForTimeout(350);
 
+  // Capture the open panel/dialog node BEFORE Escape closes it, so the
+  // post-Escape check can tell "focus is stranded inside the closed panel"
+  // (a real trap) apart from "focus correctly returned to a trigger that
+  // lives inside the host" (e.g. the button that opens the overlay, when it
+  // is slotted content) — both land `document.activeElement` inside the
+  // host, but only the first is WCAG 2.1.2's failure mode.
+  await page.evaluate(name => {
+    const host = document.querySelector(name);
+    if (!host) {
+      window.__auditBx4Panel = null;
+      return;
+    }
+    const root = host.shadowRoot ?? host;
+    window.__auditBx4Panel =
+      root.querySelector('dialog, [role="dialog"], [role="alertdialog"], [aria-modal="true"]') ?? null;
+  }, componentName);
+
   await page.keyboard.press('Escape');
   await page.waitForTimeout(350);
 
@@ -286,14 +320,12 @@ async function runBx4(page, componentName, contract) {
     // `host.open` is the source of truth.
     const stillOpen = host ? host.open === true : false;
     const active = document.activeElement;
-    // This check opens the overlay via prop injection, not a real trigger
-    // click, so there is no genuine "trigger element" to compare focus
-    // against (live Storybook run, mud-modal, 2026-09-21: comparing tag
-    // names against a null pre-open activeElement was unstable run to run).
-    // What IS testable without a trigger: focus must not be left stranded
-    // INSIDE the now-closed overlay (WCAG 2.1.2's actual failure mode).
-    const focusTrappedInClosedOverlay =
-      !!active && !!host && (active === host || host.contains(active) || !!host.shadowRoot?.contains(active));
+    const panel = window.__auditBx4Panel;
+    delete window.__auditBx4Panel;
+    // Only the panel/dialog content itself is a trap. Focus elsewhere inside
+    // the host (e.g. a trigger button) is the correct, expected restore
+    // target and is never flagged.
+    const focusTrappedInClosedOverlay = !!active && !!panel && (active === panel || panel.contains(active));
     return { stillOpen, focusTrappedInClosedOverlay };
   }, componentName);
 }
@@ -367,51 +399,84 @@ export function isBx7Applicable(contract) {
   return contract?.archetype?.value === 'FORM';
 }
 
-async function runBx7(page, componentName) {
-  return page.evaluate(name => {
-    const host = document.querySelector(name);
-    if (!host) return { found: false };
-    const calls = [];
-    // ElementInternals is created inside the component's constructor, so we
-    // cannot grab this host's own instance from outside — patch the
-    // prototype's setFormValue instead and count every call's argc.
-    const proto = window.ElementInternals?.prototype;
-    const original = proto?.setFormValue;
-    if (proto && original) {
-      proto.setFormValue = function (...args) {
-        calls.push(args.length);
-        return original.apply(this, args);
+/**
+ * A checkable control (`mud-checkbox`/`mud-switch`/`mud-radio`) only reaches
+ * `internals.setFormValue` from its `@Watch('checked')` handler — setting
+ * `host.value` alone never submits (`src/components/mud-checkbox/mud-checkbox.tsx:210-213`).
+ * Detected structurally (a `checked` @Prop), not by name, so it generalizes
+ * to any future checkable archetype. Pure — exported for tests.
+ */
+export function isCheckableControl(contract) {
+  return (contract?.props ?? []).some(p => p.name === 'checked');
+}
+
+async function runBx7(page, componentName, { isCheckable = false } = {}) {
+  return page.evaluate(
+    ({ name, isCheckable }) => {
+      const host = document.querySelector(name);
+      if (!host) return { found: false, applicable: false, reason: 'component host not found' };
+
+      // BX7 needs a key to read back out of FormData. A story that sets no
+      // `name` (attribute or property) probes an empty string, which every
+      // component "fails" identically — that is not a finding about the
+      // component, so it is reported not-applicable instead.
+      const resolvedName = host.getAttribute('name') || host.name || '';
+      if (!resolvedName) {
+        return {
+          found: true,
+          applicable: false,
+          reason: 'story sets no resolvable "name" (attribute or property) on the host',
+        };
+      }
+
+      const calls = [];
+      // ElementInternals is created inside the component's constructor, so we
+      // cannot grab this host's own instance from outside — patch the
+      // prototype's setFormValue instead and count every call's argc.
+      const proto = window.ElementInternals?.prototype;
+      const original = proto?.setFormValue;
+      if (proto && original) {
+        proto.setFormValue = function (...args) {
+          calls.push(args.length);
+          return original.apply(this, args);
+        };
+      }
+
+      const form = document.createElement('form');
+      document.body.appendChild(form);
+      form.appendChild(host); // moves the existing (already-hydrated) host into the injected form
+      // Checkable controls submit only when `checked` — set it before
+      // reading FormData (see isCheckableControl above).
+      if (isCheckable) host.checked = true;
+      if (host.value !== undefined) host.value = 'audit-value';
+      else if (host.setAttribute) host.setAttribute('value', 'audit-value');
+
+      const data = new FormData(form);
+      const entry = data.get(resolvedName);
+
+      if (proto && original) proto.setFormValue = original;
+
+      return {
+        found: true,
+        applicable: true,
+        formDataKey: resolvedName,
+        formDataHasKey: data.has(resolvedName),
+        formDataValue: entry,
+        setFormValueCallArgCounts: calls,
       };
-    }
-
-    const form = document.createElement('form');
-    document.body.appendChild(form);
-    form.appendChild(host); // moves the existing (already-hydrated) host into the injected form
-    if (host.value !== undefined) host.value = 'audit-value';
-    else if (host.setAttribute) host.setAttribute('value', 'audit-value');
-
-    const data = new FormData(form);
-    const name2 = host.getAttribute('name') || host.name || '';
-    const entry = name2 ? data.get(name2) : null;
-
-    if (proto && original) proto.setFormValue = original;
-
-    return {
-      found: true,
-      formDataKey: name2,
-      formDataHasKey: name2 ? data.has(name2) : false,
-      formDataValue: entry,
-      setFormValueCallArgCounts: calls,
-    };
-  }, componentName);
+    },
+    { name: componentName, isCheckable },
+  );
 }
 
 /**
  * PASS: FormData carries the expected key, and every `setFormValue` call
- * used two arguments (name, state) — never one. Pure — exported for tests.
+ * used two arguments (name, state) — never one. `applicable: false` (no
+ * resolvable name) is not a finding. Pure — exported for tests.
  */
 export function judgeBx7FormRoundTrip(data) {
   if (!data?.found) return null;
+  if (data.applicable === false) return null;
   if (!data.formDataHasKey) {
     return {
       severity: 'error',
@@ -458,3 +523,4 @@ if (isDirectRun) {
 }
 
 export { TOOL };
+export { notApplicable };

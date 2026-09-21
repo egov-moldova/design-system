@@ -14,7 +14,9 @@ import {
   judgeBx4Escape,
   judgeBx5StructuralDiff,
   isBx7Applicable,
+  isCheckableControl,
   judgeBx7FormRoundTrip,
+  notApplicable,
 } from '../../audit/19-interaction.mjs';
 
 describe('19-interaction: judgeBx1Hydration', () => {
@@ -153,5 +155,39 @@ describe('19-interaction: judgeBx7FormRoundTrip', () => {
 
   it('returns null when not found (not applicable)', () => {
     assert.equal(judgeBx7FormRoundTrip({ found: false }), null);
+  });
+
+  // Finding 1 (BX7 no-name gate): before the fix, `runBx7` always probed
+  // `data.get('')` for a story with no resolvable `name`, and
+  // `judgeBx7FormRoundTrip` had no way to tell that apart from a real
+  // missing-key defect — every unnamed story (e.g. mud-button's default
+  // story) failed BX7 on every run. The fix makes `runBx7` report
+  // `applicable: false` for that case; this proves the judge never turns it
+  // into a finding.
+  it('reports no finding when the capture is not applicable (no resolvable name)', () => {
+    assert.equal(
+      judgeBx7FormRoundTrip({ found: true, applicable: false, reason: 'story sets no resolvable "name"' }),
+      null,
+    );
+  });
+});
+
+describe('19-interaction: isCheckableControl (Finding 1 — checked-based form round-trip)', () => {
+  it('is true for a contract carrying a `checked` prop (mud-checkbox/mud-switch/mud-radio)', () => {
+    assert.equal(isCheckableControl({ props: [{ name: 'checked' }, { name: 'disabled' }] }), true);
+  });
+
+  it('is false for a contract with no `checked` prop (e.g. mud-button)', () => {
+    assert.equal(isCheckableControl({ props: [{ name: 'name' }, { name: 'disabled' }] }), false);
+  });
+
+  it('handles a missing contract', () => {
+    assert.equal(isCheckableControl(null), false);
+  });
+});
+
+describe('19-interaction: notApplicable (Finding 6)', () => {
+  it('shapes a not-applicable meta.checks entry with its reason', () => {
+    assert.deepEqual(notApplicable('no resolvable name'), { status: 'not-applicable', reason: 'no resolvable name' });
   });
 });
