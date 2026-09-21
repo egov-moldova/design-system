@@ -319,15 +319,18 @@ for (const [, t] of tokens) {
 // reference resolves to the same value in both modes (focusRing.color.halo, #75), while a reference
 // to a semantic token (`{color.border.brand.focus-ring}`) picks up that token's dark override.
 {
-  // These keywords resolve against their context, so they already look right in either theme.
-  const THEME_NEUTRAL_KEYWORDS = new Set(['transparent', 'currentcolor', 'inherit']);
+  // These look right in either theme: nothing to see, or the element's own text colour. Not
+  // `inherit`: a CSS-wide keyword in a custom property applies to the property itself, so
+  // `var(--x)` never receives it.
+  const THEME_NEUTRAL_KEYWORDS = new Set(['transparent', 'currentcolor']);
+  const isThemeNeutral = t => typeof t.$value === 'string' && THEME_NEUTRAL_KEYWORDS.has(t.$value.trim().toLowerCase());
   const isThemeBlind = t => {
-    if (typeof t.$value === 'string' && THEME_NEUTRAL_KEYWORDS.has(t.$value.trim().toLowerCase())) return false;
     const refs = [...iterRefs(t.$value)];
     return refs.length === 0 || refs.every(ref => ref.startsWith('palette.'));
   };
   const needsDark = t =>
     t.mode === 'light' &&
+    !isThemeNeutral(t) &&
     (t.path.startsWith('color.') || (t.tier === 'semantic' && t.$type === 'color' && isThemeBlind(t)));
   for (const t of tokens.values()) {
     if (needsDark(t) && !tokens.has(`dark:${t.path}`)) {

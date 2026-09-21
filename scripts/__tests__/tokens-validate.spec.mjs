@@ -142,9 +142,23 @@ describe('tokens-validate — dark-mode parity', () => {
     assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': outer }), []);
   });
 
-  it('accepts CSS colour keywords that already look right in both themes', () => {
-    const keywords = { overlay: { clear: color('transparent'), ink: color('currentColor'), host: color('inherit') } };
-    assert.deepEqual(darkParity({ 'tokens/core/overlay.tokens.json': keywords }), []);
+  it('accepts transparent and currentColor, which look right in both themes, in color.* too', () => {
+    const keywords = { overlay: { clear: color('transparent'), ink: color('currentColor') } };
+    const light = {
+      color: {
+        border: { brand: { 'focus-ring': color('{palette.blue.500}') } },
+        background: { clear: color('transparent') },
+      },
+    };
+    assert.deepEqual(
+      darkParity({ 'tokens/core/overlay.tokens.json': keywords, 'tokens/core/color.tokens.json': light }),
+      [],
+    );
+  });
+
+  it('still warns about inherit, which a custom property never passes through var()', () => {
+    const host = { overlay: { host: color('inherit') } };
+    assert.deepEqual(darkParity({ 'tokens/core/overlay.tokens.json': host }), ['dark-mode-missing overlay.host']);
   });
 
   it('does not ask a non-colour token for a dark override', () => {
