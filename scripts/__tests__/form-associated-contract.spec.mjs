@@ -24,7 +24,7 @@ const COMPONENTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)
 
 /**
  * Every component `.tsx` under `src/components`, found by walking files rather
- * than directories: `mud-header-nav-item.tsx` lives inside `mud-header/`, so
+ * than directories: `mud-sidebar-item.tsx` lives inside `mud-sidebar/`, so
  * a directory-per-component listing would silently skip it — and skipping is
  * the one failure mode a ratchet must not have.
  */

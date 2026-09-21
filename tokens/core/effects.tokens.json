@@ -11,7 +11,7 @@
     "300": {
       "$value": "0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 5px 12px 0px rgba(0, 0, 0, 0.08), 0px 0px 0.5px 0px rgba(0, 0, 0, 0.15)",
       "$type": "string",
-      "$comment": "Figma 'Drop Shadow/300' effect style — verified via Dev Mode metadata on the selection-menu instance (454:5903). Also drives mud-menu, mud-date-picker, mud-header (mega-menu), and mud-phone-input, which all reference this same tier."
+      "$comment": "Figma 'Drop Shadow/300' effect style — verified via Dev Mode metadata on the selection-menu instance (454:5903). Also drives mud-menu, mud-date-picker and mud-phone-input, which all reference this same tier."
     },
     "400": {
       "$value": "0px 12px 16px 6px rgba(40, 46, 55, 0.06), 0px 4px 6px 0px rgba(40, 46, 55, 0.06)",

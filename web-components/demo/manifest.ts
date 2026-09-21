@@ -104,7 +104,6 @@ export const CATEGORIES: Category[] = [
     components: [
       { tag: 'mud-table', blurb: 'Data table (columns/rows props, cell slots)' },
       { tag: 'mud-receipt', blurb: 'Transaction receipt molecule' },
-      { tag: 'mud-footer', blurb: 'Site footer (evo / simple)' },
       { tag: 'mud-date-picker', blurb: 'Calendar — single / range / multi' },
     ],
   },

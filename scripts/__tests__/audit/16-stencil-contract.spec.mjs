@@ -197,7 +197,7 @@ export class P {
       spawnSync(process.execPath, [SCRIPT.pathname, '--all', '--json'], { encoding: 'utf8' }).stdout,
     );
     assert.ok(all.meta.filesScanned > all.meta.componentsScanned, 'sub-component files are scanned');
-    const sub = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-header-nav-item', '--json'], { encoding: 'utf8' });
+    const sub = spawnSync(process.execPath, [SCRIPT.pathname, 'mud-sidebar-item', '--json'], { encoding: 'utf8' });
     const envelope = JSON.parse(sub.stdout);
     assert.deepEqual(
       envelope.findings.filter(f => f.code === 'STRUCTURE-NOT-FOUND'),
