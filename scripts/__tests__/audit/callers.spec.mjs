@@ -104,7 +104,11 @@ const GATE_CALLERS = [
   '.claude/agents/refactor-component.md',
   '.claude/commands/migrate-component.md',
 ];
-const LEGS = ['.claude/agents/a11y-verifier.md', '.claude/skills/stencil-compliance/SKILL.md'];
+const LEGS = [
+  '.claude/agents/a11y-verifier.md',
+  '.claude/agents/pixel-perfect-verifier.md',
+  '.claude/skills/stencil-compliance/SKILL.md',
+];
 
 /** The `audit-production` PASS/FAIL/WARN table header this plan replaces (Design §1 / Phase 5 task 2). */
 const PASS_FAIL_WARN_HEADER = '**Pass/Fail criteria**:';

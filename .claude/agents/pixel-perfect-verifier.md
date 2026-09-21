@@ -25,6 +25,41 @@ Optional:
 
 There is no threshold input: pass and warn thresholds live in `scripts/audit/lib/image-diff.mjs` (`DEFAULT_PASS`, `DEFAULT_WARN`).
 
+When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port from
+`.audit-storybook.json` and use it instead of the 6007 default.
+
+## AI-leg contract (when dispatched at `--depth deep`)
+
+The audit orchestrator (`scripts/audit/run-all.mjs`) opens the `ai-figma-themes` row
+(`idsJudged: ['DX-figma-themes']`) for this leg before dispatch and records its `inputHash`. This
+agent NEVER runs `verdict.mjs` or `yarn audit:component`, and never stops on either's exit code —
+only `verdict.mjs` computes the state. Its job is to close the row by writing
+
+```
+audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
+```
+
+in the shape `verdict.mjs`'s `closeAiRow` requires:
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "pixel-perfect-verifier",
+  "idsJudged": ["DX-figma-themes"],
+  "inputHash": "<the hash from the opened row, when passed — omit otherwise>",
+  "findings": [
+    { "severity": "error", "code": "PIXEL-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
+    { "question": "...", "options": ["...", "..."] }
+  ]
+}
+```
+
+Write it with `Bash` (this agent has no `Write` tool); the path is evidence output, not source.
+A finding with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"` is a blocking
+`FAIL` at `deep`. A missing file, or one that omits `DX-figma-themes`, leaves the verdict
+`INCOMPLETE` on the next `yarn audit:component --run-dir <run>` recompute, which this leg does
+not run.
+
 ## Procedure
 
 1. **Preflight** (skill step 0). Storybook on 6007 and the Playwright browser installed — abort with the matching failure mode below if either is missing; do not start or stop Storybook yourself. `FIGMA_TOKEN` is needed for references; the official Figma MCP only when the manifest is missing or a state must be read from Figma.
@@ -78,7 +113,8 @@ Verdict: FAIL | INCOMPLETE | WARN | PASS
 
 ## Constraints
 
-- **Read-only** on source files (`src/`, `tokens/`, `.claude/`). Scratch output goes to `.audit-figma/` and `.audit-screenshots/` only.
+- **Read-only** on source files (`src/`, `tokens/`, `.claude/`). Scratch output goes to `.audit-figma/` and `.audit-screenshots/` only; at `deep`, the one file it writes is its `ai-findings.json` (§ AI-leg contract).
+- **Never invokes `verdict.mjs` / `yarn audit:component`** and never stops on its exit code.
 - **No Storybook lifecycle**: do not start / stop / restart Storybook.
 - **No token build**: do not run `yarn tokens.build`. If CSS looks stale (every state fails with no design change), say so and let the orchestrator decide.
 
