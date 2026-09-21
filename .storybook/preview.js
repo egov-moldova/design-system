@@ -17,6 +17,7 @@ const { color: colorDark } = coreDarkTokens;
 import '../dist/mud/mud.esm.js';
 import customElements from './custom-elements.json';
 import { extractArgTypes as extractManifestArgTypes, labelPropertiesWithAttributes } from './manifest-arg-types.mjs';
+import { installDocsStoryOverflow } from './docs-story-overflow.mjs';
 
 import '../dist/mud/mud.css';
 import './storybook-overrides.css';
@@ -84,6 +85,15 @@ if (typeof document !== 'undefined') {
       }
     }
   });
+}
+
+// Keep horizontal scrolling on the Docs story frames that need it, so every other frame
+// can let its popovers overflow (see ./docs-story-overflow.mjs).
+// This module re-runs on HMR (`import.meta.hot.accept()` above), so the previous
+// install is torn down first instead of stacking a second set of listeners.
+if (typeof window !== 'undefined') {
+  window.__mudUninstallDocsStoryOverflow?.();
+  window.__mudUninstallDocsStoryOverflow = installDocsStoryOverflow(window);
 }
 
 // Cleanup decorator to remove toast notifications when switching stories
