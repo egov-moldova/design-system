@@ -160,39 +160,6 @@
 }
 
 /*
- * Header (title + description). Pure CSS — empty wrappers collapse via :empty
- * so consumers using only the default slot pay no layout cost.
- */
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tooltip-header-gap, var(--spacing-2));
-  margin-block-end: var(--tooltip-header-margin-block-end, var(--spacing-4));
-}
-
-.header:empty,
-.header:has(.title:empty):has(.description:empty) {
-  display: none;
-  margin-block-end: 0;
-}
-
-.title {
-  font-family: var(--tooltip-title-font-family, var(--tooltip-label-font-family));
-  font-size: var(--tooltip-title-font-size, var(--tooltip-label-font-size));
-  font-weight: var(--tooltip-title-font-weight, 600);
-  line-height: var(--tooltip-title-line-height, var(--tooltip-label-line-height));
-  color: var(--tooltip-title-color-default, var(--tooltip-label-color-default));
-}
-
-.description {
-  font-family: var(--tooltip-description-font-family, var(--tooltip-label-font-family));
-  font-size: var(--tooltip-description-font-size, var(--tooltip-label-font-size));
-  font-weight: var(--tooltip-description-font-weight, var(--tooltip-label-font-weight));
-  line-height: var(--tooltip-description-line-height, var(--tooltip-label-line-height));
-  color: var(--tooltip-description-color-default, var(--tooltip-label-color-default));
-}
-
-/*
  * Arrow offset along the cross-axis is set on the host as `--_arrow-offset`
  * by updateGeometry. The `transform` centres the arrow over that offset
  * (half its width / height). Combined placements (e.g. `top-left`) share the

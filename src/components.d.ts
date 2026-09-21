@@ -3193,7 +3193,7 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty AND no `title` / `description` slots are present.
+          * Convenience: tooltip body text. Used only when the default slot is empty.
          */
         "content"?: string;
         /**
@@ -8438,7 +8438,7 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty AND no `title` / `description` slots are present.
+          * Convenience: tooltip body text. Used only when the default slot is empty.
          */
         "content"?: string;
         /**

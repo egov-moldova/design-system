@@ -77,6 +77,21 @@ describe('mud-tooltip', () => {
       );
       expect(queryCloseButton(root)).toBeNull();
     });
+
+    it('exposes only the trigger and default slots, matching the single-text Figma tooltip', async () => {
+      const { root } = await render(
+        <mud-tooltip>
+          <button slot="trigger" type="button">
+            Trigger
+          </button>
+          <span slot="title">Title</span>
+          Body
+        </mud-tooltip>,
+      );
+      const slots = Array.from(root?.shadowRoot?.querySelectorAll('slot') ?? []).map(s => s.getAttribute('name'));
+      expect(slots).toEqual(['trigger', null]);
+      expect(root?.shadowRoot?.querySelector('.header')).toBeNull();
+    });
   });
 
   describe('size prop', () => {
