@@ -18,9 +18,8 @@ moves it there and off the host, as before, and now also follows later changes t
 
 **Migration:** HTML using `aria-label="…"` needs no change. Setting the property
 (`el.ariaLabel = '…'`) keeps working at runtime, because the browser reflects it to the attribute.
-What changes is the typing: `ariaLabel` is gone from `components.d.ts` and from the
-`@egov-moldova/mud-react` wrappers, so TSX that passes `ariaLabel={…}` stops compiling — pass
-`aria-label={…}` instead. Once moved off the host, the attribute is no longer there, so reading
+What changes is the typing: `ariaLabel` is gone from these components in `components.d.ts`, so
+Stencil TSX that passes `ariaLabel={…}` stops compiling — pass `aria-label={…}` instead. Once moved off the host, the attribute is no longer there, so reading
 `el.ariaLabel` back returns `null`, and a label is cleared by setting it to an empty string.
 
 ### Removed — `mud-cookie-banner` and `mud-receipt`
