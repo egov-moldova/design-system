@@ -27,8 +27,11 @@ Per the plan that produced this suite, every script obeys:
 2. **Never force AI to compensate** — output is a clean JSON envelope, no raw
    text parsing needed downstream.
 3. **Read-only** on source files. No script writes to `src/`, `tokens/`, or
-   `.claude/`. The scaffolders under `scripts/scaffold/` are the only writes,
-   and they require an explicit `--write` flag.
+   `.claude/`, and none writes a `*.figma.json` manifest. The audit's own
+   outputs are git-ignored: `audit/` (verdicts, fix briefs, run inputs),
+   `.audit-figma/` (the `HEAD` copy of each manifest, Figma references) and
+   `.audit-storybook.json`. The scaffolders under `scripts/scaffold/` are the
+   only source writers, and they require an explicit `--write` flag.
 4. **Regression-gated** before any AI prompt is slimmed: run the legacy
    workflow and the new workflow on the same component; critical + high
    findings must be identical (warnings ≤ 5% diff, and only in the direction
@@ -46,11 +49,13 @@ scripts/audit/
 │   ├── state-page.mjs               — render a manifest state (fixture, clock, theme, interactions) + capture
 │   ├── image-diff.mjs               — Pixelmatch with background flattening and canvas alignment
 │   ├── style-values.mjs             — normalise/compare CSS values (colours, lengths, shadows)
-│   ├── storybook-helpers.mjs        — port probe (TCP, no shell), URL builder
+│   ├── storybook-helpers.mjs        — port probe (TCP, no shell), URL builder, this worktree's Storybook
 │   ├── ts-parser.mjs                — TypeScript compiler API wrappers
-│   ├── cli-args.mjs                 — shared --json/--out/--all/--changed parsing
-│   ├── json-output.mjs              — buildResult(), emit(), finding() (schemaVersion 1.0.0)
-│   └── exit-codes.mjs               — 0 clean, 1 findings, 2 internal
+│   ├── cli-args.mjs                 — shared --json/--out/--all/--changed parsing, --depth resolution
+│   ├── json-output.mjs              — buildResult(), emit(), finding(); STATE / LEVEL / ROW_STATUS enums
+│   ├── env-preflight.mjs            — is the install usable (Node version, required packages)
+│   ├── fix-brief.mjs                — renders audit/<component>/fix-brief.md from a verdict
+│   └── exit-codes.mjs               — script exits 0/1/2; STATE_EXIT_CODES for verdict.mjs
 ├── 01-component-structure.mjs       (Wave A — fast, no browser)
 ├── 02-stencil-antipatterns.mjs      (Wave A) ★ highest-impact
 ├── 03-git-hygiene.mjs               (Wave A)
@@ -58,16 +63,20 @@ scripts/audit/
 ├── 05-story-exports.mjs             (Wave A)
 ├── 07-integration-usage.mjs         (Wave A)
 ├── 14-component-contract.mjs        (Wave A)
+├── 16-stencil-contract.mjs          (Wave A — report-only Stencil rules)
+├── 17-adapter-contract.mjs          (Wave A as row 17 `--part source`; Wave B as row 18 `--part cem`)
 ├── 06-test-coverage.mjs             (Wave B — depends on coverage/coverage-summary.json)
 ├── 08-bundle-size.mjs               (Wave B — depends on dist/)
 ├── 13-token-diff.mjs                (Wave B — component mode needs tokens-tokenhaus.json)
-├── 09-a11y-tree.mjs                 (Wave C — Playwright + Storybook)
+├── 09-a11y-tree.mjs                 (Wave C — Playwright + Storybook; BX2, BX3)
 ├── 10-contrast-pairs.mjs            (Wave C — Playwright + Storybook)
 ├── 11-pixel-diff-states.mjs         (Wave C — Playwright + Pixelmatch + Figma refs)
-├── 12-console-errors.mjs            (Wave C — Playwright + Storybook)
+├── 12-console-errors.mjs            (Wave C — Playwright + Storybook; BX6)
 ├── 15-style-parity.mjs              (Wave C — Playwright + Figma state manifest)
+├── 19-interaction.mjs               (Wave C — Playwright + Storybook; BX1, BX4, BX5, BX7)
 ├── figma-refs.mjs                   — export Figma reference PNGs for a manifest (REST); --check for coverage and freshness
-└── run-all.mjs                      — orchestrator (parallel within wave, sequential across waves)
+├── run-all.mjs                      — orchestrator (parallel within wave, sequential across waves)
+└── verdict.mjs                      — computes and writes the verdict; `yarn audit:component`
 
 scripts/scaffold/
 ├── lib/ts-template-helpers.mjs
@@ -116,6 +125,8 @@ Per-script extras land under `meta` (e.g. `meta.contract` for
 
 ### Exit codes
 
+Every script and `run-all.mjs`:
+
 | code | meaning |
 |------|---------|
 | 0    | clean — no errors (warnings + info OK) |
@@ -124,6 +135,17 @@ Per-script extras land under `meta` (e.g. `meta.contract` for
 
 Warnings DO NOT change the exit code — callers that want stricter behavior can
 read the JSON.
+
+`verdict.mjs` (and `yarn audit:component`) exits with the verdict state instead
+(`STATE_EXIT_CODES` in `lib/exit-codes.mjs`); gate callers branch on this:
+
+| code | state |
+|------|-------|
+| 0    | `PASS` |
+| 1    | `FAIL` |
+| 3    | `INCOMPLETE` |
+| 4    | `NEEDS-DECISION` |
+| 2    | usage or internal error |
 
 ### Severity guide
 
@@ -164,38 +186,64 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 | `yarn audit:bundle-size <X>`       | run 08 (reads existing dist) |
 | `yarn audit:token-diff <X>`        | run 13 |
 | `yarn audit:contract <X>`          | run 14 |
+| `yarn audit:stencil-contract <X>`  | run 16 (report-only) |
 | `yarn audit:a11y-tree <X>`         | run 09 (needs Storybook + Playwright) |
 | `yarn audit:contrast-pairs <X>`    | run 10 (needs Storybook + Playwright) |
 | `yarn audit:pixel-diff <X>`        | run 11 (needs Storybook + Playwright + refs; `--figma-dir` in story mode) |
 | `yarn audit:style-parity <X>`      | run 15 (needs Storybook + Playwright + Figma state manifest) |
 | `yarn audit:figma-refs <X>`        | export Figma references for the manifest (needs FIGMA_TOKEN); `--check` reports coverage and freshness |
 | `yarn audit:console-errors <X>`    | run 12 (needs Storybook + Playwright) |
-| `yarn audit:all <X>`               | orchestrator (all waves) |
-| `yarn audit:all:no-browser <X>`    | orchestrator without Wave C |
+| `yarn audit:component <X> --depth <d>` | the gate: run-all with `--verdict`, exit code = verdict state |
+| `yarn audit:all <X>`               | orchestrator only (envelope, no verdict) |
+| `yarn audit:all:no-browser <X>`    | orchestrator with the browser checks excused |
+
+17 and 19 have no `audit:*` alias: run `node scripts/audit/17-adapter-contract.mjs <X> --part source|cem`
+or `node scripts/audit/19-interaction.mjs <X> --port <N>`.
 | `yarn scaffold:story <X>`          | generate mud-X.stories.ts boilerplate |
 | `yarn scaffold:test <X>`           | generate mud-X.spec.tsx skeleton |
 
 ## Orchestrator (`run-all.mjs`)
 
 ```bash
-# All checks for one component (11 and 15 run when the component has a Figma state manifest)
-node scripts/audit/run-all.mjs mud-button --json
+# The checks --depth requires (default: standard), prerequisites built automatically
+node scripts/audit/run-all.mjs mud-button --depth standard --json
 
-# Skip browser waves (for CI without Playwright, or pre-commit speed)
-node scripts/audit/run-all.mjs mud-button --no-browser --json
+# Pre-commit speed: lint + Wave A, no build, no browser
+node scripts/audit/run-all.mjs --changed --depth quick --no-browser --json
 
-# Only specific scripts
+# Only specific checks (local iteration — a required id dropped here makes the verdict INCOMPLETE)
 node scripts/audit/run-all.mjs mud-button --only 02,07 --json
 
-# Skip specific scripts
-node scripts/audit/run-all.mjs mud-button --skip 06,08 --json
-
-# Audit changed components vs main (great for pre-PR)
-node scripts/audit/run-all.mjs --changed --no-browser --json
-
-# Audit every mud-* component (CI / housekeeping)
-node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
+# Audit every mud-* component, browser checks excused
+node scripts/audit/run-all.mjs --all --depth quick --no-browser --out reports/audit-all.json
 ```
+
+| Flag | Effect |
+|------|--------|
+| `--depth quick\|standard\|deep` | Which checks run — `REQUIRED_CHECKS` in `verdict.mjs`, the one table. Default `standard`. |
+| `--fast` | Deprecated alias of `--depth quick`. |
+| `--e2e` | Folded into `--depth deep` (the `e2e` row is deferred: no E2E test project). |
+| `--no-browser`, `--ci`, `CI` env | Excuse Wave C and the browser AI legs; the verdict prints `browser: waived (flag \| CI env)` and caps the level at `CLEAN-STATIC`. `--ci` also sets `meta.ciDetected`. |
+| `--no-figma` | Excuse 11, 15, `figma-refs` and the Figma AI leg for this run; `deep` is capped at `MERGE-READY`. |
+| `--skip` / `--only` | Drop or select check ids. |
+| `--verdict`, `--audit-dir <dir>` | Also write the run inputs and have `verdict.mjs` write the verdict (what `yarn audit:component` does). |
+
+**Prerequisites** (`standard`+, only those the selected rows need): `yarn dx:prepare`,
+`yarn dx:stencil:once` (writes `dist/` and `.storybook/custom-elements.json`), the component's own
+coverage (`yarn vitest run --project spec --coverage <dir>`), and a Storybook. A failed
+prerequisite makes the rows that need it `missing-prereq`, never a silent skip. `figma-refs`
+needs `FIGMA_TOKEN`.
+
+**Figma inputs come from `HEAD` only.** Each manifest is read with `git show HEAD:<path>` into
+`.audit-figma/<component>/manifest@HEAD.json` and passed to 11, 15 and `figma-refs` via
+`--manifest`. An uncommitted change is reported as `pending manifest change — not honoured`. A
+component with no design commits `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`.
+
+**Storybook belongs to this worktree.** Several worktrees share port 6007, and a bare TCP probe
+cannot tell whose Storybook answers. `run-all` reuses a server only when this worktree's
+`.audit-storybook.json` (`{ port, pid }`, git-ignored) names a live process that answers on its
+port; otherwise it starts `storybook dev` on a free port, records it, and passes it to every Wave C
+script via `--port`. The server is left running for the next audit.
 
 The orchestrator returns one combined envelope:
 
@@ -226,20 +274,67 @@ The orchestrator returns one combined envelope:
 }
 ```
 
-Read `blockers` first — if non-empty, AI should STOP and report. Then walk
-`findingsByTool` to attach context per script. `results` lets you see which
-script crashed (`ok: false` + `error: "..."`) without diving into findings.
+Each `results[]` row carries `status` — `ok` (an envelope arrived, whatever its
+findings), `crashed`, `missing-prereq` or `skipped` — so a crashed script is
+never read as zero errors. With `--verdict` the per-component envelope also
+carries `audit` (depth, excuses, filters, Figma resolution, `aiLegs[]`). Gate on
+`verdict.mjs`, not on `ok` or `blockers`.
 
 ## Waves
 
-| wave | scripts | runs in parallel | needs |
-|------|---------|------------------|-------|
-| A | 01, 02, 03, 04, 05, 07, 14 | ~500ms total | nothing |
-| B | 06, 08, 13              | ~80ms (token-diff alone, others need build) | `coverage/coverage-summary.json` (06), `dist/` (08), `tokens-tokenhaus.json` (13) |
-| C | 09, 10, 11, 12           | depends on Storybook responsiveness | Storybook on port 6007, Playwright installed |
+| wave | rows | depth | needs |
+|------|------|-------|-------|
+| A | `lint`, 01, 02, 03, 04, 05, 07, 14, 16, 17 | `quick`+ | nothing |
+| B | 06, 08, 13, 18 (17 `--part cem`) | `standard`+ | coverage (06), `dist/` (08), `tokens-tokenhaus.json` (13), the CEM (18) |
+| C | 09, 10, 11, 12, 15, 19 | `standard`+ | this worktree's Storybook, Playwright |
+| D | `figma-refs` (`--check`), `adapter-react` (`yarn build.react`), `adapter-vanilla` (`yarn build.web`), `e2e` (deferred), the `ai-*` rows | `deep` | `FIGMA_TOKEN` for `figma-refs` |
 
-Waves run sequentially; scripts within a wave run in parallel via async
-`spawn`. Wave C is opt-out via `--no-browser`.
+Waves run sequentially; rows within a wave run in parallel via async `spawn`.
+Repo-level rows (03, the adapter builds) run once per invocation and are shared
+across components. The `ai-*` rows are not run by the orchestrator: it opens
+them (leg, ids to judge, SHA-256 of the component sources plus the leg prompt)
+and the `audit-component` skill's legs close them.
+
+## Verdict (`verdict.mjs`)
+
+```bash
+yarn audit:component mud-button --depth standard             # run + verdict, exit = state
+node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # recompute from a run's inputs
+```
+
+The only writer of `verdict.json`. It rebuilds the file from its inputs on every
+run, so a hand-edited or model-written verdict never survives the next run.
+
+- **State**, first match wins: `INCOMPLETE` (a row crashed, missed its
+  prerequisite, or a required id did not run without an excuse) → `FAIL` (any
+  blocking error finding) → `NEEDS-DECISION` (no Figma manifest at `HEAD` at
+  `standard`+, or an AI leg's open question at `deep`) → `PASS`.
+- **Level**, on `PASS` only: `CLEAN-STATIC` (`quick`, or any browser-waived
+  run), `MERGE-READY` (`standard`, or `deep --no-figma`), `PRODUCTION-READY`.
+- **Excuses**, and nothing else: `--no-figma` or a committed `design: "none"`
+  (Figma ids), no manifest at `HEAD` (Figma ids, state `NEEDS-DECISION`), and
+  `--no-browser` / `--ci` / `CI` (browser ids). Each is printed in the headline.
+- **AI findings** are advisory at `quick` / `standard`. At `deep` each `ai-*`
+  row closes only with the leg's `ai-findings.json` naming the leg, every id the
+  row judges, a known major `schemaVersion` and a matching `inputHash`; an
+  `error` finding sets `FAIL`, one with `question` + `options` sets
+  `NEEDS-DECISION`, and none clears a script `FAIL`. The headline prints
+  `ai-legs: self-attested`.
+- `verdict.json` excludes timestamps, durations, stderr text and the run
+  name, so identical inputs give byte-identical files.
+
+Stable paths (git-ignored `audit/`):
+
+| path | written by |
+|------|------------|
+| `audit/<component>/verdict.json` | `verdict.mjs`, every run |
+| `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — one block per non-PASS entry with its `verify:` command |
+| `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
+| `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the AI leg, nothing else |
+| `audit/_run/summary.json` | worst state over the run's components, each `runDir` |
+
+There is no re-check mode: each fix-brief entry's `verify:` command is the
+per-fix check, and only a full run at the same depth can write `PASS`.
 
 ## Browser scripts — Playwright is loaded lazily
 
@@ -307,28 +402,10 @@ What makes the pixel percentage meaningful:
 
 ## CI integration
 
-`.github/workflows/ci.yml` includes:
-
-```yaml
-- name: Audit scripts (smoke tests)
-  run: yarn test:scripts
-
-- name: Audit all components (no browser)
-  run: node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
-  continue-on-error: true
-
-- name: Upload audit report
-  uses: actions/upload-artifact@v4
-  if: always()
-  with:
-    name: audit-all-report
-    path: reports/audit-all.json
-    retention-days: 14
-```
-
-`continue-on-error: true` is deliberate while the suite is brand new — CI
-collects the report as an artifact for review, but doesn't fail the build on
-audit findings yet. Flip to `false` after a sprint of clean runs.
+`.github/workflows/ci.yml` runs `yarn test:scripts` (the specs for every audit
+script, `verdict.mjs` and the fix-brief renderer). It does not run the audit
+itself. A CI job that does gets `browser: waived (CI env)` from the `CI`
+variable and a level no higher than `CLEAN-STATIC`.
 
 ## Adding a new audit script
 
@@ -346,7 +423,9 @@ audit findings yet. Flip to `false` after a sprint of clean runs.
    `data:` URL fixture — `10-contrast-pairs.mjs` exports `measureSamples` for
    exactly that.
 6. Register the script in `AUDIT_SCRIPTS` inside `run-all.mjs` (set `wave`,
-   `requiresBuild`, etc.).
+   `requiresBuild`, etc.) and, if a depth requires it, add its id to
+   `REQUIRED_CHECKS` in `verdict.mjs` (plus `BROWSER_IDS` / `FIGMA_IDS` when it
+   needs a browser or Figma, so the matching waiver excuses it).
 7. Add an `audit:<short-name>` entry to `package.json` scripts.
 8. Update this README's `Layout` and `npm scripts` tables.
 
@@ -358,5 +437,6 @@ audit findings yet. Flip to `false` after a sprint of clean runs.
   component-runtime equivalent; both share the same luminance math).
 - `scripts/tokens-validate.mjs` — DTCG validation; the orchestrator does NOT
   call it today because it operates on the whole token tree, not per-component.
-- `.claude/skills/audit-component/SKILL.md` — explains how AI consumes the
-  envelope under "Fast Path".
+- `.claude/skills/audit-component/SKILL.md` — the procedure around
+  `yarn audit:component`, the `deep` AI legs and the `ai-findings.json`
+  contract.

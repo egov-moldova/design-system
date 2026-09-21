@@ -1,380 +1,240 @@
 ---
 name: audit-component
-description: Use when auditing a single `mud-*` Stencil component for production readiness. Runs a 3-wave audit (Discovery → Static Analysis → Browser Verification) covering structure, TypeScript, design tokens, CSS architecture, Stencil decorators, lifecycle, host management, stories, tests, accessibility, security, and performance. Accepts flags `--deep` (invoke companion skills end-to-end), `--e2e` (include E2E test audit), `--fast` (skip browser wave for pre-commit). Returns a categorized report; never auto-fixes.
+description: Use when auditing a `mud-*` Stencil component (one name, `--changed` or `--all`) for production readiness. Runs `yarn audit:component <name> --depth quick|standard|deep`, whose script-computed verdict (PASS / FAIL / INCOMPLETE / NEEDS-DECISION, exit 0 / 1 / 3 / 4) and `audit/<name>/fix-brief.md` are the result; at `deep` the skill adds the AI legs (stencil-compliance manual rows, full WCAG + media conditions, Figma states in both themes, archetype CX checks, security) and a synthesis. Flags `--no-figma`, `--no-browser` / `--ci`; `--fast` is a deprecated alias of `--depth quick`. Never auto-fixes; never writes the verdict.
 ---
 
 # audit-component — Skill
 
-Audit a single `mud-*` Stencil component end-to-end. This skill encapsulates the logic previously in `/audit-component` slash command so it can be invoked from any orchestrator agent (`new-component`, `refactor-component`, `migrate-component`, `custom-component`, `audit-production`).
+Audits one `mud-*` component (or `--changed` / `--all`). The checks are scripts under
+`scripts/audit/`; the verdict is computed by `scripts/audit/verdict.mjs`, the only writer of
+`audit/<component>/verdict.json`. The model never writes or restates a verdict. This skill adds
+two things only: the AI judgment legs at `deep`, and a synthesis over the results.
 
-## Three-Layer Architecture (read this first)
+## Procedure
 
-The audit runs in three layers. Each layer has a distinct responsibility, runtime, and skip rule. Lower layers capture deterministic data; higher layers interpret it.
+1. **Run the audit.**
 
-| Layer | What runs | When | Skips if |
-|---|---|---|---|
-| **L1 — Deterministic scripts** | `run-all.mjs` orchestrates scripts 01–15 in 3 parallel waves (A static · B build · C browser). Pure I/O + math; byte-identical output across runs. | local + CI | Wave C only: `--no-browser` or `--ci` or `process.env.CI` |
-| **L2 — AI MCP browser checks** | Mandatory BX checklist + archetype-specific CX + discretionary DX. Drives MCP Playwright (`mcp__playwright__browser_*`) to verify keyboard nav, focus traps, form validation, light/dark structural diff — things scripts cannot adapt to per-component. | local only | `--fast` OR `ciDetected` OR MCP unavailable |
-| **L3 — Cross-layer synthesis** | AI correlates L1 + L2 findings, escalates severity, emits the Check Matrix + Verdict. | local + CI | never |
+   ```bash
+   yarn audit:component <mud-name> --depth <quick|standard|deep> [--no-figma] [--no-browser]
+   ```
 
-**Routing flag the orchestrator emits**: `envelope.meta.layer2Required`. AI MUST run L2 when this is `true` (and skip when `false`). `envelope.meta.ciDetected` surfaces the CI state to dashboards.
+   The command runs `run-all.mjs --verdict` and exits with the state's code:
 
-## Inputs
+   | Exit | State | Meaning |
+   | --- | --- | --- |
+   | 0 | `PASS` | Every required check ran and nothing blocks. Carries a `level`. |
+   | 1 | `FAIL` | At least one blocking finding. |
+   | 3 | `INCOMPLETE` | A required check crashed, lacked its prerequisite, or did not run without an excuse. |
+   | 4 | `NEEDS-DECISION` | An open design question — the audit never picks an option. |
+   | 2 | — | Usage or internal error. |
 
-- `componentName` (required): `mud-<name>` — folder name in `src/components/` or `src/hidden/`
-- Optional flags:
-  - `--deep` — also invoke [`stencil-compliance`](../stencil-compliance/SKILL.md)'s [Run contract](../stencil-compliance/SKILL.md#run-contract) + [`accessibility-compliance`](../accessibility-compliance/SKILL.md) deep audit (via `/audit-accessibility`)
-  - `--e2e` — include Phase 5b E2E test audit (default: unit-only). For future when E2E tests are mandated.
-  - `--fast` — skip Wave 3 (browser scripts) AND skip L2. Used by `pre-pr-check` for sub-30s pre-commit pass.
-  - `--ci` — skip Wave C AND skip L2 (auto-set when `process.env.CI` is truthy).
+   Precedence, first match wins: `INCOMPLETE` → `FAIL` → `NEEDS-DECISION` → `PASS`. On several
+   components the worst state decides, and `audit/_run/summary.json` lists each one.
+2. **Read `audit/<component>/fix-brief.md`** — one block per non-PASS entry, each with its
+   `verify:` command. `verdict.json` carries the same data for machines.
+3. **At `deep` only, run the AI legs** (§ AI legs), then recompute:
+   `node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run>`.
+4. **Report the synthesis** ([report-template](references/report-template.md)): the headline
+   line verbatim, the brief's path, cross-check correlations, and what was not verified.
 
-## When to invoke
+**If the orchestrator cannot run** (no `node_modules`, wrong Node, a failed prerequisite), the
+state is `INCOMPLETE` and the brief names the cause and the command that fixes it. Report that.
+Never fall back to reading files and grepping by hand: a hand-run audit has no verdict writer,
+so it can only produce the unreproducible prose verdict this design exists to remove.
 
-| Caller | Why |
-|--------|-----|
-| User via `/audit-component @mud-x` | Pre-PR audit on a specific component |
-| `new-component` agent (after Core Build) | Block scaffolding-to-ready transition |
-| `refactor-component` agent | Verify refactor didn't break invariants |
-| `migrate-component` agent | Required for `src/hidden/` → `src/components/` graduation |
-| `audit-production` agent (Phase 1) | Delegates structural/decorator checks |
+## Depths
 
-## Execution Model
+Required ids per depth are the one table `REQUIRED_CHECKS` in `scripts/audit/verdict.mjs`;
+print it with `node -e "import('./scripts/audit/verdict.mjs').then(m => console.log(m.REQUIRED_CHECKS))"`.
 
+| Depth | Runs | Highest `level` on PASS |
+| --- | --- | --- |
+| `quick` | env preflight, `lint`, Wave A (01 02 03 04 05 07 14 16 17). No build, no browser, no Figma. | `CLEAN-STATIC` |
+| `standard` (default) | quick + prerequisites built automatically + Wave B (06 08 13 18) + Wave C (09 10 11 12 15 19). Figma parity reads the committed manifest only. | `MERGE-READY` |
+| `deep` | standard + `figma-refs --check` (live Figma, file version recorded) + `adapter-react` / `adapter-vanilla` builds + the `ai-*` rows + `e2e` (deferred: no E2E test project) | `PRODUCTION-READY` |
+
+`level` is computed, never chosen: `CLEAN-STATIC` for `quick` or any browser-waived run,
+`MERGE-READY` for `standard` or `deep --no-figma`, `PRODUCTION-READY` for `deep` with Figma
+evidence or a committed `design: "none"`.
+
+## Flags and excuses
+
+| Flag | Effect |
+| --- | --- |
+| `--depth <d>` | `quick` / `standard` / `deep`. `--fast` is a deprecated alias of `--depth quick`; `--e2e` folds into `deep`. |
+| `--no-figma` | Excuses 11, 15, `figma-refs`, `ai-figma-themes` for this run. `deep` is capped at `MERGE-READY`. |
+| `--no-browser`, `--ci`, or `CI` set in the environment | Excuses Wave C and the browser AI legs; the headline prints `browser: waived (flag)` or `(CI env)`; level capped at `CLEAN-STATIC`. |
+| `--changed` / `--all` | One pipeline and one `verdict.json` per component; repo-level rows run once. |
+| `--skip` / `--only` | Local iteration. Dropping a required id makes the state `INCOMPLETE`, never `PASS`. |
+
+A component with no design commits `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`
+as its manifest: same checks excused, full ceiling, reason printed. With neither that nor a
+manifest at `HEAD`, `standard`+ is `NEEDS-DECISION`. Every Figma input is read from the
+committed manifest (`git show HEAD:<path>`); an uncommitted change is reported as
+`not honoured` and changes nothing. The audit never writes a `*.figma.json`.
+
+## AI legs (`deep`)
+
+Run-all opens one row per `ai-*` id in `audit.aiLegs[]` of
+`audit/<component>/runs/<run>/envelope.json` (`<run>`: `components[].runDir` in
+`audit/_run/summary.json`). The first `deep` run therefore exits 3, with one `INCOMPLETE` entry
+per open leg — expected. Run only the legs whose `ai-*` rows appear as `INCOMPLETE` entries; an
+excused row (browser or Figma waiver) is not run, and a leg lists only the ids of its open rows. If any **non-AI** entry is
+`INCOMPLETE`, fix that first: a leg would judge a run that cannot pass.
+
+| Leg (directory name) | Row → ids it must list | Runs as | Model | Effort |
+| --- | --- | --- | --- | --- |
+| `stencil-compliance` | `ai-stencil` → `DX-stencil-manual` | the [`stencil-compliance`](../stencil-compliance/SKILL.md) skill in this session: judge its `manual` rows | session's | session's |
+| `a11y-verifier` | `ai-wcag` → `DX-wcag`; `ai-media` → `DX-media` | agent, dispatched | `sonnet` (pinned) | agent default, not pinned |
+| `pixel-perfect-verifier` | `ai-figma-themes` → `DX-figma-themes` | agent, dispatched | `sonnet` (pinned) | agent default, not pinned |
+| `audit-component` | `ai-archetype` → `CX1`–`CX4`; `ai-security` → `DX-security` | this session ([checklists](references/layer-2-browser-checklists.md)) | session's | session's |
+
+The pins stay so that two people's `deep` runs use the same tiers; a teammate may override one
+locally and knowingly — the audit cannot detect it. The session running this skill pins nothing:
+it is the caller's. **`audit-production` is never a leg**: it runs this audit at `deep`, so
+dispatching it from here would recurse.
+
+**Dispatch rules.**
+- Browser legs run **one at a time**: the `mcp__playwright__*` browser is one instance shared by
+  every session, and two legs driving it read each other's pages. `stencil-compliance` (no
+  browser) may run alongside one browser leg.
+- Each brief carries: the component, the Storybook port from `.audit-storybook.json` (this
+  worktree's server, not 6007), the row ids and `idsJudged` it must close, the `inputHash` copied
+  from `audit.aiLegs[]`, and the output path
+  `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json`. Before reading any value in the
+  browser, the leg confirms the page URL names that port.
+- A leg may run `node scripts/audit/run-all.mjs <component> --only <ids> --json` for evidence. It
+  never runs `verdict.mjs` or `yarn audit:component`, and never stops on their exit code.
+- A leg writes only its `ai-findings.json` — never source, never a manifest, never `verdict.json`.
+
+**`ai-findings.json`** — one file per leg directory; a leg that owns two rows closes both with it:
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "a11y-verifier",
+  "idsJudged": ["DX-wcag", "DX-media"],
+  "inputHash": "sha256:… (from audit.aiLegs[])",
+  "findings": [
+    { "severity": "error", "code": "WCAG-1.4.11-FOCUS-RING", "file": "src/components/mud-x/mud-x.css", "line": 40,
+      "message": "…", "expected": { "value": "≥ 3:1", "source": "WCAG 2.1 SC 1.4.11" }, "actual": "1.9:1" },
+    { "node": "Figma 12:34", "question": "…", "options": ["…", "…"] }
+  ]
+}
 ```
-Wave 1 — Discovery (parallel I/O)
-   ├─ Read all component files (TSX/CSS/types/enums/constants/stories/spec)
-   ├─ Read tokens/core/components/<name>.tokens.json
-   ├─ Read reference impls (mud-button, mud-input)
-   ├─ Grep anti-patterns (CSS + TSX)
-   ├─ Bash: yarn lint
-   ├─ Bash: yarn tokens.build (must complete before Wave 2 token verification)
-   └─ Bash: check Storybook port 6007
-                          │
-                          ▼
-Wave 2 — Static Analysis (reasoning over Wave 1 data)
-   ├─ Structural audit (file presence, member order, naming)
-   ├─ TypeScript strict mode audit
-   ├─ Stencil decorator audit (delegates to stencil-compliance)
-   ├─ Lifecycle cleanup audit (NEW)
-   ├─ Reactivity mutation audit (NEW)
-   ├─ Token compliance (DTCG, root key, naming convention)
-   ├─ CSS architecture pattern (A: slotted / B: internal DOM)
-   ├─ Story coverage check
-   └─ Test coverage check (unit by default; e2e gated on --e2e)
-                          │
-                          ▼
-Wave 3 — Browser Verification (skipped if --fast)
-   ├─ Navigate to story
-   ├─ Snapshot accessibility tree
-   ├─ Evaluate computed styles (light + dark)
-   ├─ Console warnings check
-   └─ yarn audit:contrast (parallel with browser calls)
-                          │
-                          ▼
-Optional Deep Pass (if --deep)
-   ├─ stencil-compliance Run contract (see stencil-compliance/SKILL.md#run-contract)
-   └─ Invoke /audit-accessibility (full 9-step WCAG audit)
-                          │
-                          ▼
-                    Final Report
-```
 
----
+A row closes only when the file names its leg, lists every id the row judges, has a known major
+`schemaVersion` and, if it states one, the row's `inputHash`. At `deep`, `severity: "error"`
+→ `FAIL`, a finding with `question` + `options` → `NEEDS-DECISION`, anything else is advisory.
+An AI finding never clears a script `FAIL`. The headline prints `ai-legs: self-attested`: the
+file proves what was submitted, not that a leg ran. At `standard` the session may judge CX the
+same way; those findings render under "Advisory" and never change the state.
 
-## Fast Path (preferred when scripts are in place)
+When every leg has written its file:
+`node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run>` — exit code as above.
 
-**Before running any of the manual grep / read steps below, dispatch the local
-audit orchestrator.** It runs the same checks deterministically in parallel,
-producing a JSON envelope you can read in one shot.
+## Fix loop
 
-### Step 0 — Storybook orchestration (BEFORE invoking the orchestrator)
+1. Fix one entry at a time; its `verify:` command is the per-fix check.
+2. When every `verify:` passes, re-run the whole audit at the same depth (at `deep`, legs too:
+   the source changed, so the input hash did). Only a full run can write `PASS`.
 
-The orchestrator's Wave C (a11y tree, contrast pairs, console errors,
-optional pixel diff) requires Storybook on port 6007. **The AI agent is
-responsible for ensuring it is running** — do NOT assume the human will
-start it in another terminal.
+There is no re-check mode: a partial run that rewrote the verdict would be a second writer able
+to print `PASS` over stale rows. The audit never auto-fixes; the user picks what to address.
 
-```text
-1. Probe port 6007 (one of):
-     - PowerShell: netstat -ano | findstr :6007
-     - Bash:       lsof -i :6007
-     - Or call scripts/audit/lib/storybook-helpers.mjs::isStorybookReachable
-2. Decision:
-     - If --fast flag is set                          → SKIP Wave C, run with --no-browser
-     - Else if Storybook IS reachable                 → run full suite (no flag)
-     - Else (Storybook NOT reachable, --fast not set) → start `yarn sp.dev.watch`
-       in background, poll until reachable (~10s), THEN run full suite
-3. Never silently skip Wave C because Storybook is missing. Either start it
-   or explicitly use --fast / --no-browser and report that browser checks
-   were skipped in the final summary (`Storybook: skipped (not running)`).
-```
+## Where the old manual checks went
 
-### Step 1 — Run the orchestrator (Layer 1)
+The manual Wave 1–3 fallback, the WCAG quick-check and the Security & Performance spot-check are
+gone. Every check they carried, and its home. "ref judgment" = the
+[static-judgment reference](references/wave-2-static-analysis.md), recorded as findings in the
+session's `audit-component` file (at `quick` / `standard`, advisory).
 
-```bash
-# Default (full audit): runs Wave A + B + C in parallel inside each wave.
-# Pre-condition: Storybook on :6007 (Step 0 ensured this).
-node scripts/audit/run-all.mjs <componentName> --json
+| # | Old check | Home |
+| --- | --- | --- |
+| 1 | Read TSX / CSS / types / enums / constants / stories / spec | `01` (file set), `14` (contract); legs read what they judge |
+| 2 | Read the E2E spec (`--e2e`) | `e2e` row at `deep`, deferred: no E2E test project |
+| 3 | Read the component tokens file | `01` `STRUCTURE-MISSING-TOKENS`, `13` |
+| 4 | Read `mud-button` / `mud-text-input` for comparison | dropped: a comparison source, not a check; the rules they illustrate are in `02`, `16`, `17` and lint |
+| 5 | Anti-pattern grep, CSS + TSX | `02` |
+| 6 | `yarn lint` | `lint` row: ESLint + Stylelint on the component's files (Prettier stays in repo-wide `yarn lint`) |
+| 7 | `yarn tokens.build` | prerequisite `yarn dx:prepare` (`standard`+) |
+| 8 | Probe port 6007 / start Storybook | orchestrator: this worktree's Storybook, `.audit-storybook.json` |
+| 9 | File structure | `01` |
+| 10 | Member order, `@Watch` rules | `16` (report-only) |
+| 11 | `!` on decorated fields, no implicit `any` | `tsc` strict in the `dx:stencil:once` prerequisite (a failure leaves Wave B/C rows `INCOMPLETE`); `02` `ANTIPATTERN-TS-ANY` |
+| 12 | Generated `HTMLMud…Element` type | lint `@stencil/element-type` |
+| 13 | `import type` | lint `consistent-type-imports` |
+| 14 | `Record<>` maps, `?.` with `??`, `?` on optional props | ref judgment |
+| 15 | Stencil decorator audit | `02`, `16`, `17` (A3, A4); `manual` rows → `ai-stencil` |
+| 16 | Lifecycle leak / re-attach safety | `02` `ANTIPATTERN-007-LIFECYCLE-LEAK`; LC2 → `ai-stencil` |
+| 17 | Reactivity mutation, `@State` only for render | `02` `ANTIPATTERN-005-ARRAY-MUTATION`; S1–S3 → `ai-stencil` |
+| 18 | Form callbacks present | `16` `STENCIL-FORM-CALLBACKS` |
+| 19 | `setFormValue` with two arguments | `02` `ANTIPATTERN-010-SETFORMVALUE-1ARG`, `19` BX7 |
+| 20 | Reset / restore / validity behaviour | CX1–CX3 (FORM), `ai-archetype` |
+| 21 | DTCG shape, references resolve, tier purity, generated CSS vars exist | CI job `tokens-validate` (`yarn tokens.validate`, repo-wide, not an audit row) |
+| 22 | Token naming order, root key | ref judgment |
+| 23 | Token values vs the Figma export | `13` |
+| 24 | CSS pattern A / B, universal selectors, disabled `pointer-events` / cursor, nesting | ref judgment |
+| 25 | `:host { display }` | `02` `ANTIPATTERN-HOST-DISPLAY` |
+| 26 | `transition: all`, `!important` | lint (Stylelint) |
+| 27 | Prop mirrored as slot fallback | `02` `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK` |
+| 28 | Slot tag validation, `::slotted` rules, slot JSDoc and story | ref judgment |
+| 29 | Story lineup and title | `05` |
+| 30 | `docs.source` dynamic / typed / composite override | `05` |
+| 31 | Story typing (`Meta<Args>`, `args: any`, `typeof meta`, eslint wrap), raw story values, argTypes | ref judgment |
+| 32 | Spec anti-patterns, test content | ref judgment |
+| 33 | Coverage gate | `06` (warning below its threshold) |
+| 34 | Spec file missing | `01` `STRUCTURE-MISSING-REQUIRED` |
+| 35 | Navigate to the story, snapshot | `09`, `19` BX1 |
+| 36 | Console messages | `12` (errors; `console.warn` is info) |
+| 37 | `yarn audit:contrast`, computed colours light + dark | `10`; per Figma state and theme `15` |
+| 38 | Deep `stencil-compliance` pass | `02` + `16` rows; `manual` rows → `ai-stencil` |
+| 39 | Deep `/audit-accessibility` | `ai-wcag` (a11y-verifier) |
+| 40 | Roles, redundant ARIA, `aria-disabled` | `09` captures the tree; judgment → `ai-wcag` |
+| 41 | Accessible name without visible text | `09` `A11Y-MISSING-ACCESSIBLE-NAME` |
+| 42 | `aria-invalid` + `aria-describedby` on error | CX1 (FORM) |
+| 43 | `role="status"` / `alert` | CX1 (STATUS) |
+| 44 | Focusable via Tab | `09` BX2 |
+| 45 | Visible focus ring | `09` BX3 |
+| 46 | Enter / Space activates | CX1–CX2 (ACTION); other archetypes `ai-wcag` |
+| 47 | Escape closes overlays, no trap | `19` BX4 |
+| 48 | Shift+Tab walks back | `ai-wcag` (not scripted) |
+| 49 | Text contrast 4.5:1 / 3:1, both themes | `10` |
+| 50 | UI and focus-ring contrast 3:1 (SC 1.4.11) | `ai-wcag` (`10` does not evaluate it) |
+| 51 | Disabled distinguishable, no colour-only information | `ai-wcag` |
+| 52 | Inline styles | `02` `ANTIPATTERN-001-INLINE-STYLE` |
+| 53 | `innerHTML` | `02` `ANTIPATTERN-SECURITY-INNERHTML` |
+| 54 | Dynamic code execution, unsanitised URLs, slot content validation, secrets in props / events, cookie / storage access, leaking payloads | `ai-security` (DX-security) |
+| 55 | `@State` only for render values | `ai-stencil` (S1) |
+| 56 | Heavy work in `render()`, DOM queries in loops | ref judgment |
+| 57 | `shadow: true` | `16` `STENCIL-SHADOW-REQUIRED` |
+| 58 | Scoped `window` / `document` listeners | `02` `ANTIPATTERN-007-LIFECYCLE-LEAK` |
+| 59 | `transition: all` | lint (Stylelint) |
+| 60 | Large inline SVG | `02` `ANTIPATTERN-021-RAW-SVG` |
+| 61 | Large dependencies | `08` |
 
-# --fast / pre-commit speed path: skip browser-driven scripts AND Layer 2.
-node scripts/audit/run-all.mjs <componentName> --no-browser --json
+## Failure modes
 
-# CI mode: same as --no-browser PLUS sets meta.ciDetected for downstream tools.
-# Auto-triggered when env.CI is truthy.
-node scripts/audit/run-all.mjs <componentName> --ci --json
-```
+Observed before this design; each is why a rule above exists.
 
-### Step 2 — Run Layer 2 (MCP browser checks) — local only
-
-If `envelope.meta.layer2Required === true`, AI MUST execute Layer 2 — see
-[`references/layer-2-browser-checklists.md`](references/layer-2-browser-checklists.md):
-- §BX — Mandatory browser checklist (BX1–BX7).
-- §CX — Archetype-specific checklist — dispatch on `envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`.
-- §DX — Discretionary observations (optional, AI-driven).
-
-If `envelope.meta.layer2Required === false` (CI, `--fast`, `--no-browser`): skip L2 entirely and mark all BX/CX/DX rows in the matrix as `⏭️` with reason `layer2-disabled`.
-
-### Step 3 — Cross-layer synthesis (Layer 3)
-
-Always runs. Correlate L1 + L2 findings, escalate severity for compound defects (e.g., "missing accessible name in L1's a11y-tree AND contrast fail in L1's contrast-pairs AND Tab cannot reach the element in L2 BX2 → CRITICAL"), then emit the Check Matrix + Verdict per [`references/report-template.md`](references/report-template.md).
-
-The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
-(schemaVersion 1.0.0). Per-script details:
-
-| id | script | covers |
-|----|--------|--------|
-| 01 | `01-component-structure.mjs` | required + optional files, tokens file, hidden/components location |
-| 02 | `02-stencil-antipatterns.mjs` | patterns from anti-patterns.md (inline styles, mutations, lifecycle leak, etc.) |
-| 03 | `03-git-hygiene.mjs` | branch naming, conventional commits, forbidden staged paths |
-| 04 | `04-jsdoc-completeness.mjs` | component class + per-prop / per-event / per-method JSDoc |
-| 05 | `05-story-exports.mjs` | enumerates stories, computes Storybook ids, coverage vs Default/AllVariants/AllSizes/States |
-| 06 | `06-test-coverage.mjs` | reads `coverage/coverage-summary.json` per component |
-| 07 | `07-integration-usage.mjs` | usage sites across stories/tests/components/web-components |
-| 08 | `08-bundle-size.mjs` | dist size + per-chunk attribution |
-| 09 | `09-a11y-tree.mjs` | DOM-derived accessibility tree (role/name/children) + interactive-element census, scoped to the audited component's subtree (host + light DOM + own shadow root) — light + dark |
-| 10 | `10-contrast-pairs.mjs` | WCAG 2.1 AA contrast on every interactive element (light + dark) |
-| 11 | `11-pixel-diff-states.mjs` | Pixelmatch diff vs Figma references for every state of the component's Figma state manifest (story mode when there is none) |
-| 12 | `12-console-errors.mjs` | console.error / pageerror per story |
-| 13 | `13-token-diff.mjs` | DTCG diff vs Figma export |
-| 14 | `14-component-contract.mjs` | full API surface (props/events/methods/slots/formAssociated) |
-| 15 | `15-style-parity.mjs` | computed styles vs the exact values the Figma nodes specify, per manifest state; `absent` entries catch elements with no design |
-
-After consuming the envelope, **only the judgment-heavy steps remain for AI**.
-The orchestrator hands you raw findings; you still own:
-
-1. **Per-script interpretation** — walk `findingsByTool` (not just `summary`):
-   ARIA correctness for the captured a11y tree (09), contrast-failure
-   remediation choice (10), architecture review from the contract (14), naming
-   critique, edge-case story suggestions (05).
-2. **Cross-script synthesis** — correlate findings across tools. Examples:
-   - 02 ANTIPATTERN-007-LIFECYCLE-LEAK + 14 missing `disconnectedCallback` ⇒
-     same defect, report once with both citations.
-   - 09 missing accessible name + 10 contrast failure on same node ⇒ that
-     element is doubly-broken; flag as Critical.
-   - 05 missing AllVariants/States story + 11 pixel-diff WARNING ⇒
-     coverage gap likely hides the regression.
-3. **Severity escalation** — script `error` severity is a default; escalate to
-   Critical in the report when correlated with security/form-association/data
-   loss risk.
-4. **Final synthesis** — produce the pass/fail matrix + categorized issue
-   lists + recommendations in the format in
-   [`references/report-template.md`](references/report-template.md).
-
-The manual detail in Wave 1, [`references/wave-2-static-analysis.md`](references/wave-2-static-analysis.md)
-and Wave 3 remains as a fallback when the orchestrator is unavailable (CI
-without Node, fresh checkout before `yarn install`, etc.).
-
----
+- **A crashed script read as zero errors.** In a worktree without `node_modules`, 5 of 8 Wave A
+  scripts crashed while the envelope said `errors: 0`. Now a crashed row is `INCOMPLETE`.
+- **A component with no Figma evidence was called "Ready to merge".** 11 and 15 were dropped
+  silently when there was no manifest. Now `standard`+ is `NEEDS-DECISION` without one.
+- **Two runs could disagree**: the model wrote the verdict as prose and drove the shared MCP
+  browser for fixed assertions. Now the verdict is computed and BX1–BX7 are scripts; browser
+  legs run one at a time.
+- **The manual fallback restated the scripts** and drifted from them. It is removed; the table
+  above is the only record of where each check went.
 
 ## References — load on demand
 
 | File | Covers | Load when |
 | --- | --- | --- |
-| [references/wave-2-static-analysis.md](references/wave-2-static-analysis.md) | Wave 2 static-analysis checks §2.1–§2.10: structural audit, TypeScript strict mode, Stencil decorator delegation, lifecycle cleanup, form-associated callbacks, token compliance, CSS architecture pattern, slot validation, story coverage, test coverage | Running Wave 2 of a full audit, or interpreting the Layer 1 envelope's static-analysis findings |
-| [references/layer-2-browser-checklists.md](references/layer-2-browser-checklists.md) | Layer 2 AI MCP browser checks: §BX mandatory checklist (BX1–BX7), §CX archetype-specific checklist, §DX discretionary observations | `envelope.meta.layer2Required === true` (Fast Path Step 2), or the manual Wave 3 fallback needs the adaptive browser checks |
-| [references/report-template.md](references/report-template.md) | Final Report skeleton: Check Matrix, matrix rules, verdict rules, Critical/High/Medium/Low issue categories, Cross-Script Synthesis, Recommendations | Producing the Final Report in Layer 3 (cross-layer synthesis), after Wave 3 / Layer 2 / the Security & Performance Spot-Check have run |
+| [references/layer-2-browser-checklists.md](references/layer-2-browser-checklists.md) | BX ids → their scripts; CX archetype checks; the DX ids each deep leg judges | Running the `audit-component` leg, or writing a leg brief |
+| [references/wave-2-static-analysis.md](references/wave-2-static-analysis.md) | Static judgment no script covers (ref judgment rows above) | Judging the component's source at any depth |
+| [references/report-template.md](references/report-template.md) | Verdict files, states, levels, exit codes, the synthesis report | Reading a verdict or writing the synthesis |
 
----
-
-## Wave 1: Discovery (all parallel)
-
-Dispatch in a SINGLE message with multiple parallel tool calls.
-
-### File Reads (parallel — non-existent files OK to skip silently)
-
-- `src/components/<componentName>/<componentName>.tsx`
-- `src/components/<componentName>/<componentName>.css`
-- `src/components/<componentName>/<componentName>.types.ts`
-- `src/components/<componentName>/<componentName>.enums.ts`
-- `src/components/<componentName>/<componentName>.constants.ts`
-- `src/components/<componentName>/<componentName>.stories.ts`
-- `src/components/<componentName>/test/<componentName>.spec.tsx`
-- `src/components/<componentName>/test/<componentName>.e2e.ts` (read but only score if `--e2e`)
-- `tokens/core/components/<bareName>.tokens.json` (drop the `mud-` prefix)
-
-### Reference Reads (parallel — for cross-comparison)
-
-- `src/components/mud-button/mud-button.tsx`
-- `src/components/mud-text-input/mud-text-input.tsx`
-
-### Anti-Pattern detection
-
-Use Fast Path script `02-stencil-antipatterns.mjs` (CSS + TSX)
-run in parallel internally. Reference catalogue:
-[`stencil-compliance/references/anti-patterns.md`](../stencil-compliance/references/anti-patterns.md) for Stencil codes, [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) for project codes.
-
-Pattern codes consumed from `findingsByTool.antipatterns` are the `code` fields of
-`PATTERNS` and `FILE_CHECKS` in
-[`02-stencil-antipatterns.mjs`](../../../scripts/audit/02-stencil-antipatterns.mjs); print them with
-`node -e "import('./scripts/audit/02-stencil-antipatterns.mjs').then(m => console.log([...m.PATTERNS, ...m.FILE_CHECKS].map(p => p.code).join('\\n')))"`.
-
-`@Method()` async, `!important` and `transition: all` are no longer
-`02-stencil-antipatterns.mjs` codes — they are enforced by `yarn lint`
-(`@stencil/async-methods`, `declaration-no-important`,
-`declaration-property-value-disallowed-list`).
-
-### Bash (parallel)
-
-```bash
-yarn lint
-```
-
-```bash
-yarn tokens.build
-```
-
-```powershell
-# PowerShell
-netstat -ano | findstr :6007
-```
-
-```bash
-# Unix
-lsof -i :6007
-```
-
-**Storybook orchestration** — see the Fast Path "Step 0" above. Default
-behavior: if Storybook is NOT listening AND `--fast` is not set, the AI MUST
-start `yarn sp.dev.watch` in background and wait ~10s for the port to open
-before continuing to Wave 3 / browser scripts. Never silently skip browser
-checks — either start Storybook, or explicitly mark the run as `--fast` and
-note it in the matrix (`Storybook: skipped (not running)`).
-
----
-
-## Wave 3: Browser Verification (skipped if `--fast`)
-
-Dispatch in a SINGLE message; reuse Storybook session if active.
-
-### 3.1 Navigate
-
-```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-<name>--default" })
-```
-
-### 3.2 Wait + Snapshot + Console + Contrast (parallel)
-
-```text
-mcp__playwright__browser_wait_for({ time: 2 })
-mcp__playwright__browser_snapshot()
-mcp__playwright__browser_console_messages({ level: "warning" })
-```
-
-```bash
-yarn audit:contrast
-```
-
-### 3.3 Computed Styles (light + dark)
-
-```text
-mcp__playwright__browser_evaluate({ function: "() => { const el = document.querySelector('mud-<name>')?.shadowRoot?.querySelector('.target') || document.querySelector('mud-<name>'); const s = window.getComputedStyle(el); return { bg: s.backgroundColor, fg: s.color }; }" })
-```
-
-Toggle dark mode and repeat:
-
-```text
-mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
-```
-
-### 3.4 Accessibility Quick-Check (WCAG 2.1 AA subset)
-
-**Canonical reference:** [`accessibility-compliance`](../accessibility-compliance/SKILL.md). For deep audit run `/audit-accessibility @mud-<name>` (auto-invoked when `--deep`).
-
-**ARIA & semantics** (SC 4.1.2, 4.1.3, 2.5.3):
-- Interactive elements have appropriate ARIA roles
-- ARIA labels present where visible text is absent
-- `aria-disabled="true"` on non-button disabled elements
-- No redundant ARIA (e.g., `role="button"` on `<button>`)
-- Error states have `aria-invalid="true"` and `aria-describedby`
-- Status messages use `role="status"` or `role="alert"` per urgency
-
-**Keyboard navigation** (SC 2.1.1, 2.1.2, 2.4.3, 2.4.7):
-- Focusable via Tab
-- Focus ring visible: `:focus-visible` styles
-- Enter/Space activates
-- Escape closes overlays/dropdowns
-- No keyboard traps (Shift+Tab also works)
-
-**Visual accessibility** (SC 1.4.1, 1.4.3, 1.4.11):
-- Color contrast WCAG 2.1 AA: text 4.5:1 / 3:1 — verified in light AND dark mode
-- UI components & focus rings: 3:1 against adjacent colors
-- Disabled state distinguishable (opacity/color, not just cursor)
-- No information by color alone
-
----
-
-## Security & Performance Spot-Check
-
-Cross-reference Wave 1 grep results.
-
-**Security** — reject from [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md):
-
-- Inline styles in TSX (CSP violation)
-- `innerHTML` assignment without sanitization (XSS)
-- Dynamic code execution constructors
-- External URL loading without sanitization
-- Missing slot content validation
-- Sensitive data in props or events (tokens, passwords, PII)
-- Direct `document.cookie` / `localStorage` access in component code
-- Event payloads leaking internal state
-
-**Performance**:
-
-- No unnecessary re-renders — `@State()` only for values affecting render
-- No heavy computation in `render()`
-- `shadow: true` in component decorator
-- No DOM queries in loops — cache `querySelector` results
-- Event listeners properly scoped (no leaked `window`/`document` listeners — pair with `disconnectedCallback`)
-- CSS `transition: all` NOT used
-- No large inline SVGs — use `mud-icon`
-- No large external dependencies
-
----
-
-## Notes on Parallelism
-
-- **Wave 1** is pure I/O — Read/Grep/Bash all run in parallel without conflicts. Single message, multiple tool calls.
-- **Wave 2** is reasoning over Wave 1 data — no new I/O needed (except `stencil-compliance` Skill invocation if `--deep`).
-- **Wave 3** browser calls are sequential within a single MCP Playwright session (one browser instance), but `yarn audit:contrast` runs in parallel via Bash.
-- `--fast` flag skips Wave 3 entirely (sub-30s pre-commit pass).
-- `--deep` adds `stencil-compliance`'s Run contract (~5s additional) and full `/audit-accessibility` (~30s additional with deep MCP navigation).
-
----
-
-## Cross-Skill Invocation
-
-Other agents can invoke this skill via the Skill tool:
-
-```text
-Skill('audit-component', { args: 'mud-button --fast' })
-```
-
-When invoked headlessly, the skill returns the Final Report string. The orchestrator agent decides whether to surface it or act on findings.
-
-## Related References
-
-- [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md) — Stencil rule catalog, see its [Run contract](../stencil-compliance/SKILL.md#run-contract) and [Rule index](../stencil-compliance/SKILL.md#rule-index)
-- [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA companion
-- [`token-creation/SKILL.md`](../token-creation/SKILL.md) — token-tier rules
-- [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific component patterns
-- [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md) — project anti-pattern list
+Callers — `/audit-component`, `/pre-pr-check`, `/migrate-component`, and the `new-component`,
+`refactor-component` and `audit-production` agents — run `yarn audit:component` and stop on a
+non-zero exit. From another skill: `Skill('audit-component', { args: 'mud-button --depth quick' })`.
