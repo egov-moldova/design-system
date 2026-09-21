@@ -4,6 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, 
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
+  DATE_INPUT_LOCALES,
   DATE_INPUT_SIZES,
   DATE_INPUT_VARIANTS,
 } from './mud-date-input.types';
@@ -11,6 +12,8 @@ import type {
   DateInputBreakpoint,
   DateInputChangeDetail,
   DateInputFormat,
+  DateInputLocale,
+  DateInputMessages,
   DateInputSegment,
   DateInputSize,
   DateInputTypingDetail,
@@ -73,6 +76,42 @@ const FORMAT_SPECS: Record<DateInputFormat, FormatSpec> = {
       { kind: 'DD', length: 2 },
     ],
     offsets: { YYYY: 0, MM: 5, DD: 8 },
+  },
+};
+
+/** Locale used when `locale` is missing or has no entry below. */
+const DEFAULT_LOCALE: DateInputLocale = 'ro-RO';
+
+const DATE_INPUT_MESSAGES: Record<DateInputLocale, DateInputMessages> = {
+  'ro-RO': {
+    clearLabel: 'Șterge',
+    pickerLabel: 'Selectează data',
+    openPickerLabel: 'Deschide calendarul',
+    dayErrorText: 'Ziua trebuie să fie între 01 și {max}',
+    monthErrorText: 'Luna trebuie să fie între 01 și 12',
+    yearErrorText: 'Introduceți un an valid',
+    dateErrorText: 'Introduceți o dată validă',
+    rangeErrorText: 'Data este în afara intervalului permis',
+  },
+  'en-US': {
+    clearLabel: 'Clear',
+    pickerLabel: 'Select date',
+    openPickerLabel: 'Open the calendar',
+    dayErrorText: 'Day must be between 01 and {max}',
+    monthErrorText: 'Month must be between 01 and 12',
+    yearErrorText: 'Enter a valid year',
+    dateErrorText: 'Enter a valid date',
+    rangeErrorText: 'Date is outside the allowed range',
+  },
+  'ru-RU': {
+    clearLabel: 'Очистить',
+    pickerLabel: 'Выбрать дату',
+    openPickerLabel: 'Открыть календарь',
+    dayErrorText: 'День должен быть от 01 до {max}',
+    monthErrorText: 'Месяц должен быть от 01 до 12',
+    yearErrorText: 'Введите корректный год',
+    dateErrorText: 'Введите корректную дату',
+    rangeErrorText: 'Дата вне допустимого диапазона',
   },
 };
 
@@ -206,26 +245,7 @@ export class MudDateInput {
    */
   @Prop({ reflect: true }) clearable: boolean = false;
 
-  /** Accessible label for the clear (×) button. */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
-
-  /** Accessible name of the calendar dialog. */
-  @Prop({ attribute: 'picker-label' }) pickerLabel: string = 'Selectează data';
-
-  /** Message shown when a complete day segment is outside 01–31. */
-  @Prop({ attribute: 'day-error-text' }) dayErrorText: string = 'Ziua trebuie să fie între 01 și 31';
-
-  /** Message shown when a complete month segment is outside 01–12. */
-  @Prop({ attribute: 'month-error-text' }) monthErrorText: string = 'Luna trebuie să fie între 01 și 12';
-
-  /** Message shown when a complete year is outside the allowed years. */
-  @Prop({ attribute: 'year-error-text' }) yearErrorText: string = 'Introduceți un an valid';
-
-  /** Message shown when a complete date does not exist (e.g. `31/02/2025`). */
-  @Prop({ attribute: 'date-error-text' }) dateErrorText: string = 'Introduceți o dată validă';
-
-  /** Message shown when a complete date is outside `min` / `max`. */
-  @Prop({ attribute: 'range-error-text' }) rangeErrorText: string = 'Data este în afara intervalului permis';
+  @Prop({ reflect: true }) locale!: DateInputLocale;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -267,6 +287,8 @@ export class MudDateInput {
   private readonly helperId = `mud-date-input-helper-${this.instanceId}`;
   private readonly errorId = `mud-date-input-error-${this.instanceId}`;
   private initialValue: string = '';
+  /** Upper bound substituted into `dayErrorText`'s `{max}` placeholder; 31 until a specific month narrows it. */
+  private dayRangeMax: number = SEGMENT_MAX.DD;
   private mql?: MediaQueryList;
   /** Set when the calendar opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
@@ -293,6 +315,7 @@ export class MudDateInput {
   }
 
   componentWillLoad() {
+    this.validateLocale(this.locale);
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.updateValidation(this.value);
@@ -354,6 +377,34 @@ export class MudDateInput {
       );
       this.breakpoint = 'auto';
     }
+  }
+
+  @Watch('locale')
+  validateLocale(next: string | undefined) {
+    if (!next) {
+      console.warn(
+        `[mud-date-input] "locale" is required so every built-in label and error message can be translated. Supported: ${DATE_INPUT_LOCALES.join(
+          ', ',
+        )}. Falling back to "${DEFAULT_LOCALE}".`,
+      );
+      this.locale = DEFAULT_LOCALE;
+      return;
+    }
+    if (!DATE_INPUT_LOCALES.includes(next as DateInputLocale)) {
+      console.warn(
+        `[mud-date-input] locale="${next}" has no built-in translations. Supported: ${DATE_INPUT_LOCALES.join(
+          ', ',
+        )}. Falling back to "${DEFAULT_LOCALE}".`,
+      );
+      this.locale = DEFAULT_LOCALE;
+    }
+  }
+
+  /** All built-in strings, translated for the current (validated) `locale`. */
+  private messages(): DateInputMessages {
+    return (
+      DATE_INPUT_MESSAGES[(this.locale as DateInputLocale) ?? DEFAULT_LOCALE] ?? DATE_INPUT_MESSAGES[DEFAULT_LOCALE]
+    );
   }
 
   /** Effective picker placement once `auto` is resolved against the viewport. */
@@ -562,14 +613,9 @@ export class MudDateInput {
     };
   }
 
-  /**
-   * Parse a display value into ISO `YYYY-MM-DD`. Returns `null` when the value
-   * is incomplete, malformed, or designates a non-existent calendar date
-   * (e.g. 31/02/2025).
-   */
-  private toIsoValue(display: string): string | null {
+  /** Split a complete display value into its numeric DD/MM/YYYY parts, or `null` when malformed. */
+  private parseParts(display: string): { day: number; month: number; year: number } | null {
     const spec = this.spec();
-    if (display.length !== spec.pattern.length) return null;
     const parts: Partial<Record<'DD' | 'MM' | 'YYYY', string>> = {};
     let cursor = 0;
     for (const seg of spec.segments) {
@@ -578,19 +624,30 @@ export class MudDateInput {
       parts[seg.kind] = slice;
       cursor += seg.length + 1; // +1 for separator (last loop overshoots harmlessly)
     }
-    const dd = parts.DD ?? '';
-    const mm = parts.MM ?? '';
-    const yyyy = parts.YYYY ?? '';
-    const day = Number(dd);
-    const month = Number(mm);
-    const year = Number(yyyy);
-    if (year < 1000 || month < 1 || month > 12 || day < 1 || day > 31) return null;
-    // Reject impossible day-of-month (e.g. 30/02 or 31/04).
-    const date = new Date(Date.UTC(year, month - 1, day));
-    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
-      return null;
-    }
-    return `${yyyy}-${mm}-${dd}`;
+    return {
+      day: Number(parts.DD ?? ''),
+      month: Number(parts.MM ?? ''),
+      year: Number(parts.YYYY ?? ''),
+    };
+  }
+
+  /** Actual number of days in `month` (1–12) for `year`, honoring leap years. */
+  private daysInMonth(year: number, month: number): number {
+    return new Date(Date.UTC(year, month, 0)).getUTCDate();
+  }
+
+  private toIsoValue(display: string): string | null {
+    const spec = this.spec();
+    if (display.length !== spec.pattern.length) return null;
+    const parsed = this.parseParts(display);
+    if (!parsed) return null;
+    const { day, month, year } = parsed;
+    if (year < 1000 || month < 1 || month > 12 || day < 1) return null;
+    // Reject impossible day-of-month (e.g. 30/02 or 31/04) via the same
+    // `daysInMonth` used to size the `dayErrorText` `{max}` in `validate()` —
+    // one leap-year-aware source of truth for "does this day exist".
+    if (day > this.daysInMonth(year, month)) return null;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   private withinBounds(iso: string): boolean {
@@ -617,6 +674,7 @@ export class MudDateInput {
    * order the segments appear. Incomplete segments are not errors yet.
    */
   private validate(display: string): DateInputValidationError | null {
+    this.dayRangeMax = SEGMENT_MAX.DD;
     const spec = this.spec();
     let cursor = 0;
     for (const seg of spec.segments) {
@@ -631,6 +689,16 @@ export class MudDateInput {
       }
     }
     if (display.length !== spec.pattern.length) return null;
+
+    const parsed = this.parseParts(display);
+    if (parsed && parsed.month >= 1 && parsed.month <= 12) {
+      const max = this.daysInMonth(parsed.year, parsed.month);
+      if (parsed.day > max) {
+        this.dayRangeMax = max;
+        return 'day';
+      }
+    }
+
     const iso = this.toIsoValue(display);
     if (!iso) return 'date';
     return this.withinBounds(iso) ? null : 'range';
@@ -650,17 +718,18 @@ export class MudDateInput {
   }
 
   private validationMessage(error: DateInputValidationError): string {
+    const messages = this.messages();
     switch (error) {
       case 'day':
-        return this.dayErrorText;
+        return messages.dayErrorText.replace(/\{max\}/g, String(this.dayRangeMax));
       case 'month':
-        return this.monthErrorText;
+        return messages.monthErrorText;
       case 'year':
-        return this.yearErrorText;
+        return messages.yearErrorText;
       case 'date':
-        return this.dateErrorText;
+        return messages.dateErrorText;
       case 'range':
-        return this.rangeErrorText;
+        return messages.rangeErrorText;
     }
   }
 
@@ -833,6 +902,7 @@ export class MudDateInput {
   }
 
   render() {
+    const messages = this.messages();
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
@@ -924,7 +994,7 @@ export class MudDateInput {
               class="clear-button"
               part="clear-button"
               tabindex={-1}
-              aria-label={this.clearLabel}
+              aria-label={messages.clearLabel}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
@@ -936,7 +1006,7 @@ export class MudDateInput {
             type="button"
             class="trailing-icon"
             part="trailing-icon"
-            aria-label="Deschide calendarul"
+            aria-label={messages.openPickerLabel}
             aria-haspopup="dialog"
             aria-expanded={this.pickerOpen ? 'true' : 'false'}
             /* `aria-controls` references the popover ID — only emit it while the
@@ -965,7 +1035,7 @@ export class MudDateInput {
                   class={{ 'picker-popover': true, 'is-mobile': isMobilePopover }}
                   part="picker-popover"
                   role="dialog"
-                  aria-label={this.pickerLabel}
+                  aria-label={messages.pickerLabel}
                   aria-modal={isMobilePopover ? 'true' : undefined}
                   id={`date-input-picker-${this.instanceId}`}
                 >
@@ -973,7 +1043,7 @@ export class MudDateInput {
                     mode="single"
                     breakpoint={pickerBreakpoint}
                     header-style={isMobilePopover ? 'dropdown' : 'title'}
-                    locale="ro-RO"
+                    locale={this.locale}
                     value={this.toIsoValue(this.value) ?? undefined}
                     min={this.min}
                     max={this.max}
