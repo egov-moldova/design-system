@@ -163,8 +163,9 @@ export class MudNumericInput {
 
   /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
-   * Maps to the native `aria-valuetext` on the spinbutton. Capture-and-strip
-   * pattern, same as the native `aria-label` attribute read via `observeAriaLabel`.
+   * Maps to the native `aria-valuetext` on the spinbutton. An `aria-valuetext`
+   * attribute on the host is read once on load and stripped; later updates go
+   * through this prop, and setting it empty does not clear the value.
    */
   // The rule matches names case-insensitively; `ariaValuetext` does not shadow `HTMLElement.ariaValueText` (#88).
   // eslint-disable-next-line @stencil/reserved-member-names

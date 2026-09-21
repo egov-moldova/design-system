@@ -34,7 +34,8 @@ export const observeAriaLabel = (
       return;
     }
     if (!keepOnHost) host.removeAttribute('aria-label');
-    onChange(value.length > 0 ? value : undefined);
+    // A whitespace-only label names nothing; report it as none so a component's own fallback applies.
+    onChange(value.trim().length > 0 ? value : undefined);
   };
 
   read();
@@ -65,7 +66,7 @@ export const nameHostWithFallback = (host: HTMLElement, fallback: () => string |
 
   const readConsumer = (): void => {
     const value = host.getAttribute('aria-label');
-    consumer = value !== null && value.length > 0 ? value : undefined;
+    consumer = value !== null && value.trim().length > 0 ? value : undefined;
   };
 
   const applyFallback = (): void => {

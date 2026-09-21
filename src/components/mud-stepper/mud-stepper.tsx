@@ -124,7 +124,7 @@ export class MudStepper {
         const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
         if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
       });
-      this.resizeObserver.observe(this.host as unknown as Element);
+      this.resizeObserver.observe(this.host);
     }
 
     // Default accessible name for the host `role="list"`. Consumer's own

@@ -27,10 +27,11 @@ describe('observeAriaLabel', () => {
     expect(el.getAttribute('aria-label')).toBe('Section break');
   });
 
-  it('reports an empty label as undefined', () => {
+  it('reports an empty or whitespace-only label as undefined', () => {
     const seen: Array<string | undefined> = [];
     observeAriaLabel(host(''), value => seen.push(value));
-    expect(seen).toEqual([undefined]);
+    observeAriaLabel(host('  '), value => seen.push(value));
+    expect(seen).toEqual([undefined, undefined]);
   });
 
   it('reports nothing when the host has no label and the label is stripped', () => {

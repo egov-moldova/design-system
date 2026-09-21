@@ -751,9 +751,7 @@ export class MudTooltip {
 
   private readCssPixel(propertyName: string, fallback: number): number {
     if (typeof window === 'undefined') return fallback;
-    const raw = getComputedStyle(this.host as unknown as Element)
-      .getPropertyValue(propertyName)
-      .trim();
+    const raw = getComputedStyle(this.host).getPropertyValue(propertyName).trim();
     const parsed = parseFloat(raw);
     return Number.isNaN(parsed) ? fallback : parsed;
   }
