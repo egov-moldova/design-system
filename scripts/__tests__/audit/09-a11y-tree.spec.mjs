@@ -7,7 +7,13 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { INTERACTIVE_TAGS, INTERACTIVE_ROLES, pickDefaultStoryId } from '../../audit/09-a11y-tree.mjs';
+import {
+  INTERACTIVE_TAGS,
+  INTERACTIVE_ROLES,
+  pickDefaultStoryId,
+  judgeTabOrder,
+  judgeFocusRingVisible,
+} from '../../audit/09-a11y-tree.mjs';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 describe('09-a11y-tree: interactive-element catalogues', () => {
@@ -52,5 +58,94 @@ describe('09-a11y-tree: pickDefaultStoryId', () => {
     };
     const id = pickDefaultStoryId(target);
     assert.equal(id, 'atoms-button--default');
+  });
+});
+
+describe('09-a11y-tree: judgeTabOrder (BX2, pure)', () => {
+  it('returns null when the Tab walk covers every census element (multiset match)', () => {
+    const census = [
+      { tag: 'button', role: null },
+      { tag: 'input', role: 'textbox' },
+    ];
+    const tabWalk = [
+      { tag: 'button', role: null },
+      { tag: 'input', role: 'textbox' },
+    ];
+    assert.equal(judgeTabOrder(census, tabWalk), null);
+  });
+
+  it('returns null for an empty census (nothing to reach)', () => {
+    assert.equal(judgeTabOrder([], []), null);
+  });
+
+  it('does not require the Tab walk to match census ORDER — only coverage', () => {
+    const census = [
+      { tag: 'button', role: null },
+      { tag: 'input', role: 'textbox' },
+    ];
+    const tabWalk = [
+      { tag: 'input', role: 'textbox' },
+      { tag: 'button', role: null },
+    ];
+    assert.equal(judgeTabOrder(census, tabWalk), null);
+  });
+
+  it('flags a census element the Tab walk never reached', () => {
+    const census = [
+      { tag: 'button', role: null },
+      { tag: 'input', role: 'textbox' },
+    ];
+    const finding = judgeTabOrder(census, [{ tag: 'button', role: null }]);
+    assert.equal(finding.code, 'A11Y-BX2-TAB-ORDER-GAP');
+    assert.match(finding.message, /input/);
+  });
+
+  it('counts duplicates: two identical census entries need two matching Tab stops', () => {
+    const census = [
+      { tag: 'button', role: null },
+      { tag: 'button', role: null },
+    ];
+    const finding = judgeTabOrder(census, [{ tag: 'button', role: null }]);
+    assert.equal(finding.code, 'A11Y-BX2-TAB-ORDER-GAP');
+  });
+});
+
+describe('09-a11y-tree: judgeFocusRingVisible (BX3, pure)', () => {
+  it('returns null when the outline is visible', () => {
+    assert.equal(
+      judgeFocusRingVisible({ tag: 'button', outlineWidth: '2px', outlineStyle: 'solid', boxShadow: 'none' }),
+      null,
+    );
+  });
+
+  it('returns null when the box-shadow carries a focus ring', () => {
+    assert.equal(
+      judgeFocusRingVisible({ tag: 'button', outlineWidth: '0px', outlineStyle: 'none', boxShadow: '0 0 0 2px blue' }),
+      null,
+    );
+  });
+
+  it('flags an invisible ring (outline 0px, boxShadow none) — the Phase 0 mid-transition case', () => {
+    const finding = judgeFocusRingVisible({
+      tag: 'button',
+      outlineWidth: '0px',
+      outlineStyle: 'none',
+      boxShadow: 'none',
+    });
+    assert.equal(finding.code, 'A11Y-BX3-FOCUS-RING-INVISIBLE');
+  });
+
+  it('flags outline: none even with a non-zero width', () => {
+    const finding = judgeFocusRingVisible({
+      tag: 'button',
+      outlineWidth: '2px',
+      outlineStyle: 'none',
+      boxShadow: 'none',
+    });
+    assert.equal(finding.code, 'A11Y-BX3-FOCUS-RING-INVISIBLE');
+  });
+
+  it('returns null for a null step (nothing sampled)', () => {
+    assert.equal(judgeFocusRingVisible(null), null);
   });
 });

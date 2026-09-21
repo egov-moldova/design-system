@@ -192,6 +192,26 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
         );
       }
     }
+
+    // BX2 — every interactive element in the census is reachable by Tab, in
+    // order. `origin: 'host'` census entries are the component boundary
+    // marker, not a tab stop — a shadow host is not itself focusable unless
+    // it opts into `delegatesFocus`, and even then focus lands on its inner
+    // control (what `walkTabOrder`'s deep-active-element walk reports), so
+    // the host would never match and every shadow component would false-
+    // positive BX2. Live-Storybook run against mud-button, 2026-09-21: this
+    // fired on 5/5 runs before the filter, 0/5 after.
+    const bx2 = judgeTabOrder(
+      theme.interactive.filter(el => el.origin !== 'host'),
+      theme.tabWalk,
+    );
+    if (bx2) findings.push(finding({ ...bx2, message: `${theme.theme}: ${bx2.message}` }));
+
+    // BX3 — every element the Tab walk actually focused has a visible focus ring.
+    for (const step of theme.tabWalk) {
+      const bx3 = judgeFocusRingVisible(step);
+      if (bx3) findings.push(finding({ ...bx3, message: `${theme.theme}: ${bx3.message}` }));
+    }
   }
 
   return {
@@ -364,9 +384,174 @@ async function collectForTheme(url, componentName, theme) {
         { componentName, tags: INTERACTIVE_TAGS, roles: INTERACTIVE_ROLES },
       );
 
-      return { theme, tree, interactive };
+      // BX2 + BX3 — Tab-walk the component and sample the focus ring at each
+      // stop. Reduced motion + an injected `transition: none; animation:
+      // none` (document + every shadow root) MUST land before this sampling
+      // or the ring is caught mid-transition (Phase 0 results: 4 of 5 runs
+      // differed without it, 5 of 5 identical with it).
+      await applyNoMotionStyle(page);
+      const tabWalk = await walkTabOrder(page, interactive.length);
+
+      return { theme, tree, interactive, tabWalk };
     },
   });
+}
+
+/**
+ * Inject `transition: none !important; animation: none !important;` into the
+ * document AND every shadow root reachable from it (Phase 0 results —
+ * without this the focus ring is sampled mid-transition), plus
+ * `emulateMedia({ reducedMotion: 'reduce' })`. Idempotent — marks each root
+ * it has already touched, so it is safe to call again after an interaction
+ * that may have rendered new shadow content.
+ */
+export async function applyNoMotionStyle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => {
+    const CSS_TEXT = '*, *::before, *::after { transition: none !important; animation: none !important; }';
+    const MARK = 'data-audit-no-motion';
+    const inject = root => {
+      if (root.querySelector?.(`style[${MARK}]`)) return;
+      const style = document.createElement('style');
+      style.setAttribute(MARK, '');
+      style.textContent = CSS_TEXT;
+      (root.head ?? root).appendChild(style);
+    };
+    const visit = root => {
+      inject(root);
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) visit(el.shadowRoot);
+      }
+    };
+    visit(document);
+  });
+}
+
+/**
+ * Press Tab up to `expectedStops + 2` times (a small safety margin over the
+ * census count) and, at each stop, record the deep-active element's tag/role
+ * and focus-ring computed style. Stops early once Tab stops moving focus.
+ * Pure side-effecting (keyboard + DOM reads) — the judgment over this data
+ * (`judgeTabOrder`, `judgeFocusRingVisible`) is unit-testable without a
+ * browser.
+ */
+export async function walkTabOrder(page, expectedStops) {
+  const maxPresses = expectedStops + 2;
+  const steps = [];
+  let lastKey = null;
+  for (let i = 0; i < maxPresses; i++) {
+    await page.keyboard.press('Tab');
+    // Some components toggle their focus-ring class from a JS `focus`
+    // listener rather than pure `:focus-visible` CSS, so the ring can land a
+    // frame after the keypress. Live Storybook run, mud-checkbox,
+    // 2026-09-21: without this wait, 2 of 5 runs sampled before the class
+    // landed and reported `boxShadow: 'none'` (false BX3 positive,
+    // non-reproducible run to run).
+    await page.waitForTimeout(100);
+    const step = await page.evaluate(() => {
+      const deepActiveElement = root => {
+        let el = root.activeElement;
+        while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+        return el;
+      };
+      const el = deepActiveElement(document);
+      if (!el || el === document.body) return null;
+
+      // The focus ring is frequently NOT drawn on the focused element itself
+      // — a visually-hidden native <input> stays outline:none while a
+      // sibling `.box` carries `box-shadow` on `:host(.is-focused)` (16
+      // components use this pattern; live Storybook run, mud-checkbox,
+      // 2026-09-21: BX3 false-positived on 5/5 runs reading only the focused
+      // element before this). Walk the nearest shadow host's whole subtree
+      // (light + shadow, same technique as lib/state-page.mjs's autoBleed)
+      // for ANY element carrying a visible ring, falling back to the focused
+      // element's own style when nothing else in the subtree has one.
+      const findRing = root => {
+        const stack = [root];
+        while (stack.length > 0) {
+          const node = stack.pop();
+          const s = getComputedStyle(node);
+          const hasOutline = s.outlineWidth !== '0px' && s.outlineStyle !== 'none';
+          const hasBoxShadow = s.boxShadow && s.boxShadow !== 'none';
+          if (hasOutline || hasBoxShadow) {
+            return { outlineWidth: s.outlineWidth, outlineStyle: s.outlineStyle, boxShadow: s.boxShadow };
+          }
+          for (const child of node.children) stack.push(child);
+          if (node.shadowRoot) for (const child of node.shadowRoot.children) stack.push(child);
+        }
+        return null;
+      };
+      const host = el.getRootNode()?.host ?? el;
+      const ring =
+        findRing(host) ??
+        (() => {
+          const s = getComputedStyle(el);
+          return { outlineWidth: s.outlineWidth, outlineStyle: s.outlineStyle, boxShadow: s.boxShadow };
+        })();
+
+      return {
+        tag: el.tagName.toLowerCase(),
+        role: el.getAttribute('role'),
+        accessibleName: (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 80),
+        ...ring,
+      };
+    });
+    if (!step) break;
+    const key = `${step.tag}|${step.role}|${step.accessibleName}`;
+    if (key === lastKey) break; // Tab stopped moving focus — end of the reachable set.
+    lastKey = key;
+    steps.push(step);
+  }
+  return steps;
+}
+
+/**
+ * BX2 — every interactive census element must be reachable by Tab. Compared
+ * as a (tag, role) multiset rather than strict index order: the census walk
+ * (host → light → shadow) and the DOM's actual Tab order are two different,
+ * both-legitimate traversals of the same subtree, so index equality would
+ * false-positive on any component whose visual tab order isn't host-first.
+ * Pure — exported for tests.
+ */
+export function judgeTabOrder(census, tabWalk) {
+  if (!Array.isArray(census) || census.length === 0) return null; // N/A — nothing to reach.
+  const walked = new Map();
+  for (const step of tabWalk ?? []) {
+    const key = `${step.tag}|${step.role ?? ''}`;
+    walked.set(key, (walked.get(key) ?? 0) + 1);
+  }
+  const missing = [];
+  const seen = new Map();
+  for (const el of census) {
+    const key = `${el.tag}|${el.role ?? ''}`;
+    const already = seen.get(key) ?? 0;
+    seen.set(key, already + 1);
+    if (already >= (walked.get(key) ?? 0)) missing.push(el);
+  }
+  if (missing.length === 0) return null;
+  return {
+    severity: 'error',
+    code: 'A11Y-BX2-TAB-ORDER-GAP',
+    message: `${missing.length} census element(s) never received focus via Tab: ${missing
+      .map(el => `<${el.tag}>${el.role ? ` role=${el.role}` : ''}`)
+      .join(', ')} (WCAG 2.1.1).`,
+  };
+}
+
+/**
+ * BX3 — a Tab stop must have a visible focus indicator: a non-zero outline,
+ * or a box-shadow that isn't `none`. Pure — exported for tests.
+ */
+export function judgeFocusRingVisible(step) {
+  if (!step) return null;
+  const hasOutline = step.outlineWidth && step.outlineWidth !== '0px' && step.outlineStyle !== 'none';
+  const hasBoxShadowRing = step.boxShadow && step.boxShadow !== 'none';
+  if (hasOutline || hasBoxShadowRing) return null;
+  return {
+    severity: 'error',
+    code: 'A11Y-BX3-FOCUS-RING-INVISIBLE',
+    message: `<${step.tag}>${step.role ? ` role=${step.role}` : ''} has no visible focus ring (outlineWidth=${step.outlineWidth}, boxShadow=${step.boxShadow}) (WCAG 2.4.7).`,
+  };
 }
 
 function pickDefaultStoryId(target) {
