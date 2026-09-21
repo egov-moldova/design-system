@@ -27,8 +27,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import StyleDictionary from 'style-dictionary';
-
 import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
 
 const argv = process.argv.slice(2);
@@ -94,14 +92,23 @@ function colorize(text, color) {
 // A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
 const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
 const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
-// An all-lowercase kebab-case key whose camelCase spelling builds the same CSS variable. A digit
-// segment has none (name/kebab: `gap12` → `gap12`, `max2Lines` → `max2-lines`), so `gap-12`,
-// `max-2-lines` and `1-5` pass: renaming them would rename the variable.
-const nameKebab = StyleDictionary.hooks.transforms['name/kebab'];
-const cssName = key => nameKebab.transform({ path: [key] }, {});
-const kebabToCamel = key => key.replace(/-+([a-z0-9])/g, (_, c) => c.toUpperCase());
-const isKebab = key =>
-  key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key) && cssName(kebabToCamel(key)) === cssName(key);
+// An all-lowercase kebab-case key. One that starts with a digit (`1-5`, a half step) has no
+// camelCase form, so it passes.
+const isKebab = key => key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key);
+
+// A spelling that builds the same CSS variable as the kebab-case key: letter segments join in
+// camelCase and a digit segment becomes a nesting level, since camelCase cannot carry the dash
+// before it (name/kebab turns `gap12` into `gap12`, but `gap: { "12": … }` into `gap-12`).
+// `padding-inline-100` → `paddingInline.100`, `max-2-lines` → `max.2.lines`.
+function nestedCamel(key) {
+  const levels = [];
+  for (const segment of toKebab(key).split('-').filter(Boolean)) {
+    const last = levels.length - 1;
+    if (/^[0-9]/.test(segment) || last < 0 || /^[0-9]/.test(levels[last])) levels.push(segment);
+    else levels[last] += segment[0].toUpperCase() + segment.slice(1);
+  }
+  return levels.join('.');
+}
 
 // Files the Tokenhaus sync writes keep Figma's kebab-case variable names; see GENERATED_FILES.
 const isSyncGenerated = filePath => {
@@ -286,7 +293,7 @@ function checkKey(key, keyPath, filePath, position, kebabAllowed) {
       file: filePath,
       jsonPath: keyPath.join('.'),
       key,
-      suggestion: kebab ? kebabToCamel(key) : toCamel(key),
+      suggestion: kebab || (badCase && key.includes('-')) ? nestedCamel(key) : toCamel(key),
       reason: reasonFor(key, kebab),
       severity,
       position: position || null,

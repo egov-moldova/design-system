@@ -6,7 +6,11 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import StyleDictionary from 'style-dictionary';
+
 import { GENERATED_FILES } from '../lib/tokenhaus-generated-files.mjs';
+
+const nameKebab = StyleDictionary.hooks.transforms['name/kebab'];
 
 const SCRIPT = fileURLToPath(new URL('../tokens-lint.mjs', import.meta.url));
 const tempDirs = [];
@@ -69,11 +73,24 @@ describe('tokens-lint — key naming', () => {
     assert.equal(status, 1);
   });
 
-  it('accepts a kebab-case key with a digit segment, which no camelCase spelling keeps', () => {
-    // name/kebab turns `gap12` into `gap12` and `max2Lines` into `max2-lines`, so renaming either
-    // would rename its CSS variable (`--layout-gap-12`, `--layout-max-2-lines`).
-    const { keys } = lint(tokenRoot({ layout: { 'gap-12': leaf, 'max-2-lines': leaf } }));
-    assert.deepEqual(keys, []);
+  it('suggests nesting at a digit segment, the one spelling that keeps the CSS variable', () => {
+    // `gap12` would build `--layout-gap12` and `max2Lines` `--layout-max2-lines`; nesting the digit
+    // segment (`gap: { 12 }`) builds the same variable as the kebab-case key.
+    const keys = ['gap-12', 'max-2-lines', 'padding-inline-100', 'font-size-2xl', 'foo-', 'max-2Lines'];
+    const { report } = lint(tokenRoot({ layout: Object.fromEntries(keys.map(k => [k, leaf])) }));
+    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
+    assert.deepEqual(suggestions, {
+      'error:gap-12': 'gap.12',
+      'error:max-2-lines': 'max.2.lines',
+      'error:padding-inline-100': 'paddingInline.100',
+      'error:font-size-2xl': 'fontSize.2xl',
+      'error:foo-': 'foo',
+      'error:max-2Lines': 'max.2.lines',
+    });
+    const cssName = p => nameKebab.transform({ path: ['layout', ...p] }, {});
+    for (const issue of report.issues) {
+      assert.equal(cssName(issue.suggestion.split('.')), cssName([issue.key]), issue.key);
+    }
   });
 
   it('does not report a hyphen-free key as kebab-case', () => {
