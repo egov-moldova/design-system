@@ -175,6 +175,23 @@ function yarn(args, cwd) {
     throw new Stop(`yarn ${args.join(' ')} failed (exit ${run.status}). Fix it, commit, and rerun.`);
 }
 
+/**
+ * Paths main deleted and now git-ignores: a generated file main stopped tracking (as
+ * src/components.d.ts was). A branch that still regenerates it conflicts modify/delete on every
+ * such commit; the deletion is main's intent and the build recreates the file untracked.
+ */
+function retiredSet(paths, cwd) {
+  if (paths.length === 0) return new Set();
+  const run = spawnSync('git', ['check-ignore', '--stdin', '-z', '--no-index'], {
+    cwd,
+    input: paths.join('\0') + '\0',
+    encoding: 'utf8',
+  });
+  if (run.error) throw run.error;
+  if (run.status > 1) throw new Stop(`git check-ignore failed:\n${run.stderr.trim()}`);
+  return new Set(run.stdout.split('\0').filter(p => p && !stagesOf(cwd, p).has('2')));
+}
+
 /** Paths `.gitattributes` marks `merge=ours` — the repo's own definition of "generated". One git call. */
 function generatedSet(paths, cwd) {
   if (paths.length === 0) return new Set();
@@ -245,7 +262,8 @@ function resolveRound(cwd) {
   const conflicted = listPaths(['diff', '--name-only', '--diff-filter=U', '-z'], cwd);
   if (conflicted.length === 0) return false;
   const generated = generatedSet(conflicted, cwd);
-  const groups = classifyConflicts(conflicted, p => generated.has(p));
+  const retired = retiredSet(conflicted, cwd);
+  const groups = classifyConflicts(conflicted, p => generated.has(p) || retired.has(p));
   const real = [...groups.real];
   let resolved = 0;
   for (const p of groups.generated) {

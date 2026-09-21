@@ -205,6 +205,22 @@ describe('sync-main — rebase', () => {
     assert.equal(git(cwd, 'ls-files', 'gen.txt'), '');
   });
 
+  it('drops a file main stopped tracking and now ignores, in every branch commit that touched it', () => {
+    // src/components.d.ts's history: tracked without merge=ours on main's side any more.
+    const cwd = scratchRepo({
+      feat: [genTo('code.txt', 'types v1\n'), genTo('code.txt', 'types v2\n')],
+      main: [
+        cwd2 => {
+          fs.rmSync(path.join(cwd2, 'code.txt'));
+          write(cwd2, '.gitignore', 'code.txt\n');
+        },
+      ],
+    });
+    const run = sync(cwd);
+    assert.equal(run.status, 0, run.stderr);
+    assert.equal(git(cwd, 'ls-files', 'code.txt'), '');
+  });
+
   it('treats a CHANGELOG line both sides edited as a real conflict', () => {
     const edit = text => cwd => write(cwd, 'CHANGELOG.md', changelog().replace('### Older', `### Older\n\n${text}`));
     const cwd = scratchRepo({ main: [edit('Base line.')] });
