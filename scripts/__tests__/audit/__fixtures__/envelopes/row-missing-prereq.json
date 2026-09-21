@@ -1,0 +1,10 @@
+{
+  "id": "06",
+  "name": "test-coverage",
+  "wave": "B",
+  "status": "missing-prereq",
+  "ok": false,
+  "exitCode": 2,
+  "summary": null,
+  "error": "coverage/coverage-summary.json not found. Run `yarn test --coverage` first, or pass --run."
+}

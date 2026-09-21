@@ -174,6 +174,8 @@ export function compareEnvelopes(baselineEnv, currentEnv, { warningTolerance = 5
     removed: (baselineEnv.blockers ?? []).filter(b => !(currentEnv.blockers ?? []).includes(b)),
   };
 
+  const rows = diffRowStatuses(baselineEnv.results ?? [], currentEnv.results ?? []);
+
   // Quality rule from the plan:
   //   - critical/high (error) changes are always regression
   //   - warnings: drift up to N% allowed if direction is "more" (script catches more, never fewer)
@@ -189,14 +191,53 @@ export function compareEnvelopes(baselineEnv, currentEnv, { warningTolerance = 5
   if (warnings.removed.length > 0) reasons.push(`${warnings.removed.length} warning(s) silently disappeared`);
   if (warningDriftPct > warningTolerance)
     reasons.push(`warning drift ${warningDriftPct.toFixed(1)}% exceeds tolerance ${warningTolerance}%`);
+  if (rows.length > 0) {
+    reasons.push(
+      `${rows.length} row(s) newly ${rows.map(r => r.to).join('/')}: ${rows.map(r => `${r.name}(${r.from}→${r.to})`).join(', ')}`,
+    );
+  }
 
   const regressed =
     errors.added.length > 0 ||
     errors.removed.length > 0 ||
     warnings.removed.length > 0 ||
-    warningDriftPct > warningTolerance;
+    warningDriftPct > warningTolerance ||
+    rows.length > 0;
 
-  return { regressed, errors, warnings, blockers, warningDriftPct, reasons };
+  return { regressed, errors, warnings, blockers, rows, warningDriftPct, reasons };
+}
+
+/**
+ * A row that used to run (`status: 'ok'`, i.e. it produced a summary —
+ * including a baseline captured before `run-all.mjs` wrote `status`, where a
+ * present `summary` means the same thing) and now doesn't — `crashed`,
+ * `missing-prereq`, or `skipped` — is a regression even when its baseline had
+ * zero findings (plan Phase 1 task 2): the earlier bug (F1) was exactly a
+ * crashed row that no findings-based diff could ever see. Pure — exported for
+ * tests.
+ */
+const REGRESSED_ROW_STATUSES = new Set(['crashed', 'missing-prereq', 'skipped']);
+
+export function diffRowStatuses(baselineRows, currentRows) {
+  const baseById = new Map(baselineRows.map(r => [r.id, r]));
+  const newlyBroken = [];
+  for (const cur of currentRows) {
+    const base = baseById.get(cur.id);
+    if (!base) continue; // a row absent from the baseline entirely is not "newly" anything
+    const fromStatus = rowStatusOf(base);
+    const toStatus = rowStatusOf(cur);
+    if (fromStatus === 'ok' && REGRESSED_ROW_STATUSES.has(toStatus)) {
+      newlyBroken.push({ id: cur.id, name: cur.name, from: fromStatus, to: toStatus });
+    }
+  }
+  return newlyBroken;
+}
+
+function rowStatusOf(row) {
+  if (row.status) return row.status;
+  // Pre-status baselines (captured before this field existed): a present
+  // `summary` is exactly what `run-all.mjs`'s own classifier treats as 'ok'.
+  return row.summary ? 'ok' : 'crashed';
 }
 
 /**
@@ -286,6 +327,10 @@ function renderSummary(result) {
     if (c.diff.warnings.removed.length > 0) {
       lines.push(`    ↓ MISSING warnings:`);
       for (const e of c.diff.warnings.removed) lines.push(`      - ${e.tool}/${e.code} ${e.file ?? ''}`);
+    }
+    if ((c.diff.rows ?? []).length > 0) {
+      lines.push(`    ↓ NEWLY broken rows:`);
+      for (const r of c.diff.rows) lines.push(`      - ${r.name} (${r.id}): ${r.from} → ${r.to}`);
     }
     if (c.diff.reasons.length > 0) {
       lines.push(`    Reason(s): ${c.diff.reasons.join('; ')}`);

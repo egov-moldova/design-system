@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0.0",
+  "leg": "a11y-verifier",
+  "idsJudged": ["CX1", "CX2"],
+  "status": "open",
+  "inputHash": null,
+  "findings": []
+}

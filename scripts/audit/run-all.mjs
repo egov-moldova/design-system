@@ -44,8 +44,9 @@ import { parseArgs } from 'node:util';
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL } from './lib/exit-codes.mjs';
-import { SCHEMA_VERSION, flushStdout } from './lib/json-output.mjs';
+import { SCHEMA_VERSION, flushStdout, ROW_STATUS } from './lib/json-output.mjs';
 import { manifestPathFor } from './lib/figma-manifest.mjs';
+import { checkEnv, formatIncomplete } from './lib/env-preflight.mjs';
 
 const TOOL = 'run-all';
 
@@ -260,6 +261,15 @@ async function main() {
   const args = parseCli();
   const t0 = Date.now();
 
+  const envCheck = checkEnv();
+  if (!envCheck.ok) {
+    const message = formatIncomplete(envCheck);
+    process.stderr.write(`${TOOL}: ${message}\n`);
+    const combined = buildPreflightFailure({ args, envCheck, message, durationMs: Date.now() - t0 });
+    await emit(combined, args);
+    process.exit(EXIT_INTERNAL);
+  }
+
   const scriptsToRun = selectScripts(args);
   if (scriptsToRun.length === 0) {
     process.stderr.write(`${TOOL}: no scripts selected (after --only/--skip filtering).\n`);
@@ -300,6 +310,33 @@ async function main() {
 
   await emit(combined, args);
   process.exit(combined.ok ? 0 : 1);
+}
+
+/**
+ * The envelope emitted when `checkEnv()` fails: no script has run, so there
+ * is nothing to aggregate — the envelope carries the preflight cause instead
+ * of a synthetic per-script result (F2). Pure — exported for tests.
+ */
+export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
+  const target = args.all ? '--all' : args.changed ? '--changed' : (args.component ?? 'unknown');
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    tool: TOOL,
+    target,
+    ok: false,
+    preflight: { ok: false, cause: envCheck.cause, command: envCheck.command, message },
+    summary: { errors: 0, warnings: 0, info: 0, incomplete: 1 },
+    blockers: [message],
+    results: [],
+    findingsByTool: {},
+    meta: {
+      totalDurationMs: durationMs,
+      scriptsRun: 0,
+      parallel: true,
+      ciDetected: args.ci,
+      layer2Required: false,
+    },
+  };
 }
 
 export function selectScripts(args) {
@@ -424,10 +461,11 @@ function runScript(script, targetArg, args = {}) {
  *                          --no-browser). SKILL.md §BX gates on this flag.
  */
 export function aggregate({ targetArg, results, durationMs, ci = false, noBrowser = false }) {
-  const summary = { errors: 0, warnings: 0, info: 0 };
+  const summary = { errors: 0, warnings: 0, info: 0, incomplete: 0 };
   const blockers = [];
   const findingsByTool = {};
   const reportOnly = new Set(AUDIT_SCRIPTS.filter(s => s.blocking === false).map(s => s.name));
+  const scriptsById = new Map(AUDIT_SCRIPTS.map(s => [s.id, s]));
   // A script's own `ok` is false whenever it has errors. A report-only script is excused only
   // when those errors are rule findings: it exited 1 with a summary and resolved its target. A
   // crash, a missing envelope or STRUCTURE-NOT-FOUND (a mistyped or missing component) still fails.
@@ -455,6 +493,25 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
 
   const ok = blockingErrors === 0 && results.every(r => r.ok || excused(r));
 
+  const rows = results.map(r => {
+    const status = rowStatus(r, scriptsById.get(r.id));
+    if (status === ROW_STATUS.CRASHED || status === ROW_STATUS.MISSING_PREREQ) {
+      summary.incomplete += 1;
+      blockers.push(`${r.name}/${status}`);
+    }
+    return {
+      id: r.id,
+      name: r.name,
+      wave: r.wave,
+      ok: r.ok || excused(r),
+      status,
+      exitCode: r.exitCode,
+      durationMs: r.durationMs,
+      summary: r.summary ?? null,
+      error: r.error ?? null,
+    };
+  });
+
   return {
     schemaVersion: SCHEMA_VERSION,
     tool: TOOL,
@@ -462,16 +519,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
     ok,
     summary,
     blockers,
-    results: results.map(r => ({
-      id: r.id,
-      name: r.name,
-      wave: r.wave,
-      ok: r.ok || excused(r),
-      exitCode: r.exitCode,
-      durationMs: r.durationMs,
-      summary: r.summary ?? null,
-      error: r.error ?? null,
-    })),
+    results: rows,
     findingsByTool,
     meta: {
       totalDurationMs: durationMs,
@@ -481,6 +529,19 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
       layer2Required: !ci && !noBrowser,
     },
   };
+}
+
+/**
+ * Classify a per-script result into the shared row-status enum (F1, F3).
+ * `status: 'ok'` means an envelope reached us — the script ran, whatever its
+ * findings say. No summary reached us at all: a script that declares
+ * `requiresBuild` (06 needs coverage, 08 needs dist, Wave C needs a build +
+ * Storybook) is `missing-prereq`; anything else with no summary is `crashed`
+ * (spawn error, a non-JSON stdout, or a genuine script bug).
+ */
+function rowStatus(r, script) {
+  if (r.summary !== undefined && r.summary !== null) return ROW_STATUS.OK;
+  return script?.requiresBuild ? ROW_STATUS.MISSING_PREREQ : ROW_STATUS.CRASHED;
 }
 
 async function emit(combined, args) {
