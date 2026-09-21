@@ -270,6 +270,7 @@ Internal contributors with write access to this repo should continue branching d
 2. Push your branch and open a PR against `main`. Describe what changed and why, and note the test plan (what you ran, e.g. `yarn check`, `yarn build`, manual Storybook verification).
 3. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase).
 4. A maintainer reviews and merges once the checklist is satisfied.
+5. If GitHub reports conflicts after another PR has merged — usually only in `src/components.d.ts`, component readmes or the top of `CHANGELOG.md` — run `yarn sync:main` on your branch, then `git push --force-with-lease`. It rebases onto `main`, resolves those mechanical conflicts, rebuilds and commits the generated files, and runs lint and tests; a conflict in any other file stops it for you to resolve. Details: `_agents/generated-files.md`.
 
 ---
 

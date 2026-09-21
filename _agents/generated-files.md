@@ -12,7 +12,8 @@ The repo runs **parallel agent worktrees** where several components are built/re
 | Layer | File | Role |
 | --- | --- | --- |
 | Filesystem isolation | `git worktree` | Each agent runs in its own git worktree — no in-flight write collisions |
-| Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Cross-branch merges silently keep current branch — no conflict markers |
+| Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Local merges and rebases silently keep the current side — no conflict markers. GitHub never runs a custom driver, so a PR still shows these files as conflicting once another PR lands on `main` |
+| Pre-merge sync | `yarn sync:main` (`scripts/git/sync-main.mjs`) | Rebases onto `upstream/main` (else `origin/main`), takes main's copy of every `merge=ours` path and keeps both sides of each CHANGELOG hunk, then runs `yarn build`, commits only the regenerated files, and runs `yarn lint` + `yarn test`. Any other conflict stops the run with the rebase left in progress. It never pushes |
 | Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (`src/components.d.ts`, component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
 | Merge hint | `.husky/post-merge` | Prints a `yarn build` reminder when a merge touched a generated file |
 | Canonical regeneration | `.github/workflows/ci.yml` (`Tokens validation` job) | Rebuilds and fails when a tracked generated file differs from the build — the same check as `.husky/pre-push`, but not skippable |
