@@ -276,6 +276,9 @@ const AUDIT_SCRIPTS = [
     name: 'adapter-react',
     perComponent: false,
     requiresBuild: false,
+    // Stencil build: writes dist/, loader/, .stencil and component readme.md — the
+    // same output adapter-vanilla's build writes. Run one at a time (runWaves).
+    exclusive: true,
   },
   {
     id: 'adapter-vanilla',
@@ -285,6 +288,9 @@ const AUDIT_SCRIPTS = [
     name: 'adapter-vanilla',
     perComponent: false,
     requiresBuild: false,
+    // See adapter-react: shares the same Stencil build output, so it may not
+    // overlap with it (or any other `exclusive` row) inside a wave.
+    exclusive: true,
   },
   { id: 'e2e', wave: 'D', kind: 'deferred', name: 'e2e', perComponent: true, requiresBuild: false },
   {
@@ -796,7 +802,13 @@ async function runWaves(scripts, opts) {
   const results = [];
   for (const wave of ['A', 'B', 'C', 'D']) {
     const inWave = scripts.filter(s => s.wave === wave);
-    results.push(...(await Promise.all(inWave.map(s => runRow(s, opts)))));
+    // `exclusive` rows write shared build output (dist/, loader/, .stencil, component
+    // readme.md) and would race each other under Promise.all — run them one at a
+    // time, after the rest of the wave.
+    const parallel = inWave.filter(s => !s.exclusive);
+    const exclusive = inWave.filter(s => s.exclusive);
+    results.push(...(await Promise.all(parallel.map(s => runRow(s, opts)))));
+    for (const s of exclusive) results.push(await runRow(s, opts));
   }
   return results;
 }

@@ -24,7 +24,7 @@ import {
 } from '../../audit/run-all.mjs';
 import { checkEnv, satisfiesRange, formatIncomplete, REQUIRED_DEPS } from '../../audit/lib/env-preflight.mjs';
 import { resolveDepth } from '../../audit/lib/cli-args.mjs';
-import { ensureWorktreeStorybook } from '../../audit/lib/storybook-helpers.mjs';
+import { ensureWorktreeStorybook, startStorybookProcess } from '../../audit/lib/storybook-helpers.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { allLegsClosed, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
 
@@ -829,6 +829,34 @@ describe('run-all: runAudit — deep', () => {
   });
 });
 
+describe('run-all: runWaves serializes exclusive Wave D builds (adapter-react vs adapter-vanilla)', () => {
+  it('never runs `yarn build.react` and `yarn build.web` concurrently — both write dist/, loader/, .stencil', async () => {
+    const events = [];
+    const runCommand = async (cmd, cmdArgs) => {
+      const label = [cmd, ...cmdArgs].join(' ');
+      events.push({ label, at: 'start', t: Date.now() });
+      await new Promise(r => setTimeout(r, 20));
+      events.push({ label, at: 'end', t: Date.now() });
+      return { exitCode: 0, stdout: '', stderr: '' };
+    };
+    const p = pipeline({ argv: ['mud-fx', '--depth', 'deep', '--no-figma', '--verdict'], runCommand });
+    await runAudit(p.args, p.deps);
+
+    const react = events.filter(e => e.label === 'yarn build.react');
+    const vanilla = events.filter(e => e.label === 'yarn build.web');
+    assert.equal(react.length, 2, 'adapter-react did not run start+end');
+    assert.equal(vanilla.length, 2, 'adapter-vanilla did not run start+end');
+    const [reactStart, reactEnd] = [react[0].t, react[1].t];
+    const [vanillaStart, vanillaEnd] = [vanilla[0].t, vanilla[1].t];
+    const overlap = reactStart < vanillaEnd && vanillaStart < reactEnd;
+    assert.equal(
+      overlap,
+      false,
+      `builds overlapped: react ${reactStart}-${reactEnd}, vanilla ${vanillaStart}-${vanillaEnd}`,
+    );
+  });
+});
+
 describe('run-all: runAudit — env preflight with --verdict', () => {
   it('writes an INCOMPLETE verdict carrying the preflight cause and command', async () => {
     const p = pipeline({ argv: ['mud-fx', '--verdict'] });
@@ -888,6 +916,29 @@ describe('storybook-helpers: ensureWorktreeStorybook (Design §9, nothing starte
     const res = await ensureWorktreeStorybook(opts);
     assert.equal(res.ok, false);
     assert.match(res.cause, /did not answer on port 51515/);
+  });
+
+  it('a spawn failure (start() returns no pid) never writes an undefined pid and never polls', async () => {
+    const { log, opts } = fake({
+      start: () => undefined,
+      reachable: async () => assert.fail('must not poll a server that never spawned'),
+    });
+    const res = await ensureWorktreeStorybook(opts);
+    assert.equal(res.ok, false);
+    assert.match(res.cause, /spawn error/);
+    assert.deepEqual(log.written, [], 'wrote a record despite the spawn failure');
+  });
+
+  it('startStorybookProcess: a missing storybook binary (ENOENT) does not crash the process — "error" is handled', async () => {
+    // node_modules/.bin/storybook does not exist under this empty repoRoot, so the
+    // real child_process.spawn fails to launch and emits 'error' asynchronously.
+    // Before the fix, that event had no listener and crashed this whole test process.
+    const repoRoot = mkdtempSync(join(tmpdir(), 'run-all-spec-sb-missing-'));
+    tmpRoots.push(repoRoot);
+    const pid = startStorybookProcess({ repoRoot, port: 61299 });
+    assert.equal(pid, undefined, 'a process that never spawned should have no pid');
+    // Give the async 'error' event a turn to fire; an unhandled one throws here.
+    await new Promise(r => setTimeout(r, 100));
   });
 });
 

@@ -263,6 +263,48 @@ describe('verdict: deep', () => {
     assert.match(closure.cause, /CX2/);
   });
 
+  it('a finding missing severity does not close the row, and names the finding', () => {
+    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
+    const closure = closeAiRow(row, [
+      {
+        leg: 'audit-component',
+        data: aiFindings('audit-component', {
+          idsJudged: ['CX1'],
+          findings: [{ code: 'CX1', message: 'no severity here' }],
+        }),
+      },
+    ]);
+    assert.equal(closure.closed, false);
+    assert.match(closure.cause, /severity/);
+    assert.match(closure.cause, /finding\[0\]/);
+  });
+
+  it('a finding missing both message and actual does not close the row', () => {
+    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
+    const closure = closeAiRow(row, [
+      {
+        leg: 'audit-component',
+        data: aiFindings('audit-component', { idsJudged: ['CX1'], findings: [{ severity: 'error', code: 'CX1' }] }),
+      },
+    ]);
+    assert.equal(closure.closed, false);
+    assert.match(closure.cause, /message or actual/);
+  });
+
+  it('a decision-shaped finding (has `question`) never needs severity/message/actual', () => {
+    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
+    const closure = closeAiRow(row, [
+      {
+        leg: 'audit-component',
+        data: aiFindings('audit-component', {
+          idsJudged: ['CX1'],
+          findings: [{ code: 'CX1', question: 'Trap focus?', options: ['yes', 'no'] }],
+        }),
+      },
+    ]);
+    assert.equal(closure.closed, true);
+  });
+
   it('an AI finding may set FAIL at deep', () => {
     const aiFiles = allLegsClosed().map(f =>
       f.leg === 'a11y-verifier'
@@ -329,6 +371,18 @@ describe('verdict: deep', () => {
     const v2 = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles: decision });
     assert.equal(v2.state, 'FAIL');
   });
+
+  it('a malformed finding (no severity, no message/actual) leaves the row unclosed → INCOMPLETE, never throws', () => {
+    const aiFiles = allLegsClosed().map(f =>
+      f.leg === 'a11y-verifier' ? { leg: f.leg, data: aiFindings(f.leg, { findings: [{ code: 'DX-WCAG-1' }] }) } : f,
+    );
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    assert.equal(v.state, 'INCOMPLETE');
+    const entry = v.entries.find(e => e.check.includes('a11y-verifier'));
+    assert.ok(entry, 'no INCOMPLETE entry for the unclosed a11y-verifier row');
+    assert.match(entry.cause, /severity/);
+    assert.match(entry.cause, /message or actual/);
+  });
 });
 
 describe('verdict: AI findings are advisory at quick / standard (Decision §5)', () => {
@@ -338,6 +392,14 @@ describe('verdict: AI findings are advisory at quick / standard (Decision §5)',
       data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
     },
   ];
+
+  it('quick/standard: a malformed finding is reported as a note, never throws, and is absent from advisory', () => {
+    const malformed = [{ leg: 'a11y-verifier', data: aiFindings('a11y-verifier', { findings: [{ code: 'CX1' }] }) }];
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'quick' }), aiFiles: malformed });
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.advisory.length, 0);
+    assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
+  });
 
   for (const depth of ['quick', 'standard']) {
     it(`${depth}: a blocking AI finding with clean script rows yields PASS and lands under advisory`, () => {
@@ -384,6 +446,28 @@ describe('verdict: Figma inputs', () => {
     };
     const v = computeVerdict({ envelope: cleanEnvelope({ figma: { ...FIGMA_PRESENT, overrides: [override] } }) });
     assert.deepEqual(v.figma.overrides, [{ ...override, commit: FIGMA_PRESENT.commit }]);
+  });
+});
+
+describe('verdict: writeVerdictForRun renders the brief before writing either file', () => {
+  it('a render failure leaves verdict.json and fix-brief.md exactly as they were (no new stale pair)', () => {
+    const auditDir = tmp();
+    // First, a clean successful write, so there is a real "before" state on disk.
+    const okRunDir = writeRunDir(auditDir, cleanEnvelope());
+    writeVerdictForRun(okRunDir);
+    const stable = join(auditDir, 'mud-fx', 'verdict.json');
+    const briefPath = join(auditDir, 'mud-fx', 'fix-brief.md');
+    const verdictBefore = readFileSync(stable);
+    const briefBefore = readFileSync(briefPath);
+
+    // A script-level finding with no `actual` and no `message` cannot be rendered
+    // (fix-brief.mjs BRIEF_FIELDS[FAIL] requires `actual`) — renderFixBrief throws.
+    const broken = withError(cleanEnvelope(), '02', { message: undefined, actual: undefined });
+    const brokenRunDir = writeRunDir(auditDir, broken, { run: 'run-2' });
+    assert.throws(() => writeVerdictForRun(brokenRunDir), /missing actual/);
+
+    assert.ok(readFileSync(stable).equals(verdictBefore), 'verdict.json was overwritten despite the render failure');
+    assert.ok(readFileSync(briefPath).equals(briefBefore), 'fix-brief.md was overwritten despite the render failure');
   });
 });
 

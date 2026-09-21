@@ -376,7 +376,8 @@ yarn sp.build
 
 ## Phase 5: Testing
 
-Default: unit tests only. With `--e2e` flag also audit E2E tests.
+Unit tests (5a) are always audited. E2E (5b) is a deferred row from the gate's
+verdict, not a flag-gated pass this agent runs — see 5b.
 
 ### 5a. Unit Tests (DEFAULT — always audited)
 
@@ -403,23 +404,23 @@ node scripts/check-test-stderr.mjs --project spec src/components/mud-[name]/test
 
 **Pass criteria**: all tests pass, coverage > 80% (target — not enforced by tooling).
 
-### 5b. E2E Tests (GATED on `--e2e` flag)
+### 5b. E2E Tests (deferred row, not a live gate)
 
-If `--e2e` flag is NOT set: emit `INFO: E2E audit skipped (use --e2e to enable)` and continue.
+E2E is not audited here. `vitest.config.mts` has no project for
+`test/mud-[name].e2e.ts` files (see
+[`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)),
+so the gate (`scripts/audit/verdict.mjs` `DEFERRED_CHECKS.deep`) reports it as a
+deferred `e2e` row at `--depth deep` instead of running anything: it never
+blocks the verdict's `state`, and it carries its own reason
+("no E2E test project exists"). `--e2e` is a deprecated alias that folds into
+`--depth deep` — passing it changes nothing beyond selecting that depth; there
+is no separate flag-gated E2E pass to run by hand.
 
-`vitest.config.mts` has no project for `test/mud-[name].e2e.ts` files (see
-[`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)).
-When `--e2e` set, drive the live Storybook story through the Playwright MCP instead:
-
-1. Navigate to the story's `iframe.html?id=...` URL
-2. Hydration: `page.evaluate()` reads the `.hydrated` class on the host element
-3. Prop reflection: props/attributes reflect a re-rendered story arg
-4. `mud*` custom events: captured via `addEventListener` inside `page.evaluate()`, not a spy
-5. Shadow DOM access: `page.locator('mud-x input')` (Playwright pierces shadow roots)
-6. Focus/blur: `page.evaluate()` against `shadowRoot.querySelector(...)`
-7. Form-associated: form submission produces correct FormData via `page.evaluate()`
-
-**Pass criteria**: all checks pass; no flakes.
+Once an E2E test project exists, this section is the place to describe driving
+the live Storybook story through the Playwright MCP (hydration via `.hydrated`,
+prop reflection, `mud*` custom events, shadow-DOM access, focus/blur, and
+form-associated FormData) — until then, surface the `e2e` row from the gate's
+verdict as-is and move on.
 
 ### 5c. Visual Regression
 

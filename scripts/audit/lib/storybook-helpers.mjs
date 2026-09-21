@@ -117,12 +117,28 @@ function isProcessAlive(pid) {
   }
 }
 
-function startStorybookProcess({ repoRoot, port }) {
+/**
+ * Spawn Storybook detached. A missing binary (`node_modules/.bin/storybook`
+ * not installed — ENOENT) or any other launch failure emits `'error'` on the
+ * child ASYNCHRONOUSLY; with no listener that is an uncaught exception that
+ * crashes the whole run-all process. `child.pid` is `undefined` in exactly
+ * that failure case (Node: pid is only set once the process actually
+ * spawned), so the caller can detect the failure without waiting on the
+ * event — the listener below exists only to stop the crash.
+ *
+ * @returns {number|undefined} the child's pid, or undefined if it never spawned
+ */
+export function startStorybookProcess({ repoRoot, port }) {
   const bin = join(repoRoot, 'node_modules', '.bin', 'storybook');
   const child = spawn(bin, ['dev', '-p', String(port), '--no-open', '--ci'], {
     cwd: repoRoot,
     detached: true,
     stdio: 'ignore',
+  });
+  child.on('error', () => {
+    // Swallowed: a launch failure is reported through the undefined pid above,
+    // not through this event. Without this listener the unhandled 'error'
+    // event throws and takes the whole run-all process down with it.
   });
   child.unref();
   return child.pid;
@@ -167,6 +183,13 @@ export async function ensureWorktreeStorybook({
   }
   const port = await freePort();
   const pid = start({ repoRoot, port });
+  if (!pid) {
+    // The process never spawned (e.g. node_modules/.bin/storybook is missing) —
+    // never record an undefined pid, and never poll for a server that will
+    // never answer. The caller (run-all's runPrerequisites) turns this into
+    // missing-prereq rows for every check that requires the browser.
+    return { ok: false, cause: `Storybook failed to start on port ${port} (spawn error — is Storybook installed?)` };
+  }
   writeRecord({ port, pid });
   for (let waited = 0; waited < timeoutMs; waited += pollMs) {
     if (await reachable(port)) return { ok: true, port, reused: false };

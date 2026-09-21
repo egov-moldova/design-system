@@ -211,10 +211,29 @@ function aiFailOrDecision(f, leg, component) {
 }
 
 /**
+ * A finding whose kind renderFixBrief renders as FAIL needs `severity` and
+ * (`message` or `actual`) — BRIEF_FIELDS[FAIL] in fix-brief.mjs. A finding
+ * carrying a non-empty `question` renders as NEEDS-DECISION instead, whose
+ * fields (`node`, `options`) are always defaulted by aiFailOrDecision, so it
+ * needs no shape check here. Pure. Returns a cause string, or null when the
+ * finding's shape is safe to render.
+ */
+function findingShapeIssue(f, index) {
+  if (!f || typeof f !== 'object') return `finding[${index}] is not an object`;
+  if (typeof f.question === 'string' && f.question) return null;
+  const missing = [];
+  if (typeof f.severity !== 'string' || !f.severity) missing.push('severity');
+  if (f.message === undefined && f.actual === undefined) missing.push('message or actual');
+  return missing.length ? `finding[${index}] (${f.code ?? 'no code'}) missing ${missing.join(', ')}` : null;
+}
+
+/**
  * Close an opened AI-leg row with its leg's ai-findings.json (Design §1). A
  * row closes only when the file names the leg, lists every id the row
  * judges, carries a known major schemaVersion, and — when it states one —
- * the input hash the row was opened with. Pure.
+ * the input hash the row was opened with. A finding whose shape would make
+ * the fix brief unrenderable (missing `severity`, or missing both `message`
+ * and `actual`) also leaves the row unclosed, named by its index. Pure.
  *
  * @returns {{ closed: true, file: object } | { closed: false, cause: string }}
  */
@@ -237,6 +256,10 @@ export function closeAiRow(row, aiFiles) {
     return { closed: false, cause: 'ai-findings.json was judged over a different input (input hash differs)' };
   }
   if (!Array.isArray(data.findings)) return { closed: false, cause: 'ai-findings.json has no findings array' };
+  for (const [i, f] of data.findings.entries()) {
+    const issue = findingShapeIssue(f, i);
+    if (issue) return { closed: false, cause: `ai-findings.json from leg ${row.leg}: ${issue}` };
+  }
   return { closed: true, file: data };
 }
 
@@ -442,7 +465,14 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         notes.push(`ai-findings.json from leg ${file.leg} ignored: unreadable or unknown major schemaVersion`);
         continue;
       }
-      for (const f of [...(file.data.findings ?? [])].sort(compareFindings)) {
+      const rawFindings = Array.isArray(file.data.findings) ? file.data.findings : [];
+      const validFindings = [];
+      rawFindings.forEach((f, i) => {
+        const issue = findingShapeIssue(f, i);
+        if (issue) notes.push(`ai-findings.json from leg ${file.leg}: ${issue} — finding ignored`);
+        else validFindings.push(f);
+      });
+      for (const f of validFindings.sort(compareFindings)) {
         advisory.push({
           ...failEntry({
             f,
@@ -575,9 +605,13 @@ export function writeVerdictForRun(runDir) {
   const componentDir = resolve(absRun, '..', '..');
   const { envelope, aiFiles } = readRunInputs(absRun);
   const verdict = computeVerdict({ envelope, aiFiles, component: basename(componentDir) });
+  // Render before writing either file: a render failure (an entry the renderer
+  // cannot shape) must never leave a freshly-written verdict.json beside a
+  // stale fix-brief.md — throwing here leaves both files exactly as they were.
+  const brief = renderFixBrief(verdict, { run: basename(absRun) });
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
-  writeFileSync(join(componentDir, 'fix-brief.md'), renderFixBrief(verdict, { run: basename(absRun) }));
+  writeFileSync(join(componentDir, 'fix-brief.md'), brief);
   return verdict;
 }
 
