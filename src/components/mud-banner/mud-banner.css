@@ -97,12 +97,22 @@
   block-size: var(--banner-close-icon-size);
 }
 
-.close:focus-visible {
+/* Focus ring on both focusable parts. The browser's default ring is drawn in
+   its own blue, which disappears on the strong surfaces (the info fill is the
+   same blue), so every focusable draws the design-system ring instead: a white
+   inner halo inside a blue band, readable on all six fills. */
+.close:focus-visible,
+.link:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 var(--focus-ring-width-inner, 2px) var(--focus-ring-color-inner, currentColor),
-    0 0 0 calc(var(--focus-ring-width-inner, 2px) + var(--focus-ring-width-outer, 2px))
-      var(--focus-ring-color-outer, transparent);
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.link:focus-visible {
+  border-radius: var(--banner-close-border-radius);
 }
 
 /* ---------- Variant × emphasis surfaces (Figma "Styles") ---------- */
@@ -159,6 +169,14 @@
 
 :host([emphasis='strong'][variant='error']) .icon {
   --icon-color: var(--banner-error-strong-icon);
+}
+
+/* The shared blue focus band reads only 2.77:1 on the amber fill, under the
+   3:1 a focus indicator needs (SC 1.4.11). On this one surface the band takes
+   the dark amber the icon already uses (3.51:1); every other fill keeps the
+   default ring, which is 3.55:1 or better. */
+:host([emphasis='strong'][variant='warning']) {
+  --focus-ring-color-outer: var(--banner-warning-strong-icon);
 }
 
 /* Warning strong keeps the dark amber glyph on the amber fill (255:6673). */
