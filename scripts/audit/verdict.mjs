@@ -378,6 +378,9 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   // AI legs: declared rows at deep only; advisory everywhere else (Decision §5).
   const openedLegs = audit.aiLegs ?? [];
   const legs = [];
+  // One leg can own several rows (a11y-verifier: ai-wcag + ai-media) from a single file;
+  // its findings are read once, not once per row it closes.
+  const legsRead = new Set();
   if (depth === 'deep') {
     for (const id of aiRequired) {
       const excuse = excuseFor(id, ctx);
@@ -424,6 +427,8 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         });
         continue;
       }
+      if (legsRead.has(opened.leg)) continue;
+      legsRead.add(opened.leg);
       for (const f of [...closure.file.findings].sort(compareFindings)) {
         const entry = aiFailOrDecision(f, opened.leg, component);
         if (entry.kind === STATE.NEEDS_DECISION) decisions.push(entry);

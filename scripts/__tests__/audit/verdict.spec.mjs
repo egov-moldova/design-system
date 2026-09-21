@@ -277,6 +277,26 @@ describe('verdict: deep', () => {
     assert.equal(v.entries[0].owner, 'a11y-verifier');
   });
 
+  it('a leg whose one file closes two rows reports each finding once', () => {
+    // a11y-verifier owns both ai-wcag and ai-media, from a single ai-findings.json.
+    const aiFiles = allLegsClosed().map(f =>
+      f.leg === 'a11y-verifier'
+        ? {
+            leg: f.leg,
+            data: aiFindings(f.leg, {
+              findings: [
+                { severity: 'error', code: 'DX-WCAG-1', message: 'no name' },
+                { severity: 'warning', code: 'DX-MEDIA-1', message: 'motion' },
+              ],
+            }),
+          }
+        : f,
+    );
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    assert.equal(v.entries.filter(e => e.owner === 'a11y-verifier').length, 1);
+    assert.equal(v.advisory.filter(e => e.owner === 'a11y-verifier').length, 1);
+  });
+
   it('an AI finding may set NEEDS-DECISION at deep', () => {
     const aiFiles = allLegsClosed().map(f =>
       f.leg === 'audit-component'
