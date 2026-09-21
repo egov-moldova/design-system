@@ -208,8 +208,12 @@ time-picker 100%, time-input 96%, date-input 92%, date-picker 89%.
   focus itself moves into the popover (dialog pattern).
 - `mud-date-picker` manifest: full-calendar pixel states render December 2024, the real month
   laid out like Figma's mock January 2025.
-- `mud-time-input` has a `trigger-label` prop (the clock button's name); `mud-date-input` still
-  hard-codes "Deschide calendarul" and `locale="ro-RO"`.
+- No text is hard-coded in the four components: every visible or assistive string is a prop with
+  a Romanian default, or comes from `Intl` through `locale`. `mud-date-input` gained
+  `trigger-label` (the calendar button's name, as `mud-time-input` already had) and a `locale`
+  prop it forwards to the calendar; both default to what was hard-coded before. `mud-date-picker`
+  reads every month, weekday and "today" label from `Intl`, falling back to "Today" only if
+  `Intl.RelativeTimeFormat` throws.
 - `mud-date-input` keeps its `ariaLabel` prop: moving it to a host-attribute read (as
   `mud-time-input` now does) is a breaking change tracked in #88.
 - The `ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA` warning on `mud-date-input` is a false positive:
