@@ -250,10 +250,6 @@ export namespace Components {
          */
         "alt"?: string;
         /**
-          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").  No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on every render with a derived value, and an explicit attribute observer would map that write back into this prop mid-render (Stencil warns "state/prop changed during rendering"). Stencil's implicit kebab→camel mapping still lets consumers set `aria-label="…"` from HTML.
-         */
-        "ariaLabel"?: string;
-        /**
           * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
           * @default 'person'
          */
@@ -296,10 +292,6 @@ export namespace Components {
      * @element mud-badge
      */
     interface MudBadge {
-        /**
-          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots). Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
          */
@@ -345,13 +337,11 @@ export namespace Components {
      * Live-region routing follows WCAG status/alert conventions:
      * - `info` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Give the banner an accessible name by setting the native `aria-label`
+     * attribute on the host directly — the platform keeps it there untouched.
      * @element mud-banner
      */
     interface MudBanner {
-        /**
-          * Forwarded to the host as `aria-label`.
-         */
-        "ariaLabel"?: string;
         /**
           * Close-button accessible label. Defaults to the Romanian "Închide".
           * @default 'Închide'
@@ -572,10 +562,6 @@ export namespace Components {
      */
     interface MudCheckbox {
         /**
-          * Accessible name override. Used when no visible label is present.
-         */
-        "ariaLabel"?: string;
-        /**
           * Accessible name id reference. Forwarded to the internal control.
          */
         "ariaLabelledby"?: string;
@@ -697,10 +683,6 @@ export namespace Components {
      * @element mud-date-input
      */
     interface MudDateInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
         /**
           * Calendar-popover placement. `auto` opens a desktop dropdown on wide viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile` force one layout.
           * @default 'auto'
@@ -902,10 +884,6 @@ export namespace Components {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
-         */
-        "ariaLabel"?: string;
-        /**
           * Label for the inline "choose files" link. Rendered as an underlined brand-blue button that opens the native file picker.
           * @default 'Alege fișiere'
          */
@@ -1045,10 +1023,6 @@ export namespace Components {
      */
     interface MudIcon {
         /**
-          * Accessible label. When provided, the icon is announced; when omitted it is decorative.
-         */
-        "ariaLabel"?: string;
-        /**
           * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
           * @default 'currentColor'
          */
@@ -1185,10 +1159,6 @@ export namespace Components {
      */
     interface MudInputChip {
         /**
-          * Accessible name; mirrors to the group's `aria-label` when no visible label.
-         */
-        "ariaLabel"?: string;
-        /**
           * Confirmed chip values. Two-way bound: assigning a new array rerenders the list. Consumer mutations through events should set this prop.
           * @default []
          */
@@ -1275,10 +1245,6 @@ export namespace Components {
      */
     interface MudLink {
         /**
-          * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
-         */
-        "ariaLabel"?: string;
-        /**
           * Disables interactivity. The link becomes inert: no navigation, no hover, no focus ring. `aria-disabled="true"` is set on the internal element and `pointer-events: none` is applied via CSS.
           * @default false
          */
@@ -1340,10 +1306,6 @@ export namespace Components {
      */
     interface MudLogo {
         /**
-          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
-         */
-        "ariaLabel"?: string;
-        /**
           * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
           * @default 'mpay-logo-logomark-only'
          */
@@ -1357,13 +1319,10 @@ export namespace Components {
      * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
      * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
      * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * Set the native `aria-label` attribute on the host for an accessible name on the menu.
      * @element mud-menu
      */
     interface MudMenu {
-        /**
-          * Accessible name for the menu.
-         */
-        "ariaLabel"?: string;
         /**
           * Emit `mudClose` immediately after an item is selected.
           * @default false
@@ -1557,11 +1516,7 @@ export namespace Components {
          */
         "allowNegative": boolean;
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. An `aria-valuetext` attribute on the host is read once on load and stripped; later updates go through this prop, and setting it empty does not clear the value.
          */
         "ariaValuetext"?: string;
         /**
@@ -1778,10 +1733,6 @@ export namespace Components {
      */
     interface MudPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
           * Optional whitelist of ISO codes to surface in the dropdown. Defaults to the curated 15-country Moldova-diaspora list when omitted.
          */
         "countries"?: string[];
@@ -1873,10 +1824,6 @@ export namespace Components {
      */
     interface MudRadio {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
-        /**
           * ID of the element labelling the radio. Used when label content lives outside the component.
          */
         "ariaLabelledby"?: string;
@@ -1950,10 +1897,6 @@ export namespace Components {
      * @element mud-search-input
      */
     interface MudSearchInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Native `autocomplete` attribute forwarded to the internal control.
          */
@@ -2050,13 +1993,12 @@ export namespace Components {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
+     * Give the group an accessible name via the native `aria-label` attribute
+     * (required when no surrounding `<label>` references the control) or via
+     * `aria-labelledby` pointing at an external label element.
      * @element mud-segmented-control
      */
     interface MudSegmentedControl {
-        /**
-          * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
-         */
-        "ariaLabel"?: string;
         /**
           * ID of an element labelling the group (when an external label is used).
          */
@@ -2104,10 +2046,6 @@ export namespace Components {
      * @element mud-select
      */
     interface MudSelect {
-        /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Disables interactivity. The trigger receives `aria-disabled` and the hidden native `<select>` receives the `disabled` attribute.
           * @default false
@@ -2176,14 +2114,12 @@ export namespace Components {
     /**
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
-     * No events, no interactivity. ARIA `separator` semantics.
+     * No events, no interactivity. ARIA `separator` semantics. Most separators are
+     * decorative; give one the native `aria-label` attribute when it marks a
+     * boundary worth announcing — it stays on the host, which carries the role.
      * @element mud-separator
      */
     interface MudSeparator {
-        /**
-          * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
-         */
-        "ariaLabel"?: string;
         /**
           * Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.
           * @default false
@@ -2274,13 +2210,11 @@ export namespace Components {
     /**
      * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
      * sections and `mud-sidebar-item` rows.
+     * Set the native `aria-label` attribute on the host for an accessible name on
+     * the navigation landmark.
      * @element mud-sidebar
      */
     interface MudSidebar {
-        /**
-          * Accessible name for the navigation landmark.
-         */
-        "ariaLabel"?: string;
         /**
           * Collapse to the icon-only compact rail.
           * @default false
@@ -2406,13 +2340,12 @@ export namespace Components {
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * Set the native `aria-label` attribute on the host for the list landmark's
+     * accessible name; it defaults to `'Progress tracker'` (English) when absent —
+     * Romanian consumers can pass `'Pași'`.
      * @element mud-stepper
      */
     interface MudStepper {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
         /**
           * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
           * @default false
@@ -2453,11 +2386,7 @@ export namespace Components {
      */
     interface MudSwitch {
         /**
-          * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.
+          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `aria-label`.
          */
         "ariaLabelledby"?: string;
         /**
@@ -2554,10 +2483,6 @@ export namespace Components {
      */
     interface MudTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
           * Column definitions. Each entry maps a row field (`key`) to a header `label`, an optional `sortable` flag, alignment, and width.
          */
         "columns"?: TableColumn[];
@@ -2634,10 +2559,6 @@ export namespace Components {
      */
     interface MudTabs {
         /**
-          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
           * Id of an external labelling element (overrides `aria-label`).
          */
         "ariaLabelledby"?: string;
@@ -2670,9 +2591,10 @@ export namespace Components {
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
      * Tags are decorative by default. When a tag conveys a dynamic state
-     * to assistive tech ("Procesare în curs"), set `aria-label` and the
-     * host will adopt `role="status"` automatically — otherwise the host
-     * stays silent so visual-only tags don't pollute the a11y tree.
+     * to assistive tech ("Procesare în curs"), set the native `aria-label`
+     * attribute and the host will adopt `role="status"` automatically —
+     * otherwise the host stays silent so visual-only tags don't pollute the
+     * a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
      * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
@@ -2680,10 +2602,6 @@ export namespace Components {
      * @element mud-tag
      */
     interface MudTag {
-        /**
-          * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
-         */
-        "ariaLabel"?: string;
         /**
           * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
           * @default false
@@ -2723,10 +2641,6 @@ export namespace Components {
      * @element mud-text-input
      */
     interface MudTextInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
         /**
           * Native `autocomplete` attribute forwarded to the internal control.
          */
@@ -2833,10 +2747,6 @@ export namespace Components {
      * @element mud-textarea
      */
     interface MudTextarea {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -3086,13 +2996,11 @@ export namespace Components {
      * Live-region routing:
      * - `info` / `success` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Set the native `aria-label` attribute on the host for an explicit accessible
+     * name when the body content alone is not descriptive enough.
      * @element mud-toast
      */
     interface MudToast {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
         /**
           * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
           * @default true
@@ -3133,10 +3041,6 @@ export namespace Components {
      * @element mud-tooltip
      */
     interface MudTooltip {
-        /**
-          * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
-         */
-        "ariaLabel"?: string;
         /**
           * Convenience: tooltip body text. Rendered as the default slot's fallback, so only when the host has no default-slot nodes at all — whitespace between tags counts as a node.
          */
@@ -3501,6 +3405,8 @@ declare global {
      * Live-region routing follows WCAG status/alert conventions:
      * - `info` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Give the banner an accessible name by setting the native `aria-label`
+     * attribute on the host directly — the platform keeps it there untouched.
      * @element mud-banner
      */
     interface HTMLMudBannerElement extends Components.MudBanner, HTMLStencilElement {
@@ -3960,6 +3866,7 @@ declare global {
      * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
      * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
      * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * Set the native `aria-label` attribute on the host for an accessible name on the menu.
      * @element mud-menu
      */
     interface HTMLMudMenuElement extends Components.MudMenu, HTMLStencilElement {
@@ -4239,6 +4146,9 @@ declare global {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
+     * Give the group an accessible name via the native `aria-label` attribute
+     * (required when no surrounding `<label>` references the control) or via
+     * `aria-labelledby` pointing at an external label element.
      * @element mud-segmented-control
      */
     interface HTMLMudSegmentedControlElement extends Components.MudSegmentedControl, HTMLStencilElement {
@@ -4293,7 +4203,9 @@ declare global {
     /**
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
-     * No events, no interactivity. ARIA `separator` semantics.
+     * No events, no interactivity. ARIA `separator` semantics. Most separators are
+     * decorative; give one the native `aria-label` attribute when it marks a
+     * boundary worth announcing — it stays on the host, which carries the role.
      * @element mud-separator
      */
     interface HTMLMudSeparatorElement extends Components.MudSeparator, HTMLStencilElement {
@@ -4322,6 +4234,8 @@ declare global {
     /**
      * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
      * sections and `mud-sidebar-item` rows.
+     * Set the native `aria-label` attribute on the host for an accessible name on
+     * the navigation landmark.
      * @element mud-sidebar
      */
     interface HTMLMudSidebarElement extends Components.MudSidebar, HTMLStencilElement {
@@ -4399,6 +4313,9 @@ declare global {
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * Set the native `aria-label` attribute on the host for the list landmark's
+     * accessible name; it defaults to `'Progress tracker'` (English) when absent —
+     * Romanian consumers can pass `'Pași'`.
      * @element mud-stepper
      */
     interface HTMLMudStepperElement extends Components.MudStepper, HTMLStencilElement {
@@ -4566,9 +4483,10 @@ declare global {
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
      * Tags are decorative by default. When a tag conveys a dynamic state
-     * to assistive tech ("Procesare în curs"), set `aria-label` and the
-     * host will adopt `role="status"` automatically — otherwise the host
-     * stays silent so visual-only tags don't pollute the a11y tree.
+     * to assistive tech ("Procesare în curs"), set the native `aria-label`
+     * attribute and the host will adopt `role="status"` automatically —
+     * otherwise the host stays silent so visual-only tags don't pollute the
+     * a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
      * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
@@ -4719,6 +4637,8 @@ declare global {
      * Live-region routing:
      * - `info` / `success` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Set the native `aria-label` attribute on the host for an explicit accessible
+     * name when the body content alone is not descriptive enough.
      * @element mud-toast
      */
     interface HTMLMudToastElement extends Components.MudToast, HTMLStencilElement {
@@ -4989,10 +4909,6 @@ declare namespace LocalJSX {
          */
         "alt"?: string;
         /**
-          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").  No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on every render with a derived value, and an explicit attribute observer would map that write back into this prop mid-render (Stencil warns "state/prop changed during rendering"). Stencil's implicit kebab→camel mapping still lets consumers set `aria-label="…"` from HTML.
-         */
-        "ariaLabel"?: string;
-        /**
           * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
           * @default 'person'
          */
@@ -5035,10 +4951,6 @@ declare namespace LocalJSX {
      * @element mud-badge
      */
     interface MudBadge {
-        /**
-          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots). Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
          */
@@ -5084,13 +4996,11 @@ declare namespace LocalJSX {
      * Live-region routing follows WCAG status/alert conventions:
      * - `info` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Give the banner an accessible name by setting the native `aria-label`
+     * attribute on the host directly — the platform keeps it there untouched.
      * @element mud-banner
      */
     interface MudBanner {
-        /**
-          * Forwarded to the host as `aria-label`.
-         */
-        "ariaLabel"?: string;
         /**
           * Close-button accessible label. Defaults to the Romanian "Închide".
           * @default 'Închide'
@@ -5327,10 +5237,6 @@ declare namespace LocalJSX {
      */
     interface MudCheckbox {
         /**
-          * Accessible name override. Used when no visible label is present.
-         */
-        "ariaLabel"?: string;
-        /**
           * Accessible name id reference. Forwarded to the internal control.
          */
         "ariaLabelledby"?: string;
@@ -5476,10 +5382,6 @@ declare namespace LocalJSX {
      * @element mud-date-input
      */
     interface MudDateInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
         /**
           * Calendar-popover placement. `auto` opens a desktop dropdown on wide viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile` force one layout.
           * @default 'auto'
@@ -5713,10 +5615,6 @@ declare namespace LocalJSX {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
-         */
-        "ariaLabel"?: string;
-        /**
           * Label for the inline "choose files" link. Rendered as an underlined brand-blue button that opens the native file picker.
           * @default 'Alege fișiere'
          */
@@ -5888,10 +5786,6 @@ declare namespace LocalJSX {
      */
     interface MudIcon {
         /**
-          * Accessible label. When provided, the icon is announced; when omitted it is decorative.
-         */
-        "ariaLabel"?: string;
-        /**
           * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
           * @default 'currentColor'
          */
@@ -6032,10 +5926,6 @@ declare namespace LocalJSX {
      */
     interface MudInputChip {
         /**
-          * Accessible name; mirrors to the group's `aria-label` when no visible label.
-         */
-        "ariaLabel"?: string;
-        /**
           * Confirmed chip values. Two-way bound: assigning a new array rerenders the list. Consumer mutations through events should set this prop.
           * @default []
          */
@@ -6150,10 +6040,6 @@ declare namespace LocalJSX {
      */
     interface MudLink {
         /**
-          * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
-         */
-        "ariaLabel"?: string;
-        /**
           * Disables interactivity. The link becomes inert: no navigation, no hover, no focus ring. `aria-disabled="true"` is set on the internal element and `pointer-events: none` is applied via CSS.
           * @default false
          */
@@ -6215,10 +6101,6 @@ declare namespace LocalJSX {
      */
     interface MudLogo {
         /**
-          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
-         */
-        "ariaLabel"?: string;
-        /**
           * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
           * @default 'mpay-logo-logomark-only'
          */
@@ -6236,13 +6118,10 @@ declare namespace LocalJSX {
      * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
      * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
      * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * Set the native `aria-label` attribute on the host for an accessible name on the menu.
      * @element mud-menu
      */
     interface MudMenu {
-        /**
-          * Accessible name for the menu.
-         */
-        "ariaLabel"?: string;
         /**
           * Emit `mudClose` immediately after an item is selected.
           * @default false
@@ -6448,11 +6327,7 @@ declare namespace LocalJSX {
          */
         "allowNegative"?: boolean;
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. An `aria-valuetext` attribute on the host is read once on load and stripped; later updates go through this prop, and setting it empty does not clear the value.
          */
         "ariaValuetext"?: string;
         /**
@@ -6705,10 +6580,6 @@ declare namespace LocalJSX {
      */
     interface MudPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
           * Optional whitelist of ISO codes to surface in the dropdown. Defaults to the curated 15-country Moldova-diaspora list when omitted.
          */
         "countries"?: string[];
@@ -6832,10 +6703,6 @@ declare namespace LocalJSX {
      */
     interface MudRadio {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
-         */
-        "ariaLabel"?: string;
-        /**
           * ID of the element labelling the radio. Used when label content lives outside the component.
          */
         "ariaLabelledby"?: string;
@@ -6925,10 +6792,6 @@ declare namespace LocalJSX {
      * @element mud-search-input
      */
     interface MudSearchInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Native `autocomplete` attribute forwarded to the internal control.
          */
@@ -7053,13 +6916,12 @@ declare namespace LocalJSX {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
+     * Give the group an accessible name via the native `aria-label` attribute
+     * (required when no surrounding `<label>` references the control) or via
+     * `aria-labelledby` pointing at an external label element.
      * @element mud-segmented-control
      */
     interface MudSegmentedControl {
-        /**
-          * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
-         */
-        "ariaLabel"?: string;
         /**
           * ID of an element labelling the group (when an external label is used).
          */
@@ -7115,10 +6977,6 @@ declare namespace LocalJSX {
      * @element mud-select
      */
     interface MudSelect {
-        /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Disables interactivity. The trigger receives `aria-disabled` and the hidden native `<select>` receives the `disabled` attribute.
           * @default false
@@ -7211,14 +7069,12 @@ declare namespace LocalJSX {
     /**
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
-     * No events, no interactivity. ARIA `separator` semantics.
+     * No events, no interactivity. ARIA `separator` semantics. Most separators are
+     * decorative; give one the native `aria-label` attribute when it marks a
+     * boundary worth announcing — it stays on the host, which carries the role.
      * @element mud-separator
      */
     interface MudSeparator {
-        /**
-          * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
-         */
-        "ariaLabel"?: string;
         /**
           * Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.
           * @default false
@@ -7313,13 +7169,11 @@ declare namespace LocalJSX {
     /**
      * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
      * sections and `mud-sidebar-item` rows.
+     * Set the native `aria-label` attribute on the host for an accessible name on
+     * the navigation landmark.
      * @element mud-sidebar
      */
     interface MudSidebar {
-        /**
-          * Accessible name for the navigation landmark.
-         */
-        "ariaLabel"?: string;
         /**
           * Collapse to the icon-only compact rail.
           * @default false
@@ -7453,13 +7307,12 @@ declare namespace LocalJSX {
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * Set the native `aria-label` attribute on the host for the list landmark's
+     * accessible name; it defaults to `'Progress tracker'` (English) when absent —
+     * Romanian consumers can pass `'Pași'`.
      * @element mud-stepper
      */
     interface MudStepper {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
         /**
           * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
           * @default false
@@ -7504,11 +7357,7 @@ declare namespace LocalJSX {
      */
     interface MudSwitch {
         /**
-          * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.
+          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `aria-label`.
          */
         "ariaLabelledby"?: string;
         /**
@@ -7625,10 +7474,6 @@ declare namespace LocalJSX {
      */
     interface MudTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
           * Column definitions. Each entry maps a row field (`key`) to a header `label`, an optional `sortable` flag, alignment, and width.
          */
         "columns"?: TableColumn[];
@@ -7717,10 +7562,6 @@ declare namespace LocalJSX {
      */
     interface MudTabs {
         /**
-          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
           * Id of an external labelling element (overrides `aria-label`).
          */
         "ariaLabelledby"?: string;
@@ -7757,9 +7598,10 @@ declare namespace LocalJSX {
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
      * Tags are decorative by default. When a tag conveys a dynamic state
-     * to assistive tech ("Procesare în curs"), set `aria-label` and the
-     * host will adopt `role="status"` automatically — otherwise the host
-     * stays silent so visual-only tags don't pollute the a11y tree.
+     * to assistive tech ("Procesare în curs"), set the native `aria-label`
+     * attribute and the host will adopt `role="status"` automatically —
+     * otherwise the host stays silent so visual-only tags don't pollute the
+     * a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
      * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
@@ -7767,10 +7609,6 @@ declare namespace LocalJSX {
      * @element mud-tag
      */
     interface MudTag {
-        /**
-          * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
-         */
-        "ariaLabel"?: string;
         /**
           * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
           * @default false
@@ -7810,10 +7648,6 @@ declare namespace LocalJSX {
      * @element mud-text-input
      */
     interface MudTextInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
         /**
           * Native `autocomplete` attribute forwarded to the internal control.
          */
@@ -7940,10 +7774,6 @@ declare namespace LocalJSX {
      * @element mud-textarea
      */
     interface MudTextarea {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -8241,13 +8071,11 @@ declare namespace LocalJSX {
      * Live-region routing:
      * - `info` / `success` → `role="status"` + `aria-live="polite"`
      * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * Set the native `aria-label` attribute on the host for an explicit accessible
+     * name when the body content alone is not descriptive enough.
      * @element mud-toast
      */
     interface MudToast {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
         /**
           * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
           * @default true
@@ -8292,10 +8120,6 @@ declare namespace LocalJSX {
      * @element mud-tooltip
      */
     interface MudTooltip {
-        /**
-          * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
-         */
-        "ariaLabel"?: string;
         /**
           * Convenience: tooltip body text. Rendered as the default slot's fallback, so only when the host has no default-slot nodes at all — whitespace between tags counts as a node.
          */
@@ -8402,7 +8226,6 @@ declare namespace LocalJSX {
         "initials": string;
         "name": string;
         "iconName": IconName;
-        "ariaLabel": string;
     }
     interface MudBadgeAttributes {
         "type": BadgeType;
@@ -8411,7 +8234,6 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "count": number;
         "max": number;
-        "ariaLabel": string;
     }
     interface MudBannerAttributes {
         "variant": BannerVariant;
@@ -8420,7 +8242,6 @@ declare namespace LocalJSX {
         "linkText": string;
         "linkHref": string;
         "iconName": IconName;
-        "ariaLabel": string;
         "closeLabel": string;
     }
     interface MudBreadcrumbAttributes {
@@ -8471,7 +8292,6 @@ declare namespace LocalJSX {
         "label": string;
         "supportingText": string;
         "errorText": string;
-        "ariaLabel": string;
         "ariaLabelledby": string;
     }
     interface MudChipAttributes {
@@ -8502,7 +8322,6 @@ declare namespace LocalJSX {
         "helperText": string;
         "errorText": string;
         "placeholder": string;
-        "ariaLabel": string;
         "clearable": boolean;
         "locale": DateInputLocale;
     }
@@ -8541,7 +8360,6 @@ declare namespace LocalJSX {
         "dropzoneActiveText": string;
         "supportedFormatsText": string;
         "maxSizeText": string;
-        "ariaLabel": string;
     }
     interface MudFileItemAttributes {
         "state": FileItemState;
@@ -8560,7 +8378,6 @@ declare namespace LocalJSX {
         "color": string;
         "interactive": boolean;
         "disabled": boolean;
-        "ariaLabel": string;
     }
     interface MudInfoBoxAttributes {
         "variant": InfoBoxVariant;
@@ -8593,7 +8410,6 @@ declare namespace LocalJSX {
         "maxChips": number;
         "validatePattern": string;
         "separators": string;
-        "ariaLabel": string;
     }
     interface MudLinkAttributes {
         "size": LinkSize;
@@ -8605,18 +8421,15 @@ declare namespace LocalJSX {
         "target": string;
         "rel": string;
         "download": string;
-        "ariaLabel": string;
         "external": boolean;
     }
     interface MudLogoAttributes {
         "name": LogoName;
-        "ariaLabel": string;
     }
     interface MudMenuAttributes {
         "type": MenuType;
         "open": boolean;
         "value": string;
-        "ariaLabel": string;
         "closeOnSelect": boolean;
     }
     interface MudMenuItemAttributes {
@@ -8665,7 +8478,6 @@ declare namespace LocalJSX {
         "errorText": string;
         "incrementLabel": string;
         "decrementLabel": string;
-        "ariaLabel": string;
         "ariaValuetext": string;
         "allowDecimal": boolean;
         "allowNegative": boolean;
@@ -8707,7 +8519,6 @@ declare namespace LocalJSX {
         "helperText": string;
         "errorText": string;
         "placeholder": string;
-        "ariaLabel": string;
     }
     interface MudRadioAttributes {
         "size": RadioSize;
@@ -8720,7 +8531,6 @@ declare namespace LocalJSX {
         "value": string;
         "label": string;
         "supportingText": string;
-        "ariaLabel": string;
         "ariaLabelledby": string;
     }
     interface MudSearchInputAttributes {
@@ -8742,7 +8552,6 @@ declare namespace LocalJSX {
         "autocomplete": string;
         "maxLength": number;
         "minLength": number;
-        "ariaLabel": string;
     }
     interface MudSegmentedControlAttributes {
         "size": SegmentedControlSize;
@@ -8750,7 +8559,6 @@ declare namespace LocalJSX {
         "fluid": boolean;
         "value": string;
         "name": string;
-        "ariaLabel": string;
         "ariaLabelledby": string;
     }
     interface MudSelectAttributes {
@@ -8767,7 +8575,6 @@ declare namespace LocalJSX {
         "label": string;
         "helperText": string;
         "errorText": string;
-        "ariaLabel": string;
     }
     interface MudSeparatorAttributes {
         "orientation": SeparatorOrientation;
@@ -8775,7 +8582,6 @@ declare namespace LocalJSX {
         "variant": SeparatorVariant;
         "inset": boolean;
         "label": string;
-        "ariaLabel": string;
     }
     interface MudServiceButtonAttributes {
         "appearance": ServiceButtonAppearance;
@@ -8792,7 +8598,6 @@ declare namespace LocalJSX {
     }
     interface MudSidebarAttributes {
         "collapsed": boolean;
-        "ariaLabel": string;
     }
     interface MudSidebarGroupAttributes {
         "heading": string;
@@ -8822,7 +8627,6 @@ declare namespace LocalJSX {
         "interactive": boolean;
         "compact": boolean;
         "currentStep": number;
-        "ariaLabel": string;
     }
     interface MudSwitchAttributes {
         "checked": boolean;
@@ -8831,7 +8635,6 @@ declare namespace LocalJSX {
         "name": string;
         "value": string;
         "label": string;
-        "ariaLabel": string;
         "ariaLabelledby": string;
     }
     interface MudTabAttributes {
@@ -8853,12 +8656,10 @@ declare namespace LocalJSX {
         "sortColumn": string;
         "sortDirection": TableSortDirection;
         "rowIdField": string;
-        "ariaLabel": string;
     }
     interface MudTabsAttributes {
         "size": TabsSize;
         "value": string;
-        "ariaLabel": string;
         "ariaLabelledby": string;
     }
     interface MudTagAttributes {
@@ -8868,7 +8669,6 @@ declare namespace LocalJSX {
         "semantic": TagSemantic;
         "disabled": boolean;
         "label": string;
-        "ariaLabel": string;
     }
     interface MudTextInputAttributes {
         "variant": InputVariant;
@@ -8892,7 +8692,6 @@ declare namespace LocalJSX {
         "minLength": number;
         "inputmode": string;
         "pattern": string;
-        "ariaLabel": string;
     }
     interface MudTextareaAttributes {
         "variant": TextareaVariant;
@@ -8911,7 +8710,6 @@ declare namespace LocalJSX {
         "rows": number;
         "maxLength": number;
         "showCounter": boolean;
-        "ariaLabel": string;
     }
     interface MudTimeInputAttributes {
         "variant": TimeInputVariant;
@@ -8950,7 +8748,6 @@ declare namespace LocalJSX {
         "closable": boolean;
         "titleText": string;
         "iconName": IconName;
-        "ariaLabel": string;
         "closeLabel": string;
     }
     interface MudTooltipAttributes {
@@ -8968,7 +8765,6 @@ declare namespace LocalJSX {
         "flipFallback": boolean;
         "offset": number;
         "showArrow": boolean;
-        "ariaLabel": string;
     }
 
     interface IntrinsicElements {
@@ -9126,6 +8922,8 @@ declare module "@stencil/core" {
              * Live-region routing follows WCAG status/alert conventions:
              * - `info` → `role="status"` + `aria-live="polite"`
              * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+             * Give the banner an accessible name by setting the native `aria-label`
+             * attribute on the host directly — the platform keeps it there untouched.
              * @element mud-banner
              */
             "mud-banner": LocalJSX.IntrinsicElements["mud-banner"] & JSXBase.HTMLAttributes<HTMLMudBannerElement>;
@@ -9348,6 +9146,7 @@ declare module "@stencil/core" {
              * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
              * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
              * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+             * Set the native `aria-label` attribute on the host for an accessible name on the menu.
              * @element mud-menu
              */
             "mud-menu": LocalJSX.IntrinsicElements["mud-menu"] & JSXBase.HTMLAttributes<HTMLMudMenuElement>;
@@ -9479,6 +9278,9 @@ declare module "@stencil/core" {
              * - `ArrowLeft` / `ArrowRight` move selection between segments
              * - `Home` / `End` jump to first / last segment
              * - `Enter` / `Space` reaffirm selection on the focused segment
+             * Give the group an accessible name via the native `aria-label` attribute
+             * (required when no surrounding `<label>` references the control) or via
+             * `aria-labelledby` pointing at an external label element.
              * @element mud-segmented-control
              */
             "mud-segmented-control": LocalJSX.IntrinsicElements["mud-segmented-control"] & JSXBase.HTMLAttributes<HTMLMudSegmentedControlElement>;
@@ -9500,7 +9302,9 @@ declare module "@stencil/core" {
             /**
              * Separator — visual divider between groups of content or UI components.
              * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
-             * No events, no interactivity. ARIA `separator` semantics.
+             * No events, no interactivity. ARIA `separator` semantics. Most separators are
+             * decorative; give one the native `aria-label` attribute when it marks a
+             * boundary worth announcing — it stays on the host, which carries the role.
              * @element mud-separator
              */
             "mud-separator": LocalJSX.IntrinsicElements["mud-separator"] & JSXBase.HTMLAttributes<HTMLMudSeparatorElement>;
@@ -9519,6 +9323,8 @@ declare module "@stencil/core" {
             /**
              * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
              * sections and `mud-sidebar-item` rows.
+             * Set the native `aria-label` attribute on the host for an accessible name on
+             * the navigation landmark.
              * @element mud-sidebar
              */
             "mud-sidebar": LocalJSX.IntrinsicElements["mud-sidebar"] & JSXBase.HTMLAttributes<HTMLMudSidebarElement>;
@@ -9561,6 +9367,9 @@ declare module "@stencil/core" {
              *   - `error`      — danger ring + danger cross, neutral label
              * The component renders an ordered list with `role="list"` for AT compatibility
              * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+             * Set the native `aria-label` attribute on the host for the list landmark's
+             * accessible name; it defaults to `'Progress tracker'` (English) when absent —
+             * Romanian consumers can pass `'Pași'`.
              * @element mud-stepper
              */
             "mud-stepper": LocalJSX.IntrinsicElements["mud-stepper"] & JSXBase.HTMLAttributes<HTMLMudStepperElement>;
@@ -9647,9 +9456,10 @@ declare module "@stencil/core" {
              *   body text. Regular-weight label, tighter padding. Honors the same
              *   `type` and `semantic` axes.
              * Tags are decorative by default. When a tag conveys a dynamic state
-             * to assistive tech ("Procesare în curs"), set `aria-label` and the
-             * host will adopt `role="status"` automatically — otherwise the host
-             * stays silent so visual-only tags don't pollute the a11y tree.
+             * to assistive tech ("Procesare în curs"), set the native `aria-label`
+             * attribute and the host will adopt `role="status"` automatically —
+             * otherwise the host stays silent so visual-only tags don't pollute the
+             * a11y tree.
              * For horizontally stacked groups (8 px gutter, wrap on overflow),
              * compose multiple tags inside a `mud-tag-group` slot wrapper —
              * available as a CSS utility on this element via the `group` data
@@ -9718,6 +9528,8 @@ declare module "@stencil/core" {
              * Live-region routing:
              * - `info` / `success` → `role="status"` + `aria-live="polite"`
              * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+             * Set the native `aria-label` attribute on the host for an explicit accessible
+             * name when the body content alone is not descriptive enough.
              * @element mud-toast
              */
             "mud-toast": LocalJSX.IntrinsicElements["mud-toast"] & JSXBase.HTMLAttributes<HTMLMudToastElement>;

@@ -21,11 +21,14 @@ Keyboard contract (WAI-ARIA Authoring Practices, radiogroup pattern):
 - `Home` / `End` jump to first / last segment
 - `Enter` / `Space` reaffirm selection on the focused segment
 
+Give the group an accessible name via the native `aria-label` attribute
+(required when no surrounding `<label>` references the control) or via
+`aria-labelledby` pointing at an external label element.
+
 ## Properties
 
 | Property         | Attribute         | Description                                                                                                                                                                                                                                                                                           | Type                                     | Default     |
 | ---------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
-| `ariaLabel`      | `aria-label`      | Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.                                                                                                                                                                   | `string \| undefined`                    | `undefined` |
 | `ariaLabelledby` | `aria-labelledby` | ID of an element labelling the group (when an external label is used).                                                                                                                                                                                                                                | `string \| undefined`                    | `undefined` |
 | `disabled`       | `disabled`        | Disables every segment. The container receives `aria-disabled`.                                                                                                                                                                                                                                       | `boolean`                                | `false`     |
 | `fluid`          | `fluid`           | Full-width mode. The control fills its container and segments stretch to equal shares — the mobile breakpoint from Figma 659:8188. When false (default) the control hugs its content while keeping segments uniform.                                                                                  | `boolean`                                | `false`     |
