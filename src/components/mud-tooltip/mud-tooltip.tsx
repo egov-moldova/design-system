@@ -5,8 +5,6 @@ import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
 
 import {
   OPPOSITE_POSITION,
-  VALID_DESCRIPTION_TAGS,
-  VALID_TITLE_TAGS,
   VALID_TRIGGER_TAGS,
   type TooltipAlignment,
   type TooltipBaseSide,
@@ -23,7 +21,7 @@ import {
 let tooltipIdCounter = 0;
 
 /**
- * Tooltip — transient label, structured popover, or coach mark anchored to a
+ * Tooltip — transient label or coach mark anchored to a
  * trigger element.
  *
  * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
@@ -40,10 +38,8 @@ let tooltipIdCounter = 0;
  *
  * @element mud-tooltip
  *
- * @slot trigger     - The element the tooltip describes (button, icon, link).
- * @slot title       - Optional title row inside the bubble (mud-icon, span, strong, em).
- * @slot description - Optional secondary description row.
- * @slot             - Default slot. Body content. Used when no title/description slots are set.
+ * @slot trigger - The element the tooltip describes (button, icon, link).
+ * @slot         - Default slot. Body content.
  */
 @Component({
   tag: 'mud-tooltip',
@@ -91,8 +87,9 @@ export class MudTooltip {
   @Prop({ reflect: true }) trigger: TooltipTrigger = 'hover';
 
   /**
-   * Convenience: tooltip body text. Used only when the default slot is empty
-   * AND no `title` / `description` slots are present.
+   * Convenience: tooltip body text. Rendered as the default slot's fallback, so
+   * only when the host has no default-slot nodes at all — whitespace between
+   * tags counts as a node.
    */
   @Prop() content?: string;
 
@@ -304,20 +301,23 @@ export class MudTooltip {
    * the shadow-DOM boundary.
    */
   private getTooltipText(): string {
-    const titleEl = this.host.querySelector('[slot="title"]');
-    const descEl = this.host.querySelector('[slot="description"]');
-    const titleText = (titleEl?.textContent || '').trim();
-    const descText = (descEl?.textContent || '').trim();
-    if (titleText || descText) {
-      return [titleText, descText].filter(Boolean).join('. ');
-    }
-    const defaultText = Array.from(this.host.childNodes)
-      .filter(n => !(n as Element).slot)
+    // The nodes the default slot is assigned: text, and elements whose slot name is
+    // empty. Comment markers (`<!--v-if-->`, `<!--?lit$…$-->`) are not assigned, and
+    // reading them would put them in the mirror. The attribute, not `Element.slot`:
+    // mock-doc has no `slot` accessor, so the property read let the trigger's own
+    // text in under the spec runner.
+    const defaultNodes = Array.from(this.host.childNodes).filter(
+      n => n.nodeType === 3 || (n.nodeType === 1 && ((n as Element).getAttribute('slot') ?? '') === ''),
+    );
+    // `content` renders only as the slot's fallback, i.e. when no node is assigned —
+    // whitespace included. The mirror follows the same rule so screen readers never
+    // announce text the bubble does not show.
+    if (defaultNodes.length === 0) return (this.content ?? '').trim();
+    return defaultNodes
       .map(n => n.textContent || '')
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
-    return defaultText || (this.content ?? '').trim();
   }
 
   /**
@@ -753,12 +753,11 @@ export class MudTooltip {
 
   // ---------- Slot validation ----------
 
-  private validateSlot(name: 'trigger' | 'title' | 'description', validTags: readonly string[]): string | null {
-    const el = this.host.querySelector(`[slot="${name}"]`);
+  private validateTriggerSlot(): string | null {
+    const el = this.getSlottedTriggerEl();
     if (!el) return null;
     const tag = el.tagName.toLowerCase();
-    if (validTags.includes(tag)) return null;
-    return invalidSlottedTag(tag, validTags);
+    return VALID_TRIGGER_TAGS.includes(tag) ? null : invalidSlottedTag(tag, VALID_TRIGGER_TAGS);
   }
 
   private renderCloseButton() {
@@ -783,12 +782,7 @@ export class MudTooltip {
 
   render() {
     const isCoach = this.variant === 'coach';
-    const triggerError = this.validateSlot('trigger', VALID_TRIGGER_TAGS);
-    const titleError = this.validateSlot('title', VALID_TITLE_TAGS);
-    const descriptionError = this.validateSlot('description', VALID_DESCRIPTION_TAGS);
-    const hasTitle = !!this.host.querySelector('[slot="title"]');
-    const hasDescription = !!this.host.querySelector('[slot="description"]');
-    const showHeader = hasTitle || hasDescription;
+    const triggerError = this.validateTriggerSlot();
 
     return (
       <Host
@@ -810,24 +804,6 @@ export class MudTooltip {
           aria-hidden={this.open ? 'false' : 'true'}
           aria-label={this.ariaLabel}
         >
-          {titleError && <div class="slot-error">{titleError}</div>}
-          {descriptionError && <div class="slot-error">{descriptionError}</div>}
-
-          {showHeader && (
-            <div class="header">
-              {hasTitle && (
-                <div class="title">
-                  <slot name="title" />
-                </div>
-              )}
-              {hasDescription && (
-                <div class="description">
-                  <slot name="description" />
-                </div>
-              )}
-            </div>
-          )}
-
           <div class="content">
             <slot>{this.content}</slot>
             {isCoach && <p class="hint">Apasă Esc pentru a închide.</p>}

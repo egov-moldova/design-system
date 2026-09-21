@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Removed — `mud-tooltip` `title` and `description` slots
+
+The Figma tooltip (component set 210:3897) has a single text body and no title or description
+rows, so `mud-tooltip` no longer has `title` / `description` slots, and the undocumented
+`--tooltip-title-*`, `--tooltip-description-*` and `--tooltip-header-*` custom properties they read
+are gone with them.
+
+**Migration:** a child with `slot="title"` or `slot="description"` is no longer projected, so its
+text stops rendering and stops reaching screen readers; a tooltip that had text only in those slots
+now opens as an empty bubble. Put that text in the default slot instead.
+
 ### Removed — `mud-header` and `mud-footer`
 
 The Header and Footer organisms are no longer part of the library. These custom elements are
