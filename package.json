@@ -111,6 +111,7 @@
     "svg:remove-fill": "svgo -f src/components/mud-icon/assets --recursive --config svgo.config.icons.fill.js",
     "svg:icons": "yarn format.icons && node scripts/icons/build-registry.mjs",
     "sync:main": "node scripts/git/sync-main.mjs",
+    "types.ensure": "wireit",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
     "audit:structure": "node scripts/audit/01-component-structure.mjs",
@@ -438,10 +439,16 @@
         "yarn.lock"
       ]
     },
+    "types.ensure": {
+      "command": "node scripts/ensure-components-dts.mjs",
+      "dependencies": [
+        "dx:prepare"
+      ]
+    },
     "typecheck": {
       "command": "tsc --noEmit",
       "dependencies": [
-        "dx:prepare"
+        "types.ensure"
       ],
       "files": [
         "src/**/*.ts",

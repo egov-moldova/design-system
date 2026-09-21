@@ -16,9 +16,6 @@
 # `linguist-generated=true` collapses these files in GitHub PR diffs.
 # -----------------------------------------------------------------------------
 
-# Stencil auto-generated TypeScript declarations (7000+ lines, full regen each build)
-src/components.d.ts                                           merge=ours linguist-generated=true
-
 # Per-component readme.md (stencil build --docs output)
 src/components/*/readme.md                                    merge=ours linguist-generated=true
 src/hidden/*/readme.md                                        merge=ours linguist-generated=true

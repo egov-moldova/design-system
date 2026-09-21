@@ -1,9 +1,11 @@
 # Generated Files — How Conflicts Are Prevented
 
 ## Scope
-Governs the tracked auto-generated files (`src/components.d.ts`, component/hidden `readme.md`) and how their merges, pushes and setup are handled. **Read before touching a generated file, resolving a merge conflict in one, or setting up a new machine.**
+Governs the tracked auto-generated files (component/hidden `readme.md`) and how their merges, pushes and setup are handled, plus the git-ignored `src/components.d.ts`. **Read before touching a generated file, resolving a merge conflict in one, or setting up a new machine.**
 
 ---
+
+`src/components.d.ts` is **git-ignored**. Stencil rewrites it on every build, and the published package ships its own copy in `dist/types/components.d.ts`, so a tracked copy served no consumer and made every pair of open PRs conflict on GitHub. `yarn typecheck` runs `types.ensure` first (`scripts/ensure-components-dts.mjs`), which generates the file with `stencil build --dev` (~15 s) only when it is missing — a fresh clone or a CI checkout — so the pre-commit typecheck stays as fast as before. In a fresh clone, run `yarn typecheck` or `yarn build` once so your editor resolves the `mud-*` JSX types; after changing a component's API, `yarn build` refreshes it, as it did when the file was tracked. `yarn audit:git-hygiene` flags a force-added copy (`GIT-STAGED-COMPONENTS-DTS-STAGED`).
 
 The repo runs **parallel agent worktrees** where several components are built/redesigned simultaneously. Each worktree runs `yarn sp.build`, which regenerates the same tracked files. Without coordination, PR merges would conflict on every parallel branch.
 
@@ -13,8 +15,8 @@ The repo runs **parallel agent worktrees** where several components are built/re
 | --- | --- | --- |
 | Filesystem isolation | `git worktree` | Each agent runs in its own git worktree — no in-flight write collisions |
 | Merge strategy | `.gitattributes` (`merge=ours`) + `merge.ours.driver` (registered by `scripts/git/setup-merge-drivers.mjs`) | Local merges and rebases silently keep the current side — no conflict markers. GitHub never runs a custom driver, so a PR still shows these files as conflicting once another PR lands on `main` |
-| Pre-merge sync | `yarn sync:main` (`scripts/git/sync-main.mjs`) | Rebases onto `upstream/main` (else `origin/main`), takes main's copy of every `merge=ours` path and keeps both sides of each CHANGELOG hunk, then runs `yarn build`, commits only the regenerated files, and runs `yarn lint` + `yarn test`. Any other conflict stops the run with the rebase left in progress. It never pushes |
-| Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (`src/components.d.ts`, component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
+| Pre-merge sync | `yarn sync:main` (`scripts/git/sync-main.mjs`) | Rebases onto `upstream/main` (warns and uses `origin/main` when there is no `upstream`). A `merge=ours` path takes main's copy, or stays deleted when either side deleted it; a CHANGELOG hunk where both sides only added lines keeps both, the branch's first. Then `yarn install` if `yarn.lock` moved, `yarn build`, a commit of only the regenerated files, and `yarn lint` + `yarn typecheck` + `yarn test`. Any other conflict — including a CHANGELOG line both sides edited — stops the run with the rebase left in progress and every mechanical file already resolved; resume with `yarn sync:main --continue`. A branch with merge commits is refused. It never pushes |
+| Push-time gate | `.husky/pre-push` | Runs `yarn build`, then fails the push if the rebuilt generated files (component/hidden `readme.md`) differ from the committed copy — they must be committed together with the change that regenerates them |
 | Merge hint | `.husky/post-merge` | Prints a `yarn build` reminder when a merge touched a generated file |
 | Canonical regeneration | `.github/workflows/ci.yml` (`Tokens validation` job) | Rebuilds and fails when a tracked generated file differs from the build — the same check as `.husky/pre-push`, but not skippable |
 
