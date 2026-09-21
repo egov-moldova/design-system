@@ -1,6 +1,6 @@
 # audit-component — depth levels, deterministic verdict, fix brief
 
-**Reviewed:** preflight 3463699 · critic a82d255
+**Reviewed:** preflight 3463699, critic a82d255, critic 8952fdf — round cap reached, closed by the owner
 
 ## Goal
 
@@ -71,6 +71,16 @@ Owner answers, 2026-09-21:
    every tool. At `deep`, AI legs are declared rows and may set `FAIL` / `NEEDS-DECISION`, with
    each leg's input hash recorded. Cost accepted: `MERGE-READY` rests on scripts alone, and an
    AI-found blocker at `standard` is reported, not enforced.
+6. `--ci`, the `CI` environment variable, and `--no-browser`: **excused, level capped**. They
+   excuse the browser checks (Wave C, 11, 15, BX), the verdict prints
+   `browser: waived (flag | CI env)`, and the level is capped at `CLEAN-STATIC`. "Same state
+   from every tool" therefore means same state per environment class: a run with a browser, or
+   a browser-waived run.
+7. AI-leg rows at `deep`: **accepted as self-attested, labelled**. The verdict prints
+   `ai-legs: self-attested`, and the residual is listed under Not verified. No hook.
+8. `figma-refs --check` (live Figma API): **`deep` only**. At `standard`, Figma parity uses only
+   the committed manifest (11, 15). At `deep`, the Figma file version it read is recorded in the
+   verdict.
 
 ### Figma waiver
 
@@ -124,15 +134,19 @@ Figma value, and the fix brief shows the override entry needed to record it.
      `NEEDS-DECISION` (open design question, or no Figma manifest at `standard` or deeper) →
      `PASS`.
    - `INCOMPLETE` means any row crashed, is missing a prerequisite, or any check the depth
-     REQUIRES did not run. Each depth declares its required check ids in one table in
-     `verdict.mjs`; a required id is excused only by `--no-figma` (Figma ids) or a committed
-     `design: "none"` (Figma ids). `--skip` / `--only` stay for local iteration, but a run that
-     used them to drop a required id is `INCOMPLETE`, never a PASS.
-   - `level` exists only on `PASS` and is computed, never chosen: `CLEAN-STATIC` (quick),
-     `MERGE-READY` (standard, or deep with `--no-figma`, or deep under `--ci`),
+     REQUIRES did not run without an excuse. Each depth declares its required check ids in one
+     table in `verdict.mjs`. The excuses, and nothing else:
+     - `--no-figma` or a committed `design: "none"` → Figma ids excused.
+     - No manifest at `HEAD` → Figma ids excused, and the state becomes `NEEDS-DECISION`
+       (Decision §2), not `INCOMPLETE`.
+     - `--ci`, `CI` in the environment, or `--no-browser` → browser ids excused (Decision §6).
+     `--skip` / `--only` stay for local iteration, but a run that used them to drop a required
+     id is `INCOMPLETE`, never a PASS.
+   - `level` exists only on `PASS` and is computed, never chosen: `CLEAN-STATIC` (quick, or any
+     browser-waived run), `MERGE-READY` (standard, or deep with `--no-figma`),
      `PRODUCTION-READY` (deep with Figma evidence or a committed `design: "none"`). The strings
      `CLEAN-STATIC` / `MERGE-READY` / `PRODUCTION-READY` used elsewhere in this plan are values
-     of `level`, nothing else.
+     of `level`, nothing else. Every excuse used is printed in the verdict.
    - **AI findings and the state (Decision §5).** At `quick` and `standard` the state is
      computed from script rows only; AI findings are rendered in the fix brief under
      "Advisory" and cannot change `state`. At `deep` every required AI leg is a declared row
@@ -140,25 +154,39 @@ Figma value, and the fix brief shows the override entry needed to record it.
      it only when it names the leg and lists the CX/DX ids it judged; an unclosed row is
      `missing-prereq`, so `INCOMPLETE`. At `deep` AI findings may set `FAIL` or
      `NEEDS-DECISION`, never clear a script `FAIL`, and the verdict records, for each leg, the
-     SHA-256 of its input (the component's source files plus the leg prompt).
-   - AI legs write only `audit/<component>/<run>/ai-findings.json`. Only `verdict.mjs` writes
-     `verdict.json`, and it rebuilds the file from its inputs on every run, so a hand-edited or
-     AI-written `verdict.json` never survives the next run. Both files carry `schemaVersion`.
-   - `--changed` / `--all`: one `verdict.json` per component, plus
-     `audit/_run/<run>/summary.json` whose `state` is the worst component state under the same
+     SHA-256 of its input (the component's source files plus the leg prompt). The verdict prints
+     `ai-legs: self-attested` (Decision §7): the rows prove what was submitted, not that a leg
+     ran.
+   - Layout: `audit/<component>/verdict.json` and `audit/<component>/fix-brief.md` at stable
+     paths, rewritten on every run; per-run inputs (envelope, `ai-findings.json`) under
+     `audit/<component>/runs/<run>/`. AI legs write only `ai-findings.json`. Only `verdict.mjs`
+     writes `verdict.json`, and it rebuilds the file from its inputs on every run, so a
+     hand-edited or AI-written `verdict.json` never survives the next run. Both files carry
+     `schemaVersion`; an input with an unknown major version leaves its row unclosed
+     (`INCOMPLETE`), an unknown minor is accepted.
+   - `--changed` / `--all`: `run-all` resolves the component list once
+     (`lib/changed-components.mjs`) and runs the per-component pipeline for each, keeping
+     repo-level scripts (03) as one shared row. One `verdict.json` per component, plus
+     `audit/_run/summary.json` whose `state` is the worst component state under the same
      precedence.
    - **Exit codes carry the state.** `verdict.mjs` (and `yarn audit:component`) exit 0 only on
      `PASS`, with a distinct non-zero code per other state, mapped in `lib/exit-codes.mjs`. On a
-     multi-component run the worst state decides the exit code. Callers branch on this exit
-     status, never on their own reading of the verdict.
+     multi-component run the worst state decides the exit code. Gate callers branch on this exit
+     status, never on their own reading of the verdict. `run-all.mjs`'s own exit code keeps its
+     current meaning (0 / 1, 2 for an internal error); only `verdict.mjs` maps state to exit.
    - `verdict.json` excludes every value that varies between identical runs: timestamps,
-     `durationMs`, `meta.totalDurationMs`, and raw stderr text (it keeps the error class only).
-2. **Fix brief** (`audit/<component>/<timestamp>/fix-brief.md` + `verdict.json`, git-ignored).
-   One block per finding, in this shape:
-   `ID · severity · check · location file:line · expected (value + source: Figma node id / rule file:line) · actual · verify: <exact command> · owner: <command/agent>`.
-   Open questions go in their own section. Each one cites the Figma node, states what is
-   ambiguous, and gives the options. The audit never picks one. The brief is self-contained:
-   pasting it into a new session is enough to start fixing.
+     `durationMs`, `meta.totalDurationMs`, raw stderr text (it keeps the error class only), and
+     the run directory name.
+2. **Fix brief** (`audit/<component>/fix-brief.md`, git-ignored). One block per non-PASS entry,
+   with one shape per state:
+   - `FAIL` finding: `ID · severity · check · location file:line · expected (value + source:
+     Figma node id / rule file:line) · actual · verify: <exact command> · owner: <command/agent>`.
+   - `INCOMPLETE` row: `ID · check · cause · prerequisite command · verify: <command that re-runs
+     this one row>`.
+   - `NEEDS-DECISION`: `ID · Figma node (or "no manifest") · the question · the options`. The
+     audit never picks one.
+   - AI findings at `quick` / `standard`: the `FAIL` shape, under "Advisory".
+   The brief is self-contained: pasting it into a new session is enough to start fixing.
 3. **Fix loop, no re-check mode.** Each finding's `verify:` command is the per-fix check. When
    they all pass, the fixer runs the full audit again at the same depth, and only that run can
    write a `PASS`. There is no `--recheck` mode: a partial re-run that rewrote the verdict would
@@ -170,9 +198,11 @@ Figma value, and the fix brief shows the override entry needed to record it.
      elements, or class instances); non-primitive props are property-only (not `reflect`) and
      documented as such; prop names do not shadow `HTMLElement` members; `@Method` is async.
    - Wave B, `standard`+, after the build prerequisite: CEM parity. The CEM entry
-     (`.storybook/custom-elements.json`, a git-ignored build output) exists, is newer than every
-     file under the component's source directory, and matches the source contract (props,
-     events, slots, parts, CSS properties). A stale or missing CEM is `missing-prereq`.
+     (`.storybook/custom-elements.json`, a git-ignored build output) must match the source
+     contract (props, events, slots, parts, CSS properties) extracted in-process. A mismatch is
+     a finding naming the prerequisite command, never judged by file mtime (wireit caches by
+     content). A missing CEM is `missing-prereq`. Phase 0 confirms which build target writes
+     the CEM (`build` with `--docs`, or also the dev build) before the prerequisite is chosen.
    - Every framework-specific rule is confirmed against current docs in Phase 0 before it is
      encoded.
 5. **Interaction checks move to a script** (`19-interaction.mjs`, Wave C, a local Playwright
@@ -185,51 +215,76 @@ Figma value, and the fix brief shows the override entry needed to record it.
    it carries is mapped to a new home (Phase 4). If the orchestrator cannot run, the verdict is
    `INCOMPLETE` with the preflight reason. The procedure is
    `yarn audit:component <name> --depth <d>` (a new `package.json` script), so any tool (Codex,
-   Cursor, CI) gets the same state up to `standard`. At `deep`, a caller that cannot dispatch
-   the AI legs gets `INCOMPLETE` naming the unclosed rows. The skill adds only the AI legs and
-   the synthesis.
-7. **Model / effort**. The skill does not pin a model: it runs in the caller's session.
-   The AI legs it dispatches are existing agents that already pin a model
-   (`a11y-verifier`, `pixel-perfect-verifier`: sonnet; `audit-production`: opus). The
-   recommended tier per leg goes in a table in the skill. The pins stay (Decision §4). The
-   audit does not claim to detect a local override: the model a leg actually ran on has no
-   source outside the leg's own report.
+   Cursor, CI) gets the same state up to `standard` within its environment class (Decision §6).
+   At `deep`, a caller that cannot dispatch the AI legs gets `INCOMPLETE` naming the unclosed
+   rows. The skill adds only the AI legs and the synthesis.
+7. **Model / effort, and who is a leg.** The skill does not pin a model: it runs in the
+   caller's session, which also does the `deep` synthesis. The AI legs it dispatches are
+   existing agents that already pin a model (`a11y-verifier`, `pixel-perfect-verifier`:
+   sonnet). `audit-production` is NOT a leg: it is a gate caller that runs the audit at `deep`,
+   so dispatching it from the audit would recurse. A leg never runs `verdict.mjs` and never
+   stops on its exit code; it runs its `run-all --only` subset for evidence and writes
+   `ai-findings.json`. The recommended tier per leg goes in a table in the skill. The pins stay
+   (Decision §4). The audit does not claim to detect a local override: the model a leg actually
+   ran on has no source outside the leg's own report.
 8. **One source for every Figma input.** The orchestrator resolves each manifest once from
-   `git show HEAD:<path>` into a temp file and passes it to 11, 15 and `figma-refs` through
-   their existing `--manifest` option. Manifest presence, `design`, `expect` values, `override`
+   `git show HEAD:<path>` into the fixed, git-ignored path
+   `.audit-figma/<component>/manifest@HEAD.json` (never a random temp dir, so no run-varying
+   path reaches a finding) and passes it to 11, 15 and, at `deep`, `figma-refs` through their
+   existing `--manifest` option. `verdict.mjs` maps that path back to
+   `src/components/<component>/test/<component>.figma.json` in every fix-brief location. Manifest presence, `design`, `expect` values, `override`
    and `skip` are therefore all read from `HEAD`. A manifest that differs from `HEAD` is
    reported as `pending manifest change — not honoured`; one that exists only in the working
    tree counts as absent, so `NEEDS-DECISION` with the note "manifest present, uncommitted".
+9. **Storybook belongs to this worktree.** Nine worktrees of this repo share port 6007, and
+   `isStorybookReachable` is a bare TCP connect, so a reachable Storybook may serve another
+   branch. The orchestrator reuses a server only when this worktree's `.audit-storybook.json`
+   (git-ignored; port + pid written when it started the server) names a live process; otherwise
+   it starts Storybook on a free port, records it, and passes it to every Wave C script through
+   their existing `--port` option.
 
 ## Acceptance bar
 
-Zero-tolerance (graded by `yarn test:scripts` — `node --test "scripts/__tests__/**/*.spec.mjs"`, the existing home of every audit script test — one fixture test per line):
+Zero-tolerance (graded by `yarn test:scripts` — `node --test "scripts/__tests__/**/*.spec.mjs"`,
+the home of the audit script specs; its wireit entry runs `build` first — one fixture test per
+line; the legacy `scripts/audit/__tests__/02-antipatterns.test.mjs` stays on `yarn audit:test`):
 
 - `run-all.spec.mjs` + `verdict.spec.mjs`: a check that crashed, is missing a prerequisite, or
-  is a required id for the depth that did not run (including one dropped by `--skip` / `--only`)
-  yields `INCOMPLETE`. It never yields any other state.
+  is a required id for the depth that did not run without an excuse (including one dropped by
+  `--skip` / `--only`) yields `INCOMPLETE`. The only non-`INCOMPLETE` outcome for a missing
+  required id is the absent-`HEAD`-manifest case, which yields `NEEDS-DECISION`. Fixtures cover
+  each excuse, including `CI=1` in the environment (level `CLEAN-STATIC`, waiver printed).
 - Two runs over the same inputs produce byte-identical `verdict.json`. Graded by
   `verdict.spec.mjs` over fixtures whose envelopes differ only in the excluded fields
-  (timestamps, durations, stderr text).
+  (timestamps, durations, stderr text, run directory).
 - At `quick` and `standard`, an AI finding never changes `state`: a fixture with a blocking AI
   finding and clean script rows yields `PASS`, and the finding appears under "Advisory" in the
   fix brief. At `deep`, an AI finding cannot turn a script `FAIL` into anything else, and an
-  unclosed AI-leg row yields `INCOMPLETE`. Graded by `verdict.spec.mjs`.
+  unclosed AI-leg row yields `INCOMPLETE`, and every `deep` verdict prints
+  `ai-legs: self-attested`. Graded by `verdict.spec.mjs`.
 - `deep --no-figma` yields exactly `PASS` with `level: MERGE-READY`, never `PRODUCTION-READY`.
   Graded by `verdict.spec.mjs`.
 - A Figma input present only in the working tree changes nothing: `run-all.spec.mjs` fixtures
   with (a) an uncommitted `override`, (b) an edited `expect` value, (c) an uncommitted manifest
   each produce the same row 15 / verdict as `HEAD` alone, plus the "not honoured" note.
-- A `verdict.json` that claims PASS but was written by hand is replaced on the next
-  `verdict.mjs` run with the verdict its inputs produce. Graded by `verdict.spec.mjs`.
-- Every non-PASS state maps to its own non-zero exit code, and the worst component decides on a
-  multi-component run. Graded by `callers.spec.mjs`, which EXECUTES `verdict.mjs` over a fixture
-  per state and asserts the exit code, then asserts that every caller file listed in Phase 5
-  invokes `yarn audit:component` (or `verdict.mjs`) and restates no verdict criteria of its own.
-- Every non-PASS entry in `fix-brief.md` has location, expected + source, actual, and a
-  `verify:` command. If any field is missing, the renderer test fails. Graded by `fix-brief.spec.mjs`.
-- The command `pre-pr-check` actually runs keeps working through every phase:
-  `node scripts/audit/run-all.mjs --changed --no-browser --json` exits 0 or 1 (never 2), and its
+- A `verdict.json` at its stable path `audit/<component>/verdict.json` that claims PASS but was
+  written by hand is replaced on the next `verdict.mjs` run with the verdict its inputs produce.
+  Graded by `verdict.spec.mjs`.
+- Every non-PASS state maps to its own non-zero exit code. Graded by `callers.spec.mjs`, which
+  EXECUTES `verdict.mjs` over a fixture per state and asserts the exit code, the worst component
+  deciding on a multi-component run. It then checks the Phase 5 files by group: every gate
+  caller contains the literal invocation `yarn audit:component` and none of the deny-listed old
+  criteria tokens (`Ready to merge`, `summary.errors`, the `audit-production` PASS/FAIL/WARN
+  table header); every leg contains no `yarn audit:component` / `verdict.mjs` invocation.
+- `--changed` over two fixture components yields two `verdict.json` files and a `summary.json`
+  whose state is the worse one. Graded by `run-all.spec.mjs` (a real `run-all` run, not
+  hand-made verdicts).
+- Every non-PASS entry in `fix-brief.md` carries every field of its state's shape (Design §2).
+  If any field is missing, the renderer test fails. Graded by `fix-brief.spec.mjs`, one case per
+  state.
+- The command `pre-pr-check` runs keeps working through every phase: until Phase 2 it is
+  `node scripts/audit/run-all.mjs --changed --no-browser --json`; Phase 2 changes it to
+  `… --depth quick --changed --no-browser --json`. Either way it exits 0 or 1 (never 2) and its
   envelope still carries `ok`, `blockers` and `results[].error` (the fields
   `.claude/commands/pre-pr-check.md` reads). Graded by a `run-all.spec.mjs` case. After Phase 2,
   a separate case asserts that `--fast` resolves to `--depth quick`.
@@ -237,21 +292,24 @@ Zero-tolerance (graded by `yarn test:scripts` — `node --test "scripts/__tests_
 Tolerances. Every number is set by a Phase 0 measurement, and until then is `TBD`. No number
 here was typed from an estimate:
 
-- Seeded defects (Phase 6): 3 of 3 surface in the fix brief, and each `verify:` command exits
+- Seeded defects (Phase 6): 4 of 4 surface in the fix brief, and each `verify:` command exits
   non-zero before the fix and zero after it. Graded by `node scripts/audit/seeded-defects.mjs`
   (written in Phase 6).
-- `quick` wall-clock on `mud-button`, warm cache: `TBD` = Phase 0 Wave A time × 1.5, where the
-  Phase 0 time is `meta.totalDurationMs` of `node scripts/audit/run-all.mjs mud-button
-  --no-browser --only 01,02,03,04,05,07,14,16 --json`, median of 3 runs. Graded by
+- `quick` wall-clock on `mud-button`, warm cache: `TBD` = Phase 0 baseline × 1.5. The baseline
+  covers the same set `quick` will run: `node scripts/audit/run-all.mjs mud-button --no-browser
+  --only 01,02,03,04,05,07,14,16 --json` → `meta.totalDurationMs`, plus ESLint + Stylelint on the
+  component's own files timed with `/usr/bin/time -p`, median of 3 runs. `quick`'s
+  `meta.totalDurationMs` covers preflight, lint and every Wave A row. Graded by
   `node scripts/audit/run-all.mjs mud-button --depth quick --json` → `meta.totalDurationMs`.
-- Prompt text the skill loads: ≤ the Phase 0 baseline. Graded by
-  `node scripts/audit/measure-prompt-cost.mjs` (a static size count of the `.claude/` prompt
-  files; it measures prompt size, not billed tokens).
+- Prompt text the skill loads: ≤ the Phase 0 baseline. Graded by `node scripts/audit/measure-prompt-cost.mjs`
+  (a static size count of the `.claude/` prompt files; it measures prompt size, not billed
+  tokens).
 - Billed AI tokens per `deep` audit on `mud-button`: reported in Phase 6 against the Phase 0
-  baseline, as the sum of the dispatched legs' reported token usage, N=1 per side. Reported, not
-  gated: one run per side cannot bound variance.
+  baseline, graded by summing the `subagent_tokens` field of each dispatched leg's Agent-tool
+  completion notice, N=1 per side. Reported, not gated: one run per side cannot bound variance.
 - Two real runs agree: `yarn audit:component mud-button --depth standard` run twice on the same
-  commit produce byte-identical `verdict.json`. Graded in Phase 6.
+  commit, both with state `PASS`, give byte-identical `verdict.json`. Graded in Phase 6 by
+  `cmp` of the two files, after copying each out of its stable path.
 
 ## Global constraints
 
@@ -259,7 +317,8 @@ here was typed from an estimate:
   `main`); never commit to `main` directly.
 - Envelope schema changes are additive (`schemaVersion` minor bump); existing consumers
   (`audit-production`, `pre-pr-check`, `a11y-verifier`, `stencil-compliance`,
-  `regression-check.mjs`) keep working until migrated in Phase 5.
+  `regression-check.mjs`) keep working until migrated (`regression-check.mjs` in Phase 1, the
+  rest in Phase 5).
 - No new runtime dependencies; Playwright, pixelmatch and the TypeScript compiler API are
   already pinned.
 - Stencil `~4.45.0` is the rule baseline; re-read `package.json` before encoding any rule.
@@ -274,7 +333,7 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 | `scripts/audit/verdict.mjs` | `run-all.mjs` `aggregate()` | partial (aggregates, decides nothing) | create; it consumes `aggregate()`'s output, never re-aggregates |
 | `scripts/audit/lib/fix-brief.mjs` | report-template.md (prose) | none in code | create |
 | `scripts/audit/lib/env-preflight.mjs` | `scripts/check-lane-resolution.mjs` (resolves `node_modules` for one lane) | name-only | create; different question (is the install usable), no shared code |
-| `scripts/audit/17-adapter-contract.mjs` | `14-component-contract.mjs` (extracts the contract) | partial | create; reads 14's output — extending 14 would mix extraction with rules |
+| `scripts/audit/17-adapter-contract.mjs` | `14-component-contract.mjs` (extracts the contract) | partial | create; calls `extractContractFromTsx` in-process — extending 14 would mix extraction with rules |
 | `scripts/audit/19-interaction.mjs` | `lib/browser-context.mjs`, `lib/state-page.mjs` | building blocks | create on top of both; no browser plumbing re-written |
 | `scripts/audit/seeded-defects.mjs` | `__tests__/audit/pixel-perfect.mutations.mjs` | pattern | create; follow its mutation shape |
 | test files | `scripts/__tests__/audit/*.spec.mjs` (runner `yarn test:scripts`) | exact home | extend `run-all.spec.mjs` and `lib-json-output.spec.mjs`; new files only for new units |
@@ -299,9 +358,13 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   - Billed tokens: one current `/audit-component mud-button --deep` run, summing the dispatched
     legs' reported token usage.
   Verify: the three numbers replace their `TBD`s.
-- [ ] Interaction spike: BX2 + BX3 on one interactive component (`mud-button`) through a local
-  Playwright script, 5 runs, identical results. If they differ, re-scope `19-interaction` before
-  Phase 1 fixes the schema around it. Verify: the 5 result files compared with `cmp`.
+- [ ] Stability spike, before the schema is fixed: (a) BX2 + BX3 on `mud-button` through a local
+  Playwright script, 5 runs; (b) `09`, `10`, `11`, `15` on `mud-button`, 3 runs each, findings
+  compared with durations stripped. If either differs, Phase 1 adds rounding or bucketing to the
+  schema and `19-interaction` is re-scoped. Verify: the result files compared with `cmp`.
+- [ ] Confirm which build target writes `.storybook/custom-elements.json` (`build` with `--docs`,
+  or also `dx:stencil:once`) by running the dev build in a clean worktree and checking the file.
+  The `standard` prerequisite (Phase 2) uses that target.
 - [ ] Confirm the generic adapter rules and the React 19 rules against current docs
   (Decision §3: Angular / Vue / Blazor wait for their first consumer). Rules without a doc
   citation are not encoded. Verify: a citation per rule in the `17-adapter-contract.mjs` header.
@@ -326,17 +389,14 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   Every producer (01–17, 19, the AI legs) and the only consumer (`verdict.mjs`) build against
   it. Phase 2 and Phase 3 both depend on this schema, so it lands first. Verify: a schema unit
   test over one fixture per producer kind.
-- [ ] `regression-check.mjs` treats a row that is newly `crashed` or `missing-prereq` as a
-  regression, even when its baseline had zero findings. Verify: a case in the new
-  `regression-check.spec.mjs`.
+- [ ] `regression-check.mjs` treats a row that is newly `crashed`, `missing-prereq` or `skipped`
+  (relative to a baseline where it ran) as a regression, even when its baseline had zero
+  findings. Verify: cases in the new `regression-check.spec.mjs`.
 - [ ] Env preflight: `node_modules`, Node version vs `engines`, resolvable deps → one-line
-  `INCOMPLETE: <cause>`. Verify: `scripts/__tests__/audit/run-all.spec.mjs` case with a missing dep.
+  `INCOMPLETE: <cause> — run: <exact command>` (e.g. `fnm use 24`, `yarn install`).
+  Verify: `scripts/__tests__/audit/run-all.spec.mjs` case with a missing dep.
 - [ ] Crashed / prerequisite-missing rows → status `crashed` / `missing-prereq`, listed in
   `blockers`, counted in `summary.incomplete`. Verify: `aggregate()` unit test.
-- [ ] Automatic prerequisites at `standard`+ (tokens, the component's own coverage, a dev build,
-  and Storybook on :6007 — reused when `storybook-helpers.mjs` `isStorybookReachable` says so,
-  started and awaited otherwise), wireit-cached where wireit owns the step.
-  Verify: fresh worktree run produces 06, 08 and Wave C rows.
 
 ### Phase 2 — depth + verdict + fix brief (F7 F8 F9)
 **Executor**: opus, high effort · wave 3 (after Phase 1's schema)
@@ -357,22 +417,39 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Modify: `scripts/__tests__/audit/15-style-parity.spec.mjs`
 - Modify: `scripts/__tests__/audit/figma-manifest.spec.mjs`
 - Create: `scripts/__tests__/audit/__fixtures__/verdict/`
+- Modify: `scripts/audit/lib/storybook-helpers.mjs`
+- Read only: `scripts/audit/lib/changed-components.mjs`
+- Modify: `.claude/commands/pre-pr-check.md`
 - Modify: `.gitignore`
 - Modify: `package.json`
 
 - [ ] `--depth` in `run-all.mjs` (+ `--fast` alias of `quick`, `--e2e` folded into `deep`), plus
-  the per-depth required-check table (`quick` includes 03 git-hygiene with the other Wave A
-  scripts). Add `"audit:component"` to `package.json` scripts. Verify: `run-all.spec.mjs` cases
-  for the alias and for a `--skip` that drops a required id.
+  the per-depth required-check table with its excuses (Design §1; `quick` includes 03
+  git-hygiene with the other Wave A scripts; `figma-refs --check` registered as a `deep`-only
+  row, Decision §8). Add `"audit:component"` to `package.json` scripts. Change
+  `pre-pr-check.md`'s `run-all` line to `--depth quick` in the same commit. Verify:
+  `run-all.spec.mjs` cases for the alias, for a `--skip` that drops a required id, and for
+  `CI=1`.
+- [ ] Automatic prerequisites at `standard`+, after `--depth` exists: tokens, the component's own
+  coverage, the build target Phase 0 named for the CEM, and a worktree-owned Storybook
+  (Design §9, `.audit-storybook.json` git-ignored, port passed through `--port`). Verify: a
+  fresh worktree run produces 06, 08 and Wave C rows; a second worktree's Storybook on 6007 is
+  not reused.
+- [ ] Multi-component runs: `--changed` / `--all` loop the per-component pipeline over the list
+  from `lib/changed-components.mjs`, 03 stays one shared row, `summary.json` carries the worst
+  state. Verify: the two-component `run-all.spec.mjs` case from the Acceptance bar.
 - [ ] `verdict.mjs` + `fix-brief.md` renderer (with an "Advisory" section for AI findings at
   `quick` / `standard`) + the state → exit-code map in `lib/exit-codes.mjs` + the
   multi-component `summary.json`. Verify: fixture envelopes → golden verdicts, byte-identical
   across two runs; `callers.spec.mjs` exit-code cases.
 - [ ] AI-leg rows at `deep`: opened by the orchestrator, closed by `ai-findings.json`, input
-  hash recorded. Verify: fixtures for a closed row, an unclosed row (`INCOMPLETE`), and an
-  empty-but-closed row (`PASS`).
-- [ ] HEAD-resolved manifests (Design §8) for 11, 15 and `figma-refs`. Verify: the three
-  working-tree fixtures from the Acceptance bar.
+  hash recorded, `ai-legs: self-attested` printed. Verify: fixtures for a closed row, an
+  unclosed row (`INCOMPLETE`), an empty-but-closed row (`PASS`), and an unknown-major
+  `schemaVersion` (`INCOMPLETE`).
+- [ ] HEAD-resolved manifests (Design §8) at `.audit-figma/<component>/manifest@HEAD.json` for
+  11, 15 and `figma-refs`, with fix-brief locations mapped back to the real manifest path.
+  Verify: the three working-tree fixtures from the Acceptance bar, and a fix-brief location
+  check.
 - [ ] Figma gate: no manifest at `HEAD` at `standard`+ → `NEEDS-DECISION` with the question
   pre-filled. Verify: fixture without manifest.
 - [ ] `--no-figma` flag + `figma.design: "none"` manifest key. `validateManifest` accepts
@@ -388,7 +465,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - [ ] `deep` contents, each item mapped to what implements it (a script id, an existing agent
   or skill leg, or deferred with a reason): `stencil-compliance` manual rows, full WCAG,
   every Figma state × both themes, reduced-motion / forced-colors / 320 px / RTL, adapter
-  smoke build (React wrapper typecheck, vanilla demo), security leg, E2E when present. Verify:
+  smoke build (React wrapper typecheck; vanilla = the existing `yarn build.web` build only, no
+  vanilla-specific rules), live Figma reference check (`figma-refs --check`, file version
+  recorded), security leg, E2E when present. Verify:
   `--depth deep` on `mud-button` emits one row per mapped item.
 
 ### Phase 3 — new scripts (F5 F6)
@@ -449,11 +528,17 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   `/audit-component`, `LOCAL-SETUP.md`, `commands/README.md`, `migrate-component`,
   `new-component`, `refactor-component` → new flags and the new row statuses.
   Verify: `rg -- "--fast|--deep|--e2e" .claude` shows only the documented alias.
-- [ ] Each caller runs `yarn audit:component` (or `verdict.mjs`) and stops on a non-zero exit
-  status. `audit-production`'s own PASS/FAIL/WARN criteria are replaced by the verdict's
-  `state` + `level`, and the fallback paragraphs in `audit-production` and `pre-pr-check` are
-  removed. Verify: `callers.spec.mjs` (the invocation and no-restated-criteria assertions from
-  the Acceptance bar) passes over the final caller files.
+- [ ] Split the files into two groups, listed in `callers.spec.mjs`:
+  - Gate callers — `pre-pr-check`, `/audit-component`, `audit-production`, `new-component`,
+    `refactor-component`, `migrate-component`: run `yarn audit:component` and stop on a non-zero
+    exit status. `audit-production`'s own PASS/FAIL/WARN criteria are replaced by the verdict's
+    `state` + `level`, and the fallback paragraphs in `audit-production` and `pre-pr-check` are
+    removed.
+  - Legs — `a11y-verifier`, `stencil-compliance`: keep their `run-all --only` evidence runs,
+    write `ai-findings.json` when dispatched at `deep`, and never invoke `verdict.mjs` or stop on
+    its exit code.
+  Verify: `callers.spec.mjs` (the per-group assertions from the Acceptance bar) passes over the
+  final files.
 
 ### Phase 6 — prove it
 **Executor**: session model, medium effort · wave 5
@@ -464,10 +549,11 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 
 - [ ] Re-run the Phase 0 probes; report the before/after wall-clock, prompt size and billed
   tokens, each with its denominator.
-- [ ] Run `yarn audit:component mud-button --depth standard` twice on the same commit and `cmp`
-  the two `verdict.json` files.
-- [ ] Seed three known defects (one per layer) in a scratch branch; each must surface in the
-  fix brief with a working `verify:` command.
+- [ ] Run `yarn audit:component mud-button --depth standard` twice on the same commit, both
+  `PASS`, and `cmp` the two `verdict.json` files.
+- [ ] Seed four known defects in a scratch branch — one per layer (static, browser, Figma) plus
+  one `INCOMPLETE` (a removed prerequisite); each must surface in the fix brief in its state's
+  shape with a working `verify:` command.
 
 ## Execution matrix
 
@@ -495,8 +581,15 @@ None blocking. The five questions were answered on 2026-09-21 (see Decision).
 - The owner's original request list (the "items" the Review log cites) lives in the analysis
   session, not in this plan; coverage is graded against issue #114 and the Goal section.
 - The HEAD-only waiver rule stops the audit from granting a waiver to itself. It does not stop
-  an agent that both edits and commits the manifest. That case is caught in PR review, where
-  the verdict prints the waiver's commit, not by a mechanism.
+  an agent that both edits and commits the manifest. That case is caught only in PR review, by
+  the manifest diff itself (`verdict.json` is git-ignored and never reaches the PR), not by a
+  mechanism. `figma.skip` entries narrow coverage the same way and are printed with the waivers.
+- AI-leg rows at `deep` are self-attested (Decision §7): `ai-findings.json` proves what was
+  submitted, not that the leg ran.
+- The gate callers' "stop on a non-zero exit" is an instruction in a prompt file;
+  `callers.spec.mjs` proves the invocation is there, not that the model obeys it.
+- Determinism holds per environment class (Decision §6). Pixel diffs (11) across operating
+  systems were not measured.
 
 ## Review log
 
@@ -526,6 +619,20 @@ None blocking. The five questions were answered on 2026-09-21 (see Decision).
   - Multi-component `summary.json`; `schemaVersion` on `verdict.json` / `ai-findings.json`.
   - BX2 / BX3 moved into `09`, BX6 stays `12`; Phase 0 interaction spike.
   - Storybook prerequisite and the `audit:component` script tasked; `deep` contents mapped.
-  - Fallback removal gated on a check-to-home table; Phase 5 gains `a11y-verifier`,
-    `stencil-compliance`, `regression-check.mjs`, and replaces `audit-production`'s own criteria.
+  - Fallback removal gated on a check-to-home table; Phase 5 gains `a11y-verifier` and
+    `stencil-compliance`, Phase 1 `regression-check.mjs`; `audit-production`'s own criteria
+    replaced.
   - Model-override detection claim dropped; branch constraint and Phase 4 runner corrected.
+- 2026-09-21 critic round 3 at `8952fdf`, 3 legs, all FORTIFY. The 3-round cap ended the loop;
+  the owner decided Decision §6–§8 and approved folding without a fourth round. Applied:
+  - Absent `HEAD` manifest excuses the Figma ids and yields `NEEDS-DECISION`.
+  - `--ci` / `CI` / `--no-browser` excuse browser ids, level capped at `CLEAN-STATIC`.
+  - Phase 5 split into gate callers and legs; `audit-production` is not a leg.
+  - Worktree-owned Storybook (Design §9); fixed HEAD-manifest path; stable verdict path.
+  - Multi-component `run-all` loop tasked; fix-brief shape per state; `INCOMPLETE` seeded
+    defect.
+  - CEM staleness judged by parity, not mtime; Phase 0 confirms the CEM build target.
+  - `pre-pr-check` moves to `--depth quick` in Phase 2; `run-all` exit codes unchanged.
+  - `callers.spec.mjs` matcher defined; `quick` baseline covers the full `quick` set;
+    stability spike extended to 09/10/11/15; `figma-refs` `deep`-only.
+  - Storybook prerequisites moved from Phase 1 to Phase 2 (they need `--depth`).
