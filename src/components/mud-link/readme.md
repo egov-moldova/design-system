@@ -44,19 +44,6 @@ via `external="false"`.
 | `"icon-start"` | Optional leading `mud-icon`.                                                                                                 |
 
 
-## Dependencies
-
-### Used by
-
- - [mud-cookie-banner](../mud-cookie-banner)
-
-### Graph
-```mermaid
-graph TD;
-  mud-cookie-banner --> mud-link
-  style mud-link fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

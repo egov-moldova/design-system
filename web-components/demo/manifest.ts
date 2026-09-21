@@ -96,7 +96,6 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-logo', blurb: 'Service logomarks (LogoName union)' },
       { tag: 'mud-file-input', blurb: 'Drag-and-drop upload zone' },
       { tag: 'mud-file-item', blurb: 'Upload row — uploaded/uploading/success/error' },
-      { tag: 'mud-cookie-banner', blurb: 'GDPR consent banner' },
     ],
   },
   {
@@ -104,7 +103,6 @@ export const CATEGORIES: Category[] = [
     title: 'Data & layout',
     components: [
       { tag: 'mud-table', blurb: 'Data table (columns/rows props, cell slots)' },
-      { tag: 'mud-receipt', blurb: 'Transaction receipt molecule' },
       { tag: 'mud-date-picker', blurb: 'Calendar — single / range / multi' },
       { tag: 'mud-time-picker', blurb: 'Hour / minute picker panel' },
     ],

@@ -63,7 +63,7 @@ const FIXTURE = `<!doctype html>
 </body>
 </html>`;
 
-// The `mud-cookie-banner` / `mud-modal` shape: the component paints its surface
+// The `mud-modal` shape: the component paints its surface
 // on a shadow-tree container and the consumer's element is slotted INTO it, so
 // the painted surface is only reachable through `assignedSlot`.
 const SLOTTED_FIXTURE = FIXTURE.replace(
