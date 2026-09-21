@@ -301,17 +301,23 @@ export class MudTooltip {
    * the shadow-DOM boundary.
    */
   private getTooltipText(): string {
-    const defaultText = Array.from(this.host.childNodes)
-      // Text and unslotted elements only: framework comment markers (`<!--v-if-->`,
-      // `<!--?lit$…$-->`) would otherwise be read out. The attribute, not
-      // `Element.slot`: mock-doc has no `slot` accessor, so the property read let the
-      // trigger's text into the mirror under the spec runner.
-      .filter(n => n.nodeType === 3 || (n.nodeType === 1 && !(n as Element).hasAttribute('slot')))
+    // The nodes the default slot is assigned: text, and elements whose slot name is
+    // empty. Comment markers (`<!--v-if-->`, `<!--?lit$…$-->`) are not assigned, and
+    // reading them would put them in the mirror. The attribute, not `Element.slot`:
+    // mock-doc has no `slot` accessor, so the property read let the trigger's own
+    // text in under the spec runner.
+    const defaultNodes = Array.from(this.host.childNodes).filter(
+      n => n.nodeType === 3 || (n.nodeType === 1 && ((n as Element).getAttribute('slot') ?? '') === ''),
+    );
+    // `content` renders only as the slot's fallback, i.e. when no node is assigned —
+    // whitespace included. The mirror follows the same rule so screen readers never
+    // announce text the bubble does not show.
+    if (defaultNodes.length === 0) return (this.content ?? '').trim();
+    return defaultNodes
       .map(n => n.textContent || '')
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
-    return defaultText || (this.content ?? '').trim();
   }
 
   /**

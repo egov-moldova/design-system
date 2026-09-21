@@ -264,6 +264,37 @@ describe('mud-tooltip', () => {
       expect(document.getElementById(mirrorId)?.textContent).toBe('Detalii despre cont');
     });
 
+    it('does not mirror the content prop when a whitespace node takes the default slot', async () => {
+      const { root } = await render(
+        <mud-tooltip content="Detalii despre cont">
+          <button slot="trigger" type="button">
+            T
+          </button>
+        </mud-tooltip>,
+      );
+      root?.appendChild(document.createTextNode('\n  '));
+      (root as HTMLElement).setAttribute('open', '');
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('');
+    });
+
+    it('mirrors an element with an empty slot name, which the default slot receives', async () => {
+      const { root } = await render(
+        <mud-tooltip open>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          <span slot="">Codul are 13 cifre.</span>
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Codul are 13 cifre.');
+    });
+
     it('removes aria-describedby when the tooltip closes', async () => {
       const { root } = await render(
         <mud-tooltip open>
