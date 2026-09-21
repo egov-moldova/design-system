@@ -318,6 +318,8 @@ export class MudDateInput {
   private mql?: MediaQueryList;
   /** Set when the calendar opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
+  /** Whether the next open should move focus into the calendar. */
+  private focusPickerOnOpen: boolean = true;
   /** Body `overflow` before the mobile bottom sheet locked page scroll; `undefined` while unlocked. */
   private lockedBodyOverflow?: string;
 
@@ -436,7 +438,8 @@ export class MudDateInput {
     }
     if (this.resolvedBreakpoint() === 'mobile') this.lockPageScroll();
     // The picker is not rendered yet; componentDidRender moves focus once it is.
-    this.focusPickerOnRender = true;
+    this.focusPickerOnRender = this.focusPickerOnOpen;
+    this.focusPickerOnOpen = true;
   }
 
   /**
@@ -606,6 +609,28 @@ export class MudDateInput {
     ev.stopPropagation();
     if (this.isInert() || this.readonly) return;
     this.pickerOpen = !this.pickerOpen;
+  };
+
+  /**
+   * A click anywhere on the field opens the calendar, not only the trailing
+   * button. Focus stays where the click put it — the caret in the input — so
+   * the user can keep typing; only the trailing button moves focus into the
+   * calendar (the dialog pattern).
+   */
+  private readonly handleFieldClick = (ev: MouseEvent) => {
+    if (this.isInert() || this.readonly) return;
+    const path = ev.composedPath();
+    // The clear button, the calendar itself and the sheet's backdrop all sit
+    // inside `.control`; a click on any of them is not a click on the field,
+    // and reopening on the backdrop would undo the dismissal it just made.
+    const own = this.host.shadowRoot;
+    for (const selector of ['.clear-button', '.picker-popover', '.picker-backdrop']) {
+      const el = own?.querySelector(selector);
+      if (el && path.includes(el)) return;
+    }
+    if (this.pickerOpen) return;
+    this.focusPickerOnOpen = false;
+    this.pickerOpen = true;
   };
 
   private lockPageScroll() {
@@ -1039,7 +1064,7 @@ export class MudDateInput {
           ) : null}
         </label>
 
-        <div class="control" part="control">
+        <div class="control" part="control" onClick={this.handleFieldClick}>
           <div class="field">
             <input
               id={`date-input-${this.instanceId}`}

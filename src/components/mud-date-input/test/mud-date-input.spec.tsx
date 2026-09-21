@@ -804,6 +804,51 @@ describe('mud-date-input', () => {
     });
   });
 
+  describe('opening the calendar', () => {
+    const clickControl = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLElement>('.control')?.click();
+      await flush();
+    };
+
+    it('opens on a click anywhere on the field, not only the trailing button', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await clickControl(root);
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeTruthy();
+    });
+
+    it('leaves focus in the input when the field opens it, so typing continues', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await clickControl(root);
+      expect((root as unknown as { focusPickerOnRender: boolean }).focusPickerOnRender).toBe(false);
+    });
+
+    it('moves focus into the calendar when the trailing button opens it', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeTruthy();
+    });
+
+    it('does not open from the clear button', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" breakpoint="desktop" clearable value="15/04/2025"></mud-date-input>,
+      );
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.clear-button')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+    });
+
+    it('stays closed while readonly or disabled', async () => {
+      const ro = await render(<mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>);
+      await clickControl(ro.root);
+      expect(ro.root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+
+      const disabled = await render(<mud-date-input locale="ro-RO" label="x" disabled></mud-date-input>);
+      await clickControl(disabled.root);
+      expect(disabled.root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+    });
+  });
+
   describe('type (Figma Types 470:32035: default / advanced / date-range)', () => {
     const open = async (root: Element | null | undefined) => {
       root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
