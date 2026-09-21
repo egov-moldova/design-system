@@ -6,7 +6,9 @@ import type { SeparatorOrientation, SeparatorSize, SeparatorVariant } from './mu
  * Separator — visual divider between groups of content or UI components.
  *
  * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
- * No events, no interactivity. ARIA `separator` semantics.
+ * No events, no interactivity. ARIA `separator` semantics. Most separators are
+ * decorative; give one the native `aria-label` attribute when it marks a
+ * boundary worth announcing — it stays on the host, which carries the role.
  *
  * @element mud-separator
  * @slot - Optional rich label content (e.g. icon + text). Use either the
@@ -52,13 +54,6 @@ export class MudSeparator {
    */
   @Prop() label?: string;
 
-  /**
-   * Accessible label for screen readers. Most separators are decorative and
-   * do not need this; provide it only when the separator conveys a discrete
-   * semantic boundary that benefits from an announcement.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   private hasLabelSlot(): boolean {
     const slotted = Array.from(this.host.childNodes).some(node => {
       if (node.nodeType === Node.ELEMENT_NODE) return true;
@@ -75,12 +70,7 @@ export class MudSeparator {
     const ariaOrientation = this.orientation === 'vertical' ? 'vertical' : undefined;
 
     return (
-      <Host
-        role="separator"
-        aria-orientation={ariaOrientation}
-        aria-label={this.ariaLabel}
-        class={{ 'has-label': hasLabel }}
-      >
+      <Host role="separator" aria-orientation={ariaOrientation} class={{ 'has-label': hasLabel }}>
         {hasLabel ? (
           <div class="layout" part="layout">
             <span class="line line-start" aria-hidden="true" part="line"></span>
