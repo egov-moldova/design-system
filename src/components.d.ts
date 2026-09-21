@@ -1193,7 +1193,7 @@ export namespace Components {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -1250,7 +1250,7 @@ export namespace Components {
         "languageLabel": string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -5332,7 +5332,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
+    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K]?: never };
+    type OneOf3<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
 
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
@@ -6566,7 +6567,7 @@ declare namespace LocalJSX {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages"?: readonly HeaderLanguage[];
         /**
@@ -6631,7 +6632,7 @@ declare namespace LocalJSX {
         "languageLabel"?: string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages"?: readonly HeaderLanguage[];
         /**
@@ -9887,7 +9888,7 @@ declare namespace LocalJSX {
         "mud-checkbox": Omit<MudCheckbox, keyof MudCheckboxAttributes> & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes]?: MudCheckbox[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `attr:${K}`]?: MudCheckboxAttributes[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `prop:${K}`]?: MudCheckbox[K] };
         "mud-chip": Omit<MudChip, keyof MudChipAttributes> & { [K in keyof MudChip & keyof MudChipAttributes]?: MudChip[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `attr:${K}`]?: MudChipAttributes[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `prop:${K}`]?: MudChip[K] };
         "mud-cookie-banner": Omit<MudCookieBanner, keyof MudCookieBannerAttributes> & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes]?: MudCookieBanner[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `attr:${K}`]?: MudCookieBannerAttributes[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `prop:${K}`]?: MudCookieBanner[K] };
-        "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] } & OneOf<"locale", MudDateInput["locale"], MudDateInputAttributes["locale"]>;
+        "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] } & OneOf3<"locale", MudDateInput["locale"], MudDateInputAttributes["locale"]>;
         "mud-date-picker": Omit<MudDatePicker, keyof MudDatePickerAttributes> & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes]?: MudDatePicker[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `attr:${K}`]?: MudDatePickerAttributes[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `prop:${K}`]?: MudDatePicker[K] };
         "mud-file-input": Omit<MudFileInput, keyof MudFileInputAttributes> & { [K in keyof MudFileInput & keyof MudFileInputAttributes]?: MudFileInput[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `attr:${K}`]?: MudFileInputAttributes[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `prop:${K}`]?: MudFileInput[K] };
         "mud-file-item": Omit<MudFileItem, keyof MudFileItemAttributes> & { [K in keyof MudFileItem & keyof MudFileItemAttributes]?: MudFileItem[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `attr:${K}`]?: MudFileItemAttributes[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `prop:${K}`]?: MudFileItem[K] };
@@ -9897,7 +9898,7 @@ declare namespace LocalJSX {
         "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
-        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf<"name", MudIcon["name"], MudIconAttributes["name"]>;
+        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf3<"name", MudIcon["name"], MudIconAttributes["name"]>;
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
@@ -9922,7 +9923,7 @@ declare namespace LocalJSX {
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
         "mud-stepper": Omit<MudStepper, keyof MudStepperAttributes> & { [K in keyof MudStepper & keyof MudStepperAttributes]?: MudStepper[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `attr:${K}`]?: MudStepperAttributes[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `prop:${K}`]?: MudStepper[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
-        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
+        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf3<"value", MudTab["value"], MudTabAttributes["value"]>;
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
         "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
