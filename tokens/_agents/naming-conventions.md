@@ -54,9 +54,9 @@ In token JSON files, compound properties **MUST** use camelCase:
 |---|---|
 | `fontSize` | `--button-font-size` ✅ |
 | `font-size` | `--button-font-size` ❌ (same output, but `yarn tokens.lint` rejects it) |
-| `font_size` | `--button-font_size` ❌ (underscore preserved) |
+| `font_size` | `--button-font-size` ❌ (same output, but `yarn tokens.lint` warns on underscores) |
 
-**Exception — Figma variable names.** The files the Tokenhaus sync generates (`palette`, `color` light and dark, `font`, `sizes`; the list is `GENERATED_FILES` in `scripts/sync-tokens-from-tokenhaus.mjs`) keep Figma's kebab-case names (`base-inverse`, `blue-sky`), because the next sync writes them back. Every other token file, including all of `tokens/core/components/`, is camelCase. A key that starts with a digit (`1-5`, a half step) has no camelCase form and is accepted everywhere. Verify: `yarn tokens.lint.all`.
+**Exception — Figma variable names.** The files the Tokenhaus sync generates (`palette`, `color` light and dark, `font`, `sizes`; the list is `GENERATED_FILES` in `scripts/lib/tokenhaus-generated-files.mjs`) keep Figma's kebab-case names (`base-inverse`, `blue-sky`), because the next sync writes them back. Every other token file, including all of `tokens/core/components/`, is camelCase. A key with a digit segment (`1-5`, `gap-12`, `max-2-lines`) has no camelCase spelling that builds the same CSS variable (`max2Lines` → `--…-max2-lines`), so it keeps its kebab-case form everywhere. Verify: `yarn tokens.lint.all`.
 
 ---
 

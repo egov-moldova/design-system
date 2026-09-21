@@ -12,7 +12,7 @@
  * Rule 3 and tokens/_agents/naming-conventions.md. Errors: a key that starts uppercase, mixes
  * kebab-case with camelCase (`option-fontFamily`), or is all-lowercase kebab-case (`padding-inline`).
  * Warnings: underscores, dots, spaces.
- * The files the Tokenhaus sync generates (GENERATED_FILES in sync-tokens-from-tokenhaus.mjs) are
+ * The files the Tokenhaus sync generates (GENERATED_FILES in lib/tokenhaus-generated-files.mjs) are
  * exempt from the kebab-case rule: they carry Figma variable names verbatim (`base-inverse`,
  * `blue-sky`), and flagging them would report keys the next sync writes back.
  *
@@ -27,7 +27,9 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { GENERATED_FILES } from './sync-tokens-from-tokenhaus.mjs';
+import StyleDictionary from 'style-dictionary';
+
+import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
 
 const argv = process.argv.slice(2);
 const ROOTS = [];
@@ -92,11 +94,14 @@ function colorize(text, color) {
 // A key with uppercase letters is valid only as lowerCamelCase: no leading capital, no hyphen mixed in.
 const RE_LOWER_CAMEL = /^[a-z][a-zA-Z0-9]*$/;
 const hasBadCase = key => /[A-Z]/.test(key) && !RE_LOWER_CAMEL.test(key);
-// An all-lowercase kebab-case key. One that starts with a digit (`1-5`, a half step) has no
-// camelCase form, so it passes.
-const isKebab = key => key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key);
-// Digit segments join too (`gap-12` → `gap12`), unlike toCamel, which keeps `-1-5` for the warnings.
+// An all-lowercase kebab-case key whose camelCase spelling builds the same CSS variable. A digit
+// segment has none (name/kebab: `gap12` → `gap12`, `max2Lines` → `max2-lines`), so `gap-12`,
+// `max-2-lines` and `1-5` pass: renaming them would rename the variable.
+const nameKebab = StyleDictionary.hooks.transforms['name/kebab'];
+const cssName = key => nameKebab.transform({ path: [key] }, {});
 const kebabToCamel = key => key.replace(/-+([a-z0-9])/g, (_, c) => c.toUpperCase());
+const isKebab = key =>
+  key.includes('-') && /^[a-z][a-z0-9-]*$/.test(key) && cssName(kebabToCamel(key)) === cssName(key);
 
 // Files the Tokenhaus sync writes keep Figma's kebab-case variable names; see GENERATED_FILES.
 const isSyncGenerated = filePath => {

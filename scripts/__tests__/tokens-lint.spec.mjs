@@ -6,7 +6,7 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { GENERATED_FILES } from '../sync-tokens-from-tokenhaus.mjs';
+import { GENERATED_FILES } from '../lib/tokenhaus-generated-files.mjs';
 
 const SCRIPT = fileURLToPath(new URL('../tokens-lint.mjs', import.meta.url));
 const tempDirs = [];
@@ -69,10 +69,11 @@ describe('tokens-lint — key naming', () => {
     assert.equal(status, 1);
   });
 
-  it('rejects a kebab-case key with a digit segment, camelCasing the digits too', () => {
-    const { report } = lint(tokenRoot({ layout: { 'gap-12': leaf, 'max-2-lines': leaf } }));
-    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
-    assert.deepEqual(suggestions, { 'error:gap-12': 'gap12', 'error:max-2-lines': 'max2Lines' });
+  it('accepts a kebab-case key with a digit segment, which no camelCase spelling keeps', () => {
+    // name/kebab turns `gap12` into `gap12` and `max2Lines` into `max2-lines`, so renaming either
+    // would rename its CSS variable (`--layout-gap-12`, `--layout-max-2-lines`).
+    const { keys } = lint(tokenRoot({ layout: { 'gap-12': leaf, 'max-2-lines': leaf } }));
+    assert.deepEqual(keys, []);
   });
 
   it('does not report a hyphen-free key as kebab-case', () => {
