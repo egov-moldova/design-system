@@ -1,6 +1,6 @@
 ---
 name: mud-design
-description: Use when building UI in any project that consumes the MUD Design System (Stencil `mud-*` components via `@egov-moldova/mud`). Triggers on tasks like "build a form", "add a button", "make a card", "show a status", "tabs", "modal", "footer", "loading state", "table row", "list view" — anywhere you might be tempted to write a styled `<div>` or roll a custom UI element. Refuses to invent components when an MUD one fits; surfaces the right `<mud-name>` and shows the import + minimal example.
+description: Use when building UI in any project that consumes the MUD Design System (Stencil `mud-*` components via `@egov-moldova/mud`). Triggers on tasks like "build a form", "add a button", "make a card", "show a status", "tabs", "modal", "loading state", "table row", "list view" — anywhere you might be tempted to write a styled `<div>` or roll a custom UI element. Refuses to invent components when an MUD one fits; surfaces the right `<mud-name>` and shows the import + minimal example.
 ---
 
 # MUD Design System — Usage Skill
@@ -105,12 +105,6 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `MudInfoBox` | Inline callout that highlights a key message within the page flow. | Announcements, explanations or alerts that belong to the content. |
 | `MudToast` | Fixed-width toast with icon, optional heading and message. | Save confirmations and transient status after an action. |
 | `MudBanner` | Full-width, top-of-page system message. | System-wide notices (maintenance, outages) that persist until dismissed. |
-
-### Chrome (page-level)
-
-| Component | What it is | When to use |
-|---|---|---|
-| `MudFooter` | Full eGov footer. Variant `simple` (single-line copyright + accessibility) or `evo` (sections, contact, social, partners, locale switcher). | Every page-level footer. Pass `variant="evo"` for public surfaces; `simple` for app shells. |
 
 ## How to investigate a component
 

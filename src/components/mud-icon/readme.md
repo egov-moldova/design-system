@@ -42,10 +42,6 @@ missing, the available one is rendered and a warning is logged.
  - [mud-date-picker](../mud-date-picker)
  - [mud-file-input](../mud-file-input)
  - [mud-file-item](../mud-file-item)
- - [mud-footer](../mud-footer)
- - [mud-header-mobile](../mud-header)
- - [mud-header-nav-item](../mud-header)
- - [mud-header-services-menu](../mud-header)
  - [mud-info-box](../mud-info-box)
  - [mud-inline-message](../mud-inline-message)
  - [mud-input-chip](../mud-input-chip)
@@ -79,10 +75,6 @@ graph TD;
   mud-date-picker --> mud-icon
   mud-file-input --> mud-icon
   mud-file-item --> mud-icon
-  mud-footer --> mud-icon
-  mud-header-mobile --> mud-icon
-  mud-header-nav-item --> mud-icon
-  mud-header-services-menu --> mud-icon
   mud-info-box --> mud-icon
   mud-inline-message --> mud-icon
   mud-input-chip --> mud-icon

@@ -60,7 +60,6 @@ attribute on the parent.
 ### Used by
 
  - [mud-cookie-banner](../mud-cookie-banner)
- - [mud-header-mega-menu](../mud-header)
  - [mud-receipt](../mud-receipt)
  - [mud-sidebar-item](../mud-sidebar)
 
@@ -68,7 +67,6 @@ attribute on the parent.
 ```mermaid
 graph TD;
   mud-cookie-banner --> mud-tag
-  mud-header-mega-menu --> mud-tag
   mud-receipt --> mud-tag
   mud-sidebar-item --> mud-tag
   style mud-tag fill:#f9f,stroke:#333,stroke-width:4px

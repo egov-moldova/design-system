@@ -20,8 +20,6 @@ import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputS
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
-import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
-import { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
 import { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 import { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
@@ -65,8 +63,6 @@ export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputS
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
-export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
-export { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
 export { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 export { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
@@ -167,7 +163,7 @@ export namespace Components {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    28 of this library's 55 components implement it at the time of writing;
+     *    27 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -1146,248 +1142,6 @@ export namespace Components {
           * @default 'uploaded'
          */
         "state": FileItemState;
-    }
-    /**
-     * Page footer — civic, multi-section organism for AGE / EVO platforms.
-     * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
-     * carries `role="contentinfo"` so screen readers announce it as the page
-     * footer landmark.
-     * Two variants share one element:
-     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
-     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
-     *   contact info, social rows, partner logos, accessibility statement, and a
-     *   black legal bar with copyright + license link.
-     * - `variant="simple"` — slim variant: only the black legal bar with the
-     *   copyright text and license/terms links. Used inside scoped flows
-     *   (modals, embedded apps) where the full footer is too tall.
-     * Romanian voice ships as defaults; every visible string is overridable via
-     * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element mud-footer
-     */
-    interface MudFooter {
-        /**
-          * Optional href for the accessibility statement link in the legal bar.
-         */
-        "accessibilityHref"?: string;
-        /**
-          * Forwarded to the host as `aria-label`. Defaults to Romanian "Subsol pagină".
-         */
-        "ariaLabel"?: string;
-        /**
-          * Contact block (email / phone / address). When undefined, the section is hidden. Pass an empty object to opt out of the Romanian defaults.
-         */
-        "contact"?: FooterContact;
-        /**
-          * Plain-text copyright line shown in the legal bar. Defaults to Romanian.
-         */
-        "copyrightText"?: string;
-        /**
-          * Optional href for the privacy/license link in the legal bar.
-         */
-        "licenseHref"?: string;
-        /**
-          * Currently-selected locale for the language switcher. When undefined, the locale switcher is hidden.
-         */
-        "locale"?: FooterLocale;
-        /**
-          * Partner logo list. Each entry renders as a text badge (or anchor when `href` is set). Use the `branding` slot for custom logo SVGs.
-         */
-        "partnerLogos"?: ReadonlyArray<FooterPartner>;
-        /**
-          * Declarative link columns. Each entry renders as a titled `<nav>` with a vertical link list. Ignored when the `sections` slot is populated. Defaults to the Romanian four-column catalogue.
-         */
-        "sections"?: ReadonlyArray<FooterSection>;
-        /**
-          * Social link list. Each entry renders as a circular icon button. When undefined, the section is hidden.
-         */
-        "social"?: ReadonlyArray<FooterSocial>;
-        /**
-          * Layout flavour. - `evo` (default) — full EVO platform footer with branding, columns, contact, social, partners, legal bar. - `simple` — slim variant with only the legal bar (copyright + license links).
-          * @default 'evo'
-         */
-        "variant": FooterVariant;
-    }
-    /**
-     * Header — the EVO government portal masthead.
-     * Phase 1: the desktop shell — a pre-header band (government crest + label +
-     * language switcher) above the main bar (logo / nav / actions slots).
-     * Mega-menu, services dropdown, mobile and authenticated states layer on top.
-     * @element mud-header
-     */
-    interface MudHeader {
-        /**
-          * Government label shown in the pre-header.
-          * @default 'Guvernul Republicii Moldova'
-         */
-        "governmentLabel": string;
-        /**
-          * Active language code. Defaults to the first entry in `languages`.
-         */
-        "language"?: string;
-        /**
-          * Languages offered by the pre-header switcher.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
-         */
-        "languages": readonly HeaderLanguage[];
-        /**
-          * Accessible name for the primary navigation landmark.
-          * @default 'Main'
-         */
-        "navLabel": string;
-    }
-    /**
-     * Header mega-menu — the full-width "Servicii" dropdown panel.
-     * Data-driven: pass `columns` (heading + list of links). Toggle visibility via
-     * `open`; the consumer positions it directly beneath `mud-header` and wires it
-     * to the matching `mud-header-nav-item`'s `mudNavToggle`.
-     * @element mud-header-mega-menu
-     */
-    interface MudHeaderMegaMenu {
-        /**
-          * Accessible name for the panel (e.g. the triggering nav label).
-         */
-        "ariaLabel"?: string;
-        /**
-          * Columns of headings + links.
-          * @default []
-         */
-        "columns": readonly MegaMenuColumn[];
-        /**
-          * Whether the panel is shown.
-          * @default false
-         */
-        "open": boolean;
-    }
-    /**
-     * Mobile header — a compact bar that opens a full-screen navigation drawer.
-     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
-     * hamburger. Open: a full-screen panel with logo + language pill + close,
-     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
-     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
-     * @element mud-header-mobile
-     */
-    interface MudHeaderMobile {
-        /**
-          * Accessible label for the close button.
-          * @default 'Închide'
-         */
-        "closeLabel": string;
-        /**
-          * Active language code. Defaults to the first entry in `languages`.
-         */
-        "language"?: string;
-        /**
-          * Accessible label for the language pill.
-          * @default 'Schimbă limba'
-         */
-        "languageLabel": string;
-        /**
-          * Languages offered by the drawer's language pill.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
-         */
-        "languages": readonly HeaderLanguage[];
-        /**
-          * Alt text for the logo image.
-          * @default ''
-         */
-        "logoAlt": string;
-        /**
-          * Logo image URL (rendered in both the bar and the drawer).
-         */
-        "logoSrc"?: string;
-        /**
-          * Accessible label for the hamburger / drawer nav.
-          * @default 'Meniu'
-         */
-        "menuLabel": string;
-        /**
-          * Whether the drawer is open.
-          * @default false
-         */
-        "open": boolean;
-    }
-    /**
-     * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
-     * Renders as a link (`href`) or a button. Expandable items carry a trailing
-     * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
-     * @element mud-header-nav-item
-     */
-    interface MudHeaderNavItem {
-        /**
-          * Whether the item is the active/open entry.
-          * @default false
-         */
-        "active": boolean;
-        /**
-          * Whether the item is disabled.
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * Whether the item opens a dropdown/mega-menu (renders a trailing chevron).
-          * @default false
-         */
-        "expandable": boolean;
-        /**
-          * Whether the dropdown is open.
-          * @default false
-         */
-        "expanded": boolean;
-        /**
-          * Render as a link to this destination.
-         */
-        "href"?: string;
-        /**
-          * Label text (overridden by slotted content).
-         */
-        "label"?: string;
-        /**
-          * Optional status hint, shown as a hover/focus tooltip (e.g. "În curând").
-         */
-        "tag"?: string;
-        /**
-          * Value reported on activation.
-         */
-        "value"?: string;
-    }
-    /**
-     * Header services menu — the "Platforme utile" dropdown.
-     * A 2-column grid of platform cards (each a brand logo) over a "discover all"
-     * button. Data-driven via `platforms`; toggle visibility with `open`. Reuses
-     * `mud-logo` for platforms it ships (mpay/msign/mpower/mnotify) and accepts a
-     * `logoSrc` image for the rest (epermits/econsulat).
-     * @element mud-header-services-menu
-     */
-    interface MudHeaderServicesMenu {
-        /**
-          * Accessible name for the panel (defaults to `heading`).
-         */
-        "ariaLabel"?: string;
-        /**
-          * Destination of the "discover all" button.
-         */
-        "discoverHref"?: string;
-        /**
-          * Label of the full-width "discover all" button.
-          * @default 'Descoperă-le pe toate'
-         */
-        "discoverLabel": string;
-        /**
-          * Panel heading.
-          * @default 'Platforme utile'
-         */
-        "heading": string;
-        /**
-          * Whether the panel is shown.
-          * @default false
-         */
-        "open": boolean;
-        /**
-          * Platform cards.
-          * @default []
-         */
-        "platforms": readonly ServicePlatform[];
     }
     /**
      * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
@@ -3590,30 +3344,6 @@ export interface MudFileItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudFileItemElement;
 }
-export interface MudFooterCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudFooterElement;
-}
-export interface MudHeaderCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudHeaderElement;
-}
-export interface MudHeaderMegaMenuCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudHeaderMegaMenuElement;
-}
-export interface MudHeaderMobileCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudHeaderMobileElement;
-}
-export interface MudHeaderNavItemCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudHeaderNavItemElement;
-}
-export interface MudHeaderServicesMenuCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudHeaderServicesMenuElement;
-}
 export interface MudInfoBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudInfoBoxElement;
@@ -3772,7 +3502,7 @@ declare global {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    28 of this library's 55 components implement it at the time of writing;
+     *    27 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -4189,165 +3919,6 @@ declare global {
     var HTMLMudFileItemElement: {
         prototype: HTMLMudFileItemElement;
         new (): HTMLMudFileItemElement;
-    };
-    interface HTMLMudFooterElementEventMap {
-        "mudLocaleChange": FooterLocaleChangeDetail;
-    }
-    /**
-     * Page footer — civic, multi-section organism for AGE / EVO platforms.
-     * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
-     * carries `role="contentinfo"` so screen readers announce it as the page
-     * footer landmark.
-     * Two variants share one element:
-     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
-     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
-     *   contact info, social rows, partner logos, accessibility statement, and a
-     *   black legal bar with copyright + license link.
-     * - `variant="simple"` — slim variant: only the black legal bar with the
-     *   copyright text and license/terms links. Used inside scoped flows
-     *   (modals, embedded apps) where the full footer is too tall.
-     * Romanian voice ships as defaults; every visible string is overridable via
-     * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element mud-footer
-     */
-    interface HTMLMudFooterElement extends Components.MudFooter, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudFooterElementEventMap>(type: K, listener: (this: HTMLMudFooterElement, ev: MudFooterCustomEvent<HTMLMudFooterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudFooterElementEventMap>(type: K, listener: (this: HTMLMudFooterElement, ev: MudFooterCustomEvent<HTMLMudFooterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudFooterElement: {
-        prototype: HTMLMudFooterElement;
-        new (): HTMLMudFooterElement;
-    };
-    interface HTMLMudHeaderElementEventMap {
-        "mudLanguageChange": HeaderLanguageChangeDetail;
-    }
-    /**
-     * Header — the EVO government portal masthead.
-     * Phase 1: the desktop shell — a pre-header band (government crest + label +
-     * language switcher) above the main bar (logo / nav / actions slots).
-     * Mega-menu, services dropdown, mobile and authenticated states layer on top.
-     * @element mud-header
-     */
-    interface HTMLMudHeaderElement extends Components.MudHeader, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudHeaderElementEventMap>(type: K, listener: (this: HTMLMudHeaderElement, ev: MudHeaderCustomEvent<HTMLMudHeaderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudHeaderElementEventMap>(type: K, listener: (this: HTMLMudHeaderElement, ev: MudHeaderCustomEvent<HTMLMudHeaderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudHeaderElement: {
-        prototype: HTMLMudHeaderElement;
-        new (): HTMLMudHeaderElement;
-    };
-    interface HTMLMudHeaderMegaMenuElementEventMap {
-        "mudMegaMenuSelect": HeaderMegaMenuSelectDetail;
-    }
-    /**
-     * Header mega-menu — the full-width "Servicii" dropdown panel.
-     * Data-driven: pass `columns` (heading + list of links). Toggle visibility via
-     * `open`; the consumer positions it directly beneath `mud-header` and wires it
-     * to the matching `mud-header-nav-item`'s `mudNavToggle`.
-     * @element mud-header-mega-menu
-     */
-    interface HTMLMudHeaderMegaMenuElement extends Components.MudHeaderMegaMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudHeaderMegaMenuElementEventMap>(type: K, listener: (this: HTMLMudHeaderMegaMenuElement, ev: MudHeaderMegaMenuCustomEvent<HTMLMudHeaderMegaMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudHeaderMegaMenuElementEventMap>(type: K, listener: (this: HTMLMudHeaderMegaMenuElement, ev: MudHeaderMegaMenuCustomEvent<HTMLMudHeaderMegaMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudHeaderMegaMenuElement: {
-        prototype: HTMLMudHeaderMegaMenuElement;
-        new (): HTMLMudHeaderMegaMenuElement;
-    };
-    interface HTMLMudHeaderMobileElementEventMap {
-        "mudLanguageChange": HeaderLanguageChangeDetail;
-        "mudOpenChange": { open: boolean };
-    }
-    /**
-     * Mobile header — a compact bar that opens a full-screen navigation drawer.
-     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
-     * hamburger. Open: a full-screen panel with logo + language pill + close,
-     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
-     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
-     * @element mud-header-mobile
-     */
-    interface HTMLMudHeaderMobileElement extends Components.MudHeaderMobile, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudHeaderMobileElementEventMap>(type: K, listener: (this: HTMLMudHeaderMobileElement, ev: MudHeaderMobileCustomEvent<HTMLMudHeaderMobileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudHeaderMobileElementEventMap>(type: K, listener: (this: HTMLMudHeaderMobileElement, ev: MudHeaderMobileCustomEvent<HTMLMudHeaderMobileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudHeaderMobileElement: {
-        prototype: HTMLMudHeaderMobileElement;
-        new (): HTMLMudHeaderMobileElement;
-    };
-    interface HTMLMudHeaderNavItemElementEventMap {
-        "mudNavSelect": HeaderNavSelectDetail;
-        "mudNavToggle": HeaderNavToggleDetail;
-    }
-    /**
-     * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
-     * Renders as a link (`href`) or a button. Expandable items carry a trailing
-     * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
-     * @element mud-header-nav-item
-     */
-    interface HTMLMudHeaderNavItemElement extends Components.MudHeaderNavItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudHeaderNavItemElementEventMap>(type: K, listener: (this: HTMLMudHeaderNavItemElement, ev: MudHeaderNavItemCustomEvent<HTMLMudHeaderNavItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudHeaderNavItemElementEventMap>(type: K, listener: (this: HTMLMudHeaderNavItemElement, ev: MudHeaderNavItemCustomEvent<HTMLMudHeaderNavItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudHeaderNavItemElement: {
-        prototype: HTMLMudHeaderNavItemElement;
-        new (): HTMLMudHeaderNavItemElement;
-    };
-    interface HTMLMudHeaderServicesMenuElementEventMap {
-        "mudServiceSelect": HeaderServiceSelectDetail;
-        "mudDiscover": void;
-    }
-    /**
-     * Header services menu — the "Platforme utile" dropdown.
-     * A 2-column grid of platform cards (each a brand logo) over a "discover all"
-     * button. Data-driven via `platforms`; toggle visibility with `open`. Reuses
-     * `mud-logo` for platforms it ships (mpay/msign/mpower/mnotify) and accepts a
-     * `logoSrc` image for the rest (epermits/econsulat).
-     * @element mud-header-services-menu
-     */
-    interface HTMLMudHeaderServicesMenuElement extends Components.MudHeaderServicesMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudHeaderServicesMenuElementEventMap>(type: K, listener: (this: HTMLMudHeaderServicesMenuElement, ev: MudHeaderServicesMenuCustomEvent<HTMLMudHeaderServicesMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudHeaderServicesMenuElementEventMap>(type: K, listener: (this: HTMLMudHeaderServicesMenuElement, ev: MudHeaderServicesMenuCustomEvent<HTMLMudHeaderServicesMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudHeaderServicesMenuElement: {
-        prototype: HTMLMudHeaderServicesMenuElement;
-        new (): HTMLMudHeaderServicesMenuElement;
     };
     /**
      * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
@@ -5324,12 +4895,6 @@ declare global {
         "mud-date-picker": HTMLMudDatePickerElement;
         "mud-file-input": HTMLMudFileInputElement;
         "mud-file-item": HTMLMudFileItemElement;
-        "mud-footer": HTMLMudFooterElement;
-        "mud-header": HTMLMudHeaderElement;
-        "mud-header-mega-menu": HTMLMudHeaderMegaMenuElement;
-        "mud-header-mobile": HTMLMudHeaderMobileElement;
-        "mud-header-nav-item": HTMLMudHeaderNavItemElement;
-        "mud-header-services-menu": HTMLMudHeaderServicesMenuElement;
         "mud-icon": HTMLMudIconElement;
         "mud-info-box": HTMLMudInfoBoxElement;
         "mud-inline-message": HTMLMudInlineMessageElement;
@@ -5444,7 +5009,7 @@ declare namespace LocalJSX {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    28 of this library's 55 components implement it at the time of writing;
+     *    27 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -6550,284 +6115,6 @@ declare namespace LocalJSX {
           * @default 'uploaded'
          */
         "state"?: FileItemState;
-    }
-    /**
-     * Page footer — civic, multi-section organism for AGE / EVO platforms.
-     * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
-     * carries `role="contentinfo"` so screen readers announce it as the page
-     * footer landmark.
-     * Two variants share one element:
-     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
-     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
-     *   contact info, social rows, partner logos, accessibility statement, and a
-     *   black legal bar with copyright + license link.
-     * - `variant="simple"` — slim variant: only the black legal bar with the
-     *   copyright text and license/terms links. Used inside scoped flows
-     *   (modals, embedded apps) where the full footer is too tall.
-     * Romanian voice ships as defaults; every visible string is overridable via
-     * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element mud-footer
-     */
-    interface MudFooter {
-        /**
-          * Optional href for the accessibility statement link in the legal bar.
-         */
-        "accessibilityHref"?: string;
-        /**
-          * Forwarded to the host as `aria-label`. Defaults to Romanian "Subsol pagină".
-         */
-        "ariaLabel"?: string;
-        /**
-          * Contact block (email / phone / address). When undefined, the section is hidden. Pass an empty object to opt out of the Romanian defaults.
-         */
-        "contact"?: FooterContact;
-        /**
-          * Plain-text copyright line shown in the legal bar. Defaults to Romanian.
-         */
-        "copyrightText"?: string;
-        /**
-          * Optional href for the privacy/license link in the legal bar.
-         */
-        "licenseHref"?: string;
-        /**
-          * Currently-selected locale for the language switcher. When undefined, the locale switcher is hidden.
-         */
-        "locale"?: FooterLocale;
-        /**
-          * Fires when the user selects a new locale from the language switcher. Consumers update their app-level i18n state in response.
-         */
-        "onMudLocaleChange"?: (event: MudFooterCustomEvent<FooterLocaleChangeDetail>) => void;
-        /**
-          * Partner logo list. Each entry renders as a text badge (or anchor when `href` is set). Use the `branding` slot for custom logo SVGs.
-         */
-        "partnerLogos"?: ReadonlyArray<FooterPartner>;
-        /**
-          * Declarative link columns. Each entry renders as a titled `<nav>` with a vertical link list. Ignored when the `sections` slot is populated. Defaults to the Romanian four-column catalogue.
-         */
-        "sections"?: ReadonlyArray<FooterSection>;
-        /**
-          * Social link list. Each entry renders as a circular icon button. When undefined, the section is hidden.
-         */
-        "social"?: ReadonlyArray<FooterSocial>;
-        /**
-          * Layout flavour. - `evo` (default) — full EVO platform footer with branding, columns, contact, social, partners, legal bar. - `simple` — slim variant with only the legal bar (copyright + license links).
-          * @default 'evo'
-         */
-        "variant"?: FooterVariant;
-    }
-    /**
-     * Header — the EVO government portal masthead.
-     * Phase 1: the desktop shell — a pre-header band (government crest + label +
-     * language switcher) above the main bar (logo / nav / actions slots).
-     * Mega-menu, services dropdown, mobile and authenticated states layer on top.
-     * @element mud-header
-     */
-    interface MudHeader {
-        /**
-          * Government label shown in the pre-header.
-          * @default 'Guvernul Republicii Moldova'
-         */
-        "governmentLabel"?: string;
-        /**
-          * Active language code. Defaults to the first entry in `languages`.
-         */
-        "language"?: string;
-        /**
-          * Languages offered by the pre-header switcher.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
-         */
-        "languages"?: readonly HeaderLanguage[];
-        /**
-          * Accessible name for the primary navigation landmark.
-          * @default 'Main'
-         */
-        "navLabel"?: string;
-        /**
-          * Fired when a different language is chosen in the pre-header.
-         */
-        "onMudLanguageChange"?: (event: MudHeaderCustomEvent<HeaderLanguageChangeDetail>) => void;
-    }
-    /**
-     * Header mega-menu — the full-width "Servicii" dropdown panel.
-     * Data-driven: pass `columns` (heading + list of links). Toggle visibility via
-     * `open`; the consumer positions it directly beneath `mud-header` and wires it
-     * to the matching `mud-header-nav-item`'s `mudNavToggle`.
-     * @element mud-header-mega-menu
-     */
-    interface MudHeaderMegaMenu {
-        /**
-          * Accessible name for the panel (e.g. the triggering nav label).
-         */
-        "ariaLabel"?: string;
-        /**
-          * Columns of headings + links.
-          * @default []
-         */
-        "columns"?: readonly MegaMenuColumn[];
-        /**
-          * Fired when an option is activated.
-         */
-        "onMudMegaMenuSelect"?: (event: MudHeaderMegaMenuCustomEvent<HeaderMegaMenuSelectDetail>) => void;
-        /**
-          * Whether the panel is shown.
-          * @default false
-         */
-        "open"?: boolean;
-    }
-    /**
-     * Mobile header — a compact bar that opens a full-screen navigation drawer.
-     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
-     * hamburger. Open: a full-screen panel with logo + language pill + close,
-     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
-     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
-     * @element mud-header-mobile
-     */
-    interface MudHeaderMobile {
-        /**
-          * Accessible label for the close button.
-          * @default 'Închide'
-         */
-        "closeLabel"?: string;
-        /**
-          * Active language code. Defaults to the first entry in `languages`.
-         */
-        "language"?: string;
-        /**
-          * Accessible label for the language pill.
-          * @default 'Schimbă limba'
-         */
-        "languageLabel"?: string;
-        /**
-          * Languages offered by the drawer's language pill.
-          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
-         */
-        "languages"?: readonly HeaderLanguage[];
-        /**
-          * Alt text for the logo image.
-          * @default ''
-         */
-        "logoAlt"?: string;
-        /**
-          * Logo image URL (rendered in both the bar and the drawer).
-         */
-        "logoSrc"?: string;
-        /**
-          * Accessible label for the hamburger / drawer nav.
-          * @default 'Meniu'
-         */
-        "menuLabel"?: string;
-        /**
-          * Fired when the language is changed (cycles through `languages`).
-         */
-        "onMudLanguageChange"?: (event: MudHeaderMobileCustomEvent<HeaderLanguageChangeDetail>) => void;
-        /**
-          * Fired when the drawer opens or closes.
-         */
-        "onMudOpenChange"?: (event: MudHeaderMobileCustomEvent<{ open: boolean }>) => void;
-        /**
-          * Whether the drawer is open.
-          * @default false
-         */
-        "open"?: boolean;
-    }
-    /**
-     * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
-     * Renders as a link (`href`) or a button. Expandable items carry a trailing
-     * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
-     * @element mud-header-nav-item
-     */
-    interface MudHeaderNavItem {
-        /**
-          * Whether the item is the active/open entry.
-          * @default false
-         */
-        "active"?: boolean;
-        /**
-          * Whether the item is disabled.
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * Whether the item opens a dropdown/mega-menu (renders a trailing chevron).
-          * @default false
-         */
-        "expandable"?: boolean;
-        /**
-          * Whether the dropdown is open.
-          * @default false
-         */
-        "expanded"?: boolean;
-        /**
-          * Render as a link to this destination.
-         */
-        "href"?: string;
-        /**
-          * Label text (overridden by slotted content).
-         */
-        "label"?: string;
-        /**
-          * Fired when a non-expandable item is activated.
-         */
-        "onMudNavSelect"?: (event: MudHeaderNavItemCustomEvent<HeaderNavSelectDetail>) => void;
-        /**
-          * Fired when an expandable item is opened or closed.
-         */
-        "onMudNavToggle"?: (event: MudHeaderNavItemCustomEvent<HeaderNavToggleDetail>) => void;
-        /**
-          * Optional status hint, shown as a hover/focus tooltip (e.g. "În curând").
-         */
-        "tag"?: string;
-        /**
-          * Value reported on activation.
-         */
-        "value"?: string;
-    }
-    /**
-     * Header services menu — the "Platforme utile" dropdown.
-     * A 2-column grid of platform cards (each a brand logo) over a "discover all"
-     * button. Data-driven via `platforms`; toggle visibility with `open`. Reuses
-     * `mud-logo` for platforms it ships (mpay/msign/mpower/mnotify) and accepts a
-     * `logoSrc` image for the rest (epermits/econsulat).
-     * @element mud-header-services-menu
-     */
-    interface MudHeaderServicesMenu {
-        /**
-          * Accessible name for the panel (defaults to `heading`).
-         */
-        "ariaLabel"?: string;
-        /**
-          * Destination of the "discover all" button.
-         */
-        "discoverHref"?: string;
-        /**
-          * Label of the full-width "discover all" button.
-          * @default 'Descoperă-le pe toate'
-         */
-        "discoverLabel"?: string;
-        /**
-          * Panel heading.
-          * @default 'Platforme utile'
-         */
-        "heading"?: string;
-        /**
-          * Fired when the "discover all" button is activated.
-         */
-        "onMudDiscover"?: (event: MudHeaderServicesMenuCustomEvent<void>) => void;
-        /**
-          * Fired when a platform card is activated.
-         */
-        "onMudServiceSelect"?: (event: MudHeaderServicesMenuCustomEvent<HeaderServiceSelectDetail>) => void;
-        /**
-          * Whether the panel is shown.
-          * @default false
-         */
-        "open"?: boolean;
-        /**
-          * Platform cards.
-          * @default []
-         */
-        "platforms"?: readonly ServicePlatform[];
     }
     /**
      * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
@@ -9493,49 +8780,6 @@ declare namespace LocalJSX {
         "noRemove": boolean;
         "removeLabel": string;
     }
-    interface MudFooterAttributes {
-        "variant": FooterVariant;
-        "copyrightText": string;
-        "accessibilityHref": string;
-        "licenseHref": string;
-        "locale": FooterLocale;
-        "ariaLabel": string;
-    }
-    interface MudHeaderAttributes {
-        "governmentLabel": string;
-        "language": string;
-        "navLabel": string;
-    }
-    interface MudHeaderMegaMenuAttributes {
-        "open": boolean;
-        "ariaLabel": string;
-    }
-    interface MudHeaderMobileAttributes {
-        "logoSrc": string;
-        "logoAlt": string;
-        "open": boolean;
-        "language": string;
-        "menuLabel": string;
-        "closeLabel": string;
-        "languageLabel": string;
-    }
-    interface MudHeaderNavItemAttributes {
-        "value": string;
-        "label": string;
-        "expandable": boolean;
-        "expanded": boolean;
-        "active": boolean;
-        "disabled": boolean;
-        "tag": string;
-        "href": string;
-    }
-    interface MudHeaderServicesMenuAttributes {
-        "heading": string;
-        "discoverLabel": string;
-        "discoverHref": string;
-        "open": boolean;
-        "ariaLabel": string;
-    }
     interface MudIconAttributes {
         "name": IconName;
         "variant": IconVariant;
@@ -9966,12 +9210,6 @@ declare namespace LocalJSX {
         "mud-date-picker": Omit<MudDatePicker, keyof MudDatePickerAttributes> & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes]?: MudDatePicker[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `attr:${K}`]?: MudDatePickerAttributes[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `prop:${K}`]?: MudDatePicker[K] };
         "mud-file-input": Omit<MudFileInput, keyof MudFileInputAttributes> & { [K in keyof MudFileInput & keyof MudFileInputAttributes]?: MudFileInput[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `attr:${K}`]?: MudFileInputAttributes[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `prop:${K}`]?: MudFileInput[K] };
         "mud-file-item": Omit<MudFileItem, keyof MudFileItemAttributes> & { [K in keyof MudFileItem & keyof MudFileItemAttributes]?: MudFileItem[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `attr:${K}`]?: MudFileItemAttributes[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `prop:${K}`]?: MudFileItem[K] };
-        "mud-footer": Omit<MudFooter, keyof MudFooterAttributes> & { [K in keyof MudFooter & keyof MudFooterAttributes]?: MudFooter[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `attr:${K}`]?: MudFooterAttributes[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `prop:${K}`]?: MudFooter[K] };
-        "mud-header": Omit<MudHeader, keyof MudHeaderAttributes> & { [K in keyof MudHeader & keyof MudHeaderAttributes]?: MudHeader[K] } & { [K in keyof MudHeader & keyof MudHeaderAttributes as `attr:${K}`]?: MudHeaderAttributes[K] } & { [K in keyof MudHeader & keyof MudHeaderAttributes as `prop:${K}`]?: MudHeader[K] };
-        "mud-header-mega-menu": Omit<MudHeaderMegaMenu, keyof MudHeaderMegaMenuAttributes> & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes]?: MudHeaderMegaMenu[K] } & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes as `attr:${K}`]?: MudHeaderMegaMenuAttributes[K] } & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes as `prop:${K}`]?: MudHeaderMegaMenu[K] };
-        "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
-        "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
-        "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
         "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf3<"name", MudIcon["name"], MudIconAttributes["name"]>;
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
@@ -10049,7 +9287,7 @@ declare module "@stencil/core" {
              *    slot distributes is what gets written — measured. That is still content you
              *    handed to the slot, one component further out.)
              * 2. `disabled` does what the element makes of it, and that is not universal —
-             *    28 of this library's 55 components implement it at the time of writing;
+             *    27 of this library's 49 components implement it at the time of writing;
              *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
              *    lives in the repo rather than in the published package. `mud-tag` and
              *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -10257,66 +9495,6 @@ declare module "@stencil/core" {
              * @element mud-file-item
              */
             "mud-file-item": LocalJSX.IntrinsicElements["mud-file-item"] & JSXBase.HTMLAttributes<HTMLMudFileItemElement>;
-            /**
-             * Page footer — civic, multi-section organism for AGE / EVO platforms.
-             * Pattern B (composed organism): renders all sections inside shadow DOM and
-             * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
-             * carries `role="contentinfo"` so screen readers announce it as the page
-             * footer landmark.
-             * Two variants share one element:
-             * - `variant="evo"` (default) — full EVO platform footer: branding headline,
-             *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
-             *   contact info, social rows, partner logos, accessibility statement, and a
-             *   black legal bar with copyright + license link.
-             * - `variant="simple"` — slim variant: only the black legal bar with the
-             *   copyright text and license/terms links. Used inside scoped flows
-             *   (modals, embedded apps) where the full footer is too tall.
-             * Romanian voice ships as defaults; every visible string is overridable via
-             * the public `@Prop` surface or the `branding` / `sections` slots.
-             * @element mud-footer
-             */
-            "mud-footer": LocalJSX.IntrinsicElements["mud-footer"] & JSXBase.HTMLAttributes<HTMLMudFooterElement>;
-            /**
-             * Header — the EVO government portal masthead.
-             * Phase 1: the desktop shell — a pre-header band (government crest + label +
-             * language switcher) above the main bar (logo / nav / actions slots).
-             * Mega-menu, services dropdown, mobile and authenticated states layer on top.
-             * @element mud-header
-             */
-            "mud-header": LocalJSX.IntrinsicElements["mud-header"] & JSXBase.HTMLAttributes<HTMLMudHeaderElement>;
-            /**
-             * Header mega-menu — the full-width "Servicii" dropdown panel.
-             * Data-driven: pass `columns` (heading + list of links). Toggle visibility via
-             * `open`; the consumer positions it directly beneath `mud-header` and wires it
-             * to the matching `mud-header-nav-item`'s `mudNavToggle`.
-             * @element mud-header-mega-menu
-             */
-            "mud-header-mega-menu": LocalJSX.IntrinsicElements["mud-header-mega-menu"] & JSXBase.HTMLAttributes<HTMLMudHeaderMegaMenuElement>;
-            /**
-             * Mobile header — a compact bar that opens a full-screen navigation drawer.
-             * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
-             * hamburger. Open: a full-screen panel with logo + language pill + close,
-             * then slotted `search`, `nav`, `secondary` (services/help) and bottom
-             * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
-             * @element mud-header-mobile
-             */
-            "mud-header-mobile": LocalJSX.IntrinsicElements["mud-header-mobile"] & JSXBase.HTMLAttributes<HTMLMudHeaderMobileElement>;
-            /**
-             * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
-             * Renders as a link (`href`) or a button. Expandable items carry a trailing
-             * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
-             * @element mud-header-nav-item
-             */
-            "mud-header-nav-item": LocalJSX.IntrinsicElements["mud-header-nav-item"] & JSXBase.HTMLAttributes<HTMLMudHeaderNavItemElement>;
-            /**
-             * Header services menu — the "Platforme utile" dropdown.
-             * A 2-column grid of platform cards (each a brand logo) over a "discover all"
-             * button. Data-driven via `platforms`; toggle visibility with `open`. Reuses
-             * `mud-logo` for platforms it ships (mpay/msign/mpower/mnotify) and accepts a
-             * `logoSrc` image for the rest (epermits/econsulat).
-             * @element mud-header-services-menu
-             */
-            "mud-header-services-menu": LocalJSX.IntrinsicElements["mud-header-services-menu"] & JSXBase.HTMLAttributes<HTMLMudHeaderServicesMenuElement>;
             /**
              * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
              * One drawing per style covers every size: `variant` selects the style

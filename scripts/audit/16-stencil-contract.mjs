@@ -370,8 +370,8 @@ export function isComponentFile(file) {
   }
 }
 
-// Every `@Component` .tsx a name stands for. A folder name (`mud-header`) covers each component
-// file in that folder, sub-components included (`mud-header-nav-item.tsx`); a sub-component
+// Every `@Component` .tsx a name stands for. A folder name (`mud-sidebar`) covers each component
+// file in that folder, sub-components included (`mud-sidebar-item.tsx`); a sub-component
 // name resolves to its own file in whichever component folder holds it.
 function componentFiles(name) {
   const target = resolveComponentPaths(name, { allowSubComponent: true });

@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Removed — `mud-header` and `mud-footer`
+
+The Header and Footer organisms are no longer part of the library. These custom elements are
+gone: `mud-header`, `mud-header-nav-item`, `mud-header-mega-menu`, `mud-header-services-menu`,
+`mud-header-mobile` and `mud-footer`. So are their `--header-*` and `--footer-*` component
+tokens, and these package-root exports: `MudHeader`, `MudHeaderNavItem`, `MudHeaderMegaMenu`,
+`MudHeaderServicesMenu`, `MudHeaderMobile`, `HEADER_DEFAULT_LANGUAGES`, `HeaderLanguage`,
+`HeaderLanguageChangeDetail`, `HeaderNavSelectDetail`, `HeaderNavToggleDetail`, `MegaMenuItem`,
+`MegaMenuColumn`, `HeaderMegaMenuSelectDetail`, `ServicePlatform` and
+`HeaderServiceSelectDetail`.
+
+**Migration:** there is no replacement in this package. A page that renders `<mud-header>` or
+`<mud-footer>` keeps an element nothing defines after upgrading — no shadow content renders, and
+any children it holds show unstyled — and TypeScript code that
+imports any name above stops compiling. Build the page header and footer in the application, or
+stay on 1.1.9 until you do.
+
 ### Changed — icon style is a `variant` prop, and the size scale is 16 / 20 / 24 / 32
 
 The style used to live inside the name (`car-filled`) and the size used to pick a

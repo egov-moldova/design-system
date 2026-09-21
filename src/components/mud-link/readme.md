@@ -49,13 +49,11 @@ via `external="false"`.
 ### Used by
 
  - [mud-cookie-banner](../mud-cookie-banner)
- - [mud-footer](../mud-footer)
 
 ### Graph
 ```mermaid
 graph TD;
   mud-cookie-banner --> mud-link
-  mud-footer --> mud-link
   style mud-link fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
