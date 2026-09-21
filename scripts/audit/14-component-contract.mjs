@@ -203,8 +203,17 @@ export function extractContractFromTsx(tsxPath, componentName) {
     }
   }
 
-  // Slots are scraped from JSX render() output via regex (cheaper than walking JSX).
-  contract.slots = extractSlots(tsxContent);
+  // Slots union two sources, mirroring Stencil's own CEM builder
+  // (node_modules/@stencil/core/compiler/stencil.js:275896 `getDocsSlots`):
+  //   - vdom-scraped `<slot>` usages from the rendered JSX (extractSlots)
+  //   - `@slot <name> - <docs>` JSDoc tags on the component class
+  // A dynamic `name={...}` contributes nothing from the vdom side — Stencil's
+  // own compiler skips it too (stencil.js:280802-280807, `hasDynamicSlotName`
+  // guard) — so a dynamically-named slot is only visible via its `@slot` tag,
+  // same as `mud-table`'s `cell-{key}` / `header-cell-{key}` and
+  // `mud-breadcrumb`'s `separator` (read via `host.children`, never a
+  // `<slot name="separator">` element).
+  contract.slots = mergeSlots(extractSlots(tsxContent), extractSlotJsDocTags(classNode));
 
   // Archetype routes Layer-2 (AI MCP) checks in the audit-component skill.
   // Override via class-level `@archetype FORM|STATUS|OVERLAY|ACTION|CONTAINER`
@@ -397,15 +406,89 @@ function hasAsyncModifier(node) {
 /**
  * Extract slot names from JSX. Returns [{ name }] where the default slot has
  * name === 'default'. Uses regex over the raw text — JSX AST walking is overkill.
+ *
+ * A `<slot name={...}>` with a non-string-literal name (a variable, template
+ * literal, or any other expression) contributes NOTHING here, matching
+ * Stencil's own compiler: `hasDynamicSlotName` skips the `htmlSlots.push` for
+ * exactly this case (node_modules/@stencil/core/compiler/stencil.js:280802-
+ * 280807). Falling back to `'default'` for it — the previous behavior — is
+ * what produced a spurious default slot for `mud-table` (`name={slotName}`,
+ * `name={\`${slotName}-${rowIndex}\`}`); such a slot is real, but only
+ * discoverable via its `@slot` JSDoc tag (see `extractSlotJsDocTags`), never
+ * from the vdom scrape.
  */
 export function extractSlots(tsxContent) {
+  const code = stripComments(tsxContent);
   const slots = new Map();
   const re = /<slot\b([^>]*?)\/?>/g;
   let m;
-  while ((m = re.exec(tsxContent)) !== null) {
+  while ((m = re.exec(code)) !== null) {
     const attrs = m[1] ?? '';
-    const nameMatch = attrs.match(/\bname\s*=\s*["']([^"']+)["']/);
-    const name = nameMatch ? nameMatch[1] : 'default';
+    const staticNameMatch = attrs.match(/\bname\s*=\s*["']([^"']*)["']/);
+    if (staticNameMatch) {
+      const name = staticNameMatch[1];
+      if (!slots.has(name)) slots.set(name, { name });
+      continue;
+    }
+    const isDynamicName = /\bname\s*=\s*\{/.test(attrs);
+    if (isDynamicName) continue; // see JSDoc above — no vdom contribution
+    if (!slots.has('default')) slots.set('default', { name: 'default' });
+  }
+  return [...slots.values()];
+}
+
+/**
+ * Strip `//` and `/* *\/` comments before the slot regex runs, so a comment
+ * that merely MENTIONS `<slot>` (e.g. a doc note referencing the element)
+ * cannot be mistaken for a rendered one. String and template literals are
+ * protected so a `//` or `/*` inside one isn't misread as a comment opener.
+ * Found via `mud-radio.tsx:108` — `// \`<slot>\` when computing the
+ * accessible name...` — a JSDoc-style line comment, not a render() slot,
+ * that produced a phantom `default` slot before this fix.
+ */
+function stripComments(code) {
+  return code.replace(/`(?:\\.|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\/.*|\/\*[\s\S]*?\*\//g, match =>
+    match.startsWith('//') || match.startsWith('/*') ? '' : match,
+  );
+}
+
+/**
+ * Extract slot names from `@slot <name> - <docs>` JSDoc tags on the component
+ * class, using the exact name-parsing Stencil's own CEM builder uses
+ * (`getNameText`, node_modules/@stencil/core/compiler/stencil.js:275923-
+ * 275927): split `" " + text` on `" - "`, trim the first part. An empty name
+ * (`@slot - <docs>`, no name before the dash) documents the unnamed/default
+ * slot — `getDocsSlots` maps that vdom case to `''`, which this contract
+ * represents as `'default'` (stencil.js:275896-275902).
+ *
+ * This is the only source for a slot whose name is built at runtime
+ * (`mud-table`'s `cell-{key}` / `header-cell-{key}`) or that has no
+ * corresponding `<slot>` element at all (`mud-breadcrumb`'s `separator`,
+ * read off `host.children` via `slot="separator"`, never rendered as
+ * `<slot name="separator">`).
+ */
+function extractSlotJsDocTags(classNode) {
+  const tags = ts.getJSDocTags(classNode) ?? [];
+  const names = [];
+  for (const tag of tags) {
+    if (tag.tagName?.text !== 'slot') continue;
+    const raw =
+      typeof tag.comment === 'string'
+        ? tag.comment
+        : Array.isArray(tag.comment)
+          ? tag.comment.map(c => c.text ?? '').join('')
+          : '';
+    const [namePart] = (' ' + raw).split(' - ');
+    const name = namePart.trim();
+    names.push(name === '' ? 'default' : name);
+  }
+  return names;
+}
+
+/** Union vdom-scraped slots with JSDoc-tag slots, deduped by name. */
+function mergeSlots(vdomSlots, jsDocSlotNames) {
+  const slots = new Map(vdomSlots.map(s => [s.name, s]));
+  for (const name of jsDocSlotNames) {
     if (!slots.has(name)) slots.set(name, { name });
   }
   return [...slots.values()];
