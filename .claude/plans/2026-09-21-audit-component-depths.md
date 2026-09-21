@@ -193,10 +193,17 @@ Figma value, and the fix brief shows the override entry needed to record it.
    be a second writer able to print `PASS` over stale rows.
 4. **Adapter contract** (`17-adapter-contract.mjs`), split by what each part reads:
    - Wave A, source only, `quick`+: it calls 14's extractor in-process (no dependency on 14's
-     output file). Rules: event names carry the `mud` prefix and do not collide with native
-     DOM events; event `detail` is structured-clone / JSON-serialisable (no functions,
-     elements, or class instances); non-primitive props are property-only (not `reflect`) and
-     documented as such; prop names do not shadow `HTMLElement` members; `@Method` is async.
+     output file). Rules, each with the citation Phase 0 found (see Phase 0 results):
+     - A1: the EMITTED event name (the `eventName` option when set, else the field name)
+       carries the `mud` prefix. `02`'s `ANTIPATTERN-025-EVENT-PREFIX` checks the field name
+       only, so an `eventName` override escapes it today.
+     - A2: the emitted name is not a native DOM event name.
+     - A3: a non-primitive prop (object, array, function type) has no `reflect: true` without a
+       serializer (automates stencil-compliance SE1, `manual` today).
+     - A4: no prop, event or method name is in Stencil's reserved public member set; the
+       compiler only warns about it.
+     Not encoded: `@Method` async (already `eslint:@stencil/async-methods`, stencil-compliance
+     M1) and a serialisable event `detail` (no doc citation found).
    - Wave B, `standard`+, after the build prerequisite: CEM parity. The CEM entry
      (`.storybook/custom-elements.json`, a git-ignored build output) must match the source
      contract (props, events, slots, parts, CSS properties) extracted in-process. A mismatch is
@@ -289,19 +296,19 @@ line; the legacy `scripts/audit/__tests__/02-antipatterns.test.mjs` stays on `ya
   `.claude/commands/pre-pr-check.md` reads). Graded by a `run-all.spec.mjs` case. After Phase 2,
   a separate case asserts that `--fast` resolves to `--depth quick`.
 
-Tolerances. Every number is set by a Phase 0 measurement, and until then is `TBD`. No number
-here was typed from an estimate:
+Tolerances. Every number was set by a Phase 0 measurement (Phase 0 results); none was typed
+from an estimate:
 
 - Seeded defects (Phase 6): 4 of 4 surface in the fix brief, and each `verify:` command exits
   non-zero before the fix and zero after it. Graded by `node scripts/audit/seeded-defects.mjs`
   (written in Phase 6).
-- `quick` wall-clock on `mud-button`, warm cache: `TBD` = Phase 0 baseline × 1.5. The baseline
+- `quick` wall-clock on `mud-button`, warm cache: ≤ 4 480 ms (= Phase 0 baseline 2 987 ms × 1.5). The baseline
   covers the same set `quick` will run: `node scripts/audit/run-all.mjs mud-button --no-browser
   --only 01,02,03,04,05,07,14,16 --json` → `meta.totalDurationMs`, plus ESLint + Stylelint on the
   component's own files timed with `/usr/bin/time -p`, median of 3 runs. `quick`'s
   `meta.totalDurationMs` covers preflight, lint and every Wave A row. Graded by
   `node scripts/audit/run-all.mjs mud-button --depth quick --json` → `meta.totalDurationMs`.
-- Prompt text the skill loads: ≤ the Phase 0 baseline. Graded by `node scripts/audit/measure-prompt-cost.mjs`
+- Prompt text the skill loads (`audit-component/SKILL.md` + its three references): ≤ 51 307 chars, the Phase 0 baseline. Graded by `node scripts/audit/measure-prompt-cost.mjs`
   (a static size count of the `.claude/` prompt files; it measures prompt size, not billed
   tokens).
 - Billed AI tokens per `deep` audit on `mud-button`: reported in Phase 6 against the Phase 0
@@ -348,26 +355,62 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Read only: `scripts/audit/run-all.mjs`
 - Read only: `scripts/audit/measure-prompt-cost.mjs`
 
-- [ ] On a healthy install (`yarn install`, Node 24), re-run
+- [x] On a healthy install (`yarn install`, Node 24), re-run
   `node scripts/audit/run-all.mjs mud-button --no-browser --json`. This confirms F1 holds
   outside a broken worktree: stop and re-plan Phase 1 if every script ran clean and the
   aggregation cannot be made to show the defect.
-- [ ] Baselines, each with its own instrument, recorded in the Acceptance bar:
+- [x] Baselines, each with its own instrument, recorded in the Acceptance bar:
   - Wave A wall-clock on `mud-button`: the command named in Tolerances, median of 3.
   - Prompt size: `node scripts/audit/measure-prompt-cost.mjs`.
   - Billed tokens: one current `/audit-component mud-button --deep` run, summing the dispatched
-    legs' reported token usage.
-  Verify: the three numbers replace their `TBD`s.
-- [ ] Stability spike, before the schema is fixed: (a) BX2 + BX3 on `mud-button` through a local
+    legs' reported token usage — deferred to Phase 6 (see Phase 0 results).
+  Verify: the numbers replace their `TBD`s.
+- [x] Stability spike, before the schema is fixed: (a) BX2 + BX3 on `mud-button` through a local
   Playwright script, 5 runs; (b) `09`, `10`, `11`, `15` on `mud-button`, 3 runs each, findings
   compared with durations stripped. If either differs, Phase 1 adds rounding or bucketing to the
   schema and `19-interaction` is re-scoped. Verify: the result files compared with `cmp`.
-- [ ] Confirm which build target writes `.storybook/custom-elements.json` (`build` with `--docs`,
+- [x] Confirm which build target writes `.storybook/custom-elements.json` (`build` with `--docs`,
   or also `dx:stencil:once`) by running the dev build in a clean worktree and checking the file.
   The `standard` prerequisite (Phase 2) uses that target.
-- [ ] Confirm the generic adapter rules and the React 19 rules against current docs
+- [x] Confirm the generic adapter rules and the React 19 rules against current docs
   (Decision §3: Angular / Vue / Blazor wait for their first consumer). Rules without a doc
   citation are not encoded. Verify: a citation per rule in the `17-adapter-contract.mjs` header.
+
+#### Phase 0 results (2026-09-21, Node 24.19.0, Stencil 4.45.0, commit 1c41d54)
+
+- F1 holds on a healthy install. `run-all mud-button --no-browser --json` → exit 1,
+  `ok: false`, `summary.errors: 0`, `blockers: []`, while `06` (no `coverage-summary.json`) and
+  `08` (no `dist/mud`) exited 2.
+- Wave A median 217 ms (232 / 213 / 217); ESLint + Stylelint on `src/components/mud-button`
+  median 2 770 ms (4 240 / 2 770 / 2 720). `quick` baseline 2 987 ms.
+- Prompt size: `audit-component` SKILL.md 19 486 + wave-2 15 764 + layer-2 8 815 +
+  report-template 7 242 = 51 307 chars (~12.8k tokens at the script's 4 chars/token).
+- Billed-token baseline deferred: the "before" side is the current skill, which stays on
+  `main`, so Phase 6 measures both sides back to back instead of spending a full `deep` run now.
+- Stability, durations stripped: `09` and `10` on `mud-button`, `11` and `15` on `mud-banner`
+  (`mud-button` has no manifest): 3 of 3 runs byte-identical for each. No rounding needed.
+- BX2 + BX3 Tab walk, 5 runs: 4 distinct outputs. The focus ring was sampled mid-transition
+  (`box-shadow … 0.6788px …`). With `emulateMedia({ reducedMotion: 'reduce' })` plus a
+  `transition: none; animation: none` style injected into the document and every shadow root,
+  5 of 5 were identical. `19-interaction` and `09`'s BX2 / BX3 must apply both before sampling.
+- CEM: `yarn dx:stencil:once` (14 s) writes `.storybook/custom-elements.json`
+  (`stencil.config.ts:45-48`, an unconditional output target). That is the `standard`
+  prerequisite for 17's Wave B part.
+- Storybook needs `yarn dx:prepare` (`tokens.build.prod` writes
+  `.storybook/stories/assets/core*.tokens.json`); `yarn tokens.build` alone leaves Storybook
+  failing to start. The Phase 2 prerequisite runs `dx:prepare`.
+- Adapter rule citations:
+  - A1: `src/components/_agents/component-structure.md:193`,
+    `.claude/skills/stencil-compliance/references/anti-patterns.md:144`;
+    `02-stencil-antipatterns.mjs:277` checks the field name only.
+  - A2: react.dev, `reference/react-dom/components` § Custom HTML elements — listeners are
+    `on<eventName>`, case-sensitive, dashes allowed, so an event named like a native one is
+    indistinguishable to a consumer.
+  - A3: react.dev same section — a non-string value reaches a property only when the property
+    exists on the class at construction; otherwise it is serialised to an attribute;
+    stencil-compliance SE1 (`references/form-reactivity.md:164`).
+  - A4: `node_modules/@stencil/core/compiler/stencil.js:279766` (`validatePublicName`, reserved
+    set `RESERVED_PUBLIC_MEMBERS`), a warning only.
 
 ### Phase 1 — orchestrator honesty (F1 F2 F3)
 **Executor**: sonnet, high effort · wave 2
@@ -430,8 +473,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   `pre-pr-check.md`'s `run-all` line to `--depth quick` in the same commit. Verify:
   `run-all.spec.mjs` cases for the alias, for a `--skip` that drops a required id, and for
   `CI=1`.
-- [ ] Automatic prerequisites at `standard`+, after `--depth` exists: tokens, the component's own
-  coverage, the build target Phase 0 named for the CEM, and a worktree-owned Storybook
+- [ ] Automatic prerequisites at `standard`+, after `--depth` exists: `yarn dx:prepare` (tokens
+  and Storybook token assets), the component's own coverage, `yarn dx:stencil:once` (writes the
+  CEM), and a worktree-owned Storybook
   (Design §9, `.audit-storybook.json` git-ignored, port passed through `--port`). Verify: a
   fresh worktree run produces 06, 08 and Wave C rows; a second worktree's Storybook on 6007 is
   not reused.
@@ -489,7 +533,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
   extractor in-process, CEM parity in Wave B with the freshness check. Fixtures: one pass, one
   per rule failure, one stale CEM (`missing-prereq`).
 - [ ] BX2 + BX3 (Tab walk, focus ring) added to `09-a11y-tree`; `19-interaction.mjs` covers
-  BX1, BX4, BX5, BX7; BX6 stays `12-console-errors`. Fixtures; run against 3 archetypes.
+  BX1, BX4, BX5, BX7; BX6 stays `12-console-errors`. Both apply reduced motion plus an injected
+  `transition: none; animation: none` style in the document and every shadow root before
+  sampling (Phase 0 results). Fixtures; run against 3 archetypes, 5 runs each, identical.
 
 ### Phase 4 — skill rewrite
 **Executor**: opus, medium effort · wave 4
@@ -548,7 +594,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Modify: `.claude/plans/2026-09-21-audit-component-depths.md`
 
 - [ ] Re-run the Phase 0 probes; report the before/after wall-clock, prompt size and billed
-  tokens, each with its denominator.
+  tokens, each with its denominator. Billed tokens: one `deep` run of the old skill from a
+  `main` worktree and one of the new skill here, back to back.
 - [ ] Run `yarn audit:component mud-button --depth standard` twice on the same commit, both
   `PASS`, and `cmp` the two `verdict.json` files.
 - [ ] Seed four known defects in a scratch branch — one per layer (static, browser, Figma) plus
