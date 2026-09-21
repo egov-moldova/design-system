@@ -297,11 +297,10 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 `yarn sp.build` regenerates these tracked files in your worktree:
 
-- `src/components.d.ts`
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Stage `src/components.d.ts` and the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
+**Stage the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. `src/components.d.ts` is regenerated too but git-ignored, so it is never staged. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Return to Main Agent
 

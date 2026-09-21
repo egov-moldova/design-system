@@ -266,10 +266,11 @@ Internal contributors with write access to this repo should continue branching d
 
 ## Submitting a Pull Request
 
-1. Before opening a PR, run the full local verify gate: `yarn check` (format + typecheck + lint + test), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components.d.ts`, `src/components/*/readme.md`, etc. — these are auto-generated and must stay in sync with source.
+1. Before opening a PR, run the full local verify gate: `yarn check` (format + typecheck + lint + test), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components/*/readme.md` — these are auto-generated and must stay in sync with source.
 2. Push your branch and open a PR against `main`. Describe what changed and why, and note the test plan (what you ran, e.g. `yarn check`, `yarn build`, manual Storybook verification).
-3. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase).
+3. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase, or to clear merge conflicts as in step 5).
 4. A maintainer reviews and merges once the checklist is satisfied.
+5. If GitHub reports conflicts after another PR has merged — usually only in component readmes or the top of `CHANGELOG.md` — run `yarn sync:main` on your branch, then `git push --force-with-lease`. It rebases onto `main`, so this is the one force push step 3 expects; do it once, right before merge, not after every review round. It resolves those mechanical conflicts, rebuilds and commits the generated files, and runs lint, typecheck and tests. A conflict in any other file stops it: resolve it, `git add`, then `yarn sync:main --continue`. Details: `_agents/generated-files.md`.
 
 ---
 
@@ -338,7 +339,7 @@ Wireit waits for `dist/mud/mud.esm.js`, `dist/mud/mud.css`, and `tokens/generate
 
 ### Auto-generated files are out of sync
 
-You edited a component's source but didn't rebuild before committing. Run `yarn build` locally and commit the residual diff in `src/components.d.ts`, `src/components/*/readme.md`, etc.
+You edited a component's source but didn't rebuild before committing. Run `yarn build` locally and commit the residual diff in `src/components/*/readme.md`. (`src/components.d.ts` is regenerated too, but git-ignored.)
 
 ---
 

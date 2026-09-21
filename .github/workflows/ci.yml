@@ -70,7 +70,7 @@ jobs:
       # check as .husky/pre-push, which a push can skip.
       - name: Verify generated files are committed
         run: |
-          STALE=$(git status --porcelain -- src/components.d.ts 'src/components/*/readme.md' 'src/hidden/*/readme.md')
+          STALE=$(git status --porcelain -- 'src/components/*/readme.md' 'src/hidden/*/readme.md')
           if [ -n "$STALE" ]; then
             printf 'Generated files differ from the commit; run yarn build and commit them:\n%s\n' "$STALE"
             exit 1
