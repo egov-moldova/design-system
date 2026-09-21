@@ -836,7 +836,7 @@ webView.Source = new Uri("https://app.local/index.html");</code></pre>
           </h2>
           <p class="tldr">
             <strong>TL;DR</strong> Attributes are strings. For object/array data — <code>mud-select.options</code>,
-            <code>mud-breadcrumb.items</code>, <code>mud-receipt.lineItems</code> — wait for
+            <code>mud-breadcrumb.items</code> — wait for
             <code>customElements.whenDefined</code> and assign the JS property.
           </p>
 
@@ -847,7 +847,6 @@ webView.Source = new Uri("https://app.local/index.html");</code></pre>
           <ul>
             <li><code>&lt;mud-select&gt;</code> → <code>.options = [{ label, value }, …]</code></li>
             <li><code>&lt;mud-breadcrumb&gt;</code> → <code>.items = [{ label, href }, …]</code></li>
-            <li><code>&lt;mud-receipt&gt;</code> → <code>.lineItems = [...]</code></li>
           </ul>
           <p>
             For these, the attribute form (<code>options='[…]'</code>) does <strong>not</strong> work. Wait for upgrade,

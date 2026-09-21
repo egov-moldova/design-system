@@ -90,7 +90,6 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `MudIcon` | Token-driven SVG icon resolved by registry name. | Anywhere you'd want an inline SVG. **Never inline SVG** in app code; never use PNG icons. |
 | `MudLogo` | Brand-mark SVG by service name (`mpass-logo-with-name`, `mpay-…`, `mconnect-…`, `msign-…`, etc.). | Logo lockups for AGE-family services. **Not** for arbitrary brand assets — use `<img>` for those. |
 | `MudSeparator` | Horizontal / vertical divider with variants and optional label. | Section breaks. Always prefer over hand-rolling `border-top`. |
-| `MudReceipt` | Pre-shaped financial receipt card (sender, recipient, amount, QR, actions). | Payment outcomes, settlement summaries. |
 | `MudAccordion` + `MudAccordionItem` | Disclosure list (single or multi-open). | Collapsible filters, FAQ, "show more" sections. |
 
 ### Feedback
@@ -100,7 +99,6 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `MudSpinner` | Loading spinner with size / variant / label. | Async actions when `MudButton`'s built-in `loading` state isn't enough. |
 | `MudTooltip` | Hover / focus tooltip with position + size + variant. | Affordance hints. Use sparingly — if information is mandatory, use a real label. |
 | `MudModal` | Modal dialog with sizes, variants, destructive flag, multiple slots. | Save confirmations. Destructive confirms. Justification prompts. |
-| `MudCookieBanner` | Opinionated cookie / consent banner. | Public surfaces that need statutory consent. Don't roll your own. |
 | `MudInlineMessage` | In-context feedback: coloured leading icon plus a short text line, no surface. | Row-level errors and hints next to an input or field. |
 | `MudInfoBox` | Inline callout that highlights a key message within the page flow. | Announcements, explanations or alerts that belong to the content. |
 | `MudToast` | Fixed-width toast with icon, optional heading and message. | Save confirmations and transient status after an action. |

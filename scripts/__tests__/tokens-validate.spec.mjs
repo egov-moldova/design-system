@@ -91,20 +91,20 @@ describe('tokens-validate — component CSS coverage', () => {
 describe('tokens-validate — generated CSS drift', () => {
   it('derives the expected variable name the way Style Dictionary does (`stackZIndex` → `stack-z-index`)', () => {
     const { codes } = validate({
-      componentName: 'cookie-banner',
-      component: { 'cookie-banner': { container: { stackZIndex: { $value: '1000', $type: 'number' } } } },
-      generatedCss: '  --cookie-banner-container-stack-z-index: 1000;\n',
+      componentName: 'date-picker',
+      component: { 'date-picker': { container: { stackZIndex: { $value: '1000', $type: 'number' } } } },
+      generatedCss: '  --date-picker-container-stack-z-index: 1000;\n',
     });
     assert.deepEqual(codes, []);
   });
 
   it('reports a token whose variable is missing from the generated CSS', () => {
     const { status, codes } = validate({
-      componentName: 'cookie-banner',
-      component: { 'cookie-banner': { container: { stackZIndex: { $value: '1000', $type: 'number' } } } },
-      generatedCss: '  --cookie-banner-container-stack-zindex: 1000;\n',
+      componentName: 'date-picker',
+      component: { 'date-picker': { container: { stackZIndex: { $value: '1000', $type: 'number' } } } },
+      generatedCss: '  --date-picker-container-stack-zindex: 1000;\n',
     });
-    assert.deepEqual(codes, ['css-drift cookie-banner.container.stackZIndex']);
+    assert.deepEqual(codes, ['css-drift date-picker.container.stackZIndex']);
     assert.equal(status, 0);
   });
 });

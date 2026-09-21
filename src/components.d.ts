@@ -15,7 +15,6 @@ import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } 
 import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
-import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
 import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputLocale, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
@@ -31,7 +30,6 @@ import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, Nu
 import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
 import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
-import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 import { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
 import { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
@@ -60,7 +58,6 @@ export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } 
 export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
 export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
-export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
 export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputLocale, DateInputSize, DateInputType, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
 export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
@@ -76,7 +73,6 @@ export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, Nu
 export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
 export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
-export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 export { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
 export { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
@@ -167,7 +163,7 @@ export namespace Components {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 49 components implement it at the time of writing;
+     *    28 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -693,94 +689,6 @@ export namespace Components {
         "type": ChipType;
     }
     /**
-     * Cookie banner — GDPR consent surface (molecule).
-     * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
-     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
-     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
-     * or top edge of the viewport — it does NOT trap focus so the page underneath
-     * stays operable.
-     * Two variants share one element:
-     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
-     *   / `Accept toate`). The "Personalizează" button switches the banner to
-     *   expanded mode.
-     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
-     *   category list (necessary / analytics / marketing by default) with per-row
-     *   `mud-switch`. Required categories render a fixed check-mark instead.
-     * Romanian voice ships as defaults; every label is overridable via the public
-     * `@Prop` surface for localisation.
-     * @element mud-cookie-banner
-     */
-    interface MudCookieBanner {
-        /**
-          * "Accept all" button label.
-         */
-        "acceptLabel"?: string;
-        /**
-          * Forwarded to the host as `aria-label`. Use this when the visible title is not descriptive enough for screen-reader users.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Plain-text body. Defaults to Romanian disclosure copy. Override via `body` slot for rich content.
-         */
-        "body"?: string;
-        /**
-          * Category catalogue rendered in detailed/expanded mode. Falls back to a three-bucket Romanian default (necessary / analytics / marketing) when omitted. Ignored when the `categories` slot is populated.
-         */
-        "categories"?: ReadonlyArray<CookieCategory>;
-        /**
-          * Close button accessible label. Defaults to Romanian "Închide".
-         */
-        "closeLabel"?: string;
-        /**
-          * Whether the banner is currently expanded (preferences view).
-          * @default false
-         */
-        "expanded": boolean;
-        /**
-          * "Show less" toggle label for expanded category descriptions on mobile. Defaults to Romanian "Mai puțin".
-         */
-        "lessLabel"?: string;
-        /**
-          * "Customise / Manage cookies" button label.
-         */
-        "manageLabel"?: string;
-        /**
-          * "Show more" toggle label for clamped category descriptions on mobile. Defaults to Romanian "Mai mult".
-         */
-        "moreLabel"?: string;
-        /**
-          * Edge the banner is anchored to.
-          * @default 'bottom'
-         */
-        "position": CookieBannerPosition;
-        /**
-          * Optional href for the inline privacy-policy link.
-         */
-        "privacyHref"?: string;
-        /**
-          * Privacy-policy link label. Defaults to Romanian "Politica de confidențialitate".
-         */
-        "privacyLabel"?: string;
-        /**
-          * "Reject all" button label.
-         */
-        "rejectLabel"?: string;
-        /**
-          * "Save preferences" button label (shown only in detailed/expanded).
-         */
-        "saveLabel"?: string;
-        /**
-          * Plain-text title. Defaults to Romanian "Folosim cookie-uri".
-         */
-        "titleText"?: string;
-        /**
-          * Layout flavour. - `simple` (default) — three footer buttons, no category list on expand. - `detailed` — adds a category list with per-row toggles in the expanded   state and a single "Salvează preferințele" footer CTA.
-          * @default 'simple'
-         */
-        "variant": CookieBannerVariant;
-    }
-    /**
      * Date Input — segment-masked date entry molecule.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
@@ -994,7 +902,7 @@ export namespace Components {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination / mud-receipt).
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
          */
         "ariaLabel"?: string;
         /**
@@ -2018,143 +1926,6 @@ export namespace Components {
           * Value submitted with the form when this radio is checked.
          */
         "value"?: string;
-    }
-    /**
-     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
-     * (molecule).
-     * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
-     * and `mud-button` for the interactive pieces.
-     * Four sibling variants share one element via the `service` attribute —
-     * each maps to one of the e-Gov properties:
-     * - `service="mpay"` (default) — payment receipt
-     * - `service="mpass"` — authentication session log
-     * - `service="msign"` — signature receipt
-     * - `service="mdelivery"` — delivery confirmation
-     * The receipt is a presentational artifact. It does not fetch, validate,
-     * or persist; callers pass already-formatted values. The QR (default slot
-     * `qr` overrides) is generated client-side from the `qrData` prop via a
-     * vendored byte-mode QR encoder — no runtime dependency, no network.
-     * Print: the host carries `@media print` rules to hide action buttons,
-     * drop shadows, and force ink-primary text so a citizen can print the
-     * receipt without the surrounding UI bleeding through.
-     * Romanian voice ships as defaults; every label is overridable via the
-     * public `@Prop` surface for localisation.
-     * @element mud-receipt
-     */
-    interface MudReceipt {
-        /**
-          * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
-         */
-        "amount"?: string;
-        /**
-          * "Suma" label preceding the amount value.
-         */
-        "amountLabel"?: string;
-        /**
-          * Currency code rendered next to the amount.
-          * @default 'MDL'
-         */
-        "currency": string;
-        /**
-          * Date in ISO-8601 form (`"2026-05-22T14:32:00Z"`). Rendered via `Intl.DateTimeFormat(this.locale, …)`. Falls back to the raw string on a parse failure.
-         */
-        "date"?: string;
-        /**
-          * "Data" label preceding the date.
-         */
-        "dateLabel"?: string;
-        /**
-          * Free-text description rendered as its own row.
-         */
-        "description"?: string;
-        /**
-          * "Descriere" label preceding the free text.
-         */
-        "descriptionLabel"?: string;
-        /**
-          * "Descarcă PDF" button label.
-         */
-        "downloadLabel"?: string;
-        /**
-          * "Trimite email" button label.
-         */
-        "emailLabel"?: string;
-        /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
-         */
-        "label"?: string;
-        /**
-          * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
-          * @default 'ro-RO'
-         */
-        "locale": string;
-        /**
-          * "Imprimă" button label.
-         */
-        "printLabel"?: string;
-        /**
-          * "Cod QR pentru verificare" accessible label on the QR figure.
-         */
-        "qrAriaLabel"?: string;
-        /**
-          * "Scanează pentru verificare" caption under the QR.
-         */
-        "qrCaption"?: string;
-        /**
-          * Payload encoded into the QR. When empty AND no `qr` slot is provided, the QR panel is hidden entirely.
-         */
-        "qrData"?: string;
-        /**
-          * Recipient party. `idnp` is auto-masked.
-         */
-        "recipient"?: ReceiptParty;
-        /**
-          * "Beneficiar" label preceding the recipient.
-         */
-        "recipientLabel"?: string;
-        /**
-          * Sender party. `idnp` is auto-masked (`2002******789`).
-         */
-        "sender"?: ReceiptParty;
-        /**
-          * "Plătitor" label preceding the sender.
-         */
-        "senderLabel"?: string;
-        /**
-          * Which e-Gov property this receipt belongs to. Drives the rendered logo, the default title, and the `service` attribute carried in event detail.
-          * @default 'mpay'
-         */
-        "service": ReceiptService;
-        /**
-          * "Distribuie" button label.
-         */
-        "shareLabel"?: string;
-        /**
-          * Whether the built-in action footer renders. Disable for read-only archival views.
-          * @default true
-         */
-        "showActions": boolean;
-        /**
-          * Transaction lifecycle state. Drives the status tag color + label.
-         */
-        "status"?: ReceiptStatus;
-        /**
-          * "Status:" inline label preceding the tag.
-         */
-        "statusLabel"?: string;
-        /**
-          * Plain-text receipt title. Defaults to a Romanian per-service string (`Bon de plată`, `Confirmare autentificare`, `Confirmare semnătură`, `Confirmare livrare`).  Attribute name is `title-text` to avoid collision with the built-in HTML `title` global attribute (Stencil warns and the global wins at runtime). Prop name remains `titleText` for ergonomic JS access.
-         */
-        "titleText"?: string;
-        /**
-          * Opaque transaction identifier rendered in the footer caption.
-         */
-        "transactionId"?: string;
-        /**
-          * "Cod tranzacție" label preceding the transaction ID.
-         */
-        "transactionIdLabel"?: string;
     }
     /**
      * Search Input — single-line search-entry control.
@@ -3465,10 +3236,6 @@ export interface MudChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudChipElement;
 }
-export interface MudCookieBannerCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudCookieBannerElement;
-}
 export interface MudDateInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudDateInputElement;
@@ -3524,10 +3291,6 @@ export interface MudPhoneInputCustomEvent<T> extends CustomEvent<T> {
 export interface MudRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudRadioElement;
-}
-export interface MudReceiptCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudReceiptElement;
 }
 export interface MudSearchInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3651,7 +3414,7 @@ declare global {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 49 components implement it at the time of writing;
+     *    28 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -3897,46 +3660,6 @@ declare global {
     var HTMLMudChipElement: {
         prototype: HTMLMudChipElement;
         new (): HTMLMudChipElement;
-    };
-    interface HTMLMudCookieBannerElementEventMap {
-        "mudAccept": CookieConsentDetail;
-        "mudReject": CookieConsentDetail;
-        "mudSavePreferences": CookieConsentDetail;
-        "mudExpand": void;
-        "mudDismiss": void;
-    }
-    /**
-     * Cookie banner — GDPR consent surface (molecule).
-     * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
-     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
-     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
-     * or top edge of the viewport — it does NOT trap focus so the page underneath
-     * stays operable.
-     * Two variants share one element:
-     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
-     *   / `Accept toate`). The "Personalizează" button switches the banner to
-     *   expanded mode.
-     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
-     *   category list (necessary / analytics / marketing by default) with per-row
-     *   `mud-switch`. Required categories render a fixed check-mark instead.
-     * Romanian voice ships as defaults; every label is overridable via the public
-     * `@Prop` surface for localisation.
-     * @element mud-cookie-banner
-     */
-    interface HTMLMudCookieBannerElement extends Components.MudCookieBanner, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudCookieBannerElementEventMap>(type: K, listener: (this: HTMLMudCookieBannerElement, ev: MudCookieBannerCustomEvent<HTMLMudCookieBannerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudCookieBannerElementEventMap>(type: K, listener: (this: HTMLMudCookieBannerElement, ev: MudCookieBannerCustomEvent<HTMLMudCookieBannerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudCookieBannerElement: {
-        prototype: HTMLMudCookieBannerElement;
-        new (): HTMLMudCookieBannerElement;
     };
     interface HTMLMudDateInputElementEventMap {
         "mudInput": DateInputTypingDetail;
@@ -4456,49 +4179,6 @@ declare global {
     var HTMLMudRadioElement: {
         prototype: HTMLMudRadioElement;
         new (): HTMLMudRadioElement;
-    };
-    interface HTMLMudReceiptElementEventMap {
-        "mudDownload": ReceiptActionDetail;
-        "mudShare": ReceiptActionDetail;
-        "mudEmail": ReceiptActionDetail;
-        "mudPrint": ReceiptActionDetail;
-    }
-    /**
-     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
-     * (molecule).
-     * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
-     * and `mud-button` for the interactive pieces.
-     * Four sibling variants share one element via the `service` attribute —
-     * each maps to one of the e-Gov properties:
-     * - `service="mpay"` (default) — payment receipt
-     * - `service="mpass"` — authentication session log
-     * - `service="msign"` — signature receipt
-     * - `service="mdelivery"` — delivery confirmation
-     * The receipt is a presentational artifact. It does not fetch, validate,
-     * or persist; callers pass already-formatted values. The QR (default slot
-     * `qr` overrides) is generated client-side from the `qrData` prop via a
-     * vendored byte-mode QR encoder — no runtime dependency, no network.
-     * Print: the host carries `@media print` rules to hide action buttons,
-     * drop shadows, and force ink-primary text so a citizen can print the
-     * receipt without the surrounding UI bleeding through.
-     * Romanian voice ships as defaults; every label is overridable via the
-     * public `@Prop` surface for localisation.
-     * @element mud-receipt
-     */
-    interface HTMLMudReceiptElement extends Components.MudReceipt, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudReceiptElementEventMap>(type: K, listener: (this: HTMLMudReceiptElement, ev: MudReceiptCustomEvent<HTMLMudReceiptElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudReceiptElementEventMap>(type: K, listener: (this: HTMLMudReceiptElement, ev: MudReceiptCustomEvent<HTMLMudReceiptElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudReceiptElement: {
-        prototype: HTMLMudReceiptElement;
-        new (): HTMLMudReceiptElement;
     };
     interface HTMLMudSearchInputElementEventMap {
         "mudInput": SearchInputChangeDetail;
@@ -5100,7 +4780,6 @@ declare global {
         "mud-button-group": HTMLMudButtonGroupElement;
         "mud-checkbox": HTMLMudCheckboxElement;
         "mud-chip": HTMLMudChipElement;
-        "mud-cookie-banner": HTMLMudCookieBannerElement;
         "mud-date-input": HTMLMudDateInputElement;
         "mud-date-picker": HTMLMudDatePickerElement;
         "mud-file-input": HTMLMudFileInputElement;
@@ -5118,7 +4797,6 @@ declare global {
         "mud-pagination": HTMLMudPaginationElement;
         "mud-phone-input": HTMLMudPhoneInputElement;
         "mud-radio": HTMLMudRadioElement;
-        "mud-receipt": HTMLMudReceiptElement;
         "mud-search-input": HTMLMudSearchInputElement;
         "mud-segmented-control": HTMLMudSegmentedControlElement;
         "mud-select": HTMLMudSelectElement;
@@ -5221,7 +4899,7 @@ declare namespace LocalJSX {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 49 components implement it at the time of writing;
+     *    28 of this library's 49 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
      *    lives in the repo rather than in the published package. `mud-tag` and
      *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -5790,114 +5468,6 @@ declare namespace LocalJSX {
         "type"?: ChipType;
     }
     /**
-     * Cookie banner — GDPR consent surface (molecule).
-     * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
-     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
-     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
-     * or top edge of the viewport — it does NOT trap focus so the page underneath
-     * stays operable.
-     * Two variants share one element:
-     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
-     *   / `Accept toate`). The "Personalizează" button switches the banner to
-     *   expanded mode.
-     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
-     *   category list (necessary / analytics / marketing by default) with per-row
-     *   `mud-switch`. Required categories render a fixed check-mark instead.
-     * Romanian voice ships as defaults; every label is overridable via the public
-     * `@Prop` surface for localisation.
-     * @element mud-cookie-banner
-     */
-    interface MudCookieBanner {
-        /**
-          * "Accept all" button label.
-         */
-        "acceptLabel"?: string;
-        /**
-          * Forwarded to the host as `aria-label`. Use this when the visible title is not descriptive enough for screen-reader users.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Plain-text body. Defaults to Romanian disclosure copy. Override via `body` slot for rich content.
-         */
-        "body"?: string;
-        /**
-          * Category catalogue rendered in detailed/expanded mode. Falls back to a three-bucket Romanian default (necessary / analytics / marketing) when omitted. Ignored when the `categories` slot is populated.
-         */
-        "categories"?: ReadonlyArray<CookieCategory>;
-        /**
-          * Close button accessible label. Defaults to Romanian "Închide".
-         */
-        "closeLabel"?: string;
-        /**
-          * Whether the banner is currently expanded (preferences view).
-          * @default false
-         */
-        "expanded"?: boolean;
-        /**
-          * "Show less" toggle label for expanded category descriptions on mobile. Defaults to Romanian "Mai puțin".
-         */
-        "lessLabel"?: string;
-        /**
-          * "Customise / Manage cookies" button label.
-         */
-        "manageLabel"?: string;
-        /**
-          * "Show more" toggle label for clamped category descriptions on mobile. Defaults to Romanian "Mai mult".
-         */
-        "moreLabel"?: string;
-        /**
-          * Fires when the user accepts every (non-required) category.
-         */
-        "onMudAccept"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
-        /**
-          * Fires when the banner transitions from expanded → collapsed (via close / Esc).
-         */
-        "onMudDismiss"?: (event: MudCookieBannerCustomEvent<void>) => void;
-        /**
-          * Fires when the banner transitions from collapsed → expanded.
-         */
-        "onMudExpand"?: (event: MudCookieBannerCustomEvent<void>) => void;
-        /**
-          * Fires when the user rejects every non-required category.
-         */
-        "onMudReject"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
-        /**
-          * Fires when the user saves a custom selection (detailed/expanded only).
-         */
-        "onMudSavePreferences"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
-        /**
-          * Edge the banner is anchored to.
-          * @default 'bottom'
-         */
-        "position"?: CookieBannerPosition;
-        /**
-          * Optional href for the inline privacy-policy link.
-         */
-        "privacyHref"?: string;
-        /**
-          * Privacy-policy link label. Defaults to Romanian "Politica de confidențialitate".
-         */
-        "privacyLabel"?: string;
-        /**
-          * "Reject all" button label.
-         */
-        "rejectLabel"?: string;
-        /**
-          * "Save preferences" button label (shown only in detailed/expanded).
-         */
-        "saveLabel"?: string;
-        /**
-          * Plain-text title. Defaults to Romanian "Folosim cookie-uri".
-         */
-        "titleText"?: string;
-        /**
-          * Layout flavour. - `simple` (default) — three footer buttons, no category list on expand. - `detailed` — adds a category list with per-row toggles in the expanded   state and a single "Salvează preferințele" footer CTA.
-          * @default 'simple'
-         */
-        "variant"?: CookieBannerVariant;
-    }
-    /**
      * Date Input — segment-masked date entry molecule.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
@@ -6143,7 +5713,7 @@ declare namespace LocalJSX {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination / mud-receipt).
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
          */
         "ariaLabel"?: string;
         /**
@@ -7331,159 +6901,6 @@ declare namespace LocalJSX {
           * Value submitted with the form when this radio is checked.
          */
         "value"?: string;
-    }
-    /**
-     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
-     * (molecule).
-     * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
-     * and `mud-button` for the interactive pieces.
-     * Four sibling variants share one element via the `service` attribute —
-     * each maps to one of the e-Gov properties:
-     * - `service="mpay"` (default) — payment receipt
-     * - `service="mpass"` — authentication session log
-     * - `service="msign"` — signature receipt
-     * - `service="mdelivery"` — delivery confirmation
-     * The receipt is a presentational artifact. It does not fetch, validate,
-     * or persist; callers pass already-formatted values. The QR (default slot
-     * `qr` overrides) is generated client-side from the `qrData` prop via a
-     * vendored byte-mode QR encoder — no runtime dependency, no network.
-     * Print: the host carries `@media print` rules to hide action buttons,
-     * drop shadows, and force ink-primary text so a citizen can print the
-     * receipt without the surrounding UI bleeding through.
-     * Romanian voice ships as defaults; every label is overridable via the
-     * public `@Prop` surface for localisation.
-     * @element mud-receipt
-     */
-    interface MudReceipt {
-        /**
-          * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
-         */
-        "amount"?: string;
-        /**
-          * "Suma" label preceding the amount value.
-         */
-        "amountLabel"?: string;
-        /**
-          * Currency code rendered next to the amount.
-          * @default 'MDL'
-         */
-        "currency"?: string;
-        /**
-          * Date in ISO-8601 form (`"2026-05-22T14:32:00Z"`). Rendered via `Intl.DateTimeFormat(this.locale, …)`. Falls back to the raw string on a parse failure.
-         */
-        "date"?: string;
-        /**
-          * "Data" label preceding the date.
-         */
-        "dateLabel"?: string;
-        /**
-          * Free-text description rendered as its own row.
-         */
-        "description"?: string;
-        /**
-          * "Descriere" label preceding the free text.
-         */
-        "descriptionLabel"?: string;
-        /**
-          * "Descarcă PDF" button label.
-         */
-        "downloadLabel"?: string;
-        /**
-          * "Trimite email" button label.
-         */
-        "emailLabel"?: string;
-        /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
-         */
-        "label"?: string;
-        /**
-          * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
-          * @default 'ro-RO'
-         */
-        "locale"?: string;
-        /**
-          * Fires when the user activates the "Descarcă PDF" action.
-         */
-        "onMudDownload"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
-        /**
-          * Fires when the user activates the "Trimite email" action.
-         */
-        "onMudEmail"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
-        /**
-          * Fires when the user activates the "Imprimă" action.
-         */
-        "onMudPrint"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
-        /**
-          * Fires when the user activates the "Distribuie" action.
-         */
-        "onMudShare"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
-        /**
-          * "Imprimă" button label.
-         */
-        "printLabel"?: string;
-        /**
-          * "Cod QR pentru verificare" accessible label on the QR figure.
-         */
-        "qrAriaLabel"?: string;
-        /**
-          * "Scanează pentru verificare" caption under the QR.
-         */
-        "qrCaption"?: string;
-        /**
-          * Payload encoded into the QR. When empty AND no `qr` slot is provided, the QR panel is hidden entirely.
-         */
-        "qrData"?: string;
-        /**
-          * Recipient party. `idnp` is auto-masked.
-         */
-        "recipient"?: ReceiptParty;
-        /**
-          * "Beneficiar" label preceding the recipient.
-         */
-        "recipientLabel"?: string;
-        /**
-          * Sender party. `idnp` is auto-masked (`2002******789`).
-         */
-        "sender"?: ReceiptParty;
-        /**
-          * "Plătitor" label preceding the sender.
-         */
-        "senderLabel"?: string;
-        /**
-          * Which e-Gov property this receipt belongs to. Drives the rendered logo, the default title, and the `service` attribute carried in event detail.
-          * @default 'mpay'
-         */
-        "service"?: ReceiptService;
-        /**
-          * "Distribuie" button label.
-         */
-        "shareLabel"?: string;
-        /**
-          * Whether the built-in action footer renders. Disable for read-only archival views.
-          * @default true
-         */
-        "showActions"?: boolean;
-        /**
-          * Transaction lifecycle state. Drives the status tag color + label.
-         */
-        "status"?: ReceiptStatus;
-        /**
-          * "Status:" inline label preceding the tag.
-         */
-        "statusLabel"?: string;
-        /**
-          * Plain-text receipt title. Defaults to a Romanian per-service string (`Bon de plată`, `Confirmare autentificare`, `Confirmare semnătură`, `Confirmare livrare`).  Attribute name is `title-text` to avoid collision with the built-in HTML `title` global attribute (Stencil warns and the global wins at runtime). Prop name remains `titleText` for ergonomic JS access.
-         */
-        "titleText"?: string;
-        /**
-          * Opaque transaction identifier rendered in the footer caption.
-         */
-        "transactionId"?: string;
-        /**
-          * "Cod tranzacție" label preceding the transaction ID.
-         */
-        "transactionIdLabel"?: string;
     }
     /**
      * Search Input — single-line search-entry control.
@@ -9067,23 +8484,6 @@ declare namespace LocalJSX {
         "label": string;
         "removable": boolean;
     }
-    interface MudCookieBannerAttributes {
-        "variant": CookieBannerVariant;
-        "expanded": boolean;
-        "position": CookieBannerPosition;
-        "titleText": string;
-        "body": string;
-        "acceptLabel": string;
-        "rejectLabel": string;
-        "manageLabel": string;
-        "saveLabel": string;
-        "privacyHref": string;
-        "privacyLabel": string;
-        "closeLabel": string;
-        "moreLabel": string;
-        "lessLabel": string;
-        "ariaLabel": string;
-    }
     interface MudDateInputAttributes {
         "variant": DateInputVariant;
         "size": DateInputSize;
@@ -9322,33 +8722,6 @@ declare namespace LocalJSX {
         "supportingText": string;
         "ariaLabel": string;
         "ariaLabelledby": string;
-    }
-    interface MudReceiptAttributes {
-        "service": ReceiptService;
-        "titleText": string;
-        "status": ReceiptStatus;
-        "amount": string;
-        "currency": string;
-        "date": string;
-        "locale": string;
-        "description": string;
-        "transactionId": string;
-        "qrData": string;
-        "showActions": boolean;
-        "label": string;
-        "statusLabel": string;
-        "amountLabel": string;
-        "dateLabel": string;
-        "senderLabel": string;
-        "recipientLabel": string;
-        "descriptionLabel": string;
-        "transactionIdLabel": string;
-        "qrCaption": string;
-        "qrAriaLabel": string;
-        "printLabel": string;
-        "downloadLabel": string;
-        "emailLabel": string;
-        "shareLabel": string;
     }
     interface MudSearchInputAttributes {
         "shape": SearchInputShape;
@@ -9610,7 +8983,6 @@ declare namespace LocalJSX {
         "mud-button-group": Omit<MudButtonGroup, keyof MudButtonGroupAttributes> & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes]?: MudButtonGroup[K] } & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes as `attr:${K}`]?: MudButtonGroupAttributes[K] } & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes as `prop:${K}`]?: MudButtonGroup[K] };
         "mud-checkbox": Omit<MudCheckbox, keyof MudCheckboxAttributes> & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes]?: MudCheckbox[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `attr:${K}`]?: MudCheckboxAttributes[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `prop:${K}`]?: MudCheckbox[K] };
         "mud-chip": Omit<MudChip, keyof MudChipAttributes> & { [K in keyof MudChip & keyof MudChipAttributes]?: MudChip[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `attr:${K}`]?: MudChipAttributes[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `prop:${K}`]?: MudChip[K] };
-        "mud-cookie-banner": Omit<MudCookieBanner, keyof MudCookieBannerAttributes> & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes]?: MudCookieBanner[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `attr:${K}`]?: MudCookieBannerAttributes[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `prop:${K}`]?: MudCookieBanner[K] };
         "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] } & OneOf3<"locale", MudDateInput["locale"], MudDateInputAttributes["locale"]>;
         "mud-date-picker": Omit<MudDatePicker, keyof MudDatePickerAttributes> & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes]?: MudDatePicker[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `attr:${K}`]?: MudDatePickerAttributes[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `prop:${K}`]?: MudDatePicker[K] };
         "mud-file-input": Omit<MudFileInput, keyof MudFileInputAttributes> & { [K in keyof MudFileInput & keyof MudFileInputAttributes]?: MudFileInput[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `attr:${K}`]?: MudFileInputAttributes[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `prop:${K}`]?: MudFileInput[K] };
@@ -9628,7 +9000,6 @@ declare namespace LocalJSX {
         "mud-pagination": Omit<MudPagination, keyof MudPaginationAttributes> & { [K in keyof MudPagination & keyof MudPaginationAttributes]?: MudPagination[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `attr:${K}`]?: MudPaginationAttributes[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `prop:${K}`]?: MudPagination[K] };
         "mud-phone-input": Omit<MudPhoneInput, keyof MudPhoneInputAttributes> & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes]?: MudPhoneInput[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `attr:${K}`]?: MudPhoneInputAttributes[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `prop:${K}`]?: MudPhoneInput[K] };
         "mud-radio": Omit<MudRadio, keyof MudRadioAttributes> & { [K in keyof MudRadio & keyof MudRadioAttributes]?: MudRadio[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `attr:${K}`]?: MudRadioAttributes[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `prop:${K}`]?: MudRadio[K] };
-        "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
         "mud-search-input": Omit<MudSearchInput, keyof MudSearchInputAttributes> & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes]?: MudSearchInput[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `attr:${K}`]?: MudSearchInputAttributes[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `prop:${K}`]?: MudSearchInput[K] };
         "mud-segmented-control": Omit<MudSegmentedControl, keyof MudSegmentedControlAttributes> & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes]?: MudSegmentedControl[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `attr:${K}`]?: MudSegmentedControlAttributes[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `prop:${K}`]?: MudSegmentedControl[K] };
         "mud-select": Omit<MudSelect, keyof MudSelectAttributes> & { [K in keyof MudSelect & keyof MudSelectAttributes]?: MudSelect[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `attr:${K}`]?: MudSelectAttributes[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `prop:${K}`]?: MudSelect[K] };
@@ -9694,7 +9065,7 @@ declare module "@stencil/core" {
              *    slot distributes is what gets written — measured. That is still content you
              *    handed to the slot, one component further out.)
              * 2. `disabled` does what the element makes of it, and that is not universal —
-             *    27 of this library's 49 components implement it at the time of writing;
+             *    28 of this library's 49 components implement it at the time of writing;
              *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
              *    lives in the repo rather than in the published package. `mud-tag` and
              *    `mud-badge` implement it as a visual state only: in `trailing` they render
@@ -9825,26 +9196,6 @@ declare module "@stencil/core" {
              * @element mud-chip
              */
             "mud-chip": LocalJSX.IntrinsicElements["mud-chip"] & JSXBase.HTMLAttributes<HTMLMudChipElement>;
-            /**
-             * Cookie banner — GDPR consent surface (molecule).
-             * Pattern B (composed molecule): renders its own header / body / categories /
-             * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
-             * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
-             * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
-             * or top edge of the viewport — it does NOT trap focus so the page underneath
-             * stays operable.
-             * Two variants share one element:
-             * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
-             *   / `Accept toate`). The "Personalizează" button switches the banner to
-             *   expanded mode.
-             * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
-             *   category list (necessary / analytics / marketing by default) with per-row
-             *   `mud-switch`. Required categories render a fixed check-mark instead.
-             * Romanian voice ships as defaults; every label is overridable via the public
-             * `@Prop` surface for localisation.
-             * @element mud-cookie-banner
-             */
-            "mud-cookie-banner": LocalJSX.IntrinsicElements["mud-cookie-banner"] & JSXBase.HTMLAttributes<HTMLMudCookieBannerElement>;
             /**
              * Date Input — segment-masked date entry molecule.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
@@ -10093,30 +9444,6 @@ declare module "@stencil/core" {
              * @element mud-radio
              */
             "mud-radio": LocalJSX.IntrinsicElements["mud-radio"] & JSXBase.HTMLAttributes<HTMLMudRadioElement>;
-            /**
-             * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
-             * (molecule).
-             * Pattern B (composed molecule): renders its own header / amount block /
-             * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
-             * and `mud-button` for the interactive pieces.
-             * Four sibling variants share one element via the `service` attribute —
-             * each maps to one of the e-Gov properties:
-             * - `service="mpay"` (default) — payment receipt
-             * - `service="mpass"` — authentication session log
-             * - `service="msign"` — signature receipt
-             * - `service="mdelivery"` — delivery confirmation
-             * The receipt is a presentational artifact. It does not fetch, validate,
-             * or persist; callers pass already-formatted values. The QR (default slot
-             * `qr` overrides) is generated client-side from the `qrData` prop via a
-             * vendored byte-mode QR encoder — no runtime dependency, no network.
-             * Print: the host carries `@media print` rules to hide action buttons,
-             * drop shadows, and force ink-primary text so a citizen can print the
-             * receipt without the surrounding UI bleeding through.
-             * Romanian voice ships as defaults; every label is overridable via the
-             * public `@Prop` surface for localisation.
-             * @element mud-receipt
-             */
-            "mud-receipt": LocalJSX.IntrinsicElements["mud-receipt"] & JSXBase.HTMLAttributes<HTMLMudReceiptElement>;
             /**
              * Search Input — single-line search-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own

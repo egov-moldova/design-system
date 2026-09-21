@@ -59,15 +59,11 @@ attribute on the parent.
 
 ### Used by
 
- - [mud-cookie-banner](../mud-cookie-banner)
- - [mud-receipt](../mud-receipt)
  - [mud-sidebar-item](../mud-sidebar)
 
 ### Graph
 ```mermaid
 graph TD;
-  mud-cookie-banner --> mud-tag
-  mud-receipt --> mud-tag
   mud-sidebar-item --> mud-tag
   style mud-tag fill:#f9f,stroke:#333,stroke-width:4px
 ```
