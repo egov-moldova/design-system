@@ -228,6 +228,7 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "src/assets/**/*",
+        "!src/components.d.ts",
         "stencil.config.ts",
         "stencil-postcss.config.mjs",
         "tsconfig.json",
@@ -237,7 +238,8 @@
       "output": [
         "dist/**",
         "loader/**",
-        ".storybook/custom-elements.json"
+        ".storybook/custom-elements.json",
+        "src/components.d.ts"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -334,11 +336,13 @@
         "stencil.config.ts",
         "stencil-postcss.config.mjs",
         "tsconfig.json",
-        "tsconfig.stencil.json"
+        "tsconfig.stencil.json",
+        "!src/components.d.ts"
       ],
       "output": [
         "dist/**",
-        "loader/**"
+        "loader/**",
+        "src/components.d.ts"
       ],
       "packageLocks": [
         "yarn.lock"

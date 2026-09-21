@@ -16,6 +16,11 @@
 # `linguist-generated=true` collapses these files in GitHub PR diffs.
 # -----------------------------------------------------------------------------
 
+# Stencil's TypeScript declarations: git-ignored, not tracked. No merge=ours, but the
+# linguist-generated mark is what `yarn sync:main` reads to drop it from an old branch's
+# commits (main deleted it); a force-added file that is only ignored is not dropped.
+src/components.d.ts                                           linguist-generated=true
+
 # Per-component readme.md (stencil build --docs output)
 src/components/*/readme.md                                    merge=ours linguist-generated=true
 src/hidden/*/readme.md                                        merge=ours linguist-generated=true

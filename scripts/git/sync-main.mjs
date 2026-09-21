@@ -175,27 +175,10 @@ function yarn(args, cwd) {
     throw new Stop(`yarn ${args.join(' ')} failed (exit ${run.status}). Fix it, commit, and rerun.`);
 }
 
-/**
- * Paths main deleted and now git-ignores: a generated file main stopped tracking (as
- * src/components.d.ts was). A branch that still regenerates it conflicts modify/delete on every
- * such commit; the deletion is main's intent and the build recreates the file untracked.
- */
-function retiredSet(paths, cwd) {
+/** Paths whose `.gitattributes` value for `attr` is `value`, in one git call. */
+function attrSet(paths, cwd, attr, value) {
   if (paths.length === 0) return new Set();
-  const run = spawnSync('git', ['check-ignore', '--stdin', '-z', '--no-index'], {
-    cwd,
-    input: paths.join('\0') + '\0',
-    encoding: 'utf8',
-  });
-  if (run.error) throw run.error;
-  if (run.status > 1) throw new Stop(`git check-ignore failed:\n${run.stderr.trim()}`);
-  return new Set(run.stdout.split('\0').filter(p => p && !stagesOf(cwd, p).has('2')));
-}
-
-/** Paths `.gitattributes` marks `merge=ours` — the repo's own definition of "generated". One git call. */
-function generatedSet(paths, cwd) {
-  if (paths.length === 0) return new Set();
-  const run = spawnSync('git', ['check-attr', '--stdin', '-z', 'merge'], {
+  const run = spawnSync('git', ['check-attr', '--stdin', '-z', attr], {
     cwd,
     input: paths.join('\0') + '\0',
     encoding: 'utf8',
@@ -205,9 +188,25 @@ function generatedSet(paths, cwd) {
   const fields = run.stdout.split('\0');
   const result = new Set();
   for (let k = 0; k + 2 < fields.length; k += 3) {
-    if (fields[k + 2] === 'ours') result.add(fields[k]);
+    if (fields[k + 2] === value) result.add(fields[k]);
   }
   return result;
+}
+
+/** Paths `.gitattributes` marks `merge=ours` — the repo's own definition of a tracked generated file. */
+function generatedSet(paths, cwd) {
+  return attrSet(paths, cwd, 'merge', 'ours');
+}
+
+/**
+ * Generated files main stopped tracking: main deleted the path, and `.gitattributes` still marks
+ * it `linguist-generated` (as src/components.d.ts is). A branch that regenerated it conflicts
+ * modify/delete on every such commit; main's deletion is the intent, and the build recreates the
+ * file untracked. Being git-ignored alone is not enough — a force-added config is not generated.
+ */
+function retiredSet(paths, cwd) {
+  const deletedOnMain = paths.filter(p => !stagesOf(cwd, p).has('2'));
+  return attrSet(deletedOnMain, cwd, 'linguist-generated', 'true');
 }
 
 function rebaseInProgress(cwd) {

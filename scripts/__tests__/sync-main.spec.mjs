@@ -205,20 +205,31 @@ describe('sync-main — rebase', () => {
     assert.equal(git(cwd, 'ls-files', 'gen.txt'), '');
   });
 
-  it('drops a file main stopped tracking and now ignores, in every branch commit that touched it', () => {
-    // src/components.d.ts's history: tracked without merge=ours on main's side any more.
+  // src/components.d.ts's history: main deletes it, ignores it, and marks it linguist-generated.
+  const untrackOnMain = (file, attrs) => cwd2 => {
+    fs.rmSync(path.join(cwd2, file));
+    write(cwd2, '.gitignore', `${file}\n`);
+    if (attrs) fs.appendFileSync(path.join(cwd2, '.gitattributes'), `${file} linguist-generated=true\n`);
+  };
+
+  it('drops a generated file main stopped tracking, in every branch commit that touched it', () => {
     const cwd = scratchRepo({
       feat: [genTo('code.txt', 'types v1\n'), genTo('code.txt', 'types v2\n')],
-      main: [
-        cwd2 => {
-          fs.rmSync(path.join(cwd2, 'code.txt'));
-          write(cwd2, '.gitignore', 'code.txt\n');
-        },
-      ],
+      main: [untrackOnMain('code.txt', true)],
     });
     const run = sync(cwd);
     assert.equal(run.status, 0, run.stderr);
     assert.equal(git(cwd, 'ls-files', 'code.txt'), '');
+  });
+
+  it('keeps it a real conflict when the file main dropped is only ignored, not generated', () => {
+    const cwd = scratchRepo({
+      feat: [genTo('code.txt', 'my local config\n')],
+      main: [untrackOnMain('code.txt', false)],
+    });
+    const run = sync(cwd);
+    assert.equal(run.status, 1);
+    assert.match(run.stderr, /real conflicts[^\n]*\n {2}code\.txt\n/);
   });
 
   it('treats a CHANGELOG line both sides edited as a real conflict', () => {
