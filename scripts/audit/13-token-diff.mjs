@@ -240,10 +240,9 @@ function relativePathFor(absPath) {
     .replace(/\\/g, '/');
 }
 
-// The single non-`$` key of a component token file, else the bare component name.
 export function componentRoot(doc, bare) {
   const roots = doc && typeof doc === 'object' ? Object.keys(doc).filter(key => !key.startsWith('$')) : [];
-  return roots.length === 1 ? roots[0] : bare;
+  return roots[0] ?? bare;
 }
 
 // The block comes back under `root`, the current file's own root key (`searchInput` in

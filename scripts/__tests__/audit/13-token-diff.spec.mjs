@@ -17,10 +17,9 @@ describe('13-token-diff: componentRoot', () => {
     assert.equal(componentRoot({ $description: 'x', searchInput: {} }, 'search-input'), 'searchInput');
   });
 
-  it('falls back to the bare name for an empty, null or multi-root document', () => {
+  it('falls back to the bare name for an empty or null document', () => {
     assert.equal(componentRoot(null, 'search-input'), 'search-input');
-    assert.equal(componentRoot({}, 'search-input'), 'search-input');
-    assert.equal(componentRoot({ a: {}, b: {} }, 'search-input'), 'search-input');
+    assert.equal(componentRoot({ $description: 'x' }, 'search-input'), 'search-input');
   });
 });
 
