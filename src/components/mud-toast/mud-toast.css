@@ -26,10 +26,18 @@
   font-weight: var(--toast-body-font-weight);
 
   /* Appearance: slide down from slightly above + fade in (Figma Behavior panel).
-     Plays once on mount; the dismiss/exit transition stays consumer-owned since
-     the atom cannot defer its own DOM removal. Disabled under reduced-motion. */
+     Plays once on mount. Disabled under reduced-motion. */
   animation: toast-appear var(--toast-container-appearance-duration) var(--toast-container-transition-timing-function)
     both;
+}
+
+/* Dismissal: fade out in place, no movement (Figma Behavior › dismissal,
+   567:28546). `mudClose` fires when it ends; the consumer then removes the
+   toast. */
+:host(.is-dismissing) {
+  pointer-events: none;
+  animation: toast-dismiss var(--toast-container-dismiss-duration) var(--toast-container-transition-timing-function)
+    forwards;
 }
 
 @keyframes toast-appear {
@@ -41,6 +49,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes toast-dismiss {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }
 
@@ -90,10 +108,15 @@
    heading's first line (flex-start, above). */
 :host(:not(.has-title)) {
   align-items: center;
+  padding-block-end: var(--toast-container-padding-bottom-text-only);
 }
 
 :host(:not(.has-title)) .main {
   align-items: center;
+}
+
+:host(:not(.has-title)) .content {
+  gap: var(--toast-container-stack-gap-text-only);
 }
 
 /* ---------- leading icon ---------- */
@@ -183,6 +206,18 @@
 ::slotted([slot='actions']) {
   color: inherit;
 }
+
+/* The toast surface keeps its saturated fill in both themes, while
+   mud-link's white / strict labels flip with the theme — in dark they
+   would read #121212 on blue. Tie the label to the toast's text colour:
+   white, or #121212 on warning, exactly Figma's Style=White / Strict
+   link (100:784, 100:819) in light. */
+::slotted(mud-link[slot='actions']) {
+  --_label: currentcolor;
+  --_label-hover: currentcolor;
+  --_label-active: currentcolor;
+  --_label-visited: currentcolor;
+}
 ::slotted(mud-button[slot='actions']) {
   --_label: currentcolor;
   --_label-hover: currentcolor;
@@ -205,7 +240,7 @@
      shifts the glyph nor steals width from the message. The Figma `toast`
      component defines no hover state for the close control, so the button
      surface stays transparent on hover — only `:focus-visible` shows a ring
-     (WCAG 2.4.7 baseline). */
+     (WCAG 2.4.7 baseline), drawn on the glyph as Figma does (575:32853). */
   --_close-bleed: calc((var(--toast-close-size-pointer) - var(--toast-close-icon-size)) / 2);
 
   flex-shrink: 0;
@@ -251,11 +286,15 @@
 
 .close:focus-visible {
   outline: none;
+}
+
+/* Figma "Focus Ring/Small" on the 16px glyph, not the 32px hit box (575:32853):
+   a 1px white halo inside a brand band ending 3px out. It stays inside the
+   toast, so the host's `overflow: clip` never cuts it. */
+.close:focus-visible .close-icon {
   box-shadow:
-    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
-    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
-  position: relative;
-  z-index: 1;
+    0 0 0 var(--toast-close-focus-ring-offset) var(--focus-ring-color-inner),
+    0 0 0 var(--toast-close-focus-ring-width) var(--focus-ring-color-outer);
 }
 
 .close-icon {
@@ -276,7 +315,8 @@
 /* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  :host {
+  :host,
+  :host(.is-dismissing) {
     animation: none;
   }
 }

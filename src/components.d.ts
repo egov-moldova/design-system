@@ -3377,7 +3377,8 @@ export namespace Components {
      * button (shown by default — `closable` defaults to `true`).
      * Placement, vertical stacking and auto-dismiss are the consumer's
      * responsibility — this atom is just the surface. Its entrance animation
-     * (slide-down + fade-in) plays once on mount.
+     * (slide-down + fade-in) plays once on mount; closing it fades it out in
+     * place before `mudClose` fires (Figma Behavior › dismissal).
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
@@ -5215,7 +5216,8 @@ declare global {
      * button (shown by default — `closable` defaults to `true`).
      * Placement, vertical stacking and auto-dismiss are the consumer's
      * responsibility — this atom is just the surface. Its entrance animation
-     * (slide-down + fade-in) plays once on mount.
+     * (slide-down + fade-in) plays once on mount; closing it fades it out in
+     * place before `mudClose` fires (Figma Behavior › dismissal).
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
@@ -9083,7 +9085,8 @@ declare namespace LocalJSX {
      * button (shown by default — `closable` defaults to `true`).
      * Placement, vertical stacking and auto-dismiss are the consumer's
      * responsibility — this atom is just the surface. Its entrance animation
-     * (slide-down + fade-in) plays once on mount.
+     * (slide-down + fade-in) plays once on mount; closing it fades it out in
+     * place before `mudClose` fires (Figma Behavior › dismissal).
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
@@ -9114,7 +9117,7 @@ declare namespace LocalJSX {
          */
         "iconName"?: IconName;
         /**
-          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
+          * Fires once the close fade-out has finished (at once under `prefers-reduced-motion`). Payload is `void` — the consumer removes the toast from the DOM.
          */
         "onMudClose"?: (event: MudToastCustomEvent<void>) => void;
         /**
@@ -10698,7 +10701,8 @@ declare module "@stencil/core" {
              * button (shown by default — `closable` defaults to `true`).
              * Placement, vertical stacking and auto-dismiss are the consumer's
              * responsibility — this atom is just the surface. Its entrance animation
-             * (slide-down + fade-in) plays once on mount.
+             * (slide-down + fade-in) plays once on mount; closing it fades it out in
+             * place before `mudClose` fires (Figma Behavior › dismissal).
              * Pattern B (atom-display + interactive close): the close affordance lives
              * inside shadow DOM so it participates in tab order with a real
              * `button` role. The body itself is not interactive.
