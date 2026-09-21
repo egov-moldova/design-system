@@ -1,0 +1,518 @@
+{
+  "component": "mud-badge",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "149:4937",
+        "reason": "numbered-badge Style=Light (#FFFFFF) has no mud-badge variant."
+      },
+      {
+        "node": "149:4949",
+        "reason": "numbered-badge Style=Light (#FFFFFF) has no mud-badge variant."
+      },
+      {
+        "node": "149:4953",
+        "reason": "numbered-badge Style=Light (#FFFFFF) has no mud-badge variant."
+      },
+      {
+        "node": "149:4939",
+        "reason": "numbered-badge Style=Neutral (#F1F1F1) has no mud-badge variant."
+      },
+      {
+        "node": "149:4951",
+        "reason": "numbered-badge Style=Neutral (#F1F1F1) has no mud-badge variant."
+      },
+      {
+        "node": "149:4955",
+        "reason": "numbered-badge Style=Neutral (#F1F1F1) has no mud-badge variant."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "atoms-badge--default",
+    "capture": {
+      "selector": "mud-badge",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "notif-numbered-sm",
+      "node": "962:36921",
+      "html": "<mud-badge type=\"numbered\" variant=\"danger\" size=\"sm\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "962:36921",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingLeft": "2px",
+            "paddingRight": "2px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma 962:36921 (docs instance 964:36927) fills #D92D20 and pads 0 2px. It hugs vertically with no block padding, so its height is the 12px line box. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "962:36921",
+          "styles": {
+            "fontSize": "10px",
+            "lineHeight": "12px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 10/12 in #FFFFFF; \"1\" is the set's default Counter Value."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "962:36921",
+          "absent": true,
+          "note": "A numbered variant carries no inner pip."
+        }
+      ]
+    },
+    {
+      "name": "notif-numbered-md",
+      "node": "53:657",
+      "html": "<mud-badge type=\"numbered\" variant=\"danger\" size=\"md\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:657",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingLeft": "2px",
+            "paddingRight": "2px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 53:657 (docs instance 797:43144) fills #D92D20 and pads 0 2px. Its height is the explicit 16px the node declares. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:657",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #FFFFFF; \"1\" is the set's default Counter Value."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:657",
+          "absent": true,
+          "note": "A numbered variant carries no inner pip."
+        }
+      ]
+    },
+    {
+      "name": "notif-numbered-lg",
+      "node": "53:661",
+      "html": "<mud-badge type=\"numbered\" variant=\"danger\" size=\"lg\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:661",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingLeft": "4px",
+            "paddingRight": "4px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 53:661 (docs instance 551:18359) fills #D92D20 and pads 0 4px. It hugs vertically with no block padding, so its height is the 16px line box. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:661",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #FFFFFF; \"1\" is the set's default Counter Value."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:661",
+          "absent": true,
+          "note": "A numbered variant carries no inner pip."
+        }
+      ]
+    },
+    {
+      "name": "notif-numbered-xl",
+      "node": "797:43130",
+      "html": "<mud-badge type=\"numbered\" variant=\"danger\" size=\"xl\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "797:43130",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingLeft": "4px",
+            "paddingRight": "4px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 797:43130 (docs instance 551:18354) fills #D92D20 and pads 0 4px. It hugs vertically with no block padding, so its height is the 20px line box. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "797:43130",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 14/20 in #FFFFFF; \"1\" is the set's default Counter Value."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "797:43130",
+          "absent": true,
+          "note": "A numbered variant carries no inner pip."
+        }
+      ]
+    },
+    {
+      "name": "notif-dot-xs",
+      "node": "53:666",
+      "html": "<mud-badge type=\"dot\" variant=\"danger\" size=\"xs\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:666",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 53:666 (docs instance 551:18348) fills #D92D20. Its outer size is NOT asserted: the instance hugs with no declared dimensions and, for xs/sm, no child, so node data yields no geometry - that rung's size needs the pixel reference. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:666",
+          "absent": true,
+          "note": "Figma 53:666 has no child at all - this rung is a solid pip, so an inner dot would be an element with no design."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:666",
+          "absent": true,
+          "note": "A dot variant shows no count."
+        }
+      ]
+    },
+    {
+      "name": "notif-dot-sm",
+      "node": "53:665",
+      "html": "<mud-badge type=\"dot\" variant=\"danger\" size=\"sm\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:665",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 53:665 (docs instance 551:18343) fills #D92D20. Its outer size is NOT asserted: the instance hugs with no declared dimensions and, for xs/sm, no child, so node data yields no geometry - that rung's size needs the pixel reference. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:665",
+          "absent": true,
+          "note": "Figma 53:665 has no child at all - this rung is a solid pip, so an inner dot would be an element with no design."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:665",
+          "absent": true,
+          "note": "A dot variant shows no count."
+        }
+      ]
+    },
+    {
+      "name": "notif-dot-md",
+      "node": "53:659",
+      "html": "<mud-badge type=\"dot\" variant=\"danger\" size=\"md\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:659",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 53:659 (docs instance 551:18338) fills #D92D20. Its outer size is NOT asserted: the instance hugs with no declared dimensions and, for xs/sm, no child, so node data yields no geometry - that rung's size needs the pixel reference. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:659",
+          "styles": {
+            "boxWidth": "2px",
+            "boxHeight": "2px",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma places a 2x2 white Circle inside this variant."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:659",
+          "absent": true,
+          "note": "A dot variant shows no count."
+        }
+      ]
+    },
+    {
+      "name": "notif-dot-lg",
+      "node": "53:663",
+      "html": "<mud-badge type=\"dot\" variant=\"danger\" size=\"lg\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "53:663",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 53:663 (docs instance 797:43135) fills #D92D20. Its outer size is NOT asserted: the instance hugs with no declared dimensions and, for xs/sm, no child, so node data yields no geometry - that rung's size needs the pixel reference. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "53:663",
+          "styles": {
+            "boxWidth": "3px",
+            "boxHeight": "3px",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma places a 3x3 white Circle inside this variant."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "53:663",
+          "absent": true,
+          "note": "A dot variant shows no count."
+        }
+      ]
+    },
+    {
+      "name": "notif-dot-xl",
+      "node": "797:43132",
+      "html": "<mud-badge type=\"dot\" variant=\"danger\" size=\"xl\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "797:43132",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 797:43132 (docs instance 551:18333) fills #D92D20. Its outer size is NOT asserted: the instance hugs with no declared dimensions and, for xs/sm, no child, so node data yields no geometry - that rung's size needs the pixel reference. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-dot",
+          "node": "797:43132",
+          "styles": {
+            "boxWidth": "3px",
+            "boxHeight": "3px",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma places a 3x3 white Circle inside this variant."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "797:43132",
+          "absent": true,
+          "note": "A dot variant shows no count."
+        }
+      ]
+    },
+    {
+      "name": "numbered-dark-md",
+      "node": "149:4933",
+      "html": "<mud-badge type=\"numbered\" variant=\"default\" size=\"md\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4933",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "paddingLeft": "2px",
+            "paddingRight": "2px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 149:4933 (numbered-badge Style=Dark) fills #1E1E1E and pads 0 2px. Its height is the explicit 16px the node declares. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4933",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "numbered-dark-lg",
+      "node": "149:4941",
+      "html": "<mud-badge type=\"numbered\" variant=\"default\" size=\"lg\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4941",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "paddingLeft": "4px",
+            "paddingRight": "4px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 149:4941 (numbered-badge Style=Dark) fills #1E1E1E and pads 0 4px. It hugs vertically with no block padding, so its height is the 16px line box. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4941",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "numbered-dark-xl",
+      "node": "149:4945",
+      "html": "<mud-badge type=\"numbered\" variant=\"default\" size=\"xl\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4945",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 149:4945 (numbered-badge Style=Dark) fills #1E1E1E and pads 0 8px. It hugs vertically with no block padding, so its height is the 20px line box. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4945",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "color": "#FFFFFF",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 14/20 in #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "numbered-accent-md",
+      "node": "149:4935",
+      "html": "<mud-badge type=\"numbered\" variant=\"warning\" size=\"md\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4935",
+          "styles": {
+            "backgroundColor": "#FEC84B",
+            "paddingLeft": "2px",
+            "paddingRight": "2px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 149:4935 (numbered-badge Style=Accent) fills #FEC84B and pads 0 2px. Its height is the explicit 16px the node declares. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4935",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#121212",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #121212."
+        }
+      ]
+    },
+    {
+      "name": "numbered-accent-lg",
+      "node": "149:4943",
+      "html": "<mud-badge type=\"numbered\" variant=\"warning\" size=\"lg\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4943",
+          "styles": {
+            "backgroundColor": "#FEC84B",
+            "paddingLeft": "4px",
+            "paddingRight": "4px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 149:4943 (numbered-badge Style=Accent) fills #FEC84B and pads 0 4px. It hugs vertically with no block padding, so its height is the 16px line box. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4943",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "color": "#121212",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 12/16 in #121212."
+        }
+      ]
+    },
+    {
+      "name": "numbered-accent-xl",
+      "node": "149:4947",
+      "html": "<mud-badge type=\"numbered\" variant=\"warning\" size=\"xl\" count=\"1\"></mud-badge>",
+      "expect": [
+        {
+          "target": "mud-badge",
+          "node": "149:4947",
+          "styles": {
+            "backgroundColor": "#FEC84B",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 149:4947 (numbered-badge Style=Accent) fills #FEC84B and pads 0 8px. It hugs vertically with no block padding, so its height is the 20px line box. This is the set the component's xl padding token follows; notification-badge pads its own xl 0 4px instead. Figma gives borderRadius 999px on every variant; the token resolves to 9999px. Both exceed half of every rung, so Chromium clamps each to the same pill - an interpretation, not drift."
+        },
+        {
+          "target": "mud-badge .badge-count",
+          "node": "149:4947",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "color": "#121212",
+            "textContent": "1"
+          },
+          "note": "Figma text style for this rung is 14/20 in #121212."
+        }
+      ]
+    }
+  ]
+}
