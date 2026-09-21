@@ -16,7 +16,8 @@ button (shown by default — `closable` defaults to `true`).
 
 Placement, vertical stacking and auto-dismiss are the consumer's
 responsibility — this atom is just the surface. Its entrance animation
-(slide-down + fade-in) plays once on mount.
+(slide-down + fade-in) plays once on mount; closing it fades it out in
+place before `mudClose` fires (Figma Behavior › dismissal).
 
 Pattern B (atom-display + interactive close): the close affordance lives
 inside shadow DOM so it participates in tab order with a real
@@ -43,9 +44,9 @@ Live-region routing:
 
 ## Events
 
-| Event      | Description                                                                                                                              | Type                |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `mudClose` | Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal. | `CustomEvent<void>` |
+| Event      | Description                                                                                                                                           | Type                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `mudClose` | Fires once the close fade-out has finished (at once under `prefers-reduced-motion`). Payload is `void` — the consumer removes the toast from the DOM. | `CustomEvent<void>` |
 
 
 ## Slots
