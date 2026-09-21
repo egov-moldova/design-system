@@ -459,6 +459,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Create: `scripts/__tests__/audit/fix-brief.spec.mjs`
 - Modify: `scripts/__tests__/audit/15-style-parity.spec.mjs`
 - Modify: `scripts/__tests__/audit/figma-manifest.spec.mjs`
+- Modify: `scripts/__tests__/audit/run-all.spec.mjs`
+- Modify: `scripts/audit/lib/json-output.mjs`
+- Modify: `scripts/__tests__/audit/lib-json-output.spec.mjs`
 - Create: `scripts/__tests__/audit/__fixtures__/verdict/`
 - Modify: `scripts/audit/lib/storybook-helpers.mjs`
 - Read only: `scripts/audit/lib/changed-components.mjs`
