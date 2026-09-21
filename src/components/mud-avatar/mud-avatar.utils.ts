@@ -6,16 +6,16 @@ import type { IconSize } from '../mud-icon/mud-icon.types';
  *
  * The avatar slot is a circle whose diameter is the rung value
  * (24 / 32 / 40 / 48 / 72 px); the glyph inside follows `mud-icon`'s scale
- * (16 / 20 / 24 / 32 px). `xs` asks for the smallest of those, while the
- * rendered box stays at the avatar's own `--avatar-icon-size-xs` (12px) —
- * `.icon` in mud-avatar.css pins it.
+ * (16 / 20 / 24 / 32 px). These values mirror the `--avatar-icon-size-*`
+ * tokens, which carry the glyph box Figma draws in set 203:2112 — note that
+ * `xl` keeps the 24px glyph instead of growing with the circle.
  */
 export const ICON_SIZE_FOR: Record<AvatarSize, IconSize> = {
   xs: 16,
-  sm: 16,
+  sm: 20,
   md: 20,
   lg: 24,
-  xl: 32,
+  xl: 24,
 };
 
 /**
