@@ -4,7 +4,25 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { diffTokens, extractComponentBlock, flattenDtcg, resolveMode } from '../../audit/13-token-diff.mjs';
+import {
+  componentRoot,
+  diffTokens,
+  extractComponentBlock,
+  flattenDtcg,
+  resolveMode,
+} from '../../audit/13-token-diff.mjs';
+
+describe('13-token-diff: componentRoot', () => {
+  it("reads the component file's own root, skipping DTCG `$` metadata", () => {
+    assert.equal(componentRoot({ $description: 'x', searchInput: {} }, 'search-input'), 'searchInput');
+  });
+
+  it('falls back to the bare name for an empty, null or multi-root document', () => {
+    assert.equal(componentRoot(null, 'search-input'), 'search-input');
+    assert.equal(componentRoot({}, 'search-input'), 'search-input');
+    assert.equal(componentRoot({ a: {}, b: {} }, 'search-input'), 'search-input');
+  });
+});
 
 describe('13-token-diff: extractComponentBlock', () => {
   const block = { gap: { $value: '8px', $type: 'dimension' } };
@@ -17,6 +35,10 @@ describe('13-token-diff: extractComponentBlock', () => {
     assert.deepEqual(extractComponentBlock({ components: { searchInput: block } }, 'search-input', 'searchInput'), {
       searchInput: block,
     });
+  });
+
+  it('keys the block by the bare name when no root is given', () => {
+    assert.deepEqual(extractComponentBlock({ button: block }, 'button'), { button: block });
   });
 
   it('returns null when the export has no block under either name', () => {

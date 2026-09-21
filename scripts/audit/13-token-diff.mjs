@@ -203,14 +203,16 @@ function loadComponentSources(componentName, figmaExportPath) {
   }
   const before = readJsonOrFail(currentPath, 'current');
   const figmaAll = readJsonOrFail(figmaAbs, 'figma export');
-  const after = extractComponentBlock(figmaAll, bare, Object.keys(before)[0] ?? bare);
+  const root = componentRoot(before, bare);
+  const after = extractComponentBlock(figmaAll, bare, root);
   if (!after) {
+    const names = root === bare ? `"${bare}"` : `"${bare}" or "${root}"`;
     return {
       error: finding({
         severity: 'info',
         code: 'TOKEN-DIFF-NO-FIGMA-BLOCK',
         file: figmaExportPath,
-        message: `No "${bare}" block found in Figma export — component may be unreleased or named differently in Figma.`,
+        message: `No ${names} block found in Figma export — component may be unreleased or named differently in Figma.`,
       }),
     };
   }
@@ -238,10 +240,16 @@ function relativePathFor(absPath) {
     .replace(/\\/g, '/');
 }
 
+// The single non-`$` key of a component token file, else the bare component name.
+export function componentRoot(doc, bare) {
+  const roots = doc && typeof doc === 'object' ? Object.keys(doc).filter(key => !key.startsWith('$')) : [];
+  return roots.length === 1 ? roots[0] : bare;
+}
+
 // The block comes back under `root`, the current file's own root key (`searchInput` in
 // search-input.tokens.json), or every flattened path differs from the current file's and the
 // diff reports each token as removed and re-added. The export may name it either way.
-export function extractComponentBlock(figmaAll, bare, root) {
+export function extractComponentBlock(figmaAll, bare, root = bare) {
   // Figma exports vary in nesting; check a few common layouts.
   if (!figmaAll || typeof figmaAll !== 'object') return null;
   for (const scope of [figmaAll, figmaAll.components]) {
