@@ -142,6 +142,11 @@ describe('tokens-validate — dark-mode parity', () => {
     assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': outer }), []);
   });
 
+  it('accepts CSS colour keywords that already look right in both themes', () => {
+    const keywords = { overlay: { clear: color('transparent'), ink: color('currentColor'), host: color('inherit') } };
+    assert.deepEqual(darkParity({ 'tokens/core/overlay.tokens.json': keywords }), []);
+  });
+
   it('does not ask a non-colour token for a dark override', () => {
     const width = { focusRing: { width: { outer: { $value: '3px', $type: 'dimension' } } } };
     assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': width }), []);

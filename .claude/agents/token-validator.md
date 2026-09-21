@@ -64,7 +64,7 @@ For every finding, also note whether `yarn tokens.lint` or `yarn lint.colors` al
 
 ### Step 5 — Surface the WCAG / Figma angle when relevant
 
-If any `color.*` finding (especially `dark-mode-missing` on a semantic color used by a focus state, disabled state, or border) could affect WCAG 2.1 AA contrast, call it out and point at Figma node `2753-5965` (see context in the project plan) as the authoritative requirements source. Do NOT attempt to fetch Figma yourself unless the figma MCP is authenticated.
+If any colour finding (especially `dark-mode-missing` on a semantic or `focusRing.*` colour used by a focus state, disabled state, or border) could affect WCAG 2.1 AA contrast, call it out and point at Figma node `2753-5965` (see context in the project plan) as the authoritative requirements source. Do NOT attempt to fetch Figma yourself unless the figma MCP is authenticated.
 
 ### Step 6 — Output
 
