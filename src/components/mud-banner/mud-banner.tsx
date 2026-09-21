@@ -190,7 +190,12 @@ export class MudBanner {
           >
             <span class="close-icon" aria-hidden="true">
               <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M3.333 3.333 L12.667 12.667 M12.667 3.333 L3.333 12.667"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
               </svg>
             </span>
           </button>

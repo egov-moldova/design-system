@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-banner · @egov-moldova/mud-web-components</title>
+  </head>
+  <body data-component="mud-banner">
+    <main class="demo-main">
+      <section id="mud-banner" class="component-section">
+        <h2>&lt;mud-banner&gt;</h2>
+        <p class="label">
+          Full-width system message for the top of a page. <code>variant</code> picks the color family —
+          <code>info</code>, <code>warning</code> or <code>error</code> (there is no <code>success</code>);
+          <code>emphasis</code> picks the surface — <code>subtle</code> (tinted) or <code>strong</code> (filled).
+          Placement and removal belong to the consumer: a dismissible banner only emits <code>mudDismiss</code>.
+        </p>
+
+        <div class="subsection">
+          <h3>Subtle</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
+            <mud-banner variant="info" emphasis="subtle">
+              Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.
+            </mud-banner>
+            <mud-banner variant="warning" emphasis="subtle"> Sesiunea dumneavoastră expiră în 5 minute. </mud-banner>
+            <mud-banner variant="error" emphasis="subtle">
+              Serviciul de semnare electronică este momentan indisponibil.
+            </mud-banner>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Strong</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
+            <mud-banner variant="info" emphasis="strong">
+              Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.
+            </mud-banner>
+            <mud-banner variant="warning" emphasis="strong"> Sesiunea dumneavoastră expiră în 5 minute. </mud-banner>
+            <mud-banner variant="error" emphasis="strong">
+              Serviciul de semnare electronică este momentan indisponibil.
+            </mud-banner>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Link and close</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
+            <mud-banner variant="info" emphasis="subtle" link-text="Detalii" link-href="#link-target">
+              Mentenanță programată astăzi.
+            </mud-banner>
+            <mud-banner variant="info" emphasis="strong" link-text="Detalii" link-href="#link-target">
+              Mentenanță programată astăzi.
+            </mud-banner>
+            <mud-banner variant="warning" emphasis="subtle" dismissible="">
+              Sesiunea dumneavoastră expiră în 5 minute.
+            </mud-banner>
+            <mud-banner
+              variant="error"
+              emphasis="strong"
+              dismissible=""
+              link-text="Reîncercați"
+              link-href="#link-target"
+            >
+              Serviciul de semnare electronică este momentan indisponibil.
+            </mud-banner>
+          </div>
+          <span class="label">
+            Tab reaches the link, then the close button; both draw the focus ring on every fill.
+          </span>
+        </div>
+
+        <div class="subsection">
+          <h3>Icon</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
+            <mud-banner variant="info" emphasis="subtle" icon-name="calendar">
+              Programarea dumneavoastră este confirmată pentru 15 aprilie.
+            </mud-banner>
+            <mud-banner variant="info" emphasis="subtle">
+              <mud-icon slot="icon-start" name="notification" size="24"></mud-icon>
+              Icon supplied through the <code>icon-start</code> slot.
+            </mud-banner>
+          </div>
+          <span class="label">icon-name overrides the per-variant default; the slot overrides both.</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
+            <mud-banner variant="warning" emphasis="subtle" dismissible="" link-text="Detalii" link-href="#link-target">
+              Mesaj foarte lung: începând cu data de 15 aprilie, depunerea cererilor pentru actele de identitate se
+              efectuează exclusiv prin programare online, iar ghișeele fizice vor deservi doar cazurile urgente.
+            </mud-banner>
+            <div style="max-width: 420px">
+              <mud-banner variant="info" emphasis="subtle" dismissible="">
+                Într-un container îngust textul se rupe pe mai multe rânduri.
+              </mud-banner>
+            </div>
+          </div>
+          <span class="label">
+            A long message keeps clear of the close button; below 640px the banner switches to the mobile layout.
+          </span>
+        </div>
+
+        <div class="subsection">
+          <h3>Dismissal</h3>
+          <div class="row" style="align-items: flex-start">
+            <div style="flex: 1 1 320px">
+              <div id="demo-banner-slot">
+                <mud-banner variant="info" emphasis="strong" dismissible="">
+                  Închideți acest banner pentru a vedea evenimentul.
+                </mud-banner>
+              </div>
+              <button id="demo-banner-restore" type="button" style="margin-top: var(--spacing-12)">
+                Afișează din nou
+              </button>
+            </div>
+            <div class="cell">
+              <pre id="banner-log" style="margin: 0; min-width: 260px; min-height: 100px">mudDismiss log</pre>
+            </div>
+          </div>
+          <span class="label">The component emits mudDismiss; removing the banner is the consumer's job.</span>
+        </div>
+      </section>
+      <script type="module">
+        const log = document.getElementById('banner-log');
+        const slot = document.getElementById('demo-banner-slot');
+        const restore = document.getElementById('demo-banner-restore');
+        const write = line => {
+          if (log) log.textContent = `${line}\n${log.textContent}`;
+        };
+        // The component only announces the dismissal; taking the banner out of
+        // the DOM is the consumer's job, which is what this does.
+        const template = slot?.firstElementChild?.cloneNode(true);
+        const wire = el => {
+          el.addEventListener('mudDismiss', () => {
+            write(`mudDismiss @ ${new Date().toLocaleTimeString()}`);
+            el.remove();
+          });
+        };
+        if (slot?.firstElementChild) wire(slot.firstElementChild);
+        restore?.addEventListener('click', () => {
+          if (!slot || slot.firstElementChild || !template) return;
+          const copy = template.cloneNode(true);
+          slot.appendChild(copy);
+          wire(copy);
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

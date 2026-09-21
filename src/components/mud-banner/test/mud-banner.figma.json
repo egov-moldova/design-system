@@ -1,0 +1,663 @@
+{
+  "$comment": "Figma state manifest for mud-banner - values copied from the banner set (106:1053) and the Banner page (566:27665: Types 566:27750, Placement 577:33061, Dismissal 571:29230, Target Sizes 578:33349). The set has no Success style and no hover / focus frames. Every master hides the link layer, so the link is style-only.",
+  "component": "mud-banner",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-banner--default",
+    "viewport": {
+      "width": 1280,
+      "height": 600
+    },
+    "capture": {
+      "selector": "mud-banner",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "desktop-info-subtle",
+      "node": "106:1052",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"info\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "desktop-warning-subtle",
+      "node": "255:6612",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"warning\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEEFC6",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "desktop-error-subtle",
+      "node": "106:1054",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"error\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEE4E2",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "desktop-info-strong",
+      "node": "255:6641",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"info\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "desktop-warning-strong",
+      "node": "255:6673",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"warning\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEC84B",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "desktop-error-strong",
+      "node": "255:6667",
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"error\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "boxWidth": "1248px"
+          },
+          "note": "Figma padding 12px 0px, width 1248 (contextual fill). The close sits absolutely 16px from the right edge, so the row needs no inline padding."
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "8px",
+            "alignItems": "center"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          },
+          "note": "Desktop/Body/Small."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-banner .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        }
+      ]
+    },
+    {
+      "name": "mobile-info-subtle",
+      "node": "574:30062",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"info\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "mobile-warning-subtle",
+      "node": "574:30188",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"warning\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEEFC6",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "mobile-error-subtle",
+      "node": "574:30168",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"error\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEE4E2",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "mobile-info-strong",
+      "node": "574:30228",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"info\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "mobile-warning-strong",
+      "node": "574:30242",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"warning\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#FEC84B",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#121212"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "mobile-error-strong",
+      "node": "574:30235",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"error\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner",
+          "styles": {
+            "backgroundColor": "#D92D20",
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "columnGap": "16px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-banner .content",
+          "styles": {
+            "columnGap": "12px"
+          }
+        },
+        {
+          "target": "mud-banner .message",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#FFFFFF"
+          },
+          "note": "Mobile/Body/Default — larger than the desktop 14/20."
+        },
+        {
+          "target": "mud-banner .icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        }
+      ],
+      "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
+    },
+    {
+      "name": "desktop-link",
+      "node": "106:1034",
+      "pixel": false,
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"info\" emphasis=\"subtle\" dismissible link-text=\"Click here\" link-href=\"#\">Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner .link",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#0058D2",
+            "textDecorationLine": "underline"
+          },
+          "note": "The link layer is the link component 53:628 (Primary, 16: Medium, Underline=true). It is hidden in every master, so there is no reference image to diff."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer",
+      "node": "578:33523",
+      "pixel": false,
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"warning\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          },
+          "note": "Target Sizes, pointer devices: the 32x32 surface 578:33523 over the close, described by 578:33397."
+        }
+      ]
+    },
+    {
+      "name": "target-touch",
+      "node": "574:30158",
+      "pixel": false,
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-banner variant=\"warning\" emphasis=\"strong\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. </mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma's mobile master draws the close in a 24x24 Icon Container (574:30158). The 40x40 touch target that 578:33410 asks for is an ::after overlay extending the hit area 8px on every side, which a computed-style check cannot see; widening the box itself would take 16px from the message and change where it wraps."
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,8 @@
 /* mud-banner — full-width top-of-page system message.
    The surface color comes from the variant × emphasis rules below; default
    props (info / subtle) reflect to attributes so the surface matches before
-   hydration. Banner references the semantic color tokens directly because the
-   tokenhaus sync does not (yet) define `--banner-*` component tokens for this
-   new component. */
+   hydration. Every value is a `--banner-*` component token
+   (tokens/core/components/banner.tokens.json). */
 
 :host {
   display: flex;
@@ -12,19 +11,23 @@
   position: relative;
   box-sizing: border-box;
   inline-size: 100%;
-  gap: var(--spacing-8, 8px);
-  padding-block: var(--spacing-12, 12px);
-  /* Inline padding leaves room for the absolutely-positioned close button so
-     the centered content never collides with it. */
-  padding-inline: var(--spacing-48, 48px);
-  font-family: var(--font-family-primary, 'Onest', sans-serif);
+  gap: var(--banner-container-gap);
+  padding-block: var(--banner-container-padding-block);
+  /* Figma pads the row 12px 0 (106:1052); the close is absolute, so the row
+     itself needs no inline padding. */
+  padding-inline: var(--banner-container-padding-inline);
+  font-family: var(--banner-message-font-family);
 }
 
 .content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-8, 8px);
+  gap: var(--banner-container-content-gap);
   min-inline-size: 0;
+  /* The centred content keeps clear of the absolutely-positioned close. The
+     margin is symmetric, so the centre stays where Figma puts it; it only
+     caps how far a long message may run. */
+  margin-inline: var(--banner-container-content-inset);
 }
 
 .icon {
@@ -32,39 +35,45 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: 24px;
-  block-size: 24px;
+  inline-size: var(--banner-icon-size);
+  block-size: var(--banner-icon-size);
 }
 
 .message {
   margin: 0;
-  font-size: var(--font-size-fs-14, 14px);
-  line-height: var(--line-height-lh-20, 20px);
-  font-weight: var(--font-weight-fw-regular, 400);
-  white-space: nowrap;
+  font-size: var(--banner-message-font-size);
+  line-height: var(--banner-message-line-height);
+  font-weight: var(--banner-message-font-weight);
+  /* Figma's message is one short line, and it still renders as one. A long
+     message wraps rather than running off the page: with `nowrap` it pushed
+     past the viewport and gave the whole page a horizontal scrollbar. */
+  overflow-wrap: anywhere;
 }
 
 .link {
   flex-shrink: 0;
-  font-size: var(--font-size-fs-16, 16px);
-  line-height: var(--line-height-lh-24, 24px);
+  font-size: var(--banner-link-font-size);
+  line-height: var(--banner-link-line-height);
   text-decoration: underline;
-  text-underline-offset: 2px;
-  color: var(--color-text-brand-default, #0058d2);
+  text-underline-offset: var(--banner-link-underline-offset);
+  color: var(--banner-link-color);
   cursor: pointer;
 }
 
 .close {
   position: absolute;
-  inset-inline-end: var(--spacing-16, 16px);
+  /* Figma puts the 16px glyph 16px from the right edge (106:1029 at x=1216 of
+     1248). The 32x32 pointer target (Target Sizes, 578:33523) is centred on
+     that glyph, so the button itself ends 8px from the edge. */
+  inset-inline-end: var(--banner-close-inset-inline-end);
   inset-block-start: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--banner-close-size-pointer);
+  block-size: var(--banner-close-size-pointer);
   padding: 0;
   margin: 0;
   appearance: none;
@@ -72,7 +81,7 @@
   background: transparent;
   color: inherit;
   cursor: pointer;
-  border-radius: var(--border-radius-4, 4px);
+  border-radius: var(--banner-close-border-radius);
   transition: background-color 150ms ease;
 }
 
@@ -82,55 +91,100 @@
 
 .close-icon {
   display: inline-flex;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--banner-close-icon-size);
+  block-size: var(--banner-close-icon-size);
 }
 
 .close svg {
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--banner-close-icon-size);
+  block-size: var(--banner-close-icon-size);
 }
 
-.close:focus-visible {
+/* Focus ring on both focusable parts. The browser's default ring is drawn in
+   its own blue, which disappears on the strong surfaces (the info fill is the
+   same blue), so every focusable draws the design-system ring instead: a white
+   inner halo inside a blue band, readable on all six fills. */
+.close:focus-visible,
+.link:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 var(--focus-ring-width-inner, 2px) var(--focus-ring-color-inner, currentColor),
-    0 0 0 calc(var(--focus-ring-width-inner, 2px) + var(--focus-ring-width-outer, 2px))
-      var(--focus-ring-color-outer, transparent);
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.link:focus-visible {
+  border-radius: var(--banner-close-border-radius);
 }
 
 /* ---------- Variant × emphasis surfaces (Figma "Styles") ---------- */
 
 /* Strong = filled background, on-color foreground. */
 :host([emphasis='strong'][variant='info']) {
-  background: var(--color-background-brand-default, #0058d2);
-  color: var(--color-text-base-inverse-on-color, #fff);
+  background: var(--banner-info-strong-background);
+  color: var(--banner-info-strong-text);
 }
 
 :host([emphasis='strong'][variant='warning']) {
-  background: var(--color-background-warning-accent, #fec84b);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-warning-strong-background);
+  color: var(--banner-warning-strong-text);
 }
 
 :host([emphasis='strong'][variant='error']) {
-  background: var(--color-background-danger-default, #d92d20);
-  color: var(--color-text-base-inverse-on-color, #fff);
+  background: var(--banner-error-strong-background);
+  color: var(--banner-error-strong-text);
 }
 
 /* Subtle = tinted background, dark foreground. */
 :host([emphasis='subtle'][variant='info']) {
-  background: var(--color-background-brand-secondary, #e8f0fb);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-info-subtle-background);
+  color: var(--banner-info-subtle-text);
 }
 
 :host([emphasis='subtle'][variant='warning']) {
-  background: var(--color-background-warning-secondary, #feefc6);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-warning-subtle-background);
+  color: var(--banner-warning-subtle-text);
 }
 
 :host([emphasis='subtle'][variant='error']) {
-  background: var(--color-background-danger-secondary, #fee4e2);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-error-subtle-background);
+  color: var(--banner-error-subtle-text);
+}
+
+/* ---------- Icon color (Figma paints it per style, not with the text) ---------- */
+
+:host([emphasis='subtle'][variant='info']) .icon {
+  --icon-color: var(--banner-info-subtle-icon);
+}
+
+:host([emphasis='subtle'][variant='warning']) .icon {
+  --icon-color: var(--banner-warning-subtle-icon);
+}
+
+:host([emphasis='subtle'][variant='error']) .icon {
+  --icon-color: var(--banner-error-subtle-icon);
+}
+
+:host([emphasis='strong'][variant='info']) .icon {
+  --icon-color: var(--banner-info-strong-icon);
+}
+
+:host([emphasis='strong'][variant='error']) .icon {
+  --icon-color: var(--banner-error-strong-icon);
+}
+
+/* The shared blue focus band reads only 2.77:1 on the amber fill, under the
+   3:1 a focus indicator needs (SC 1.4.11). On this one surface the band takes
+   the dark amber the icon already uses (3.51:1); every other fill keeps the
+   default ring, which is 3.55:1 or better. */
+:host([emphasis='strong'][variant='warning']) {
+  --focus-ring-color-outer: var(--banner-warning-strong-icon);
+}
+
+/* Warning strong keeps the dark amber glyph on the amber fill (255:6673). */
+:host([emphasis='strong'][variant='warning']) .icon {
+  --icon-color: var(--banner-warning-strong-icon);
 }
 
 /* On a filled (strong) surface a brand-blue link is low-contrast, so the link
@@ -144,30 +198,49 @@
   :host {
     align-items: flex-start;
     justify-content: flex-start;
-    padding-inline-start: var(--spacing-16, 16px);
-    padding-inline-end: var(--spacing-12, 12px);
+    /* Figma mobile: padding 12px 12px 12px 16px, 16px between the content and
+       the close (574:30062). */
+    gap: var(--banner-mobile-gap);
+    padding-inline-start: var(--banner-mobile-padding-inline-start);
+    padding-inline-end: var(--banner-mobile-padding-inline-end);
   }
 
   .content {
     flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--spacing-12, 12px);
+    gap: var(--banner-mobile-content-gap);
+    margin-inline: 0;
   }
 
   .message {
     flex: 1 1 0;
     min-inline-size: 0;
-    white-space: normal;
-    font-size: var(--font-size-fs-16, 16px);
-    line-height: var(--line-height-lh-24, 24px);
+    font-size: var(--banner-message-font-size-mobile);
+    line-height: var(--banner-message-line-height-mobile);
   }
 
+  /* Figma's mobile master draws the close in a 24x24 box, 4px around the
+     glyph (574:30158). Widening the box to the 40x40 touch target would take
+     16px from the message and change where it wraps, so the box stays 24x24
+     and the ::after overlay below grows the hit area instead. */
   .close {
-    position: static;
+    position: relative;
+    /* The desktop rule offsets the absolutely-positioned button; a relative
+       one would be shifted by the same inset. */
+    inset-inline-end: auto;
+    inset-block-start: auto;
     transform: none;
-    inline-size: 40px;
-    block-size: 40px;
-    padding: var(--spacing-4, 4px);
+    inline-size: var(--banner-close-size-mobile);
+    block-size: var(--banner-close-size-mobile);
+    padding: var(--banner-close-padding);
+  }
+
+  /* Touch target 40x40 (Target Sizes, 578:33410): the overlay extends the
+     button's hit area 8px on every side without affecting layout. */
+  .close::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--banner-close-hit-area-inset));
   }
 }

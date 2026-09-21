@@ -67,6 +67,7 @@ export const CATEGORIES: Category[] = [
     slug: 'feedback',
     title: 'Feedback & display',
     components: [
+      { tag: 'mud-banner', blurb: 'Full-width system message — info / warning / error, subtle / strong' },
       { tag: 'mud-avatar', blurb: 'Photo / initials / icon avatar' },
       { tag: 'mud-badge', blurb: 'Numbered / dot badge' },
       { tag: 'mud-tag', blurb: 'Status / info tag' },
