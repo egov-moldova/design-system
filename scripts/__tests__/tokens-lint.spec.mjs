@@ -6,6 +6,8 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { GENERATED_FILES } from '../sync-tokens-from-tokenhaus.mjs';
+
 const SCRIPT = fileURLToPath(new URL('../tokens-lint.mjs', import.meta.url));
 const tempDirs = [];
 
@@ -39,9 +41,46 @@ describe('tokens-lint — key naming', () => {
     assert.equal(status, 0);
   });
 
-  it('keeps accepting the all-lowercase kebab-case keys the Tokenhaus sync generates', () => {
-    const { keys } = lint(tokenRoot({ color: { text: { 'base-inverse': { 'on-color': leaf } } } }));
+  it('accepts all-lowercase kebab-case keys in every file the Tokenhaus sync generates', () => {
+    // The sync writes Figma variable names verbatim (`base-inverse`, `blue-sky`); flagging them
+    // would report keys the next sync writes back.
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-lint-sync-'));
+    tempDirs.push(base);
+    for (const file of GENERATED_FILES) {
+      fs.mkdirSync(path.join(base, path.dirname(file)), { recursive: true });
+      fs.writeFileSync(path.join(base, file), JSON.stringify({ color: { 'base-inverse': { 'on-color': leaf } } }));
+    }
+    const { status, report, keys } = lint(path.join(base, 'core'), path.join(base, 'core.dark'));
     assert.deepEqual(keys, []);
+    assert.equal(report.filesScanned, GENERATED_FILES.length);
+    assert.equal(status, 0);
+  });
+
+  it('rejects all-lowercase kebab-case keys in hand-authored files, suggesting camelCase', () => {
+    const { status, report } = lint(
+      tokenRoot({ 'search-input': { 'padding-inline': leaf, 'info-moderate': { gap: leaf } } }),
+    );
+    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.jsonPath}`, i.suggestion]));
+    assert.deepEqual(suggestions, {
+      'error:search-input': 'searchInput',
+      'error:search-input.padding-inline': 'paddingInline',
+      'error:search-input.info-moderate': 'infoModerate',
+    });
+    assert.equal(status, 1);
+  });
+
+  it('still accepts a key that starts with a digit, which has no camelCase form', () => {
+    const { keys } = lint(tokenRoot({ spacing: { '1-5': leaf, '0-5': leaf } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('lints a hand-authored file that shares a basename with a generated one', () => {
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-lint-components-'));
+    tempDirs.push(base);
+    fs.mkdirSync(path.join(base, 'core', 'components'), { recursive: true });
+    fs.writeFileSync(path.join(base, 'core', 'components', 'color.tokens.json'), JSON.stringify({ 'a-b': leaf }));
+    const { keys } = lint(path.join(base, 'core'));
+    assert.deepEqual(keys, ['error:a-b']);
   });
 
   it('rejects a key that starts with an uppercase letter or mixes kebab-case with camelCase, suggesting camelCase', () => {

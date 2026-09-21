@@ -8,6 +8,7 @@ import { afterEach, describe, it } from 'node:test';
 import {
   APPLY_OUTPUT_BASE,
   CliError,
+  GENERATED_FILES,
   MODE_DARK,
   MODE_LIGHT,
   ORPHAN_FILES_CORE,
@@ -463,6 +464,12 @@ describe('staging output', () => {
     assert.deepEqual(report.skipped, []);
     return report.generated.map(entry => path.relative(outputBase, entry.filePath));
   }
+
+  // tokens-lint exempts exactly these files from the camelCase key rule.
+  it('exports GENERATED_FILES as exactly the files a run writes', async () => {
+    const written = (await generatedFiles()).map(file => file.split(path.sep).join('/'));
+    assert.deepEqual([...written].sort(), [...GENERATED_FILES].sort());
+  });
 
   it('is ignored by the repository .gitignore files alone', async () => {
     // check-ignore runs against an empty git dir, with system and global config off and

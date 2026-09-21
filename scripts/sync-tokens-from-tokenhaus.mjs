@@ -92,6 +92,16 @@ const ORPHAN_FILES_CORE = [
 
 const ORPHAN_FILES_DARK = [];
 
+// Every file a run writes, relative to the output base. tokens-lint exempts these from the
+// camelCase key rule, because they carry Figma variable names verbatim (`base-inverse`).
+const GENERATED_FILES = [
+  'core/palette.tokens.json',
+  'core/color.tokens.json',
+  'core.dark/color.tokens.json',
+  'core/font.tokens.json',
+  'core/sizes.tokens.json',
+];
+
 // Forced output base when --apply is set.
 const APPLY_OUTPUT_BASE = 'tokens';
 
@@ -963,6 +973,7 @@ function printFatalError(error) {
 export {
   APPLY_OUTPUT_BASE,
   CliError,
+  GENERATED_FILES,
   MODE_DARK,
   MODE_LIGHT,
   ORPHAN_FILES_CORE,

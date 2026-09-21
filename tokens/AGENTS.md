@@ -127,7 +127,7 @@ reference, staging vs. apply, and the manual `effects.tokens.json` step: `_agent
 
 1. **3-Tier Hierarchy**: Component CSS → semantic tokens → palette tokens. Never skip tiers.
 2. **No palette in component tokens**: `{palette.*}` references forbidden in `tokens/core/components/*.tokens.json`. Use `{color.*}` semantic references. Deliberate, reasoned exceptions only: see `_agents/semantic-tokens.md`.
-3. **camelCase in JSON**: Compound properties like `fontSize`, `borderRadius`, `paddingInline`. Style Dictionary converts to kebab-case CSS vars.
+3. **camelCase in JSON**: Compound keys like `fontSize`, `borderRadius`, `paddingInline`, `searchInput`. Style Dictionary converts to kebab-case CSS vars. Only the files the Tokenhaus sync generates keep Figma's kebab-case names; `yarn tokens.lint.all` fails on kebab-case anywhere else. See `_agents/naming-conventions.md`.
 4. **No "components" wrapper**: Component name at JSON root — `{ "button": {} }` not `{ "components": { "button": {} } }`.
 5. **Always use references**: Component tokens must reference core tokens (`{color.neutral.text.default}`) — never raw hex/px values.
 

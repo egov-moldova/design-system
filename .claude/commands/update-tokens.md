@@ -82,7 +82,7 @@ Example structure (DTCG):
 
 ```json
 {
-  "component-name": {
+  "componentName": {
     "variant": {
       "state": {
         "property": {
