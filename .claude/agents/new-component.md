@@ -223,6 +223,19 @@ yarn sp.build
 yarn audit:contrast
 ```
 
+Then run the deterministic gate and STOP if the exit status is non-zero:
+
+```bash
+yarn audit:component mud-<name> --depth standard
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). A `NEEDS-DECISION`
+with no Figma manifest at `HEAD` is expected here only if the manifest from
+Step 3/8 was never committed — commit it (or declare `figma.design: "none"`)
+before re-running. Read `audit/mud-<name>/fix-brief.md` for any other
+non-`PASS` state.
+
 Check console: `mcp__playwright__browser_console_messages({ level: "error" })`.
 
 Reference: `_agents/verification-git.md`.

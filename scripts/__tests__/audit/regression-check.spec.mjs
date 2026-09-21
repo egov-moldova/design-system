@@ -9,7 +9,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { compareEnvelopes, diffRowStatuses } from '../../audit/regression-check.mjs';
+import { compareEnvelopes, diffRowStatuses, resolveCheckDepth } from '../../audit/regression-check.mjs';
+import { resolveBaselineDepth } from '../../audit/regression-baseline.mjs';
 
 function envelope({ results = [], findingsByTool = {}, blockers = [] } = {}) {
   return { findingsByTool, blockers, results };
@@ -108,5 +109,55 @@ describe('regression-check: compareEnvelopes counts a newly-broken row as a regr
     assert.equal(diff.regressed, true);
     assert.equal(diff.errors.added.length, 1);
     assert.equal(diff.rows.length, 1);
+  });
+});
+
+/**
+ * Phase 5 task 3: `regression-baseline.mjs` and `regression-check.mjs` spawn
+ * `run-all` with an explicit `--depth` instead of inheriting its default
+ * (`standard`, which would build `standard`'s prerequisites). The baseline
+ * records the depth it captured at; `regression-check` refuses to compare
+ * against a different one.
+ */
+describe('regression-baseline: resolveBaselineDepth', () => {
+  it('defaults to quick — no build, comparable to a plain check run', () => {
+    assert.deepEqual(resolveBaselineDepth({}), { depth: 'quick' });
+  });
+
+  it('defaults to standard when --include-browser is set (Wave C already needs the build)', () => {
+    assert.deepEqual(resolveBaselineDepth({ includeBrowser: true }), { depth: 'standard' });
+  });
+
+  it('an explicit --depth wins over --include-browser', () => {
+    assert.deepEqual(resolveBaselineDepth({ depth: 'deep', includeBrowser: false }), { depth: 'deep' });
+  });
+
+  it('rejects an unknown depth', () => {
+    const result = resolveBaselineDepth({ depth: 'thorough' });
+    assert.match(result.error, /--depth must be one of/);
+  });
+});
+
+describe('regression-check: resolveCheckDepth', () => {
+  it('re-runs at the baseline’s own recorded depth when none is requested', () => {
+    assert.deepEqual(resolveCheckDepth({ baselineDepth: 'quick' }), { depth: 'quick' });
+  });
+
+  it('accepts a requested depth that matches the baseline', () => {
+    assert.deepEqual(resolveCheckDepth({ baselineDepth: 'standard', requestedDepth: 'standard' }), {
+      depth: 'standard',
+    });
+  });
+
+  it('refuses to compare across depths', () => {
+    const result = resolveCheckDepth({ baselineDepth: 'standard', requestedDepth: 'quick' });
+    assert.match(result.error, /refusing to compare across depths/);
+    assert.match(result.error, /"standard"/);
+    assert.match(result.error, /"quick"/);
+  });
+
+  it('refuses a baseline with no recorded depth (captured before Phase 5)', () => {
+    const result = resolveCheckDepth({ baselineDepth: undefined });
+    assert.match(result.error, /no recorded depth/);
   });
 });

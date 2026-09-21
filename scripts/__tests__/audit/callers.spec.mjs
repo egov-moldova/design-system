@@ -4,9 +4,10 @@
  * fixture per state and asserts the exit code, the worst component deciding
  * on a multi-component run.
  *
- * The second half — every Phase 5 gate caller invoking `yarn audit:component`
- * and every leg never invoking it — is a pending block until Phase 5 writes
- * the caller list.
+ * The second half checks the Phase 5 caller files by group: every gate
+ * caller invokes `yarn audit:component` and none of the deny-listed old
+ * criteria tokens survive; every leg invokes neither `yarn audit:component`
+ * nor `verdict.mjs`.
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -16,6 +17,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
+import { REPO_ROOT } from '../../audit/lib/component-paths.mjs';
 import { STATE_EXIT_CODES } from '../../audit/lib/exit-codes.mjs';
 import { FIGMA_ABSENT, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
 
@@ -91,10 +93,57 @@ describe('callers: verdict.mjs exit code per state', () => {
   });
 });
 
-// PENDING — Phase 5 (callers) fills GATE_CALLERS and LEGS with the final file
-// lists and turns these into real assertions over their contents.
-describe('callers: caller files by group (pending Phase 5)', () => {
-  it.todo('every gate caller contains the literal `yarn audit:component` invocation');
-  it.todo('no gate caller contains `Ready to merge`, `summary.errors` or the audit-production PASS/FAIL/WARN header');
-  it.todo('no leg contains a `yarn audit:component` or `verdict.mjs` invocation');
+// Phase 5 (callers) file lists (plan Phase 5 `## Files`). Gate callers run
+// `yarn audit:component` and stop on its exit status; legs keep their
+// `run-all --only` evidence runs and never invoke the gate.
+const GATE_CALLERS = [
+  '.claude/commands/pre-pr-check.md',
+  '.claude/commands/audit-component.md',
+  '.claude/agents/audit-production.md',
+  '.claude/agents/new-component.md',
+  '.claude/agents/refactor-component.md',
+  '.claude/commands/migrate-component.md',
+];
+const LEGS = ['.claude/agents/a11y-verifier.md', '.claude/skills/stencil-compliance/SKILL.md'];
+
+/** The `audit-production` PASS/FAIL/WARN table header this plan replaces (Design §1 / Phase 5 task 2). */
+const PASS_FAIL_WARN_HEADER = '**Pass/Fail criteria**:';
+const DENY_TOKENS = ['Ready to merge', 'summary.errors', PASS_FAIL_WARN_HEADER];
+
+/** Fenced code blocks only — a prose mention inside backticks (e.g. "never invokes `verdict.mjs`") is not an invocation. */
+function codeBlocks(text) {
+  return [...text.matchAll(/```[a-z]*\n([\s\S]*?)```/g)].map(m => m[1]);
+}
+
+function readFile(rel) {
+  return readFileSync(join(REPO_ROOT, rel), 'utf8');
+}
+
+describe('callers: caller files by group', () => {
+  for (const rel of GATE_CALLERS) {
+    it(`gate caller ${rel} invokes \`yarn audit:component\` in a code block`, () => {
+      const blocks = codeBlocks(readFile(rel));
+      assert.ok(
+        blocks.some(b => b.includes('yarn audit:component')),
+        `${rel}: no code block invokes \`yarn audit:component\``,
+      );
+    });
+
+    it(`gate caller ${rel} carries none of the deny-listed old criteria tokens`, () => {
+      const text = readFile(rel);
+      for (const token of DENY_TOKENS) {
+        assert.ok(!text.includes(token), `${rel}: still contains deny-listed token "${token}"`);
+      }
+    });
+  }
+
+  for (const rel of LEGS) {
+    it(`leg ${rel} never invokes \`yarn audit:component\` or \`verdict.mjs\` in a code block`, () => {
+      const blocks = codeBlocks(readFile(rel));
+      for (const block of blocks) {
+        assert.ok(!block.includes('yarn audit:component'), `${rel}: a code block invokes \`yarn audit:component\``);
+        assert.ok(!/\bverdict\.mjs\b/.test(block), `${rel}: a code block invokes \`verdict.mjs\``);
+      }
+    });
+  }
 });

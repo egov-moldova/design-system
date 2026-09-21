@@ -9,6 +9,15 @@ Checks one `mud-*` component against the Stencil rules of the pinned version
 ([`references/version-delta.md`](references/version-delta.md)). Scripts and linters decide every rule
 they can; you judge only the `manual` rows of the [rule index](#rule-index).
 
+**As the `ai-stencil` leg of `/audit-component --depth deep`**: the
+orchestrator (`run-all.mjs`) opens an `ai-stencil` row (`idsJudged:
+['DX-stencil-manual']`) before dispatch. This skill never invokes
+`verdict.mjs` / `yarn audit:component` and never stops on either's exit
+code — it keeps running its own `run-all --only 02,04,14,16` evidence pass
+(step 1 below) and, when dispatched at `deep`, closes the row it was opened
+for by writing `audit/<component>/runs/<run>/ai/stencil-compliance/ai-findings.json`
+(§ Deep-depth output, after the run contract).
+
 Project overlays in [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) and
 [`src/components/_agents/component-structure.md`](../../../src/components/_agents/component-structure.md)
 (`mud-` prefix, member order, `@Watch` rule, host classes) win over Stencil's docs, whether stricter or looser.
@@ -38,6 +47,32 @@ Input: one component name (`mud-<name>`).
 [`references/anti-patterns.md`](references/anti-patterns.md); project codes (tokens, colours, raw pixels, icons,
 `innerHTML`, `any`) carry their fix in the finding, with the rules in
 [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md).
+
+## Deep-depth output (`ai-stencil` leg only)
+
+When this skill runs as the `ai-stencil` leg of `--depth deep`, step 5's
+manual findings (never the script findings from step 1 — `verdict.mjs` reads
+those directly off the envelope) also close the opened row:
+
+```
+audit/<component>/runs/<run>/ai/stencil-compliance/ai-findings.json
+```
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "stencil-compliance",
+  "idsJudged": ["DX-stencil-manual"],
+  "inputHash": "<the hash from the opened row, when known — omit if not passed>",
+  "findings": [
+    { "severity": "error", "code": "STENCIL-<manual rule id>", "file": "...", "line": 12, "message": "...", "fix": "..." }
+  ]
+}
+```
+
+`idsJudged` must equal `["DX-stencil-manual"]`. An unclosed row leaves the
+verdict `INCOMPLETE` on the next `yarn audit:component --run-dir <run>`
+recompute; this skill does not run that recompute itself.
 
 ## Rule index
 

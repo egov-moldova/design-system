@@ -24,6 +24,7 @@ import { dirname, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT } from './lib/component-paths.mjs';
+import { DEPTHS } from './lib/cli-args.mjs';
 
 const TOOL = 'regression-baseline';
 
@@ -38,9 +39,37 @@ components. Used as the input for regression-check.mjs.
 Options:
   --components <list>     Comma-separated mud-* names (default: ${DEFAULT_COMPONENTS.join(',')})
   --out <file>            Output path (default: ${DEFAULT_OUT})
+  --depth <d>             quick | standard | deep (default: standard when
+                          --include-browser is set, else quick — see
+                          resolveBaselineDepth). The baseline records the
+                          depth it ran at; regression-check.mjs refuses to
+                          compare against a different one.
   --include-browser       Run Wave C scripts too (needs Storybook + Playwright)
   --skip <ids>            Comma-separated audit ids to skip (default: 06,08 — no coverage / build deps)
   --help, -h              Show this help`;
+
+/**
+ * Resolve the depth a baseline capture runs at (plan `2026-09-21-audit-component-depths.md`
+ * Phase 5 task 3). An explicit `--depth` wins; otherwise `standard` when
+ * `--include-browser` is set (Wave C already needs its build + Storybook
+ * prerequisites), else `quick` — the only depth whose required-check set
+ * (`verdict.mjs` `REQUIRED_CHECKS.quick`) needs no build at all, so capturing
+ * at `quick` is what keeps a baseline comparable to a later check run without
+ * `standard`'s prerequisites (tokens, the component's own coverage, a dev
+ * build, Storybook) ever being built. `standard` is the default `run-all.mjs`
+ * depth — silently inheriting it (no `--depth` at all) is exactly the Phase 2
+ * regression this task fixes: `18` (adapter-contract-cem, Wave B) is neither
+ * a browser id nor covered by `--skip 06,08`, so a depth-less run would still
+ * schedule it and trigger the `dx:stencil:once` build. Pure.
+ *
+ * @returns {{ depth: string } | { error: string }}
+ */
+export function resolveBaselineDepth({ depth, includeBrowser = false } = {}) {
+  if (depth !== undefined && !DEPTHS.includes(depth)) {
+    return { error: `--depth must be one of ${DEPTHS.join(', ')} (got "${depth}")` };
+  }
+  return { depth: depth ?? (includeBrowser ? 'standard' : 'quick') };
+}
 
 function parseCli() {
   let parsed;
@@ -50,6 +79,7 @@ function parseCli() {
       options: {
         'components': { type: 'string' },
         'out': { type: 'string', default: DEFAULT_OUT },
+        'depth': { type: 'string' },
         'include-browser': { type: 'boolean', default: false },
         'skip': { type: 'string', default: '06,08' },
         'help': { type: 'boolean', short: 'h', default: false },
@@ -65,10 +95,17 @@ function parseCli() {
     process.stdout.write(`${USAGE}\n`);
     process.exit(0);
   }
+  const includeBrowser = parsed.values['include-browser'];
+  const resolved = resolveBaselineDepth({ depth: parsed.values.depth, includeBrowser });
+  if (resolved.error) {
+    process.stderr.write(`${TOOL}: ${resolved.error}\n\n${USAGE}\n`);
+    process.exit(2);
+  }
   return {
     components: parsed.values.components ? parsed.values.components.split(',').map(s => s.trim()) : DEFAULT_COMPONENTS,
     out: parsed.values.out,
-    includeBrowser: parsed.values['include-browser'],
+    depth: resolved.depth,
+    includeBrowser,
     skip: parsed.values.skip,
   };
 }
@@ -97,6 +134,7 @@ async function main() {
     components,
     meta: {
       durationMs: Date.now() - t0,
+      depth: args.depth,
       includeBrowser: args.includeBrowser,
       skip: args.skip,
     },
@@ -110,7 +148,7 @@ async function main() {
 
 function runOrchestrator(componentName, args) {
   const scriptPath = join(REPO_ROOT, 'scripts', 'audit', 'run-all.mjs');
-  const cliArgs = [scriptPath, componentName, '--json'];
+  const cliArgs = [scriptPath, componentName, '--json', '--depth', args.depth];
   if (!args.includeBrowser) cliArgs.push('--no-browser');
   if (args.skip) cliArgs.push('--skip', args.skip);
 

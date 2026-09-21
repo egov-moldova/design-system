@@ -46,14 +46,28 @@ node scripts/audit/run-all.mjs --depth quick --changed --no-browser --json
 
 Read the result. The `blockers` array lists every error-severity finding except those of
 report-only scripts (`stencil-contract`), which count in `summary` but never block;
-each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`).
-If `ok` is false or `blockers` is non-empty, STOP and report — do not proceed to Wave 2. A script that
+each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`), or
+`name/status` (e.g. `structure/crashed`) for a row that crashed or hit a missing
+prerequisite — those also count in `summary.incomplete`. If `ok` is false or
+`blockers` is non-empty, STOP and report — do not proceed to Wave 2. A script that
 crashed adds no finding, so `ok: false` with empty `blockers` is still a stop: read `results[].error`.
 
 If you also want git + branch + commit hygiene as part of Wave 1, you already
 have it: the orchestrator includes `03-git-hygiene` automatically.
 
-The fallback grep gates below remain valid when the orchestrator is unavailable.
+Equivalent gate, when you want the verdict rather than the raw envelope:
+
+```bash
+yarn audit:component --changed --depth quick --no-browser --json
+```
+
+`yarn audit:component` (`scripts/audit/verdict.mjs`) runs the same `run-all.mjs
+--depth quick --changed --no-browser` pass and computes a `state`. Exit 0 only on
+`PASS`; STOP on anything else — 1 `FAIL`, 3 `INCOMPLETE` (a row crashed, hit a
+missing prerequisite, or a required `quick` check did not run — see
+`summary.incomplete` / `blockers` on the underlying envelope for which one), 4
+`NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the located failure
+instead of re-deriving it from the raw envelope.
 
 ## Wave 1: Static Analysis & Test (parallel)
 
@@ -81,24 +95,19 @@ git diff --stat HEAD~1
 
 ### Wave 1 — Stencil anti-pattern + git hygiene gates
 
-Already covered by the Fast Path orchestrator above (`run-all --changed --no-browser`)
-via scripts `02-stencil-antipatterns` (14+ patterns paralelle) and
-`03-git-hygiene` (branch + commits + forbidden staged paths). If for any
-reason you skip Fast Path, individual scripts are still callable:
+Already covered by the Fast Path orchestrator above (`run-all --depth quick
+--changed --no-browser`) via scripts `02-stencil-antipatterns` (14+ patterns
+parallel) and `03-git-hygiene` (branch + commits + forbidden staged paths).
 
-```bash
-node scripts/audit/02-stencil-antipatterns.mjs --changed --json
-node scripts/audit/03-git-hygiene.mjs --json
-```
-
-Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md); project codes (tokens, colours, icons, `innerHTML`, `any`): [`_agents/anti-patterns.md`](../../_agents/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
+Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md); project codes (tokens, colours, icons, `innerHTML`, `any`): [`_agents/anti-patterns.md`](../../_agents/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --depth deep` after Wave 5.
 
 **Verify after Wave 1 results land**:
 
 - Lint: zero violations
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
-- Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` immediately)
+- Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` / `name/status` immediately)
+- Gate: `yarn audit:component --changed --depth quick --no-browser --json` exits 0
 - Merge driver still registered — `git config --get merge.ours.driver` returns `true`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)

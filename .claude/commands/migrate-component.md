@@ -42,7 +42,19 @@ List missing files.
 
 ## Step 3: Run Full Audit
 
-Invoke `/audit-component $ARGUMENTS` (or follow `audit-component.md` steps inline if calling another slash command isn't supported in your harness).
+Run the deterministic gate and STOP if the exit status is non-zero:
+
+```bash
+yarn audit:component $ARGUMENTS --depth deep
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Read
+`audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
+`audit/$ARGUMENTS/fix-brief.md` for every entry. Then invoke `/audit-component
+$ARGUMENTS --depth deep` (or follow `audit-component.md` steps inline if
+calling another slash command isn't supported in your harness) for the
+judgment-only legs the gate itself cannot run.
 
 The audit identifies all issues across structure, tokens, CSS, TypeScript, accessibility, security, performance, stories, tests.
 

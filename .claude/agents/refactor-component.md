@@ -11,7 +11,7 @@ Refactor an existing component to align with latest patterns from `AGENTS.md`. A
 
 ## Step 1: Run Audit First
 
-Invoke `/audit-component` (or follow `audit-component.md` steps inline) on the target component. Wait for the audit report before proceeding.
+Invoke `/audit-component --depth standard` (or follow `audit-component.md` steps inline) on the target component. Wait for the audit report before proceeding.
 
 ## Step 1.5: Capture Pre-Refactor Baseline
 
@@ -174,6 +174,18 @@ yarn test
 yarn sp.build
 yarn audit:contrast
 ```
+
+Then run the deterministic gate and STOP if the exit status is non-zero:
+
+```bash
+yarn audit:component mud-<name> --depth standard
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Read
+`audit/mud-<name>/fix-brief.md` for any non-`PASS` state — a refactor that
+introduces a new finding here is the regression Step 6 exists to catch, seen
+from the deterministic side.
 
 ```text
 mcp__playwright__browser_console_messages({ level: "error" })
