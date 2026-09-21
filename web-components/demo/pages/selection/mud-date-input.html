@@ -15,25 +15,35 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input type="default" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input locale="ro-RO" type="default" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">type=default · month title</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input type="advanced" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input locale="ro-RO" type="advanced" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">type=advanced · month and year dropdowns</span>
             </div>
             <div class="cell">
               <div style="width: 320px">
-                <mud-date-input type="date-range" value="18/01/2025 - 22/01/2025" label="Perioada"></mud-date-input>
+                <mud-date-input
+                  locale="ro-RO"
+                  type="date-range"
+                  value="18/01/2025 - 22/01/2025"
+                  label="Perioada"
+                ></mud-date-input>
               </div>
               <span class="label">type=date-range · start - end</span>
             </div>
             <div class="cell">
               <div style="width: 320px">
-                <mud-date-input type="date-range" value="22/01/2025 - 18/01/2025" label="Perioada"></mud-date-input>
+                <mud-date-input
+                  locale="ro-RO"
+                  type="date-range"
+                  value="22/01/2025 - 18/01/2025"
+                  label="Perioada"
+                ></mud-date-input>
               </div>
               <span class="label">date-range · end before start (order error)</span>
             </div>

@@ -1,5 +1,5 @@
 {
-  "$comment": "Figma state manifest for mud-date-input — values copied from the date-input component set (184:823), the Input: Date / Time page (470:31393: States 470:31407, Behavior 487:7779, Validation 489:8090, Assistive Text 470:31508, Edge Cases 470:31520) and text-input/.clear-button (142:4306). Icon colours come from exported SVGs. The time-input set (13810:9195) has no component in code.",
+  "$comment": "Figma state manifest for mud-date-input — values copied from the date-input component set (184:823), the Input: Date / Time page (470:31393: States 470:31407, Behavior 487:7779, Validation 489:8090, Assistive Text 470:31508, Edge Cases 470:31520) and text-input/.clear-button (142:4306). Icon colours come from exported SVGs. The time-input set (13810:9195) is covered by mud-time-input's own manifest. Masks cover mock data only: the field text (Figma's Filled state reads DD/MM/YYYY and its focus caret is a '|' glyph that shifts the text) and, in the open states, the calendar title / chips (Figma's mock January); style parity still checks those elements.",
   "component": "mud-date-input",
   "figma": {
     "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
@@ -875,6 +875,209 @@
           "note": "Not in Figma: a read-only field must not let the calendar change its value, so the trigger is disabled (unit test covers the click)."
         }
       ]
+    },
+    {
+      "name": "type-default-open",
+      "node": "487:7732",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .title"],
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [
+        {
+          "type": "click",
+          "target": "mud-date-input .trailing-icon"
+        }
+      ],
+      "capture": {
+        "selector": ".type-frame",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "use": "control-lg-focus"
+        },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "470:32429",
+          "styles": {
+            "boxWidth": "320px",
+            "rowGap": "8px",
+            "borderTopWidth": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker .title",
+          "node": "470:32429",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#121212"
+          },
+          "note": "Instance node I470:32429;158:570;158:544."
+        },
+        {
+          "target": "mud-date-input mud-date-picker [part='month-dropdown']",
+          "absent": true
+        },
+        {
+          "target": "mud-date-input mud-date-picker .footer",
+          "absent": true
+        }
+      ],
+      "note": "Figma types 470:32035. The field reads 11/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json), and the calendar is Romanian (the field passes locale ro-RO), so the state renders December 2024."
+    },
+    {
+      "name": "type-advanced-open",
+      "node": "487:7753",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .header-dropdowns"],
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" type=\"advanced\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [
+        {
+          "type": "click",
+          "target": "mud-date-input .trailing-icon"
+        }
+      ],
+      "capture": {
+        "selector": ".type-frame",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "use": "control-lg-focus"
+        },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "483:5952",
+          "styles": {
+            "boxWidth": "320px",
+            "rowGap": "8px",
+            "borderTopWidth": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker [part='month-dropdown']",
+          "node": "483:5952",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "6px",
+            "paddingRight": "4px",
+            "borderTopLeftRadius": "4px"
+          },
+          "note": "Instance node I483:5952;229:5115 (.picker-header Year Switcher)."
+        },
+        {
+          "target": "mud-date-input mud-date-picker .header-dropdowns",
+          "node": "483:5952",
+          "styles": {
+            "columnGap": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker .title",
+          "absent": true
+        },
+        {
+          "target": "mud-date-input mud-date-picker .footer",
+          "absent": true
+        }
+      ],
+      "note": "Figma types 470:32035. The field reads 11/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json), and the calendar is Romanian (the field passes locale ro-RO), so the state renders December 2024."
+    },
+    {
+      "name": "breakpoint-mobile-picker",
+      "node": "797:37061",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .header-dropdowns"],
+      "clock": "2024-12-07T10:00:00Z",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "html": "<div class=\"type-frame\" style=\"width:320px;height:452px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" breakpoint=\"desktop\" type=\"advanced\" value=\"11/12/2024\"></mud-date-input></div></div>",
+      "interaction": [
+        {
+          "type": "click",
+          "target": "mud-date-input .trailing-icon"
+        }
+      ],
+      "capture": {
+        "selector": ".type-frame",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "use": "control-lg-focus"
+        },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "797:37063",
+          "styles": {
+            "boxWidth": "320px",
+            "rowGap": "8px",
+            "borderTopWidth": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input .picker-backdrop",
+          "absent": true,
+          "note": "The anchored dropdown has no scrim; only the bottom sheet does (797:37918)."
+        }
+      ],
+      "note": "Figma Breakpoints 'mobile: picker': the dropdown anchored to the field on a phone, with the advanced (chips) header — breakpoint=\"desktop\" + type=\"advanced\" at a 430px (phone) viewport."
+    },
+    {
+      "name": "date-range-open",
+      "node": "487:7774",
+      "mask": ["mud-date-input .field", "mud-date-input mud-date-picker .title"],
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div class=\"range-frame\" style=\"width:320px;height:450px\"><div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" type=\"date-range\" breakpoint=\"desktop\" value=\"18/12/2024 - 22/12/2024\"></mud-date-input></div></div>",
+      "interaction": [
+        {
+          "type": "click",
+          "target": "mud-date-input .trailing-icon"
+        }
+      ],
+      "capture": {
+        "selector": ".range-frame",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "use": "control-lg-focus"
+        },
+        {
+          "target": "mud-date-input mud-date-picker",
+          "node": "483:5709",
+          "styles": {
+            "boxWidth": "320px",
+            "rowGap": "6px",
+            "borderTopWidth": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker button.day-cell[data-iso='2024-12-18']",
+          "node": "159:897",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF",
+            "borderTopRightRadius": "0px"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker button.day-cell[data-iso='2024-12-20']",
+          "node": "159:901",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "color": "#121212"
+          }
+        },
+        {
+          "target": "mud-date-input mud-date-picker .footer",
+          "absent": true
+        }
+      ],
+      "note": "Figma's field reads 18/01/2025 - 22/01/2025 over a mock January laid out like December 2024 (see mud-date-picker.figma.json); the state renders December 2024 so the calendars line up."
     }
   ]
 }

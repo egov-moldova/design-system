@@ -367,7 +367,8 @@
   inset-block-start: calc(100% + var(--_border-width-default));
   inset-inline-start: calc(-1 * var(--_border-width-default));
   z-index: 10;
-  margin-block-start: var(--spacing-4);
+  /* Figma puts the calendar 8px under the field (Date Picker page, 470:32032). */
+  margin-block-start: var(--date-input-popover-offset);
   display: block;
 }
 
