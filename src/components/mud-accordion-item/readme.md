@@ -36,7 +36,7 @@ force field:
    slot distributes is what gets written — measured. That is still content you
    handed to the slot, one component further out.)
 2. `disabled` does what the element makes of it, and that is not universal —
-   27 of this library's 49 components implement it at the time of writing;
+   28 of this library's 49 components implement it at the time of writing;
    contributors can recount with `node scripts/count-disabled-props.mjs`, which
    lives in the repo rather than in the published package. `mud-tag` and
    `mud-badge` implement it as a visual state only: in `trailing` they render

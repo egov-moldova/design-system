@@ -37,7 +37,6 @@ missing, the available one is rendered and a warning is logged.
  - [mud-breadcrumb](../mud-breadcrumb)
  - [mud-checkbox](../mud-checkbox)
  - [mud-chip](../mud-chip)
- - [mud-cookie-banner](../mud-cookie-banner)
  - [mud-date-input](../mud-date-input)
  - [mud-date-picker](../mud-date-picker)
  - [mud-file-input](../mud-file-input)
@@ -71,7 +70,6 @@ graph TD;
   mud-breadcrumb --> mud-icon
   mud-checkbox --> mud-icon
   mud-chip --> mud-icon
-  mud-cookie-banner --> mud-icon
   mud-date-input --> mud-icon
   mud-date-picker --> mud-icon
   mud-file-input --> mud-icon

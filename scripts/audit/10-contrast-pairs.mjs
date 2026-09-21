@@ -637,13 +637,12 @@ export async function measureSamples(url, componentName, theme) {
           //   - `assignedSlot` — slotted light-DOM content paints where its
           //     slot sits, so a consumer's element slotted into a shadow tree
           //     paints on that tree's surfaces. `mud-modal` paints its
-          //     background on a shadow `.container` with the slots inside it
-          //     and nothing on `:host`, so a
-          //     `parentElement` walk leaves that container out and scores the
-          //     slotted element against the page canvas — the same false
-          //     failure as #49, one level in.
+          //     background on a shadow `.surface` with the slots inside it and
+          //     nothing on `:host`, so a `parentElement` walk leaves that
+          //     surface out and scores the slotted element against the page
+          //     canvas — the same false failure as #49, one level in.
           //     Baseline: `grep -n 'container-background' src/components/mud-modal/mud-modal.css`
-          //     -> `.container` carries `--modal-container-background`.
+          //     -> line 55, inside `.surface`, carries `--modal-container-background`.
           //   - `getRootNode().host` — an element at the top of a shadow root
           //     has no `parentElement`, but it still paints on the host's
           //     ancestors.

@@ -10,8 +10,8 @@ are gone, and so are their `--cookie-banner-*` and `--receipt-*` component token
 `@egov-moldova/mud/loader` stops re-exporting `CookieBannerPosition`, `CookieBannerVariant`,
 `CookieCategory`, `CookieConsentDetail`, `ReceiptActionDetail`, `ReceiptParty`, `ReceiptService`,
 `ReceiptStatus`, `MudCookieBannerCustomEvent` and `MudReceiptCustomEvent`.
-`@egov-moldova/mud-web-components` re-exports this package's types and registers its elements, so
-it loses the same elements and types.
+`@egov-moldova/mud-web-components` registers this package's elements, so it stops defining both
+tags and loses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types.
 
 **Migration:** there is no replacement in this package. A page that renders `<mud-cookie-banner>`
 or `<mud-receipt>` keeps an element nothing defines after upgrading — no shadow content renders,
