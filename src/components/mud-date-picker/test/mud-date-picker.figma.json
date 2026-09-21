@@ -1,5 +1,5 @@
 {
-  "$comment": "Figma state manifest for mud-date-picker — values copied from the date-picker (159:904), .day-cell (158:401) and .picker-header (229:5095) component sets and the Date Picker page (470:32032). Checked by scripts/audit/15-style-parity.mjs and 11-pixel-diff-states.mjs. Figma mock dates are illustrative (its January 2025 starts on a Sunday); compare states, not the calendar layout.",
+  "$comment": "Figma state manifest for mud-date-picker — values copied from the date-picker (159:904), .day-cell (158:401) and .picker-header (229:5095) component sets and the Date Picker page (470:32032). Checked by scripts/audit/15-style-parity.mjs and 11-pixel-diff-states.mjs. Figma's mock 'January 2025' is laid out as a month that starts on a Sunday. December 2024 has that exact layout (Sunday start, 31 days after a 30-day month), so the full-calendar pixel states render December 2024 with the clock on the 7th; the title text is checked on a January state.",
   "component": "mud-date-picker",
   "figma": { "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC", "scale": 2 },
   "defaults": {
@@ -12,7 +12,8 @@
     {
       "name": "date-picker",
       "node": "157:4570",
-      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2024-12-11\" view-date=\"2024-12-01\"></mud-date-picker>",
       "expect": [
         {
           "target": "mud-date-picker",
@@ -44,8 +45,7 @@
             "fontSize": "16px",
             "lineHeight": "24px",
             "fontWeight": "500",
-            "color": "#121212",
-            "textContent": "January 2025"
+            "color": "#121212"
           }
         },
         { "target": "mud-date-picker .day-grid", "node": "486:7071", "styles": { "rowGap": "4px" } },
@@ -84,7 +84,8 @@
             "lineHeight": "20px",
             "fontWeight": "500"
           }
-        }
+        },
+        { "target": "mud-date-picker .title", "node": "158:544", "styles": { "textContent": "January 2025" } }
       ]
     },
     {
@@ -106,10 +107,10 @@
           "target": "mud-date-picker button.day-cell[data-iso='2025-01-07']",
           "styles": {
             "color": "#0058D2",
-            "borderTopColor": "#0058D2",
-            "borderTopWidth": "1.5px",
+            "boxShadow": "inset 0px 0px 0px 1.5px #0058D2",
             "backgroundColor": "transparent"
-          }
+          },
+          "note": "Figma draws a 1.5px #0058D2 inside stroke. Chromium snaps border-width to whole CSS px at every DPR (1.5px renders 1px), so the ring is an inset box-shadow of the same width and colour."
         }
       ]
     },
@@ -147,7 +148,11 @@
       "expect": [
         {
           "target": "mud-date-picker button.day-cell[data-iso='2025-01-07']",
-          "styles": { "backgroundColor": "#F5F5F5", "borderTopColor": "#0058D2", "color": "#0058D2" }
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "boxShadow": "inset 0px 0px 0px 1.5px #0058D2",
+            "color": "#0058D2"
+          }
         }
       ]
     },
@@ -168,11 +173,12 @@
     {
       "name": "date-range-picker",
       "node": "159:905",
-      "html": "<mud-date-picker locale=\"en-GB\" mode=\"range\" range-start=\"2025-01-18\" range-end=\"2025-01-22\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<mud-date-picker locale=\"en-GB\" mode=\"range\" range-start=\"2024-12-18\" range-end=\"2024-12-22\" view-date=\"2024-12-01\"></mud-date-picker>",
       "expect": [
         { "target": "mud-date-picker", "styles": { "rowGap": "6px" } },
         {
-          "target": "mud-date-picker button.day-cell[data-iso='2025-01-18']",
+          "target": "mud-date-picker button.day-cell[data-iso='2024-12-18']",
           "node": "159:897",
           "styles": {
             "backgroundColor": "#0058D2",
@@ -182,12 +188,12 @@
           }
         },
         {
-          "target": "mud-date-picker button.day-cell[data-iso='2025-01-20']",
+          "target": "mud-date-picker button.day-cell[data-iso='2024-12-20']",
           "node": "159:901",
           "styles": { "backgroundColor": "#E8F0FB", "color": "#121212", "borderTopLeftRadius": "0px" }
         },
         {
-          "target": "mud-date-picker button.day-cell[data-iso='2025-01-22']",
+          "target": "mud-date-picker button.day-cell[data-iso='2024-12-22']",
           "node": "159:899",
           "styles": {
             "backgroundColor": "#0058D2",
@@ -202,7 +208,8 @@
     {
       "name": "advanced-picker",
       "node": "229:5114",
-      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2024-12-11\" view-date=\"2024-12-01\"></mud-date-picker>",
       "expect": [
         {
           "target": "mud-date-picker [part='month-dropdown']",
@@ -242,12 +249,47 @@
       "expect": [{ "target": "mud-date-picker [part='month-dropdown']", "styles": { "backgroundColor": "#D9D9D9" } }]
     },
     {
+      "name": "year-dropdown-hover",
+      "node": "524:2618",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "hover", "target": "mud-date-picker [part='year-dropdown']" },
+      "expect": [
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "styles": { "backgroundColor": "#F5F5F5", "boxHeight": "40px", "borderTopLeftRadius": "4px" },
+          "note": "Year chip I524:2618;229:5115;229:5108."
+        }
+      ]
+    },
+    {
+      "name": "year-dropdown-active",
+      "node": "524:2821",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "press", "target": "mud-date-picker [part='year-dropdown']" },
+      "expect": [
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "styles": { "backgroundColor": "#D9D9D9" },
+          "note": "Year chip I524:2821;229:5115;229:5108."
+        }
+      ]
+    },
+    {
       "name": "month-picker",
       "node": "524:1973",
+      "pixel": false,
       "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
       "interaction": [{ "type": "click", "target": "mud-date-picker [part='month-dropdown']" }],
       "expect": [
-        { "target": "mud-date-picker .header", "absent": true, "note": "Month Picker variant has no .picker-header." },
+        {
+          "target": "mud-date-picker [part='year-dropdown']",
+          "node": "602:4076",
+          "styles": { "textContent": "2025" },
+          "note": "The Month Picker variant (524:1973) draws no header, but the Behavior text 602:4076 says tapping the year label within the month view opens the year view; without it the year is unreachable from the month view. The header keeps the year chip, so this state is style-only (pixel: false). Design question."
+        },
+        { "target": "mud-date-picker [part='month-dropdown']", "absent": true },
         { "target": "mud-date-picker .footer", "absent": true },
         {
           "target": "mud-date-picker .month-grid",
@@ -299,7 +341,8 @@
     {
       "name": "mobile-bottom-sheet",
       "node": "797:37918",
-      "html": "<div style=\"width: 375px\"><mud-date-picker breakpoint=\"mobile\" header-style=\"dropdown\" locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker></div>",
+      "clock": "2024-12-07T10:00:00Z",
+      "html": "<div style=\"width: 375px\"><mud-date-picker breakpoint=\"mobile\" header-style=\"dropdown\" locale=\"en-GB\" value=\"2024-12-11\" view-date=\"2024-12-01\"></mud-date-picker></div>",
       "expect": [
         { "target": "mud-date-picker", "styles": { "boxWidth": "375px", "borderTopWidth": "0px" } },
         {

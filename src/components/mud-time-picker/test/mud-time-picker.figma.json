@@ -1,0 +1,144 @@
+{
+  "$comment": "Figma state manifest for mud-time-picker — values copied from the Time frame (13807:8471): the dropdown 13810:9450 built from .day-cell instances (158:401). Checked by scripts/audit/15-style-parity.mjs and 11-pixel-diff-states.mjs.",
+  "component": "mud-time-picker",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "molecules-time-picker--default",
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "capture": {
+      "selector": "mud-time-picker",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "time-picker",
+      "node": "13810:9450",
+      "html": "<mud-time-picker value=\"11:15\"></mud-time-picker>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-time-picker [role='option'][data-column='hours'][data-value='11']"
+      },
+      "expect": [
+        {
+          "target": "mud-time-picker",
+          "styles": {
+            "boxWidth": "202px",
+            "boxHeight": "352px",
+            "padding": "12px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopLeftRadius": "12px",
+            "boxShadow": "0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 5px 12px 0px rgba(0, 0, 0, 0.08), 0px 0px 0.5px 0px rgba(0, 0, 0, 0.15)"
+          }
+        },
+        {
+          "target": "mud-time-picker .columns",
+          "node": "13810:9452",
+          "styles": {
+            "columnGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-picker .column[data-column='hours']",
+          "node": "13810:9451",
+          "styles": {
+            "rowGap": "8px"
+          }
+        },
+        {
+          "target": "mud-time-picker [role='option'][data-column='hours'][data-value='11']",
+          "node": "13810:9453",
+          "styles": {
+            "boxWidth": "75px",
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "6px",
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "boxShadow": "0px 0px 0px 1px #FFFFFF, 0px 0px 0px 3px #3379DB",
+            "textContent": "11"
+          },
+          "note": "Active .day-cell with Focus Ring/Small: the hour column is the one being edited."
+        },
+        {
+          "target": "mud-time-picker .separator-cell",
+          "node": "13810:9454",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "40px",
+            "color": "#121212",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "textContent": ":"
+          }
+        },
+        {
+          "target": "mud-time-picker [role='option'][data-column='minutes'][data-value='15']",
+          "node": "13810:9499",
+          "styles": {
+            "boxWidth": "75px",
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "6px",
+            "backgroundColor": "#E8F0FB",
+            "color": "#121212",
+            "textContent": "15"
+          },
+          "note": "Middle .day-cell: the selected minute while the hours are being edited."
+        },
+        {
+          "target": "mud-time-picker [role='option'][data-column='minutes'][data-value='16']",
+          "node": "13810:9501",
+          "styles": {
+            "backgroundColor": "transparent",
+            "color": "#121212",
+            "textContent": "16"
+          }
+        }
+      ]
+    },
+    {
+      "name": "option-hover",
+      "node": "489:9029",
+      "pixel": false,
+      "html": "<mud-time-picker value=\"11:15\"></mud-time-picker>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-time-picker [role='option'][data-column='hours'][data-value='12']"
+      },
+      "expect": [
+        {
+          "target": "mud-time-picker [role='option'][data-column='hours'][data-value='12']",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "color": "#121212"
+          },
+          "note": "The dropdown is built from .day-cell; its Hover is shown on the Date Picker page (default: hover, 489:9029)."
+        }
+      ]
+    },
+    {
+      "name": "option-inactive",
+      "node": "158:453",
+      "pixel": false,
+      "html": "<mud-time-picker value=\"09:30\" min=\"09:30\"></mud-time-picker>",
+      "expect": [
+        {
+          "target": "mud-time-picker [role='option'][data-column='hours'][data-value='8']",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": ".day-cell Inactive: an hour with no minute inside min / max."
+        }
+      ]
+    }
+  ]
+}

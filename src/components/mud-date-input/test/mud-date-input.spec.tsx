@@ -1,6 +1,8 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-date-input';
+// The range and type tests read props off the nested picker, so it hydrates too.
+import '../../mud-date-picker/mud-date-picker';
 
 import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from '../mud-date-input.types';
 
@@ -567,6 +569,24 @@ describe('mud-date-input', () => {
       expect(helper?.id).toBe(describedBy);
     });
 
+    it('shows a helper that is only slotted, with no helper-text', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-date-input locale="ro-RO" label="x">
+          <span slot="helper">Format</span>
+        </mud-date-input>,
+      );
+      const hidden = root!.shadowRoot!.querySelector<HTMLSlotElement>('.helper-slot slot[name="helper"]');
+      expect(queryAssistive(root)).toBeNull();
+      // mock-doc does not fire slotchange on assignment the way a browser does;
+      // a dispatched one reaches the JSX-bound handler.
+      hidden!.dispatchEvent(new Event('slotchange'));
+      await waitForChanges();
+      const helper = root?.shadowRoot?.querySelector('.assistive-helper');
+      expect(helper?.querySelector('slot[name="helper"]')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.helper-slot')).toBeNull();
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(helper?.getAttribute('id'));
+    });
+
     it('wires aria-describedby to the error id when invalid + error-text present', async () => {
       const { root } = await render(
         <mud-date-input locale="ro-RO" label="x" invalid error-text="Required"></mud-date-input>,
@@ -738,7 +758,9 @@ describe('mud-date-input', () => {
       const { root } = await render(<mud-date-input locale="en-US" label="x" breakpoint="desktop"></mud-date-input>);
       await openPicker(root);
       expect(root?.shadowRoot?.querySelector('.picker-popover')?.getAttribute('aria-label')).toBe('Select date');
-      expect(root?.shadowRoot?.querySelector('mud-date-picker')?.getAttribute('locale')).toBe('en-US');
+      // The picker hydrates in this suite, so `locale` lives on the property.
+      const picker = root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
+      expect(picker?.locale).toBe('en-US');
     });
 
     it('anchors the popover inside the field row, not below the assistive text', async () => {
@@ -778,6 +800,472 @@ describe('mud-date-input', () => {
       await openPicker(root);
       root?.shadowRoot?.querySelector<HTMLElement>('.picker-backdrop')?.click();
       await new Promise<void>(r => setTimeout(r, 0));
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+  });
+
+  describe('opening the calendar', () => {
+    const clickControl = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLElement>('.control')?.click();
+      await flush();
+    };
+
+    it('opens on a click anywhere on the field, not only the trailing button', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await clickControl(root);
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeTruthy();
+    });
+
+    it('leaves focus in the input when the field opens it, so typing continues', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await clickControl(root);
+      expect((root as unknown as { focusPickerOnRender: boolean }).focusPickerOnRender).toBe(false);
+    });
+
+    it('moves focus into the calendar when the trailing button opens it', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeTruthy();
+    });
+
+    it('does not open from the clear button', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" breakpoint="desktop" clearable value="15/04/2025"></mud-date-input>,
+      );
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.clear-button')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+    });
+
+    it('stays closed while readonly or disabled', async () => {
+      const ro = await render(<mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>);
+      await clickControl(ro.root);
+      expect(ro.root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+
+      const disabled = await render(<mud-date-input locale="ro-RO" label="x" disabled></mud-date-input>);
+      await clickControl(disabled.root);
+      expect(disabled.root?.shadowRoot?.querySelector('mud-date-picker')).toBeNull();
+    });
+  });
+
+  describe('type (Figma Types 470:32035: default / advanced / date-range)', () => {
+    const open = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+      return root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
+    };
+
+    it('defaults to type="default": one date, calendar with the title header', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      expect(root?.getAttribute('type')).toBe('default');
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('title');
+      expect(picker?.mode).toBe('single');
+    });
+
+    it('type="advanced" opens the calendar with the month and year chips', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" breakpoint="desktop" type="advanced"></mud-date-input>,
+      );
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('dropdown');
+      expect(picker?.mode).toBe('single');
+    });
+
+    it('type="date-range" opens the range calendar with the title header', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" breakpoint="desktop" type="date-range"></mud-date-input>,
+      );
+      const picker = await open(root);
+      expect(picker?.headerStyle).toBe('title');
+      expect(picker?.mode).toBe('range');
+    });
+
+    it('keeps the chips on the mobile bottom sheet for every type', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" breakpoint="mobile" type="default"></mud-date-input>,
+      );
+      expect((await open(root))?.headerStyle).toBe('dropdown');
+    });
+
+    it('falls back to default for an unsupported type', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
+      (root as HTMLMudDateInputElement).type = 'range' as unknown as 'default';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('type="range" is not supported'));
+      expect(root?.getAttribute('type')).toBe('default');
+      warn.mockRestore();
+    });
+  });
+
+  describe('type="date-range" (Figma Types → date-range, 483:5705)', () => {
+    const type = async (root: Element | null | undefined, raw: string) => {
+      const native = queryNative(root)!;
+      native.value = raw;
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      return native;
+    };
+    const openPicker = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+    };
+    const pickRange = (root: Element | null | undefined, rangeStart: string, rangeEnd?: string) => {
+      root?.shadowRoot?.querySelector('mud-date-picker')?.dispatchEvent(
+        new CustomEvent('mudChange', {
+          detail: { value: rangeEnd ? [rangeStart, rangeEnd] : [rangeStart], rangeStart, rangeEnd },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+      return flush();
+    };
+
+    it('shows the two-date pattern as placeholder', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" type="date-range"></mud-date-input>);
+      const native = queryNative(root)!;
+      expect(native.getAttribute('placeholder')).toBe('DD/MM/YYYY - DD/MM/YYYY');
+      expect(native.maxLength).toBe(23);
+    });
+
+    it('writes the range separator once the first date is complete', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" type="date-range"></mud-date-input>);
+      const native = await type(root, '18012025');
+      expect(native.value).toBe('18/01/2025 - ');
+      await type(root, '1801202522012025');
+      expect(native.value).toBe('18/01/2025 - 22/01/2025');
+    });
+
+    it('pads a part-typed day of the second date on "/"', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" type="date-range"></mud-date-input>);
+      const native = await type(root, '180120253');
+      expect(native.value).toBe('18/01/2025 - 3');
+      // mock-doc does not route KeyboardEvents through JSX listeners: call the
+      // handler with an event targeting the field (as the banner spec does).
+      const ev = new KeyboardEvent('keydown', { key: '/', bubbles: true, cancelable: true });
+      Object.defineProperty(ev, 'target', { value: native });
+      (root as unknown as { handleKeyDown: (e: KeyboardEvent) => void }).handleKeyDown(ev);
+      await flush();
+      expect(native.value).toBe('18/01/2025 - 03/');
+      expect(ev.defaultPrevented).toBe(true);
+    });
+
+    it('never pads the year of the first date', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" type="date-range"></mud-date-input>);
+      const native = await type(root, '1801202');
+      const ev = new KeyboardEvent('keydown', { key: '-', bubbles: true, cancelable: true });
+      Object.defineProperty(ev, 'target', { value: native });
+      (root as unknown as { handleKeyDown: (e: KeyboardEvent) => void }).handleKeyDown(ev);
+      expect(native.value).toBe('18/01/202');
+      expect(ev.defaultPrevented).toBe(false);
+    });
+
+    it('reports the segment under the caret in the second date', async () => {
+      const onInput = vi.fn();
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" type="date-range" onMudInput={onInput}></mud-date-input>,
+      );
+      await type(root, '1801202522');
+      expect(onInput.mock.calls.at(-1)?.[0].detail.segment).toBe('MM');
+    });
+
+    it('emits the ISO interval with isoStart / isoEnd once both dates are valid', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          value="18/01/2025 - 22/01/2025"
+          onMudChange={onChange}
+        ></mud-date-input>,
+      );
+      queryNative(root)!.dispatchEvent(new Event('change', { bubbles: true }));
+      await flush();
+      expect(onChange.mock.calls[0][0].detail).toEqual({
+        value: '18/01/2025 - 22/01/2025',
+        isoValue: '2025-01-18/2025-01-22',
+        isoStart: '2025-01-18',
+        isoEnd: '2025-01-22',
+        error: null,
+      });
+    });
+
+    it('keeps isoValue null while only the start is complete', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          value="18/01/2025 - 2"
+          onMudChange={onChange}
+        ></mud-date-input>,
+      );
+      queryNative(root)!.dispatchEvent(new Event('change', { bubbles: true }));
+      await flush();
+      expect(onChange.mock.calls[0][0].detail).toEqual({
+        value: '18/01/2025 - 2',
+        isoValue: null,
+        isoStart: '2025-01-18',
+        isoEnd: null,
+        error: null,
+      });
+    });
+
+    it('flags an end date before the start with the order error', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>,
+      );
+      await flush();
+      expect(root?.classList.contains('is-invalid')).toBe(true);
+      expect(queryAssistive(root)?.textContent).toContain('Data de sfârșit trebuie să fie după data de început');
+    });
+
+    it('translates the order error with the locale', async () => {
+      const { root } = await render(
+        <mud-date-input locale="en-US" label="x" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>,
+      );
+      await flush();
+      expect(queryAssistive(root)?.textContent).toContain('The end date must be after the start date');
+    });
+
+    it('validates each date on its own: a day past the end of its month names the real maximum', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" type="date-range" value="18/01/2025 - 31/02/2025"></mud-date-input>,
+      );
+      await flush();
+      expect(queryAssistive(root)?.textContent).toContain('Ziua trebuie să fie între 01 și 28');
+    });
+
+    it('applies min / max to both dates', async () => {
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          max="2025-01-20"
+          value="18/01/2025 - 22/01/2025"
+        ></mud-date-input>,
+      );
+      await flush();
+      expect(queryAssistive(root)?.textContent).toContain('Data este în afara intervalului permis');
+    });
+
+    it('opens the calendar in range mode with the typed dates', async () => {
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          value="18/01/2025 - 22/01/2025"
+        ></mud-date-input>,
+      );
+      await openPicker(root);
+      const picker = root?.shadowRoot?.querySelector('mud-date-picker') as HTMLMudDatePickerElement | null;
+      expect(picker?.mode).toBe('range');
+      expect(picker?.rangeStart).toBe('2025-01-18');
+      expect(picker?.rangeEnd).toBe('2025-01-22');
+      expect(picker?.value).toBeUndefined();
+    });
+
+    it('keeps the calendar open and the value unchanged while only the start is picked', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          value="18/01/2025 - 22/01/2025"
+          onMudChange={onChange}
+        ></mud-date-input>,
+      );
+      await openPicker(root);
+      await pickRange(root, '2025-02-03');
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeTruthy();
+      expect(queryNative(root)?.value).toBe('18/01/2025 - 22/01/2025');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('fills the field, emits once and closes when both ends are picked', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          onMudChange={onChange}
+        ></mud-date-input>,
+      );
+      await openPicker(root);
+      await pickRange(root, '2025-01-18');
+      await pickRange(root, '2025-01-18', '2025-01-22');
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+      expect((root as HTMLMudDateInputElement).value).toBe('18/01/2025 - 22/01/2025');
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0].detail.isoValue).toBe('2025-01-18/2025-01-22');
+    });
+
+    it('closes on an outside click mid-selection without applying anything', async () => {
+      const { root } = await render(
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          type="date-range"
+          breakpoint="desktop"
+          value="18/01/2025 - 22/01/2025"
+        ></mud-date-input>,
+      );
+      await openPicker(root);
+      await pickRange(root, '2025-02-03');
+      const outside = new MouseEvent('click', { bubbles: true, composed: true });
+      Object.defineProperty(outside, 'composedPath', { value: () => [document.body, document, window] });
+      (root as unknown as { handleOutsideClick: (e: MouseEvent) => void }).handleOutsideClick(outside);
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+      expect((root as HTMLMudDateInputElement).value).toBe('18/01/2025 - 22/01/2025');
+    });
+
+    it('draws the field focused while the calendar is open', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" type="date-range" breakpoint="desktop"></mud-date-input>,
+      );
+      expect(root?.classList.contains('is-focused')).toBe(false);
+      await openPicker(root);
+      expect(root?.classList.contains('is-focused')).toBe(true);
+    });
+  });
+  describe('required + announcements', () => {
+    type Internals = { internals: { setValidity: (...args: unknown[]) => void } };
+    const stubValidity = (root: Element | null | undefined) => {
+      const setValidity = vi.fn();
+      (root as unknown as Internals).internals.setValidity = setValidity;
+      return setValidity;
+    };
+
+    it('reports valueMissing to the form while a required field is empty', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
+      const setValidity = stubValidity(root);
+      (root as HTMLMudDateInputElement).required = true;
+      await flush();
+      expect(setValidity).toHaveBeenLastCalledWith({ valueMissing: true }, 'Introduceți data', expect.anything());
+      (root as HTMLMudDateInputElement).value = '15/04/2025';
+      await flush();
+      expect(setValidity).toHaveBeenLastCalledWith({});
+    });
+
+    it('does not flag a disabled or read-only required field', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" required disabled></mud-date-input>);
+      const setValidity = stubValidity(root);
+      (root as unknown as { revalidate: () => void }).revalidate();
+      expect(setValidity).toHaveBeenLastCalledWith({});
+    });
+
+    it('shows the required message only after a submit found the field empty', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" required></mud-date-input>);
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+      expect(root?.classList.contains('is-invalid')).toBe(false);
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')?.textContent).toContain('Introduceți data');
+      expect(root?.classList.contains('is-invalid')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('clears the required message once the field holds a value, and on form reset', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" required></mud-date-input>);
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      const native = queryNative(root)!;
+      native.value = '15';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+      (root as unknown as { handleInvalid: () => void; formResetCallback: () => void }).formResetCallback();
+      await flush();
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeTruthy();
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')).toBeNull();
+    });
+
+    it('translates the required message with the locale', async () => {
+      const { root } = await render(<mud-date-input locale="en-US" label="x" required></mud-date-input>);
+      (root as unknown as { handleInvalid: () => void }).handleInvalid();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.assistive-error')?.textContent).toContain('Enter a date');
+    });
+
+    it('announces the error through a polite status region, not twice', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" invalid error-text="Greșit"></mud-date-input>,
+      );
+      const live = root?.shadowRoot?.querySelector('.live-region');
+      expect(live?.getAttribute('role')).toBe('status');
+      expect(live?.getAttribute('aria-live')).toBe('polite');
+      expect(live?.textContent).toBe('Greșit');
+      const visible = root?.shadowRoot?.querySelector('.assistive-error');
+      expect(visible?.getAttribute('aria-hidden')).toBe('true');
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(visible?.getAttribute('id'));
+    });
+
+    it('keeps the status region empty without an error', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
+      expect(root?.shadowRoot?.querySelector('.live-region')?.textContent).toBe('');
+    });
+  });
+  describe('closing when focus leaves', () => {
+    const frames = () => new Promise<void>(resolve => setTimeout(resolve, 80));
+    const focusOut = (root: Element | null | undefined, relatedTarget: EventTarget | null) => {
+      const ev = new FocusEvent('focusout', { bubbles: true, composed: true });
+      Object.defineProperty(ev, 'relatedTarget', { value: relatedTarget });
+      (root as unknown as { handleFocusOut: (e: FocusEvent) => void }).handleFocusOut(ev);
+    };
+    const open = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await flush();
+    };
+
+    it('closes when focus moves to something outside the field', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await open(root);
+      const outside = document.createElement('button');
+      document.body.appendChild(outside);
+      focusOut(root, outside);
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+      outside.remove();
+    });
+
+    it('stays open while focus moves inside the field and its popover', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await open(root);
+      focusOut(root, root ?? null);
+      await frames();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeTruthy();
+    });
+
+    it('re-checks a focus loss with no destination two frames later', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x" breakpoint="desktop"></mud-date-input>);
+      await open(root);
+      focusOut(root, null);
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeTruthy();
+      await frames();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+
+    it('ignores focus changes while closed', async () => {
+      const { root } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
+      focusOut(root, null);
+      await frames();
       expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
     });
   });

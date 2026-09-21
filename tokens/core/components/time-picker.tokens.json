@@ -1,0 +1,63 @@
+{
+  "timePicker": {
+    "container": {
+      "width": {
+        "$value": "202px",
+        "$type": "dimension",
+        "$comment": "Figma time dropdown 13810:9450 (fixed 202px, like the 320px date picker)."
+      },
+      "padding": { "$value": "{spacing.12}", "$type": "dimension" },
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
+      "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "column": {
+      "gap": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Row gap (13810:9451) and the gap between the hour, separator and minute cells (13810:9452)."
+      }
+    },
+    "separator": {
+      "width": { "$value": "{spacing.12}", "$type": "dimension", "$comment": "The ':' cell, 13810:9454." }
+    },
+    "option": {
+      "height": { "$value": "{spacing.40}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.6}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.8}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "focusRingWidth": {
+        "$value": "{borderWidth.3}",
+        "$type": "dimension",
+        "$comment": "Figma 'Focus Ring/Small' on the active hour (13810:9453)."
+      },
+      "focusRingOffset": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" },
+      "default": {
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+      },
+      "hover": {
+        "background": { "$value": "{color.background.base.default-hover}", "$type": "color" }
+      },
+      "selected": {
+        "$comment": "Selected value in the column being edited — .day-cell Active (158:400).",
+        "background": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "color": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
+      },
+      "selectedInactive": {
+        "$comment": "Selected value in the other column — .day-cell Middle (159:901).",
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
+      },
+      "disabled": {
+        "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      }
+    }
+  }
+}

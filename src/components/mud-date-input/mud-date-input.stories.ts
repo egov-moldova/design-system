@@ -1,12 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { DATE_INPUT_FORMATS, DATE_INPUT_LOCALES, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
-import type { DateInputFormat, DateInputLocale, DateInputSize, DateInputVariant } from './mud-date-input.types';
+import {
+  DATE_INPUT_FORMATS,
+  DATE_INPUT_TYPES,
+  DATE_INPUT_LOCALES,
+  DATE_INPUT_SIZES,
+  DATE_INPUT_VARIANTS,
+} from './mud-date-input.types';
+import type {
+  DateInputFormat,
+  DateInputLocale,
+  DateInputSize,
+  DateInputType,
+  DateInputVariant,
+} from './mud-date-input.types';
 
 type DateInputArgs = {
   variant: DateInputVariant;
   size: DateInputSize;
   format: DateInputFormat;
+  type: DateInputType;
   locale: DateInputLocale;
   label: string;
   placeholder: string;
@@ -26,6 +39,7 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
     variant="${args.variant}"
     size="${args.size}"
     format="${args.format}"
+    type="${args.type}"
     locale="${args.locale}"
     label="${args.label}"
     placeholder="${args.placeholder}"
@@ -82,6 +96,13 @@ const meta: Meta<DateInputArgs> = {
       description: 'Display format pattern.',
       table: { defaultValue: { summary: 'DD/MM/YYYY' } },
     },
+    type: {
+      control: 'inline-radio',
+      options: DATE_INPUT_TYPES,
+      description:
+        'The Figma Types (470:32035): `default` (calendar with a "Month Year" title), `advanced` (month and year dropdown chips) or `date-range` (a start and an end date). The mobile bottom sheet always uses the chips.',
+      table: { defaultValue: { summary: 'default' } },
+    },
     locale: {
       control: 'select',
       options: DATE_INPUT_LOCALES,
@@ -111,6 +132,7 @@ export const Default: Story = {
     variant: 'default',
     size: 'lg',
     format: 'DD/MM/YYYY',
+    type: 'default',
     locale: 'ro-RO',
     label: 'Label',
     placeholder: '',
@@ -339,6 +361,89 @@ export const Validation: Story = {
           '<mud-date-input locale="ro-RO" size="lg" label="Label" value="45"></mud-date-input>',
           '<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/18"></mud-date-input>',
           '<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/04/1550"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+const typeColumn = (caption: string, field: string, calendar: string) => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-8); inline-size: 320px;">
+    <span style="${cellLabelStyle}">${caption}</span>
+    <div style="inline-size: 282px;">${field}</div>
+    ${calendar}
+  </div>
+`;
+
+export const Types: Story = {
+  name: 'Types',
+  render: () => /*html*/ `
+    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-48); padding: var(--spacing-24);">
+      ${typeColumn(
+        'default',
+        '<mud-date-input locale="ro-RO" size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+        '<mud-date-picker locale="ro-RO" value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
+      )}
+      ${typeColumn(
+        'advanced',
+        '<mud-date-input locale="ro-RO" size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+        '<mud-date-picker locale="ro-RO" header-style="dropdown" value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
+      )}
+      ${typeColumn(
+        'date-range',
+        '<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+        '<mud-date-picker locale="ro-RO" type="date-range" range-start="2025-01-18" range-end="2025-01-22" view-date="2025-01-01"></mud-date-picker>',
+      )}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The three types of the Figma Date Picker page (470:32035), laid out like the page: each field with the calendar it opens shown below it. `type="default"`: one "Month Year" title. `type="advanced"`: month and year dropdown chips. `type="date-range"`: a start and an end date. The calendars under the fields are static copies for comparison — the calendar icon opens the real one.',
+      },
+      source: {
+        code: [
+          '<mud-date-input locale="ro-RO" size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input locale="ro-RO" size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const DateRange: Story = {
+  name: 'Date Range',
+  render: () =>
+    wrapTriple(
+      [
+        cell(
+          'empty',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range"></mud-date-input>`,
+        ),
+        cell(
+          'filled',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
+        ),
+        cell(
+          'order-error',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The Figma `date-range` type (Date Picker page, Types — 483:5705), `type="date-range"`: one field holds the start and the end date. Typing writes ` - ` after the first date; the calendar opens in range mode and fills the field once both ends are picked — closing it half-way (outside click, Escape) changes nothing. An end date before the start is an `order` error (`order-error-text`). `mudChange` carries `isoStart`, `isoEnd` and the ISO 8601 interval in `isoValue` (`2025-01-18/2025-01-22`).',
+      },
+      source: {
+        code: [
+          '<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range"></mud-date-input>',
+          '<mud-date-input locale="ro-RO" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },
