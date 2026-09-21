@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Removed — `mud-cookie-banner` and `mud-receipt`
+
+The cookie banner and the receipt card are product-level compositions, not building blocks, so
+they are no longer part of the library. The `mud-cookie-banner` and `mud-receipt` custom elements
+are gone, and so are their `--cookie-banner-*` and `--receipt-*` component tokens.
+`@egov-moldova/mud/loader` stops re-exporting `CookieBannerPosition`, `CookieBannerVariant`,
+`CookieCategory`, `CookieConsentDetail`, `ReceiptActionDetail`, `ReceiptParty`, `ReceiptService`,
+`ReceiptStatus`, `MudCookieBannerCustomEvent` and `MudReceiptCustomEvent`.
+`@egov-moldova/mud-web-components` re-exports this package's types and registers its elements, so
+it loses the same elements and types.
+
+**Migration:** there is no replacement in this package. A page that renders `<mud-cookie-banner>`
+or `<mud-receipt>` keeps an element nothing defines after upgrading — no shadow content renders,
+and any children it holds show unstyled. TypeScript code stops compiling where it imports any name
+above, or uses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types or the tags
+in TSX. Compose the banner or the receipt in the application from the remaining components, or pin
+`@egov-moldova/mud` (and `@egov-moldova/mud-web-components`, if you use it) to exactly `1.1.9`
+until you do.
+
 ### Removed — `mud-tooltip` `title` and `description` slots
 
 The Figma tooltip (component set 210:3897) has a single text body and no title or description
