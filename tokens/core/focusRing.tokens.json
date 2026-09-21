@@ -10,7 +10,7 @@
         "$type": "color"
       },
       "halo": {
-        "$description": "Soft focus halo around form fields. The brand value is Figma's 'Focus Ring/Large' effect (blue-sky/200, see date-picker.tokens.json); effects are not Figma variables, so the Tokenhaus sync does not export this group.",
+        "$description": "Soft focus halo around form fields. The brand value is Figma's 'Focus Ring/Large' effect (blue-sky/200, see date-picker.tokens.json); effects are not Figma variables, so the Tokenhaus sync does not export this group. Dark-mode values: tokens/core.dark/focusRing.tokens.json.",
         "brand": {
           "$value": "{palette.blue-sky.200}",
           "$type": "color"

@@ -19,7 +19,14 @@ const color = $value => ({ $value, $type: 'color' });
  * Lays out a project the way the repo does — `tokens/core/**`, `tokens/generated/core.tokens.css`,
  * `src/components/mud-<name>/mud-<name>.css` — and runs the validator over its `tokens` root.
  */
-function validate({ component, componentName = 'date-input', css = '', generatedCss = '', withComponentCss = true }) {
+function validate({
+  component,
+  componentName = 'date-input',
+  css = '',
+  generatedCss = '',
+  withComponentCss = true,
+  files = {},
+}) {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-validate-'));
   tempDirs.push(project);
   const write = (rel, content) => {
@@ -35,6 +42,7 @@ function validate({ component, componentName = 'date-input', css = '', generated
     '  --palette-blue-200: #bbdefb;\n  --palette-blue-500: #2196f3;\n  --color-border-brand-focus-ring: #2196f3;\n';
   write('tokens/generated/core.tokens.css', `:root {\n${foundationCss}${generatedCss}}\n`);
   if (withComponentCss) write(`src/components/mud-${componentName}/mud-${componentName}.css`, css);
+  for (const [rel, content] of Object.entries(files)) write(rel, content);
   const out = path.join(project, 'report.json');
   const run = spawnSync(
     process.execPath,
@@ -106,6 +114,61 @@ describe('tokens-validate — generated CSS drift', () => {
     });
     assert.deepEqual(codes, ['css-drift date-picker.container.stackZIndex']);
     assert.equal(status, 0);
+  });
+});
+
+describe('tokens-validate — dark-mode parity', () => {
+  const halo = { focusRing: { color: { halo: { brand: color('{palette.blue.200}') } } } };
+  const darkParity = files =>
+    validate({ component: {}, withComponentCss: false, files }).codes.filter(c => c.startsWith('dark-mode-missing'));
+
+  it('warns about a colour outside color.* that points at a palette shade and has no dark override', () => {
+    // The focus-ring halo kept its light `*.200` shades in dark mode because only color.* was checked (#75).
+    assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': halo }), [
+      'dark-mode-missing focusRing.color.halo.brand',
+    ]);
+  });
+
+  it('accepts that colour once tokens/core.dark overrides it', () => {
+    const dark = { focusRing: { color: { halo: { brand: color('{palette.blue.500}') } } } };
+    assert.deepEqual(
+      darkParity({ 'tokens/core/focusRing.tokens.json': halo, 'tokens/core.dark/focusRing.tokens.json': dark }),
+      [],
+    );
+  });
+
+  it('accepts a colour that follows the theme through a semantic token', () => {
+    const outer = { focusRing: { color: { outer: color('{color.border.brand.focus-ring}') } } };
+    assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': outer }), []);
+  });
+
+  it('accepts transparent and currentColor, which look right in both themes, in color.* too', () => {
+    const keywords = { overlay: { clear: color('transparent'), ink: color('currentColor') } };
+    const light = {
+      color: {
+        border: { brand: { 'focus-ring': color('{palette.blue.500}') } },
+        background: { clear: color('transparent') },
+      },
+    };
+    assert.deepEqual(
+      darkParity({ 'tokens/core/overlay.tokens.json': keywords, 'tokens/core/color.tokens.json': light }),
+      [],
+    );
+  });
+
+  it('still warns about inherit, which a custom property never passes through var()', () => {
+    const host = { overlay: { host: color('inherit') } };
+    assert.deepEqual(darkParity({ 'tokens/core/overlay.tokens.json': host }), ['dark-mode-missing overlay.host']);
+  });
+
+  it('does not ask a non-colour token for a dark override', () => {
+    const width = { focusRing: { width: { outer: { $value: '3px', $type: 'dimension' } } } };
+    assert.deepEqual(darkParity({ 'tokens/core/focusRing.tokens.json': width }), []);
+  });
+
+  it('warns about a hard-coded colour outside color.* with no dark override', () => {
+    const literal = { overlay: { scrim: color('#000000') } };
+    assert.deepEqual(darkParity({ 'tokens/core/overlay.tokens.json': literal }), ['dark-mode-missing overlay.scrim']);
   });
 });
 

@@ -34,6 +34,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Command, CommanderError } from 'commander';
 
+import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
+
 const SCRIPT_FILE = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = path.dirname(SCRIPT_FILE);
 const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
@@ -815,7 +817,6 @@ function printSummary(ctx, metadata) {
 
 function printNextSteps(options) {
   const outCore = formatPathForLog(path.join(options.outputBase, 'core'));
-  const outDark = formatPathForLog(path.join(options.outputBase, 'core.dark'));
 
   if (options.apply) {
     const action = options.dryRun
@@ -825,7 +826,7 @@ function printNextSteps(options) {
 Done. Apply mode ${action}.
 Next steps:
   1. Verify tokens/core/effects.tokens.json exists (carry-forward from shadow.tokens.json).
-     If missing, author it manually before yarn tokens.build (drop-shadow.100..500).
+     If missing, author it manually before yarn tokens.build (dropShadow.100..500).
   2. yarn tokens.build && yarn tokens.lint.all
   3. Run yarn test:scripts to confirm regression suite passes.
   4. Update src/components/ CSS variable references — see plan PR D for migration script.`);
@@ -835,16 +836,12 @@ Next steps:
   console.log(`
 Done. Next steps:
   1. Inspect generated foundation files:
-     - ${outCore}/palette.tokens.json
-     - ${outCore}/color.tokens.json
-     - ${outCore}/font.tokens.json
-     - ${outCore}/sizes.tokens.json
-     - ${outDark}/color.tokens.json
+${GENERATED_FILES.map(file => `     - ${formatPathForLog(path.join(options.outputBase, file))}`).join('\n')}
   2. Diff against current tokens/core:
      diff -r ${outCore} tokens/core
   3. For a clean break, re-run with --apply to overwrite tokens/core and tokens/core.dark
      and delete legacy orphan files automatically.
-  4. Author tokens/core/effects.tokens.json manually with drop-shadow.100..500 (Figma elevation 1-5).
+  4. Author tokens/core/effects.tokens.json manually with dropShadow.100..500 (Figma elevation 1-5).
   5. yarn tokens.build && yarn tokens.lint.all`);
 }
 
@@ -902,7 +899,7 @@ async function main(argv = process.argv) {
   ctx.notGenerated = [
     {
       file: 'effects.tokens.json',
-      reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)',
+      reason: 'not in Tokenhaus export — author manually (dropShadow.100..500 from Figma elevation 1-5)',
     },
     { file: 'screen.tokens.json', reason: 'not in Tokenhaus export — breakpoints removed from Figma' },
     { file: 'letterSpacing (in font.tokens.json)', reason: 'not in Tokenhaus export — emitted as empty placeholder' },
@@ -963,6 +960,7 @@ function printFatalError(error) {
 export {
   APPLY_OUTPUT_BASE,
   CliError,
+  GENERATED_FILES,
   MODE_DARK,
   MODE_LIGHT,
   ORPHAN_FILES_CORE,

@@ -6,6 +6,12 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import StyleDictionary from 'style-dictionary';
+
+import { GENERATED_FILES } from '../lib/tokenhaus-generated-files.mjs';
+
+const nameKebab = StyleDictionary.hooks.transforms['name/kebab'];
+
 const SCRIPT = fileURLToPath(new URL('../tokens-lint.mjs', import.meta.url));
 const tempDirs = [];
 
@@ -39,9 +45,75 @@ describe('tokens-lint — key naming', () => {
     assert.equal(status, 0);
   });
 
-  it('keeps accepting the all-lowercase kebab-case keys the Tokenhaus sync generates', () => {
-    const { keys } = lint(tokenRoot({ color: { text: { 'base-inverse': { 'on-color': leaf } } } }));
+  it('accepts all-lowercase kebab-case keys in every file the Tokenhaus sync generates', () => {
+    // The sync writes Figma variable names verbatim (`base-inverse`, `blue-sky`); flagging them
+    // would report keys the next sync writes back.
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-lint-sync-'));
+    tempDirs.push(base);
+    for (const file of GENERATED_FILES) {
+      fs.mkdirSync(path.join(base, path.dirname(file)), { recursive: true });
+      fs.writeFileSync(path.join(base, file), JSON.stringify({ color: { 'base-inverse': { 'on-color': leaf } } }));
+    }
+    const { status, report, keys } = lint(path.join(base, 'core'), path.join(base, 'core.dark'));
     assert.deepEqual(keys, []);
+    assert.equal(report.filesScanned, GENERATED_FILES.length);
+    assert.equal(status, 0);
+  });
+
+  it('rejects all-lowercase kebab-case keys in hand-authored files, suggesting camelCase', () => {
+    const { status, report } = lint(
+      tokenRoot({ 'search-input': { 'padding-inline': leaf, 'info-moderate': { gap: leaf } } }),
+    );
+    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.jsonPath}`, i.suggestion]));
+    assert.deepEqual(suggestions, {
+      'error:search-input': 'searchInput',
+      'error:search-input.padding-inline': 'paddingInline',
+      'error:search-input.info-moderate': 'infoModerate',
+    });
+    assert.equal(status, 1);
+  });
+
+  it('keeps a hyphen before a digit segment, which camelCase cannot carry', () => {
+    // `gap12` would build `--layout-gap12`, not `--layout-gap-12`.
+    const { keys } = lint(tokenRoot({ layout: { 'gap-12': leaf, 'paddingInline-100': leaf, 'max-2Lines': leaf } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('suggests a spelling that passes and builds the same CSS variable', () => {
+    const keys = ['max-2-lines', 'padding-inline-100', 'border-colour', 'padding-inline_x', 'gap_12', 'size_1_5'];
+    const { report } = lint(tokenRoot({ layout: Object.fromEntries(keys.map(k => [k, leaf])) }));
+    const suggestions = Object.fromEntries(report.issues.map(i => [`${i.severity}:${i.key}`, i.suggestion]));
+    assert.deepEqual(suggestions, {
+      'error:max-2-lines': 'max-2Lines',
+      'error:padding-inline-100': 'paddingInline-100',
+      'error:border-colour': 'borderColour',
+      'error:padding-inline_x': 'paddingInlineX',
+      'warning:gap_12': 'gap-12',
+      'warning:size_1_5': 'size-1-5',
+    });
+    const cssName = key => nameKebab.transform({ path: ['layout', key] }, {});
+    for (const issue of report.issues) assert.equal(cssName(issue.suggestion), cssName(issue.key), issue.key);
+    const followed = lint(tokenRoot({ layout: Object.fromEntries(report.issues.map(i => [i.suggestion, leaf])) }));
+    assert.deepEqual(followed.keys, []);
+  });
+
+  it('does not report a hyphen-free key as kebab-case', () => {
+    const { keys } = lint(tokenRoot({ border: { colour: leaf } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('still accepts a key that starts with a digit, which has no camelCase form', () => {
+    const { keys } = lint(tokenRoot({ spacing: { '1-5': leaf, '0-5': leaf } }));
+    assert.deepEqual(keys, []);
+  });
+
+  it('lints a hand-authored file that shares a basename with a generated one', () => {
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-lint-components-'));
+    tempDirs.push(base);
+    fs.mkdirSync(path.join(base, 'core', 'components'), { recursive: true });
+    fs.writeFileSync(path.join(base, 'core', 'components', 'color.tokens.json'), JSON.stringify({ 'a-b': leaf }));
+    const { keys } = lint(path.join(base, 'core'));
+    assert.deepEqual(keys, ['error:a-b']);
   });
 
   it('rejects a key that starts with an uppercase letter or mixes kebab-case with camelCase, suggesting camelCase', () => {

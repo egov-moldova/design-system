@@ -1087,7 +1087,6 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-storybook: "npm:^10.6.0"
     husky: "npm:^9.1.7"
-    known-css-properties: "npm:^0.37.0"
     lit: "npm:^3.3.2"
     lodash: "npm:^4.18.1"
     oxlint: "npm:^1.83.0"
@@ -6525,13 +6524,6 @@ __metadata:
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"
   checksum: 10c0/61cdff9623dabf3568b6445e93e31376bee1cdb93f8ba7033d86022c2a9b1791a1d9510e026e6465ebd701a6dd2f7b0808483ad8838341ac52f003f512e0b4c4
-  languageName: node
-  linkType: hard
-
-"known-css-properties@npm:^0.37.0":
-  version: 0.37.0
-  resolution: "known-css-properties@npm:0.37.0"
-  checksum: 10c0/e0ec08cae580e8833254b690971f73ec6f78ac461820a3c755b4a0b62c5b871501753b4aa60b30576a0f621ba44b231235cf9f35ab89e2e7de5448dfe0600241
   languageName: node
   linkType: hard
 

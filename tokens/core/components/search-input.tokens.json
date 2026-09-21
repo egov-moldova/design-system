@@ -1,5 +1,5 @@
 {
-  "search-input": {
+  "searchInput": {
     "field": {
       "gap": { "$value": "{spacing.8}", "$type": "dimension" }
     },

@@ -1,5 +1,5 @@
 {
-  "button-group": {
+  "buttonGroup": {
     "gap": {
       "horizontal": { "$value": "{spacing.12}", "$type": "dimension" },
       "vertical": { "$value": "{spacing.12}", "$type": "dimension" }
