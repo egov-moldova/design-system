@@ -184,6 +184,35 @@ describe('mud-avatar', () => {
       expect(queryPhoto(root)).toBeNull();
       expect(queryIcon(root)).toBeTruthy();
     });
+
+    it('falls back to initials when the image fails to load', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      expect(queryPhoto(root)).toBeTruthy();
+
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+
+      // A portrait that 404s must not leave an empty circle behind.
+      expect(queryPhoto(root)).toBeNull();
+      expect(queryInitials(root)?.textContent).toBe('IP');
+    });
+
+    it('retries the photo when `src` changes after a failure', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+      expect(queryPhoto(root)).toBeNull();
+
+      // A new URL deserves its own attempt; the failure must not be sticky.
+      (root as HTMLMudAvatarElement).src = 'https://example.com/ion.png';
+      await waitForChanges();
+
+      expect(queryPhoto(root)?.getAttribute('src')).toBe('https://example.com/ion.png');
+    });
   });
 
   describe('type="icon" rendering', () => {
