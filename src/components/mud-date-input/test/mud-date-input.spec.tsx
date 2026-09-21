@@ -154,7 +154,9 @@ describe('mud-date-input', () => {
     });
 
     it('renders a helper assistive row when `helper-text` is set', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" helper-text="Pick a date"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" helper-text="Pick a date"></mud-date-input>,
+      );
       const assistive = queryAssistive(root);
       expect(assistive?.classList.contains('assistive-helper')).toBe(true);
       expect(assistive?.textContent).toContain('Pick a date');
@@ -191,7 +193,9 @@ describe('mud-date-input', () => {
     });
 
     it('shows the ghost remaining hint only while the input is focused (partial value)', async () => {
-      const { root, waitForChanges } = await render(<mud-date-input locale="ro-RO" label="x" value="15/04/"></mud-date-input>);
+      const { root, waitForChanges } = await render(
+        <mud-date-input locale="ro-RO" label="x" value="15/04/"></mud-date-input>,
+      );
       // Unfocused — ghost is suppressed to avoid axe's `bgOverlap` false-positive
       // on a transient state. The native `placeholder` carries the format to AT.
       expect(queryGhostRemaining(root)).toBe(null);
@@ -292,7 +296,9 @@ describe('mud-date-input', () => {
 
     it('emits mudChange with isoValue=null when value is incomplete', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" value="15/04/" onMudChange={onChange}></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" value="15/04/" onMudChange={onChange}></mud-date-input>,
+      );
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
       await flush();
@@ -333,7 +339,13 @@ describe('mud-date-input', () => {
     it('formats MM/DD/YYYY correctly', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input locale="ro-RO" label="x" format="MM/DD/YYYY" value="04/15/2025" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          format="MM/DD/YYYY"
+          value="04/15/2025"
+          onMudChange={onChange}
+        ></mud-date-input>,
       );
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
@@ -344,7 +356,13 @@ describe('mud-date-input', () => {
     it('formats YYYY-MM-DD correctly', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input locale="ro-RO" label="x" format="YYYY-MM-DD" value="2025-04-15" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          format="YYYY-MM-DD"
+          value="2025-04-15"
+          onMudChange={onChange}
+        ></mud-date-input>,
       );
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
@@ -355,7 +373,9 @@ describe('mud-date-input', () => {
     it('uses the format pattern as the default placeholder', async () => {
       const { root: rootDmy } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
       expect(queryNative(rootDmy)?.getAttribute('placeholder')).toBe('DD/MM/YYYY');
-      const { root: rootIso } = await render(<mud-date-input locale="ro-RO" label="x" format="YYYY-MM-DD"></mud-date-input>);
+      const { root: rootIso } = await render(
+        <mud-date-input locale="ro-RO" label="x" format="YYYY-MM-DD"></mud-date-input>,
+      );
       expect(queryNative(rootIso)?.getAttribute('placeholder')).toBe('YYYY-MM-DD');
     });
   });
@@ -364,7 +384,13 @@ describe('mud-date-input', () => {
     it('returns null isoValue when the value falls below min', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input locale="ro-RO" label="x" value="15/04/2025" min="2025-05-01" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          value="15/04/2025"
+          min="2025-05-01"
+          onMudChange={onChange}
+        ></mud-date-input>,
       );
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
@@ -375,7 +401,13 @@ describe('mud-date-input', () => {
     it('returns null isoValue when the value rises above max', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-date-input locale="ro-RO" label="x" value="15/04/2025" max="2025-03-31" onMudChange={onChange}></mud-date-input>,
+        <mud-date-input
+          locale="ro-RO"
+          label="x"
+          value="15/04/2025"
+          max="2025-03-31"
+          onMudChange={onChange}
+        ></mud-date-input>,
       );
       const native = queryNative(root)!;
       native.dispatchEvent(new Event('change', { bubbles: true }));
@@ -412,7 +444,9 @@ describe('mud-date-input', () => {
       ['29/02/2025', 'day', 'Ziua trebuie să fie între 01 și 28'],
     ])('flags %s as a %s error with its message', async (value, error, message) => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" value={value} onMudChange={onChange}></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" value={value} onMudChange={onChange}></mud-date-input>,
+      );
       expect(root?.classList.contains('is-invalid')).toBe(true);
       expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
       expect(queryAssistive(root)?.textContent).toContain(message);
@@ -458,7 +492,9 @@ describe('mud-date-input', () => {
     });
 
     it('clears the error once the value becomes valid', async () => {
-      const { root, waitForChanges } = await render(<mud-date-input locale="ro-RO" label="x" value="45/"></mud-date-input>);
+      const { root, waitForChanges } = await render(
+        <mud-date-input locale="ro-RO" label="x" value="45/"></mud-date-input>,
+      );
       (root as unknown as { value: string }).value = '15/04/2025';
       await waitForChanges();
       expect(root?.classList.contains('is-invalid')).toBe(false);
@@ -475,13 +511,17 @@ describe('mud-date-input', () => {
     });
 
     it('passes readonly through to the native input', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>,
+      );
       const native = queryNative(root);
       expect(native?.readOnly).toBe(true);
     });
 
     it('does not open the calendar while readonly', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" readonly value="15/04/2025"></mud-date-input>,
+      );
       const trigger = root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
       expect(trigger?.hasAttribute('disabled')).toBe(true);
       trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -528,7 +568,9 @@ describe('mud-date-input', () => {
     });
 
     it('wires aria-describedby to the error id when invalid + error-text present', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" label="x" invalid error-text="Required"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" label="x" invalid error-text="Required"></mud-date-input>,
+      );
       const describedBy = queryNative(root)?.getAttribute('aria-describedby');
       const error = root?.shadowRoot?.querySelector('.assistive-error');
       expect(describedBy).toBeTruthy();
@@ -562,9 +604,7 @@ describe('mud-date-input', () => {
       const { root } = await render(
         <mud-date-input locale="en-US" clearable value="15/04/2025" label="x"></mud-date-input>,
       );
-      expect(root?.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label')).toBe(
-        'Open the calendar',
-      );
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label')).toBe('Open the calendar');
       expect(queryClearButton(root)?.getAttribute('aria-label')).toBe('Clear');
     });
   });
@@ -581,7 +621,9 @@ describe('mud-date-input', () => {
     });
 
     it('appears when clearable and the field has a value', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" clearable value="15/04/2025" label="x"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" clearable value="15/04/2025" label="x"></mud-date-input>,
+      );
       expect(queryClearButton(root)).not.toBeNull();
     });
 
@@ -591,12 +633,16 @@ describe('mud-date-input', () => {
     });
 
     it('stays hidden when readonly, even with a value', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" clearable readonly value="15/04/2025" label="x"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" clearable readonly value="15/04/2025" label="x"></mud-date-input>,
+      );
       expect(queryClearButton(root)).toBeNull();
     });
 
     it('stays hidden when disabled, even with a value', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" clearable disabled value="15/04/2025" label="x"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" clearable disabled value="15/04/2025" label="x"></mud-date-input>,
+      );
       expect(queryClearButton(root)).toBeNull();
     });
 
@@ -624,7 +670,9 @@ describe('mud-date-input', () => {
     });
 
     it('clear button is tabindex=-1 (reached programmatically, not via Tab)', async () => {
-      const { root } = await render(<mud-date-input locale="ro-RO" clearable value="15/04/2025" label="x"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="ro-RO" clearable value="15/04/2025" label="x"></mud-date-input>,
+      );
       expect(queryClearButton(root)?.getAttribute('tabindex')).toBe('-1');
     });
   });

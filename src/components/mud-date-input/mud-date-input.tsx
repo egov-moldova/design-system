@@ -402,7 +402,9 @@ export class MudDateInput {
 
   /** All built-in strings, translated for the current (validated) `locale`. */
   private messages(): DateInputMessages {
-    return DATE_INPUT_MESSAGES[(this.locale as DateInputLocale) ?? DEFAULT_LOCALE] ?? DATE_INPUT_MESSAGES[DEFAULT_LOCALE];
+    return (
+      DATE_INPUT_MESSAGES[(this.locale as DateInputLocale) ?? DEFAULT_LOCALE] ?? DATE_INPUT_MESSAGES[DEFAULT_LOCALE]
+    );
   }
 
   /** Effective picker placement once `auto` is resolved against the viewport. */

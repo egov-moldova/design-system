@@ -156,7 +156,10 @@ export const AllVariants: Story = {
   render: () =>
     wrap(
       DATE_INPUT_VARIANTS.map(variant =>
-        cell(variant, /*html*/ `<mud-date-input locale="ro-RO" variant="${variant}" size="lg" label="Label"></mud-date-input>`),
+        cell(
+          variant,
+          /*html*/ `<mud-date-input locale="ro-RO" variant="${variant}" size="lg" label="Label"></mud-date-input>`,
+        ),
       ).join(''),
     ),
   parameters: {
@@ -183,7 +186,9 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: DATE_INPUT_SIZES.map(s => `<mud-date-input locale="ro-RO" size="${s}" label="Label"></mud-date-input>`).join('\n'),
+        code: DATE_INPUT_SIZES.map(
+          s => `<mud-date-input locale="ro-RO" size="${s}" label="Label"></mud-date-input>`,
+        ).join('\n'),
       },
     },
   },
@@ -199,12 +204,18 @@ export const States: Story = {
           'default: filled',
           /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
         ),
-        cell('default: disabled', /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" disabled></mud-date-input>`),
+        cell(
+          'default: disabled',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" disabled></mud-date-input>`,
+        ),
         cell(
           'default: readonly',
           /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/04/2025" readonly></mud-date-input>`,
         ),
-        cell('default: mandatory', /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" required></mud-date-input>`),
+        cell(
+          'default: mandatory',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" required></mud-date-input>`,
+        ),
         cell(
           'destructive: default',
           /*html*/ `<mud-date-input locale="ro-RO" variant="destructive" size="lg" label="Label"></mud-date-input>`,
@@ -302,9 +313,18 @@ export const Validation: Story = {
   render: () =>
     wrapTriple(
       [
-        cell('DD-error', /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="45"></mud-date-input>`),
-        cell('MM-error', /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/18"></mud-date-input>`),
-        cell('YYYY-error', /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/04/1550"></mud-date-input>`),
+        cell(
+          'DD-error',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="45"></mud-date-input>`,
+        ),
+        cell(
+          'MM-error',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/18"></mud-date-input>`,
+        ),
+        cell(
+          'YYYY-error',
+          /*html*/ `<mud-date-input locale="ro-RO" size="lg" label="Label" value="15/04/1550"></mud-date-input>`,
+        ),
       ].join(''),
     ),
   parameters: {
