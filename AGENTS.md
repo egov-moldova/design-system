@@ -147,7 +147,8 @@ See `_agents/environment-commands.md` for the full decision matrix and all comma
 
 ## Merge driver for auto-generated files
 
-`git worktree` isolation, a `merge=ours` driver, `.husky/pre-push` and CI together let several
-parallel branches regenerate `src/components.d.ts` and the component `readme.md` files without
-merge conflicts. Never hand-edit these files or stage them with `git add -A`/`git add .`. Full
+`src/components.d.ts` is git-ignored: the build regenerates it and the package ships its own
+copy, so it never conflicts. For the tracked component `readme.md` files, `git worktree`
+isolation, a `merge=ours` driver, `.husky/pre-push`, CI and `yarn sync:main` keep parallel
+branches from conflicting. Never hand-edit these files or stage them with `git add -A`/`git add .`. Full
 mechanism, setup and verification: `_agents/generated-files.md`.

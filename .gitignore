@@ -5,6 +5,9 @@ www/
 loader/
 storybook-static/
 tokens/generated/
+# Stencil rewrites it on every build and `dx:prepare`; the package ships its own copy in
+# dist/types/. Tracked, it made every pair of open PRs conflict on GitHub.
+src/components.d.ts
 coverage/
 reports/
 

@@ -32,6 +32,47 @@ body.sb-main-padded,
   box-sizing: border-box;
 }
 
+/* Docs story frames let component popovers overflow them (issue #84): addon-docs clips
+ * `.docs-story` (`overflow: auto`) and `.sbdocs-preview` (`overflow: hidden`), which cuts
+ * off every calendar and listbox at the edge of the closed field. ./docs-story-overflow.mjs
+ * marks each story that fits its frame; one wider than its frame keeps the scrolling box.
+ * Two classes outrank the single emotion class addon-docs sets `overflow` with. */
+.sbdocs.sbdocs-preview:has(> .docs-story[data-mud-overflow-visible]),
+.sbdocs-preview .docs-story[data-mud-overflow-visible] {
+  overflow: visible;
+}
+
+/* `overflow: hidden` also rounded the corners of the frame's toolbar and story box; hand
+ * them the frame's radius directly, which matches wherever the frame still clips too. */
+.sbdocs.sbdocs-preview > :first-child {
+  border-start-start-radius: inherit;
+  border-start-end-radius: inherit;
+}
+
+.sbdocs.sbdocs-preview > :last-child {
+  border-end-start-radius: inherit;
+  border-end-end-radius: inherit;
+}
+
+/* Every inline story sits under a transformed zoom wrapper, so each (already positioned)
+ * frame paints as its own layer and a later frame covers the popover of an earlier one.
+ * Raise the frame the reader is working in, lowest first: one holding an element marked
+ * `open` (an overlay rendered open, but also an expanded accordion or menu, so it must not
+ * outrank the others), the hovered one, and the one holding focus, which wins even when the
+ * pointer has moved on to a neighbour. A tooltip hovered in a neighbour therefore stays
+ * under a focused frame. */
+.sbdocs.sbdocs-preview:has([open]) {
+  z-index: 1;
+}
+
+.sbdocs.sbdocs-preview:hover {
+  z-index: 2;
+}
+
+.sbdocs.sbdocs-preview:focus-within {
+  z-index: 3;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Light/Dark theming overrides for addon-docs + Code/HTML panels.
  *

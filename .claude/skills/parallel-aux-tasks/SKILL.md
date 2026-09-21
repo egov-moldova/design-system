@@ -187,7 +187,7 @@ Before claiming the parallel phase complete, the orchestrator runs `superpowers:
 
 ## Generated-file safety in parallel worktrees
 
-When N parallel worktrees (3-5 per session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
+When N parallel worktrees (3-5 per session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`. Of these, only the `readme.md` files are tracked; the rest are git-ignored.
 
 These paths are governed by:
 
