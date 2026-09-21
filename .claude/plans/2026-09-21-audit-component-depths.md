@@ -574,6 +574,7 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`,
 - Modify: `.claude/commands/migrate-component.md`
 - Modify: `.claude/agents/audit-production.md`
 - Modify: `.claude/agents/a11y-verifier.md`
+- Modify: `.claude/agents/pixel-perfect-verifier.md`
 - Modify: `.claude/agents/new-component.md`
 - Modify: `.claude/agents/refactor-component.md`
 - Modify: `.claude/skills/stencil-compliance/SKILL.md`
