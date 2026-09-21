@@ -6,11 +6,16 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  expectedStyles,
+  headManifestRelPath,
+  isDesignNone,
   isPixelState,
+  listOverrides,
   loadManifest,
   manifestPathFor,
   normalizeNodeId,
   referenceFileName,
+  resolveHeadManifest,
   resolveState,
   validateManifest,
 } from '../../audit/lib/figma-manifest.mjs';
@@ -264,5 +269,155 @@ describe('figma-manifest: figma.skip', () => {
       manifest([{ name: 'a', node: '1:2' }], { figma: { fileKey: 'abc123', skip: [{ node: '9:9' }] } }),
     );
     assert.ok(errors.some(e => /figma.skip\[0\] needs a node id and a reason/.test(e)));
+  });
+});
+
+describe('figma-manifest: figma.design "none"', () => {
+  const none = { figma: { design: 'none', reason: 'internal utility, no design', decidedBy: 'Dan' } };
+
+  it('accepts design "none" with a reason and decidedBy, and no fileKey and no states', () => {
+    assert.deepEqual(validateManifest(none), []);
+    assert.equal(isDesignNone(none), true);
+  });
+
+  it('rejects it without a reason or decidedBy, or with a fileKey or states', () => {
+    assert.ok(validateManifest({ figma: { design: 'none', decidedBy: 'Dan' } }).some(e => /needs a reason/.test(e)));
+    assert.ok(validateManifest({ figma: { design: 'none', reason: 'r' } }).some(e => /needs decidedBy/.test(e)));
+    assert.ok(
+      validateManifest({ figma: { ...none.figma, fileKey: 'abc' } }).some(e => /cannot carry a fileKey/.test(e)),
+    );
+    assert.ok(
+      validateManifest({ ...none, states: [{ name: 'a', node: '1:2' }] }).some(e => /cannot carry states/.test(e)),
+    );
+    assert.ok(validateManifest({ figma: { design: 'maybe', reason: 'r', decidedBy: 'd' } }).length > 0);
+  });
+
+  it('still requires fileKey and states for a regular manifest', () => {
+    assert.ok(validateManifest({ figma: { scale: 2 } }).some(e => /fileKey/.test(e)));
+  });
+});
+
+describe('figma-manifest: expect[].override (Figma corrections)', () => {
+  const withOverride = override =>
+    manifest([
+      {
+        name: 'a',
+        node: '1:2',
+        expect: [{ target: 'mud-x', styles: { color: '#000000' }, ...(override ? { override } : {}) }],
+      },
+    ]);
+  const ok = { value: '#111111', reason: 'Figma typo', decidedBy: 'Dan' };
+
+  it('accepts an override with value, reason and decidedBy on a one-property entry', () => {
+    assert.deepEqual(validateManifest(withOverride(ok)), []);
+  });
+
+  it('rejects an override without a reason or decidedBy, or on an entry with several properties', () => {
+    assert.ok(
+      validateManifest(withOverride({ value: '#1', decidedBy: 'Dan' })).some(e => /override needs a reason/.test(e)),
+    );
+    assert.ok(
+      validateManifest(withOverride({ value: '#1', reason: 'r' })).some(e => /override needs decidedBy/.test(e)),
+    );
+    const two = manifest([
+      { name: 'a', node: '1:2', expect: [{ target: 'x', styles: { color: '#0', width: '1px' }, override: ok }] },
+    ]);
+    assert.ok(validateManifest(two).some(e => /exactly one property/.test(e)));
+  });
+
+  it('expectedStyles checks the override value instead of the Figma one', () => {
+    assert.deepEqual(expectedStyles({ styles: { color: '#000000' }, override: ok }), { color: '#111111' });
+    assert.deepEqual(expectedStyles({ styles: { color: '#000000' } }), { color: '#000000' });
+  });
+
+  it('listOverrides names where, target, property, the Figma value and the correction', () => {
+    assert.deepEqual(listOverrides(withOverride(ok)), [
+      {
+        where: 'a',
+        target: 'mud-x',
+        prop: 'color',
+        figma: '#000000',
+        value: '#111111',
+        reason: 'Figma typo',
+        decidedBy: 'Dan',
+      },
+    ]);
+  });
+});
+
+describe('figma-manifest: resolveHeadManifest (every Figma input from HEAD)', () => {
+  const REL = 'src/components/mud-x/test/mud-x.figma.json';
+  const head = JSON.stringify(
+    manifest([{ name: 'a', node: '1:2', expect: [{ target: 'mud-x', styles: { color: '#000000' } }] }]),
+  );
+
+  function deps({ headText, wtText }) {
+    const written = new Map();
+    return {
+      written,
+      git: args => {
+        if (args[0] === 'show')
+          return headText === null ? { status: 128, stdout: '' } : { status: 0, stdout: headText };
+        return { status: 0, stdout: 'c0ffee\n' };
+      },
+      repoRoot: '/repo',
+      readWorkingTree: p => (p === `/repo/${REL}` ? wtText : null),
+      writeFile: (p, text) => written.set(p, text),
+    };
+  }
+
+  it('writes the HEAD text to the fixed .audit-figma path and records the commit', () => {
+    const d = deps({ headText: head, wtText: head });
+    const r = resolveHeadManifest('mud-x', d);
+    assert.equal(r.status, 'present');
+    assert.equal(r.path, headManifestRelPath('mud-x'));
+    assert.equal(r.path, '.audit-figma/mud-x/manifest@HEAD.json');
+    assert.equal(r.commit, 'c0ffee');
+    assert.equal(r.pending, false);
+    assert.equal(d.written.get('/repo/.audit-figma/mud-x/manifest@HEAD.json'), head);
+  });
+
+  it('an uncommitted edit is pending and not honoured: the HEAD text is what the checks read', () => {
+    const edited = head.replace('#000000', '#ffffff');
+    const d = deps({ headText: head, wtText: edited });
+    const r = resolveHeadManifest('mud-x', d);
+    assert.equal(r.pending, true);
+    assert.equal(d.written.get('/repo/.audit-figma/mud-x/manifest@HEAD.json'), head);
+  });
+
+  it('a manifest only in the working tree counts as absent', () => {
+    const r = resolveHeadManifest('mud-x', deps({ headText: null, wtText: head }));
+    assert.equal(r.status, 'absent');
+    assert.equal(r.workingTreeOnly, true);
+    assert.equal(r.path, null);
+  });
+
+  it('reads design "none" and committed overrides from HEAD', () => {
+    const none = JSON.stringify({ figma: { design: 'none', reason: 'utility', decidedBy: 'Dan' } });
+    const r = resolveHeadManifest('mud-x', deps({ headText: none, wtText: none }));
+    assert.equal(r.status, 'design-none');
+    assert.deepEqual(r.design, { reason: 'utility', decidedBy: 'Dan' });
+
+    const withOverride = JSON.stringify(
+      manifest([
+        {
+          name: 'a',
+          node: '1:2',
+          expect: [
+            {
+              target: 'mud-x',
+              styles: { color: '#000' },
+              override: { value: '#111', reason: 'typo', decidedBy: 'Dan' },
+            },
+          ],
+        },
+      ]),
+    );
+    assert.equal(
+      resolveHeadManifest('mud-x', deps({ headText: withOverride, wtText: withOverride })).overrides.length,
+      1,
+    );
+    // The same override only in the working tree is not honoured.
+    assert.deepEqual(resolveHeadManifest('mud-x', deps({ headText: head, wtText: withOverride })).overrides, []);
   });
 });

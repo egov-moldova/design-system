@@ -109,3 +109,27 @@ export function defaultUsage(toolName, summary, extraLines = []) {
     ...(extraLines.length ? ['', ...extraLines] : []),
   ].join('\n');
 }
+
+/** Audit depths, shallowest first (plan `2026-09-21-audit-component-depths.md` Decision §1). */
+export const DEPTHS = Object.freeze(['quick', 'standard', 'deep']);
+export const DEFAULT_DEPTH = 'standard';
+
+/**
+ * Resolve `--depth` and its two legacy spellings into one depth: `--fast` is
+ * an alias of `quick` (kept for `pre-pr-check`), `--e2e` folds into `deep`.
+ * A legacy flag that contradicts an explicit `--depth` is a usage error rather
+ * than a silent pick. Pure.
+ *
+ * @returns {{ depth: string } | { error: string }}
+ */
+export function resolveDepth({ depth, fast = false, e2e = false } = {}) {
+  if (depth !== undefined && !DEPTHS.includes(depth)) {
+    return { error: `--depth must be one of ${DEPTHS.join(', ')} (got "${depth}")` };
+  }
+  if (fast && e2e) return { error: '--fast (quick) and --e2e (deep) contradict each other' };
+  const implied = fast ? 'quick' : e2e ? 'deep' : undefined;
+  if (implied && depth !== undefined && depth !== implied) {
+    return { error: `--${fast ? 'fast' : 'e2e'} means --depth ${implied}, which contradicts --depth ${depth}` };
+  }
+  return { depth: depth ?? implied ?? DEFAULT_DEPTH };
+}

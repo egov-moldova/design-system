@@ -50,6 +50,7 @@ import { launchBrowser, setTheme, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HI
 import { DEFAULT_PASS, DEFAULT_WARN, classifyDiff, describeSizeMismatch } from './lib/image-diff.mjs';
 import {
   defaultRefsDir,
+  isDesignNone,
   loadManifest,
   manifestPathFor,
   referenceFileName,
@@ -243,6 +244,11 @@ async function analyzeManifest(target, manifestPath, opts) {
       states: [],
       componentName: target.name,
     };
+  }
+
+  if (isDesignNone(manifest)) {
+    // A declared "no design" is a recorded decision, not a finding: nothing to compare.
+    return { mode: 'manifest', manifest: manifestRel, findings: [], states: [], componentName: target.name };
   }
 
   const scale = Number(args.extras.scale ?? manifest.figma?.scale ?? DEFAULT_SCALE);

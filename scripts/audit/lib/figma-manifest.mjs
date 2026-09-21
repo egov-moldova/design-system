@@ -59,6 +59,14 @@
  *   each with a reason; `figma-refs --check` reports every other uncovered one.
  * - Styles accept any computed-style property plus `boxWidth`, `boxHeight`
  *   (border box) and `textContent` (trimmed).
+ * - `override` on an `expect` entry records a correction the owner decided
+ *   (e.g. a Figma typo): `{ "value": "…", "reason": "…", "decidedBy": "…" }`.
+ *   The entry lists exactly one style; `15-style-parity` checks `value`
+ *   instead of the Figma one, and the verdict lists the override.
+ * - A component with no design declares it instead of states:
+ *   `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`.
+ *   Figma checks are skipped and the verdict prints the reason.
+ * - The audit honours all of this only from HEAD (`resolveHeadManifest`).
  *
  * Selectors are Playwright CSS selectors, which pierce open shadow roots, so
  * `mud-x .inner` reaches `.inner` inside `mud-x`'s shadow DOM.
@@ -110,6 +118,7 @@ export function validateManifest(manifest) {
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
     return ['manifest must be a JSON object'];
   }
+  if (manifest.figma?.design !== undefined) return validateDesignNone(manifest);
   const defaults = manifest.defaults ?? {};
   const states = manifest.states;
 
@@ -229,9 +238,76 @@ export function validateManifest(manifest) {
   return errors;
 }
 
+/**
+ * A component with no design (AGENTS.md Figma-First exception) declares it
+ * once: `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`,
+ * with no `fileKey` and no `states` — there is no node to cite. Pure.
+ */
+function validateDesignNone(manifest) {
+  const errors = [];
+  const { design, reason, decidedBy, fileKey } = manifest.figma;
+  if (design !== 'none') errors.push('figma.design can only be "none"');
+  if (typeof reason !== 'string' || !reason.trim()) errors.push('figma.design "none" needs a reason');
+  if (typeof decidedBy !== 'string' || !decidedBy.trim()) errors.push('figma.design "none" needs decidedBy');
+  if (fileKey !== undefined) errors.push('figma.design "none" cannot carry a fileKey');
+  if (manifest.states !== undefined) errors.push('figma.design "none" cannot carry states');
+  return errors;
+}
+
+/** True when the manifest declares that the component has no Figma design. Pure. */
+export function isDesignNone(manifest) {
+  return manifest?.figma?.design === 'none';
+}
+
+/**
+ * The styles an expectation is checked against: the Figma values, except a
+ * property carrying a committed correction (`override`), which is checked
+ * against `override.value`. An override applies to exactly one property, so
+ * an entry with one must list exactly one (validated). Pure.
+ */
+export function expectedStyles(exp) {
+  if (!exp?.override) return exp?.styles ?? {};
+  const [prop] = Object.keys(exp.styles);
+  return { [prop]: exp.override.value };
+}
+
+/** Every `override` in a manifest, in state then shared order. Pure. */
+export function listOverrides(manifest) {
+  const out = [];
+  const collect = (list, where) => {
+    for (const e of list ?? []) {
+      if (!e?.override || !e.styles) continue;
+      const [prop] = Object.keys(e.styles);
+      out.push({
+        where,
+        target: e.target,
+        prop,
+        figma: e.styles[prop],
+        value: e.override.value,
+        reason: e.override.reason,
+        decidedBy: e.override.decidedBy,
+      });
+    }
+  };
+  for (const s of manifest?.states ?? []) collect(s?.expect, s?.name);
+  for (const [key, list] of Object.entries(manifest?.shared ?? {})) collect(list, `shared:${key}`);
+  return out;
+}
+
 function validateExpectation(e, where, state, errors) {
   if (typeof e?.target !== 'string' || e.target.length === 0) errors.push(`${where}.target must be a selector`);
   if (e?.absent !== undefined && e.absent !== true) errors.push(`${where}.absent can only be true`);
+  if (e?.override !== undefined) {
+    const o = e.override;
+    if (!o || typeof o !== 'object' || typeof o.value !== 'string') {
+      errors.push(`${where}.override needs a string value`);
+    }
+    if (typeof o?.reason !== 'string' || !o.reason.trim()) errors.push(`${where}.override needs a reason`);
+    if (typeof o?.decidedBy !== 'string' || !o.decidedBy.trim()) errors.push(`${where}.override needs decidedBy`);
+    if (e.absent === true || !e.styles || Object.keys(e.styles).length !== 1) {
+      errors.push(`${where}.override corrects one value: its styles must list exactly one property`);
+    }
+  }
   if (e?.absent === true) {
     if (e.styles !== undefined) errors.push(`${where} cannot have both absent and styles`);
   } else if (!e?.styles || typeof e.styles !== 'object' || Object.keys(e.styles).length === 0) {
@@ -296,6 +372,82 @@ export function resolveState(manifest, state, componentName) {
     expect: (state.expect ?? [])
       .flatMap(e => (e.use !== undefined ? (manifest.shared?.[e.use] ?? []) : [e]))
       .map(e => ({ ...e, node: normalizeNodeId(e.node ?? state.node) })),
+  };
+}
+
+/** Repo-relative path of a component's committed manifest. */
+export function manifestRelPath(componentName) {
+  return `src/components/${componentName}/test/${componentName}.figma.json`;
+}
+
+/**
+ * The fixed, git-ignored path the orchestrator writes a component's HEAD
+ * manifest to (Design §8). Fixed rather than a temp dir so no run-varying path
+ * reaches a finding.
+ */
+export function headManifestRelPath(componentName) {
+  return `.audit-figma/${componentName}/manifest@HEAD.json`;
+}
+
+/**
+ * Resolve a component's Figma manifest from the committed tree (Design §8):
+ * every Figma input — presence, `design`, `expect`, `override`, `skip` — is
+ * read from `git show HEAD:<path>`, never from the working tree, so the audit
+ * cannot grant itself a waiver or a correction. The HEAD copy is written to
+ * `headManifestRelPath()` and passed to 11 / 15 / figma-refs via `--manifest`.
+ *
+ * @param {string} componentName
+ * @param {object} [deps] — injection seam for tests
+ * @param {(args: string[]) => {status: number|null, stdout: string}} deps.git
+ * @param {string} [deps.repoRoot]
+ * @param {(abs: string) => string|null} [deps.readWorkingTree] — null when absent
+ * @param {(abs: string, text: string) => void} [deps.writeFile]
+ * @returns {{ status: 'present'|'absent'|'design-none', path: string|null, rel: string,
+ *   commit: string|null, pending: boolean, workingTreeOnly: boolean,
+ *   design: {reason: string, decidedBy: string}|null, overrides: object[], skips: object[] }}
+ */
+export function resolveHeadManifest(componentName, deps) {
+  const repoRoot = deps.repoRoot ?? REPO_ROOT;
+  const rel = manifestRelPath(componentName);
+  const show = deps.git(['show', `HEAD:${rel}`]);
+  const headText = show.status === 0 ? show.stdout : null;
+  const wtText = deps.readWorkingTree(join(repoRoot, rel));
+  const base = {
+    rel,
+    pending: headText !== null && wtText !== headText,
+    workingTreeOnly: headText === null && wtText !== null,
+    design: null,
+    overrides: [],
+    skips: [],
+  };
+  if (headText === null) return { ...base, status: 'absent', path: null, commit: null };
+
+  const log = deps.git(['log', '-1', '--format=%H', 'HEAD', '--', rel]);
+  const commit = log.status === 0 ? log.stdout.trim() || null : null;
+  const headRel = headManifestRelPath(componentName);
+  deps.writeFile(join(repoRoot, headRel), headText);
+  let manifest = null;
+  try {
+    manifest = JSON.parse(headText);
+  } catch {
+    // An unparsable HEAD manifest still goes to 11 / 15, which report it as MANIFEST-INVALID.
+  }
+  if (isDesignNone(manifest)) {
+    return {
+      ...base,
+      status: 'design-none',
+      path: headRel,
+      commit,
+      design: { reason: manifest.figma.reason, decidedBy: manifest.figma.decidedBy },
+    };
+  }
+  return {
+    ...base,
+    status: 'present',
+    path: headRel,
+    commit,
+    overrides: listOverrides(manifest),
+    skips: (manifest?.figma?.skip ?? []).map(s => ({ node: s.node, reason: s.reason })),
   };
 }
 

@@ -1,0 +1,390 @@
+{
+  "schemaVersion": "1.1.0",
+  "tool": "run-all",
+  "target": "mud-fx",
+  "ok": false,
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 0,
+    "incomplete": 0
+  },
+  "blockers": [],
+  "results": [
+    {
+      "id": "lint",
+      "name": "check-lint",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "01",
+      "name": "check-01",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "02",
+      "name": "check-02",
+      "wave": "A",
+      "ok": false,
+      "status": "ok",
+      "exitCode": 1,
+      "durationMs": 987,
+      "summary": {
+        "errors": 1,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "03",
+      "name": "check-03",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "04",
+      "name": "check-04",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "05",
+      "name": "check-05",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "07",
+      "name": "check-07",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "14",
+      "name": "check-14",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "16",
+      "name": "check-16",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "17",
+      "name": "check-17",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "06",
+      "name": "check-06",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "08",
+      "name": "check-08",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "13",
+      "name": "check-13",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "18",
+      "name": "check-18",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "09",
+      "name": "check-09",
+      "wave": "A",
+      "ok": false,
+      "status": "crashed",
+      "exitCode": 2,
+      "durationMs": 987,
+      "summary": null,
+      "error": "a11y-tree: internal error — boom at 12:07:44.908 (pid 5151)",
+      "component": "mud-fx"
+    },
+    {
+      "id": "10",
+      "name": "check-10",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "11",
+      "name": "check-11",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "12",
+      "name": "check-12",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "15",
+      "name": "check-15",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    },
+    {
+      "id": "19",
+      "name": "check-19",
+      "wave": "A",
+      "ok": true,
+      "status": "ok",
+      "exitCode": 0,
+      "durationMs": 987,
+      "summary": {
+        "errors": 0,
+        "warnings": 0,
+        "info": 0
+      },
+      "error": null,
+      "component": "mud-fx"
+    }
+  ],
+  "findingsByTool": {
+    "check-lint": [],
+    "check-01": [],
+    "check-02": [
+      {
+        "severity": "error",
+        "code": "FIXTURE-ERROR",
+        "file": "src/components/mud-fx/x.tsx",
+        "line": 7,
+        "message": "seeded"
+      }
+    ],
+    "check-03": [],
+    "check-04": [],
+    "check-05": [],
+    "check-07": [],
+    "check-14": [],
+    "check-16": [],
+    "check-17": [],
+    "check-06": [],
+    "check-08": [],
+    "check-13": [],
+    "check-18": [],
+    "check-09": [],
+    "check-10": [],
+    "check-11": [],
+    "check-12": [],
+    "check-15": [],
+    "check-19": []
+  },
+  "meta": {
+    "totalDurationMs": 6909,
+    "scriptsRun": 20,
+    "parallel": true,
+    "startedAt": "2026-09-21T12:07:43.500Z"
+  },
+  "audit": {
+    "component": "mud-fx",
+    "depth": "standard",
+    "noFigma": false,
+    "browserWaiver": null,
+    "filters": {
+      "only": [],
+      "skip": []
+    },
+    "figma": {
+      "status": "present",
+      "rel": "src/components/mud-fx/test/mud-fx.figma.json",
+      "path": ".audit-figma/mud-fx/manifest@HEAD.json",
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "pending": false,
+      "workingTreeOnly": false,
+      "design": null,
+      "overrides": [],
+      "skips": []
+    },
+    "aiLegs": [],
+    "prerequisites": []
+  }
+}

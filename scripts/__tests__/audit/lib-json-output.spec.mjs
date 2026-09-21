@@ -57,7 +57,7 @@ function emitThroughPipe(bytes) {
 
 describe('json-output: schema versions', () => {
   it('bumps the envelope SCHEMA_VERSION to a minor over 1.0.0', () => {
-    assert.equal(SCHEMA_VERSION, '1.1.0');
+    assert.equal(SCHEMA_VERSION, '1.2.0');
   });
 
   it('defines separate schemaVersions for verdict.json and ai-findings.json', () => {

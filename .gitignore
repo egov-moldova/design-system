@@ -28,6 +28,10 @@ node_modules/
 .playwright-mcp
 .audit-screenshots/
 .audit-figma/
+# Audit verdicts, fix briefs and per-run inputs (scripts/audit/verdict.mjs). Anchored:
+# an unanchored `audit/` would also ignore scripts/audit/.
+/audit/
+/.audit-storybook.json
 .remember/
 .sass-cache/
 .versions/

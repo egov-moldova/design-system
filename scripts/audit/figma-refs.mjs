@@ -37,6 +37,7 @@ import { buildResult, emit, finding, flushStdout } from './lib/json-output.mjs';
 import { EXIT_FINDINGS, EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import {
   defaultRefsDir,
+  isDesignNone,
   isPixelState,
   loadManifest,
   manifestPathFor,
@@ -276,6 +277,10 @@ async function main() {
   const { manifest, errors } = loadManifest(manifestPath);
   if (!manifest || errors.length) {
     process.stderr.write(`${TOOL}: ${manifestPath}\n  - ${errors.join('\n  - ')}\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+  if (isDesignNone(manifest)) {
+    process.stderr.write(`${TOOL}: the manifest declares figma.design "none" — there is no Figma file to read.\n`);
     process.exit(EXIT_INTERNAL);
   }
   if (!manifest.figma?.fileKey) {

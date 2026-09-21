@@ -28,7 +28,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-export const SCHEMA_VERSION = '1.1.0';
+export const SCHEMA_VERSION = '1.2.0';
 
 /**
  * `verdict.json`'s overall state (Design §1). First match wins, decided by

@@ -41,7 +41,7 @@ returns ONE JSON envelope you can read in a single tool call:
 # Covers structure, anti-patterns, git hygiene, jsdoc, story exports,
 # integration usage, component contract, token diff — across the components
 # touched in this branch's git diff vs main.
-node scripts/audit/run-all.mjs --changed --no-browser --json
+node scripts/audit/run-all.mjs --depth quick --changed --no-browser --json
 ```
 
 Read the result. The `blockers` array lists every error-severity finding except those of

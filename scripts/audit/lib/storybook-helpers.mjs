@@ -7,11 +7,16 @@
  *  - storyUrl                 — build iframe URL for a Storybook story id
  *  - inferStoryId             — best-effort `<category>-<bare>--<exportName>` builder
  *
+ *  - ensureWorktreeStorybook — reuse or start THIS worktree's Storybook (Design §9)
+ *
  * Worktree-aware: callers may pass `port` (e.g. 6008 when a parallel git
  * worktree runs Storybook on a custom port). Defaults keep single-checkout
  * workflows simple.
  */
 import net from 'node:net';
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export const DEFAULT_PORT = 6007;
 export const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}`;
@@ -85,4 +90,87 @@ function kebabCase(s) {
     .toLowerCase()
     .replace(/[\s_]+/g, '-')
     .replace(/[^a-z0-9-]/g, '');
+}
+
+/** Git-ignored record of the Storybook this worktree started: `{ port, pid }`. */
+export const STORYBOOK_RECORD = '.audit-storybook.json';
+
+/** Resolve a port nothing listens on, by letting the OS pick one. */
+export function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.once('error', reject);
+    server.listen(0, () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
+}
+
+function isProcessAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return err.code === 'EPERM';
+  }
+}
+
+function startStorybookProcess({ repoRoot, port }) {
+  const bin = join(repoRoot, 'node_modules', '.bin', 'storybook');
+  const child = spawn(bin, ['dev', '-p', String(port), '--no-open', '--ci'], {
+    cwd: repoRoot,
+    detached: true,
+    stdio: 'ignore',
+  });
+  child.unref();
+  return child.pid;
+}
+
+/**
+ * Return the port of a Storybook that belongs to THIS worktree, starting one
+ * if needed (Design §9). Nine worktrees of this repo share port 6007 and
+ * `isStorybookReachable` is a bare TCP connect, so a reachable 6007 may serve
+ * another branch: a server is reused only when this worktree's
+ * `.audit-storybook.json` names a live process that answers on its port.
+ * Otherwise a new one starts on a free port and is recorded; it is left
+ * running (detached) so the next audit reuses it.
+ *
+ * Every side effect is injectable so tests never start a server.
+ *
+ * @returns {Promise<{ ok: true, port: number, reused: boolean } | { ok: false, cause: string }>}
+ */
+export async function ensureWorktreeStorybook({
+  repoRoot,
+  readRecord = () => {
+    const file = join(repoRoot, STORYBOOK_RECORD);
+    return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
+  },
+  writeRecord = record => writeFileSync(join(repoRoot, STORYBOOK_RECORD), `${JSON.stringify(record, null, 2)}\n`),
+  isAlive = isProcessAlive,
+  reachable = port => isStorybookReachable({ port }),
+  freePort = findFreePort,
+  start = startStorybookProcess,
+  sleep = ms => new Promise(r => setTimeout(r, ms)),
+  timeoutMs = 120_000,
+  pollMs = 500,
+} = {}) {
+  let record = null;
+  try {
+    record = readRecord();
+  } catch {
+    // An unreadable record is treated as no record: start a fresh server.
+  }
+  if (record?.pid && record?.port && isAlive(record.pid) && (await reachable(record.port))) {
+    return { ok: true, port: record.port, reused: true };
+  }
+  const port = await freePort();
+  const pid = start({ repoRoot, port });
+  writeRecord({ port, pid });
+  for (let waited = 0; waited < timeoutMs; waited += pollMs) {
+    if (await reachable(port)) return { ok: true, port, reused: false };
+    await sleep(pollMs);
+  }
+  return { ok: false, cause: `Storybook did not answer on port ${port} within ${timeoutMs} ms` };
 }
