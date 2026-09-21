@@ -44,7 +44,10 @@
   font-size: var(--banner-message-font-size);
   line-height: var(--banner-message-line-height);
   font-weight: var(--banner-message-font-weight);
-  white-space: nowrap;
+  /* Figma's message is one short line, and it still renders as one. A long
+     message wraps rather than running off the page: with `nowrap` it pushed
+     past the viewport and gave the whole page a horizontal scrollbar. */
+  overflow-wrap: anywhere;
 }
 
 .link {
@@ -213,7 +216,6 @@
   .message {
     flex: 1 1 0;
     min-inline-size: 0;
-    white-space: normal;
     font-size: var(--banner-message-font-size-mobile);
     line-height: var(--banner-message-line-height-mobile);
   }
