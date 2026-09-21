@@ -3,7 +3,11 @@ import { kebabCase, startCase } from 'lodash';
 
 import * as coreDark from './assets/core.dark.tokens.json';
 
-export const SOURCE_TOKEN_MODULES = import.meta.glob('../../tokens/core/**/*.tokens.json', { eager: true });
+export const SOURCE_TOKEN_MODULES = {
+  // Dark files come second so their references overwrite the light ones in the map below.
+  ...import.meta.glob('../../tokens/core/**/*.tokens.json', { eager: true }),
+  ...import.meta.glob('../../tokens/core.dark/**/*.tokens.json', { eager: true }),
+};
 
 export const TOKEN_REFERENCE_PATTERN = /^\{([^}]+)\}$/;
 
