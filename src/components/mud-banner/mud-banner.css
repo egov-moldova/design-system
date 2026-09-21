@@ -1,9 +1,8 @@
 /* mud-banner — full-width top-of-page system message.
    The surface color comes from the variant × emphasis rules below; default
    props (info / subtle) reflect to attributes so the surface matches before
-   hydration. Banner references the semantic color tokens directly because the
-   tokenhaus sync does not (yet) define `--banner-*` component tokens for this
-   new component. */
+   hydration. Every value is a `--banner-*` component token
+   (tokens/core/components/banner.tokens.json). */
 
 :host {
   display: flex;
@@ -12,23 +11,23 @@
   position: relative;
   box-sizing: border-box;
   inline-size: 100%;
-  gap: var(--spacing-8, 8px);
-  padding-block: var(--spacing-12, 12px);
+  gap: var(--banner-container-gap);
+  padding-block: var(--banner-container-padding-block);
   /* Figma pads the row 12px 0 (106:1052); the close is absolute, so the row
      itself needs no inline padding. */
-  padding-inline: 0;
-  font-family: var(--font-family-primary, 'Onest', sans-serif);
+  padding-inline: var(--banner-container-padding-inline);
+  font-family: var(--banner-message-font-family);
 }
 
 .content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-8, 8px);
+  gap: var(--banner-container-content-gap);
   min-inline-size: 0;
   /* The centred content keeps clear of the absolutely-positioned close. The
      margin is symmetric, so the centre stays where Figma puts it; it only
      caps how far a long message may run. */
-  margin-inline: var(--spacing-48, 48px);
+  margin-inline: var(--banner-container-content-inset);
 }
 
 .icon {
@@ -36,25 +35,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: 24px;
-  block-size: 24px;
+  inline-size: var(--banner-icon-size);
+  block-size: var(--banner-icon-size);
 }
 
 .message {
   margin: 0;
-  font-size: var(--font-size-fs-14, 14px);
-  line-height: var(--line-height-lh-20, 20px);
-  font-weight: var(--font-weight-fw-regular, 400);
+  font-size: var(--banner-message-font-size);
+  line-height: var(--banner-message-line-height);
+  font-weight: var(--banner-message-font-weight);
   white-space: nowrap;
 }
 
 .link {
   flex-shrink: 0;
-  font-size: var(--font-size-fs-16, 16px);
-  line-height: var(--line-height-lh-24, 24px);
+  font-size: var(--banner-link-font-size);
+  line-height: var(--banner-link-line-height);
   text-decoration: underline;
-  text-underline-offset: 2px;
-  color: var(--color-text-brand-default, #0058d2);
+  text-underline-offset: var(--banner-link-underline-offset);
+  color: var(--banner-link-color);
   cursor: pointer;
 }
 
@@ -63,15 +62,15 @@
   /* Figma puts the 16px glyph 16px from the right edge (106:1029 at x=1216 of
      1248). The 32x32 pointer target (Target Sizes, 578:33523) is centred on
      that glyph, so the button itself ends 8px from the edge. */
-  inset-inline-end: var(--spacing-8, 8px);
+  inset-inline-end: var(--banner-close-inset-inline-end);
   inset-block-start: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: 32px;
-  block-size: 32px;
+  inline-size: var(--banner-close-size-pointer);
+  block-size: var(--banner-close-size-pointer);
   padding: 0;
   margin: 0;
   appearance: none;
@@ -79,7 +78,7 @@
   background: transparent;
   color: inherit;
   cursor: pointer;
-  border-radius: var(--border-radius-4, 4px);
+  border-radius: var(--banner-close-border-radius);
   transition: background-color 150ms ease;
 }
 
@@ -89,13 +88,13 @@
 
 .close-icon {
   display: inline-flex;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--banner-close-icon-size);
+  block-size: var(--banner-close-icon-size);
 }
 
 .close svg {
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--banner-close-icon-size);
+  block-size: var(--banner-close-icon-size);
 }
 
 .close:focus-visible {
@@ -110,58 +109,61 @@
 
 /* Strong = filled background, on-color foreground. */
 :host([emphasis='strong'][variant='info']) {
-  background: var(--color-background-brand-default, #0058d2);
-  color: var(--color-text-base-inverse-on-color, #fff);
+  background: var(--banner-info-strong-background);
+  color: var(--banner-info-strong-text);
 }
 
 :host([emphasis='strong'][variant='warning']) {
-  background: var(--color-background-warning-accent, #fec84b);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-warning-strong-background);
+  color: var(--banner-warning-strong-text);
 }
 
 :host([emphasis='strong'][variant='error']) {
-  background: var(--color-background-danger-default, #d92d20);
-  color: var(--color-text-base-inverse-on-color, #fff);
+  background: var(--banner-error-strong-background);
+  color: var(--banner-error-strong-text);
 }
 
 /* Subtle = tinted background, dark foreground. */
 :host([emphasis='subtle'][variant='info']) {
-  background: var(--color-background-brand-secondary, #e8f0fb);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-info-subtle-background);
+  color: var(--banner-info-subtle-text);
 }
 
 :host([emphasis='subtle'][variant='warning']) {
-  background: var(--color-background-warning-secondary, #feefc6);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-warning-subtle-background);
+  color: var(--banner-warning-subtle-text);
 }
 
 :host([emphasis='subtle'][variant='error']) {
-  background: var(--color-background-danger-secondary, #fee4e2);
-  color: var(--color-text-base-default-on-color, #121212);
+  background: var(--banner-error-subtle-background);
+  color: var(--banner-error-subtle-text);
 }
 
 /* ---------- Icon color (Figma paints it per style, not with the text) ---------- */
 
 :host([emphasis='subtle'][variant='info']) .icon {
-  --icon-color: var(--color-icon-brand-on-secondary);
+  --icon-color: var(--banner-info-subtle-icon);
 }
 
 :host([emphasis='subtle'][variant='warning']) .icon {
-  --icon-color: var(--color-icon-warning-on-secondary);
+  --icon-color: var(--banner-warning-subtle-icon);
 }
 
 :host([emphasis='subtle'][variant='error']) .icon {
-  --icon-color: var(--color-icon-danger-on-secondary);
+  --icon-color: var(--banner-error-subtle-icon);
 }
 
-:host([emphasis='strong'][variant='info']) .icon,
+:host([emphasis='strong'][variant='info']) .icon {
+  --icon-color: var(--banner-info-strong-icon);
+}
+
 :host([emphasis='strong'][variant='error']) .icon {
-  --icon-color: var(--color-icon-base-inverse-on-color);
+  --icon-color: var(--banner-error-strong-icon);
 }
 
 /* Warning strong keeps the dark amber glyph on the amber fill (255:6673). */
 :host([emphasis='strong'][variant='warning']) .icon {
-  --icon-color: var(--color-icon-warning-on-secondary);
+  --icon-color: var(--banner-warning-strong-icon);
 }
 
 /* On a filled (strong) surface a brand-blue link is low-contrast, so the link
@@ -177,16 +179,16 @@
     justify-content: flex-start;
     /* Figma mobile: padding 12px 12px 12px 16px, 16px between the content and
        the close (574:30062). */
-    gap: var(--spacing-16, 16px);
-    padding-inline-start: var(--spacing-16, 16px);
-    padding-inline-end: var(--spacing-12, 12px);
+    gap: var(--banner-mobile-gap);
+    padding-inline-start: var(--banner-mobile-padding-inline-start);
+    padding-inline-end: var(--banner-mobile-padding-inline-end);
   }
 
   .content {
     flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--spacing-12, 12px);
+    gap: var(--banner-mobile-content-gap);
     margin-inline: 0;
   }
 
@@ -194,8 +196,8 @@
     flex: 1 1 0;
     min-inline-size: 0;
     white-space: normal;
-    font-size: var(--font-size-fs-16, 16px);
-    line-height: var(--line-height-lh-24, 24px);
+    font-size: var(--banner-message-font-size-mobile);
+    line-height: var(--banner-message-line-height-mobile);
   }
 
   /* Figma's mobile master draws the close in a 24x24 box, 4px around the
@@ -209,9 +211,9 @@
     inset-inline-end: auto;
     inset-block-start: auto;
     transform: none;
-    inline-size: 24px;
-    block-size: 24px;
-    padding: var(--spacing-4, 4px);
+    inline-size: var(--banner-close-size-mobile);
+    block-size: var(--banner-close-size-mobile);
+    padding: var(--banner-close-padding);
   }
 
   /* Touch target 40x40 (Target Sizes, 578:33410): the overlay extends the
@@ -219,6 +221,6 @@
   .close::after {
     content: '';
     position: absolute;
-    inset: calc(-1 * var(--spacing-8, 8px));
+    inset: calc(-1 * var(--banner-close-hit-area-inset));
   }
 }

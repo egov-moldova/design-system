@@ -1,0 +1,109 @@
+{
+  "banner": {
+    "container": {
+      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingInline": {
+        "$value": "{spacing.0}",
+        "$type": "dimension",
+        "$comment": "Figma pads the row 12px 0 (106:1052); the close is absolute, so the row needs no inline padding."
+      },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "contentGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "contentInset": {
+        "$value": "{spacing.48}",
+        "$type": "dimension",
+        "$comment": "Symmetric margin that keeps the centred content clear of the absolutely-positioned close. It does not move the centre, only caps how far a long message may run."
+      }
+    },
+    "mobile": {
+      "paddingInlineStart": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.12}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "contentGap": { "$value": "{spacing.12}", "$type": "dimension" }
+    },
+    "icon": { "size": { "$value": "{spacing.24}", "$type": "dimension" } },
+    "message": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "fontSizeMobile": {
+        "$value": "{fontSize.16}",
+        "$type": "dimension",
+        "$comment": "Mobile/Body/Default (574:30062) is one rung larger than the desktop 14/20."
+      },
+      "lineHeightMobile": { "$value": "{lineHeight.24}", "$type": "dimension" }
+    },
+    "link": {
+      "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "underlineOffset": { "$value": "{spacing.2}", "$type": "dimension" },
+      "color": { "$value": "{color.text.brand.default}", "$type": "color" }
+    },
+    "close": {
+      "sizePointer": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Pointer target per the Figma Target Sizes frame 578:33523."
+      },
+      "sizeMobile": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "The box Figma's mobile master draws, 4px around the glyph (574:30158)."
+      },
+      "hitAreaInset": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Grows the mobile hit area to the 40x40 touch target (578:33410) without widening the box, which would change where the message wraps."
+      },
+      "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.4}", "$type": "dimension" },
+      "insetInlineEnd": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "The 32px target is centred on the glyph, which sits 16px from the right edge (106:1029 at x=1216 of 1248)."
+      },
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" }
+    },
+    "info": {
+      "subtle": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "icon": { "$value": "{color.icon.brand.on-secondary}", "$type": "color" }
+      },
+      "strong": {
+        "background": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+        "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
+      }
+    },
+    "warning": {
+      "subtle": {
+        "background": { "$value": "{color.background.warning.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "icon": { "$value": "{color.icon.warning.on-secondary}", "$type": "color" }
+      },
+      "strong": {
+        "background": { "$value": "{color.background.warning.accent}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "icon": {
+          "$value": "{color.icon.warning.on-secondary}",
+          "$type": "color",
+          "$comment": "The glyph stays dark amber on the amber fill (255:6673)."
+        }
+      }
+    },
+    "error": {
+      "subtle": {
+        "background": { "$value": "{color.background.danger.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "icon": { "$value": "{color.icon.danger.on-secondary}", "$type": "color" }
+      },
+      "strong": {
+        "background": { "$value": "{color.background.danger.default}", "$type": "color" },
+        "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+        "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
+      }
+    }
+  }
+}
