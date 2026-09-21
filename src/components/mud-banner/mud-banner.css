@@ -14,9 +14,9 @@
   inline-size: 100%;
   gap: var(--spacing-8, 8px);
   padding-block: var(--spacing-12, 12px);
-  /* Inline padding leaves room for the absolutely-positioned close button so
-     the centered content never collides with it. */
-  padding-inline: var(--spacing-48, 48px);
+  /* Figma pads the row 12px 0 (106:1052); the close is absolute, so the row
+     itself needs no inline padding. */
+  padding-inline: 0;
   font-family: var(--font-family-primary, 'Onest', sans-serif);
 }
 
@@ -25,6 +25,10 @@
   align-items: center;
   gap: var(--spacing-8, 8px);
   min-inline-size: 0;
+  /* The centred content keeps clear of the absolutely-positioned close. The
+     margin is symmetric, so the centre stays where Figma puts it; it only
+     caps how far a long message may run. */
+  margin-inline: var(--spacing-48, 48px);
 }
 
 .icon {
@@ -56,15 +60,18 @@
 
 .close {
   position: absolute;
-  inset-inline-end: var(--spacing-16, 16px);
+  /* Figma puts the 16px glyph 16px from the right edge (106:1029 at x=1216 of
+     1248). The 32x32 pointer target (Target Sizes, 578:33523) is centred on
+     that glyph, so the button itself ends 8px from the edge. */
+  inset-inline-end: var(--spacing-8, 8px);
   inset-block-start: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: 32px;
+  block-size: 32px;
   padding: 0;
   margin: 0;
   appearance: none;
@@ -133,6 +140,30 @@
   color: var(--color-text-base-default-on-color, #121212);
 }
 
+/* ---------- Icon color (Figma paints it per style, not with the text) ---------- */
+
+:host([emphasis='subtle'][variant='info']) .icon {
+  --icon-color: var(--color-icon-brand-on-secondary);
+}
+
+:host([emphasis='subtle'][variant='warning']) .icon {
+  --icon-color: var(--color-icon-warning-on-secondary);
+}
+
+:host([emphasis='subtle'][variant='error']) .icon {
+  --icon-color: var(--color-icon-danger-on-secondary);
+}
+
+:host([emphasis='strong'][variant='info']) .icon,
+:host([emphasis='strong'][variant='error']) .icon {
+  --icon-color: var(--color-icon-base-inverse-on-color);
+}
+
+/* Warning strong keeps the dark amber glyph on the amber fill (255:6673). */
+:host([emphasis='strong'][variant='warning']) .icon {
+  --icon-color: var(--color-icon-warning-on-secondary);
+}
+
 /* On a filled (strong) surface a brand-blue link is low-contrast, so the link
    adopts the on-color foreground and stays underlined. */
 :host([emphasis='strong']) .link {
@@ -144,6 +175,9 @@
   :host {
     align-items: flex-start;
     justify-content: flex-start;
+    /* Figma mobile: padding 12px 12px 12px 16px, 16px between the content and
+       the close (574:30062). */
+    gap: var(--spacing-16, 16px);
     padding-inline-start: var(--spacing-16, 16px);
     padding-inline-end: var(--spacing-12, 12px);
   }
@@ -153,6 +187,7 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--spacing-12, 12px);
+    margin-inline: 0;
   }
 
   .message {
@@ -163,11 +198,27 @@
     line-height: var(--line-height-lh-24, 24px);
   }
 
+  /* Figma's mobile master draws the close in a 24x24 box, 4px around the
+     glyph (574:30158). Widening the box to the 40x40 touch target would take
+     16px from the message and change where it wraps, so the box stays 24x24
+     and the ::after overlay below grows the hit area instead. */
   .close {
-    position: static;
+    position: relative;
+    /* The desktop rule offsets the absolutely-positioned button; a relative
+       one would be shifted by the same inset. */
+    inset-inline-end: auto;
+    inset-block-start: auto;
     transform: none;
-    inline-size: 40px;
-    block-size: 40px;
+    inline-size: 24px;
+    block-size: 24px;
     padding: var(--spacing-4, 4px);
+  }
+
+  /* Touch target 40x40 (Target Sizes, 578:33410): the overlay extends the
+     button's hit area 8px on every side without affecting layout. */
+  .close::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--spacing-8, 8px));
   }
 }
