@@ -203,7 +203,7 @@ function loadComponentSources(componentName, figmaExportPath) {
   }
   const before = readJsonOrFail(currentPath, 'current');
   const figmaAll = readJsonOrFail(figmaAbs, 'figma export');
-  const after = extractComponentBlock(figmaAll, bare);
+  const after = extractComponentBlock(figmaAll, bare, Object.keys(before)[0] ?? bare);
   if (!after) {
     return {
       error: finding({
@@ -238,12 +238,15 @@ function relativePathFor(absPath) {
     .replace(/\\/g, '/');
 }
 
-function extractComponentBlock(figmaAll, bare) {
+// The block comes back under `root`, the current file's own root key (`searchInput` in
+// search-input.tokens.json), or every flattened path differs from the current file's and the
+// diff reports each token as removed and re-added. The export may name it either way.
+export function extractComponentBlock(figmaAll, bare, root) {
   // Figma exports vary in nesting; check a few common layouts.
-  if (figmaAll && typeof figmaAll === 'object') {
-    if (figmaAll[bare]) return { [bare]: figmaAll[bare] };
-    if (figmaAll.components && figmaAll.components[bare]) {
-      return { [bare]: figmaAll.components[bare] };
+  if (!figmaAll || typeof figmaAll !== 'object') return null;
+  for (const scope of [figmaAll, figmaAll.components]) {
+    for (const name of [bare, root]) {
+      if (scope && scope[name]) return { [root]: scope[name] };
     }
   }
   return null;

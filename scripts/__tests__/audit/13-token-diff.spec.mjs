@@ -4,7 +4,25 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { diffTokens, flattenDtcg, resolveMode } from '../../audit/13-token-diff.mjs';
+import { diffTokens, extractComponentBlock, flattenDtcg, resolveMode } from '../../audit/13-token-diff.mjs';
+
+describe('13-token-diff: extractComponentBlock', () => {
+  const block = { gap: { $value: '8px', $type: 'dimension' } };
+
+  it("keys the Figma block by the current file's camelCase root, so paths line up", () => {
+    // search-input.tokens.json has the root `searchInput`; the export may name the block either way.
+    assert.deepEqual(extractComponentBlock({ 'search-input': block }, 'search-input', 'searchInput'), {
+      searchInput: block,
+    });
+    assert.deepEqual(extractComponentBlock({ components: { searchInput: block } }, 'search-input', 'searchInput'), {
+      searchInput: block,
+    });
+  });
+
+  it('returns null when the export has no block under either name', () => {
+    assert.equal(extractComponentBlock({ button: block }, 'search-input', 'searchInput'), null);
+  });
+});
 
 describe('13-token-diff: flattenDtcg', () => {
   it('flattens DTCG tree to dotted paths', () => {
