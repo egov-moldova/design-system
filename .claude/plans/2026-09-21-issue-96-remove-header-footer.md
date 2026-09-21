@@ -6,6 +6,22 @@ Delete `mud-header` (with its four sub-components) and `mud-footer` from the lib
 the web-components demo and every doc or script that names them, so nothing in the repo still
 refers to either organism.
 
+## Problem
+
+The Header and Footer organisms are no longer wanted in the design system, yet they still ship as
+six custom elements, carry their own tokens, and appear in Storybook, the web-components demo and
+the `mud-design` skill that tells consuming projects which component to use.
+
+## Acceptance bar
+
+- `git grep -nE "mud-header|mud-footer|MudHeader|MudFooter" -- ':!.claude/plans' ':!CHANGELOG.md'`
+  prints nothing, and neither does `git ls-files | grep -iE "(mud|cor)-(header|footer)"`, which
+  also catches files under the organisms' pre-rename `cor-` names.
+- The built Storybook index has no `Organisms/Header` or `Organisms/Footer` entry.
+- `yarn lint`, `yarn typecheck`, `yarn test`, `yarn test:scripts`, `yarn docs:check`, `yarn build`,
+  `yarn sp.build`, `yarn test.storybook`, `yarn build.web` and `yarn validate.package` pass.
+- `CHANGELOG.md` names every removed element, token group and export, with a migration note.
+
 ## Spec/issue link
 
 <https://github.com/egov-moldova/design-system/issues/96> — "To delete Header and Footer
@@ -35,24 +51,31 @@ not only Storybook. It ships as a breaking change with a `Removed` CHANGELOG ent
 
 ## Tasks
 
-- [ ] Delete `src/components/mud-header/`, `src/components/mud-footer/`,
+- [x] Delete `src/components/mud-header/`, `src/components/mud-footer/`,
       `tokens/core/components/{header,footer}.tokens.json` and
       `web-components/demo/pages/data/mud-footer.html`.
-      Verify: `yarn test.scripts` fails on the `16-stencil-contract` sub-component case, which
+      Verify: `yarn test:scripts` fails on the `16-stencil-contract` sub-component case, which
       used `mud-header-nav-item` as its fixture.
-- [ ] Retarget that fixture to `mud-sidebar-item`, and the comments naming `mud-header-*` in
+- [x] Retarget that fixture to `mud-sidebar-item`, and the comments naming `mud-header-*` in
       `scripts/audit/16-stencil-contract.mjs`, `scripts/count-disabled-props.mjs` and
       `scripts/__tests__/form-associated-contract.spec.mjs`.
       Verify: the scripts suite passes.
-- [ ] Drop the exports from `src/index.ts`, the demo manifest entry, the `MudFooter` row in the
+- [x] Drop the exports from `src/index.ts`, the demo manifest entry, the `MudFooter` row in the
       `mud-design` skill and the `mud-header` mention in `tokens/core/effects.tokens.json`.
-- [ ] Update the disabled-prop count in `mud-accordion-item`'s JSDoc from 28 of 55 to the
+      Verify: `yarn typecheck` and the acceptance-bar greps.
+- [x] Update the disabled-prop count in `mud-accordion-item`'s JSDoc from 28 of 55 to the
       recount. Verify: `node scripts/count-disabled-props.mjs`.
-- [ ] Add a `Removed` entry to `CHANGELOG.md`.
-- [ ] `yarn build` to regenerate `src/components.d.ts` and the dependent readmes.
+- [x] Add a `Removed` entry to `CHANGELOG.md`, including the types `@egov-moldova/mud/loader`
+      re-exports and the `@egov-moldova/mud-web-components` adapter that inherits the removal.
+      Verify: every `export` line naming `mud-header` or `mud-footer` in the published 1.1.9
+      `dist/types/components.d.ts`, and every `CustomEvent` interface for them, is named in the
+      entry.
+- [x] `yarn build` to regenerate `src/components.d.ts` and the dependent readmes.
       Verify: `git grep -nE "mud-header|mud-footer|MudHeader|MudFooter" -- ':!.claude/plans' ':!CHANGELOG.md'`
       prints nothing.
-- [ ] `yarn lint`, `yarn test`, `yarn build`, `yarn sp.build`, `yarn build.web`.
+- [x] Delete `docs/screenshots/cor-footer/`, the footer's screenshots from before its rename to
+      `mud-footer`, which nothing references. Verify: the `git ls-files` grep in the acceptance bar.
+- [x] Every check in the acceptance bar.
 
 ## Not verified
 

@@ -11,13 +11,18 @@ tokens, and these package-root exports: `MudHeader`, `MudHeaderNavItem`, `MudHea
 `MudHeaderServicesMenu`, `MudHeaderMobile`, `HEADER_DEFAULT_LANGUAGES`, `HeaderLanguage`,
 `HeaderLanguageChangeDetail`, `HeaderNavSelectDetail`, `HeaderNavToggleDetail`, `MegaMenuItem`,
 `MegaMenuColumn`, `HeaderMegaMenuSelectDetail`, `ServicePlatform` and
-`HeaderServiceSelectDetail`.
+`HeaderServiceSelectDetail`. `@egov-moldova/mud/loader` also stops re-exporting `FooterContact`,
+`FooterLocale`, `FooterLocaleChangeDetail`, `FooterPartner`, `FooterSection`, `FooterSocial`,
+`FooterVariant`, `MudFooterCustomEvent` and the five `MudHeader*CustomEvent` interfaces.
+`@egov-moldova/mud-web-components` re-exports this package's types and registers its elements, so
+it loses the same elements and types.
 
 **Migration:** there is no replacement in this package. A page that renders `<mud-header>` or
 `<mud-footer>` keeps an element nothing defines after upgrading — no shadow content renders, and
-any children it holds show unstyled — and TypeScript code that
-imports any name above stops compiling. Build the page header and footer in the application, or
-stay on 1.1.9 until you do.
+any children it holds show unstyled. TypeScript code stops compiling where it imports any name
+above, or uses the global `HTMLMudHeader*Element` / `HTMLMudFooterElement` types or the tags in
+TSX. Build the page header and footer in the application, or pin `@egov-moldova/mud` (and
+`@egov-moldova/mud-web-components`, if you use it) to exactly `1.1.9` until you do.
 
 ### Changed — icon style is a `variant` prop, and the size scale is 16 / 20 / 24 / 32
 
