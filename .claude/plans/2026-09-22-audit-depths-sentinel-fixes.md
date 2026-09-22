@@ -737,6 +737,13 @@ whose block is found nowhere keeps `noTarget` (INCOMPLETE, named).
 - Modify: `scripts/audit/lib/fix-brief.mjs`
 - Modify: `scripts/audit/13-token-diff.mjs`
 - Modify: `scripts/audit/19-interaction.mjs`
+- Modify: `scripts/audit/09-a11y-tree.mjs`
+- Modify: `scripts/audit/10-contrast-pairs.mjs`
+- Modify: `scripts/audit/11-pixel-diff-states.mjs`
+- Modify: `scripts/audit/12-console-errors.mjs`
+- Modify: `scripts/audit/15-style-parity.mjs`
+- Modify: `scripts/audit/lib/browser-context.mjs`
+- Read only: `scripts/audit/measure-prompt-cost.mjs`
 - Modify: `scripts/__tests__/audit/verdict.spec.mjs`
 - Modify: `scripts/__tests__/audit/run-all.spec.mjs`
 - Modify: `scripts/__tests__/audit/callers.spec.mjs`
@@ -784,6 +791,22 @@ whose block is found nowhere keeps `noTarget` (INCOMPLETE, named).
   trailing slash and the component's real directory (`run-all.mjs:327,1196`); a fresh run with an
   invalid component name exits 2 (`verdict.mjs:941`); `compareFindings` ties break on the
   rendered text (`verdict.mjs:329`); `report-template.md:46` names the crashed entry's `log`.
+- [ ] U6 Performance pass (owner request, 2026-09-22: fastest execution, least CPU/RAM, tokens
+  and time, never at the cost of result quality). Measure first, change second, re-measure with
+  the same probe; a change ships only if the verdict stays byte-identical (`cmp`) and the probe
+  improves. Probe: `/usr/bin/time -l node scripts/audit/verdict.mjs <c> --depth <d>` (wall-clock
+  and max RSS) plus each row's `durationMs` from `envelope.json`, n=3 per configuration, on
+  `mud-banner` and `mud-button` at `quick` and `standard` (and `deep` once). Baseline seen at
+  2b73c58 on one `deep` run of `mud-banner`: 21 rows summing 39.6 s — `adapter-react` 17.0 s, the
+  browser rows 12 / 09 / 10 / 19 at 5.9 / 4.2 / 3.5 / 2.4 s, each launching its own Chromium
+  (`lib/browser-context.mjs:66`), `lint` 2.6 s. Candidates, each judged by its measurement: one
+  shared Chromium for the browser rows (launch once, `connect` per script, or run them in one
+  process); whether browser rows run concurrently within Wave C and what peak RSS that costs;
+  whether `lint` re-lints the whole repo where the component's files suffice. Token cost: record
+  the skill's and callers' prompt sizes with `scripts/audit/measure-prompt-cost.mjs` before and
+  after this phase (the descope should shrink them). Record every number, including the
+  candidates rejected and why, under `#### Phase 6 results`; claim no improvement without its
+  before/after pair.
 - Not in this PR (recorded for the follow-up issue): the two-phase `deep` completion, the
   stale-lock takeover race (narrowed, not closed), `freshRunCommand` dropping waivers,
   `bx7ExpectedValue`'s type-text guessing, `run-all --out` written outside the lock on the direct
