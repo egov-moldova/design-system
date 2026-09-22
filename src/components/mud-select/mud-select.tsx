@@ -1,5 +1,17 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  readTask,
+  State,
+  Watch,
+  h,
+} from '@stencil/core';
 
 import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
 import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
@@ -355,6 +367,18 @@ export class MudSelect {
    */
   private positionListbox = () => {
     if (!this.open || typeof window === 'undefined') return;
+    // `componentDidRender` calls this, so the measurement runs INSIDE the render
+    // cycle: writing `dropUp` / `listboxMaxBlockSize` straight from here makes
+    // Stencil log `the state/prop "listboxMaxBlockSize" changed during
+    // rendering` and schedules a second pass on every open. `readTask` moves the
+    // DOM read — and the writes that follow it — into the next read frame, which
+    // is the batching API for exactly this (AGENTS.md rule API5). It also keeps
+    // the scroll / resize listeners off the layout-thrash path.
+    readTask(() => this.measureListbox());
+  };
+
+  private measureListbox() {
+    if (!this.open || typeof window === 'undefined') return;
     const control = this.host.shadowRoot?.querySelector('.control') as HTMLElement | null;
     const listbox = this.listboxEl;
     if (!control || !listbox) return;
@@ -374,10 +398,17 @@ export class MudSelect {
 
     const dropUp = spaceBelow < wanted && spaceAbove > spaceBelow;
     const available = dropUp ? spaceAbove : spaceBelow;
+    const maxBlockSize = Math.round(Math.max(MIN_HEIGHT, Math.min(HARD_CAP, available)));
 
-    this.dropUp = dropUp;
-    this.listboxMaxBlockSize = Math.round(Math.max(MIN_HEIGHT, Math.min(HARD_CAP, available)));
-  };
+    // Guarded, because `componentDidRender` calls this inside the render cycle:
+    // an unconditional write there makes Stencil log "the state/prop
+    // \"listboxMaxBlockSize\" changed during rendering" and schedules a second
+    // render pass on every open. Writing only on a real change settles in one.
+    // Still guarded: on scroll / resize the measurement usually lands on the same
+    // numbers, and an unconditional write would re-render the listbox each frame.
+    if (this.dropUp !== dropUp) this.dropUp = dropUp;
+    if (this.listboxMaxBlockSize !== maxBlockSize) this.listboxMaxBlockSize = maxBlockSize;
+  }
 
   componentDidRender() {
     if (this.open) this.positionListbox();
