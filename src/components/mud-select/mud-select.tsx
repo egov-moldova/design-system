@@ -125,6 +125,26 @@ export class MudSelect {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
+   * Shown in place of the list when nothing matches the query.
+   * @default 'Nicio opțiune'
+   */
+  @Prop({ attribute: 'empty-label' }) emptyLabel: string = 'Nicio opțiune';
+
+  /**
+   * Names the listbox for assistive technology when the field has no visible
+   * label and no `aria-label` to borrow.
+   * @default 'Opțiuni'
+   */
+  @Prop({ attribute: 'listbox-label' }) listboxLabel: string = 'Opțiuni';
+
+  /**
+   * Validation message reported when the field is `required` and nothing is
+   * selected.
+   * @default 'Selectați o opțiune.'
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage: string = 'Selectați o opțiune.';
+
+  /**
    * Lets the user narrow the list by typing into the control.
    *
    * Off by default: turning it on makes the control a text field, which changes
@@ -253,7 +273,7 @@ export class MudSelect {
     if (!this.internals) return;
     const value = (this.value ?? '').trim();
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Selectați o opțiune.', this.triggerEl);
+      this.internals.setValidity({ valueMissing: true }, this.requiredMessage, this.triggerEl);
       return;
     }
     this.internals.setValidity({});
@@ -856,7 +876,7 @@ export class MudSelect {
             part="listbox"
             role="listbox"
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Options') : undefined}
+            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? this.listboxLabel) : undefined}
             hidden={!this.open}
             style={
               this.listboxMaxBlockSize
@@ -866,7 +886,7 @@ export class MudSelect {
           >
             {opts.length === 0 ? (
               <div class="listbox-empty" role="presentation">
-                No options
+                {this.emptyLabel}
               </div>
             ) : (
               toRows(this.visibleEntries()).map((row, rowIndex) => {
