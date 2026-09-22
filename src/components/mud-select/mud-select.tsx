@@ -3,6 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, 
 
 import { SELECT_SIZES, SELECT_VARIANTS } from './mud-select.types';
 import type { SelectChangeDetail, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
 
@@ -113,13 +114,6 @@ export class MudSelect {
    */
   @Prop() options?: SelectOption[];
 
-  /**
-   * Accessible name. Mirrors to the trigger's `aria-label` when no visible
-   * label is present. Captured into `resolvedAriaLabel` on mount and the
-   * host attribute is stripped to avoid Stencil's auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
@@ -127,6 +121,7 @@ export class MudSelect {
   @State() private fieldsetDisabled: boolean = false;
   @State() private highlightedIndex: number = -1;
   @State() private slotOptions: SelectOption[] = [];
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the trigger when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   /** True when the listbox is flipped above the control (not enough room below). */
   @State() private dropUp: boolean = false;
@@ -161,9 +156,13 @@ export class MudSelect {
   private initialValue: string = '';
   private triggerEl?: HTMLButtonElement;
   private listboxEl?: HTMLElement;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.refreshSlotOptions();
     this.internals.setFormValue(this.value, this.value);
@@ -178,22 +177,6 @@ export class MudSelect {
     if (this.open && typeof window !== 'undefined') {
       window.addEventListener('resize', this.positionListbox);
       window.addEventListener('scroll', this.positionListbox, true);
-    }
-  }
-
-  /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
-   */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
     }
   }
 
@@ -251,15 +234,6 @@ export class MudSelect {
   @Watch('required')
   handleRequiredChange() {
     this.syncValidity();
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
   }
 
   @Watch('options')
@@ -334,6 +308,7 @@ export class MudSelect {
       window.removeEventListener('resize', this.positionListbox);
       window.removeEventListener('scroll', this.positionListbox, true);
     }
+    this.stopAriaLabel?.();
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */

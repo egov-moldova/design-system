@@ -360,12 +360,13 @@ describe('mud-text-input', () => {
 
   describe('aria-label capture', () => {
     it('puts aria-label on the inner input when no visible label is present', async () => {
-      const { root } = await render(<mud-text-input ariaLabel="Search"></mud-text-input>);
+      const { root } = await render(<mud-text-input aria-label="Search"></mud-text-input>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Search');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('omits aria-label on the input when a visible label is provided', async () => {
-      const { root } = await render(<mud-text-input label="Email" ariaLabel="Other"></mud-text-input>);
+      const { root } = await render(<mud-text-input label="Email" aria-label="Other"></mud-text-input>);
       expect(queryNative(root)?.hasAttribute('aria-label')).toBe(false);
     });
   });

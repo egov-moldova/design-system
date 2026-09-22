@@ -1,6 +1,7 @@
 import { Component, Element, Host, Prop, State, h } from '@stencil/core';
 
 import type { LinkSize, LinkUnderline, LinkVariant } from './mud-link.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 /**
  * Link — interactive navigational atom.
@@ -96,12 +97,6 @@ export class MudLink {
   @Prop() download?: string;
 
   /**
-   * Forwarded to the internal element as `aria-label`. Required when the
-   * default slot contains only an icon with no text label.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
-  /**
    * When `true` (default) and `target="_blank"`, renders an external-link icon
    * indicator after the label. Set to `false` to suppress the indicator (e.g.
    * when the consumer wants to control the icon themselves via slot=icon-end).
@@ -112,7 +107,24 @@ export class MudLink {
   @State() private hasIconStart: boolean = false;
   @State() private hasIconEnd: boolean = false;
 
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property),
+   * forwarded to the internal control. Required when the default slot
+   * contains only an icon with no text label.
+   */
+  @State() private resolvedAriaLabel?: string;
+
   @Element() host!: HTMLMudLinkElement;
+
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentDidLoad() {
     if (!this.hasAccessibleName()) {
@@ -136,8 +148,7 @@ export class MudLink {
   }
 
   private hasAccessibleName(): boolean {
-    if (this.ariaLabel && this.ariaLabel.trim().length > 0) return true;
-    if (this.host.hasAttribute('aria-label')) return true;
+    if (this.resolvedAriaLabel && this.resolvedAriaLabel.trim().length > 0) return true;
     if (this.host.hasAttribute('aria-labelledby')) return true;
     if ((this.host.textContent ?? '').trim().length > 0) return true;
     return false;
@@ -161,7 +172,7 @@ export class MudLink {
   }
 
   render() {
-    const ariaLabel = this.ariaLabel?.trim();
+    const ariaLabel = this.resolvedAriaLabel?.trim();
     const ariaDisabled = this.disabled ? 'true' : null;
     const tabIndexAttr = this.disabled ? -1 : 0;
     const showExternal = this.shouldShowExternalIndicator();

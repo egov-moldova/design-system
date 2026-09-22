@@ -1,6 +1,7 @@
-import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Host, Prop, h } from '@stencil/core';
 
 import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
+import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
 
 /**
  * Badge — small, non-interactive status / count indicator.
@@ -69,43 +70,37 @@ export class MudBadge {
    */
   @Prop() max: number = 99;
 
-  /**
-   * Override the accessible name. When omitted, `numbered` uses the visible
-   * count text and `dot` falls back to "Notification" (so screen readers
-   * announce something meaningful for empty dots). Captured into
-   * `resolvedAriaLabel` on mount and the host attribute is stripped to
-   * avoid Stencil's auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
-  @State() private resolvedAriaLabel?: string;
-
   @Element() host!: HTMLMudBadgeElement;
 
-  componentWillLoad() {
-    this.captureAriaLabel();
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
-  }
-
   /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop. Capture the consumer-provided
-   * value into a state field, then strip the attribute so the loop never fires.
+   * Names the host: keeps the consumer's native `aria-label` attribute when
+   * set, otherwise applies the computed fallback (the visible count, or
+   * "Notification"). See `nameHostWithFallback`.
    */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
+  private hostLabel?: HostAriaLabel;
+
+  connectedCallback() {
+    this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
+  }
+
+  disconnectedCallback() {
+    this.hostLabel?.stop();
+  }
+
+  componentWillRender() {
+    this.hostLabel?.update();
+  }
+
+  // `xs` is a dot-only rung in Figma (8 px can't hold a count), so a numbered
+  // xs always degrades to a solid dot rather than clipping the digits.
+  private get isDot(): boolean {
+    return this.type === 'dot' || this.size === 'xs';
+  }
+
+  private fallbackLabel(): string {
+    if (this.type === 'dot') return 'Notification';
+    const displayText = this.isDot ? '' : this.formatCount();
+    return displayText || 'Notification';
   }
 
   private formatCount(): string {
@@ -118,27 +113,14 @@ export class MudBadge {
     return String(this.count);
   }
 
-  private resolveAccessibleName(displayText: string): string {
-    if (this.resolvedAriaLabel) {
-      return this.resolvedAriaLabel;
-    }
-    if (this.type === 'dot') {
-      return 'Notification';
-    }
-    return displayText || 'Notification';
-  }
-
   render() {
-    // `xs` is a dot-only rung in Figma (8 px can't hold a count), so a numbered
-    // xs always degrades to a solid dot rather than clipping the digits.
-    const isDot = this.type === 'dot' || this.size === 'xs';
+    const isDot = this.isDot;
     const displayText = isDot ? '' : this.formatCount();
-    const accessibleName = this.resolveAccessibleName(displayText);
     // Per Figma 551:18330, md/lg/xl dots carry a centered inner pip; xs/sm are solid.
     const showInnerDot = isDot && (this.size === 'md' || this.size === 'lg' || this.size === 'xl');
 
     return (
-      <Host role="status" aria-live="polite" aria-label={accessibleName}>
+      <Host role="status" aria-live="polite">
         {!isDot && (
           <span class="badge-count" aria-hidden="true">
             {displayText}

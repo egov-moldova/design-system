@@ -602,6 +602,7 @@ describe('mud-date-input', () => {
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Birthday');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('exposes the format pattern via aria-placeholder', async () => {

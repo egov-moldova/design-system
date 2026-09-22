@@ -214,9 +214,9 @@ describe('mud-avatar', () => {
       expect(root?.getAttribute('role')).toBe('img');
     });
 
-    it('uses `aria-label` override when provided', async () => {
+    it('uses `aria-label` override when provided, winning over `name`', async () => {
       const { root } = await render(
-        <mud-avatar name="Ion Popescu" ariaLabel="Coleg cu rol de administrator"></mud-avatar>,
+        <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
       );
       expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
     });

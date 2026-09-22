@@ -25,6 +25,10 @@ let segmentedControlInstanceCounter = 0;
  * - `Home` / `End` jump to first / last segment
  * - `Enter` / `Space` reaffirm selection on the focused segment
  *
+ * Give the group an accessible name via the native `aria-label` attribute
+ * (required when no surrounding `<label>` references the control) or via
+ * `aria-labelledby` pointing at an external label element.
+ *
  * @element mud-segmented-control
  *
  * @slot - Reserved for future declarative segments. Today, all segments come
@@ -74,12 +78,6 @@ export class MudSegmentedControl {
 
   /** Form-control `name`. Used during form submission. */
   @Prop({ reflect: true }) name?: string;
-
-  /**
-   * Accessible name for the group. Forwarded to the host's `aria-label`.
-   * Required when no surrounding `<label>` references the control.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /** ID of an element labelling the group (when an external label is used). */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
@@ -279,7 +277,6 @@ export class MudSegmentedControl {
           'is-disabled': inert,
         }}
         role="radiogroup"
-        aria-label={this.ariaLabel}
         aria-labelledby={this.ariaLabelledby}
         aria-disabled={inert ? 'true' : null}
       >

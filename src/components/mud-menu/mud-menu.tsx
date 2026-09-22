@@ -1,4 +1,6 @@
-import { Component, Element, Event, type EventEmitter, h, Host, Listen, Prop, Watch } from '@stencil/core';
+import { Component, Element, Event, type EventEmitter, h, Host, Listen, Prop, State, Watch } from '@stencil/core';
+
+import { observeAriaLabel } from '../../utils/aria-label';
 
 import type { MenuChangeDetail, MenuItemSelectDetail, MenuSelectDetail, MenuType } from './mud-menu.types';
 
@@ -12,6 +14,8 @@ import type { MenuChangeDetail, MenuItemSelectDetail, MenuSelectDetail, MenuType
  * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
  * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
  * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+ *
+ * Set the native `aria-label` attribute on the host for an accessible name on the menu.
  *
  * @element mud-menu
  * @slot - The `mud-menu-item` elements.
@@ -32,13 +36,15 @@ export class MudMenu {
   /** Currently selected value (selection menus). */
   @Prop({ reflect: true, mutable: true }) value?: string;
 
-  /** Accessible name for the menu. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   /** Emit `mudClose` immediately after an item is selected. */
   @Prop() closeOnSelect = false;
 
+  /** The host's `aria-label`, forwarded onto the inner panel. */
+  @State() private resolvedAriaLabel?: string;
+
   @Element() host!: HTMLMudMenuElement;
+
+  private stopAriaLabel?: () => void;
 
   /** Fired when any item is activated. */
   @Event({ eventName: 'mudSelect', bubbles: true, composed: true })
@@ -102,6 +108,14 @@ export class MudMenu {
     this.focusItem(items[targetIndex]);
   }
 
+  connectedCallback(): void {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback(): void {
+    this.stopAriaLabel?.();
+  }
+
   componentDidLoad(): void {
     this.propagateToItems();
     this.resetRovingTabindex();
@@ -155,7 +169,7 @@ export class MudMenu {
           class="panel"
           part="panel"
           role={this.type === 'selection' ? 'listbox' : 'menu'}
-          aria-label={this.ariaLabel ?? undefined}
+          aria-label={this.resolvedAriaLabel}
         >
           <slot onSlotchange={this.handleSlotChange}></slot>
         </div>

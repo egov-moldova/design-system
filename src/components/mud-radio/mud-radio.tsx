@@ -3,6 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h
 
 import { RADIO_SIZES } from './mud-radio.types';
 import type { RadioChangeDetail, RadioSize } from './mud-radio.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let radioInstanceCounter = 0;
 
@@ -86,12 +87,6 @@ export class MudRadio {
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   /** ID of the element labelling the radio. Used when label content lives outside the component. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
@@ -99,9 +94,9 @@ export class MudRadio {
   @State() private hasSupportingTextSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
-  // Local mirror for the consumer-set aria-label / aria-labelledby. We strip
-  // those from the host on mount (axe: aria-prohibited-attr), which clears the
-  // Stencil prop via its attribute observer — so we keep the value here.
+  // The consumer's `aria-label` (attribute or native `ariaLabel` property), read and
+  // stripped off the host by `observeAriaLabel` (axe: aria-prohibited-attr on the
+  // custom element's implicit "generic" role).
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
   // Flattened slotted-label text. axe's `label` rule cannot walk into a
@@ -128,6 +123,7 @@ export class MudRadio {
   private readonly labelId = `mud-radio-label-${this.instanceId}`;
   private readonly supportingId = `mud-radio-supporting-${this.instanceId}`;
   private initialChecked: boolean = false;
+  private stopAriaLabel?: () => void;
 
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
   // warn in dev and fall back to the default instead of throwing.
@@ -161,21 +157,12 @@ export class MudRadio {
     this.syncFormValue();
   }
 
-  // The consumer-set `<mud-radio aria-label="…">` / `aria-labelledby="…">`
-  // attributes get mirrored to the internal <input> via render(). They must
-  // NOT remain on the host because the custom element has the implicit
-  // "generic" role, on which aria-label / aria-labelledby are prohibited
-  // (axe rule: aria-prohibited-attr). We cache the values in @State BEFORE
-  // stripping so the Stencil prop observer's subsequent "attribute removed"
-  // event can't clear them.
-  @Watch('ariaLabel')
-  syncAriaLabel(next?: string) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-      if (this.host.hasAttribute('aria-label')) this.host.removeAttribute('aria-label');
-    }
-  }
-
+  // The consumer-set `<mud-radio aria-labelledby="…">` attribute is mirrored to
+  // the internal <input> via render(). It must NOT remain on the host because
+  // the custom element has the implicit "generic" role, on which
+  // aria-labelledby is prohibited (axe rule: aria-prohibited-attr). We cache
+  // the value in @State BEFORE stripping so the Stencil prop observer's
+  // subsequent "attribute removed" event can't clear it.
   @Watch('ariaLabelledby')
   syncAriaLabelledby(next?: string) {
     if (next && next.length > 0) {
@@ -184,11 +171,18 @@ export class MudRadio {
     }
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
   componentWillLoad() {
     this.initialChecked = this.checked;
     this.syncFormValue();
     // Initial pass — @Watch only fires on subsequent prop changes.
-    this.syncAriaLabel(this.ariaLabel);
     this.syncAriaLabelledby(this.ariaLabelledby);
   }
 

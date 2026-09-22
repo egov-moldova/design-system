@@ -3,6 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h
 
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let textareaInstanceCounter = 0;
 
@@ -118,17 +119,11 @@ export class MudTextarea {
    */
   @Prop({ attribute: 'show-counter' }) showCounter: boolean = true;
 
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Captured into `resolvedAriaLabel` on mount and
-   * the host attribute is stripped to avoid Stencil's auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the internal control when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudTextareaElement;
@@ -154,28 +149,20 @@ export class MudTextarea {
   private readonly counterId = `mud-textarea-counter-${this.instanceId}`;
   private initialValue: string = '';
   private nativeEl?: HTMLTextAreaElement;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
-  }
-
-  /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
-   */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
   }
 
   /**
@@ -241,15 +228,6 @@ export class MudTextarea {
   @Watch('required')
   handleRequiredChange() {
     this.syncValidity();
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */

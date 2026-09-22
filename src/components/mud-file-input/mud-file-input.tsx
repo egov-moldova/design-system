@@ -2,6 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import type {
   FileInputChangeDetail,
   FileInputDropDetail,
@@ -136,16 +137,6 @@ export class MudFileInput {
    */
   @Prop({ mutable: true }) files: File[] = [];
 
-  /**
-   * Accessible name; mirrors to the drop zone's `aria-label` when no visible
-   * label is provided. Setting `aria-label` directly on the host also works —
-   * captured on connect into `resolvedAriaLabel` and stripped to avoid
-   * Stencil's attribute-observer / render-loop antipattern (same pattern as
-   * mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb /
-   * mud-date-picker / mud-modal / mud-pagination).
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   /** Tracks drag-over. Maps to Figma's "Active" state visually. */
@@ -153,6 +144,10 @@ export class MudFileInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * drop zone when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudFileInputElement;
@@ -188,9 +183,13 @@ export class MudFileInput {
   private dragDepth: number = 0;
   /** Object URLs created for image-preview thumbnails, keyed by File for revocation. */
   private previewUrls = new Map<File, string>();
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.syncFormValue(this.files);
     this.syncValidity(this.files);
   }
@@ -202,6 +201,7 @@ export class MudFileInput {
   disconnectedCallback() {
     for (const url of this.previewUrls.values()) URL.revokeObjectURL(url);
     this.previewUrls.clear();
+    this.stopAriaLabel?.();
   }
 
   /**
@@ -223,21 +223,6 @@ export class MudFileInput {
         this.previewUrls.set(file, URL.createObjectURL(file));
       }
     }
-  }
-
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  protected syncAriaLabelProp(next?: string): void {
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('required')

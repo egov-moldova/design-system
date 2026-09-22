@@ -3,6 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h
 
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let inputInstanceCounter = 0;
 
@@ -126,18 +127,12 @@ export class MudTextInput {
   @Prop({ attribute: 'minlength' }) minLength?: number;
 
   /** Native `inputmode` hint forwarded to the internal control. */
+  // The rule matches names case-insensitively; `inputmode` does not shadow `HTMLElement.inputMode` (#88).
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop() inputmode?: string;
 
   /** Native `pattern` regex forwarded to the internal control. */
   @Prop() pattern?: string;
-
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Setting `aria-label` directly on the host also
-   * works — captured on connect into `resolvedAriaLabel` and stripped to
-   * avoid Stencil's attribute-observer / render-loop antipattern.
-   */
-  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -145,6 +140,10 @@ export class MudTextInput {
   @State() private hasIconEnd: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * internal control when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudTextInputElement;
@@ -169,29 +168,20 @@ export class MudTextInput {
   private readonly errorId = `mud-text-input-error-${this.instanceId}`;
   private nativeInput?: HTMLInputElement;
   private initialValue: string = '';
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
-  }
-
-  private captureAriaLabel() {
-    const hostAttr = this.host.getAttribute('aria-label');
-    if (hostAttr && hostAttr.length > 0) {
-      this.resolvedAriaLabel = hostAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  syncAriaLabelProp(next?: string) {
-    // Only override resolvedAriaLabel when the prop is actually set —
-    // captureAriaLabel strips the attribute, which would otherwise null this out.
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('required')

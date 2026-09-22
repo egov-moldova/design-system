@@ -11,6 +11,7 @@ import {
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
 import type { DatePickerChangeDetail } from '../mud-date-picker/mud-date-picker.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
@@ -250,12 +251,6 @@ export class MudDateInput {
   @Prop() placeholder?: string;
 
   /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
-   */
-  @Prop() ariaLabel?: string;
-
-  /**
    * Shows a trailing clear (×) button while the field holds a value, wiping the
    * entry in one click. Matches the Figma `clearButton` axis shown in the
    * Focus / Filled states. The button never appears while the field is empty,
@@ -280,6 +275,11 @@ export class MudDateInput {
   @State() private validationError: DateInputValidationError | null = null;
   /** Set when a form submit found the required field empty; cleared once it holds a value. */
   @State() private requiredShown: boolean = false;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * internal control when no visible label is present.
+   */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudDateInputElement;
 
@@ -316,6 +316,7 @@ export class MudDateInput {
   /** Upper bound substituted into `dayErrorText`'s `{max}` placeholder; 31 until a specific month narrows it. */
   private dayRangeMax: number = SEGMENT_MAX.DD;
   private mql?: MediaQueryList;
+  private stopAriaLabel?: () => void;
   /** Set when the calendar opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
   /** Whether the next open should move focus into the calendar. */
@@ -504,12 +505,14 @@ export class MudDateInput {
       this.isMobileViewport = this.mql.matches;
       this.mql.addEventListener('change', this.handleViewportChange);
     }
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
   }
 
   disconnectedCallback() {
     this.mql?.removeEventListener('change', this.handleViewportChange);
     this.mql = undefined;
     this.unlockPageScroll();
+    this.stopAriaLabel?.();
   }
 
   componentWillLoad() {
@@ -1027,7 +1030,7 @@ export class MudDateInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorMessage();
     const isInvalid = this.isInvalid();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const placeholder = this.resolvedPlaceholder();
     const iconSize = this.size === 'lg' ? 24 : 20;
     const pickerBreakpoint = this.resolvedBreakpoint();

@@ -3,6 +3,7 @@ import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil
 
 import { fetchLogoSvg, resolveLogoAssetUrl } from './mud-logo.providers';
 import { LOGO_NAMES, type LogoName } from './mud-logo.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 /**
  * Brand logo for Moldovan M-products.
@@ -35,16 +36,18 @@ export class MudLogo {
    */
   @Prop({ reflect: true }) name: LogoName = 'mpay-logo-logomark-only';
 
-  /**
-   * Accessible label. When provided (and non-whitespace), the logo is announced
-   * as an image; when omitted or whitespace-only the logo is decorative
-   * (aria-hidden).
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private svgElement: Element | null = null;
 
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property). When
+   * set (and non-whitespace), the logo is announced as an image; when
+   * omitted or whitespace-only the logo is decorative (aria-hidden).
+   */
+  @State() private resolvedAriaLabel?: string;
+
   @Element() host!: HTMLMudLogoElement;
+
+  private stopAriaLabel?: () => void;
 
   /**
    * Emitted when an asset fails to load — either because the `name` is not
@@ -84,6 +87,16 @@ export class MudLogo {
       container.appendChild(this.svgElement.cloneNode(true));
     }
     this.lastAppendedSvg = this.svgElement;
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
+      keepOnHost: true,
+    });
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   private async loadSvg(): Promise<void> {
@@ -138,12 +151,11 @@ export class MudLogo {
       return <Host aria-hidden="true" />;
     }
 
-    const trimmedLabel = this.ariaLabel?.trim();
+    const trimmedLabel = this.resolvedAriaLabel?.trim();
     const isDecorative = !trimmedLabel;
     const hostAttrs: Record<string, string> = {};
     if (!isDecorative) {
       hostAttrs['role'] = 'img';
-      hostAttrs['aria-label'] = trimmedLabel as string;
     } else {
       hostAttrs['aria-hidden'] = 'true';
     }

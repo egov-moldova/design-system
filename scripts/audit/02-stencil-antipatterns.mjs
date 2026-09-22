@@ -295,7 +295,9 @@ export const FILE_CHECKS = [
   },
   // ─── Asset-loader patterns (lessons from mud-logo audit, 2026-05) ──────────
   {
-    // A component that participates in the ARIA tree (declares `ariaLabel`)
+    // A component that participates in the ARIA tree (reads the host's
+    // `aria-label` through src/utils/aria-label.ts, or — in fixtures and legacy
+    // code — declares an `ariaLabel` prop)
     // must keep its host attribute set even when the render bails — otherwise
     // screen readers traverse a nameless generic element. Use
     // `<Host aria-hidden="true" />` as the decorative fallback instead of
@@ -305,8 +307,8 @@ export const FILE_CHECKS = [
     scope: 'tsx',
     ruleScope: 'project',
     check: (content, ctx) => {
-      // Gate: component must declare an `ariaLabel` prop (signals ARIA participation).
-      if (!/@Prop\([^)]*\)\s+ariaLabel\b/.test(content)) return [];
+      // Gate: the component names itself from `aria-label` (signals ARIA participation).
+      if (!/@Prop\([^)]*\)\s+ariaLabel\b|\b(?:observeAriaLabel|nameHostWithFallback)\(/.test(content)) return [];
 
       const lines = content.split('\n');
 

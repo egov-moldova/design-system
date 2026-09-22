@@ -25,7 +25,6 @@ array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
 
 | Property          | Attribute          | Description                                                                                                                             | Type                         | Default     |
 | ----------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------- |
-| `ariaLabel`       | `aria-label`       | Accessible name; mirrors to the group's `aria-label` when no visible label.                                                             | `string \| undefined`        | `undefined` |
 | `chips`           | --                 | Confirmed chip values. Two-way bound: assigning a new array rerenders the list. Consumer mutations through events should set this prop. | `string[]`                   | `[]`        |
 | `disabled`        | `disabled`         | Disables interactivity. Both chip remove-buttons and the text input become inert.                                                       | `boolean`                    | `false`     |
 | `errorText`       | `error-text`       | Plain-text error message shown below the control when `invalid` is set.                                                                 | `string \| undefined`        | `undefined` |

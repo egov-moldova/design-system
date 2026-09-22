@@ -1,6 +1,7 @@
 import { Component, Element, Host, Prop, State, h } from '@stencil/core';
 
 import type { TagSemantic, TagSize, TagType, TagVariant } from './mud-tag.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 /**
  * Tag — compact, non-interactive label used to mark state, category,
@@ -20,9 +21,10 @@ import type { TagSemantic, TagSize, TagType, TagVariant } from './mud-tag.types'
  *   `type` and `semantic` axes.
  *
  * Tags are decorative by default. When a tag conveys a dynamic state
- * to assistive tech ("Procesare în curs"), set `aria-label` and the
- * host will adopt `role="status"` automatically — otherwise the host
- * stays silent so visual-only tags don't pollute the a11y tree.
+ * to assistive tech ("Procesare în curs"), set the native `aria-label`
+ * attribute and the host will adopt `role="status"` automatically —
+ * otherwise the host stays silent so visual-only tags don't pollute the
+ * a11y tree.
  *
  * For horizontally stacked groups (8 px gutter, wrap on overflow),
  * compose multiple tags inside a `mud-tag-group` slot wrapper —
@@ -86,18 +88,30 @@ export class MudTag {
    */
   @Prop() label?: string;
 
-  /**
-   * Overrides the accessible name. When set, the host also adopts
-   * `role="status"` so screen readers announce the tag as a live
-   * status region (e.g. "Procesare în curs").
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
   @State() private hasIconEnd: boolean = false;
 
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property). When
+   * set, the host also adopts `role="status"` so screen readers announce the
+   * tag as a live status region (e.g. "Procesare în curs").
+   */
+  @State() private resolvedAriaLabel?: string;
+
   @Element() host!: HTMLMudTagElement;
+
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
+      keepOnHost: true,
+    });
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
     this.detectSlots();
@@ -150,14 +164,14 @@ export class MudTag {
 
   private resolveLabelText(): string {
     if (this.label && this.label.trim().length > 0) return this.label.trim();
-    if (this.ariaLabel && this.ariaLabel.trim().length > 0) return this.ariaLabel.trim();
+    if (this.resolvedAriaLabel && this.resolvedAriaLabel.trim().length > 0) return this.resolvedAriaLabel.trim();
     const text = (this.host.textContent ?? '').trim();
     return text;
   }
 
   render() {
     const labelText = this.resolveLabelText();
-    const announces = !!(this.ariaLabel && this.ariaLabel.trim().length > 0);
+    const announces = !!(this.resolvedAriaLabel && this.resolvedAriaLabel.trim().length > 0);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
@@ -165,12 +179,7 @@ export class MudTag {
     };
 
     return (
-      <Host
-        class={hostClasses}
-        role={announces ? 'status' : null}
-        aria-live={announces ? 'polite' : null}
-        aria-label={announces ? this.ariaLabel : null}
-      >
+      <Host class={hostClasses} role={announces ? 'status' : null} aria-live={announces ? 'polite' : null}>
         <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
         <span class="label">
           <slot onSlotchange={this.onLabelSlotChange} />

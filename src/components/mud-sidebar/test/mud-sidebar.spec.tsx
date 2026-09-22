@@ -45,10 +45,11 @@ describe('mud-sidebar', () => {
     expect(nav).toBeTruthy();
   });
 
-  it('sets aria-label on the nav when aria-label prop is provided', async () => {
+  it('sets aria-label on the nav when the aria-label attribute is provided', async () => {
     const { root } = await render(<mud-sidebar aria-label="Navigare principala" />);
     const nav = root?.shadowRoot?.querySelector('nav.sidebar');
     expect(nav?.getAttribute('aria-label')).toBe('Navigare principala');
+    expect(root?.hasAttribute('aria-label')).toBe(false);
   });
 
   it('does not set aria-label on the nav when prop is absent', async () => {
