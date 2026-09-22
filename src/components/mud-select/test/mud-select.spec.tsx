@@ -641,6 +641,151 @@ describe('mud-select', () => {
     });
   });
 
+  describe('filtering', () => {
+    const type = async (root: Element | null | undefined, text: string) => {
+      const input = queryTrigger(root);
+      if (!input) throw new Error('no trigger');
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+    };
+
+    const cities = (
+      <mud-select label="Oraș" searchable placeholder="Caută">
+        <option value="chisinau">Chișinău</option>
+        <option value="balti">Bălți</option>
+        <option value="tandarei">Țăndărei</option>
+        <option value="orhei">Orhei</option>
+      </mud-select>
+    );
+
+    it('narrows the list to what matches', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'orhei');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['orhei']);
+    });
+
+    it('matches Romanian text typed without diacritics', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'chisinau');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['chisinau']);
+    });
+
+    it('matches comma-below and cedilla spellings alike', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable>
+          <option value="comma">Țăndărei</option>
+          {/* The legacy cedilla spelling of the same name. */}
+          <option value="cedilla">Ţăndărei</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'tandarei');
+      expect(queryOptions(root)).toHaveLength(2);
+    });
+
+    it('ignores case and surrounding space', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, '  BĂLȚI  ');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['balti']);
+    });
+
+    it('matches the value as well as the label', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'balti');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['balti']);
+    });
+
+    it('drops a group whose options all fail the filter', async () => {
+      const { root } = await render(
+        <mud-select label="Food" searchable>
+          <optgroup label="Fruit">
+            <option value="apple">Apples</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'apple');
+      const groups = queryGroups(root);
+      expect(groups).toHaveLength(1);
+      const id = groups[0]?.getAttribute('aria-labelledby');
+      expect(root?.shadowRoot?.querySelector(`#${id}`)?.textContent?.trim()).toBe('Fruit');
+    });
+
+    it('shows the empty state when nothing matches', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'zzz');
+      expect(queryOptions(root)).toHaveLength(0);
+      expect(root?.shadowRoot?.querySelector('.listbox-empty')).toBeTruthy();
+    });
+
+    it('opens the listbox as soon as the user types', async () => {
+      const { root } = await render(cities);
+      await flush();
+      expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('false');
+      await type(root, 'or');
+      expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('does not filter when searchable is off', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș">
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'orhei');
+      expect(queryOptions(root)).toHaveLength(2);
+    });
+
+    it('opens on an empty field so typing starts a query, not an edit', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable value="orhei" open>
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      const input = queryTrigger(root);
+      // Were the label still in the field, the first keystroke would append to it.
+      expect(input?.getAttribute('value')).toBe('');
+      expect(input?.getAttribute('placeholder')).toBe('Orhei');
+    });
+
+    it('keeps showing the selection when the query matches nothing', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable value="orhei" open>
+          <option value="orhei">Orhei</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'zzz');
+      expect(queryOptions(root)).toHaveLength(0);
+      // The selection is looked up in the whole model, so an empty result does
+      // not make the field look cleared.
+      expect(queryTrigger(root)?.getAttribute('placeholder')).toBe('Orhei');
+    });
+
+    it('clears the query on selection so the label is what shows', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'orhei');
+      (queryOptions(root)[0] as HTMLElement).click();
+      await flush();
+      expect(queryTrigger(root)?.getAttribute('value')).toBe('Orhei');
+      expect(queryOptions(root)).toHaveLength(4);
+    });
+  });
+
   describe('slots', () => {
     it('forwards content into the icon-start slot', async () => {
       const { root } = await render(

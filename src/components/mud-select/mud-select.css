@@ -217,6 +217,11 @@
   white-space: nowrap;
 }
 
+/* A searchable control takes text, so it reads as one. */
+:host([searchable]:not([readonly]):not([disabled])) .trigger {
+  cursor: text;
+}
+
 .trigger::placeholder {
   color: var(--_text-placeholder);
   opacity: 1;

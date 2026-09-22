@@ -136,3 +136,50 @@ export const toRows = (entries: SelectEntry[]): SelectRow[] => {
 
   return rows;
 };
+
+/**
+ * Folds case and strips diacritics so a query matches text the user cannot
+ * easily type.
+ *
+ * Decomposes and drops combining marks rather than carrying a character map:
+ * that covers Romanian in both spellings — `ș`/`ț` written with the correct
+ * comma below (U+0219, U+021B) and with the cedilla (U+015F, U+0163) that
+ * legacy data still uses — without a table to maintain.
+ */
+export const foldForSearch = (value: string): string => value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+/**
+ * Whether an option answers the query, following react-select's `createFilter`
+ * defaults: the query is trimmed, case and accents are ignored, and the label
+ * and value are searched together as one string.
+ */
+export const optionMatches = (option: SelectOptionEntry, query: string): boolean => {
+  const needle = foldForSearch(query.trim());
+  if (needle.length === 0) return true;
+  return foldForSearch(`${option.label} ${option.value}`).includes(needle);
+};
+
+/**
+ * Narrows the model to what answers the query.
+ *
+ * A group survives only while it still has a matching option — an empty heading
+ * names nothing — and rules are re-collapsed afterwards, since removing the
+ * options around one can leave it dividing nothing.
+ */
+export const filterEntries = (entries: SelectEntry[], query: string): SelectEntry[] => {
+  if (query.trim().length === 0) return entries;
+
+  const kept: SelectEntry[] = [];
+  for (const entry of entries) {
+    if (entry.kind === 'option') {
+      if (optionMatches(entry, query)) kept.push(entry);
+      continue;
+    }
+    // Drop a heading that its own options have just left empty.
+    if (entry.kind === 'group' && kept[kept.length - 1]?.kind === 'group') kept.pop();
+    kept.push(entry);
+  }
+  if (kept[kept.length - 1]?.kind === 'group') kept.pop();
+
+  return collapseSeparators(kept);
+};

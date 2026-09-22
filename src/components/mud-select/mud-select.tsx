@@ -3,7 +3,13 @@ import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, 
 
 import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
 import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
-import { entriesFromOptions, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
+import {
+  entriesFromOptions,
+  filterEntries,
+  markupSelectedValue,
+  readEntriesFromLightDom,
+  toRows,
+} from './mud-select.utils';
 import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
@@ -111,6 +117,16 @@ export class MudSelect {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
+   * Lets the user narrow the list by typing into the control.
+   *
+   * Off by default: turning it on makes the control a text field, which changes
+   * how every existing select behaves — including raising an on-screen keyboard
+   * on touch — so it is the consumer's call, not a default.
+   * @default false
+   */
+  @Prop({ reflect: true }) searchable: boolean = false;
+
+  /**
    * Declarative option list.
    *
    * @deprecated Write the options as markup instead — `<option>`, `<optgroup>`
@@ -128,6 +144,8 @@ export class MudSelect {
   @State() private fieldsetDisabled: boolean = false;
   @State() private highlightedIndex: number = -1;
   @State() private entries: SelectEntry[] = [];
+  /** What the user has typed. Empty unless `searchable` and the user is typing. */
+  @State() private query: string = '';
   /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the trigger when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   /** True when the listbox is flipped above the control (not enough room below). */
@@ -425,9 +443,18 @@ export class MudSelect {
       this.options && this.options.length > 0 ? entriesFromOptions(this.options) : readEntriesFromLightDom(this.host);
   }
 
+  /**
+   * The model after the query — what is rendered, and what the keyboard walks.
+   * Everything downstream indexes into this, never into the unfiltered list, so
+   * a highlight always points at a row the user can see.
+   */
+  private visibleEntries(): SelectEntry[] {
+    return this.searchable && this.query.trim().length > 0 ? filterEntries(this.entries, this.query) : this.entries;
+  }
+
   /** The choices, in render order — what `highlightedIndex` and `value` index into. */
   private resolvedOptions(): SelectOption[] {
-    return this.entries.filter(isOptionEntry);
+    return this.visibleEntries().filter(isOptionEntry);
   }
 
   private resolvedVariant(): SelectVariant {
@@ -489,6 +516,9 @@ export class MudSelect {
   private setListboxOpen(next: boolean, opts: { returnFocus?: boolean } = {}) {
     if (this.open === next) return;
     this.open = next;
+    // A query outlives nothing: a closed listbox showing a filtered label would
+    // be lying about what is selected.
+    if (!next) this.query = '';
     if (!next && opts.returnFocus !== false) this.triggerEl?.focus();
   }
 
@@ -525,6 +555,26 @@ export class MudSelect {
     this.setListboxOpen(!this.open);
   };
 
+  private handleInput = (ev: Event) => {
+    if (!this.searchable || this.readonly || this.isInert()) return;
+    this.query = (ev.target as HTMLInputElement).value;
+    if (!this.open) this.setListboxOpen(true);
+    // The old highlight indexed the unfiltered list; re-aim it at the new first row.
+    this.highlightedIndex = this.firstEnabledIndex();
+  };
+
+  /**
+   * Clicking a searchable control that is already open should move the caret,
+   * not close what the user is typing into.
+   */
+  private handleTriggerClick = (ev: MouseEvent) => {
+    if (this.searchable && this.open && !this.readonly) {
+      ev.stopPropagation();
+      return;
+    }
+    this.toggleListbox(ev);
+  };
+
   private selectIndex(index: number) {
     const opts = this.resolvedOptions();
     const opt = opts[index];
@@ -534,6 +584,7 @@ export class MudSelect {
       this.value = next;
       this.mudChange.emit({ value: next });
     }
+    this.query = '';
     this.closeListbox();
   }
 
@@ -651,8 +702,17 @@ export class MudSelect {
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const opts = this.resolvedOptions();
-    const selected = opts.find(opt => opt.value === this.value);
-    const triggerText = selected?.label ?? '';
+    // From the whole model, not the filtered view: a query that matches nothing
+    // must not make the current selection look as though it had been cleared.
+    const selected = this.entries.filter(isOptionEntry).find(opt => opt.value === this.value);
+    const canType = this.searchable && !this.readonly && !effectivelyDisabled;
+    // Open and searchable, the field is the query box: it starts empty however
+    // full the selection is, so the first keystroke begins a query instead of
+    // being appended to the selected label. The selection steps back to the
+    // placeholder, where it stays readable. Closed, the field is the selection.
+    const showsQuery = canType && this.open;
+    const triggerText = showsQuery ? this.query : (selected?.label ?? '');
+    const placeholderText = showsQuery ? (selected?.label ?? this.placeholder) : this.placeholder;
     const isPlaceholder = !selected;
     const activeDescendantId =
       this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
@@ -697,23 +757,23 @@ export class MudSelect {
             </span>
 
             {/* An input, not a button: ARIA 1.2 names <input role="combobox"> as
-                the pattern, and it is the element a filter can later be typed
-                into. Until then it is not editable — `readonly` plus
+                the pattern, and a filter has to be typed into something. Without
+                `searchable` it is not editable — `readonly` plus
                 `inputmode="none"` keep the caret and the on-screen keyboard
                 away while leaving it focusable and keyboard-operable. */}
             <input
               ref={el => (this.triggerEl = el)}
               id={this.triggerId}
-              class={{ 'trigger': true, 'is-placeholder': isPlaceholder }}
+              class={{ 'trigger': true, 'is-placeholder': isPlaceholder && !showsQuery }}
               part="trigger"
               type="text"
               role="combobox"
               autocomplete="off"
               spellcheck={false}
-              inputmode="none"
-              readOnly={true}
+              inputmode={canType ? undefined : 'none'}
+              readOnly={!canType}
               value={triggerText}
-              placeholder={this.placeholder}
+              placeholder={placeholderText}
               aria-haspopup="listbox"
               aria-expanded={this.open ? 'true' : 'false'}
               aria-controls={this.listboxId}
@@ -726,7 +786,8 @@ export class MudSelect {
               aria-required={this.required ? 'true' : null}
               aria-readonly={this.readonly ? 'true' : null}
               disabled={effectivelyDisabled}
-              onClick={this.toggleListbox}
+              onClick={this.handleTriggerClick}
+              onInput={this.handleInput}
               onKeyDown={this.handleTriggerKeyDown}
               onFocus={this.handleTriggerFocus}
               onBlur={this.handleTriggerBlur}
@@ -757,7 +818,7 @@ export class MudSelect {
                 No options
               </div>
             ) : (
-              toRows(this.entries).map((row, rowIndex) => {
+              toRows(this.visibleEntries()).map((row, rowIndex) => {
                 if (row.kind === 'separator') return <div class="listbox-separator" role="separator"></div>;
                 if (row.kind === 'option') return this.renderOption(row, iconSize);
 
