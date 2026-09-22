@@ -270,6 +270,115 @@
       ]
     },
     {
+      "name": "mandatory-large",
+      "node": "159:1116",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" required><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "use": "large-label"
+        },
+        {
+          "target": "mud-select",
+          "styles": {
+            "rowGap": "8px"
+          },
+          "note": "The component 159:1113 is a column with gap 8 — label to input, and input to assistive text."
+        },
+        {
+          "target": "mud-select .label",
+          "styles": {
+            "columnGap": "4px"
+          },
+          "note": "Figma Label row 159:1114 puts spacing/4 between the text and the asterisk."
+        },
+        {
+          "target": "mud-select .required-mark",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "rgb(217, 45, 32)"
+          },
+          "note": "Figma 159:1116 is the 12/asterisk instance at 12x12; its #D92D20 was sampled from the export of 456:24890, since the glyph is a flattened SVG in the node data."
+        }
+      ]
+    },
+    {
+      "name": "helper-large",
+      "node": "159:1122",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" helper-text=\"Helper message displayed here\"><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .assistive",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "rgb(56, 56, 56)",
+            "columnGap": "6px"
+          },
+          "note": "Figma 159:1122 is the inline-message 132:4101 with the icon off: gap 6, Desktop/Body/Small at #383838."
+        },
+        {
+          "target": "mud-select .assistive mud-icon",
+          "absent": true,
+          "note": "The helper variant sets the inline-message property 📍 Icon to false."
+        }
+      ]
+    },
+    {
+      "name": "error-large",
+      "node": "159:1217",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" invalid error-text=\"Error message displayed here\"><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .assistive",
+          "styles": {
+            "color": "rgb(217, 45, 32)",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "columnGap": "4px"
+          },
+          "note": "Figma 159:1217 swaps in the Error inline-message 132:4113: gap 4 once the icon is on, text #D92D20."
+        },
+        {
+          "target": "mud-select .assistive-icon",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "rgb(217, 45, 32)"
+          },
+          "note": "Figma 132:4114 renders 20/circle-error-filled at 20x20."
+        }
+      ]
+    },
+    {
+      "name": "leading-icon-large",
+      "node": "159:1118",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><mud-icon slot=\"icon-start\" name=\"search\" size=\"24\"></mud-icon><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .control-icon-start",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 159:1118 is the 24/search instance at 24x24, a direct child of the Input frame. Its colour is not verifiable: the layer is hidden in every documented instance, so no pixels exist to sample."
+        },
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "columnGap": "8px"
+          },
+          "note": "Input frame 159:1117 spaces icon, content and chevron with spacing/8."
+        }
+      ]
+    },
+    {
       "name": "listbox-open",
       "node": "172:3093",
       "pixel": false,
@@ -282,9 +391,10 @@
             "rowGap": "4px",
             "backgroundColor": "rgb(255, 255, 255)",
             "borderTopLeftRadius": "16px",
-            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 5px 12px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0.5px 0px"
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 5px 12px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0.5px 0px",
+            "insetBlockStart": "56px"
           },
-          "note": "Figma selection-menu 172:3093 — the dropdown the Select Input Behavior section (454:5854) names as the custom menu."
+          "note": "Figma selection-menu 172:3093 — the dropdown the Select Input Behavior section (454:5854) names as the custom menu. `insetBlockStart` is the Large control's 48px plus the 8px the Behavior/custom composition 454:5975 puts between the field and the menu; the menu is absolutely positioned, so that gap is expressed as an offset rather than a margin."
         }
       ]
     },
@@ -328,6 +438,24 @@
             "color": "rgb(0, 88, 210)"
           },
           "note": "Figma .menu-item-selection State=Selected uses padding 12px 16px — the checkmark takes the space the 24px otherwise reserves."
+        }
+      ]
+    },
+    {
+      "name": "listbox-option-disabled",
+      "node": "409:21939",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" open><option value=\"a\">Option 1</option><option value=\"b\" disabled>Option 2</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .listbox .option.is-disabled",
+          "styles": {
+            "color": "rgb(117, 117, 117)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Deliberate deviation, recorded on the token `select.option.text.disabled`: Figma 409:21939 paints the disabled label #B2B2B2, which is 1.98:1 on the white menu and would read as absent rather than inactive. The component keeps text.base.tertiary (#757575, 4.6:1). WCAG 1.4.3 exempts inactive controls, so the design is conformant too — this is a project choice, not a fix, and it is open with the designers."
         }
       ]
     }
