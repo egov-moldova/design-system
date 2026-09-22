@@ -657,6 +657,48 @@ lint` clean; `node scripts/audit/seeded-defects.mjs` 4/4; two `--depth standard`
 INCOMPLETE); a probe of the deep first phase shows `awaitingLegs: true`. Record under
 `#### Phase 5 results`.
 
+#### Phase 5 results (2026-09-22, Node 24.19.0, commits f4ef2a1 + 8a5d456 over da6328c)
+
+Per task (test names are in the spec named; each failed before its fix):
+- T1 fixed — run-all's readers are `defaultReadSources` / `defaultReadPrompt` and `openAiLegs` calls them `(repoRoot, x)`; `run-all.spec` "T1: a real two-argument source reader…".
+- T2 / T15 fixed — pure `bx4Outcome`; `19-interaction.spec` "bx4Outcome …" (popup + not opened → noTarget, no popup → not-applicable, accordion-item → no ESCAPE-NO-CLOSE).
+- T3 fixed — `TOKEN-DIFF-NO-CURRENT` is `info`, not `noTarget`; `13-token-diff.spec` "T3 …".
+- T4 fixed — BX4 closes first via pure `bx4CloseStep` (the `open` prop, else a `close*` method with no argument, else nothing — never the open method with `false`, which opened mud-modal: code-review finding 1); `19-interaction.spec` "bx4CloseStep …". The browser sequencing itself is live-checked only (below).
+- T5 fixed — `callers.spec` "T5: a well-formed --run-dir with no envelope.json → exit 2".
+- T6 fixed — `touchesWorktree` (prerequisites or an `exclusive` row); `run-all.spec` "T6 …".
+- T7 fixed — the audit-dir lock is taken first in `runAudit` whenever the run writes `_run/` (`writesRunDir`), refusal → `lockRefused`, run-all exit 3; `run-all.spec` "T7 …" ×2.
+- T8 / T9 fixed — callers and SKILL.md recompute with `yarn audit:component --recompute <component> --json` and read `components[].awaitingLegs` from stdout; re-hash rule stated; `callers.spec` S4 block (both predicates false on the HEAD docs, true now).
+- T10 fixed — a crashed entry carries `log`, not `prerequisite`; fix-brief renders either; `verdict.spec` / `fix-brief.spec` "T10 …".
+- T11 fixed — pure `bx7ExpectedValue`; `19-interaction.spec` "bx7ExpectedValue …".
+- T12 fixed — warnings sorted with `compareFindings`; `verdict.spec` "T12 …".
+- T13 fixed — pixel-perfect-verifier steps 2–3 pass the HEAD manifest.
+- T14 fixed — coverage filters `src/components/<name>/`; `run-all.spec` "T14 …" (substring-filter fixture, mud-button-group failing).
+- T16 fixed — 17's header and the mapping text say P11 is eslint's, A4 kept for the gap.
+- T17 fixed as specified — the takeover re-reads and confirms its nonce; `run-all.spec` "T17 …". Residual race: see § Not verified.
+- T18 fixed — `componentOfSpec` in `lib/component-paths.mjs`, used by 06 and `evaluateCoverageResults`; 06 paths repo-relative; `06-test-coverage.spec`.
+- T19 covered by Decision 11 — `callers.spec` "--recompute <component> recomputes…", early-exit summaries "every early exit … components: []".
+- T20 fixed — `verdict.spec` "T20 …".
+- T21 dropped (as the row states).
+- T22 fixed — `run-all.spec` "T22 …".
+- T23 fixed — `verdict.spec` "T23 …".
+- T24 fixed — `awaiting` folded onto each incomplete entry and stripped before numbering; `verdict.spec` "Decision 11: an awaiting entry…".
+- T25 fixed — `resolveComponents` exported; `run-all.spec` "T25 …" (the test sits beside the function in run-all, not in `lib-changed-components.spec`).
+- T26 fixed — `run-all.spec` "T26 …" ×2.
+- T27 fixed — delimiter `AI_FINDINGS_JSON_END`, body one JSON document.
+- T28 fixed — the hand-off must match a RECORDED start time; a holder on a host without `ps` (none recorded) is honoured on its nonce (code-review finding 3); `run-all.spec` "T28 …".
+- `--run-dir` symlink resolution — not done (as the row states).
+
+Code-review (high, over f4ef2a1) raised 6; fixed in 8a5d456: 1 (above), 2 (`--recompute $ARGUMENTS` carried `--depth`; name now normalized), 3, 4 (`--recompute`'s stdout and exit speak only for the recomputed component; the summary file keeps all), 6 (README said `verdict.json` lacks `awaitingLegs`; `--json` added to every gate call). Finding 5 is the residual race below.
+
+Verify, as run:
+- `node --test "scripts/__tests__/**/*.spec.mjs"` 1379 / 1379; `vitest run --project spec` 48 files, 1987 / 1987; `eslint src` clean; `prettier --check .` clean; `seeded-defects.mjs` 4/4.
+- two `--depth standard` runs on `mud-banner` → `cmp` identical `verdict.json` (PASS · MERGE-READY).
+- `--depth standard`: `mud-accordion-item` exit 1 (FAIL on real findings: ANTIPATTERN-025 event prefix, three PIXEL-NO-REFERENCE); `mud-tooltip`, `mud-icon` exit 4 (no manifest at HEAD). None carries ESCAPE-NO-CLOSE or a TOKEN-DIFF-NO-CURRENT INCOMPLETE (13 row `ok`, one info finding).
+- 19 directly on this worktree's Storybook: `mud-modal` BX4 opened, Escape closed it, focus not trapped; `mud-accordion-item` and `mud-tooltip` BX4 `not-applicable` (no dialog / popover / aria-haspopup / aria-modal — tooltip's `role="tooltip"` is outside S12's popup set).
+- `--depth deep --no-figma` on `mud-banner` → exit 3, `components[0].awaitingLegs: true`, five open `ai-*` entries each verifying with `yarn audit:component --recompute mud-banner`; `--recompute mud-banner --json` → exit 3, `awaitingLegs: true`; `--recompute mud-nope` → exit 2.
+- scope-check `--phase 5 --base da6328c`: 24 files in scope. The Files list names 31; the 7 untouched were already conformant (`lib/leg-input.mjs`, `lib/changed-components.mjs`, `wave-2-static-analysis.md`, `lib-changed-components.spec.mjs`), read-only, or this plan.
+- fresh-eyes verify (over da6328c..8a5d456): FORTIFY (med) — the one above-bar finding was this missing results section.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |
@@ -677,6 +719,12 @@ INCOMPLETE); a probe of the deep first phase shows `awaitingLegs: true`. Record 
 - Decision 5's sites are still an enumeration (ten, found by two review rounds). A structural
   backstop — each script reports a `checked` count and a required row with zero checked items is
   INCOMPLETE — would catch the next one; deferred, one meta field per script.
+- `acquireLock`'s stale-lock takeover (T17): the post-create nonce read-back narrows, but does
+  not close, a double takeover — a taker that already passed its compare can still delete a
+  lock whose owner has read back its own nonce and returned. Closing it needs a serialized
+  takeover (a second `wx` file) — a redesign, not T17's read-back (Phase 5 code-review finding 5).
+- T4's close-before-baseline and the BX4 open/Escape sequence are proven live on mud-modal,
+  mud-tooltip and mud-accordion-item only; the pure choice (`bx4CloseStep`) is unit-tested.
 - AI legs keep unrestricted Bash; the write target for `ai-findings.json` is bounded by prompt
   convention only. Pre-existing, out of this plan's scope (preflight leg 2, finding 2); a
   separate hardening issue.
