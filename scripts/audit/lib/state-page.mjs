@@ -107,7 +107,16 @@ async function waitForHydration(page) {
 
 async function interact(page, { type, target }) {
   const locator = page.locator(target).first();
-  if ((await locator.count()) === 0) throw new Error(`interaction target not found: ${target}`);
+  // Wait for the target rather than reading the count once. A state that sets
+  // array props renders twice: `componentOnReady()` resolves on the first pass,
+  // before the prop arrives, so the rows the interaction aims at may not exist
+  // yet. A cold page absorbed that gap and a warm one did not, which made the
+  // same state pass first and fail second in the same browser.
+  try {
+    await locator.waitFor({ state: 'attached' });
+  } catch {
+    throw new Error(`interaction target not found: ${target}`);
+  }
   if (type === 'hover') {
     await locator.hover();
     return async () => {};
