@@ -42,19 +42,31 @@ List missing files.
 
 ## Step 3: Run Full Audit
 
-Run the deterministic gate and STOP if the exit status is non-zero:
+Run the deterministic gate:
 
 ```bash
 yarn audit:component $ARGUMENTS --depth deep
 ```
 
 Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
-`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Read
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). An exit `3` with
+`verdict.json`'s `awaitingLegs: true` means every `INCOMPLETE` entry is an
+opened `ai-*` row (Decision §1, `2026-09-22-audit-depths-sentinel-fixes.md`):
+invoke `/audit-component $ARGUMENTS --depth deep` (or follow
+`audit-component.md` steps inline if calling another slash command isn't
+supported in your harness) for the judgment-only legs, each of which writes
+`audit/$ARGUMENTS/runs/<run>/ai/<leg>/ai-findings.json`. Once every opened row
+is closed, recompute and STOP on a non-zero exit:
+
+```bash
+yarn audit:component --run-dir <verdict.runDir>
+```
+
+`<verdict.runDir>` is `verdict.json`'s own `runDir` field from the first run —
+the full `audit/$ARGUMENTS/runs/<run>` form; a bare run id is rejected. Any
+other non-zero exit from the first run — STOP; read
 `audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
-`audit/$ARGUMENTS/fix-brief.md` for every entry. Then invoke `/audit-component
-$ARGUMENTS --depth deep` (or follow `audit-component.md` steps inline if
-calling another slash command isn't supported in your harness) for the
-judgment-only legs the gate itself cannot run.
+`audit/$ARGUMENTS/fix-brief.md` for every entry.
 
 The audit identifies all issues across structure, tokens, CSS, TypeScript, accessibility, security, performance, stories, tests.
 

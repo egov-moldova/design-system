@@ -135,7 +135,9 @@ When every leg has written its file:
 
 ## Fix loop
 
-1. Fix one entry at a time; its `verify:` command is the per-fix check.
+1. Fix one entry at a time. Run the exact string in that entry's `verify` field as read from
+   `verdict.json`'s `entries[]` — never a command retyped or paraphrased from `fix-brief.md`'s
+   prose, which renders the same field for a human and is display text, not the source of truth.
 2. When every `verify:` passes, re-run the whole audit at the same depth (at `deep`, legs too:
    the source changed, so the input hash did). Only a full run can write `PASS`.
 

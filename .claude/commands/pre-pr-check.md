@@ -33,41 +33,31 @@ Wave 5 (parallel):       console check  +  storybook a11y panel  +  commit messa
 
 ## Fast Path — replaces Wave 1 grep gates (preferred)
 
-Instead of running 6 individual `rg` calls and parsing each result, dispatch
-the local audit orchestrator. It runs every static check in parallel and
-returns ONE JSON envelope you can read in a single tool call:
+Run the audit gate ONCE — never the raw orchestrator separately, and never
+both judged against different criteria (the gate's exit status is the only
+verdict; a second, independent read of the envelope invites disagreement):
 
 ```bash
 # Covers structure, anti-patterns, git hygiene, jsdoc, story exports,
 # integration usage, component contract, token diff — across the components
-# touched in this branch's git diff vs main.
-node scripts/audit/run-all.mjs --depth quick --changed --no-browser --json
-```
-
-Read the result. The `blockers` array lists every error-severity finding except those of
-report-only scripts (`stencil-contract`), which count in `summary` but never block;
-each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`), or
-`name/status` (e.g. `structure/crashed`) for a row that crashed or hit a missing
-prerequisite — those also count in `summary.incomplete`. If `ok` is false or
-`blockers` is non-empty, STOP and report — do not proceed to Wave 2. A script that
-crashed adds no finding, so `ok: false` with empty `blockers` is still a stop: read `results[].error`.
-
-If you also want git + branch + commit hygiene as part of Wave 1, you already
-have it: the orchestrator includes `03-git-hygiene` automatically.
-
-Equivalent gate, when you want the verdict rather than the raw envelope:
-
-```bash
+# touched in this branch's git diff vs main. Also writes audit/_run/envelope.json.
 yarn audit:component --changed --depth quick --no-browser --json
 ```
 
-`yarn audit:component` (`scripts/audit/verdict.mjs`) runs the same `run-all.mjs
---depth quick --changed --no-browser` pass and computes a `state`. Exit 0 only on
-`PASS`; STOP on anything else — 1 `FAIL`, 3 `INCOMPLETE` (a row crashed, hit a
-missing prerequisite, or a required `quick` check did not run — see
-`summary.incomplete` / `blockers` on the underlying envelope for which one), 4
-`NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the located failure
-instead of re-deriving it from the raw envelope.
+`yarn audit:component` (`scripts/audit/verdict.mjs`) runs `run-all.mjs --depth
+quick --changed --no-browser` and computes a `state`; `--json` also writes the
+raw envelope to `audit/_run/envelope.json`. Branch on this command's exit
+status only: `0` `PASS`; STOP on anything else — `1` `FAIL`, `3` `INCOMPLETE`
+(a row crashed, hit a missing prerequisite, or a required `quick` check did
+not run), `4` `NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the
+located failure. The envelope at `audit/_run/envelope.json` is read only to
+display the `blockers` array (each entry `tool/CODE`, e.g.
+`antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`, or `name/status` for a crashed
+row) alongside the fix brief — it never overrides the exit-status branch
+above.
+
+If you also want git + branch + commit hygiene as part of Wave 1, you already
+have it: the orchestrator includes `03-git-hygiene` automatically.
 
 ## Wave 1: Static Analysis & Test (parallel)
 
@@ -106,8 +96,9 @@ Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patte
 - Lint: zero violations
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
-- Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` / `name/status` immediately)
-- Gate: `yarn audit:component --changed --depth quick --no-browser --json` exits 0
+- Gate: `yarn audit:component --changed --depth quick --no-browser --json` (§ Fast Path) exits 0 —
+  the single run this wave depends on. On a non-zero exit, escalate its `audit/_run/envelope.json`
+  `blockers` (each `tool/CODE` / `name/status`) alongside the fix brief.
 - Merge driver still registered — `git config --get merge.ours.driver` returns `true`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)

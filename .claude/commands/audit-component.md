@@ -29,13 +29,13 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
 
 ## Execution
 
-1. Run the gate and STOP on a non-zero exit status:
+1. Run the gate once:
 
    ```bash
    yarn audit:component $ARGUMENTS
    ```
 
-   Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4` NEEDS-DECISION, `2` usage/internal error. Read `audit/<component>/verdict.json` (`state`, `level`, `headline`, `rows`, `entries`) and `audit/<component>/fix-brief.md` — never re-derive the verdict by hand.
+   Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4` NEEDS-DECISION, `2` usage/internal error. At `--depth deep`, an exit `3` with `verdict.json`'s `awaitingLegs: true` means every `INCOMPLETE` entry is an opened `ai-*` row (Decision §1, `2026-09-22-audit-depths-sentinel-fixes.md`) — go to step 2, then step 3. Any other non-zero exit — STOP. Read `audit/<component>/verdict.json` (`state`, `level`, `headline`, `rows`, `entries`) and `audit/<component>/fix-brief.md` — never re-derive the verdict by hand.
 
 2. At `standard`/`deep`, invoke the skill for the legs the gate itself cannot run (archetype CX rows, cross-layer synthesis, and — at `deep` — the AI-leg rows the orchestrator opened):
 
@@ -43,7 +43,16 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
    Skill('audit-component', { args: '$ARGUMENTS' })
    ```
 
-   The skill never invokes `verdict.mjs` and never stops on its exit code; each leg it dispatches writes `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json`, and a second `yarn audit:component --run-dir <run>` recomputes the verdict once every opened row is closed.
+   The skill never invokes `verdict.mjs` and never stops on its exit code; each leg it dispatches writes `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json`.
+
+3. At `deep`, once every opened row is closed, recompute and STOP on a non-zero exit:
+
+   ```bash
+   yarn audit:component --run-dir <verdict.runDir>
+   ```
+
+   `<verdict.runDir>` is `verdict.json`'s own `runDir` field from step 1 — the full
+   `audit/<component>/runs/<run>` form; a bare run id is rejected.
 
 ## Output
 

@@ -23,6 +23,11 @@ Optional:
 - `storyId` — default `atoms-<componentName>--default`
 - `interactiveStates` — default inferred from component type
 
+When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port
+from `.audit-storybook.json` (repo root, `{ port, pid }` — `lib/storybook-helpers.mjs`) and use
+it instead of the 6007 default, both for `storybookBaseUrl` and for `--port` on every script
+below.
+
 ## AI-leg contract (when dispatched at `--depth deep`)
 
 The orchestrator (`run-all.mjs`) opens `ai-wcag` (`idsJudged: ['DX-wcag']`) and
@@ -42,12 +47,25 @@ with the shape `verdict.mjs`'s `closeAiRow` requires:
   "schemaVersion": "1.0.0",
   "leg": "a11y-verifier",
   "idsJudged": ["DX-wcag", "DX-media"],
-  "inputHash": "<the hash from the opened row, when known — omit if not passed>",
+  "inputHash": "<the hash from the opened row, when known — omit if not passed; optional and
+    informational only, kept for a human reading the file — the verdict never consults it,
+    since the recompute re-hashes the current sources itself (Decision §7,
+    `2026-09-22-audit-depths-sentinel-fixes.md`)>",
   "findings": [
     { "severity": "error", "code": "A11Y-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
     { "question": "...", "options": ["...", "..."] }
   ]
 }
+```
+
+Write it with `Bash` using a quoted heredoc delimiter, so no `$`/backtick in a finding's text is
+interpolated by the shell:
+
+```bash
+mkdir -p audit/<component>/runs/<run>/ai/a11y-verifier
+cat <<'EOF' > audit/<component>/runs/<run>/ai/a11y-verifier/ai-findings.json
+{ ... the JSON above ... }
+EOF
 ```
 
 `idsJudged` must list every id the row was opened for (a leg opened for both
@@ -77,12 +95,14 @@ in parallel:
 node scripts/audit/run-all.mjs mud-<name> --only 09,10,12 --json
 ```
 
-Or individually if you only need one:
+`run-all.mjs` reads `.audit-storybook.json` itself and passes `--port` to every browser script it
+spawns. Running a script individually does not: pass `--port <the port from .audit-storybook.json>`
+yourself.
 
 ```bash
-node scripts/audit/09-a11y-tree.mjs mud-<name> --json     # a11y tree + element census
-node scripts/audit/10-contrast-pairs.mjs mud-<name> --json # WCAG contrast pairs (light + dark)
-node scripts/audit/12-console-errors.mjs mud-<name> --json # runtime errors that affect a11y
+node scripts/audit/09-a11y-tree.mjs mud-<name> --port <port> --json     # a11y tree + element census
+node scripts/audit/10-contrast-pairs.mjs mud-<name> --port <port> --json # WCAG contrast pairs (light + dark)
+node scripts/audit/12-console-errors.mjs mud-<name> --port <port> --json # runtime errors that affect a11y
 ```
 
 Also run the token-level pair:
@@ -260,7 +280,7 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 
 | Symptom | Likely cause | Reported as |
 |---|---|---|
-| Script exits with `Storybook not reachable on port 6007` | Storybook not started | `environment-not-ready` |
+| Script exits with `Storybook not reachable` on this worktree's port (`.audit-storybook.json`) | Storybook not started | `environment-not-ready` |
 | `yarn audit:contrast` exits non-zero | New FAIL pairs outside ACCEPTED_EXCEPTIONS | `contrast-regression` + listed pairs |
 | Script exits with `playwright not installed` | dep missing | `playwright-missing` + fall back to MCP path |
 | Snapshot empty (script returns `interactive: []`) | Story failed to render or selectors too narrow | `story-render-failure` |

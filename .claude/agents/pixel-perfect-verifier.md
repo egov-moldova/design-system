@@ -46,7 +46,10 @@ in the shape `verdict.mjs`'s `closeAiRow` requires:
   "schemaVersion": "1.0.0",
   "leg": "pixel-perfect-verifier",
   "idsJudged": ["DX-figma-themes"],
-  "inputHash": "<the hash from the opened row, when passed — omit otherwise>",
+  "inputHash": "<the hash from the opened row, when passed — omit otherwise; optional and
+    informational only, kept for a human reading the file — the verdict never consults it,
+    since the recompute re-hashes the current sources itself (Decision §7,
+    `2026-09-22-audit-depths-sentinel-fixes.md`)>",
   "findings": [
     { "severity": "error", "code": "PIXEL-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
     { "question": "...", "options": ["...", "..."] }
@@ -54,7 +57,16 @@ in the shape `verdict.mjs`'s `closeAiRow` requires:
 }
 ```
 
-Write it with `Bash` (this agent has no `Write` tool); the path is evidence output, not source.
+Write it with `Bash` (this agent has no `Write` tool) using a quoted heredoc delimiter, so no
+`$`/backtick in a finding's text is interpolated by the shell:
+
+```bash
+mkdir -p audit/<component>/runs/<run>/ai/pixel-perfect-verifier
+cat <<'EOF' > audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
+{ ... the JSON above ... }
+EOF
+```
+
 A finding with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"` is a blocking
 `FAIL` at `deep`. A missing file, or one that omits `DX-figma-themes`, leaves the verdict
 `INCOMPLETE` on the next `yarn audit:component --run-dir <run>` recompute, which this leg does
@@ -62,13 +74,17 @@ not run.
 
 ## Procedure
 
-1. **Preflight** (skill step 0). Storybook on 6007 and the Playwright browser installed — abort with the matching failure mode below if either is missing; do not start or stop Storybook yourself. `FIGMA_TOKEN` is needed for references; the official Figma MCP only when the manifest is missing or a state must be read from Figma.
+1. **Preflight** (skill step 0). Storybook reachable on this worktree's port (§ Inputs — read
+   `.audit-storybook.json`, never assume 6007) and the Playwright browser installed — abort with
+   the matching failure mode below if either is missing; do not start or stop Storybook yourself.
+   `FIGMA_TOKEN` is needed for references; the official Figma MCP only when the manifest is
+   missing or a state must be read from Figma.
 2. **Manifest** — `src/components/<name>/test/<name>.figma.json`.
    - Exists → continue.
    - Missing → return `manifest-missing` with the list of Figma variants (name + node id) from `mcp__figma__get_metadata`. **Do not draft values**: a manifest value must be copied from Figma by whoever writes it, and `src/` is the orchestrator's.
 3. **References, then coverage** — `node scripts/audit/figma-refs.mjs <name>` (REST with `FIGMA_TOKEN`), then `node scripts/audit/figma-refs.mjs <name> --check --json`; report every `FIGMA-*` finding. No token → `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
-4. **Style parity** — `node scripts/audit/15-style-parity.mjs <name> --json`.
-5. **Screenshot diff** — `node scripts/audit/11-pixel-diff-states.mjs <name> --json`. `Read` the diff image of every `WARNING` / `FAIL` state; handle `PIXEL-SIZE-MISMATCH` before percentages.
+4. **Style parity** — `node scripts/audit/15-style-parity.mjs <name> --port <this worktree's port> --manifest .audit-figma/<name>/manifest@HEAD.json --json`. Figma inputs come from HEAD only (Design §8, `run-all.mjs`); the HEAD copy was already written by the deep run that opened this leg's row — never fall back to the working-tree manifest at `src/components/<name>/test/<name>.figma.json`.
+5. **Screenshot diff** — `node scripts/audit/11-pixel-diff-states.mjs <name> --port <this worktree's port> --manifest .audit-figma/<name>/manifest@HEAD.json --json`. `Read` the diff image of every `WARNING` / `FAIL` state; handle `PIXEL-SIZE-MISMATCH` before percentages.
 6. **Judge** each finding (skill step 6): drift / not in design / design question / tooling limit. Token names come from the `STYLE-MISMATCH` row (`observedTokens`, `expectedTokens`); report them as given and do not guess a token the row does not name.
 
 When a script cannot express a state (a gesture, a timing-dependent view), drive it with `mcp__playwright__browser_*` and compare with `mcp__image-compare__compare_images`, and say in the report which states were checked that way.
@@ -123,7 +139,7 @@ Verdict: FAIL | INCOMPLETE | WARN | PASS
 | Symptom | Likely cause | Reported as |
 |---|---|---|
 | `Playwright browser is not installed on this machine` | browser binary missing | `playwright-browser-missing` — `npx playwright install chromium-headless-shell` |
-| `Storybook not reachable on port 6007` | dev server not running | `environment-not-ready` |
+| `Storybook not reachable` on this worktree's port (`.audit-storybook.json`) | dev server not running | `environment-not-ready` |
 | `mcp__figma__*` calls fail while the manifest is missing | official Figma MCP not authenticated (`/mcp`) | `figma-unavailable` — stop; do not verify from memory |
 | No `src/components/<name>/test/<name>.figma.json` | no manifest yet | `manifest-missing` — list the Figma variants (name + node id); draft no values |
 | `PIXEL-MANIFEST-INVALID` / `STYLE-MANIFEST-INVALID` | manifest schema | `manifest-invalid` + the validation messages |

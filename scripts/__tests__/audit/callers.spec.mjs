@@ -8,6 +8,18 @@
  * caller invokes `yarn audit:component` and none of the deny-listed old
  * criteria tokens survive; every leg invokes neither `yarn audit:component`
  * nor `verdict.mjs`.
+ *
+ * Decision §10 of `2026-09-22-audit-depths-sentinel-fixes.md` is a stated,
+ * narrow carve-out from Design §1 above: a `--depth deep` caller may also
+ * read two fields `verdict.mjs` computes and writes into `verdict.json` —
+ * `awaitingLegs` (Decision §1 of that plan: true only when every INCOMPLETE
+ * entry is an opened `ai-*` row awaiting its leg) and `runDir` (the
+ * repo-relative `audit/<component>/runs/<run>` form a caller passes straight
+ * back to `--run-dir`, which S8 validates). Neither field is re-derived by
+ * the caller — both are computed by the verdict — so the carve-out holds
+ * without reopening "callers branch on exit status, never their own reading
+ * of the verdict". The third describe block below asserts this by text over
+ * the three deep two-phase callers.
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -166,6 +178,15 @@ const LEGS = [
   '.claude/skills/stencil-compliance/SKILL.md',
 ];
 
+/** S4's two-phase `--depth deep` flow: exit 3 + `awaitingLegs` → dispatch legs → recompute
+ * with `--run-dir <verdict.runDir>` → stop on non-zero. Subset of GATE_CALLERS that runs
+ * `--depth deep` and owns the two-phase branch (plan Phase 5 task 1). */
+const DEEP_CALLERS = [
+  '.claude/agents/audit-production.md',
+  '.claude/commands/audit-component.md',
+  '.claude/commands/migrate-component.md',
+];
+
 /** The `audit-production` PASS/FAIL/WARN table header this plan replaces (Design §1 / Phase 5 task 2). */
 const PASS_FAIL_WARN_HEADER = '**Pass/Fail criteria**:';
 const DENY_TOKENS = ['Ready to merge', 'summary.errors', PASS_FAIL_WARN_HEADER];
@@ -204,6 +225,26 @@ describe('callers: caller files by group', () => {
         assert.ok(!block.includes('yarn audit:component'), `${rel}: a code block invokes \`yarn audit:component\``);
         assert.ok(!/\bverdict\.mjs\b/.test(block), `${rel}: a code block invokes \`verdict.mjs\``);
       }
+    });
+  }
+});
+
+describe('callers: S4 — deep two-phase flow (Decision §1 awaitingLegs, Decision §10 carve-out)', () => {
+  for (const rel of DEEP_CALLERS) {
+    it(`${rel} names awaitingLegs`, () => {
+      assert.ok(readFile(rel).includes('awaitingLegs'), `${rel}: does not mention awaitingLegs`);
+    });
+
+    it(`${rel} passes --run-dir the verdict's runDir (full \`audit/<component>/runs/<run>\` form, never a bare run id)`, () => {
+      const text = readFile(rel);
+      assert.ok(
+        text.includes('--run-dir <verdict.runDir>'),
+        `${rel}: no \`--run-dir <verdict.runDir>\` usage — S8 rejects a bare run id`,
+      );
+    });
+
+    it(`${rel} no longer says "re-run the gate above"`, () => {
+      assert.ok(!readFile(rel).includes('re-run the gate above'), `${rel}: still says "re-run the gate above"`);
     });
   }
 });

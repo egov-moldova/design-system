@@ -63,7 +63,10 @@ audit/<component>/runs/<run>/ai/stencil-compliance/ai-findings.json
   "schemaVersion": "1.0.0",
   "leg": "stencil-compliance",
   "idsJudged": ["DX-stencil-manual"],
-  "inputHash": "<the hash from the opened row, when known — omit if not passed>",
+  "inputHash": "<the hash from the opened row, when known — omit if not passed; optional and
+    informational only, kept for a human reading the file — the verdict never consults it,
+    since the recompute re-hashes the current sources itself (Decision §7,
+    `2026-09-22-audit-depths-sentinel-fixes.md`)>",
   "findings": [
     { "severity": "error", "code": "STENCIL-<manual rule id>", "file": "...", "line": 12, "message": "...", "fix": "..." }
   ]

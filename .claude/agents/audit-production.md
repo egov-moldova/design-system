@@ -37,7 +37,7 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 
 ## Fast Path — the gate (mandatory)
 
-Run the deterministic gate ONCE and STOP on a non-zero exit status:
+Run the deterministic gate once:
 
 ```bash
 yarn audit:component mud-<name> --depth deep
@@ -49,19 +49,27 @@ manual rows, full WCAG, every Figma state × both themes, adapter smoke
 builds, the live Figma reference check, a security leg, E2E when present) and
 computes `state` — never this agent. Exit codes
 (`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4`
-NEEDS-DECISION, `2` usage/internal error. On a non-zero exit, read
-`audit/mud-<name>/verdict.json` (`state`, `level`, `rows`, `entries`) and
-`audit/mud-<name>/fix-brief.md` and report them directly — **this agent's own
-PASS/FAIL/WARN criteria (§ Phase 11) are replaced by the verdict's `state` +
-`level`.**
+NEEDS-DECISION, `2` usage/internal error.
 
-`--depth deep`'s AI-leg rows (`ai-stencil`, `ai-wcag`, `ai-media`,
-`ai-figma-themes`, `ai-archetype`, `ai-security`) are opened by the
-orchestrator and closed by the legs this agent dispatches below — each writes
-`audit/mud-<name>/runs/<run>/ai/<leg>/ai-findings.json`; none of them invokes
-`verdict.mjs` or stops on its exit code. Once every opened row is closed,
-re-run the gate above (or `yarn audit:component --run-dir
-audit/mud-<name>/runs/<run>`) to recompute the verdict from the closed rows.
+- Exit `3` with `verdict.json`'s `awaitingLegs: true` — every `INCOMPLETE`
+  entry is an opened `ai-*` row awaiting its leg (Decision §1,
+  `2026-09-22-audit-depths-sentinel-fixes.md`): dispatch the legs below, each
+  of which writes `audit/mud-<name>/runs/<run>/ai/<leg>/ai-findings.json`
+  without invoking `verdict.mjs` or stopping on its exit code. Once every
+  opened row is closed, recompute:
+
+  ```bash
+  yarn audit:component --run-dir <verdict.runDir>
+  ```
+
+  `<verdict.runDir>` is `verdict.json`'s own `runDir` field from the first
+  run — the full `audit/mud-<name>/runs/<run>` form; a bare run id is
+  rejected. STOP if this exit is non-zero.
+- Exit `3` with `awaitingLegs: false`, or any other non-zero exit — STOP. In
+  either case read `audit/mud-<name>/verdict.json` (`state`, `level`, `rows`,
+  `entries`) and `audit/mud-<name>/fix-brief.md` and report them directly —
+  **this agent's own PASS/FAIL/WARN criteria (§ Phase 11) are replaced by the
+  verdict's `state` + `level`.**
 
 After the gate, only the JUDGMENT-heavy phases remain for AI, since the
 script + AI-leg rows already cover structure, anti-patterns, JSDoc, story
