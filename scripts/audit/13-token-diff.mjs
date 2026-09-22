@@ -33,6 +33,7 @@ import { fileURLToPath } from 'node:url';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { normalizeComponentName, bareName, REPO_ROOT, resolveComponentPaths } from './lib/component-paths.mjs';
+import { tokenOwner } from './lib/token-match.mjs';
 
 const TOOL = 'token-diff';
 
@@ -179,24 +180,51 @@ export function resolveMode(args) {
  */
 const TOKENS_DIR = join(REPO_ROOT, 'tokens', 'core', 'components');
 
-const kebab = key => key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+/**
+ * Every custom property a stylesheet READS but does not itself declare, split
+ * by whether the read carries a fallback. `var(--icon-color, currentColor)`
+ * cannot be "missing": the fallback makes the property optional by
+ * construction, so it is a styling API the component publishes, never a token
+ * it expects someone else to define. A fallback-less read is the opposite —
+ * the component only renders correctly once something defines it. Pure.
+ *
+ * @returns {{ required: string[], api: string[] }} both sorted, disjoint
+ */
+export function undeclaredCustomProperties(cssText) {
+  const css = String(cssText ?? '');
+  const declared = new Set([...css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)].map(m => m[1]));
+  const withFallback = new Map();
+  for (const m of css.matchAll(/var\(\s*(--[A-Za-z0-9_-]+)\s*(,?)/g)) {
+    const [, name, comma] = m;
+    if (declared.has(name)) continue;
+    // One fallback-less read is enough to make the property required.
+    withFallback.set(name, (withFallback.get(name) ?? true) && comma === ',');
+  }
+  const pick = wanted =>
+    [...withFallback]
+      .filter(([, hasFallback]) => hasFallback === wanted)
+      .map(([n]) => n)
+      .sort();
+  return { required: pick(false), api: pick(true) };
+}
 
 /**
  * Which tokens file a component's CSS draws on (Decision 13). Its own
- * `<bare>.tokens.json` when present; otherwise the file whose root key — or
- * root key plus one child, kebab-cased (`accordion` + `item` →
- * `accordion-item`) — prefixes the most `var(--…)` names the component's CSS
- * uses without defining them itself (`mud-text-input` → `input.tokens.json`).
- * `file: null` means the CSS uses no component tokens at all (`mud-icon`,
- * whose `--icon-size` is its own local property).
+ * `<bare>.tokens.json` when present; otherwise the component token file that
+ * owns the most custom properties the CSS reads without declaring them
+ * (`mud-text-input` → `input.tokens.json`). Ownership is `tokenOwner`'s
+ * longest-name match, the same rule `15-style-parity` names tokens by, so
+ * `--button-group-*` is never a `button` token.
  *
- * @returns {{ file: string | null, abs: string | null }}
+ * `file: null` means no component token file owns anything this CSS reads.
+ * `required` / `api` then say whether that is a gap or a design: a
+ * fallback-less `--<bare>-*` read with no file behind it is a missing input
+ * (`noTarget`), while one that always carries a fallback is published API.
+ *
+ * @returns {{ file: string | null, abs: string | null, required: string[], api: string[] }}
  */
 export function resolveTokensFile(componentName, { tokensDir = TOKENS_DIR } = {}) {
   const bare = bareName(componentName);
-  const own = join(tokensDir, `${bare}.tokens.json`);
-  if (existsSync(own)) return { file: relativePathFor(own), abs: own };
-
   const resolved = resolveComponentPaths(componentName);
   const css = resolved.found
     ? readdirSync(resolved.root)
@@ -204,53 +232,68 @@ export function resolveTokensFile(componentName, { tokensDir = TOKENS_DIR } = {}
         .map(f => readFileSync(join(resolved.root, f), 'utf8'))
         .join('\n')
     : '';
-  const defined = new Set([...css.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
-  const used = [...new Set([...css.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map(m => m[1]))].filter(v => !defined.has(v));
+  const undeclared = undeclaredCustomProperties(css);
+  const ownPrefix = `--${bare}-`;
+  const scoped = {
+    required: undeclared.required.filter(v => v.startsWith(ownPrefix)),
+    api: undeclared.api.filter(v => v.startsWith(ownPrefix)),
+  };
 
-  let best = { count: 0, abs: null };
-  for (const f of existsSync(tokensDir)
-    ? readdirSync(tokensDir)
-        .filter(n => n.endsWith('.tokens.json'))
-        .sort()
-    : []) {
-    const abs = join(tokensDir, f);
-    let doc;
-    try {
-      doc = JSON.parse(readFileSync(abs, 'utf8'));
-    } catch {
-      continue;
-    }
-    const prefixes = [];
-    for (const root of Object.keys(doc).filter(k => !k.startsWith('$'))) {
-      prefixes.push(`--${kebab(root)}-`);
-      const node = doc[root];
-      if (node && typeof node === 'object') {
-        for (const child of Object.keys(node).filter(k => !k.startsWith('$'))) {
-          prefixes.push(`--${kebab(root)}-${kebab(child)}-`);
-        }
-      }
-    }
-    const count = used.filter(v => prefixes.some(p => v.startsWith(p))).length;
-    if (count > best.count) best = { count, abs };
+  const own = join(tokensDir, `${bare}.tokens.json`);
+  if (existsSync(own)) return { file: relativePathFor(own), abs: own, ...scoped };
+
+  const components = (existsSync(tokensDir) ? readdirSync(tokensDir) : [])
+    .filter(n => n.endsWith('.tokens.json'))
+    .map(n => n.replace(/\.tokens\.json$/, ''))
+    .sort();
+  const counts = new Map();
+  for (const v of [...undeclared.required, ...undeclared.api]) {
+    const owner = tokenOwner(v, components);
+    if (owner) counts.set(owner, (counts.get(owner) ?? 0) + 1);
   }
-  return best.abs ? { file: relativePathFor(best.abs), abs: best.abs } : { file: null, abs: null };
+  let best = { count: 0, name: null };
+  for (const name of components) {
+    const count = counts.get(name) ?? 0;
+    if (count > best.count) best = { count, name };
+  }
+  if (!best.name) return { file: null, abs: null, ...scoped };
+  const abs = join(tokensDir, `${best.name}.tokens.json`);
+  return { file: relativePathFor(abs), abs, ...scoped };
 }
 
 /** Exported for tests (S6, Decision 13): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` sites. */
-export function loadComponentSources(componentName, figmaExportPath) {
+export function loadComponentSources(componentName, figmaExportPath, { tokensDir = TOKENS_DIR } = {}) {
   const bare = bareName(componentName);
-  const { abs: currentPath } = resolveTokensFile(componentName);
+  const { abs: currentPath, required, api } = resolveTokensFile(componentName, { tokensDir });
   if (!currentPath) {
-    // Decision 13: the component's CSS uses no component-scoped tokens, so
-    // there is nothing to diff. Visible as a not-applicable note on the row —
-    // never a silent pass, never a `noTarget` INCOMPLETE for a file the
-    // component legitimately has none of.
+    const expected = relativePathFor(join(tokensDir, `${bare}.tokens.json`));
+    // Decision 13, and the component's own prefix is what decides between the
+    // two shapes. A fallback-less `--<bare>-*` read with no file behind it is a
+    // missing input: the row could not diff anything it should have been able
+    // to diff, so INCOMPLETE rather than a silent pass.
+    if (required.length) {
+      return {
+        error: finding({
+          severity: 'warning',
+          code: 'TOKEN-DIFF-NO-CURRENT',
+          file: expected,
+          message: `${componentName}'s CSS reads ${required.join(', ')} with no fallback, and no file under tokens/core/components/ defines them — there is nothing to diff against.`,
+          fix: `create ${expected} with the component's tokens, or give the custom properties a fallback if they are a styling API`,
+          noTarget: true,
+        }),
+      };
+    }
+    // Everything else is a design, not a gap, and the message says which:
+    // published styling API (always read with a fallback), or no component
+    // tokens at all. Visible on the row as a not-applicable note.
+    const reason = api.length
+      ? `its only own custom ${api.length === 1 ? 'property is' : 'properties are'} ${api.join(', ')}, always read with a fallback — published styling API, not tokens`
+      : 'no var(--…) in its CSS is owned by a file in tokens/core/components/';
     return {
       error: finding({
-        severity: 'info',
         code: 'TOKEN-DIFF-NO-CURRENT',
-        file: relativePathFor(join(TOKENS_DIR, `${bare}.tokens.json`)),
-        message: `${componentName} uses no component tokens (no var(--…) in its CSS matches a file in tokens/core/components/) — token diff not applicable.`,
+        file: expected,
+        message: `${componentName} uses no component tokens (${reason}) — token diff not applicable.`,
         notApplicable: true,
       }),
     };
@@ -273,12 +316,19 @@ export function loadComponentSources(componentName, figmaExportPath) {
   const after = extractComponentBlock(figmaAll, bare, root);
   if (!after) {
     const names = root === bare ? `"${bare}"` : `"${bare}" or "${root}"`;
+    // The export is the Tokenhaus pipeline's, and it carries only global
+    // foundations today — no component block for ANY component. The row would
+    // otherwise report `info` and read as a pass while comparing nothing, so
+    // it says on the row that it did not apply, and why.
+    // Baseline: `node -p "Object.keys(require('./tokens-tokenhaus.json')).join('|')"`
+    // → 8 keys, all global foundations ("3. Sizes", "1. Semantic Colors", …),
+    // not one component block.
     return {
       error: finding({
-        severity: 'info',
         code: 'TOKEN-DIFF-NO-FIGMA-BLOCK',
         file: figmaExportPath,
-        message: `No ${names} block found in Figma export — component may be unreleased or named differently in Figma.`,
+        message: `No ${names} block found in ${figmaExportPath} — the Figma export carries no tokens for this component, so there is nothing to diff against. Token diff not applicable.`,
+        notApplicable: true,
       }),
     };
   }

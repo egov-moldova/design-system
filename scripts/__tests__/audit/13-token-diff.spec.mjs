@@ -3,6 +3,9 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
   componentRoot,
@@ -12,6 +15,7 @@ import {
   resolveMode,
   loadComponentSources,
   resolveTokensFile,
+  undeclaredCustomProperties,
 } from '../../audit/13-token-diff.mjs';
 
 describe('13-token-diff: U3 — the tokens file resolves by the component CSS prefix (Decision 13)', () => {
@@ -37,6 +41,51 @@ describe('13-token-diff: U3 — the tokens file resolves by the component CSS pr
     assert.equal(error.severity, 'info');
     assert.equal(error.notApplicable, true);
     assert.notEqual(error.noTarget, true);
+  });
+
+  it("names mud-icon's --icon-color as published API in the note, so the not-applicable says why", () => {
+    const { error } = loadComponentSources('mud-icon', 'tokenhaus/export.json');
+    assert.match(error.message, /--icon-color/);
+    assert.match(error.message, /fallback/);
+  });
+
+  it('own-prefixed reads split by fallback: with one it is API, without one it is required', () => {
+    const css = ':host { color: var(--icon-color, currentColor); gap: var(--icon-gap); --icon-size: 16px; }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--icon-gap'], api: ['--icon-color'] });
+  });
+
+  it('one fallback-less read among several makes the property required', () => {
+    const css = 'a { gap: var(--x-gap, 0); } b { gap: var(--x-gap); }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--x-gap'], api: [] });
+  });
+
+  it('mud-icon has no fallback-less own read — its --icon-color is the API case', () => {
+    const { required, api } = resolveTokensFile('mud-icon');
+    assert.deepEqual(required, []);
+    assert.deepEqual(api, ['--icon-color']);
+  });
+
+  it('Decision 13, third case: a fallback-less --<bare>-* read with no tokens file is noTarget, not a note', () => {
+    // An empty tokens dir reproduces "the component reads its own tokens and
+    // nothing defines them" against real component CSS: mud-button's
+    // `--button-container-*` reads carry no fallback.
+    const empty = mkdtempSync(join(tmpdir(), 'token-diff-'));
+    const { error } = loadComponentSources('mud-button', 'tokens-tokenhaus.json', { tokensDir: empty });
+    assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
+    assert.equal(error.noTarget, true);
+    assert.notEqual(error.notApplicable, true);
+    assert.match(error.message, /--button-container-border-radius-circular-lg/);
+    assert.match(error.fix, /create/);
+  });
+});
+
+describe('13-token-diff: U3 — a Figma export with no block for the component does not silently pass', () => {
+  it('TOKEN-DIFF-NO-FIGMA-BLOCK is a visible notApplicable, never a bare info', () => {
+    const { error } = loadComponentSources('mud-button', 'tokens-tokenhaus.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-FIGMA-BLOCK');
+    assert.equal(error.severity, 'info');
+    assert.equal(error.notApplicable, true);
+    assert.match(error.message, /nothing to diff against/);
   });
 
   it('mud-text-input is diffed, not not-applicable', () => {

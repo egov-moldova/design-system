@@ -16,6 +16,7 @@ import {
   judgeBx4Opened,
   declaresPopup,
   POPUP_MARKERS,
+  POPUP_SURFACE_SELECTOR,
   judgeBx4Escape,
   bx4Outcome,
   judgeBx5StructuralDiff,
@@ -177,6 +178,31 @@ describe('19-interaction: declaresPopup (S12)', () => {
 
   it('handles a missing dom capture', () => {
     assert.equal(declaresPopup(null, null), false);
+  });
+});
+
+describe('19-interaction: POPUP_SURFACE_SELECTOR (BX4 focus-trap panel)', () => {
+  it('covers every surface marker declaresPopup accepts, so a trap in a menu or tooltip is seen', () => {
+    for (const sel of [POPUP_MARKERS.hasDialog, POPUP_MARKERS.hasPopover, POPUP_MARKERS.hasAriaModal]) {
+      for (const part of sel.split(', ')) assert.ok(POPUP_SURFACE_SELECTOR.includes(part), part);
+    }
+    for (const role of ['tooltip', 'menu', 'listbox']) {
+      assert.ok(POPUP_SURFACE_SELECTOR.includes(`[role="${role}"]`), role);
+    }
+  });
+
+  it('excludes aria-haspopup — it marks the trigger, and a trigger is the correct focus-restore target', () => {
+    assert.equal(POPUP_SURFACE_SELECTOR.includes('aria-haspopup'), false);
+  });
+
+  it('is a selector the DOM can parse', () => {
+    // A malformed list would make `root.querySelector` throw inside the page,
+    // failing the whole BX4 step rather than reporting no panel.
+    assert.doesNotThrow(() => new RegExp(POPUP_SURFACE_SELECTOR.replace(/[[\]"]/g, '\\$&')));
+    assert.deepEqual(
+      POPUP_SURFACE_SELECTOR.split(', ').filter(s => !s.trim()),
+      [],
+    );
   });
 });
 

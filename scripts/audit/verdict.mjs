@@ -353,8 +353,12 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
     } else if (row.status === ROW_STATUS.OK) {
       const allFindings = findingsByTool[row.name] ?? [];
       // Decision 13: a check that does not apply says why, on its row — never
-      // a state change, never a warning.
-      const notApplicable = allFindings.filter(f => f.notApplicable === true);
+      // a state change, never a warning. `noTarget` wins when a finding
+      // carries both, so "checked nothing but should have" is never demoted
+      // to a note; `finding()` cannot produce that pair, but a row's own
+      // literal object or an advisory file can.
+      const doesNotApply = f => f.notApplicable === true && f.noTarget !== true;
+      const notApplicable = allFindings.filter(doesNotApply);
       if (notApplicable.length) out.note = notApplicable.map(f => f.message).join('; ');
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
@@ -374,7 +378,8 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         }
       }
       if (row.blocking !== false) {
-        const found = allFindings.filter(f => f.severity === 'error' && f.noTarget !== true).sort(compareFindings);
+        const graded = allFindings.filter(f => f.noTarget !== true && !doesNotApply(f));
+        const found = graded.filter(f => f.severity === 'error').sort(compareFindings);
         for (const f of found) {
           fails.push(
             failEntry({
@@ -388,7 +393,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
           );
         }
         addWarnings(
-          allFindings.filter(f => f.severity === 'warning' && f.noTarget !== true),
+          graded.filter(f => f.severity === 'warning'),
           `${id} ${row.name}`,
           verifyCommand(component, depth, id),
         );

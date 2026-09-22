@@ -236,16 +236,21 @@ function colorize(noColor) {
  * §5) marks "this required row checked nothing" — `verdict.mjs` maps it to an
  * INCOMPLETE entry instead of grading it as an error or a warning.
  * `notApplicable: true` (Decision 13) marks "this check does not apply here",
- * its `message` the reason — shown, never state-changing.
+ * its `message` the reason — shown, never state-changing. It FORCES severity
+ * `info`: a check that did not apply cannot also have failed, and an `error`
+ * carrying the flag would otherwise be graded and noted at once.
+ * `noTarget` wins when a caller sets both — "checked nothing but should have"
+ * is the stronger claim, and `verdict.mjs` grades it as INCOMPLETE.
  */
 export function finding({ severity, code, file, line, column, message, snippet, fix, noTarget, notApplicable }) {
-  const f = { severity, code, message };
+  const applies = notApplicable && !noTarget;
+  const f = { severity: applies ? 'info' : severity, code, message };
   if (file) f.file = file;
   if (line !== undefined) f.line = line;
   if (column !== undefined) f.column = column;
   if (snippet) f.snippet = snippet;
   if (fix) f.fix = fix;
   if (noTarget) f.noTarget = true;
-  if (notApplicable) f.notApplicable = true;
+  if (applies) f.notApplicable = true;
   return f;
 }

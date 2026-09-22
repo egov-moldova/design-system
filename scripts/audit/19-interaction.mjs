@@ -362,15 +362,33 @@ export const POPUP_MARKERS = Object.freeze({
   hasPopupRole: '[role="tooltip"], [role="menu"], [role="listbox"]',
 });
 
+/**
+ * The subset of `POPUP_MARKERS` that marks the SURFACE Escape must dismiss.
+ * `aria-haspopup` is excluded: it sits on the trigger and says a surface
+ * exists somewhere, never that this node is it — matching a trigger as the
+ * panel would read "focus returned to the trigger" as a trap.
+ */
+export const POPUP_SURFACE_SELECTOR = [
+  POPUP_MARKERS.hasDialog,
+  POPUP_MARKERS.hasPopover,
+  POPUP_MARKERS.hasAriaModal,
+  POPUP_MARKERS.hasPopupRole,
+].join(', ');
+
 async function capturePopupMarkers(page, componentName) {
   return page.evaluate(
     ({ name, markers }) => {
       const host = document.querySelector(name);
       const out = Object.fromEntries(Object.keys(markers).map(k => [k, false]));
       if (!host) return out;
-      // Both trees: a slotted trigger (light DOM) can carry `aria-haspopup`
-      // while the surface itself renders in the shadow root.
-      const has = sel => host.matches(sel) || !!host.querySelector(sel) || !!host.shadowRoot?.querySelector(sel);
+      // The host element and its shadow root only — that is the component's
+      // own DOM. Light-DOM children are author content slotted in by the
+      // story, and a marker there says nothing about this component: an
+      // unrelated slotted trigger carrying `aria-haspopup` would otherwise
+      // make any container look like it declares a popup.
+      // Baseline: `grep -rln "shadow: false\|scoped: true" 'src/components/*/[a-z]*.tsx'`
+      // → none; every mud-* renders its own markup into a shadow root.
+      const has = sel => host.matches(sel) || !!host.shadowRoot?.querySelector(sel);
       for (const [k, sel] of Object.entries(markers)) out[k] = has(sel);
       return out;
     },
@@ -449,16 +467,21 @@ async function runBx4(page, componentName, contract) {
   // lives inside the host" (e.g. the button that opens the overlay, when it
   // is slotted content) — both land `document.activeElement` inside the
   // host, but only the first is WCAG 2.1.2's failure mode.
-  await page.evaluate(name => {
-    const host = document.querySelector(name);
-    if (!host) {
-      window.__auditBx4Panel = null;
-      return;
-    }
-    const root = host.shadowRoot ?? host;
-    window.__auditBx4Panel =
-      root.querySelector('dialog, [role="dialog"], [role="alertdialog"], [aria-modal="true"]') ?? null;
-  }, componentName);
+  await page.evaluate(
+    ({ name, selector }) => {
+      const host = document.querySelector(name);
+      if (!host) {
+        window.__auditBx4Panel = null;
+        return;
+      }
+      const root = host.shadowRoot ?? host;
+      window.__auditBx4Panel = root.querySelector(selector) ?? null;
+    },
+    // The same surfaces `declaresPopup` accepts. Without the popup roles a
+    // trap inside a floating menu, listbox or tooltip left the panel null,
+    // and the post-Escape check then reported no trap whatever focus did.
+    { name: componentName, selector: POPUP_SURFACE_SELECTOR },
+  );
 
   await page.keyboard.press('Escape');
   await page.waitForTimeout(350);
