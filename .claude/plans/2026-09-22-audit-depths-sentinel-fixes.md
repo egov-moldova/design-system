@@ -891,7 +891,6 @@ The owner asked for round 4's 10 must-fix findings and 3 recommendations to be f
 and targeted live verification, then for round 5 to be recorded as WAIVED rather than run.
 
 **Files**:
-
 - Modify: `scripts/audit/13-token-diff.mjs`
 - Modify: `scripts/audit/19-interaction.mjs`
 - Modify: `scripts/audit/12-console-errors.mjs`
