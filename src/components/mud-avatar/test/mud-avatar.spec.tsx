@@ -250,6 +250,32 @@ describe('mud-avatar', () => {
       expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
     });
 
+    it('follows a later `name` change instead of freezing on the first one', async () => {
+      const { root, waitForChanges } = await render(<mud-avatar name="Ion Popescu"></mud-avatar>);
+      expect(root?.getAttribute('aria-label')).toBe('Ion Popescu');
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // The host's own `aria-label` write is read back by whatever names the
+      // host. Treating that echo as the consumer's label pinned the name to
+      // whoever rendered first, so a recycled element announced the wrong
+      // person. `nameHostWithFallback` tells the two apart by provenance.
+      expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
+    });
+
+    it('keeps a consumer `aria-label` across a `name` change', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
+      );
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // Their label is theirs: re-applying the fallback must not overwrite it.
+      expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
+    });
+
     it('falls back to `name` when no aria-label is provided', async () => {
       const { root } = await render(<mud-avatar name="Maria Pop"></mud-avatar>);
       expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
