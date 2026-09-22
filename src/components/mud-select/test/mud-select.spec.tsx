@@ -92,7 +92,8 @@ describe('mud-select', () => {
       const trigger = queryTrigger(root);
       expect(trigger).toBeTruthy();
       expect(trigger?.getAttribute('role')).toBe('combobox');
-      expect(trigger?.getAttribute('aria-haspopup')).toBe('listbox');
+      // ARIA 1.2 implies `aria-haspopup="listbox"` for a combobox, so it is left off.
+      expect(trigger?.hasAttribute('aria-haspopup')).toBe(false);
     });
 
     it('renders the label text via `label` prop', async () => {

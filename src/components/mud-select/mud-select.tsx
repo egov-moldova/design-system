@@ -835,7 +835,14 @@ export class MudSelect {
                 the pattern, and a filter has to be typed into something. Without
                 `searchable` it is not editable — `readonly` plus
                 `inputmode="none"` keep the caret and the on-screen keyboard
-                away while leaving it focusable and keyboard-operable. */}
+                away while leaving it focusable and keyboard-operable.
+
+                No `aria-haspopup`: ARIA 1.2 gives `role="combobox"` an implicit
+                `listbox` popup, which is what this one is, and APG's combobox
+                examples leave it off for that reason. Writing it out also costs
+                something — axe's `aria-valid-attr-value` stops resolving
+                `aria-controls` once the attribute is present, since a popup may
+                be built on demand, and reports the reference as needing review. */}
             <input
               ref={el => (this.triggerEl = el)}
               id={this.triggerId}
@@ -849,7 +856,6 @@ export class MudSelect {
               readOnly={!canType}
               value={triggerText}
               placeholder={placeholderText}
-              aria-haspopup="listbox"
               aria-expanded={this.open ? 'true' : 'false'}
               aria-controls={this.listboxId}
               aria-activedescendant={activeDescendantId}
