@@ -65,8 +65,9 @@ did not ask for.
   explicit path in the commit whose source change regenerated them.
 - No visual change to any state that exists today. Every current `select.*` token keeps its value;
   the new tokens are additive.
-- `options` stays working. It is deprecated, not removed, and keeps its precedence over markup so
-  existing callers do not change behaviour.
+- `options` is removed, not deprecated. It was first kept as a deprecated prop (task 6); the
+  request that followed was to leave one way to write a list, so tasks 15 and 16 take it out and
+  the change ships as breaking.
 - Files never touched: `tokens/core/components/menu.tokens.json` and `src/components/mud-menu/**`.
   The menu is the reference for the new values, not a participant in this change.
 - Out of scope, recorded rather than done: multi-select (Figma's `Chips` property on `159:1112`)
@@ -83,7 +84,7 @@ did not ask for.
 
 - [x] **2. `SelectEntry` model.** Replace `SelectOption[]` internally with a discriminated union of
   `{ kind: 'option' | 'group' | 'separator' }`. `SelectOption` stays exported for the deprecated
-  `options` prop. Verify: `yarn test.dev src/components/mud-select`
+  `options` prop — folded into `SelectOptionEntry` by task 16, once that prop is gone. Verify: `yarn test.dev src/components/mud-select`
 
 - [x] **3. Light-DOM reader.** Walk `host.children`: `OPTION` becomes an option, `OPTGROUP` becomes
   a heading plus its `OPTION` descendants (inheriting the group's `disabled`), `HR` becomes a
@@ -105,7 +106,7 @@ did not ask for.
   it. Verify: `yarn test.dev src/components/mud-select`
 
 - [x] **6. Deprecate `options`.** Mark the prop `@deprecated` in its JSDoc, naming markup as the
-  replacement. Precedence is unchanged. Verify: `yarn build && git diff --stat src/components/mud-select/readme.md` (the
+  replacement. Precedence is unchanged. Superseded by task 16, which removes it. Verify: `yarn build && git diff --stat src/components/mud-select/readme.md` (the
   `docs-readme` target only runs under `--docs`, which only the full build passes)
 
 - [x] **7. Render groups and separators.** A group renders `role="group"` with `aria-labelledby`
@@ -158,6 +159,20 @@ did not ask for.
 - [x] **14. Figma state manifest.** `mud-select` has never been pixel-verified — there is no
   `test/mud-select.figma.json`. Add one covering the 20 variants of `159:1112`, plus open states
   citing `172:3093`. Verify: `node scripts/audit/figma-refs.mjs mud-select --check --json`
+
+- [x] **15. Stories as markup.** Every story fed the component through the `options` prop, set by a
+  `<script>` injected next to it, so Storybook documented the data API and its docs source showed
+  markup that never ran. Rewrite all of them as children, and add the examples the markup is for:
+  a list built from an array, `disabled` on an option and on a group, options added and removed
+  while the page runs, and the select in a form where reset returns it to `<option selected>`.
+  Verify: `node scripts/audit/05-story-exports.mjs mud-select --json`, plus each new story driven
+  in Chromium.
+
+- [x] **16. Remove `options`.** Take the prop out along with its `@Watch`, its precedence branch in
+  `refreshEntries()` and `entriesFromOptions()`; fold `SelectOption` into `SelectOptionEntry`. The
+  specs that set the prop render the same list as children instead. Breaking, and marked as such in
+  the commit. Verify: `yarn test.dev src/components/mud-select --coverage` and
+  `yarn build && git diff --stat src/components/mud-select/readme.md`
 
 ## Not verified
 
