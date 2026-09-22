@@ -149,8 +149,21 @@ const wrap = (children: string) => /*html*/ `
   </div>
 `;
 
+/**
+ * Room for a cell whose listbox starts open. The popover leaves the flow, so
+ * without it the list lands on the next cell's caption — unreadable, and enough
+ * to make axe report a caption whose background it cannot determine. The number
+ * is the listbox's own 320px cap plus the label and control above it.
+ */
+const OPEN_CELL_BLOCK_SIZE = '400px';
+
+/** True when the markup opens the listbox, and the cell therefore needs that room. */
+const opensListbox = (body: string) => /\sopen[\s>]/.test(body);
+
 const cell = (caption: string, body: string) => /*html*/ `
-  <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-8);${
+    opensListbox(body) ? ` min-block-size: ${OPEN_CELL_BLOCK_SIZE};` : ''
+  }">
     <span style="${cellLabelStyle}">${caption}</span>
     ${body}
   </div>
@@ -577,17 +590,17 @@ const TOGGLE_DISABLED = `
 export const DynamicOptions: Story = {
   name: 'Dynamic Options',
   render: () => /*html*/ `
-      <div id="mud-select-dynamic" style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px;">
-        <mud-select size="large" label="Oraș" placeholder="Alege un oraș" open>
-          <optgroup label="Nord">
-            <option value="balti">Bălți</option>
-          </optgroup>
-        </mud-select>
+      <div id="mud-select-dynamic" style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px; min-block-size: ${OPEN_CELL_BLOCK_SIZE};">
         <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-12);">
           <mud-button size="sm" variant="secondary" onclick="${ADD_OPTION}">Adaugă opțiune</mud-button>
           <mud-button size="sm" variant="secondary" onclick="${REMOVE_OPTION}">Elimină ultima</mud-button>
           <mud-button size="sm" variant="secondary" onclick="${TOGGLE_DISABLED}">Comută disabled</mud-button>
         </div>
+        <mud-select size="large" label="Oraș" placeholder="Alege un oraș" open>
+          <optgroup label="Nord">
+            <option value="balti">Bălți</option>
+          </optgroup>
+        </mud-select>
       </div>
     `,
   parameters: {
