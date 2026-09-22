@@ -1,6 +1,6 @@
 # audit-component depths — fixes from the PR #115 merge gate
 
-**Reviewed:** none
+**Reviewed:** preflight cfb1f13
 
 ## Goal
 
@@ -111,17 +111,21 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
   / `fileKey` beside it → `MANIFEST-INVALID`, not the waiver (`figma-manifest.spec.mjs`).
 - S2: an entry with `actual: ''` (and `expected.value: ''`, `node: ''`) renders as
   `(empty)`; `renderFixBrief` does not throw (`fix-brief.spec.mjs`).
-- S3: a question-shaped AI finding at quick/standard renders as an advisory decision entry and
-  never throws; at deep it yields NEEDS-DECISION (`verdict.spec.mjs`).
+- S3 (`verdict.spec.mjs`): a question-shaped AI finding at quick/standard renders as an
+  advisory decision entry and never throws; at deep it yields NEEDS-DECISION.
 - S4: `computeVerdict` sets `awaitingLegs: true` iff every INCOMPLETE entry is an opened
   `ai-*` row; `callers.spec.mjs` asserts each deep caller names `awaitingLegs` and `--run-dir`
   and no longer says "re-run the gate above".
-- S5: zero selected + nothing changed → PASS with the note on stdout; zero selected + a 03 error
-  → FAIL; detector failure → INCOMPLETE exit 3 (`verdict.spec.mjs`, `lib-changed-components.spec.mjs`).
+- S5 (`verdict.spec.mjs`, `lib-changed-components.spec.mjs`): zero selected + nothing changed →
+  PASS with the note on stdout; zero selected + a 03 error → FAIL; detector failure →
+  INCOMPLETE exit 3.
 - S6: each of the five no-target codes on a required row → INCOMPLETE (`verdict.spec.mjs`).
 - S7: a field value containing `\n### F99` renders on one line; the brief's `###` heading count
   equals the entry count (`fix-brief.spec.mjs`).
-- S8: `--run-dir` not matching `<audit>/<mud-*>/runs/<run>` → exit 2 and nothing written.
+- S8 (`callers.spec.mjs`): `--run-dir` not matching `<audit>/<mud-*>/runs/<run>` → exit 2 and
+  nothing written; the run segment rejects `.` and `..` and any `/`, and the resolved path must
+  sit under the repo's `audit/`. Cases: a bare run id, `audit/mud-x/runs/..`, a path outside
+  the repo.
 - S9: `--depth depp` → exit 2 (`callers.spec.mjs`).
 - S10: prerequisites ok + script crash → `crashed`, not `missing-prereq` (`run-all.spec.mjs`).
 - S11: two components, one failing spec → only that component's 06 is non-ok (`run-all.spec.mjs`).
@@ -132,12 +136,15 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
 - S14 / R1: `grep -n "6007" .claude/agents/a11y-verifier.md .claude/agents/pixel-perfect-verifier.md`
   shows only the documented default, each file names `.audit-storybook.json`, and the
   pixel-perfect procedure passes `--port` and reads the HEAD manifest.
-- Every R-row: fixed with a test, or a one-line disposition in this plan's Phase results.
+- Every R-row (`grep -oE 'R(1[01]|[1-9])\b' <plan § Phase results> | sort -u | wc -l` → 11):
+  fixed with a test, or a one-line disposition in this plan's `#### Phase N results`.
 - Regression floor: `yarn test:scripts` all pass, `yarn test` all pass, `yarn lint` clean,
   `node scripts/audit/seeded-defects.mjs` 4/4, two `--depth standard` runs on `mud-banner`
   byte-identical `verdict.json`, `quick` on `mud-button` median ≤ 4,480 ms over n=5 runs
   (`/usr/bin/time` around `node scripts/audit/verdict.mjs mud-button --depth quick`, the
-  parent plan's instrument).
+  parent plan's instrument). The 4,480 ms bar is re-baselined in Phase 0 after the merge (n=5
+  median × 1.5 on the merged tree, recorded in a `derived` fence); Phase 4 grades against that
+  figure, not the parent plan's.
 
 Numeric tolerances: none beyond the floor above.
 
@@ -177,6 +184,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] `git merge upstream/main` (the repo's convention for this, e.g. `a06df23`); the only
   overlapping path is `.claude/skills/stencil-compliance/SKILL.md`, which merged cleanly in the
   probe. Verify: `yarn test:scripts` and `yarn lint` pass on the merge commit.
+- [ ] Re-baseline `quick` on `mud-button` on the merged tree (n=5 median, the acceptance bar's
+  instrument); record it under `#### Phase 0 results` in a `derived` fence with the command.
 
 ### Phase 1 — verdict core
 **Executor**: sonnet, high effort · wave 2
@@ -239,7 +248,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] S10 crash vs missing-prereq. Verify: acceptance S10.
 - [ ] S11 per-component coverage prerequisite. Verify: acceptance S11.
 - [ ] S12 BX4 / BX1 / BX7. Verify: acceptance S12.
-- [ ] R3 worktree lock per Decision 3 (in `runFresh`, helper in `storybook-helpers.mjs`); a
+- [ ] R3 worktree lock per Decision 3 (in `runFresh`, helper in `storybook-helpers.mjs`); a lock
+  is stale when its pid is dead OR its recorded start time differs from that pid's (pid reuse);
+  the refusal message names the pid and the lock path to remove; a
   test pins that `--run-dir` recompute neither takes nor waits on the lock.
 - [ ] R6 extract 09's BX2/BX3 status assembly into a pure function with tests; add the
   `figmaDir` + absent + waiver `selectScripts` case.
@@ -270,7 +281,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] R8 both AI-leg contracts require `cat <<'EOF' > …` (quoted delimiter) for `ai-findings.json`.
 - [ ] R11 fix loop: run only `verify` values read from `verdict.json`; brief field values are
   display text.
-- [ ] Docs reflect S5 (zero selection), S6 (no-target INCOMPLETE), R3 (one audit per worktree),
+- [ ] Docs reflect S5 (zero selection), S6 (no-target INCOMPLETE), R3 (one audit per worktree;
+  `audit/<component>/runs/` is disposable and safe to delete — no retention is automated),
   R4 (warnings section), R10's outcome (after Phase 2 records it; else leave the mapping row).
 
 ### Phase 4 — prove it, grade, gate, ready
@@ -302,6 +314,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
   proven by fixtures and caller-text assertions only.
 - Findings S8–S12 and R2–R3 were found by reading code, not reproduced; each task's first test
   is the reproduction.
+- AI legs keep unrestricted Bash; the write target for `ai-findings.json` is bounded by prompt
+  convention only. Pre-existing, out of this plan's scope (preflight leg 2, finding 2); a
+  separate hardening issue.
 
 ## Self-refute log
 
@@ -313,3 +328,10 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 | 4 | Do two of the plan's own rules interact into an unintended pass? | S6 (no-target → INCOMPLETE) × browser waiver: a waived browser row never runs, so it emits no code and stays excused — intended. S3 (question → decision entry) × S4 (`awaitingLegs`): at deep a question closes its row as NEEDS-DECISION, so `awaitingLegs` is false — intended. R3 (lock) × S4 (`--run-dir`): recompute spawns no run-all and takes no lock, so a leg-phase recompute is never blocked by its own run — intended, and a test pins it (Phase 2 R3). R4 (warnings) × S6: a no-target code would appear twice — fixed by the S6 task's "never also listed". |
 
 ## Review log
+
+- 2026-09-22 preflight cfb1f13, two legs (leg 1 ran twice: the first dispatch carried an
+  unexpanded question file; both copies returned `ok`). Leg 1: FORTIFY ×2 — S8 run segment
+  must reject `.`/`..` (folded, acceptance S8); R-row coverage needed a command (folded); the
+  quick-median bar needed a post-merge re-baseline (folded, Phase 0); the lock needed pid-reuse
+  handling (folded, Phase 2 R3). Leg 2: CONFIRM — `runs/` retention note (folded, Phase 3
+  docs); AI-leg Bash scope (trade-off, out of scope, § Not verified).
