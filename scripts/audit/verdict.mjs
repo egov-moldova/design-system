@@ -710,7 +710,8 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
   }));
   const states = components.map(c => c.state);
   if (preflight) states.push(STATE.INCOMPLETE);
-  if (repoLevel && !repoLevel.ok) states.push(STATE.FAIL);
+  if (repoLevel?.incomplete) states.push(STATE.INCOMPLETE);
+  else if (repoLevel && !repoLevel.ok) states.push(STATE.FAIL);
   const summary = {
     schemaVersion: VERDICT_SCHEMA_VERSION,
     depth,

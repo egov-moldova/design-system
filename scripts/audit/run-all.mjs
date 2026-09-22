@@ -307,10 +307,11 @@ export function evaluateCoverageResults(parsed, { exitCode, components }) {
   const failedFiles = parsed.testResults
     .filter(t => t.status === 'failed')
     .map(t => String(t.name ?? '').replace(/\\/g, '/'));
-  const failedComponents = [
-    ...new Set(failedFiles.map(f => f.match(/src\/components\/(mud-[a-z0-9-]+)\//)?.[1]).filter(Boolean)),
-  ];
-  const ok = exitCode === 0 || failedComponents.every(c => components.includes(c));
+  const owners = failedFiles.map(f => f.match(/src\/(?:components|hidden)\/(mud-[a-z0-9-]+)\//)?.[1] ?? null);
+  const failedComponents = [...new Set(owners.filter(Boolean))];
+  // A non-zero exit is accounted for only by failed specs that each belong to
+  // a selected component; an unmapped failure, or none at all, fails closed.
+  const ok = exitCode === 0 || (owners.length > 0 && owners.every(c => c !== null && components.includes(c)));
   return { ok, failedComponents };
 }
 
@@ -991,7 +992,15 @@ export async function runAudit(args, deps = {}) {
         // S5 / Decision §2: with zero components selected, no per-component verdict
         // carries the repo-level rows' (03, ...) outcome — `combined` is the only
         // place it lives, so it is handed to writeSummary explicitly.
-        const repoLevel = components.length === 0 ? { ok: combined.ok } : null;
+        const repoLevel =
+          components.length === 0
+            ? {
+                ok: combined.ok,
+                incomplete: combined.results.some(
+                  r => r.status === ROW_STATUS.CRASHED || r.status === ROW_STATUS.MISSING_PREREQ,
+                ),
+              }
+            : null;
         result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
       } finally {
         if (auditLockToken) d.releaseLock(auditLockPath, auditLockToken);

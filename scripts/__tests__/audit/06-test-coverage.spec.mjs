@@ -182,6 +182,15 @@ describe('06-test-coverage: failedSpecsForComponent (S11)', () => {
     ]);
   });
 
+  it('maps a failed spec under src/hidden/<name>/ too', () => {
+    const vitestResults = {
+      testResults: [{ name: '/repo/src/hidden/mud-draft/test/mud-draft.spec.tsx', status: 'failed' }],
+    };
+    assert.deepEqual(failedSpecsForComponent(vitestResults, 'mud-draft'), [
+      '/repo/src/hidden/mud-draft/test/mud-draft.spec.tsx',
+    ]);
+  });
+
   it('handles a missing or malformed report', () => {
     assert.deepEqual(failedSpecsForComponent(null, 'mud-button'), []);
     assert.deepEqual(failedSpecsForComponent({}, 'mud-button'), []);

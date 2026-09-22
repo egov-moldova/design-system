@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -451,6 +451,25 @@ describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-se
     const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a', 'mud-b'] });
     assert.equal(res.ok, false);
     assert.deepEqual(res.failedComponents, ['mud-c']);
+  });
+
+  it('maps a failed spec under src/hidden/<name>/ to its component too', () => {
+    const parsed = {
+      testResults: [{ name: '/repo/src/hidden/mud-b/test/x.spec.tsx', status: 'failed' }],
+    };
+    const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-b'] });
+    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'] });
+  });
+
+  it('not ok when a failed spec maps to no component — an unmapped failure never passes as ok', () => {
+    const parsed = {
+      testResults: [{ name: '/repo/scripts/__tests__/x.spec.mjs', status: 'failed' }],
+    };
+    assert.equal(evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a'] }).ok, false);
+  });
+
+  it('not ok when vitest exited non-zero with no failed spec to account for it', () => {
+    assert.equal(evaluateCoverageResults({ testResults: [] }, { exitCode: 1, components: ['mud-a'] }).ok, false);
   });
 
   it('never ok when the results JSON did not parse — a vitest crash never lets 06 read a stale summary', () => {
@@ -941,6 +960,38 @@ describe('storybook-helpers: R3 locks (plan 2026-09-22-audit-depths-sentinel-fix
     assert.match(second.cause, new RegExp(lockPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     // The first run's own lock survives — the refused second run never touched it.
     assert.equal(existsSync(lockPath), true);
+  });
+
+  it('acquireLock: a lock file just created but not yet readable is held, not taken over', () => {
+    const lockPath = tmpLockPath();
+    mkdirSync(dirname(lockPath), { recursive: true });
+    writeFileSync(lockPath, '');
+    const second = acquireLock(lockPath, { pid: 222, startTimeOf: () => 't2', isAlive: () => true });
+    assert.equal(second.ok, false);
+    assert.equal(readFileSync(lockPath, 'utf8'), '');
+  });
+
+  it('acquireLock: an unreadable lock file older than the grace period is taken over', () => {
+    const lockPath = tmpLockPath();
+    mkdirSync(dirname(lockPath), { recursive: true });
+    writeFileSync(lockPath, '{not json');
+    const old = new Date(Date.now() - 60_000);
+    utimesSync(lockPath, old, old);
+    const second = acquireLock(lockPath, { pid: 222, startTimeOf: () => 't2', isAlive: () => true });
+    assert.equal(second.ok, true);
+    releaseLock(lockPath, second.token);
+  });
+
+  it('acquireLock: a live holder whose start time cannot be read is held, not taken over', () => {
+    const lockPath = tmpLockPath();
+    acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    const second = acquireLock(lockPath, {
+      pid: 222,
+      startTimeOf: pid => (pid === 111 ? null : 't2'),
+      isAlive: () => true,
+    });
+    assert.equal(second.ok, false);
+    assert.match(second.cause, /pid 111/);
   });
 
   it('acquireLock: a stale lock (dead pid) is taken over, not refused', () => {

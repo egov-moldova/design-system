@@ -16,7 +16,7 @@
 import net from 'node:net';
 import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export const DEFAULT_PORT = 6007;
@@ -243,6 +243,24 @@ export function isLockStale(existing, currentStartTime) {
   return currentStartTime !== existing.startTime; // pid reused
 }
 
+const UNREADABLE_LOCK_GRACE_MS = 10_000;
+
+function readLockRaw(lockPath) {
+  try {
+    return readFileSync(lockPath, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+function lockMtimeMs(lockPath) {
+  try {
+    return statSync(lockPath).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
 /**
  * Take a lock file at `lockPath`, replacing it if stale. Returns
  * `{ ok: true, token }` (the nonce, to hand a spawned child via
@@ -265,20 +283,37 @@ export function acquireLock(
       return { ok: true, token: nonce, lockPath };
     } catch (err) {
       if (err.code !== 'EEXIST') throw err;
+      const raw = readLockRaw(lockPath);
+      if (raw === null) continue; // released between our create and our read
       let existing = null;
       try {
-        existing = JSON.parse(readFileSync(lockPath, 'utf8'));
+        existing = JSON.parse(raw);
       } catch {
         existing = null;
       }
-      const currentStartTime = existing?.pid && isAlive(existing.pid) ? startTimeOf(existing.pid) : null;
-      if (isLockStale(existing, currentStartTime)) {
-        rmSync(lockPath, { force: true });
+      let stale;
+      if (!existing?.pid) {
+        // `wx` creates the file before its holder writes it, so an unreadable
+        // lock is a holder mid-write until it has been unreadable for a while.
+        stale = Date.now() - lockMtimeMs(lockPath) > UNREADABLE_LOCK_GRACE_MS;
+      } else if (!isAlive(existing.pid)) {
+        stale = true;
+      } else {
+        // A live pid whose start time cannot be read cannot be proven reused.
+        const currentStartTime = startTimeOf(existing.pid);
+        stale = currentStartTime !== null && isLockStale(existing, currentStartTime);
+      }
+      if (stale) {
+        // Another taker may have replaced the stale lock since we read it;
+        // delete only the content we judged.
+        if (readLockRaw(lockPath) === raw) rmSync(lockPath, { force: true });
         continue;
       }
       return {
         ok: false,
-        cause: `audit already running: pid ${existing.pid} holds the lock at ${lockPath}`,
+        cause: existing?.pid
+          ? `audit already running: pid ${existing.pid} holds the lock at ${lockPath}`
+          : `audit already running: a lock at ${lockPath} is being written`,
       };
     }
   }

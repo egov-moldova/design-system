@@ -676,6 +676,12 @@ describe('S5: writeSummary / printSummary with zero components selected', () => 
     assert.equal(summary.note, 'no components selected');
   });
 
+  it('nothing selected and a repo-level row crashed or lost its prerequisite → INCOMPLETE, not FAIL', () => {
+    const auditDir = tmp();
+    const summary = writeSummary(auditDir, { depth: 'quick', runs: [], repoLevel: { ok: false, incomplete: true } });
+    assert.equal(summary.state, 'INCOMPLETE');
+  });
+
   it('the note prints on stdout in text mode too, not only in --json', () => {
     const auditDir = tmp();
     const summary = writeSummary(auditDir, { depth: 'quick', runs: [] });

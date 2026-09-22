@@ -49,13 +49,13 @@ const USAGE = defaultUsage(
     '  --run               Run `yarn vitest run --project spec --coverage` first (slow; 30-60s)',
     '  --threshold <N>     Pass threshold for each metric (default: 80)',
     '  --vitest-results <path>  JSON-reporter output from the coverage prerequisite',
-    '                            (run-all.mjs, S11) — default audit/_run/vitest-results.json',
+    '                            (run-all.mjs passes <audit dir>/_run/vitest-results.json);',
+    '                            omitted → failing specs are not reported',
   ],
 );
 
 const DEFAULT_THRESHOLD = 80;
 const COVERAGE_REPORT_REL = 'coverage/coverage-summary.json';
-const DEFAULT_VITEST_RESULTS_REL = join('audit', '_run', 'vitest-results.json');
 
 async function main() {
   const args = parseAuditArgs({
@@ -64,7 +64,9 @@ async function main() {
     extra: {
       'run': { type: 'boolean', default: false },
       'threshold': { type: 'string', default: String(DEFAULT_THRESHOLD) },
-      'vitest-results': { type: 'string', default: join(REPO_ROOT, DEFAULT_VITEST_RESULTS_REL) },
+      // No default: only run-all's coverage prerequisite refreshes the file, so a
+      // standalone 06 reading it would report a spec fixed since as still failing.
+      'vitest-results': { type: 'string' },
     },
   });
   const t0 = Date.now();
@@ -162,15 +164,16 @@ function readVitestResults(path) {
 
 /**
  * The relative spec file paths, from a vitest JSON-reporter report, whose
- * test suite failed AND lives under `src/components/<componentName>/`. Pure —
+ * test suite failed AND lives under `src/components/<componentName>/` or
+ * `src/hidden/<componentName>/`. Pure —
  * exported for tests.
  */
 export function failedSpecsForComponent(vitestResults, componentName) {
-  const marker = `src/components/${componentName}/`;
+  const markers = [`src/components/${componentName}/`, `src/hidden/${componentName}/`];
   return (vitestResults?.testResults ?? [])
     .filter(t => t.status === 'failed')
     .map(t => String(t.name ?? '').replace(/\\/g, '/'))
-    .filter(name => name.includes(marker));
+    .filter(name => markers.some(m => name.includes(m)));
 }
 
 /**
