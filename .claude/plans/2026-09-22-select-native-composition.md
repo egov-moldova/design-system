@@ -111,7 +111,9 @@ did not ask for.
 
 - [x] **7. Render groups and separators.** A group renders `role="group"` with `aria-labelledby`
   pointing at its heading; the heading itself is `role="presentation"` and carries the separator
-  rule above its label, as `mud-menu-item` does. `<hr>` renders `role="separator"`. The group is a
+  rule above its label, as `mud-menu-item` does. `<hr>` renders as presentational: ARIA 1.2 lets a listbox own only `option` and
+  `group`, so a `role="separator"` child invalidates the listbox, and the empty-state row is the
+  option the listbox is required to own, disabled. The group is a
   nested flex column repeating the listbox gap — not `display: contents`, whose role handling in
   assistive technology has been unreliable. Keyboard navigation continues to walk the flat option
   list. Verify: `node scripts/audit/run-all.mjs mud-select --only 09 --json`
