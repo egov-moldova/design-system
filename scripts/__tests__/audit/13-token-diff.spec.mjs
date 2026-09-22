@@ -59,6 +59,16 @@ describe('13-token-diff: U3 — the tokens file resolves by the component CSS pr
     assert.deepEqual(undeclaredCustomProperties(css), { required: ['--x-gap'], api: [] });
   });
 
+  it('a commented-out declaration does not declare the property', () => {
+    const css = '/* --x-gap: 4px; */ a { gap: var(--x-gap); }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--x-gap'], api: [] });
+  });
+
+  it('a commented-out read does not make the property required', () => {
+    const css = 'a { gap: var(--x-gap, 0); /* gap: var(--x-gap); */ }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: [], api: ['--x-gap'] });
+  });
+
   it('mud-icon has no fallback-less own read — its --icon-color is the API case', () => {
     const { required, api } = resolveTokensFile('mud-icon');
     assert.deepEqual(required, []);

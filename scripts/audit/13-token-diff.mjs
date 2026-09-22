@@ -191,7 +191,8 @@ const TOKENS_DIR = join(REPO_ROOT, 'tokens', 'core', 'components');
  * @returns {{ required: string[], api: string[] }} both sorted, disjoint
  */
 export function undeclaredCustomProperties(cssText) {
-  const css = String(cssText ?? '');
+  // A commented-out declaration or read is not code.
+  const css = String(cssText ?? '').replace(/\/\*[\s\S]*?\*\//g, '');
   const declared = new Set([...css.matchAll(/(--[A-Za-z0-9_-]+)\s*:/g)].map(m => m[1]));
   const withFallback = new Map();
   for (const m of css.matchAll(/var\(\s*(--[A-Za-z0-9_-]+)\s*(,?)/g)) {

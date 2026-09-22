@@ -112,6 +112,8 @@ export async function withPage({ url, action, headless = true, waitUntil = 'netw
  * deterministic however the calls interleave).
  */
 export async function mapLimit(items, limit, fn) {
+  // Zero workers would resolve at once with every slot unvisited.
+  if (!(limit >= 1)) throw new RangeError(`mapLimit: limit must be >= 1, got ${limit}`);
   const out = new Array(items.length);
   let next = 0;
   const worker = async () => {

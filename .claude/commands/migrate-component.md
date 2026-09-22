@@ -61,7 +61,7 @@ in `audit/_run/summary.json`. Then re-render the brief so those findings appear
 under "Advisory":
 
 ```bash
-yarn audit:component --rerender <componentName> --json
+yarn audit:component --rerender $ARGUMENTS --json
 ```
 
 The audit identifies all issues across structure, tokens, CSS, TypeScript, accessibility, security, performance, stories, tests.

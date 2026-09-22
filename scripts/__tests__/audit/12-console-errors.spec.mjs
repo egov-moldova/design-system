@@ -88,6 +88,16 @@ describe('U6: mapLimit — bounded concurrency, input order kept', () => {
     const { mapLimit } = await import('../../audit/lib/browser-context.mjs');
     assert.deepEqual(await mapLimit([], 4, async () => 1), []);
   });
+
+  it('a limit below 1 throws instead of returning unvisited slots', async () => {
+    const { mapLimit } = await import('../../audit/lib/browser-context.mjs');
+    for (const limit of [0, -1, Number.NaN]) {
+      await assert.rejects(
+        mapLimit([1, 2], limit, async x => x),
+        RangeError,
+      );
+    }
+  });
 });
 
 describe('12-console-errors: the page budget bounds a --all / --changed run', () => {

@@ -335,6 +335,22 @@ describe('verdict: Decision 13 — a visible not-applicable', () => {
     assert.match(brief, /## Not applicable\n\n- 13 check-13 — mud-fx references no component-scoped variable\n/);
   });
 
+  it('a notApplicable finding that bypassed finding() is not counted in the row errors or warnings', () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '13');
+    row.summary = { errors: 1, warnings: 1, info: 0 };
+    e.findingsByTool[row.name] = [
+      { severity: 'error', code: 'X', message: 'does not apply', notApplicable: true },
+      { severity: 'warning', code: 'Y', message: 'nor this', notApplicable: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'PASS');
+    const out = v.rows.find(r => r.id === '13');
+    assert.equal(out.errors, 0);
+    assert.equal(out.warnings, 0);
+    assert.equal(out.note, 'does not apply; nor this');
+  });
+
   it('a row with no notApplicable finding carries no note', () => {
     assert.ok(computeVerdict({ envelope: cleanEnvelope() }).rows.every(r => !('note' in r)));
   });

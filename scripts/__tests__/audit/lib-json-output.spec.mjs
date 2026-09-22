@@ -142,6 +142,21 @@ describe('json-output: S6 — finding() accepts and emits noTarget', () => {
     assert.equal(f.notApplicable, true);
     assert.equal('notApplicable' in finding({ severity: 'info', code: 'X', message: 'm' }), false);
   });
+
+  it('Decision 13: notApplicable forces severity info whatever the caller passed', () => {
+    for (const severity of ['error', 'warning']) {
+      const f = finding({ severity, code: 'X', message: 'm', notApplicable: true });
+      assert.equal(f.severity, 'info');
+      assert.equal(f.notApplicable, true);
+    }
+  });
+
+  it('noTarget wins over notApplicable and keeps the caller severity', () => {
+    const f = finding({ severity: 'error', code: 'X', message: 'm', noTarget: true, notApplicable: true });
+    assert.equal(f.severity, 'error');
+    assert.equal(f.noTarget, true);
+    assert.equal('notApplicable' in f, false);
+  });
 });
 
 describe('json-output: emit', () => {

@@ -364,6 +364,12 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       const doesNotApply = f => f.notApplicable === true && f.noTarget !== true;
       const notApplicable = allFindings.filter(doesNotApply);
       if (notApplicable.length) out.note = notApplicable.map(f => f.message).join('; ');
+      // The envelope's counts come from the script's own summary, taken
+      // before this exclusion — a not-applicable finding that bypassed
+      // `finding()` would otherwise leave `errors` contradicting the state.
+      const countOf = sev => notApplicable.filter(f => f.severity === sev).length;
+      out.errors = Math.max(0, out.errors - countOf('error'));
+      out.warnings = Math.max(0, out.warnings - countOf('warning'));
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
       // warnings below. On a row the depth does not require it is a warning
