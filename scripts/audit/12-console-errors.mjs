@@ -20,6 +20,7 @@
  *   node scripts/audit/12-console-errors.mjs --all --json
  */
 import { fileURLToPath } from 'node:url';
+import { cpus } from 'node:os';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
@@ -90,7 +91,9 @@ async function main() {
 
   let perComponent;
   try {
-    perComponent = await Promise.all(targets.map(t => analyzeComponent(t, { baseUrl, warnAsFinding, explicitStory })));
+    perComponent = await mapLimit(targets, componentConcurrency(targets.length), t =>
+      analyzeComponent(t, { baseUrl, warnAsFinding, explicitStory }),
+    );
   } catch (err) {
     process.stderr.write(`${TOOL}: ${err.message}\n`);
     process.exit(EXIT_INTERNAL);
@@ -225,6 +228,25 @@ function pascal(s) {
 }
 
 const STORY_CONCURRENCY = 4;
+
+/**
+ * Chromium pages this row keeps open at once, across every component it
+ * scans. A page is CPU-bound while the story hydrates, so the budget is the
+ * core count, floored at one component's worth and capped so a large machine
+ * does not point sixteen pages at one Storybook dev server.
+ */
+export const PAGE_BUDGET = Math.min(16, Math.max(STORY_CONCURRENCY, cpus().length));
+
+/**
+ * How many components to scan at once, each holding one browser and up to
+ * STORY_CONCURRENCY pages. `--all` used to hand every component to
+ * `Promise.all`, so 44 components meant 44 Chromium processes and — after the
+ * per-component story concurrency landed — 176 pages against one dev server.
+ * Pure — exported for tests.
+ */
+export function componentConcurrency(targetCount, budget = PAGE_BUDGET) {
+  return Math.max(1, Math.min(targetCount, Math.floor(budget / STORY_CONCURRENCY)));
+}
 
 /**
  * Navigate to a single URL and collect console.error / console.warn / pageerror,

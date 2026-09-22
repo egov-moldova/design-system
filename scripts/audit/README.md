@@ -440,6 +440,23 @@ What makes the pixel percentage meaningful:
 | Dark capture vs light reference | guaranteed FAIL | dark only against `<state>-dark.png` / dark states |
 | "today", hover, focus, open views | not reachable | `clock`, `interaction` (hover, focus, press, click) |
 
+## Measuring the suite itself
+
+Two scripts, neither part of a run:
+
+```bash
+node scripts/audit/measure-run-cost.mjs --component mud-button --depth quick,standard --out reports/run-cost-before.json
+# …change something…
+node scripts/audit/measure-run-cost.mjs --component mud-button --depth quick,standard --compare reports/run-cost-before.json
+node scripts/audit/measure-prompt-cost.mjs --out reports/prompt-cost.md   # the static AI-prompt side
+```
+
+`measure-run-cost.mjs` reports median wall-clock, peak RSS and the slowest rows
+per cell, and re-reads `verdict.json` after every repetition: it exits 1 if any
+two repetitions of a cell differ by a byte. A run that got faster and moved a
+verdict is a failed measurement, not a faster suite — so the before/after pair
+is the unit, never a single "after" number.
+
 ## CI integration
 
 `.github/workflows/ci.yml` runs `yarn test:scripts` (the specs for every audit

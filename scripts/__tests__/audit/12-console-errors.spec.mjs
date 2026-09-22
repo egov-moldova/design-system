@@ -10,7 +10,12 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { classifyMessage, analyzeComponent } from '../../audit/12-console-errors.mjs';
+import {
+  classifyMessage,
+  analyzeComponent,
+  componentConcurrency,
+  PAGE_BUDGET,
+} from '../../audit/12-console-errors.mjs';
 
 describe('12-console-errors: S6 — CONSOLE-NO-STORIES carries noTarget (Decision §5)', () => {
   it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
@@ -82,5 +87,32 @@ describe('U6: mapLimit — bounded concurrency, input order kept', () => {
   it('an empty list resolves to an empty array', async () => {
     const { mapLimit } = await import('../../audit/lib/browser-context.mjs');
     assert.deepEqual(await mapLimit([], 4, async () => 1), []);
+  });
+});
+
+describe('12-console-errors: the page budget bounds a --all / --changed run', () => {
+  it('one component takes the whole budget as its own story concurrency', () => {
+    assert.equal(componentConcurrency(1, 8), 1);
+  });
+
+  it('many components split the budget instead of each opening a browser', () => {
+    // Before this, `--all` handed all 44 to Promise.all: 44 Chromium
+    // processes at four pages each, all pointed at one dev server.
+    assert.equal(componentConcurrency(44, 8), 2);
+    assert.equal(componentConcurrency(44, 16), 4);
+  });
+
+  it('never returns 0, however small the budget — that would stall the run', () => {
+    assert.equal(componentConcurrency(44, 1), 1);
+    assert.equal(componentConcurrency(44, 0), 1);
+  });
+
+  it('never exceeds the number of components there are to scan', () => {
+    assert.equal(componentConcurrency(2, 16), 2);
+  });
+
+  it('the live budget is at least one component-worth of pages', () => {
+    assert.ok(PAGE_BUDGET >= 4, `PAGE_BUDGET=${PAGE_BUDGET}`);
+    assert.ok(PAGE_BUDGET <= 16, `PAGE_BUDGET=${PAGE_BUDGET}`);
   });
 });
