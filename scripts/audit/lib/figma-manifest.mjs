@@ -80,6 +80,8 @@ export const THEMES = ['light', 'dark'];
 const STATE_NAME_RE = /^[a-z0-9][a-z0-9-]*$/;
 const NODE_ID_RE = /^\d+[:-]\d+$/;
 const STORY_ID_RE = /^[a-z0-9-]+--[a-z0-9-]+$/;
+// Deliberately matching control characters (S1).
+const CONTROL_CHAR_RE = /[\x00-\x1f\x7f]/;
 
 export function manifestPathFor(componentName) {
   return join(REPO_ROOT, 'src', 'components', componentName, 'test', `${componentName}.figma.json`);
@@ -249,6 +251,12 @@ function validateDesignNone(manifest) {
   if (design !== 'none') errors.push('figma.design can only be "none"');
   if (typeof reason !== 'string' || !reason.trim()) errors.push('figma.design "none" needs a reason');
   if (typeof decidedBy !== 'string' || !decidedBy.trim()) errors.push('figma.design "none" needs decidedBy');
+  if (typeof reason === 'string' && CONTROL_CHAR_RE.test(reason)) {
+    errors.push('figma.design reason contains a control character');
+  }
+  if (typeof decidedBy === 'string' && CONTROL_CHAR_RE.test(decidedBy)) {
+    errors.push('figma.design decidedBy contains a control character');
+  }
   if (fileKey !== undefined) errors.push('figma.design "none" cannot carry a fileKey');
   if (manifest.states !== undefined) errors.push('figma.design "none" cannot carry states');
   return errors;
@@ -432,7 +440,12 @@ export function resolveHeadManifest(componentName, deps) {
   } catch {
     // An unparsable HEAD manifest still goes to 11 / 15, which report it as MANIFEST-INVALID.
   }
-  if (isDesignNone(manifest)) {
+  // A design-none waiver is granted only once the manifest itself validates
+  // (S1): no reason/decidedBy, a fileKey or states beside it, or a control
+  // character in reason/decidedBy falls through to `status: 'present'` below,
+  // so 11 / 15 / figma-refs run and report MANIFEST-INVALID through their own
+  // `loadManifest` call instead of the waiver being granted silently.
+  if (isDesignNone(manifest) && validateDesignNone(manifest).length === 0) {
     return {
       ...base,
       status: 'design-none',

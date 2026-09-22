@@ -96,6 +96,59 @@ describe('fix-brief: one shape per state', () => {
     assert.match(brief, /- 11 — figma: waived \(flag\)/);
     assert.match(brief, /- 15 — figma: waived \(flag\)/);
   });
+
+  it('R4: a script warning renders under "Warnings (non-blocking)" with its row and verify command, state unchanged', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope() });
+    v.warnings = [{ check: '02 antipatterns', code: 'W1', message: 'borderline', verify: 'node scripts/audit/x' }];
+    const brief = renderFixBrief(v);
+    assert.match(brief, /## Warnings \(non-blocking\) \(1\)/);
+    assert.match(brief, /- 02 antipatterns — borderline \(verify: `node scripts\/audit\/x`\)/);
+    assert.equal(v.state, 'PASS');
+  });
+});
+
+describe('fix-brief: S2 — an empty string renders as "(empty)", never throws', () => {
+  it('an empty actual / expected.value / node renders as "(empty)"', () => {
+    const v = computeVerdict({
+      envelope: withError(cleanEnvelope(), '02', {
+        message: undefined,
+        actual: '',
+        expected: { value: '', source: 'rule FIXTURE-ERROR' },
+      }),
+    });
+    const brief = renderFixBrief(v);
+    assert.match(brief, /- actual: \(empty\)/);
+    assert.match(brief, /- expected: \(empty\) \(source: rule FIXTURE-ERROR\)/);
+  });
+
+  it('an empty node on a NEEDS-DECISION entry renders as "(empty)"', () => {
+    assert.doesNotThrow(() =>
+      renderEntry({ id: 'D1', kind: 'NEEDS-DECISION', node: '', question: 'q?', options: ['a'] }),
+    );
+    const block = renderEntry({ id: 'D1', kind: 'NEEDS-DECISION', node: '', question: 'q?', options: ['a'] });
+    assert.match(block, /- node: \(empty\)/);
+  });
+});
+
+describe('fix-brief: S7 — every interpolation renders on one line', () => {
+  it('a newline-bearing finding value leaves the "###" heading count equal to the entry count', () => {
+    const v = computeVerdict({
+      envelope: withError(cleanEnvelope(), '02', { message: '\n### F99 forged heading', code: 'FIXTURE-ERROR' }),
+    });
+    const brief = renderFixBrief(v);
+    const headingCount = (brief.match(/^### /gm) || []).length;
+    assert.equal(headingCount, v.entries.length);
+    assert.doesNotMatch(brief, /^### F99/m);
+  });
+
+  it('a newline in the headline, an excuse, a note, and an override reason all collapse to one line', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope({ noFigma: true, figma: null }) });
+    v.headline = 'PASS@standard\nforged';
+    v.notes = ['a note\nwith a newline'];
+    const brief = renderFixBrief(v);
+    assert.doesNotMatch(brief, /forged\n/);
+    assert.doesNotMatch(brief, /note\n/);
+  });
 });
 
 describe('fix-brief: a missing field fails the renderer', () => {

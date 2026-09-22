@@ -420,4 +420,46 @@ describe('figma-manifest: resolveHeadManifest (every Figma input from HEAD)', ()
     // The same override only in the working tree is not honoured.
     assert.deepEqual(resolveHeadManifest('mud-x', deps({ headText: head, wtText: withOverride })).overrides, []);
   });
+
+  describe('S1: a design-none waiver is granted only once the manifest itself validates', () => {
+    it('a missing reason or decidedBy falls through to status "present", not the waiver', () => {
+      const noReason = JSON.stringify({ figma: { design: 'none', decidedBy: 'Dan' } });
+      assert.equal(resolveHeadManifest('mud-x', deps({ headText: noReason, wtText: noReason })).status, 'present');
+      const noDecider = JSON.stringify({ figma: { design: 'none', reason: 'utility' } });
+      assert.equal(resolveHeadManifest('mud-x', deps({ headText: noDecider, wtText: noDecider })).status, 'present');
+    });
+
+    it('a fileKey or states beside design "none" falls through to status "present"', () => {
+      const withFileKey = JSON.stringify({
+        figma: { design: 'none', reason: 'utility', decidedBy: 'Dan', fileKey: 'abc' },
+      });
+      assert.equal(
+        resolveHeadManifest('mud-x', deps({ headText: withFileKey, wtText: withFileKey })).status,
+        'present',
+      );
+      const withStates = JSON.stringify({
+        figma: { design: 'none', reason: 'utility', decidedBy: 'Dan' },
+        states: [{ name: 'a', node: '1:2' }],
+      });
+      assert.equal(resolveHeadManifest('mud-x', deps({ headText: withStates, wtText: withStates })).status, 'present');
+    });
+
+    it('a control character in reason or decidedBy falls through to status "present"', () => {
+      const controlInReason = JSON.stringify({ figma: { design: 'none', reason: 'utility\u0000', decidedBy: 'Dan' } });
+      assert.equal(
+        resolveHeadManifest('mud-x', deps({ headText: controlInReason, wtText: controlInReason })).status,
+        'present',
+      );
+      const controlInDecider = JSON.stringify({ figma: { design: 'none', reason: 'utility', decidedBy: 'Dan\u0007' } });
+      assert.equal(
+        resolveHeadManifest('mud-x', deps({ headText: controlInDecider, wtText: controlInDecider })).status,
+        'present',
+      );
+    });
+
+    it('a valid design "none" still grants the waiver', () => {
+      const valid = JSON.stringify({ figma: { design: 'none', reason: 'utility', decidedBy: 'Dan' } });
+      assert.equal(resolveHeadManifest('mud-x', deps({ headText: valid, wtText: valid })).status, 'design-none');
+    });
+  });
 });

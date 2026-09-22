@@ -47,62 +47,28 @@
  *   node scripts/audit/run-all.mjs mud-button --only 01,02,03 --json
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseArgs } from 'node:util';
 import { REPO_ROOT, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL } from './lib/exit-codes.mjs';
 import { ROW_STATUS, SCHEMA_VERSION, buildAiLegRow, finding, flushStdout } from './lib/json-output.mjs';
 import { resolveHeadManifest } from './lib/figma-manifest.mjs';
 import { checkEnv, formatIncomplete } from './lib/env-preflight.mjs';
-import { resolveDepth } from './lib/cli-args.mjs';
+import { parseCli } from './lib/cli-args.mjs';
+import {
+  AI_LEG_TABLE,
+  componentDirFor,
+  defaultReadPrompt,
+  defaultReadSources,
+  hashLegInput,
+} from './lib/leg-input.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
 import { ensureWorktreeStorybook } from './lib/storybook-helpers.mjs';
 import { figmaToken } from './figma-refs.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, excuseFor, writeSummary, writeVerdictForRun } from './verdict.mjs';
 
 const TOOL = 'run-all';
-
-const USAGE = `Usage: node scripts/audit/run-all.mjs <component | --all | --changed> [options]
-
-Run the audit checks a depth requires in waves and aggregate the results into
-a single JSON envelope. AI agents should call this instead of dispatching each
-script individually; gate callers use \`yarn audit:component\` (verdict.mjs).
-
-Targets (choose one):
-  <mud-name>          Audit one component (e.g. mud-button or button)
-  --all               Audit every mud-* component, one pipeline each
-  --changed           Audit components touched in git diff vs main, one pipeline each
-
-Depth:
-  --depth <d>         quick | standard | deep (default: standard)
-                        quick     lint + Wave A; no build, no browser
-                        standard  quick + prerequisites + Waves B and C
-                        deep      standard + figma-refs --check, adapter builds,
-                                  E2E (deferred) and the AI-leg rows
-  --fast              Deprecated alias of --depth quick
-  --e2e               Folded into --depth deep
-
-Options:
-  --json              Emit the combined JSON envelope to stdout (default human summary)
-  --out <file>        Write the combined JSON envelope to a file
-  --skip <ids>        Comma-separated list of check ids to skip (e.g. 06,08)
-  --only <ids>        Comma-separated list — only run these checks. A required id dropped
-                      by --skip / --only makes the verdict INCOMPLETE.
-  --no-browser        Excuse the browser checks (Wave C and the browser AI legs);
-                      the verdict level is capped at CLEAN-STATIC.
-  --ci                Same as --no-browser, and sets meta.ciDetected. Also enabled
-                      when process.env.CI is set.
-  --no-figma          Excuse the Figma checks (11, 15, figma-refs, the Figma AI leg)
-                      for this run; deep is then capped at MERGE-READY.
-  --figma-dir <dir>   Forwarded to 11-pixel-diff-states (reference PNGs)
-  --verdict           Also write audit/<component>/runs/<run>/, verdict.json,
-                      fix-brief.md and audit/_run/summary.json (verdict.mjs does this)
-  --audit-dir <dir>   Root for --verdict output (default: audit/)
-  --no-color          Disable ANSI colors
-  --help, -h          Show this help`;
 
 /**
  * The check registry. `kind` defaults to 'script' (an audit script spawned
@@ -293,60 +259,21 @@ const AUDIT_SCRIPTS = [
     exclusive: true,
   },
   { id: 'e2e', wave: 'D', kind: 'deferred', name: 'e2e', perComponent: true, requiresBuild: false },
-  {
-    id: 'ai-stencil',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'stencil-compliance-manual',
-    leg: 'stencil-compliance',
-    idsJudged: ['DX-stencil-manual'],
-    prompt: '.claude/skills/stencil-compliance/SKILL.md',
-  },
-  {
-    id: 'ai-wcag',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'full-wcag',
-    leg: 'a11y-verifier',
-    idsJudged: ['DX-wcag'],
-    prompt: '.claude/agents/a11y-verifier.md',
-  },
-  {
-    id: 'ai-media',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'media-conditions',
-    leg: 'a11y-verifier',
-    idsJudged: ['DX-media'],
-    prompt: '.claude/agents/a11y-verifier.md',
-  },
+  // The leg / idsJudged / prompt fields of each `ai-leg` row come from the one
+  // table both this registry and verdict.mjs's recompute read (`lib/leg-input.mjs`
+  // AI_LEG_TABLE, Decision §7 of `2026-09-22-audit-depths-sentinel-fixes.md`).
+  { id: 'ai-stencil', wave: 'D', kind: 'ai-leg', name: 'stencil-compliance-manual', ...AI_LEG_TABLE['ai-stencil'] },
+  { id: 'ai-wcag', wave: 'D', kind: 'ai-leg', name: 'full-wcag', ...AI_LEG_TABLE['ai-wcag'] },
+  { id: 'ai-media', wave: 'D', kind: 'ai-leg', name: 'media-conditions', ...AI_LEG_TABLE['ai-media'] },
   {
     id: 'ai-figma-themes',
     wave: 'D',
     kind: 'ai-leg',
     name: 'figma-states-both-themes',
-    leg: 'pixel-perfect-verifier',
-    idsJudged: ['DX-figma-themes'],
-    prompt: '.claude/agents/pixel-perfect-verifier.md',
+    ...AI_LEG_TABLE['ai-figma-themes'],
   },
-  {
-    id: 'ai-archetype',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'archetype',
-    leg: 'audit-component',
-    idsJudged: ['CX1', 'CX2', 'CX3', 'CX4'],
-    prompt: '.claude/skills/audit-component/SKILL.md',
-  },
-  {
-    id: 'ai-security',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'security',
-    leg: 'audit-component',
-    idsJudged: ['DX-security'],
-    prompt: '.claude/skills/audit-component/SKILL.md',
-  },
+  { id: 'ai-archetype', wave: 'D', kind: 'ai-leg', name: 'archetype', ...AI_LEG_TABLE['ai-archetype'] },
+  { id: 'ai-security', wave: 'D', kind: 'ai-leg', name: 'security', ...AI_LEG_TABLE['ai-security'] },
 ];
 
 /** Prerequisite commands, in the order they run. `storybook` is started, not run. */
@@ -380,98 +307,6 @@ function prerequisiteCommand(requires, componentDir) {
     default:
       return null;
   }
-}
-
-/**
- * Parse argv. `env` is injectable so a test can set `CI` without touching
- * the real environment.
- */
-export function parseCli(argv = process.argv.slice(2), env = process.env) {
-  let parsed;
-  try {
-    parsed = parseArgs({
-      args: argv,
-      options: {
-        'all': { type: 'boolean', default: false },
-        'changed': { type: 'boolean', default: false },
-        'json': { type: 'boolean', default: false },
-        'out': { type: 'string' },
-        'skip': { type: 'string', default: '' },
-        'only': { type: 'string', default: '' },
-        'depth': { type: 'string' },
-        'fast': { type: 'boolean', default: false },
-        'e2e': { type: 'boolean', default: false },
-        'no-browser': { type: 'boolean', default: false },
-        'no-figma': { type: 'boolean', default: false },
-        'ci': { type: 'boolean', default: false },
-        'figma-dir': { type: 'string' },
-        'verdict': { type: 'boolean', default: false },
-        'audit-dir': { type: 'string' },
-        'no-color': { type: 'boolean', default: false },
-        'help': { type: 'boolean', short: 'h', default: false },
-      },
-      allowPositionals: true,
-      strict: true,
-    });
-  } catch (err) {
-    process.stderr.write(`${TOOL}: ${err.message}\n\n${USAGE}\n`);
-    process.exit(EXIT_INTERNAL);
-  }
-  if (parsed.values.help) {
-    process.stdout.write(`${USAGE}\n`);
-    process.exit(0);
-  }
-  const component = parsed.positionals[0] ?? null;
-  const all = parsed.values.all;
-  const changed = parsed.values.changed;
-  const targetCount = [component, all, changed].filter(Boolean).length;
-  if (targetCount === 0) {
-    process.stderr.write(`${TOOL}: choose a component, --all, or --changed.\n\n${USAGE}\n`);
-    process.exit(EXIT_INTERNAL);
-  }
-  if (targetCount > 1) {
-    process.stderr.write(`${TOOL}: choose exactly one of <component>, --all, --changed.\n`);
-    process.exit(EXIT_INTERNAL);
-  }
-  const depth = resolveDepth({ depth: parsed.values.depth, fast: parsed.values.fast, e2e: parsed.values.e2e });
-  if (depth.error) {
-    process.stderr.write(`${TOOL}: ${depth.error}\n`);
-    process.exit(EXIT_INTERNAL);
-  }
-  // CI mode: the explicit --ci flag or any truthy CI env var (GitHub Actions,
-  // GitLab CI, CircleCI, … all set CI=true). Either excuses the browser checks
-  // and caps the level (Decision §6); the verdict names which one.
-  const ciEnv = Boolean(env.CI);
-  const ci = parsed.values.ci || ciEnv;
-  const noBrowser = parsed.values['no-browser'];
-  const browserWaiver = ciEnv ? 'CI env' : parsed.values.ci || noBrowser ? 'flag' : null;
-  return {
-    component,
-    all,
-    changed,
-    depth: depth.depth,
-    json: parsed.values.json,
-    out: parsed.values.out ?? null,
-    skip: splitIds(parsed.values.skip),
-    only: splitIds(parsed.values.only),
-    noBrowser,
-    noFigma: parsed.values['no-figma'],
-    ci,
-    browserWaiver,
-    figmaDir: parsed.values['figma-dir'] ?? null,
-    verdict: parsed.values.verdict,
-    auditDir: parsed.values['audit-dir'] ?? null,
-    noColor: parsed.values['no-color'],
-  };
-}
-
-function splitIds(s) {
-  return new Set(
-    s
-      .split(',')
-      .map(x => x.trim())
-      .filter(Boolean),
-  );
 }
 
 /**
@@ -523,44 +358,6 @@ function defaultRunCommand(cmd, cmdArgs, { cwd = REPO_ROOT, capture = false } = 
 function defaultGit(gitArgs) {
   const res = spawnSync('git', gitArgs, { cwd: REPO_ROOT, encoding: 'utf8' });
   return { status: res.status, stdout: res.stdout ?? '' };
-}
-
-function componentDirFor(repoRoot, component) {
-  const hidden = `src/hidden/${component}`;
-  return existsSync(join(repoRoot, hidden)) && !existsSync(join(repoRoot, 'src/components', component))
-    ? hidden
-    : `src/components/${component}`;
-}
-
-function walkFiles(root) {
-  const out = [];
-  if (!existsSync(root)) return out;
-  for (const entry of readdirSync(root)) {
-    const abs = join(root, entry);
-    if (statSync(abs).isDirectory()) out.push(...walkFiles(abs));
-    else out.push(abs);
-  }
-  return out;
-}
-
-/** Every source file of a component, as `{ path, content }` sorted by path. */
-function defaultReadSources(repoRoot, component) {
-  const root = join(repoRoot, componentDirFor(repoRoot, component));
-  return walkFiles(root)
-    .map(abs => ({ path: relative(repoRoot, abs), content: readFileSync(abs, 'utf8') }))
-    .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
-}
-
-/**
- * SHA-256 of what an AI leg judges: the component's source files plus the
- * leg prompt (Design §1). Recorded when the row is opened; a leg's
- * ai-findings.json that states a different hash does not close it. Pure.
- */
-export function hashLegInput(sources, promptText) {
-  const h = createHash('sha256');
-  for (const s of sources) h.update(`${s.path}\u0000${s.content}\u0000`);
-  h.update(`prompt\u0000${promptText ?? ''}`);
-  return `sha256:${h.digest('hex')}`;
 }
 
 function defaultRunId() {
@@ -888,7 +685,7 @@ export async function runAudit(args, deps = {}) {
     listAll: () => listAllComponents().map(c => c.name),
     ensureStorybook: () => ensureWorktreeStorybook({ repoRoot }),
     readSources: component => defaultReadSources(repoRoot, component),
-    readPrompt: rel => (existsSync(join(repoRoot, rel)) ? readFileSync(join(repoRoot, rel), 'utf8') : ''),
+    readPrompt: rel => defaultReadPrompt(repoRoot, rel),
     runId: defaultRunId(),
     ...deps,
   };
@@ -910,7 +707,13 @@ export async function runAudit(args, deps = {}) {
       const runs = [];
       if (!args.all && !args.changed && targetArg) {
         const envelope = { ...combined, target: targetArg, audit: { ...auditBase, component: targetArg } };
-        runs.push(writeRun(auditDir, targetArg, d.runId, envelope));
+        runs.push(
+          writeRun(auditDir, targetArg, d.runId, envelope, {
+            repoRoot: d.repoRoot,
+            readSources: d.readSources,
+            readPrompt: d.readPrompt,
+          }),
+        );
       }
       result.summary = writeSummary(auditDir, {
         depth: args.depth,
@@ -1014,18 +817,30 @@ export async function runAudit(args, deps = {}) {
 
   const result = { combined, perComponent };
   if (args.verdict) {
-    const runs = perComponent.map(({ component, envelope }) => writeRun(auditDir, component, d.runId, envelope));
+    const runs = perComponent.map(({ component, envelope }) =>
+      writeRun(auditDir, component, d.runId, envelope, {
+        repoRoot: d.repoRoot,
+        readSources: d.readSources,
+        readPrompt: d.readPrompt,
+      }),
+    );
     result.summary = writeSummary(auditDir, { depth: args.depth, runs });
   }
   return result;
 }
 
-/** Write one component's run inputs and have verdict.mjs compute and write its verdict. */
-function writeRun(auditDir, component, runId, envelope) {
+/**
+ * Write one component's run inputs and have verdict.mjs compute and write its
+ * verdict. `legDeps` (repoRoot / readSources / readPrompt) forwards the same
+ * deps `openAiLegs` opened the row's hash with, so the immediate recompute
+ * right after opening never reads as "source changed" (R2) — a test's
+ * injected fixture deps and production's real ones are each self-consistent.
+ */
+function writeRun(auditDir, component, runId, envelope, legDeps) {
   const runDir = join(auditDir, component, 'runs', runId);
   mkdirSync(runDir, { recursive: true });
   writeFileSync(join(runDir, 'envelope.json'), `${JSON.stringify(envelope, null, 2)}\n`);
-  return { runDir, verdict: writeVerdictForRun(runDir) };
+  return { runDir, verdict: writeVerdictForRun(runDir, legDeps) };
 }
 
 class UsageError extends Error {}
@@ -1265,4 +1080,7 @@ if (isDirectRun) {
   });
 }
 
-export { TOOL, AUDIT_SCRIPTS };
+// `parseCli` and `hashLegInput` now live in lib/cli-args.mjs and
+// lib/leg-input.mjs respectively (Decisions §7, §8); re-exported here so
+// existing importers of run-all.mjs keep working unchanged.
+export { TOOL, AUDIT_SCRIPTS, parseCli, hashLegInput };

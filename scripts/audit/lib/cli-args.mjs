@@ -12,6 +12,7 @@
  * Tool-specific flags can be added by passing extra `options` to `parseAuditArgs`.
  */
 import { parseArgs } from 'node:util';
+import { EXIT_INTERNAL } from './exit-codes.mjs';
 
 const BASE_OPTIONS = {
   'all': { type: 'boolean', default: false },
@@ -132,4 +133,146 @@ export function resolveDepth({ depth, fast = false, e2e = false } = {}) {
     return { error: `--${fast ? 'fast' : 'e2e'} means --depth ${implied}, which contradicts --depth ${depth}` };
   }
   return { depth: depth ?? implied ?? DEFAULT_DEPTH };
+}
+
+const RUN_ALL_TOOL = 'run-all';
+
+/**
+ * `run-all.mjs`'s own usage text (Decision §8 of
+ * `2026-09-22-audit-depths-sentinel-fixes.md`: moved here, beside
+ * `resolveDepth`, so `verdict.mjs` can validate the same flags before
+ * spawning run-all as a child process, exiting 2 on a usage error itself
+ * rather than letting a spawned failure read back as INCOMPLETE).
+ */
+export const RUN_ALL_USAGE = `Usage: node scripts/audit/run-all.mjs <component | --all | --changed> [options]
+
+Run the audit checks a depth requires in waves and aggregate the results into
+a single JSON envelope. AI agents should call this instead of dispatching each
+script individually; gate callers use \`yarn audit:component\` (verdict.mjs).
+
+Targets (choose one):
+  <mud-name>          Audit one component (e.g. mud-button or button)
+  --all               Audit every mud-* component, one pipeline each
+  --changed           Audit components touched in git diff vs main, one pipeline each
+
+Depth:
+  --depth <d>         quick | standard | deep (default: standard)
+                        quick     lint + Wave A; no build, no browser
+                        standard  quick + prerequisites + Waves B and C
+                        deep      standard + figma-refs --check, adapter builds,
+                                  E2E (deferred) and the AI-leg rows
+  --fast              Deprecated alias of --depth quick
+  --e2e               Folded into --depth deep
+
+Options:
+  --json              Emit the combined JSON envelope to stdout (default human summary)
+  --out <file>        Write the combined JSON envelope to a file
+  --skip <ids>        Comma-separated list of check ids to skip (e.g. 06,08)
+  --only <ids>        Comma-separated list — only run these checks. A required id dropped
+                      by --skip / --only makes the verdict INCOMPLETE.
+  --no-browser        Excuse the browser checks (Wave C and the browser AI legs);
+                      the verdict level is capped at CLEAN-STATIC.
+  --ci                Same as --no-browser, and sets meta.ciDetected. Also enabled
+                      when process.env.CI is set.
+  --no-figma          Excuse the Figma checks (11, 15, figma-refs, the Figma AI leg)
+                      for this run; deep is then capped at MERGE-READY.
+  --figma-dir <dir>   Forwarded to 11-pixel-diff-states (reference PNGs)
+  --verdict           Also write audit/<component>/runs/<run>/, verdict.json,
+                      fix-brief.md and audit/_run/summary.json (verdict.mjs does this)
+  --audit-dir <dir>   Root for --verdict output (default: audit/)
+  --no-color          Disable ANSI colors
+  --help, -h          Show this help`;
+
+/**
+ * Parse `run-all.mjs`'s own argv. `env` is injectable so a test can set `CI`
+ * without touching the real environment. Exits the process (2) on a usage
+ * error — verdict.mjs's fresh mode calls this before spawning run-all so a
+ * usage error surfaces as exit 2 there too, never as a spawned INCOMPLETE (S9).
+ */
+export function parseCli(argv = process.argv.slice(2), env = process.env) {
+  let parsed;
+  try {
+    parsed = parseArgs({
+      args: argv,
+      options: {
+        'all': { type: 'boolean', default: false },
+        'changed': { type: 'boolean', default: false },
+        'json': { type: 'boolean', default: false },
+        'out': { type: 'string' },
+        'skip': { type: 'string', default: '' },
+        'only': { type: 'string', default: '' },
+        'depth': { type: 'string' },
+        'fast': { type: 'boolean', default: false },
+        'e2e': { type: 'boolean', default: false },
+        'no-browser': { type: 'boolean', default: false },
+        'no-figma': { type: 'boolean', default: false },
+        'ci': { type: 'boolean', default: false },
+        'figma-dir': { type: 'string' },
+        'verdict': { type: 'boolean', default: false },
+        'audit-dir': { type: 'string' },
+        'no-color': { type: 'boolean', default: false },
+        'help': { type: 'boolean', short: 'h', default: false },
+      },
+      allowPositionals: true,
+      strict: true,
+    });
+  } catch (err) {
+    process.stderr.write(`${RUN_ALL_TOOL}: ${err.message}\n\n${RUN_ALL_USAGE}\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+  if (parsed.values.help) {
+    process.stdout.write(`${RUN_ALL_USAGE}\n`);
+    process.exit(0);
+  }
+  const component = parsed.positionals[0] ?? null;
+  const all = parsed.values.all;
+  const changed = parsed.values.changed;
+  const targetCount = [component, all, changed].filter(Boolean).length;
+  if (targetCount === 0) {
+    process.stderr.write(`${RUN_ALL_TOOL}: choose a component, --all, or --changed.\n\n${RUN_ALL_USAGE}\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+  if (targetCount > 1) {
+    process.stderr.write(`${RUN_ALL_TOOL}: choose exactly one of <component>, --all, --changed.\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+  const depth = resolveDepth({ depth: parsed.values.depth, fast: parsed.values.fast, e2e: parsed.values.e2e });
+  if (depth.error) {
+    process.stderr.write(`${RUN_ALL_TOOL}: ${depth.error}\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+  // CI mode: the explicit --ci flag or any truthy CI env var (GitHub Actions,
+  // GitLab CI, CircleCI, … all set CI=true). Either excuses the browser checks
+  // and caps the level (Decision §6); the verdict names which one.
+  const ciEnv = Boolean(env.CI);
+  const ci = parsed.values.ci || ciEnv;
+  const noBrowser = parsed.values['no-browser'];
+  const browserWaiver = ciEnv ? 'CI env' : parsed.values.ci || noBrowser ? 'flag' : null;
+  return {
+    component,
+    all,
+    changed,
+    depth: depth.depth,
+    json: parsed.values.json,
+    out: parsed.values.out ?? null,
+    skip: splitIds(parsed.values.skip),
+    only: splitIds(parsed.values.only),
+    noBrowser,
+    noFigma: parsed.values['no-figma'],
+    ci,
+    browserWaiver,
+    figmaDir: parsed.values['figma-dir'] ?? null,
+    verdict: parsed.values.verdict,
+    auditDir: parsed.values['audit-dir'] ?? null,
+    noColor: parsed.values['no-color'],
+  };
+}
+
+function splitIds(s) {
+  return new Set(
+    s
+      .split(',')
+      .map(x => x.trim())
+      .filter(Boolean),
+  );
 }

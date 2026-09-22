@@ -29,7 +29,7 @@
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { basename, join, relative, resolve } from 'node:path';
+import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { REPO_ROOT } from './lib/component-paths.mjs';
@@ -37,6 +37,7 @@ import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import { headManifestRelPath, manifestRelPath } from './lib/figma-manifest.mjs';
 import {
   AI_FINDINGS_SCHEMA_VERSION,
+  AI_LEG_STATUS,
   LEVEL,
   ROW_STATUS,
   SCHEMA_VERSION,
@@ -44,6 +45,8 @@ import {
   VERDICT_SCHEMA_VERSION,
 } from './lib/json-output.mjs';
 import { renderFixBrief } from './lib/fix-brief.mjs';
+import { currentLegHashes, defaultReadPrompt, defaultReadSources } from './lib/leg-input.mjs';
+import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 
 const TOOL = 'verdict';
 
@@ -252,9 +255,10 @@ export function closeAiRow(row, aiFiles) {
   const judged = new Set(Array.isArray(data.idsJudged) ? data.idsJudged : []);
   const missing = row.idsJudged.filter(id => !judged.has(id));
   if (missing.length) return { closed: false, cause: `ai-findings.json does not list ${missing.join(', ')}` };
-  if (data.inputHash && row.inputHash && data.inputHash !== row.inputHash) {
-    return { closed: false, cause: 'ai-findings.json was judged over a different input (input hash differs)' };
-  }
+  // The leg's own self-reported `inputHash` is never consulted (Decision §7,
+  // plan `2026-09-22-audit-depths-sentinel-fixes.md`): a recompute re-hashes
+  // the current sources itself and compares against the row's recorded hash
+  // (computeVerdict's `currentHashes`), which a self-report cannot add to.
   if (!Array.isArray(data.findings)) return { closed: false, cause: 'ai-findings.json has no findings array' };
   for (const [i, f] of data.findings.entries()) {
     const issue = findingShapeIssue(f, i);
@@ -272,8 +276,11 @@ export function closeAiRow(row, aiFiles) {
  * @param {object|null} opts.envelope — run-all's per-component envelope
  * @param {Array<{leg: string, data: object|null}>} [opts.aiFiles]
  * @param {string} [opts.component] — used when the envelope is missing
+ * @param {Record<string,string>|null} [opts.currentHashes] — id → current
+ *   `sha256:...` of what an `ai-*` leg judges, as of right now (`lib/leg-input.mjs`
+ *   `currentLegHashes`). `null` skips the staleness check entirely (Decision §7).
  */
-export function computeVerdict({ envelope, aiFiles = [], component: fallbackComponent = null }) {
+export function computeVerdict({ envelope, aiFiles = [], component: fallbackComponent = null, currentHashes = null }) {
   const audit = envelope?.audit ?? {};
   const component = audit.component ?? fallbackComponent ?? envelope?.target ?? 'unknown';
   const depth = audit.depth ?? 'standard';
@@ -290,12 +297,22 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   const notes = [];
   const excuses = [];
   const rows = [];
+  const warnings = [];
   const addExcuse = e => {
     if (!excuses.includes(e)) excuses.push(e);
   };
+  // Parallel to `incomplete`: true for an entry that is an opened `ai-*` row
+  // whose current source hash still matches — the only shape `awaitingLegs`
+  // (Decision §1) counts. Every other INCOMPLETE cause (a non-ai row, a leg
+  // never opened, a stale hash) pushes `false`.
+  const awaitingFlags = [];
+  const addIncomplete = (entry, awaiting = false) => {
+    incomplete.push(entry);
+    awaitingFlags.push(awaiting);
+  };
 
   if (!envelope) {
-    incomplete.push({
+    addIncomplete({
       kind: STATE.INCOMPLETE,
       check: 'run-all',
       cause: 'no envelope for this run — the orchestrator did not finish',
@@ -303,7 +320,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       verify: `yarn audit:component ${component} --depth ${depth}`,
     });
   } else if (major(envelope.schemaVersion) !== major(SCHEMA_VERSION)) {
-    incomplete.push({
+    addIncomplete({
       kind: STATE.INCOMPLETE,
       check: 'run-all',
       cause: `envelope schemaVersion ${envelope.schemaVersion} has an unknown major version`,
@@ -312,7 +329,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
     });
   }
   if (envelope?.preflight && envelope.preflight.ok === false) {
-    incomplete.push({
+    addIncomplete({
       kind: STATE.INCOMPLETE,
       check: 'env-preflight',
       cause: envelope.preflight.cause,
@@ -352,7 +369,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
           ? 'required at this depth, dropped by --only'
           : 'required at this depth, did not run';
       rows.push({ id, name: null, required: true, status: ROW_STATUS.SKIPPED });
-      incomplete.push({
+      addIncomplete({
         kind: STATE.INCOMPLETE,
         check: id,
         cause,
@@ -373,26 +390,52 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
     if (row.deferred) out.deferred = row.deferred;
     if (row.status === ROW_STATUS.CRASHED || row.status === ROW_STATUS.MISSING_PREREQ) {
       out.errorClass = errorClass(row);
-      incomplete.push({
+      addIncomplete({
         kind: STATE.INCOMPLETE,
         check: `${id} ${row.name}`,
         cause: `${row.status} (${out.errorClass})`,
         prerequisite: row.prerequisite ?? 'none',
         verify: verifyCommand(component, depth, id),
       });
-    } else if (row.status === ROW_STATUS.OK && row.blocking !== false) {
-      const found = (findingsByTool[row.name] ?? []).filter(f => f.severity === 'error').sort(compareFindings);
-      for (const f of found) {
-        fails.push(
-          failEntry({
-            f,
+    } else if (row.status === ROW_STATUS.OK) {
+      const allFindings = findingsByTool[row.name] ?? [];
+      // A required row that checked nothing (Decision §5): INCOMPLETE, not a
+      // FAIL — the fix is a missing input, and it never also lands in R4's
+      // warnings below.
+      const noTargetFindings = allFindings.filter(f => f.noTarget === true);
+      if (isRequired) {
+        for (const f of noTargetFindings) {
+          addIncomplete({
+            kind: STATE.INCOMPLETE,
             check: `${id} ${row.name}`,
-            component,
-            source: `rule ${f.code} (${row.file ? `scripts/audit/${row.file}` : row.name})`,
+            cause: `no target resolved (${f.code ?? 'no code'}): ${f.message ?? 'no target to check'}`,
+            prerequisite: f.fix || 'resolve the missing input named in the finding',
             verify: verifyCommand(component, depth, id),
-            owner: row.owner ?? '/modify-component',
-          }),
-        );
+          });
+        }
+      }
+      if (row.blocking !== false) {
+        const found = allFindings.filter(f => f.severity === 'error' && f.noTarget !== true).sort(compareFindings);
+        for (const f of found) {
+          fails.push(
+            failEntry({
+              f,
+              check: `${id} ${row.name}`,
+              component,
+              source: `rule ${f.code} (${row.file ? `scripts/audit/${row.file}` : row.name})`,
+              verify: verifyCommand(component, depth, id),
+              owner: row.owner ?? '/modify-component',
+            }),
+          );
+        }
+        for (const f of allFindings.filter(f => f.severity === 'warning' && f.noTarget !== true)) {
+          warnings.push({
+            check: `${id} ${row.name}`,
+            code: f.code,
+            message: f.message || f.fix || 'warning',
+            verify: verifyCommand(component, depth, id),
+          });
+        }
       }
     }
     rows.push(out);
@@ -416,7 +459,9 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       if (!opened) {
         rows.push({ id, name: null, required: true, status: ROW_STATUS.SKIPPED });
         if (envelope && envelope.preflight?.ok !== false) {
-          incomplete.push({
+          // Never opened at all is not "awaiting" a leg's return (Decision §1
+          // of this plan) — it is a leg the orchestrator should have dispatched.
+          addIncomplete({
             kind: STATE.INCOMPLETE,
             check: id,
             cause: 'required AI leg was never opened by the orchestrator',
@@ -426,13 +471,21 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         }
         continue;
       }
-      const closure = closeAiRow(opened, aiFiles);
+      // R2 (Decision §7): the recompute's own re-hash of the current sources
+      // decides staleness, never the leg's self-reported inputHash. A mismatch
+      // leaves the row unclosed and is not "awaiting legs" — the sources moved
+      // under it, so re-dispatching the same leg would judge stale code.
+      const currentHash = currentHashes ? (currentHashes[id] ?? null) : null;
+      const hashStale = currentHash !== null && Boolean(opened.inputHash) && currentHash !== opened.inputHash;
+      const closure = hashStale
+        ? { closed: false, cause: 'source changed since run <run> — start a fresh run' }
+        : closeAiRow(opened, aiFiles);
       legs.push({
         id,
         leg: opened.leg,
         idsJudged: opened.idsJudged,
         inputHash: opened.inputHash,
-        status: closure.closed ? 'closed' : 'open',
+        status: closure.closed ? AI_LEG_STATUS.CLOSED : AI_LEG_STATUS.OPEN,
       });
       rows.push({
         id,
@@ -441,13 +494,18 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         status: closure.closed ? ROW_STATUS.OK : ROW_STATUS.MISSING_PREREQ,
       });
       if (!closure.closed) {
-        incomplete.push({
-          kind: STATE.INCOMPLETE,
-          check: `${id} ${opened.leg}`,
-          cause: `missing-prereq (${closure.cause})`,
-          prerequisite: `dispatch the ${opened.leg} leg; it writes audit/${component}/runs/<run>/ai/${opened.leg}/ai-findings.json`,
-          verify: rerunVerdictCommand(component),
-        });
+        addIncomplete(
+          {
+            kind: STATE.INCOMPLETE,
+            check: `${id} ${opened.leg}`,
+            cause: hashStale ? closure.cause : `missing-prereq (${closure.cause})`,
+            prerequisite: hashStale
+              ? `a fresh run: yarn audit:component ${component} --depth ${depth}`
+              : `dispatch the ${opened.leg} leg; it writes audit/${component}/runs/<run>/ai/${opened.leg}/ai-findings.json`,
+            verify: rerunVerdictCommand(component),
+          },
+          !hashStale,
+        );
         continue;
       }
       if (legsRead.has(opened.leg)) continue;
@@ -472,18 +530,12 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         if (issue) notes.push(`ai-findings.json from leg ${file.leg}: ${issue} — finding ignored`);
         else validFindings.push(f);
       });
+      // Advisory only — never state-changing at quick/standard (Decision §5).
+      // A question-shaped finding renders as an advisory decision entry
+      // rather than being forced through the FAIL shape (S3): `aiFailOrDecision`
+      // already picks the right shape and never needs severity/actual for one.
       for (const f of validFindings.sort(compareFindings)) {
-        advisory.push({
-          ...failEntry({
-            f,
-            check: `ai ${file.leg}`,
-            component,
-            source: `AI leg ${file.leg}`,
-            verify: `re-dispatch the ${file.leg} leg, then: ${rerunVerdictCommand(component)}`,
-            owner: file.leg,
-          }),
-          kind: STATE.FAIL,
-        });
+        advisory.push(aiFailOrDecision(f, file.leg, component));
       }
     }
   }
@@ -515,6 +567,10 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         ? STATE.NEEDS_DECISION
         : STATE.PASS;
   const level = state === STATE.PASS ? levelFor({ depth, browserWaiver, noFigma }) : null;
+  // Decision §1: true only when every INCOMPLETE entry is an opened `ai-*`
+  // row whose hash still matches — never a constant, never vacuous over an
+  // empty list (a PASS/FAIL run has no INCOMPLETE entries at all).
+  const awaitingLegs = incomplete.length > 0 && awaitingFlags.every(Boolean);
 
   const number = (list, prefix) => list.map((e, i) => ({ id: `${prefix}${i + 1}`, ...e }));
   const entries = [...number(incomplete, 'I'), ...number(fails, 'F'), ...number(decisions, 'D')];
@@ -534,6 +590,8 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   verdict.headline = headlineParts.join(' · ');
   verdict.excuses = excuses;
   verdict.notes = notes;
+  verdict.awaitingLegs = awaitingLegs;
+  verdict.warnings = warnings;
   verdict.figma = figma
     ? {
         manifest: figma.rel ?? manifestRelPath(component),
@@ -566,8 +624,17 @@ export function levelFor({ depth, browserWaiver, noFigma }) {
 
 // ─── I/O: the only writer ────────────────────────────────────────────────
 
-/** Read a run directory's inputs. */
-export function readRunInputs(runDir) {
+/**
+ * Read a run directory's inputs, plus the current input hash of every `ai-*`
+ * id (R2, Decision §7) — computed here, the I/O layer, and handed to the
+ * pure `computeVerdict` as `currentHashes`. `repoRoot` / `readSources` /
+ * `readPrompt` are an injection seam for tests; production always re-hashes
+ * the real, current source tree.
+ */
+export function readRunInputs(
+  runDir,
+  { component = null, repoRoot = REPO_ROOT, readSources = defaultReadSources, readPrompt = defaultReadPrompt } = {},
+) {
   const envelopePath = join(runDir, 'envelope.json');
   let envelope = null;
   if (existsSync(envelopePath)) {
@@ -592,19 +659,28 @@ export function readRunInputs(runDir) {
       aiFiles.push({ leg, data });
     }
   }
-  return { envelope, aiFiles };
+  const resolvedComponent = component ?? envelope?.audit?.component ?? basename(resolve(runDir, '..', '..'));
+  const currentHashes = currentLegHashes(repoRoot, resolvedComponent, { readSources, readPrompt });
+  return { envelope, aiFiles, currentHashes };
 }
 
 /**
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
- * levels up, so the stable paths never depend on the run name.
+ * levels up, so the stable paths never depend on the run name. `legDeps`
+ * (`repoRoot` / `readSources` / `readPrompt`) forwards to `readRunInputs`'s
+ * re-hash — an injection seam for tests, unset in production.
  */
-export function writeVerdictForRun(runDir) {
+export function writeVerdictForRun(runDir, legDeps = {}) {
   const absRun = resolve(runDir);
   const componentDir = resolve(absRun, '..', '..');
-  const { envelope, aiFiles } = readRunInputs(absRun);
-  const verdict = computeVerdict({ envelope, aiFiles, component: basename(componentDir) });
+  const component = basename(componentDir);
+  const { envelope, aiFiles, currentHashes } = readRunInputs(absRun, { component, ...legDeps });
+  const verdict = computeVerdict({ envelope, aiFiles, component, currentHashes });
+  // Decision §10: the repo-relative form a caller can pass straight back to
+  // `--run-dir` (S8 validates that shape). Computed here, not in the pure
+  // computeVerdict, since only the I/O layer knows the run directory.
+  verdict.runDir = relative(REPO_ROOT, absRun).split(sep).join('/');
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
@@ -663,6 +739,34 @@ function printSummary(summary, json) {
   process.stdout.write(`state: ${summary.state}\n`);
 }
 
+/**
+ * S8: `--run-dir` must resolve to exactly `<auditRoot>/<mud-component>/runs/<run>`
+ * — never a bare id, never a path that climbs out via `..`, never a component
+ * or run segment that is itself `.` / `..` / carries a path separator. Pure.
+ *
+ * @returns {{ ok: true } | { ok: false, reason: string }}
+ */
+export function validateRunDirArg(runDirArg, auditRoot) {
+  const abs = resolve(runDirArg);
+  const rootAbs = resolve(auditRoot);
+  const rel = relative(rootAbs, abs);
+  if (rel === '' || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+    return { ok: false, reason: `--run-dir must be under ${rootAbs} (got "${runDirArg}")` };
+  }
+  const parts = rel.split(sep);
+  if (parts.length !== 3 || parts[1] !== 'runs') {
+    return { ok: false, reason: `--run-dir must match <auditRoot>/mud-*/runs/<run> (got "${runDirArg}")` };
+  }
+  const [component, , run] = parts;
+  if (!/^mud-[a-z0-9-]+$/.test(component)) {
+    return { ok: false, reason: `--run-dir's component segment must look like "mud-*" (got "${component}")` };
+  }
+  if (!run || run === '.' || run === '..' || run.includes('/') || run.includes(sep)) {
+    return { ok: false, reason: `--run-dir's run segment is invalid (got "${run}")` };
+  }
+  return { ok: true };
+}
+
 function recompute(runDirs, json) {
   const runs = runDirs.map(runDir => ({ runDir, verdict: writeVerdictForRun(runDir) }));
   const auditDir = resolve(runDirs[0], '..', '..', '..');
@@ -676,6 +780,11 @@ function runFresh(argv) {
   const forwarded = argv.filter(a => a !== '--json');
   const auditDirIndex = forwarded.indexOf('--audit-dir');
   const auditDir = auditDirIndex >= 0 ? resolve(forwarded[auditDirIndex + 1]) : join(REPO_ROOT, 'audit');
+  // S9: validate the run-all flags before spawning — a usage error (e.g.
+  // `--depth depp`) must exit 2 before any child process starts, never fall
+  // through to "run-all exited without a summary" (which is INCOMPLETE / 3).
+  // `parseRunAllCli` exits 2 itself on a usage error (lib/cli-args.mjs).
+  parseRunAllCli(forwarded);
   const summaryPath = join(auditDir, '_run', 'summary.json');
   // A summary left by an earlier run must never stand in for this one.
   rmSync(summaryPath, { force: true });
@@ -708,12 +817,24 @@ function main() {
     try {
       parsed = parseArgs({
         args: argv,
-        options: { 'run-dir': { type: 'string', multiple: true }, 'json': { type: 'boolean', default: false } },
+        options: {
+          'run-dir': { type: 'string', multiple: true },
+          'json': { type: 'boolean', default: false },
+          'audit-dir': { type: 'string' },
+        },
         strict: true,
       });
     } catch (err) {
       process.stderr.write(`${TOOL}: ${err.message}\n\n${USAGE}\n`);
       return EXIT_INTERNAL;
+    }
+    const auditRoot = parsed.values['audit-dir'] ? resolve(parsed.values['audit-dir']) : join(REPO_ROOT, 'audit');
+    for (const runDirArg of parsed.values['run-dir']) {
+      const check = validateRunDirArg(runDirArg, auditRoot);
+      if (!check.ok) {
+        process.stderr.write(`${TOOL}: ${check.reason}\n\n${USAGE}\n`);
+        return EXIT_INTERNAL;
+      }
     }
     return recompute(parsed.values['run-dir'], parsed.values.json);
   }

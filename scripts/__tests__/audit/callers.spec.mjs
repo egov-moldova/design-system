@@ -11,7 +11,7 @@
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,8 +31,11 @@ function auditDir() {
   return dir;
 }
 
-function runVerdict(runDirs) {
-  return spawnSync(process.execPath, [VERDICT, ...runDirs.flatMap(d => ['--run-dir', d]), '--json'], {
+function runVerdict(runDirs, auditRoot) {
+  // S8: --run-dir must resolve under --audit-dir (or the repo's audit/); these
+  // fixtures live under a tmp auditDir, so every CLI invocation now names it.
+  const auditArgs = auditRoot ? ['--audit-dir', auditRoot] : [];
+  return spawnSync(process.execPath, [VERDICT, ...runDirs.flatMap(d => ['--run-dir', d]), ...auditArgs, '--json'], {
     encoding: 'utf8',
   });
 }
@@ -60,7 +63,7 @@ describe('callers: verdict.mjs exit code per state', () => {
     it(`${state} → exit ${STATE_EXIT_CODES[state]}`, () => {
       const dir = auditDir();
       const runDir = writeRunDir(dir, make('mud-fx'));
-      const res = runVerdict([runDir]);
+      const res = runVerdict([runDir], dir);
       assert.equal(res.status, STATE_EXIT_CODES[state], res.stderr);
       assert.equal(JSON.parse(res.stdout).state, state);
       assert.equal(JSON.parse(readFileSync(join(dir, 'mud-fx', 'verdict.json'), 'utf8')).state, state);
@@ -77,7 +80,7 @@ describe('callers: verdict.mjs exit code per state', () => {
     for (const [states, worst] of cases) {
       const dir = auditDir();
       const runDirs = states.map((s, i) => writeRunDir(dir, FIXTURE_FOR_STATE[s](`mud-fx-${i}`)));
-      const res = runVerdict(runDirs);
+      const res = runVerdict(runDirs, dir);
       assert.equal(res.status, STATE_EXIT_CODES[worst], `${states.join('+')}: ${res.stderr}`);
       const summary = JSON.parse(readFileSync(join(dir, '_run', 'summary.json'), 'utf8'));
       assert.equal(summary.state, worst);
@@ -90,6 +93,59 @@ describe('callers: verdict.mjs exit code per state', () => {
 
   it('a usage error exits 2, never a state code', () => {
     assert.equal(spawnSync(process.execPath, [VERDICT], { encoding: 'utf8' }).status, 2);
+  });
+});
+
+describe('callers: S8 — --run-dir must match <auditRoot>/mud-*/runs/<run>', () => {
+  it('the existing exit-code cases pass with --audit-dir <tmp> (already exercised above via runVerdict(..., dir))', () => {
+    const dir = auditDir();
+    const runDir = writeRunDir(dir, cleanEnvelope({ component: 'mud-fx' }));
+    const res = runVerdict([runDir], dir);
+    assert.equal(res.status, 0, res.stderr);
+  });
+
+  it('a bare run id → exit 2, nothing written', () => {
+    const dir = auditDir();
+    const res = runVerdict(['just-a-run-id'], dir);
+    assert.equal(res.status, 2);
+    assert.equal(existsSync(join(dir, 'mud-fx', 'verdict.json')), false);
+  });
+
+  it('<auditRoot>/mud-x/runs/.. → exit 2, nothing written', () => {
+    const dir = auditDir();
+    mkdirSync(join(dir, 'mud-x', 'runs'), { recursive: true });
+    const res = runVerdict([join(dir, 'mud-x', 'runs', '..')], dir);
+    assert.equal(res.status, 2);
+    assert.equal(existsSync(join(dir, 'mud-x', 'verdict.json')), false);
+  });
+
+  it('a directory outside auditRoot → exit 2, nothing written', () => {
+    const dir = auditDir();
+    const outside = mkdtempSync(join(tmpdir(), 'callers-spec-outside-'));
+    tmpRoots.push(outside);
+    const runDir = writeRunDir(outside, cleanEnvelope({ component: 'mud-fx' }));
+    const res = runVerdict([runDir], dir);
+    assert.equal(res.status, 2);
+    assert.equal(existsSync(join(outside, 'mud-fx', 'verdict.json')), false);
+  });
+});
+
+describe('callers: S9 — a usage error in fresh mode exits 2 before run-all is spawned', () => {
+  function runFresh(argv, auditDir) {
+    return spawnSync(process.execPath, [VERDICT, ...argv, '--audit-dir', auditDir], { encoding: 'utf8' });
+  }
+
+  it('--depth depp → exit 2, no summary.json written', () => {
+    const dir = auditDir();
+    const res = runFresh(['mud-button', '--depth', 'depp'], dir);
+    assert.equal(res.status, 2);
+    assert.equal(existsSync(join(dir, '_run', 'summary.json')), false);
+  });
+
+  it('an invalid component name still surfaces as run-all crashing without a summary → exit 3, unchanged', () => {
+    const dir = auditDir();
+    const res = runFresh(['not a valid component name!!'], dir);
+    assert.equal(res.status, 3, res.stderr);
   });
 });
 

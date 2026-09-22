@@ -23,6 +23,7 @@ import {
   hashLegInput,
 } from '../../audit/run-all.mjs';
 import { checkEnv, satisfiesRange, formatIncomplete, REQUIRED_DEPS } from '../../audit/lib/env-preflight.mjs';
+import { SCHEMA_VERSION } from '../../audit/lib/json-output.mjs';
 import { resolveDepth } from '../../audit/lib/cli-args.mjs';
 import { ensureWorktreeStorybook, startStorybookProcess } from '../../audit/lib/storybook-helpers.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, writeVerdictForRun } from '../../audit/verdict.mjs';
@@ -298,7 +299,7 @@ describe('run-all: aggregate', () => {
 
   it('includes schema version and tool metadata', () => {
     const combined = aggregate({ targetArg: 'mud-button', results: [], durationMs: 42 });
-    assert.equal(combined.schemaVersion, '1.2.0');
+    assert.equal(combined.schemaVersion, SCHEMA_VERSION);
     assert.equal(combined.tool, 'run-all');
     assert.equal(combined.meta.totalDurationMs, 42);
     assert.equal(combined.meta.parallel, true);
@@ -676,10 +677,11 @@ describe('run-all: runAudit — Figma inputs from HEAD only (Design §8)', () =>
       brief: readFileSync(join(p.auditDir, 'mud-fx', 'fix-brief.md'), 'utf8'),
     };
   }
+  // runDir is per-run by design (Decision §10) — each call runs under its own
+  // fresh tmp repoRoot, so only notes/runDir are excluded from the compare.
+  const omit = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
   const sameAsHead = (variant, baseline) => {
-    const { notes: _n1, ...a } = variant.verdict;
-    const { notes: _n2, ...b } = baseline.verdict;
-    assert.deepEqual(a, b);
+    assert.deepEqual(omit(variant.verdict, ['notes', 'runDir']), omit(baseline.verdict, ['notes', 'runDir']));
     assert.deepEqual(variant.manifestRead, baseline.manifestRead);
   };
 
@@ -793,7 +795,14 @@ describe('run-all: runAudit — deep', () => {
       mkdirSync(join(runDir, 'ai', leg), { recursive: true });
       writeFileSync(join(runDir, 'ai', leg, 'ai-findings.json'), JSON.stringify({ ...data, inputHash: hash }));
     }
-    const v = writeVerdictForRun(runDir);
+    // Same deps openAiLegs opened the row's hash with (R2) — production always
+    // uses the real repoRoot/sources/prompt on both sides; only a test needs
+    // to thread its fixture deps through both, or the recompute reads "stale".
+    const v = writeVerdictForRun(runDir, {
+      repoRoot: p.repoRoot,
+      readSources: p.deps.readSources,
+      readPrompt: p.deps.readPrompt,
+    });
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
     assert.match(v.headline, /ai-legs: self-attested/);
@@ -811,7 +820,11 @@ describe('run-all: runAudit — deep', () => {
       run: 'run-1',
       ai: allLegsClosed().map(f => ({ ...f, data: { ...f.data, inputHash: null } })),
     });
-    const v = writeVerdictForRun(runDir);
+    const v = writeVerdictForRun(runDir, {
+      repoRoot: p.repoRoot,
+      readSources: p.deps.readSources,
+      readPrompt: p.deps.readPrompt,
+    });
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'MERGE-READY');
   });

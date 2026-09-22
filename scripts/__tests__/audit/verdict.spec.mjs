@@ -11,6 +11,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
+import { renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import {
   REQUIRED_CHECKS,
   closeAiRow,
@@ -385,6 +386,92 @@ describe('verdict: deep', () => {
   });
 });
 
+describe('verdict: S4 — awaitingLegs, true only when every INCOMPLETE entry is an opened ai-* row whose hash still matches', () => {
+  it('positive: every INCOMPLETE entry is an opened, unclosed ai-* row → true', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
+    assert.equal(v.state, 'INCOMPLETE');
+    assert.ok(v.entries.length > 0);
+    assert.equal(v.awaitingLegs, true);
+  });
+
+  it('mixed: opened ai-* rows plus one non-ai INCOMPLETE entry → false', () => {
+    const v = computeVerdict({ envelope: drop(cleanEnvelope({ depth: 'deep' }), '13'), aiFiles: [] });
+    assert.equal(v.state, 'INCOMPLETE');
+    assert.ok(v.entries.some(e => !e.check.startsWith('ai-')));
+    assert.equal(v.awaitingLegs, false);
+  });
+
+  it('stale hash: an ai-* row open on a hash that no longer matches its opened value → false', () => {
+    const currentHashes = { 'ai-stencil': 'sha256:bbbb' }; // opened rows all recorded INPUT_HASH ('sha256:aaaa')
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes });
+    assert.equal(v.state, 'INCOMPLETE');
+    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
+    assert.match(stale.cause, /source changed since run/);
+    assert.equal(v.awaitingLegs, false);
+  });
+
+  it('PASS → false', () => {
+    assert.equal(
+      computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() }).awaitingLegs,
+      false,
+    );
+  });
+
+  it('FAIL → false', () => {
+    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles: allLegsClosed() });
+    assert.equal(v.state, 'FAIL');
+    assert.equal(v.awaitingLegs, false);
+  });
+
+  it('a leg never opened at all is not "awaiting" — the whole verdict has no leg dispatched yet', () => {
+    const e = cleanEnvelope({ depth: 'deep' });
+    e.audit.aiLegs = e.audit.aiLegs.filter(l => l.id !== 'ai-stencil');
+    const v = computeVerdict({ envelope: e, aiFiles: [] });
+    assert.equal(v.state, 'INCOMPLETE');
+    // Every remaining entry is still an opened, unclosed ai-* row, so this stays true —
+    // the "never opened" entry sits alongside them but is itself excluded from awaiting.
+    const neverOpened = v.entries.find(x => x.check === 'ai-stencil');
+    assert.ok(neverOpened);
+    assert.equal(v.awaitingLegs, false);
+  });
+});
+
+describe('verdict: R7 — the AI-leg row status enum', () => {
+  it('closeAiRow feeds an "open"/"closed" status recognized by AI_LEG_STATUSES', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() });
+    assert.ok(v.aiLegs.legs.every(l => l.status === 'closed'));
+    const unclosed = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
+    assert.ok(unclosed.aiLegs.legs.every(l => l.status === 'open'));
+  });
+});
+
+describe('verdict: R4 — script warnings, non-blocking', () => {
+  it('a warning-severity finding on a blocking row lands in verdict.warnings, never changes the state', () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '02');
+    row.summary = { errors: 0, warnings: 1, info: 0 };
+    e.findingsByTool[row.name] = [{ severity: 'warning', code: 'W1', message: 'borderline', file: 'x.tsx' }];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.warnings.length, 1);
+    assert.equal(v.warnings[0].code, 'W1');
+    assert.match(v.warnings[0].verify, /run-all\.mjs mud-fx --depth standard --only 02/);
+  });
+
+  it('a noTarget finding never also appears in warnings, even at warning severity', () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '02');
+    row.summary = { errors: 0, warnings: 1, info: 0 };
+    e.findingsByTool[row.name] = [
+      { severity: 'warning', code: 'NO-TARGET', message: 'nothing to check', noTarget: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.warnings.length, 0);
+    assert.equal(v.state, 'INCOMPLETE');
+    assert.match(v.entries[0].cause, /no target resolved/);
+  });
+});
+
 describe('verdict: AI findings are advisory at quick / standard (Decision §5)', () => {
   const blocking = [
     {
@@ -408,6 +495,24 @@ describe('verdict: AI findings are advisory at quick / standard (Decision §5)',
       assert.equal(v.advisory.length, 1);
       assert.equal(v.advisory[0].id, 'A1');
       assert.equal(v.advisory[0].code, 'CX1');
+    });
+
+    it(`S3: ${depth} — a question-shaped AI finding (question + options, no severity) renders as an advisory decision entry, never throws`, () => {
+      const question = [
+        {
+          leg: 'a11y-verifier',
+          data: aiFindings('a11y-verifier', {
+            findings: [{ code: 'CX1', question: 'Trap focus?', options: ['yes', 'no'] }],
+          }),
+        },
+      ];
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: question });
+      assert.equal(v.state, 'PASS');
+      assert.equal(v.advisory.length, 1);
+      assert.equal(v.advisory[0].kind, 'NEEDS-DECISION');
+      assert.equal(v.advisory[0].question, 'Trap focus?');
+      assert.deepEqual(v.advisory[0].options, ['yes', 'no']);
+      assert.doesNotThrow(() => renderFixBrief(v));
     });
   }
 });
@@ -481,7 +586,7 @@ describe('verdict: worstState', () => {
 });
 
 describe('verdict: the only writer, byte-identical', () => {
-  it('two runs over envelopes differing only in excluded fields write byte-identical verdict.json', () => {
+  it('two runs over envelopes differing only in excluded fields write byte-identical verdict.json (runDir excepted — it is per-run by design, Decision §10)', () => {
     const auditDir = tmp();
     const outputs = [];
     for (const [run, fixture] of [
@@ -498,10 +603,16 @@ describe('verdict: the only writer, byte-identical', () => {
       readFileSync(join(FIXTURES, 'envelope-a.json')),
       readFileSync(join(FIXTURES, 'envelope-b.json')),
     );
-    assert.ok(outputs[0].equals(outputs[1]), 'verdict.json differs between the two runs');
-    const v = JSON.parse(outputs[0]);
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.doesNotMatch(outputs[0].toString(), /durationMs|boom|4242|5151|2026-09-21/);
+    const [a, b] = outputs.map(buf => JSON.parse(buf));
+    assert.notEqual(a.runDir, b.runDir, 'runDir should differ between the two runs — it names this run');
+    assert.match(a.runDir, /4242/);
+    assert.match(b.runDir, /5151/);
+    delete a.runDir;
+    delete b.runDir;
+    assert.deepEqual(a, b, 'verdict.json differs between the two runs beyond runDir');
+    assert.equal(a.state, 'INCOMPLETE');
+    const strippedA = JSON.stringify(a);
+    assert.doesNotMatch(strippedA, /durationMs|boom|4242|5151|2026-09-21/);
   });
 
   it('a hand-written PASS verdict.json at the stable path is replaced on the next run', () => {

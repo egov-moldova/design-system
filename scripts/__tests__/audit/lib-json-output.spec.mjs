@@ -21,6 +21,9 @@ import {
   isValidRowStatus,
   buildAiLegRow,
   isValidAiLegRow,
+  AI_LEG_STATUS,
+  AI_LEG_STATUSES,
+  finding,
 } from '../../audit/lib/json-output.mjs';
 
 const LIB = fileURLToPath(new URL('../../audit/lib/json-output.mjs', import.meta.url));
@@ -57,12 +60,22 @@ function emitThroughPipe(bytes) {
 
 describe('json-output: schema versions', () => {
   it('bumps the envelope SCHEMA_VERSION to a minor over 1.0.0', () => {
-    assert.equal(SCHEMA_VERSION, '1.2.0');
+    assert.equal(SCHEMA_VERSION, '1.3.0');
   });
 
   it('defines separate schemaVersions for verdict.json and ai-findings.json', () => {
-    assert.equal(VERDICT_SCHEMA_VERSION, '1.0.0');
+    assert.equal(VERDICT_SCHEMA_VERSION, '1.1.0');
     assert.equal(AI_FINDINGS_SCHEMA_VERSION, '1.0.0');
+  });
+
+  it('S13: the module doc states the same schemaVersion as the SCHEMA_VERSION constant, in both the header and the example envelope', () => {
+    const source = readFileSync(LIB, 'utf8');
+    const docHeader = source.match(/Shape \(schemaVersion (\S+) —/);
+    assert.ok(docHeader, 'doc header does not state a schemaVersion');
+    assert.equal(docHeader[1], SCHEMA_VERSION);
+    const example = source.match(/"schemaVersion":\s*"([^"]+)"/);
+    assert.ok(example, 'doc has no example envelope with a schemaVersion');
+    assert.equal(example[1], SCHEMA_VERSION);
   });
 });
 
@@ -157,6 +170,24 @@ describe('json-output: buildAiLegRow', () => {
 
   it('rejects an invalid status', () => {
     assert.throws(() => buildAiLegRow({ leg: 'a11y-verifier', idsJudged: ['CX1'], status: 'closing' }));
+  });
+
+  it('R7: AI_LEG_STATUS names the same two values buildAiLegRow/isValidAiLegRow accept', () => {
+    assert.deepEqual(AI_LEG_STATUSES, ['open', 'closed']);
+    assert.equal(AI_LEG_STATUS.OPEN, 'open');
+    assert.equal(AI_LEG_STATUS.CLOSED, 'closed');
+    for (const status of AI_LEG_STATUSES) {
+      assert.equal(isValidAiLegRow(buildAiLegRow({ leg: 'a11y-verifier', idsJudged: ['CX1'], status })), true);
+    }
+  });
+});
+
+describe('json-output: S6 — finding() accepts and emits noTarget', () => {
+  it('noTarget: true is carried on the finding; omitted (falsy) it is absent entirely', () => {
+    const f = finding({ severity: 'warning', code: 'A11Y-NO-STORY', message: 'no story', noTarget: true });
+    assert.equal(f.noTarget, true);
+    const g = finding({ severity: 'warning', code: 'A11Y-NO-STORY', message: 'no story' });
+    assert.equal('noTarget' in g, false);
   });
 });
 
