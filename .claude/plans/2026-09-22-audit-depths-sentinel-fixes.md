@@ -530,6 +530,133 @@ Grade (6809fe4..9f6e749, then 5fb9328):
   `<run>` — fixed in 5fb9328 (1333/1333). The byte-identity bar vs Decision 10's `runDir` —
   closed by moving `runDir` to the summary (owner's call).
 
+### Phase 5 — sentinel round 2 findings (2026-09-22, over e63c311..ac89c79)
+**Executor**: session model or dedicated stage, high effort · wave 5
+
+Sentinel round 2 returned REQUEST-CHANGES (correctness, testability, maintainability,
+documentation FAIL). Every finding below is fixed test-first unless its row says otherwise.
+Round 3 is the last sentinel round this branch may spend (sentinel cap).
+
+**Decision 11** (the verify placeholder, T9/T8/T19): `verdict.mjs` gains `--recompute <component>`,
+which reads that component's `runDir` from `<auditDir>/_run/summary.json` and recomputes it —
+exit 2 when the summary does not list the component. Every `verify` value and every caller then
+names `yarn audit:component --recompute <component>` — a fixed string, so `verdict.json` stays
+byte-identical and no command carries a `<run>` placeholder. `--run-dir` stays for explicit use.
+Callers read `awaitingLegs` from this invocation's `--json` stdout (`components[].awaitingLegs`,
+added to the summary), never from a `verdict.json` an earlier run may have left behind; every
+early exit of `runFresh` (lock refusal, run-all crash, preflight) prints a summary with
+`components: []`.
+
+**Files**:
+- Modify: `scripts/audit/verdict.mjs`
+- Modify: `scripts/audit/run-all.mjs`
+- Modify: `scripts/audit/lib/leg-input.mjs`
+- Modify: `scripts/audit/lib/storybook-helpers.mjs`
+- Modify: `scripts/audit/lib/fix-brief.mjs`
+- Modify: `scripts/audit/lib/changed-components.mjs`
+- Modify: `scripts/audit/lib/component-paths.mjs`
+- Modify: `scripts/audit/06-test-coverage.mjs`
+- Modify: `scripts/audit/13-token-diff.mjs`
+- Modify: `scripts/audit/19-interaction.mjs`
+- Modify: `scripts/audit/17-adapter-contract.mjs`
+- Modify: `scripts/__tests__/audit/verdict.spec.mjs`
+- Modify: `scripts/__tests__/audit/run-all.spec.mjs`
+- Modify: `scripts/__tests__/audit/callers.spec.mjs`
+- Modify: `scripts/__tests__/audit/fix-brief.spec.mjs`
+- Modify: `scripts/__tests__/audit/06-test-coverage.spec.mjs`
+- Modify: `scripts/__tests__/audit/13-token-diff.spec.mjs`
+- Modify: `scripts/__tests__/audit/19-interaction.spec.mjs`
+- Modify: `scripts/__tests__/audit/lib-changed-components.spec.mjs`
+- Modify: `.claude/agents/audit-production.md`
+- Modify: `.claude/agents/a11y-verifier.md`
+- Modify: `.claude/agents/pixel-perfect-verifier.md`
+- Modify: `.claude/commands/audit-component.md`
+- Modify: `.claude/commands/migrate-component.md`
+- Modify: `.claude/skills/audit-component/SKILL.md`
+- Modify: `.claude/skills/audit-component/references/wave-2-static-analysis.md`
+- Modify: `.claude/skills/stencil-compliance/SKILL.md`
+- Modify: `scripts/audit/README.md`
+- Modify: `.claude/plans/2026-09-22-audit-depths-sentinel-fixes.md`
+- Read only: `.claude/skills/stencil-compliance/references/decorators.md`
+- Read only: `node_modules/vitest/`
+
+Must-fix (FAIL band):
+- [ ] T1 `run-all.mjs:771,803,988` — `readSources`/`readPrompt` take `(repoRoot, x)` on both
+  sides (one signature, the one `lib/leg-input.mjs` calls). Test: a real two-argument reader
+  (not an argument-ignoring stub) gives the opened row's hash and the in-run verdict's re-hash
+  the same value; `awaitingLegs: true` on a first `deep` run with no legs written.
+- [ ] T2 `19-interaction.mjs:447` — BX4's Escape check applies only when the component declares
+  a popup (`declaresPopup`); a disclosure that opens without one (`mud-accordion-item`) is
+  `not-applicable` with the reason. Fixture: accordion-item → no `ESCAPE-NO-CLOSE`.
+- [ ] T3 `13-token-diff.mjs:191` — `TOKEN-DIFF-NO-CURRENT` is not `noTarget`: a component with no
+  own tokens file has nothing to diff, so the row is `not-applicable` with the reason (Decision 5
+  corrected; `TOKEN-DIFF-NO-FIGMA-EXPORT` keeps `noTarget`). Fixture: `mud-icon` → row ok.
+- [ ] T4 `19-interaction.mjs:392` — BX4 closes the overlay (method with `false`, or `open=false`)
+  and waits before its `before` snapshot, so a story that renders open (`mud-tooltip`) is judged.
+- [ ] T5 `verdict.mjs:776` — `--run-dir` also requires `<runDir>/envelope.json` to exist; else
+  exit 2, nothing written. Case in `callers.spec.mjs`.
+- [ ] T6 `run-all.mjs:867` — the worktree lock is taken whenever any selected row writes `dist/`
+  or starts Storybook (prerequisites, `exclusive` adapter rows), not only when prerequisites run.
+- [ ] T7 `run-all.mjs:980` — `runAudit` takes the audit-dir lock up front (or honours a valid
+  hand-off) before any work; a held lock → INCOMPLETE exit 3, never a late UsageError; every
+  `_run/` write happens under it.
+- [ ] T8 `migrate-component.md:66`, `audit-component.md:55` — the recompute names
+  `--recompute <component>` (Decision 11), so it always targets the latest run; the skill invoked
+  from a caller does not start a second fresh run when one is already awaiting legs.
+- [ ] T9 `SKILL.md:138` — R11's rule runs `verify` values that are fixed strings (Decision 11); the
+  stale `inputHash` sentence near SKILL.md:124 is updated to the re-hash rule.
+- [ ] T10 `verdict.mjs:404` — an INCOMPLETE entry carries `prerequisite` only for
+  `missing-prereq`; a `crashed` entry names the crash and its log instead.
+- [ ] T11 `19-interaction.mjs:626` — BX7 sets a value suited to the value prop's declared type
+  (number → a numeric string, date/time → a valid literal) and compares the same normalised form.
+- [ ] T12 `verdict.mjs:438` — `warnings` sorted with `compareFindings`; measured text stays in
+  `message` (determinism is per environment class, as for FAILs). Test: shuffled input, same output.
+- [ ] T13 `pixel-perfect-verifier.md:85` — steps 2–3 gate on and export from the HEAD manifest
+  (`--manifest .audit-figma/<name>/manifest@HEAD.json`), like steps 4–5.
+- [ ] T14 `run-all.mjs:666` — coverage filters pass `src/components/<name>/` with the trailing
+  slash (vitest matches by substring, `cli-api.CnMVyzaz.js:10934-10935`). Fixture: `mud-button`
+  with a failing `mud-button-group` spec → mud-button's prerequisite ok.
+- [ ] T15 `19-interaction.mjs:203` — the BX4 not-opened branch is extracted into a pure
+  `bx4Outcome(bx4Data)` that `analyzeComponent` calls; tests: popup + not opened → finding
+  `INTERACTION-BX4-NOT-OPENED` with `noTarget: true`; no popup → `not-applicable`.
+- [ ] T16 `stencil-compliance/SKILL.md:106` (upstream's P11 → eslint row, kept) — our side is
+  aligned instead: `17-adapter-contract.mjs`'s header and the audit-component mapping rows say
+  P11 is enforced by eslint (upstream #110) and A4 stays for Stencil's reserved names and
+  `@Event` members that rule does not reach.
+
+Improve-later (beyond), folded because each is a few lines:
+- [ ] T17 `storybook-helpers.mjs:309` — after taking over a stale lock, re-read and confirm the
+  nonce is ours; otherwise treat the lock as contended.
+- [ ] T18 `06-test-coverage.mjs:171` — failed spec paths repo-relative (`relativeToRepo`); one
+  shared spec→component mapper used by 06 and `evaluateCoverageResults`.
+- [ ] T19 (critic #2) — covered by Decision 11 (`--json` stdout carries `awaitingLegs`).
+- [ ] T20 (critic #3) — a stale-hash entry's `verify` is the fresh-run command
+  `yarn audit:component <component> --depth <depth>`.
+- [ ] T21 (critic #4, lock altitude) — dropped as a redesign; T7 removes the late throw and the
+  lock-order inversion it named.
+- [ ] T22 `run-all.mjs:677` — the coverage cause says "vitest exited <n> with no failed spec" when
+  `failedComponents` is empty.
+- [ ] T23 `verdict.mjs:413` — a `noTarget` finding on a non-required row goes to `warnings`.
+- [ ] T24 `verdict.mjs:314` — `awaiting` folded onto each incomplete entry; `awaitingLegs` derived
+  from the one array.
+- [ ] T25 `run-all.mjs:723` — every `resolveComponents` branch returns `cause: null` on success.
+- [ ] T26 — a direct test injects a forged `AUDIT_LOCK_TOKEN` into `runAudit` and asserts it takes
+  its own lock.
+- [ ] T27 `a11y-verifier.md:33`, `pixel-perfect-verifier.md:60` — the heredoc delimiter becomes
+  `AI_FINDINGS_JSON_END` and the body must be one valid JSON document (strings escape newlines,
+  so no line can equal the delimiter).
+- [ ] T28 `storybook-helpers.mjs:342` — `isValidLockToken` also requires the holder's start time
+  to match.
+- Not done, with reason: `--run-dir` symlink resolution (security Info) — no privilege boundary
+  in this local tool's threat model.
+
+Verify: `node --test "scripts/__tests__/**/*.spec.mjs"` all pass; `yarn test` all pass; `yarn
+lint` clean; `node scripts/audit/seeded-defects.mjs` 4/4; two `--depth standard` runs on
+`mud-banner` `cmp`-identical; `--depth standard` on `mud-accordion-item`, `mud-tooltip`,
+`mud-icon` exits 0 or names only real findings (no `ESCAPE-NO-CLOSE`, no `TOKEN-DIFF-NO-CURRENT`
+INCOMPLETE); a probe of the deep first phase shows `awaitingLegs: true`. Record under
+`#### Phase 5 results`.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |
@@ -539,6 +666,7 @@ Grade (6809fe4..9f6e749, then 5fb9328):
 | 2 | implementer | sonnet, high | 3 |
 | 3 | implementer (prose that must match the code) | sonnet, medium | 3 (parallel with 2) |
 | 4 | docs + verification + gate | session model, high | 4 |
+| 5 | implementer (sentinel round-2 fixes) | session model, high | 5 |
 
 ## Not verified
 
