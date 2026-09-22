@@ -300,8 +300,10 @@ export const WithError: Story = {
   },
 };
 
-const ICON_START = /*html*/ `<mud-icon slot="icon-start" name="house" size="20"></mud-icon>`;
-const ICON_SEARCH = /*html*/ `<mud-icon slot="icon-start" name="search" size="20"></mud-icon>`;
+// 24px, not 20: Figma's Large field carries `24/search` at 24×24 (159:1118), and
+// the control reserves exactly that box. A Medium field takes the 20px rung.
+const ICON_START = /*html*/ `<mud-icon slot="icon-start" name="house" size="24"></mud-icon>`;
+const ICON_SEARCH = /*html*/ `<mud-icon slot="icon-start" name="search" size="24"></mud-icon>`;
 
 export const WithIcons: Story = {
   name: 'With Icons',
