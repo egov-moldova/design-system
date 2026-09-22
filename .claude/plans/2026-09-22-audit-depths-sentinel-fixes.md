@@ -135,7 +135,9 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
 - Every R-row: fixed with a test, or a one-line disposition in this plan's Phase results.
 - Regression floor: `yarn test:scripts` all pass, `yarn test` all pass, `yarn lint` clean,
   `node scripts/audit/seeded-defects.mjs` 4/4, two `--depth standard` runs on `mud-banner`
-  byte-identical `verdict.json`, `quick` on `mud-button` median ≤ 4,480 ms.
+  byte-identical `verdict.json`, `quick` on `mud-button` median ≤ 4,480 ms over n=5 runs
+  (`/usr/bin/time` around `node scripts/audit/verdict.mjs mud-button --depth quick`, the
+  parent plan's instrument).
 
 Numeric tolerances: none beyond the floor above.
 
@@ -195,7 +197,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] S3 question-shaped AI finding → decision entry. Verify: acceptance S3.
 - [ ] S4 `awaitingLegs` computed and written; `VERDICT_SCHEMA_VERSION` minor bump. Verify:
   acceptance S4 (computeVerdict half).
-- [ ] S6 `NO_TARGET_CODES` → INCOMPLETE. Verify: acceptance S6.
+- [ ] S6 `NO_TARGET_CODES` → INCOMPLETE; a test greps every `code: '…-NO-STOR…'` emitted under
+  `scripts/audit/*.mjs` and fails when one is missing from the allowlist (Self-refute row 1).
+  No-target codes are entries, never also listed under R4's warnings. Verify: acceptance S6.
 - [ ] S7 single-line field rendering, `code` included. Verify: acceptance S7.
 - [ ] S8 `--run-dir` shape check → exit 2. Verify: acceptance S8.
 - [ ] S9 usage errors exit 2 in fresh mode (distinguish run-all's usage exit from a
@@ -235,7 +239,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] S10 crash vs missing-prereq. Verify: acceptance S10.
 - [ ] S11 per-component coverage prerequisite. Verify: acceptance S11.
 - [ ] S12 BX4 / BX1 / BX7. Verify: acceptance S12.
-- [ ] R3 worktree lock per Decision 3 (in `runFresh`, helper in `storybook-helpers.mjs`).
+- [ ] R3 worktree lock per Decision 3 (in `runFresh`, helper in `storybook-helpers.mjs`); a
+  test pins that `--run-dir` recompute neither takes nor waits on the lock.
 - [ ] R6 extract 09's BX2/BX3 status assembly into a pure function with tests; add the
   `figmaDir` + absent + waiver `selectScripts` case.
 - [ ] R9 `seeded-defects` records pid + start time and signals only when both match.
@@ -297,5 +302,14 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
   proven by fixtures and caller-text assertions only.
 - Findings S8–S12 and R2–R3 were found by reading code, not reproduced; each task's first test
   is the reproduction.
+
+## Self-refute log
+
+| # | Question | Instance + fix, or no instance + what was scanned |
+|---|---|---|
+| 1 | Does a fix reuse the defect's own mechanism class? | S6's allowlist relies on each script naming its no-target code; a new script with a new code would be `ok` again — the same silent pass. Fix: Phase 1 S6 task adds a test that greps every `-NO-STOR` code the scripts emit and fails on one missing from the list. R2 replaces a leg-copied hash (self-report) with a re-hash by the recompute (mechanism). S4's `awaitingLegs` is a field, but whether a caller obeys it stays prose — the parent plan's accepted limit, restated under Not verified. |
+| 2 | Can a rule's letter be met with its intent violated? | S5: "detector failure → INCOMPLETE" is met vacuously if `listChangedComponents` keeps returning `[]` on a failed `git diff`. Fix: Phase 2 S5 task makes the detector return its status, and the test drives a failing git. S4: `awaitingLegs` must be false when any non-`ai-*` row is INCOMPLETE — acceptance S4 says "iff". |
+| 3 | Every numeric target has a denominator, a minimum n and an instrument outside what it grades? | The only number is the quick median; it had no n. Fix: acceptance floor now says n=5 and names the instrument. Byte-identity is a boolean over two runs, instrument `cmp`. |
+| 4 | Do two of the plan's own rules interact into an unintended pass? | S6 (no-target → INCOMPLETE) × browser waiver: a waived browser row never runs, so it emits no code and stays excused — intended. S3 (question → decision entry) × S4 (`awaitingLegs`): at deep a question closes its row as NEEDS-DECISION, so `awaitingLegs` is false — intended. R3 (lock) × S4 (`--run-dir`): recompute spawns no run-all and takes no lock, so a leg-phase recompute is never blocked by its own run — intended, and a test pins it (Phase 2 R3). R4 (warnings) × S6: a no-target code would appear twice — fixed by the S6 task's "never also listed". |
 
 ## Review log
