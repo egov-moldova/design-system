@@ -231,8 +231,20 @@
    segments no longer makes the equal-width track grow/shrink ("jump"). */
 .segment__label {
   display: inline-grid;
+  /* `minmax(0, max-content)`, not the implicit `auto`: an auto column can never
+     be narrower than its min-content, and the hidden bold sizer below sets that
+     to the full unwrapped label. With an icon beside it that floor exceeded the
+     segment, so the label spilled onto the track instead of truncating — the
+     small-phone break. Letting the column collapse to 0 hands the overflow back
+     to `.segment__label-text`, which ellipsises it, as Figma's Edge Cases
+     (663:12433) asks for. */
+  grid-template-columns: minmax(0, max-content);
   align-items: center;
-  justify-items: center;
+  /* Stretch, not centre: a centred grid item takes its content's width, so a
+     label wider than the collapsed column spilled over the icon beside it
+     instead of truncating. Stretched, the item is the column, and the text
+     centres inside it. */
+  justify-items: stretch;
   min-inline-size: 0;
 }
 
@@ -242,6 +254,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 
 .segment__label::after {
