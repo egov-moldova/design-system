@@ -166,7 +166,17 @@
       "paddingInline": {
         "$value": "{spacing.16}",
         "$type": "dimension",
-        "$comment": "Figma menu-item-selection uses spacing/16 left/right."
+        "$comment": "Figma menu-item-selection starts every row at spacing/16."
+      },
+      "paddingInlineEnd": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma .menu-item-selection State=Default is padding 12px 24px 12px 16px — a row with no trailing checkmark keeps 24px. Mirrors menu.item.paddingInlineEnd."
+      },
+      "paddingInlineEndTrailing": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma .menu-item-selection State=Selected is padding 12px 16px — the checkmark occupies what the 24px reserves. Mirrors menu.item.paddingInlineEndTrailing."
       },
       "paddingBlock": {
         "$value": "{spacing.12}",

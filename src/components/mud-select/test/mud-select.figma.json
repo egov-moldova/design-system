@@ -1,0 +1,309 @@
+{
+  "component": "mud-select",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "6173:5585",
+        "reason": "Hover/Medium — the Medium column differs from Large only in height, inline padding and control font size, which default-medium pins; the hover border is pinned by hover-large."
+      },
+      {
+        "node": "6173:5595",
+        "reason": "Focus/Medium — same reasoning as Hover/Medium; the focus border and ring are pinned by focus-large."
+      },
+      {
+        "node": "6173:5605",
+        "reason": "Filled/Medium — same reasoning; the filled text colour is pinned by filled-large."
+      },
+      {
+        "node": "6173:5615",
+        "reason": "Disabled/Medium — same reasoning; the disabled fill and text are pinned by disabled-large."
+      },
+      {
+        "node": "6173:5575",
+        "reason": "Covered by the default-medium state under its Input frame 6173:5579."
+      },
+      {
+        "node": "6173:5624",
+        "reason": "Destructive/Disabled/Medium — Destructive differs from Default only in border colour, pinned by destructive-large; disabled visuals are pinned by disabled-large."
+      },
+      {
+        "node": "6173:5633",
+        "reason": "Destructive/Default/Medium — combination of destructive-large and default-medium, both covered."
+      },
+      {
+        "node": "6173:5643",
+        "reason": "Destructive/Hover/Medium — combination of covered states."
+      },
+      {
+        "node": "6173:5653",
+        "reason": "Destructive/Filled/Medium — combination of covered states."
+      },
+      {
+        "node": "6173:5663",
+        "reason": "Destructive/Focus/Medium — combination of covered states."
+      },
+      {
+        "node": "159:1199",
+        "reason": "Destructive/Disabled/Large — the component forces the disabled design over the variant colours, so it renders disabled-large."
+      },
+      {
+        "node": "159:1429",
+        "reason": "Destructive/Hover/Large — combination of destructive-large and hover-large."
+      },
+      {
+        "node": "159:1218",
+        "reason": "Destructive/Filled/Large — combination of destructive-large and filled-large."
+      },
+      {
+        "node": "159:1250",
+        "reason": "Destructive/Focus/Large — combination of destructive-large and focus-large."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "atoms-input-select--default",
+    "capture": { "selector": "mud-select", "bleed": "auto" }
+  },
+  "shared": {
+    "large-label": [
+      {
+        "target": "mud-select .label",
+        "styles": {
+          "fontFamily": "Onest",
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": "400",
+          "color": "rgb(56, 56, 56)"
+        },
+        "note": "Figma Label text uses Desktop/Body/Small at #383838 in every variant of 159:1112."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "default-large",
+      "node": "159:1117",
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "expect": [
+        { "use": "large-label" },
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(217, 217, 217)",
+            "borderTopLeftRadius": "8px"
+          }
+        },
+        {
+          "target": "mud-select .trigger",
+          "styles": { "fontSize": "16px", "lineHeight": "24px" },
+          "note": "Figma 159:1120 sets the placeholder in Desktop/Body/Default (16/24) for Large."
+        },
+        {
+          "target": "mud-select .assistive",
+          "absent": true,
+          "note": "Figma 159:1113 ships Assistive Text hidden by default (👁️ Assistive Text = false)."
+        }
+      ]
+    },
+    {
+      "name": "default-medium",
+      "node": "6173:5579",
+      "html": "<mud-select size=\"medium\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "expect": [
+        { "use": "large-label" },
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "12px",
+            "paddingRight": "12px",
+            "columnGap": "8px",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(217, 217, 217)",
+            "borderTopLeftRadius": "8px"
+          }
+        },
+        {
+          "target": "mud-select .trigger",
+          "styles": { "fontSize": "14px", "lineHeight": "20px" },
+          "note": "Figma 6173:5582 drops the Medium placeholder to Desktop/Body/Small (14/20)."
+        }
+      ]
+    },
+    {
+      "name": "hover-large",
+      "node": "159:1127",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "interaction": { "type": "hover", "target": "mud-select .control" },
+      "expect": [
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(68, 68, 68)",
+            "boxShadow": "inset 0px 0px 0px 1px #444444",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "boxHeight": "48px"
+          },
+          "note": "Figma 159:1127 strokes the frame 2px #444444. A Figma stroke is inside the box and moves nothing, while a 2px CSS border would push the text in by a pixel, so the component keeps a 1px border and paints the second pixel with an inset shadow. Measured at the left edge of the rendered control: two pixels of #444444."
+        }
+      ]
+    },
+    {
+      "name": "focus-large",
+      "node": "159:1137",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "interaction": { "type": "focus", "target": "mud-select .trigger" },
+      "expect": [
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(0, 88, 210)",
+            "boxShadow": "inset 0px 0px 0px 1px #0058d2, 0px 0px 0px 4px #ccdef6",
+            "boxHeight": "48px"
+          },
+          "note": "Figma 159:1137 strokes 2px #0058D2 with effect Focus Ring/Large/Default = 0px 0px 0px 4px rgba(204, 222, 246, 1). The ring is unstacked and maps straight across; the stroke is inside the box, so its second pixel is an inset shadow rather than a wider border, which would shift the text. Measured at the left edge: three pixels of #CCDEF6 then two of #0058D2."
+        }
+      ]
+    },
+    {
+      "name": "filled-large",
+      "node": "159:1163",
+      "html": "<mud-select size=\"large\" label=\"Label\" value=\"a\"><option value=\"a\">Placeholder</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(217, 217, 217)",
+            "backgroundColor": "rgb(255, 255, 255)"
+          }
+        },
+        {
+          "target": "mud-select .trigger",
+          "styles": { "color": "rgb(18, 18, 18)" },
+          "note": "Figma 159:1166 paints a filled value #121212, against the placeholder's #757575."
+        }
+      ]
+    },
+    {
+      "name": "disabled-large",
+      "node": "159:1185",
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" disabled><option value=\"a\">Option A</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "backgroundColor": "rgb(241, 241, 241)",
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(217, 217, 217)",
+            "boxHeight": "48px"
+          }
+        },
+        {
+          "target": "mud-select .trigger",
+          "styles": { "color": "rgb(178, 178, 178)" },
+          "note": "Figma 159:1188 sets the disabled placeholder to #B2B2B2."
+        }
+      ]
+    },
+    {
+      "name": "destructive-large",
+      "node": "159:1212",
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" invalid error-text=\"Error message displayed here\"><option value=\"a\">Option A</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .control",
+          "styles": {
+            "borderTopWidth": "1px",
+            "borderTopColor": "rgb(217, 45, 32)",
+            "backgroundColor": "rgb(255, 255, 255)"
+          }
+        },
+        {
+          "target": "mud-select .assistive-text",
+          "styles": {
+            "color": "rgb(217, 45, 32)",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 159:1217 swaps in the Error inline-message: #D92D20 text with the 20/circle-error-filled icon."
+        }
+      ]
+    },
+    {
+      "name": "listbox-open",
+      "node": "172:3093",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" open><option value=\"a\">Option 1</option><option value=\"b\">Option 2</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .listbox",
+          "styles": {
+            "padding": "8px",
+            "rowGap": "4px",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderTopLeftRadius": "16px",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 5px 12px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0.5px 0px"
+          },
+          "note": "Figma selection-menu 172:3093 — the dropdown the Select Input Behavior section (454:5854) names as the custom menu."
+        }
+      ]
+    },
+    {
+      "name": "listbox-option-default",
+      "node": "409:21915",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" open><option value=\"a\">Option 1</option><option value=\"b\">Option 2</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .listbox .option:not(.is-selected):not(.is-highlighted)",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "columnGap": "12px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "color": "rgb(56, 56, 56)",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma .menu-item-selection State=Default uses padding 12px 24px 12px 16px — the trailing 24px is what a row without a checkmark gets, which menu.item.paddingInlineEnd already models."
+        }
+      ]
+    },
+    {
+      "name": "listbox-option-selected",
+      "node": "172:2944",
+      "pixel": false,
+      "html": "<mud-select size=\"large\" label=\"Label\" value=\"a\" open><option value=\"a\">Option 1</option><option value=\"b\">Option 2</option></mud-select>",
+      "expect": [
+        {
+          "target": "mud-select .listbox .option.is-selected",
+          "styles": {
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "backgroundColor": "rgb(245, 245, 245)",
+            "color": "rgb(0, 88, 210)"
+          },
+          "note": "Figma .menu-item-selection State=Selected uses padding 12px 16px — the checkmark takes the space the 24px otherwise reserves."
+        }
+      ]
+    }
+  ]
+}

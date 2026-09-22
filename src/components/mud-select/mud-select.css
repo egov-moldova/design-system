@@ -248,6 +248,12 @@
   color: var(--_text-placeholder);
 }
 
+/* Disabled outranks placeholder. Both are one class plus one qualifier, so
+   source order alone decided it and the later placeholder rule was winning. */
+:host(.is-disabled) .trigger.is-placeholder {
+  color: var(--select-default-text-disabled);
+}
+
 /* ---------- Listbox popover ---------- */
 
 .listbox {
@@ -342,7 +348,12 @@
   gap: var(--select-option-gap);
   min-block-size: var(--_option-min-block-size);
   padding-block: var(--select-option-padding-block);
-  padding-inline: var(--select-option-padding-inline);
+  /* Figma fills the Default row explicitly. The token follows the theme, so a
+     dark surface stays dark rather than being pinned white. */
+  background-color: var(--select-option-background-default);
+  padding-inline-start: var(--select-option-padding-inline);
+  /* Figma reserves the wider end padding for a row with no trailing checkmark. */
+  padding-inline-end: var(--select-option-padding-inline-end);
   border-radius: var(--select-option-border-radius);
   color: var(--select-option-text-default);
   font-family: var(--select-option-font-family);
@@ -358,6 +369,11 @@
 
 .option.is-highlighted {
   background-color: var(--select-option-background-hover);
+}
+
+/* A trailing checkmark fills the space that end padding otherwise reserves. */
+.option.is-selected {
+  padding-inline-end: var(--select-option-padding-inline-end-trailing);
 }
 
 .option.is-selected {
