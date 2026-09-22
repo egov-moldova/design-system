@@ -178,10 +178,12 @@ did not ask for.
 
 ## Not verified
 
-- **Pixel diffs.** `FIGMA_TOKEN` is unset in this environment, so `figma-refs.mjs` cannot export
-  references and `11-pixel-diff-states.mjs` will report `PIXEL-NO-REFERENCE`. Task 14 writes the
-  manifest and task 8 runs style parity, which needs no token; the screenshot comparison stays
-  unrun until someone with a token runs it.
+- **Figma coverage and reference freshness.** `FIGMA_TOKEN` is unset here, so `figma-refs.mjs
+  --check` cannot run: uncovered variants, gone nodes and stale references are unverified. The
+  screenshot diff itself does run — `.audit-figma/mud-select/` already holds references from an
+  earlier export, and the five `pixel: true` states pass at 0.12–0.19% against a 0.5% threshold.
+  The other states are `pixel: false`: their Figma nodes are sub-elements whose canvas a
+  whole-control capture can never match, so style parity is what covers them.
 - **Clicking a control whose input already has focus.** The browser's default focus handling on
   `mousedown` over a shadow host leaves an already-focused input unable to accept text: `keydown`
   and `beforeinput` fire, the edit never lands, and every measurable property — `readOnly`,
