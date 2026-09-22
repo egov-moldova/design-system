@@ -24,7 +24,7 @@ Optional:
 - `interactiveStates` — default inferred from component type
 
 When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port
-from `.audit-storybook.json` (repo root, `{ port, pid }` — `lib/storybook-helpers.mjs`) and use
+from `.audit-storybook.json` (repo root, `{ port, pid }` — `scripts/audit/lib/storybook-helpers.mjs`) and use
 it instead of the 6007 default, both for `storybookBaseUrl` and for `--port` on every script
 below.
 
