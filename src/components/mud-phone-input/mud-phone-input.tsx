@@ -976,13 +976,14 @@ export class MudPhoneInput {
 
         <div class="control-wrapper">
           <div class="control" part="control">
+            {/* No `aria-haspopup`: implicit for a combobox whose popup is a
+                listbox, as `mud-select` notes at greater length. */}
             {isInternational ? (
               <button
                 ref={el => (this.triggerEl = el)}
                 {...triggerCommon}
                 type="button"
                 role="combobox"
-                aria-haspopup="listbox"
                 aria-expanded={isOpen ? 'true' : 'false'}
                 aria-controls={this.listboxId}
                 aria-activedescendant={activeDescendantId}
