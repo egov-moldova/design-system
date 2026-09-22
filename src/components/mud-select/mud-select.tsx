@@ -158,9 +158,30 @@ export class MudSelect {
   private triggerEl?: HTMLButtonElement;
   private listboxEl?: HTMLElement;
   private stopAriaLabel?: () => void;
+  private optionsObserver?: MutationObserver;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.observeOptions();
+  }
+
+  /**
+   * `slotchange` is not enough on its own. Appending an `<option>` inside an
+   * `<optgroup>` leaves the slot's assigned nodes untouched — the `optgroup`
+   * itself did not change — so the event never fires and the listbox keeps
+   * showing a stale list. The same goes for flipping `disabled` or rewriting an
+   * option's text, neither of which is a slot change at all.
+   */
+  private observeOptions() {
+    if (typeof MutationObserver === 'undefined') return;
+    this.optionsObserver = new MutationObserver(() => this.refreshEntries());
+    this.optionsObserver.observe(this.host, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['value', 'label', 'disabled', 'selected'],
+    });
   }
 
   componentWillLoad() {
@@ -311,6 +332,8 @@ export class MudSelect {
       window.removeEventListener('scroll', this.positionListbox, true);
     }
     this.stopAriaLabel?.();
+    this.optionsObserver?.disconnect();
+    this.optionsObserver = undefined;
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */

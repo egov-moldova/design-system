@@ -93,8 +93,10 @@ did not ask for.
 - [ ] **4. Mutation observation.** `slotchange` does not fire when an `<option>` is added inside an
   `<optgroup>`, because the assigned node (the `optgroup`) did not change. Observe the host with
   `{ childList: true, subtree: true, attributes: true, attributeFilter: ['value', 'label', 'disabled', 'selected'] }`
-  and disconnect in `disconnectedCallback`. Verify: `node scripts/audit/run-all.mjs mud-select --only 02 --json`
-  (`ANTIPATTERN-007-LIFECYCLE-LEAK` must be absent)
+  plus `characterData: true`, since relabelling an option in place is neither a child-list nor an
+  attribute change, and disconnect in `disconnectedCallback`. Verify:
+  `node scripts/audit/run-all.mjs mud-select --only 02 --json` (`ANTIPATTERN-007-LIFECYCLE-LEAK`
+  must be absent) — and a browser, per the note below.
 
 - [ ] **5. `selected` as a value source.** When the host has no `value` attribute, the first
   non-disabled `<option selected>` supplies the initial value. The check is
@@ -160,6 +162,13 @@ did not ask for.
   references and `11-pixel-diff-states.mjs` will report `PIXEL-NO-REFERENCE`. Task 14 writes the
   manifest and task 8 runs style parity, which needs no token; the screenshot comparison stays
   unrun until someone with a token runs it.
+- **Mutation observation, in the spec suite.** The spec environment is mock-doc, which has no
+  `MutationObserver`; the component's `typeof` guard turns the observer into a no-op there, so no
+  spec can exercise it. Verified instead in headless Chromium against the built component: an
+  `<option>` appended inside an existing `<optgroup>`, and a `disabled` attribute toggled on an
+  option, both reach the rendered rows — and both fail on the same page without the observer,
+  which is what rules out relying on `slotchange` alone. Task 12's stories are the place to make
+  this a standing browser-mode test rather than a one-off run.
 - **Dark mode.** No task changes a colour value; the new tokens resolve through the same semantic
   references `menu.heading.*` already uses, which the dark theme covers. Not separately measured.
 - **Screen-reader announcement of the filtered result count.** react-select ships a live region
