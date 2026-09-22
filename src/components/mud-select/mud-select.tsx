@@ -3,7 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, 
 
 import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
 import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
-import { entriesFromOptions, readEntriesFromLightDom } from './mud-select.utils';
+import { entriesFromOptions, markupSelectedValue, readEntriesFromLightDom } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
@@ -185,8 +185,11 @@ export class MudSelect {
   }
 
   componentWillLoad() {
-    this.initialValue = this.value;
     this.refreshEntries();
+    this.adoptMarkupSelection();
+    // Captured after the markup has had its say, so a form reset restores what
+    // the page shipped with — which is what resetting a native <select> does.
+    this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
     if (this.open) this.primeHighlight();
@@ -389,6 +392,22 @@ export class MudSelect {
       if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
       return true;
     });
+  }
+
+  /**
+   * Seeds `value` from `<option selected>`, the way a native `<select>` starts on
+   * its selected option.
+   *
+   * Only when the author set no value. A non-empty `value` is explicit however it
+   * arrived, which matters because a framework — and JSX — sets the property
+   * before the attribute exists, so an attribute check alone would clobber it.
+   * The attribute is still consulted, since `value=""` is an explicit empty
+   * choice that the reflected default is otherwise indistinguishable from.
+   */
+  private adoptMarkupSelection() {
+    if (this.value !== '' || this.host.hasAttribute('value')) return;
+    const selected = markupSelectedValue(this.entries);
+    if (selected !== undefined) this.value = selected;
   }
 
   /**

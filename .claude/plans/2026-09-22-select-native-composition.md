@@ -99,9 +99,10 @@ did not ask for.
   must be absent) — and a browser, per the note below.
 
 - [ ] **5. `selected` as a value source.** When the host has no `value` attribute, the first
-  non-disabled `<option selected>` supplies the initial value. The check is
-  `host.hasAttribute('value')`, since the reflected prop defaults to `''` and cannot otherwise be
-  distinguished from an explicit empty value. Verify: `yarn test.dev src/components/mud-select`
+  non-disabled `<option selected>` supplies the initial value. "Set no value" means a `value` that is
+  both empty and absent as an attribute: an attribute check alone is not enough, because JSX and
+  frameworks set the property before any attribute exists, and the markup selection would clobber
+  it. Verify: `yarn test.dev src/components/mud-select`
 
 - [ ] **6. Deprecate `options`.** Mark the prop `@deprecated` in its JSDoc, naming markup as the
   replacement. Precedence is unchanged. Verify: `yarn build && git diff --stat src/components/mud-select/readme.md` (the

@@ -19,6 +19,7 @@ const toOptionEntry = (el: Element, inheritedDisabled: boolean): SelectOptionEnt
     value: el.getAttribute('value') ?? label,
     label,
     disabled: inheritedDisabled || el.hasAttribute('disabled'),
+    selected: el.hasAttribute('selected'),
   };
 };
 
@@ -78,6 +79,15 @@ export const readEntriesFromLightDom = (host: Element): SelectEntry[] => {
 
   return collapseSeparators(entries);
 };
+
+/**
+ * The value a native `<select>` would start on: the first selectable option
+ * marked `selected`. Returns `undefined` when the markup marks none, so the
+ * caller can leave `value` alone rather than guessing.
+ */
+export const markupSelectedValue = (entries: SelectEntry[]): string | undefined =>
+  entries.find((entry): entry is SelectOptionEntry => entry.kind === 'option' && !!entry.selected && !entry.disabled)
+    ?.value;
 
 /** Wraps the deprecated `options` prop in the entry model. */
 export const entriesFromOptions = (options: SelectOption[]): SelectEntry[] =>

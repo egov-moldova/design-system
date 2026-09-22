@@ -484,6 +484,70 @@ describe('mud-select', () => {
       expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['apple']);
     });
 
+    it('starts on the option marked selected', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana" selected>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('banana');
+    });
+
+    it('finds a selected option nested in an optgroup', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="none">Choose</option>
+          <optgroup label="Fruit">
+            <option value="banana" selected>
+              Bananas
+            </option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('banana');
+    });
+
+    it('lets an explicit value beat selected, set as a property', async () => {
+      const { root } = await render(
+        <mud-select label="Food" value="apple">
+          <option value="apple">Apples</option>
+          <option value="banana" selected>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('apple');
+    });
+
+    it('ignores selected on a disabled option', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana" selected disabled>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+    });
+
+    it('leaves value empty when no option is marked selected', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+    });
+
     it('still lets the deprecated options prop win over markup', async () => {
       const { root } = await render(
         <mud-select label="Food">

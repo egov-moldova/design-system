@@ -19,6 +19,12 @@ export interface SelectOption {
 /** A choosable row — one `<option>`, or one entry of the `options` prop. */
 export interface SelectOptionEntry extends SelectOption {
   kind: 'option';
+  /**
+   * The markup carried `selected`. Read once, at load, to seed `value` when the
+   * host has no `value` attribute; ignored afterwards, so a re-read of the light
+   * DOM never overrides what the user has since chosen.
+   */
+  selected?: boolean;
 }
 
 /**
