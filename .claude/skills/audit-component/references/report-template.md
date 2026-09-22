@@ -26,24 +26,24 @@ same inputs give byte-identical files.
   `yarn audit:component` is 0 · 1 · 3 · 4 (2 = usage or internal error). Callers branch on the
   exit code, never on their own reading of the file.
 - `level` — only on `PASS`: `CLEAN-STATIC`, `MERGE-READY` or `PRODUCTION-READY`.
-- `headline` — `<STATE>@<depth> · <level> · <excuses> · ai-legs: self-attested` (the last part
+- `headline` — `<STATE>@<depth> · <level> · <excuses> · ai-legs: advisory` (the last part
   at `deep` only). Quote it verbatim.
 - `excuses` — every waiver used: `browser: waived (flag | CI env)`, `figma: waived (flag)`,
   `figma: design none (…; decided by …; commit …)`, `figma: no manifest at HEAD`, Figma `skip`s.
 - `notes` — e.g. `pending manifest change — not honoured`.
 - `rows[]` — one per check: `id`, `status` (`ok`, `crashed`, `missing-prereq`, `skipped`),
-  `required`, counts, `excuse` or `deferred`.
+  `required`, counts, `excuse` or `deferred`, and `note` — why a check does not apply here (the
+  brief lists it under "Not applicable"; it never changes the state).
 - `entries[]` — non-PASS items, ids `I<n>` (INCOMPLETE), `F<n>` (FAIL), `D<n>` (NEEDS-DECISION).
-- `advisory[]` — `A<n>`: AI findings that do not change the state.
+- `advisory[]` — `A<n>`: AI findings, at every depth; they never change the state.
 - `figma` — manifest, status, commit, overrides and skips honoured, Figma file version (`deep`).
-- `aiLegs` — `deep` only: each leg's ids, input hash, `closed` or `open`.
 
 ## Fix-brief entry shapes
 
 | State | Fields |
 | --- | --- |
 | FAIL | id · severity · check · location `file:line` · expected (value + source: Figma node or rule `file:line`) · actual · `verify:` command · owner |
-| INCOMPLETE | id · check · cause · prerequisite command · `verify:` command that re-runs that one row |
+| INCOMPLETE | id · check · cause · prerequisite command — or, for a crashed row, `log:` (where its stderr is kept) · `verify:` command that re-runs that one row |
 | NEEDS-DECISION | id · Figma node (or `no manifest`) · question · options — the audit never picks one |
 | Advisory | the FAIL shape, under "Advisory" |
 
@@ -53,7 +53,7 @@ same inputs give byte-identical files.
 ## Audit: <component> @ <depth>
 **Verdict**: <headline, verbatim> — exit <code>
 **Fix brief**: audit/<component>/fix-brief.md (<n> INCOMPLETE · <n> FAIL · <n> NEEDS-DECISION · <n> advisory)
-**AI legs** (deep): <leg — closed | open (cause)>, one per leg
+**AI legs** (deep, advisory): <leg — wrote its file | not run>, one per leg
 
 ### Correlations
 - <one defect seen by several checks, e.g. "the icon-only button fails 09 (no accessible name)
@@ -63,7 +63,7 @@ same inputs give byte-identical files.
 - <D-entries restated as questions to the user, options unchanged>
 
 ### Not verified
-- <excused checks, deferred rows, `ai-legs: self-attested`, anything a leg could not render>
+- <excused checks, deferred rows, not-applicable rows, AI legs not run, anything a leg could not render>
 ```
 
 Rules:

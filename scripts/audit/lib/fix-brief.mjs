@@ -7,7 +7,7 @@
  *   FAIL            ID · severity · check · location · expected (value + source) · actual · verify · owner
  *   INCOMPLETE      ID · check · cause · prerequisite (or, for a crash, log) · verify
  *   NEEDS-DECISION  ID · node (or "no manifest") · question · options — the audit never picks one
- *   Advisory        AI findings at quick / standard, in the FAIL shape; they never change the state
+ *   Advisory        AI findings, at every depth, in the FAIL shape; they never change the state
  *
  * A missing field is a renderer error, not an empty line: a brief that drops
  * the verify command or the expected value's source is the failure F8 names.
@@ -47,7 +47,8 @@ function present(value) {
  * newline is replaced so a finding's own text can never forge a new `###`
  * heading or another field's `- field:` line. Applied to every interpolation
  * in this module — entry fields, `code` in the heading, the headline, and the
- * excused/deferred/notes/override/warning sections in `renderFixBrief`. Pure.
+ * excused/not-applicable/deferred/notes/override/warning sections in
+ * `renderFixBrief`. Pure.
  */
 function line(value) {
   if (value === '') return '(empty)';
@@ -102,6 +103,12 @@ export function renderFixBrief(verdict) {
   if (excused.length) {
     out.push('## Checks not run (excused)', '');
     for (const r of excused) out.push(`- ${r.id} — ${line(r.excuse)}`);
+    out.push('');
+  }
+  const notApplicable = (verdict.rows ?? []).filter(r => r.note);
+  if (notApplicable.length) {
+    out.push('## Not applicable', '');
+    for (const r of notApplicable) out.push(`- ${r.id} ${line(r.name)} — ${line(r.note)}`);
     out.push('');
   }
   const deferred = (verdict.rows ?? []).filter(r => r.deferred);

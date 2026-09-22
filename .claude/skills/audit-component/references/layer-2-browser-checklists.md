@@ -26,7 +26,7 @@ not repeat them.
 
 A BX finding is corrected through its `verify:` command in the fix brief, never re-checked by hand.
 
-## §CX — archetype checks (`ai-archetype`, ids CX1–CX4)
+## §CX — archetype checks (the advisory CX leg, ids CX1–CX4)
 
 Read the archetype from `yarn audit:contract <mud-name> --json` → `meta.contract.archetype`
 (`value`, `confidence`). Judge **only that archetype's row**. With `confidence: "low"`, you may

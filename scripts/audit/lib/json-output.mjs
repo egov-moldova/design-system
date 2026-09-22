@@ -1,15 +1,15 @@
 /**
  * Standard JSON envelope produced by every scripts/audit/* tool.
  *
- * Shape (schemaVersion 1.3.0 — additive over every earlier minor; existing
+ * Shape (schemaVersion 1.4.0 — additive over every earlier minor; existing
  * fields keep their meaning):
  *   {
- *     "schemaVersion": "1.3.0",
+ *     "schemaVersion": "1.4.0",
  *     "tool": "stencil-antipatterns",
  *     "target": "mud-button",               // component name OR "all" OR a glob
  *     "ok": true,                            // false iff summary.errors > 0
  *     "summary": { "errors": 0, "warnings": 2, "info": 5 },
- *     "findings": [ { severity, code, file, line, column?, message, snippet?, fix?, noTarget? } ],
+ *     "findings": [ { severity, code, file, line, column?, message, snippet?, fix?, noTarget?, notApplicable? } ],
  *     "meta": { "durationMs": 230, "filesScanned": 12, "tool": "stencil-antipatterns" }
  *   }
  *
@@ -22,6 +22,9 @@
  *           nothing" (plan `2026-09-22-audit-depths-sentinel-fixes.md`
  *           Decision §5). `verdict.mjs` maps it to an INCOMPLETE entry
  *           instead of counting it toward the row's errors/warnings.
+ *   1.4.0 — a finding may carry `notApplicable: true` (severity `info`): the
+ *           check does not apply to this component, and the message says why
+ *           (Decision 13). `verdict.mjs` shows it as the row's `note`.
  *
  * Severity is one of: "error" | "warning" | "info".
  *
@@ -29,15 +32,15 @@
  * schema directly and a stable shape is part of the quality contract.
  *
  * This module also defines the shared schema `verdict.mjs` (Phase 2) and the
- * AI legs (Phase 2/3) build against — `state`, `level`, per-row `status`, the
- * AI-leg row shape, and their own `schemaVersion`s. Landing it here, ahead of
+ * AI legs (Phase 2/3) build against — `state`, `level`, per-row `status`, and
+ * their own `schemaVersion`s. Landing it here, ahead of
  * any consumer, is deliberate (plan `2026-09-21-audit-component-depths.md`
  * Phase 1): every producer and the one consumer read the same enum.
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-export const SCHEMA_VERSION = '1.3.0';
+export const SCHEMA_VERSION = '1.4.0';
 
 /**
  * `verdict.json`'s overall state (Design §1). First match wins, decided by
@@ -75,14 +78,6 @@ export const ROW_STATUS = Object.freeze({
 });
 export const ROW_STATUSES = Object.freeze(Object.values(ROW_STATUS));
 
-/**
- * An AI-leg row's own status — distinct from `ROW_STATUS` above, which is
- * per-script. `open`: the orchestrator dispatched the leg; `closed`: the
- * leg's own `ai-findings.json` satisfied `verdict.mjs`'s `closeAiRow` (R7).
- */
-export const AI_LEG_STATUS = Object.freeze({ OPEN: 'open', CLOSED: 'closed' });
-export const AI_LEG_STATUSES = Object.freeze(Object.values(AI_LEG_STATUS));
-
 export function isValidState(state) {
   return STATES.includes(state);
 }
@@ -98,62 +93,20 @@ export function isValidRowStatus(status) {
 /**
  * `schemaVersion` written into `audit/<component>/verdict.json` (Phase 2).
  * 1.1.0 (plan `2026-09-22-audit-depths-sentinel-fixes.md`) added `awaitingLegs`
- * and `warnings` — additive, existing readers are unaffected. The run directory
- * is not here: it is per-run, so it lives in `_run/summary.json`.
+ * and `warnings`. 2.0.0 (Decision 12 of that plan) removes `awaitingLegs` and
+ * `aiLegs` — breaking, but no released reader uses either: AI legs are advisory
+ * at every depth now. Also 2.0.0: a row may carry `note` (Decision 13, a
+ * not-applicable check's reason). The run directory is not here: it is
+ * per-run, so it lives in `_run/summary.json`.
  */
-export const VERDICT_SCHEMA_VERSION = '1.1.0';
+export const VERDICT_SCHEMA_VERSION = '2.0.0';
 
 /**
  * `schemaVersion` an AI leg writes into its own `ai-findings.json` (Phase
- * 2/3). An unknown major version leaves the row it closes `INCOMPLETE`; an
- * unknown minor is accepted (Design §1) — `verdict.mjs` owns that check.
+ * 2/3). A file with an unknown major version is ignored and named in the
+ * verdict's notes; an unknown minor is accepted — `verdict.mjs` owns that check.
  */
 export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
-
-/**
- * Build an AI-leg row (Design §1): opened by the orchestrator when it
- * dispatches a `deep`-depth AI leg (`status: 'open'`), closed by that leg's
- * own `ai-findings.json` (`status: 'closed'`) naming the leg and the CX/DX
- * ids it judged. An unclosed row is `missing-prereq` to `verdict.mjs` — this
- * builder only shapes the row, it never decides that.
- *
- * @param {object} opts
- * @param {string} opts.leg          — the agent/skill leg name (e.g. "a11y-verifier")
- * @param {string[]} opts.idsJudged  — the CX/DX ids this leg is responsible for
- * @param {'open'|'closed'} [opts.status]
- * @param {string|null} [opts.inputHash] — sha256 of the leg's source input + prompt
- * @param {Array} [opts.findings]    — findings in the same shape as `finding()` below
- */
-export function buildAiLegRow({ leg, idsJudged, status = AI_LEG_STATUS.OPEN, inputHash = null, findings = [] }) {
-  if (!leg) throw new Error('buildAiLegRow: leg is required');
-  if (!Array.isArray(idsJudged) || idsJudged.length === 0) {
-    throw new Error('buildAiLegRow: idsJudged must be a non-empty array');
-  }
-  if (!AI_LEG_STATUSES.includes(status)) {
-    throw new Error(`buildAiLegRow: status must be one of ${AI_LEG_STATUSES.join(', ')}, got "${status}"`);
-  }
-  return {
-    schemaVersion: AI_FINDINGS_SCHEMA_VERSION,
-    leg,
-    idsJudged,
-    status,
-    inputHash,
-    findings,
-  };
-}
-
-/** Structural check for an AI-leg row — not full schemaVersion validation (Phase 2 owns that). */
-export function isValidAiLegRow(row) {
-  return (
-    !!row &&
-    typeof row.leg === 'string' &&
-    row.leg.length > 0 &&
-    Array.isArray(row.idsJudged) &&
-    row.idsJudged.length > 0 &&
-    AI_LEG_STATUSES.includes(row.status) &&
-    Array.isArray(row.findings)
-  );
-}
 
 /**
  * Build a normalized result object from raw findings.
@@ -282,8 +235,10 @@ function colorize(noColor) {
  * Helper to make a finding with sensible defaults. `noTarget: true` (Decision
  * §5) marks "this required row checked nothing" — `verdict.mjs` maps it to an
  * INCOMPLETE entry instead of grading it as an error or a warning.
+ * `notApplicable: true` (Decision 13) marks "this check does not apply here",
+ * its `message` the reason — shown, never state-changing.
  */
-export function finding({ severity, code, file, line, column, message, snippet, fix, noTarget }) {
+export function finding({ severity, code, file, line, column, message, snippet, fix, noTarget, notApplicable }) {
   const f = { severity, code, message };
   if (file) f.file = file;
   if (line !== undefined) f.line = line;
@@ -291,5 +246,6 @@ export function finding({ severity, code, file, line, column, message, snippet, 
   if (snippet) f.snippet = snippet;
   if (fix) f.fix = fix;
   if (noTarget) f.noTarget = true;
+  if (notApplicable) f.notApplicable = true;
   return f;
 }

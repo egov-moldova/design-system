@@ -15,7 +15,6 @@ import { after, describe, it } from 'node:test';
 import { renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import {
   REQUIRED_CHECKS,
-  closeAiRow,
   computeVerdict,
   excuseFor,
   levelFor,
@@ -201,261 +200,143 @@ describe('verdict: level', () => {
   });
 });
 
-describe('verdict: deep', () => {
+describe('verdict: deep — AI legs advisory (Decision 12)', () => {
+  it('REQUIRED_CHECKS.deep requires no ai-* row', () => {
+    assert.deepEqual(
+      REQUIRED_CHECKS.deep.filter(id => id.startsWith('ai-')),
+      [],
+    );
+  });
+
   it('deep --no-figma yields exactly PASS with level MERGE-READY, never PRODUCTION-READY', () => {
-    const v = computeVerdict({
-      envelope: cleanEnvelope({ depth: 'deep', noFigma: true, figma: null }),
-      aiFiles: allLegsClosed(),
-    });
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep', noFigma: true, figma: null }) });
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'MERGE-READY');
   });
 
   it('a committed design "none" reaches PRODUCTION-READY at deep, reason printed', () => {
-    const v = computeVerdict({
-      envelope: cleanEnvelope({ depth: 'deep', figma: FIGMA_DESIGN_NONE }),
-      aiFiles: allLegsClosed(),
-    });
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep', figma: FIGMA_DESIGN_NONE }) });
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
     assert.match(v.headline, /internal utility; decided by Dan/);
   });
 
-  it('every deep verdict prints ai-legs: self-attested', () => {
-    for (const aiFiles of [[], allLegsClosed()]) {
-      const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
-      assert.match(v.headline, /ai-legs: self-attested/);
-      assert.equal(v.aiLegs.attestation, 'self-attested');
-    }
-  });
-
-  it('records each leg input hash', () => {
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() });
-    assert.equal(v.aiLegs.legs.length, 6);
-    assert.ok(v.aiLegs.legs.every(l => l.inputHash === 'sha256:aaaa' && l.status === 'closed'));
-  });
-
-  it('an unclosed AI-leg row yields INCOMPLETE', () => {
-    const aiFiles = allLegsClosed().filter(f => f.leg !== 'a11y-verifier');
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.equal(v.entries.filter(x => x.kind === 'INCOMPLETE').length, 2); // ai-wcag + ai-media
-  });
-
-  it('an empty-but-closed row passes', () => {
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() });
+  it('a deep run with no ai/ directory → PASS PRODUCTION-READY, headline "ai-legs: advisory"', () => {
+    const auditDir = tmp();
+    const runDir = writeRunDir(auditDir, cleanEnvelope({ depth: 'deep' }));
+    const v = writeVerdictForRun(runDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
+    assert.match(v.headline, /ai-legs: advisory$/);
+    assert.deepEqual(v.entries, []);
   });
 
-  it('an unknown-major schemaVersion leaves the row unclosed → INCOMPLETE; an unknown minor is accepted', () => {
-    const major = allLegsClosed().map(f =>
-      f.leg === 'stencil-compliance' ? { leg: f.leg, data: aiFindings(f.leg, { schemaVersion: '2.0.0' }) } : f,
-    );
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: major });
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.match(v.entries[0].cause, /unknown major version/);
-
-    const minor = allLegsClosed().map(f =>
-      f.leg === 'stencil-compliance' ? { leg: f.leg, data: aiFindings(f.leg, { schemaVersion: '1.7.0' }) } : f,
-    );
-    assert.equal(computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: minor }).state, 'PASS');
+  it('an error-severity AI finding at deep → still PASS, listed under Advisory in verdict and brief', () => {
+    const aiFiles = [
+      {
+        leg: 'a11y-verifier',
+        data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'DX-WCAG-1', message: 'no name' }] }),
+      },
+    ];
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.level, 'PRODUCTION-READY');
+    assert.equal(v.advisory.length, 1);
+    assert.equal(v.advisory[0].code, 'DX-WCAG-1');
+    assert.equal(v.advisory[0].owner, 'a11y-verifier');
+    const brief = renderFixBrief(v);
+    assert.match(brief, /## Advisory/);
+    assert.match(brief, /DX-WCAG-1/);
   });
 
-  it('a file that does not list every id of the row does not close it', () => {
-    const row = { leg: 'audit-component', idsJudged: ['CX1', 'CX2'], inputHash: 'sha256:aaaa' };
-    const closure = closeAiRow(row, [
-      { leg: 'audit-component', data: aiFindings('audit-component', { idsJudged: ['CX1'] }) },
-    ]);
-    assert.equal(closure.closed, false);
-    assert.match(closure.cause, /CX2/);
-  });
-
-  it('a finding missing severity does not close the row, and names the finding', () => {
-    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
-    const closure = closeAiRow(row, [
+  it('a question-shaped AI finding at deep is an advisory decision entry, never NEEDS-DECISION', () => {
+    const aiFiles = [
       {
         leg: 'audit-component',
         data: aiFindings('audit-component', {
-          idsJudged: ['CX1'],
-          findings: [{ code: 'CX1', message: 'no severity here' }],
+          findings: [{ code: 'CX2', question: 'Trap focus?', options: ['yes', 'no'] }],
         }),
       },
-    ]);
-    assert.equal(closure.closed, false);
-    assert.match(closure.cause, /severity/);
-    assert.match(closure.cause, /finding\[0\]/);
-  });
-
-  it('a finding missing both message and actual does not close the row', () => {
-    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
-    const closure = closeAiRow(row, [
-      {
-        leg: 'audit-component',
-        data: aiFindings('audit-component', { idsJudged: ['CX1'], findings: [{ severity: 'error', code: 'CX1' }] }),
-      },
-    ]);
-    assert.equal(closure.closed, false);
-    assert.match(closure.cause, /message or actual/);
-  });
-
-  it('a decision-shaped finding (has `question`) never needs severity/message/actual', () => {
-    const row = { leg: 'audit-component', idsJudged: ['CX1'], inputHash: 'sha256:aaaa' };
-    const closure = closeAiRow(row, [
-      {
-        leg: 'audit-component',
-        data: aiFindings('audit-component', {
-          idsJudged: ['CX1'],
-          findings: [{ code: 'CX1', question: 'Trap focus?', options: ['yes', 'no'] }],
-        }),
-      },
-    ]);
-    assert.equal(closure.closed, true);
-  });
-
-  it('an AI finding may set FAIL at deep', () => {
-    const aiFiles = allLegsClosed().map(f =>
-      f.leg === 'a11y-verifier'
-        ? {
-            leg: f.leg,
-            data: aiFindings(f.leg, { findings: [{ severity: 'error', code: 'DX-WCAG-1', message: 'no name' }] }),
-          }
-        : f,
-    );
+    ];
     const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
-    assert.equal(v.state, 'FAIL');
-    assert.equal(v.entries[0].owner, 'a11y-verifier');
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.advisory[0].kind, 'NEEDS-DECISION');
+    assert.doesNotThrow(() => renderFixBrief(v));
   });
 
-  it('a leg whose one file closes two rows reports each finding once', () => {
-    // a11y-verifier owns both ai-wcag and ai-media, from a single ai-findings.json.
-    const aiFiles = allLegsClosed().map(f =>
-      f.leg === 'a11y-verifier'
-        ? {
-            leg: f.leg,
-            data: aiFindings(f.leg, {
-              findings: [
-                { severity: 'error', code: 'DX-WCAG-1', message: 'no name' },
-                { severity: 'warning', code: 'DX-MEDIA-1', message: 'motion' },
-              ],
-            }),
-          }
-        : f,
-    );
+  it('a malformed AI finding at deep is a note, never INCOMPLETE', () => {
+    const aiFiles = [
+      { leg: 'a11y-verifier', data: aiFindings('a11y-verifier', { findings: [{ code: 'DX-WCAG-1' }] }) },
+    ];
     const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
-    assert.equal(v.entries.filter(e => e.owner === 'a11y-verifier').length, 1);
-    assert.equal(v.advisory.filter(e => e.owner === 'a11y-verifier').length, 1);
-  });
-
-  it('an AI finding may set NEEDS-DECISION at deep', () => {
-    const aiFiles = allLegsClosed().map(f =>
-      f.leg === 'audit-component'
-        ? {
-            leg: f.leg,
-            data: aiFindings(f.leg, {
-              findings: [
-                { severity: 'warning', code: 'CX2', message: 'm', question: 'Trap focus?', options: ['yes', 'no'] },
-              ],
-            }),
-          }
-        : f,
-    );
-    assert.equal(computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles }).state, 'NEEDS-DECISION');
+    assert.equal(v.state, 'PASS');
+    assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
   });
 
   it('an AI finding cannot turn a script FAIL into anything else', () => {
-    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles: allLegsClosed() });
+    const aiFiles = [
+      {
+        leg: 'audit-component',
+        data: aiFindings('audit-component', {
+          findings: [{ severity: 'info', code: 'X', message: 'm', question: 'q?', options: ['a'] }],
+        }),
+      },
+    ];
+    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles });
     assert.equal(v.state, 'FAIL');
-    const decision = allLegsClosed().map(f =>
-      f.leg === 'audit-component'
-        ? {
-            leg: f.leg,
-            data: aiFindings(f.leg, {
-              findings: [{ severity: 'info', code: 'X', message: 'm', question: 'q?', options: ['a'] }],
-            }),
-          }
-        : f,
-    );
-    const v2 = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles: decision });
-    assert.equal(v2.state, 'FAIL');
   });
 
-  it('a malformed finding (no severity, no message/actual) leaves the row unclosed → INCOMPLETE, never throws', () => {
-    const aiFiles = allLegsClosed().map(f =>
-      f.leg === 'a11y-verifier' ? { leg: f.leg, data: aiFindings(f.leg, { findings: [{ code: 'DX-WCAG-1' }] }) } : f,
-    );
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
-    assert.equal(v.state, 'INCOMPLETE');
-    const entry = v.entries.find(e => e.check.includes('a11y-verifier'));
-    assert.ok(entry, 'no INCOMPLETE entry for the unclosed a11y-verifier row');
-    assert.match(entry.cause, /severity/);
-    assert.match(entry.cause, /message or actual/);
-  });
-});
-
-describe('verdict: S4 — awaitingLegs, true only when every INCOMPLETE entry is an opened ai-* row whose hash still matches', () => {
-  it('positive: every INCOMPLETE entry is an opened, unclosed ai-* row → true', () => {
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.ok(v.entries.length > 0);
-    assert.equal(v.awaitingLegs, true);
+  it('verdict.json carries neither awaitingLegs nor aiLegs, at any depth', () => {
+    for (const depth of ['quick', 'standard', 'deep']) {
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: allLegsClosed() });
+      assert.equal('awaitingLegs' in v, false, depth);
+      assert.equal('aiLegs' in v, false, depth);
+    }
   });
 
-  it('mixed: opened ai-* rows plus one non-ai INCOMPLETE entry → false', () => {
-    const v = computeVerdict({ envelope: drop(cleanEnvelope({ depth: 'deep' }), '13'), aiFiles: [] });
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.ok(v.entries.some(e => !e.check.startsWith('ai-')));
-    assert.equal(v.awaitingLegs, false);
-  });
-
-  it('stale hash: an ai-* row open on a hash that no longer matches its opened value → false', () => {
-    const currentHashes = { 'ai-stencil': 'sha256:bbbb' }; // opened rows all recorded INPUT_HASH ('sha256:aaaa')
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes });
-    assert.equal(v.state, 'INCOMPLETE');
-    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
-    assert.match(stale.cause, /source changed since run/);
-    assert.equal(v.awaitingLegs, false);
-  });
-
-  it('stale hash: the cause names the run it was opened in when the caller knows it', () => {
-    const currentHashes = { 'ai-stencil': 'sha256:bbbb' };
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes, run: 'r-2026' });
-    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
-    assert.equal(stale.cause, 'source changed since run r-2026 — start a fresh run');
-  });
-
-  it('PASS → false', () => {
-    assert.equal(
-      computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() }).awaitingLegs,
-      false,
-    );
-  });
-
-  it('FAIL → false', () => {
-    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles: allLegsClosed() });
-    assert.equal(v.state, 'FAIL');
-    assert.equal(v.awaitingLegs, false);
-  });
-
-  it('a leg never opened at all is not "awaiting" — the whole verdict has no leg dispatched yet', () => {
+  it('an envelope written before Decision 12, still carrying audit.aiLegs, opens no row', () => {
     const e = cleanEnvelope({ depth: 'deep' });
-    e.audit.aiLegs = e.audit.aiLegs.filter(l => l.id !== 'ai-stencil');
-    const v = computeVerdict({ envelope: e, aiFiles: [] });
-    assert.equal(v.state, 'INCOMPLETE');
-    // Every remaining entry is still an opened, unclosed ai-* row, so this stays true —
-    // the "never opened" entry sits alongside them but is itself excluded from awaiting.
-    const neverOpened = v.entries.find(x => x.check === 'ai-stencil');
-    assert.ok(neverOpened);
-    assert.equal(v.awaitingLegs, false);
+    e.audit.aiLegs = [{ id: 'ai-wcag', leg: 'a11y-verifier', idsJudged: ['DX-wcag'], status: 'open', findings: [] }];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'PASS');
+    assert.ok(!v.rows.some(r => r.id.startsWith('ai-')));
+  });
+
+  it('verdict.json schemaVersion is 2.0.0 (awaitingLegs removed — a breaking change)', () => {
+    assert.equal(computeVerdict({ envelope: cleanEnvelope() }).schemaVersion, '2.0.0');
   });
 });
 
-describe('verdict: R7 — the AI-leg row status enum', () => {
-  it('closeAiRow feeds an "open"/"closed" status recognized by AI_LEG_STATUSES', () => {
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() });
-    assert.ok(v.aiLegs.legs.every(l => l.status === 'closed'));
-    const unclosed = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
-    assert.ok(unclosed.aiLegs.legs.every(l => l.status === 'open'));
+describe('verdict: Decision 13 — a visible not-applicable', () => {
+  const notApplicable = () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '13');
+    row.summary = { errors: 0, warnings: 0, info: 1 };
+    e.findingsByTool[row.name] = [
+      {
+        severity: 'info',
+        code: 'TOKEN-DIFF-NOT-APPLICABLE',
+        message: 'mud-fx references no component-scoped variable',
+        notApplicable: true,
+      },
+    ];
+    return e;
+  };
+
+  it('never moves the state; the row carries the reason as note', () => {
+    const v = computeVerdict({ envelope: notApplicable() });
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.rows.find(r => r.id === '13').note, 'mud-fx references no component-scoped variable');
+    assert.deepEqual(v.warnings, []);
+  });
+
+  it('the brief lists it under "Not applicable" with its reason', () => {
+    const brief = renderFixBrief(computeVerdict({ envelope: notApplicable() }));
+    assert.match(brief, /## Not applicable\n\n- 13 check-13 — mud-fx references no component-scoped variable\n/);
+  });
+
+  it('a row with no notApplicable finding carries no note', () => {
+    assert.ok(computeVerdict({ envelope: cleanEnvelope() }).rows.every(r => !('note' in r)));
   });
 });
 
@@ -820,23 +701,6 @@ describe('verdict: Phase 5 (sentinel round 2)', () => {
     );
   });
 
-  it('T20: a stale-hash entry verifies with a fresh run, not a recompute', () => {
-    const currentHashes = { 'ai-stencil': 'sha256:bbbb' };
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes });
-    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
-    assert.equal(stale.verify, 'yarn audit:component mud-fx --depth deep');
-  });
-
-  it('Decision 11: an awaiting entry verifies with the fixed --recompute string (no <run> placeholder)', () => {
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
-    assert.equal(v.awaitingLegs, true);
-    for (const e of v.entries) {
-      assert.equal(e.verify, 'yarn audit:component --recompute mud-fx');
-      assert.ok(!JSON.stringify(e).includes('<run>'), JSON.stringify(e));
-    }
-    assert.ok(!JSON.stringify(v).includes('awaiting"'), 'the per-entry awaiting flag never reaches verdict.json');
-  });
-
   it('T23: a noTarget finding on a non-required row goes to warnings, not INCOMPLETE', () => {
     const e = cleanEnvelope({ depth: 'quick' });
     e.results.push({
@@ -860,20 +724,13 @@ describe('verdict: Phase 5 (sentinel round 2)', () => {
     assert.equal(v.warnings[0].code, 'A11Y-NO-STORY');
   });
 
-  it("Decision 11: writeSummary carries each component's awaitingLegs", () => {
+  it('Decision 12: writeSummary lists no awaitingLegs', () => {
     const dir = tmp();
-    const awaiting = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-a', depth: 'deep' }), aiFiles: [] });
-    const pass = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-b' }) });
+    const v = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-a', depth: 'deep' }) });
     const summary = writeSummary(dir, {
       depth: 'deep',
-      runs: [
-        { verdict: awaiting, runDir: join(dir, 'mud-a', 'runs', 'r') },
-        { verdict: pass, runDir: join(dir, 'mud-b', 'runs', 'r') },
-      ],
+      runs: [{ verdict: v, runDir: join(dir, 'mud-a', 'runs', 'r') }],
     });
-    assert.deepEqual(
-      summary.components.map(c => c.awaitingLegs),
-      [true, false],
-    );
+    assert.equal('awaitingLegs' in summary.components[0], false);
   });
 });

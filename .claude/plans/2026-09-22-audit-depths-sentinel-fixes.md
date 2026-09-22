@@ -760,8 +760,13 @@ whose block is found nowhere keeps `noTarget` (INCOMPLETE, named).
 - Modify: `.claude/commands/migrate-component.md`
 - Modify: `.claude/skills/audit-component/SKILL.md`
 - Modify: `.claude/skills/audit-component/references/report-template.md`
+- Modify: `.claude/skills/audit-component/references/layer-2-browser-checklists.md`
+- Modify: `.claude/skills/audit-component/references/wave-2-static-analysis.md`
 - Modify: `.claude/skills/stencil-compliance/SKILL.md`
 - Modify: `scripts/audit/README.md`
+- Modify: `scripts/__tests__/audit/__fixtures__/verdict/envelope.mjs`
+- Delete: `scripts/__tests__/audit/__fixtures__/envelopes/ai-leg-row-closed.json`
+- Delete: `scripts/__tests__/audit/__fixtures__/envelopes/ai-leg-row-open.json`
 - Modify: `.claude/plans/2026-09-22-audit-depths-sentinel-fixes.md`
 - Read only: `tokens/core/components/`
 - Read only: `src/components/`

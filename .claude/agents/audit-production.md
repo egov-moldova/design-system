@@ -22,7 +22,7 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 
 | Phase | Delegates to | What it adds |
 |-------|--------------|--------------|
-| 1 — Code Quality | `yarn audit:component mud-<name> --depth deep` (Fast Path, above) + [`audit-component` skill](../skills/audit-component/SKILL.md) for the AI legs | Stencil compliance via [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) (the `ai-stencil` leg) |
+| 1 — Code Quality | `yarn audit:component mud-<name> --depth deep` (Fast Path, above) + [`audit-component` skill](../skills/audit-component/SKILL.md) for the AI legs | Stencil compliance via [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) (an advisory leg) |
 | 2 — Tokens & CSS | `yarn tokens.validate` + [`token-validator` agent](token-validator.md) | Dark mode parity check |
 | 3 — Accessibility | [`/audit-accessibility`](../commands/audit-accessibility.md) | WCAG 2.1 AA deep, light + dark |
 | 4 — Stories | the gate's `05` row (Wave A, `--depth quick`+) | Storybook build pass |
@@ -30,10 +30,10 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 | 5b — E2E Tests | deferred at every depth (`e2e` row) | (future) — Stencil E2E patterns |
 | 5c — Visual Regression | `mcp__image-compare__compare_images` | Pixel diff against Figma reference |
 | 6 — Performance | Local checks | Bundle size + runtime perf |
-| 7 — Security | the gate's `ai-security` leg (`--depth deep`) + `yarn npm audit` | npm advisories + CSP compliance |
+| 7 — Security | the skill's security leg (advisory, `--depth deep`) + `yarn npm audit` | npm advisories + CSP compliance |
 | 8 — Documentation | Local checks | JSDoc + readme.md + Storybook docs |
 | 9 — Git Hygiene | the gate's `03` row (shared, every depth) | Conventional commits + no unrelated diff |
-| 10 — Stencil Compliance summary | Surfaces the `ai-stencil` leg's findings under their own header | — |
+| 10 — Stencil Compliance summary | Surfaces the `stencil-compliance` leg's advisory findings under their own header | — |
 
 ## Fast Path — the gate (mandatory)
 
@@ -44,40 +44,29 @@ yarn audit:component mud-<name> --depth deep --json
 ```
 
 This is `scripts/audit/verdict.mjs`: it drives `run-all.mjs --depth deep`
-(quick + standard's built prerequisites and Wave B/C + `stencil-compliance`
-manual rows, full WCAG, every Figma state × both themes, adapter smoke
-builds, the live Figma reference check, a security leg, E2E when present) and
-computes `state` — never this agent. Exit codes
-(`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4`
-NEEDS-DECISION, `2` usage/internal error.
+(quick + standard's built prerequisites and Wave B/C + adapter smoke builds,
+the live Figma reference check, E2E when present) and computes `state` —
+never this agent. Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS,
+`1` FAIL, `3` INCOMPLETE, `4` NEEDS-DECISION, `2` usage/internal error.
 
-- Exit `3` with this invocation's `--json` stdout carrying
-  `components[].awaitingLegs: true` — every `INCOMPLETE` entry is an opened
-  `ai-*` row awaiting its leg (Decision §11,
-  `2026-09-22-audit-depths-sentinel-fixes.md`): dispatch the legs below, each
-  of which writes `audit/mud-<name>/runs/<run>/ai/<leg>/ai-findings.json`
-  without invoking `verdict.mjs` or stopping on its exit code. Do not start a
-  second fresh run while one is already `awaitingLegs`. Once every opened row
-  is closed, recompute:
+- Any non-zero exit — STOP. Read `audit/mud-<name>/verdict.json` (`state`,
+  `level`, `rows`, `entries`) and `audit/mud-<name>/fix-brief.md` and report
+  them directly — **this agent's own PASS/FAIL/WARN criteria (§ Phase 11) are
+  replaced by the verdict's `state` + `level`.**
+- Exit `0` — the verdict is final; no AI leg can change it (Decision 12,
+  `2026-09-22-audit-depths-sentinel-fixes.md`: AI legs are advisory at every
+  depth). Phase 1 dispatches them as optional follow-ups; each writes
+  `<runDir>/ai/<leg>/ai-findings.json`, where `<runDir>` is
+  `components[].runDir` in `audit/_run/summary.json`. Then re-render the
+  brief so their findings appear under "Advisory":
 
   ```bash
-  yarn audit:component --recompute mud-<name> --json
+  yarn audit:component --run-dir <runDir> --json
   ```
 
-  `--recompute <component>` always targets this component's latest run (read
-  from `audit/_run/summary.json`) — a fixed string, never a `<run>`
-  placeholder; `--run-dir <runDir>` stays available for explicitly targeting
-  an older run. STOP if this exit is non-zero.
-- Exit `3` with `awaitingLegs: false`, or any other non-zero exit — STOP. In
-  either case read `audit/mud-<name>/verdict.json` (`state`, `level`, `rows`,
-  `entries`) and `audit/mud-<name>/fix-brief.md` and report them directly —
-  **this agent's own PASS/FAIL/WARN criteria (§ Phase 11) are replaced by the
-  verdict's `state` + `level`.**
-
 After the gate, only the JUDGMENT-heavy phases remain for AI, since the
-script + AI-leg rows already cover structure, anti-patterns, JSDoc, story
-exports, test coverage, bundle size, git hygiene, Stencil compliance, and
-WCAG:
+script already covers structure, anti-patterns, JSDoc, story exports, test
+coverage, bundle size, git hygiene and the scripted accessibility checks:
 
 - **Phase 3.x** — interpreting ARIA correctness from the captured a11y tree
 - **Phase 3.3** — picking the right remediation when contrast fails (token re-map vs design exception)
@@ -128,7 +117,7 @@ If running without subagent support, fall back to the legacy serial 9-phase exec
 
 ## Phase 1: Code Quality & Architecture
 
-**Invoke**: `Skill('audit-component', { args: '<componentName> --depth deep' })` for the AI legs the Fast Path gate opened, including the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) leg (`ai-stencil`). The phase 1 report inherits the gate's verdict (`audit/<componentName>/verdict.json` `rows` / `entries`) plus the skill's advisory findings.
+**Invoke**: `Skill('audit-component', { args: '<componentName> --depth deep' })` for the optional AI legs, including the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) leg — telling it the caller already ran the gate and the component's `runDir`, so it never starts a second fresh run. The phase 1 report inherits the gate's verdict (`audit/<componentName>/verdict.json` `rows` / `entries`) plus the skill's advisory findings.
 
 Additionally verify these production-only items below.
 
@@ -571,7 +560,7 @@ surfaces an unexpected change; otherwise trust the envelope.
 
 ## Phase 10: Stencil Compliance Deep Pass
 
-The `ai-stencil` leg dispatched in Phase 1 already covers
+The `stencil-compliance` leg dispatched in Phase 1 already covers
 [`stencil-compliance`](../skills/stencil-compliance/SKILL.md)'s
 [Run contract](../skills/stencil-compliance/SKILL.md#run-contract), judged against its
 [Rule index](../skills/stencil-compliance/SKILL.md#rule-index). This phase surfaces the
@@ -627,9 +616,9 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 - Phase 3.x  (ARIA / contrast judgment): ...
 - Phase 7    (Security beyond `yarn npm audit`): ...
 - Phase 8.3  (Storybook docs quality): ...
-- Phase 10   (Stencil compliance synthesis, from the `ai-stencil` leg): ...
+- Phase 10   (Stencil compliance synthesis, from the `stencil-compliance` leg): ...
 
-### Stencil Compliance Findings (from the `ai-stencil` leg)
+### Stencil Compliance Findings (from the `stencil-compliance` leg, advisory)
 - Section 1 @Component: ...
 - Section 2 @Prop: ...
 - ... (only show non-PASS sections)
@@ -645,15 +634,14 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 **Verdict criteria (`scripts/audit/verdict.mjs`, Design §1 of the plan)**:
 
 - **PASS**: every required check for `--depth deep` ran (or was excused by
-  `--no-figma` / `--no-browser` / `CI`) with no error-severity finding, and
-  every AI-leg row this agent's dispatched legs opened is closed.
-- **FAIL**: at least one blocking finding — a script row, or (at `deep`) a
-  closed AI-leg row.
-- **NEEDS-DECISION**: an open design question — no Figma manifest at `HEAD`,
-  or an AI leg reporting a question rather than a finding.
-- **INCOMPLETE**: any row crashed, hit a missing prerequisite, or a required
-  check for `deep` did not run without an excuse — including an AI-leg row
-  this agent never dispatched.
+  `--no-figma` / `--no-browser` / `CI`) with no error-severity finding.
+- **FAIL**: at least one blocking script finding.
+- **NEEDS-DECISION**: an open design question — no Figma manifest at `HEAD`.
+- **INCOMPLETE**: any row crashed, hit a missing prerequisite, checked nothing,
+  or a required check for `deep` did not run without an excuse.
+
+AI-leg findings, including a leg's question, are advisory and never move the
+state (Decision 12).
 
 This agent no longer assigns its own PASS/FAIL/WARN per phase; report the
 gate's `state` + `level` and let the judgment phases above add findings the

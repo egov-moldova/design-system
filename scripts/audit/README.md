@@ -297,20 +297,19 @@ carries `audit` (depth, excuses, filters, Figma resolution, `aiLegs[]`). Gate on
 | A | `lint`, 01, 02, 03, 04, 05, 07, 14, 16, 17 | `quick`+ | nothing |
 | B | 06, 08, 13, 18 (17 `--part cem`) | `standard`+ | coverage (06), `dist/` (08), `tokens-tokenhaus.json` (13), the CEM (18) |
 | C | 09, 10, 11, 12, 15, 19 | `standard`+ | this worktree's Storybook, Playwright |
-| D | `figma-refs` (`--check`), `adapter-react` (`yarn build.react`), `adapter-vanilla` (`yarn build.web`), `e2e` (deferred), the `ai-*` rows | `deep` | `FIGMA_TOKEN` for `figma-refs` |
+| D | `figma-refs` (`--check`), `adapter-react` (`yarn build.react`), `adapter-vanilla` (`yarn build.web`), `e2e` (deferred) | `deep` | `FIGMA_TOKEN` for `figma-refs` |
 
 Waves run sequentially; rows within a wave run in parallel via async `spawn`.
 Repo-level rows (03, the adapter builds) run once per invocation and are shared
-across components. The `ai-*` rows are not run by the orchestrator: it opens
-them (leg, ids to judge, SHA-256 of the component sources plus the leg prompt)
-and the `audit-component` skill's legs close them.
+across components. AI legs have no row: the `audit-component` skill dispatches
+them, and their findings are advisory at every depth (Decision 12 of
+`2026-09-22-audit-depths-sentinel-fixes.md`).
 
 ## Verdict (`verdict.mjs`)
 
 ```bash
 yarn audit:component mud-button --depth standard             # run + verdict, exit = state
-node scripts/audit/verdict.mjs --recompute mud-button         # recompute the component's latest run
-node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # recompute an explicit run
+node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # re-render a run, e.g. with advisory AI findings
 ```
 
 The only writer of `verdict.json`. It rebuilds the file from its inputs on every
@@ -320,39 +319,28 @@ run, so a hand-edited or model-written verdict never survives the next run.
   prerequisite, a required id did not run without an excuse, or a required row
   reported a `noTarget` finding) → `FAIL` (any
   blocking error finding) → `NEEDS-DECISION` (no Figma manifest at `HEAD` at
-  `standard`+, or an AI leg's open question at `deep`) → `PASS`.
+  `standard`+) → `PASS`.
 - **Level**, on `PASS` only: `CLEAN-STATIC` (`quick`, or any browser-waived
   run), `MERGE-READY` (`standard`, or `deep --no-figma`), `PRODUCTION-READY`.
 - **Excuses**, and nothing else: `--no-figma` or a committed `design: "none"`
   (Figma ids), no manifest at `HEAD` (Figma ids, state `NEEDS-DECISION`), and
   `--no-browser` / `--ci` / `CI` (browser ids). Each is printed in the headline.
-- **AI findings** are advisory at `quick` / `standard`. At `deep` each `ai-*`
-  row closes only with the leg's `ai-findings.json` naming the leg, every id the
-  row judges and a known major `schemaVersion`, and only while the sources the
-  row was opened on are unchanged — the verdict re-hashes them itself; a leg's
-  own `inputHash` is informational. A changed source leaves the row open with a
-  stale-hash entry whose `verify` is the fresh-run command
-  `yarn audit:component <component> --depth <depth>` — that row is not
-  `awaitingLegs` (below). An `error` finding sets `FAIL`, one with `question` +
-  `options` sets `NEEDS-DECISION`, and none clears a script `FAIL`. The headline
-  prints `ai-legs: self-attested`.
-- **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3.
-  `awaitingLegs` is written to `verdict.json` too, but a caller reads it from
-  `components[].awaitingLegs` of its own invocation's `--json` stdout summary —
-  computed on that invocation, true only when every `INCOMPLETE` entry is an
-  opened `ai-*` row on unchanged sources; a caller reading an earlier run's
-  `verdict.json` would be reading a value that can go stale the moment a
-  source changes. The caller then dispatches the legs and recomputes with
-  `yarn audit:component --recompute <component>`, a fixed string that reads
-  the component's latest `runDir` from `audit/_run/summary.json` itself — no
-  caller ever interpolates a `<run>` placeholder. `--run-dir <runDir>` stays
-  for explicitly targeting an older run; `<runDir>` is the component's entry
-  in `audit/_run/summary.json` — the repo-relative `audit/<component>/runs/<run>`
-  (absolute when `--audit-dir` is outside the repo). `runDir` is kept out of
-  `verdict.json` so that file is byte-identical across runs; both flags accept
-  only that shape, under `--audit-dir` when one is given. Exit 3 without
-  `awaitingLegs` is a stop. Every early exit of a fresh run (lock refusal,
-  run-all crash, preflight) still prints a summary, with `components: []`.
+- **AI findings** are advisory at every depth, `deep` included: a leg's
+  `ai-findings.json` under the run's `ai/<leg>/` is listed under "Advisory" and
+  never moves `state`; a malformed file or finding is named in `notes`. At
+  `deep` the headline says `ai-legs: advisory` — `PRODUCTION-READY` means the
+  scripted rows passed.
+- **Re-render.** A leg that writes after the run is folded in with
+  `yarn audit:component --run-dir <runDir>`, where `<runDir>` is the component's
+  entry in `audit/_run/summary.json` — the repo-relative
+  `audit/<component>/runs/<run>` (absolute when `--audit-dir` is outside the
+  repo). `runDir` is kept out of `verdict.json` so that file is byte-identical
+  across runs; `--run-dir` accepts only that shape, under `--audit-dir` when one
+  is given. Every early exit of a fresh run (lock refusal, run-all crash,
+  preflight) still prints a summary, with `components: []`.
+- **Not applicable.** A finding marked `notApplicable: true` (severity `info`)
+  never moves `state`; its row carries the reason as `note` and the brief lists
+  it under "Not applicable" (Decision 13).
 - **Warnings** never change the state. `verdict.json` lists them under
   `warnings`, and the brief renders them as "Warnings (non-blocking)" with their
   row and `verify:` command.
@@ -377,7 +365,7 @@ per-fix check, and only a full run at the same depth can write `PASS`.
 
 **One audit per worktree.** A run that builds or starts Storybook holds
 `audit/_run/.worktree.lock` (it guards `dist/` and the Storybook record); a fresh
-run and a `--recompute` / `--run-dir` recompute hold `<audit dir>/_run/.lock` (it guards
+run and a `--run-dir` re-render hold `<audit dir>/_run/.lock` (it guards
 `_run/summary.json`, `_run/envelope.json`, `_run/vitest-results.json` and each
 `verdict.json`). A second audit that finds a live lock is `INCOMPLETE`, naming the
 holder's pid and the lock path; a lock whose pid is dead or was reused is taken

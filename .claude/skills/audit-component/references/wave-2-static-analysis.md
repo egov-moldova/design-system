@@ -24,7 +24,7 @@ finding sets `FAIL`. Cite the rule's file and line in `expected.source`.
 | Adapter rules A1–A4; CEM parity | `17`, `18` — A4 overlaps lint `@stencil/reserved-member-names` and is kept for the names and the `@Event` members that rule does not check (comparison in `17-adapter-contract.mjs`'s header) |
 | `@Method` async, element type, `import type`, `transition: all`, `!important` | `lint` row (ESLint + Stylelint) |
 | DTCG shape, references, tier purity, generated CSS vars | `yarn tokens.validate` (CI job `tokens-validate`, repo-wide) |
-| Stencil rules marked `manual` | `ai-stencil` at `deep` — [`stencil-compliance` Rule index](../../stencil-compliance/SKILL.md#rule-index) |
+| Stencil rules marked `manual` | the advisory `stencil-compliance` leg at `deep` — [`stencil-compliance` Rule index](../../stencil-compliance/SKILL.md#rule-index) |
 
 ## TypeScript
 

@@ -20,7 +20,6 @@ import {
   buildPreflightFailure,
   parseCli,
   runAudit,
-  hashLegInput,
   evaluateCoverageResults,
   resolveComponents,
   VITEST_RESULTS_REL,
@@ -39,7 +38,6 @@ import {
 } from '../../audit/lib/storybook-helpers.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { allLegsClosed, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
-import { defaultReadPrompt, defaultReadSources } from '../../audit/lib/leg-input.mjs';
 
 describe('run-all: AUDIT_SCRIPTS registry', () => {
   it('every entry has id, wave, name; script entries name an .mjs file', () => {
@@ -143,22 +141,25 @@ describe('run-all: selectScripts', () => {
 
   it('a committed design "none" is honoured: no Figma checks scheduled', () => {
     const none = ids({ depth: 'deep' }, { status: 'design-none', design: { reason: 'r', decidedBy: 'd' } });
-    for (const id of ['11', '15', 'figma-refs', 'ai-figma-themes']) assert.equal(none.includes(id), false, id);
+    for (const id of ['11', '15', 'figma-refs']) assert.equal(none.includes(id), false, id);
   });
 
   it('--no-figma drops the Figma checks', () => {
     const selected = ids({ noFigma: true, depth: 'deep' }, present);
-    for (const id of ['11', '15', 'figma-refs', 'ai-figma-themes']) assert.equal(selected.includes(id), false, id);
+    for (const id of ['11', '15', 'figma-refs']) assert.equal(selected.includes(id), false, id);
   });
 
-  it('a browser waiver drops every Wave C script and the browser AI legs', () => {
+  it('a browser waiver drops every Wave C script', () => {
     const selected = selectScripts({ ...base, depth: 'deep', browserWaiver: 'CI env' }, { figma: present });
     assert.equal(
       selected.some(s => s.wave === 'C'),
       false,
     );
+  });
+
+  it('Decision 12: no depth selects an ai-leg row — the registry has none', () => {
     assert.equal(
-      selected.some(s => ['ai-wcag', 'ai-media', 'ai-archetype'].includes(s.id)),
+      AUDIT_SCRIPTS.some(s => s.kind === 'ai-leg' || s.id.startsWith('ai-')),
       false,
     );
   });
@@ -435,7 +436,7 @@ describe('run-all: aggregate row status (F1, F3)', () => {
 describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-sentinel-fixes.md Decision §6)', () => {
   it('ok when the run exited 0, regardless of testResults content', () => {
     const res = evaluateCoverageResults({ testResults: [] }, { exitCode: 0, components: ['mud-a'] });
-    assert.deepEqual(res, { ok: true, failedComponents: [] });
+    assert.deepEqual(res, { ok: true, failedComponents: [], unmappedSpecs: [] });
   });
 
   it('ok when every failed spec maps to a selected component (a real fixer FAIL, not a prereq failure)', () => {
@@ -443,7 +444,7 @@ describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-se
       testResults: [{ name: '/repo/src/components/mud-b/test/x.spec.tsx', status: 'failed' }],
     };
     const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a', 'mud-b'] });
-    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'] });
+    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'], unmappedSpecs: [] });
   });
 
   it('not ok when a failed spec maps to a component outside the selection', () => {
@@ -460,14 +461,16 @@ describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-se
       testResults: [{ name: '/repo/src/hidden/mud-b/test/x.spec.tsx', status: 'failed' }],
     };
     const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-b'] });
-    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'] });
+    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'], unmappedSpecs: [] });
   });
 
   it('not ok when a failed spec maps to no component — an unmapped failure never passes as ok', () => {
     const parsed = {
       testResults: [{ name: '/repo/scripts/__tests__/x.spec.mjs', status: 'failed' }],
     };
-    assert.equal(evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a'] }).ok, false);
+    const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a'] });
+    assert.equal(res.ok, false);
+    assert.deepEqual(res.unmappedSpecs, ['/repo/scripts/__tests__/x.spec.mjs']);
   });
 
   it('not ok when vitest exited non-zero with no failed spec to account for it', () => {
@@ -478,10 +481,12 @@ describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-se
     assert.deepEqual(evaluateCoverageResults(null, { exitCode: 0, components: ['mud-a'] }), {
       ok: false,
       failedComponents: [],
+      unmappedSpecs: [],
     });
     assert.deepEqual(evaluateCoverageResults({}, { exitCode: 0, components: ['mud-a'] }), {
       ok: false,
       failedComponents: [],
+      unmappedSpecs: [],
     });
   });
 });
@@ -630,7 +635,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_SCRIPTS = join(HERE, '__fixtures__', 'verdict', 'scripts');
 const REPO = join(HERE, '..', '..', '..');
 const FIXTURE_REGISTRY = AUDIT_SCRIPTS.map(s =>
-  ['ai-leg', 'deferred', 'command'].includes(s.kind) ? s : { ...s, kind: 'script', file: 'fixture-check.mjs' },
+  ['deferred', 'command'].includes(s.kind) ? s : { ...s, kind: 'script', file: 'fixture-check.mjs' },
 );
 const tmpRoots = [];
 after(() => tmpRoots.forEach(d => rmSync(d, { recursive: true, force: true })));
@@ -703,8 +708,6 @@ function pipeline({
         commands.push('storybook');
         return { ok: true, port: 61234 };
       }),
-    readSources: () => [{ path: 'src/components/x/x.tsx', content: 'x' }],
-    readPrompt: () => 'prompt',
     runId: 'run-1',
   };
   return { args, deps, commands, auditDir, repoRoot };
@@ -755,7 +758,7 @@ describe('run-all: runAudit — INCOMPLETE and its excuses (real pipeline)', () 
     assert.equal(row.errorClass, 'prerequisite-failed');
     const v = verdictOf(p.auditDir);
     assert.equal(v.state, 'INCOMPLETE');
-    assert.match(v.entries[0].prerequisite, /yarn vitest run --project spec --coverage src\/components\/mud-fx/);
+    assert.match(v.entries[0].prerequisite, /yarn vitest run --project spec --coverage src\/components\/mud-fx\/$/);
   });
 
   it('CI=1 in the environment excuses the browser checks: PASS, CLEAN-STATIC, waiver printed, no Storybook', async () => {
@@ -1104,7 +1107,7 @@ describe('run-all: runAudit — S5, zero components selected (plan 2026-09-22-au
 describe('run-all: runAudit — deep', () => {
   const H = manifestText();
 
-  it('emits one row per mapped deep item, opens the AI legs with their input hash, and closes to PRODUCTION-READY', async () => {
+  it('emits one row per mapped deep item, opens no AI row, and passes at PRODUCTION-READY (Decision 12)', async () => {
     const p = pipeline({
       argv: ['mud-fx', '--depth', 'deep', '--verdict'],
       env: { FIGMA_TOKEN: 'x' },
@@ -1113,20 +1116,9 @@ describe('run-all: runAudit — deep', () => {
     });
     const r = await runAudit(p.args, p.deps);
     const envelope = r.perComponent[0].envelope;
-    const rowIds = new Set([...envelope.results.map(x => x.id), ...envelope.audit.aiLegs.map(x => x.id)]);
-    const deepItems = [
-      'figma-refs',
-      'adapter-react',
-      'adapter-vanilla',
-      'e2e',
-      'ai-stencil',
-      'ai-wcag',
-      'ai-media',
-      'ai-figma-themes',
-      'ai-archetype',
-      'ai-security',
-    ];
-    for (const id of deepItems) assert.ok(rowIds.has(id), id);
+    const rowIds = new Set(envelope.results.map(x => x.id));
+    for (const id of ['figma-refs', 'adapter-react', 'adapter-vanilla', 'e2e']) assert.ok(rowIds.has(id), id);
+    assert.equal('aiLegs' in envelope.audit, false);
     assert.equal(envelope.results.find(x => x.id === 'e2e').status, 'skipped');
     assert.ok(p.commands.includes('yarn build.react') && p.commands.includes('yarn build.web'));
     assert.deepEqual(JSON.parse(infoOf(envelope, 'figma-refs', 'FIXTURE-ARGV')[0]), [
@@ -1134,50 +1126,30 @@ describe('run-all: runAudit — deep', () => {
       '--manifest',
       join(p.repoRoot, '.audit-figma/mud-fx/manifest@HEAD.json'),
     ]);
-    const hash = hashLegInput(p.deps.readSources(), 'prompt');
-    assert.ok(envelope.audit.aiLegs.every(l => l.status === 'open' && l.inputHash === hash));
 
-    // Legs not yet dispatched: INCOMPLETE naming the unclosed rows.
-    const before = verdictOf(p.auditDir);
-    assert.equal(before.state, 'INCOMPLETE');
-    assert.equal(before.entries.length, 6);
-
-    // The legs write their ai-findings.json into the run; the verdict is recomputed from the same inputs.
-    const runDir = join(p.auditDir, 'mud-fx', 'runs', 'run-1');
-    for (const { leg, data } of allLegsClosed()) {
-      mkdirSync(join(runDir, 'ai', leg), { recursive: true });
-      writeFileSync(join(runDir, 'ai', leg, 'ai-findings.json'), JSON.stringify({ ...data, inputHash: hash }));
-    }
-    // Same deps openAiLegs opened the row's hash with (R2) — production always
-    // uses the real repoRoot/sources/prompt on both sides; only a test needs
-    // to thread its fixture deps through both, or the recompute reads "stale".
-    const v = writeVerdictForRun(runDir, {
-      repoRoot: p.repoRoot,
-      readSources: p.deps.readSources,
-      readPrompt: p.deps.readPrompt,
-    });
+    // No leg dispatched: the fresh run alone is the verdict.
+    const v = verdictOf(p.auditDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
-    assert.match(v.headline, /ai-legs: self-attested/);
+    assert.match(v.headline, /ai-legs: advisory/);
+
+    // A leg that writes afterwards is folded in by a re-render, as advisory only.
+    const runDir = join(p.auditDir, 'mud-fx', 'runs', 'run-1');
+    const [first] = allLegsClosed();
+    mkdirSync(join(runDir, 'ai', first.leg), { recursive: true });
+    writeFileSync(
+      join(runDir, 'ai', first.leg, 'ai-findings.json'),
+      JSON.stringify({ ...first.data, findings: [{ severity: 'error', code: 'DX-1', message: 'm' }] }),
+    );
+    const rerendered = writeVerdictForRun(runDir);
+    assert.equal(rerendered.state, 'PASS');
+    assert.equal(rerendered.advisory.length, 1);
   });
 
-  it('deep --no-figma closes to exactly PASS at MERGE-READY', async () => {
+  it('deep --no-figma passes at exactly MERGE-READY', async () => {
     const p = pipeline({ argv: ['mud-fx', '--depth', 'deep', '--no-figma', '--verdict'] });
-    const r = await runAudit(p.args, p.deps);
-    assert.equal(
-      r.perComponent[0].envelope.audit.aiLegs.some(l => l.id === 'ai-figma-themes'),
-      false,
-    );
-    const runDir = join(p.auditDir, 'mud-fx', 'runs', 'run-1');
-    writeRunDir(p.auditDir, r.perComponent[0].envelope, {
-      run: 'run-1',
-      ai: allLegsClosed().map(f => ({ ...f, data: { ...f.data, inputHash: null } })),
-    });
-    const v = writeVerdictForRun(runDir, {
-      repoRoot: p.repoRoot,
-      readSources: p.deps.readSources,
-      readPrompt: p.deps.readPrompt,
-    });
+    await runAudit(p.args, p.deps);
+    const v = verdictOf(p.auditDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'MERGE-READY');
   });
@@ -1351,25 +1323,6 @@ describe('run-all: Phase 5 (sentinel round 2)', () => {
     return acquireLock(lockPath, { pid: process.pid, startTimeOf: () => realStartTime, isAlive: () => true });
   };
 
-  it('T1: a real two-argument source reader gives the opened row and the in-run re-hash the same value', async () => {
-    const p = pipeline({
-      argv: ['mud-fx', '--depth', 'deep', '--verdict'],
-      env: { FIGMA_TOKEN: 'x' },
-      head: { 'mud-fx': H },
-      wt: { 'mud-fx': H },
-    });
-    mkdirSync(join(p.repoRoot, 'src', 'components', 'mud-fx'), { recursive: true });
-    writeFileSync(join(p.repoRoot, 'src', 'components', 'mud-fx', 'mud-fx.tsx'), 'export const x = 1;\n');
-    // The production readers — never an argument-ignoring stub.
-    p.deps.readSources = defaultReadSources;
-    p.deps.readPrompt = defaultReadPrompt;
-    await runAudit(p.args, p.deps);
-    const v = verdictOf(p.auditDir);
-    assert.equal(v.state, 'INCOMPLETE');
-    assert.ok(!v.entries.some(e => /source changed/.test(e.cause)), JSON.stringify(v.entries, null, 2));
-    assert.equal(v.awaitingLegs, true);
-  });
-
   it('T6: an exclusive adapter build takes the worktree lock even when no prerequisite runs', async () => {
     const p = pipeline({ argv: ['mud-fx', '--depth', 'deep', '--only', 'adapter-react', '--verdict'] });
     const held = liveHolder(join(p.repoRoot, 'audit', '_run', '.worktree.lock'));
@@ -1486,6 +1439,53 @@ describe('run-all: Phase 5 (sentinel round 2)', () => {
     const row = r.combined.results.find(x => x.id === '06');
     assert.equal(row.status, 'missing-prereq');
     assert.match(row.error, /vitest exited 1 with no failed spec/);
+  });
+
+  const failingSpecRun = specPath => async (cmd, cmdArgs) => {
+    const out = cmdArgs.find(a => a.startsWith('--outputFile='));
+    if (out) {
+      mkdirSync(dirname(out.slice(13)), { recursive: true });
+      writeFileSync(out.slice(13), JSON.stringify({ testResults: [{ name: specPath, status: 'failed' }] }));
+      return { exitCode: 1, stdout: '', stderr: '' };
+    }
+    return { exitCode: 0, stdout: '', stderr: '' };
+  };
+
+  it('U5: a failed spec outside any component directory is named as unmapped, not as "no failed spec"', async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      runCommand: failingSpecRun('/repo/scripts/__tests__/x.spec.mjs'),
+    });
+    const r = await runAudit(p.args, p.deps);
+    const row = r.combined.results.find(x => x.id === '06');
+    assert.equal(row.status, 'missing-prereq');
+    assert.match(row.error, /outside any component directory: \/repo\/scripts\/__tests__\/x\.spec\.mjs/);
+    assert.doesNotMatch(row.error, /no failed spec/);
+  });
+
+  it("U5: a foreign component's failure names only the components outside the selection", async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      runCommand: failingSpecRun('/repo/src/components/mud-other/test/x.spec.tsx'),
+    });
+    const r = await runAudit(p.args, p.deps);
+    const row = r.combined.results.find(x => x.id === '06');
+    assert.match(row.error, /test\(s\) failed in mud-other — not in this run's selection/);
+  });
+
+  it("U5: the printed coverage prerequisite names the component's real directory, with its trailing slash", async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--no-figma', '--verdict'],
+      runCommand: async (cmd, cmdArgs) => ({
+        exitCode: cmdArgs.includes('--coverage') ? 1 : 0,
+        stdout: '',
+        stderr: '',
+      }),
+    });
+    mkdirSync(join(p.repoRoot, 'src', 'hidden', 'mud-fx'), { recursive: true });
+    const r = await runAudit(p.args, p.deps);
+    const row = r.combined.results.find(x => x.id === '06');
+    assert.equal(row.prerequisite, 'yarn vitest run --project spec --coverage src/hidden/mud-fx/');
   });
 
   it('T25: every resolveComponents branch returns cause: null on success', () => {

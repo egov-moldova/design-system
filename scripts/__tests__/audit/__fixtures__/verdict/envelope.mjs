@@ -44,12 +44,7 @@ export const LEGS = Object.freeze({
   'ai-security': { leg: 'audit-component', idsJudged: ['DX-security'] },
 });
 
-export const INPUT_HASH = 'sha256:aaaa';
-
-/**
- * A clean envelope: every required, non-excused id ran with no findings;
- * at deep every required, non-excused AI leg is opened.
- */
+/** A clean envelope: every required, non-excused id ran with no findings. */
 export function cleanEnvelope({
   component = 'mud-fx',
   depth = 'standard',
@@ -61,30 +56,18 @@ export function cleanEnvelope({
 } = {}) {
   const ctx = { noFigma, figma, browserWaiver };
   const ids = REQUIRED_CHECKS[depth].filter(id => !excuseFor(id, ctx));
-  const results = ids
-    .filter(id => !id.startsWith('ai-'))
-    .map(id => ({
-      id,
-      name: `check-${id}`,
-      wave: 'A',
-      ok: true,
-      status: 'ok',
-      exitCode: 0,
-      durationMs,
-      summary: { errors: 0, warnings: 0, info: 0 },
-      error: null,
-      component,
-    }));
-  const aiLegs = ids
-    .filter(id => id.startsWith('ai-'))
-    .map(id => ({
-      id,
-      schemaVersion: AI_FINDINGS_SCHEMA_VERSION,
-      ...LEGS[id],
-      status: 'open',
-      inputHash: INPUT_HASH,
-      findings: [],
-    }));
+  const results = ids.map(id => ({
+    id,
+    name: `check-${id}`,
+    wave: 'A',
+    ok: true,
+    status: 'ok',
+    exitCode: 0,
+    durationMs,
+    summary: { errors: 0, warnings: 0, info: 0 },
+    error: null,
+    component,
+  }));
   return {
     schemaVersion: SCHEMA_VERSION,
     tool: 'run-all',
@@ -95,7 +78,7 @@ export function cleanEnvelope({
     results,
     findingsByTool: Object.fromEntries(results.map(r => [r.name, []])),
     meta: { totalDurationMs: durationMs * 3, scriptsRun: results.length, parallel: true },
-    audit: { component, depth, noFigma, browserWaiver, filters, figma, aiLegs, prerequisites: [] },
+    audit: { component, depth, noFigma, browserWaiver, filters, figma, prerequisites: [] },
   };
 }
 
@@ -119,17 +102,17 @@ export function withError(envelope, id, f = {}) {
   return envelope;
 }
 
-/** An ai-findings.json that closes every row a leg was opened for. */
+/** A leg's ai-findings.json, listing every id the leg judges. */
 export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {}) {
   const ids =
     idsJudged ??
     Object.values(LEGS)
       .filter(l => l.leg === leg)
       .flatMap(l => l.idsJudged);
-  return { schemaVersion, leg, idsJudged: ids, inputHash: INPUT_HASH, findings };
+  return { schemaVersion, leg, idsJudged: ids, findings };
 }
 
-/** Every leg's closing file, with no findings. */
+/** Every leg's file, with no findings. */
 export function allLegsClosed() {
   return [...new Set(Object.values(LEGS).map(l => l.leg))].map(leg => ({ leg, data: aiFindings(leg) }));
 }

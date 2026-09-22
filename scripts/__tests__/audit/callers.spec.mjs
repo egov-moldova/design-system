@@ -9,19 +9,13 @@
  * criteria tokens survive; every leg invokes neither `yarn audit:component`
  * nor `verdict.mjs`.
  *
- * Decision §10 of `2026-09-22-audit-depths-sentinel-fixes.md` is a stated,
- * narrow carve-out from Design §1 above: a `--depth deep` caller may also
- * read `awaitingLegs` (Decision §1 of that plan: true only when every
- * INCOMPLETE entry is an opened `ai-*` row awaiting its leg). Decision 11
- * narrows where it is read: from this invocation's `--json` stdout
- * (`components[].awaitingLegs`), never from a `verdict.json` an earlier run
- * may have left behind — and the recompute is the fixed string
- * `yarn audit:component --recompute <component>`, which finds the latest
- * run in `audit/_run/summary.json` itself, so no caller carries a run path.
- * The field is computed by the verdict, never re-derived by the caller, so
- * the carve-out holds without reopening "callers branch on exit status,
- * never their own reading of the verdict". The last describe block below
- * asserts this by text over the three deep two-phase callers.
+ * Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md` descoped the
+ * two-phase `deep` flow: AI legs are advisory at every depth, so every caller
+ * runs the gate once and stops on a non-zero exit — no `awaitingLegs`, no
+ * `--recompute`. The one field a caller still reads besides the exit status is
+ * a component's `runDir` in `audit/_run/summary.json` (Decision 10), which it
+ * passes to `--run-dir` to re-render the brief with advisory findings a leg
+ * wrote afterwards. The last describe block asserts this by text.
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -145,8 +139,8 @@ describe('callers: S8 — --run-dir must match <auditRoot>/mud-*/runs/<run>', ()
   });
 });
 
-describe('callers: T5 / Decision 11 — --run-dir needs an envelope; --recompute reads the summary', () => {
-  function recomputeCli(argv, dir) {
+describe('callers: T5 / Decision 12 — --run-dir needs an envelope and re-renders the named run', () => {
+  function rerenderCli(argv, dir) {
     return spawnSync(process.execPath, [VERDICT, ...argv, '--audit-dir', dir, '--json'], { encoding: 'utf8' });
   }
 
@@ -161,31 +155,25 @@ describe('callers: T5 / Decision 11 — --run-dir needs an envelope; --recompute
     assert.equal(existsSync(join(dir, '_run', 'summary.json')), false);
   });
 
-  it('--recompute <component> recomputes the run the summary lists for it', () => {
+  it('--run-dir re-renders the named run from its current inputs', () => {
     const dir = auditDir();
     const runDir = writeRunDir(dir, FIXTURE_FOR_STATE.FAIL('mud-fx'));
     assert.equal(runVerdict([runDir], dir).status, STATE_EXIT_CODES.FAIL);
-    // The fixer's change lands; the same run's inputs now read clean.
     writeFileSync(join(runDir, 'envelope.json'), JSON.stringify(cleanEnvelope({ component: 'mud-fx' })));
-    const res = recomputeCli(['--recompute', 'mud-fx'], dir);
+    const res = rerenderCli(['--run-dir', runDir], dir);
     assert.equal(res.status, 0, res.stderr);
     const out = JSON.parse(res.stdout);
     assert.equal(out.state, 'PASS');
-    assert.deepEqual(
-      out.components.map(c => [c.component, c.awaitingLegs]),
-      [['mud-fx', false]],
-    );
+    assert.equal('awaitingLegs' in out.components[0], false);
     assert.equal(JSON.parse(readFileSync(join(dir, 'mud-fx', 'verdict.json'), 'utf8')).state, 'PASS');
   });
 
-  it('--recompute keeps the other components the summary lists', () => {
+  it('--run-dir keeps the other components the summary lists; its exit speaks only for its own run', () => {
     const dir = auditDir();
     const a = writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx-a'));
     const b = writeRunDir(dir, FIXTURE_FOR_STATE.FAIL('mud-fx-b'));
     runVerdict([a, b], dir);
-    // The exit and stdout are this recompute's own — a caller stops on mud-fx-b's
-    // FAIL when it recomputes mud-fx-b, never while recomputing a passing mud-fx-a.
-    const res = recomputeCli(['--recompute', 'mud-fx-a'], dir);
+    const res = rerenderCli(['--run-dir', a], dir);
     assert.equal(res.status, 0, res.stderr);
     assert.deepEqual(
       JSON.parse(res.stdout).components.map(c => c.component),
@@ -193,32 +181,12 @@ describe('callers: T5 / Decision 11 — --run-dir needs an envelope; --recompute
     );
     const summary = JSON.parse(readFileSync(join(dir, '_run', 'summary.json'), 'utf8'));
     assert.equal(summary.state, 'FAIL', 'the summary file still carries every component');
-    assert.deepEqual(
-      summary.components.map(c => c.component),
-      ['mud-fx-a', 'mud-fx-b'],
-    );
-    assert.equal(recomputeCli(['--recompute', 'mud-fx-b'], dir).status, STATE_EXIT_CODES.FAIL);
   });
 
-  it('--recompute of a component the summary does not list → exit 2, nothing written', () => {
+  it('--recompute is gone → exit 2', () => {
     const dir = auditDir();
     runVerdict([writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx'))], dir);
-    const res = recomputeCli(['--recompute', 'mud-other'], dir);
-    assert.equal(res.status, 2);
-    assert.match(res.stderr, /mud-other/);
-    assert.equal(existsSync(join(dir, 'mud-other')), false);
-  });
-
-  it('--recompute normalizes the component name like a fresh run does (`@mud-fx`, `fx`)', () => {
-    const dir = auditDir();
-    runVerdict([writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx'))], dir);
-    assert.equal(recomputeCli(['--recompute', '@mud-fx'], dir).status, 0);
-    assert.equal(recomputeCli(['--recompute', 'fx'], dir).status, 0);
-  });
-
-  it('--recompute with no summary at all → exit 2', () => {
-    const res = recomputeCli(['--recompute', 'mud-fx'], auditDir());
-    assert.equal(res.status, 2);
+    assert.equal(rerenderCli(['--recompute', 'mud-fx'], dir).status, 2);
   });
 });
 
@@ -243,7 +211,10 @@ describe('callers: Decision 11 — every early exit of a fresh run prints a summ
 
   it('run-all exiting without a summary → exit 3, --json stdout is a summary with no components', () => {
     const dir = auditDir();
-    const res = spawnSync(process.execPath, [VERDICT, 'not a valid component name!!', '--audit-dir', dir, '--json'], {
+    // A file where the component's audit directory must go: run-all cannot
+    // write the run and crashes before it writes a summary.
+    writeFileSync(join(dir, 'mud-button'), 'not a directory');
+    const res = spawnSync(process.execPath, [VERDICT, 'mud-button', '--depth', 'quick', '--audit-dir', dir, '--json'], {
       encoding: 'utf8',
     });
     assert.equal(res.status, 3, res.stderr);
@@ -265,10 +236,12 @@ describe('callers: S9 — a usage error in fresh mode exits 2 before run-all is 
     assert.equal(existsSync(join(dir, '_run', 'summary.json')), false);
   });
 
-  it('an invalid component name still surfaces as run-all crashing without a summary → exit 3, unchanged', () => {
+  it('U5: an invalid component name → exit 2 before run-all is spawned, no summary.json written', () => {
     const dir = auditDir();
     const res = runFresh(['not a valid component name!!'], dir);
-    assert.equal(res.status, 3, res.stderr);
+    assert.equal(res.status, 2, res.stderr);
+    assert.match(res.stderr, /invalid component name/);
+    assert.equal(existsSync(join(dir, '_run', 'summary.json')), false);
   });
 });
 
@@ -289,9 +262,8 @@ const LEGS = [
   '.claude/skills/stencil-compliance/SKILL.md',
 ];
 
-/** S4's two-phase `--depth deep` flow: exit 3 + `awaitingLegs` (from `--json` stdout) → dispatch
- * legs → `yarn audit:component --recompute <component>` → stop on non-zero (Decision 11). Subset of
- * GATE_CALLERS that runs `--depth deep` and owns the two-phase branch (plan Phase 5 task 1). */
+/** The GATE_CALLERS that run `--depth deep`: they run the gate once and stop on a non-zero exit;
+ * AI legs are optional advisory follow-ups re-rendered with `--run-dir` (Decision 12). */
 const DEEP_CALLERS = [
   '.claude/agents/audit-production.md',
   '.claude/commands/audit-component.md',
@@ -340,33 +312,39 @@ describe('callers: caller files by group', () => {
   }
 });
 
-describe('callers: S4 — deep two-phase flow (Decision §1 awaitingLegs, Decision §10 carve-out)', () => {
-  for (const rel of DEEP_CALLERS) {
-    it(`${rel} names awaitingLegs`, () => {
-      assert.ok(readFile(rel).includes('awaitingLegs'), `${rel}: does not mention awaitingLegs`);
-    });
+describe('callers: Decision 12 — deep runs the gate once; AI legs are advisory', () => {
+  const SKILL = '.claude/skills/audit-component/SKILL.md';
+  /** Code-block lines that start a fresh gate run — `yarn audit:component` not re-rendering a run. */
+  const freshGateLines = rel =>
+    codeBlocks(readFile(rel))
+      .flatMap(b => b.split('\n'))
+      .filter(l => l.includes('yarn audit:component') && !l.includes('--run-dir'));
 
-    it(`${rel} recomputes with the fixed \`--recompute <component>\` string, never a run path (Decision 11)`, () => {
-      const blocks = codeBlocks(readFile(rel));
-      assert.ok(
-        blocks.some(b => /yarn audit:component --recompute \S+/.test(b)),
-        `${rel}: no code block runs \`yarn audit:component --recompute <component>\``,
-      );
-      // `--run-dir` stays documented for an explicitly named older run; the
-      // two-phase flow itself never recomputes by a run path.
-      assert.ok(!blocks.some(b => b.includes('--run-dir')), `${rel}: a code block still recomputes by --run-dir`);
-      assert.ok(!readFile(rel).includes('verdict.runDir'), `${rel}: still reads runDir from verdict.json`);
-    });
-
-    it(`${rel} reads awaitingLegs from the invocation's --json stdout (components[].awaitingLegs)`, () => {
-      assert.ok(
-        readFile(rel).includes('components[].awaitingLegs'),
-        `${rel}: does not name \`components[].awaitingLegs\` on --json stdout`,
-      );
-    });
-
-    it(`${rel} no longer says "re-run the gate above"`, () => {
-      assert.ok(!readFile(rel).includes('re-run the gate above'), `${rel}: still says "re-run the gate above"`);
+  for (const rel of [...new Set([...GATE_CALLERS, ...LEGS, SKILL])]) {
+    it(`${rel} names neither awaitingLegs nor --recompute`, () => {
+      const text = readFile(rel);
+      assert.ok(!text.includes('awaitingLegs'), `${rel}: still names awaitingLegs`);
+      assert.ok(!text.includes('--recompute'), `${rel}: still names --recompute`);
     });
   }
+
+  for (const rel of DEEP_CALLERS) {
+    it(`${rel} runs the gate exactly once`, () => {
+      assert.equal(freshGateLines(rel).length, 1, freshGateLines(rel).join('\n'));
+    });
+
+    it(`${rel} re-renders advisory legs with --run-dir, taking runDir from audit/_run/summary.json`, () => {
+      const text = readFile(rel);
+      assert.ok(
+        codeBlocks(text).some(b => /yarn audit:component --run-dir \S+/.test(b)),
+        `${rel}: no code block re-renders with --run-dir`,
+      );
+      assert.ok(text.includes('audit/_run/summary.json'), `${rel}: does not name audit/_run/summary.json`);
+      assert.ok(!text.includes('verdict.runDir'), `${rel}: reads runDir from verdict.json`);
+    });
+  }
+
+  it('the skill never starts a second fresh run when a caller already ran the gate', () => {
+    assert.match(readFile(SKILL), /caller already ran the gate[^\n]*runDir/i);
+  });
 });

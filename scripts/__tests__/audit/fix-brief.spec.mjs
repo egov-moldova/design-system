@@ -86,9 +86,10 @@ describe('fix-brief: one shape per state', () => {
     const advisoryAt = brief.indexOf('## Advisory');
     assert.ok(advisoryAt > 0);
     const block = assertShape(brief.slice(advisoryAt), v.advisory[0]);
-    // Decision 11: the recompute is a fixed string — no `<run>` placeholder to fill.
-    assert.match(block, /yarn audit:component --recompute mud-fx/);
-    assert.ok(!brief.includes('<run>'));
+    // Decision 12: an advisory finding is folded in by re-rendering the run the summary lists.
+    assert.match(block, /re-dispatch the a11y-verifier leg, then: yarn audit:component --run-dir /);
+    assert.match(block, /audit\/_run\/summary\.json/);
+    assert.doesNotMatch(brief, /--recompute/);
   });
 
   it('T10: an INCOMPLETE entry with a log instead of a prerequisite renders the log', () => {

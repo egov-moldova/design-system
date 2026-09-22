@@ -19,10 +19,6 @@ import {
   isValidState,
   isValidLevel,
   isValidRowStatus,
-  buildAiLegRow,
-  isValidAiLegRow,
-  AI_LEG_STATUS,
-  AI_LEG_STATUSES,
   finding,
 } from '../../audit/lib/json-output.mjs';
 
@@ -60,11 +56,11 @@ function emitThroughPipe(bytes) {
 
 describe('json-output: schema versions', () => {
   it('bumps the envelope SCHEMA_VERSION to a minor over 1.0.0', () => {
-    assert.equal(SCHEMA_VERSION, '1.3.0');
+    assert.equal(SCHEMA_VERSION, '1.4.0');
   });
 
   it('defines separate schemaVersions for verdict.json and ai-findings.json', () => {
-    assert.equal(VERDICT_SCHEMA_VERSION, '1.1.0');
+    assert.equal(VERDICT_SCHEMA_VERSION, '2.0.0');
     assert.equal(AI_FINDINGS_SCHEMA_VERSION, '1.0.0');
   });
 
@@ -126,60 +122,6 @@ describe('json-output: one fixture per producer kind', () => {
     assert.equal(isValidRowStatus(row.status), true);
     assert.equal(row.status, 'skipped');
   });
-
-  it('an open AI-leg row is a valid AI-leg row', () => {
-    const row = readFixture('ai-leg-row-open.json');
-    assert.equal(isValidAiLegRow(row), true);
-  });
-
-  it('a closed AI-leg row is a valid AI-leg row', () => {
-    const row = readFixture('ai-leg-row-closed.json');
-    assert.equal(isValidAiLegRow(row), true);
-  });
-});
-
-describe('json-output: buildAiLegRow', () => {
-  it('opens a row with status "open" and no input hash by default', () => {
-    const row = buildAiLegRow({ leg: 'a11y-verifier', idsJudged: ['CX1'] });
-    assert.equal(row.status, 'open');
-    assert.equal(row.inputHash, null);
-    assert.equal(row.schemaVersion, AI_FINDINGS_SCHEMA_VERSION);
-    assert.equal(isValidAiLegRow(row), true);
-  });
-
-  it('closes a row with an input hash and findings', () => {
-    const row = buildAiLegRow({
-      leg: 'a11y-verifier',
-      idsJudged: ['CX1'],
-      status: 'closed',
-      inputHash: 'sha256:abc',
-      findings: [{ severity: 'warning', code: 'X', message: 'm' }],
-    });
-    assert.equal(row.status, 'closed');
-    assert.equal(row.inputHash, 'sha256:abc');
-    assert.equal(row.findings.length, 1);
-  });
-
-  it('rejects a row with no leg name', () => {
-    assert.throws(() => buildAiLegRow({ idsJudged: ['CX1'] }));
-  });
-
-  it('rejects a row with an empty idsJudged', () => {
-    assert.throws(() => buildAiLegRow({ leg: 'a11y-verifier', idsJudged: [] }));
-  });
-
-  it('rejects an invalid status', () => {
-    assert.throws(() => buildAiLegRow({ leg: 'a11y-verifier', idsJudged: ['CX1'], status: 'closing' }));
-  });
-
-  it('R7: AI_LEG_STATUS names the same two values buildAiLegRow/isValidAiLegRow accept', () => {
-    assert.deepEqual(AI_LEG_STATUSES, ['open', 'closed']);
-    assert.equal(AI_LEG_STATUS.OPEN, 'open');
-    assert.equal(AI_LEG_STATUS.CLOSED, 'closed');
-    for (const status of AI_LEG_STATUSES) {
-      assert.equal(isValidAiLegRow(buildAiLegRow({ leg: 'a11y-verifier', idsJudged: ['CX1'], status })), true);
-    }
-  });
 });
 
 describe('json-output: S6 — finding() accepts and emits noTarget', () => {
@@ -188,6 +130,17 @@ describe('json-output: S6 — finding() accepts and emits noTarget', () => {
     assert.equal(f.noTarget, true);
     const g = finding({ severity: 'warning', code: 'A11Y-NO-STORY', message: 'no story' });
     assert.equal('noTarget' in g, false);
+  });
+
+  it('Decision 13: notApplicable: true is carried on the finding; omitted it is absent entirely', () => {
+    const f = finding({
+      severity: 'info',
+      code: 'TOKEN-DIFF-NOT-APPLICABLE',
+      message: 'no tokens',
+      notApplicable: true,
+    });
+    assert.equal(f.notApplicable, true);
+    assert.equal('notApplicable' in finding({ severity: 'info', code: 'X', message: 'm' }), false);
   });
 });
 

@@ -9,7 +9,7 @@
  *   quick     env preflight, lint, Wave A — no build, no browser
  *   standard  quick + prerequisites built automatically + Wave B + Wave C
  *   deep      standard + Wave D (figma-refs --check, adapter smoke builds,
- *             E2E deferred) + the AI-leg rows it opens for the skill
+ *             E2E deferred); AI legs are advisory and have no row
  *
  *   Wave A (parallel, no browser, no build):
  *     lint, 01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
@@ -52,17 +52,10 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT, componentOfSpec, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
-import { ROW_STATUS, SCHEMA_VERSION, STATE, buildAiLegRow, finding, flushStdout } from './lib/json-output.mjs';
+import { ROW_STATUS, SCHEMA_VERSION, STATE, finding, flushStdout } from './lib/json-output.mjs';
 import { resolveHeadManifest } from './lib/figma-manifest.mjs';
 import { checkEnv, formatIncomplete } from './lib/env-preflight.mjs';
 import { parseCli } from './lib/cli-args.mjs';
-import {
-  AI_LEG_TABLE,
-  componentDirFor,
-  defaultReadPrompt,
-  defaultReadSources,
-  hashLegInput,
-} from './lib/leg-input.mjs';
 import { detectChangedComponents } from './lib/changed-components.mjs';
 import { acquireLock, ensureWorktreeStorybook, isValidLockToken, releaseLock } from './lib/storybook-helpers.mjs';
 import { figmaToken } from './figma-refs.mjs';
@@ -74,7 +67,8 @@ const TOOL = 'run-all';
  * The check registry. `kind` defaults to 'script' (an audit script spawned
  * with `<target> --json [...args]`); 'lint' runs ESLint + Stylelint on the
  * component's files; 'command' runs a repo-level build; 'deferred' is a row
- * that reports its reason; 'ai-leg' is opened for the skill to close.
+ * that reports its reason. AI legs have no row: their findings are advisory
+ * (Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md`).
  * `requiresBuild` names the prerequisite a row needs (PREREQUISITES_FOR).
  */
 const AUDIT_SCRIPTS = [
@@ -259,22 +253,15 @@ const AUDIT_SCRIPTS = [
     exclusive: true,
   },
   { id: 'e2e', wave: 'D', kind: 'deferred', name: 'e2e', perComponent: true, requiresBuild: false },
-  // The leg / idsJudged / prompt fields of each `ai-leg` row come from the one
-  // table both this registry and verdict.mjs's recompute read (`lib/leg-input.mjs`
-  // AI_LEG_TABLE, Decision §7 of `2026-09-22-audit-depths-sentinel-fixes.md`).
-  { id: 'ai-stencil', wave: 'D', kind: 'ai-leg', name: 'stencil-compliance-manual', ...AI_LEG_TABLE['ai-stencil'] },
-  { id: 'ai-wcag', wave: 'D', kind: 'ai-leg', name: 'full-wcag', ...AI_LEG_TABLE['ai-wcag'] },
-  { id: 'ai-media', wave: 'D', kind: 'ai-leg', name: 'media-conditions', ...AI_LEG_TABLE['ai-media'] },
-  {
-    id: 'ai-figma-themes',
-    wave: 'D',
-    kind: 'ai-leg',
-    name: 'figma-states-both-themes',
-    ...AI_LEG_TABLE['ai-figma-themes'],
-  },
-  { id: 'ai-archetype', wave: 'D', kind: 'ai-leg', name: 'archetype', ...AI_LEG_TABLE['ai-archetype'] },
-  { id: 'ai-security', wave: 'D', kind: 'ai-leg', name: 'security', ...AI_LEG_TABLE['ai-security'] },
 ];
+
+/** A component's own directory, `src/hidden/<name>` when it lives there instead. */
+export function componentDirFor(repoRoot, component) {
+  const hidden = `src/hidden/${component}`;
+  return existsSync(join(repoRoot, hidden)) && !existsSync(join(repoRoot, 'src/components', component))
+    ? hidden
+    : `src/components/${component}`;
+}
 
 /** Prerequisite commands, in the order they run. `storybook` is started, not run;
  * `coverage` is handled specially in `runPrerequisites` (S11 — its command depends
@@ -300,16 +287,29 @@ export const VITEST_RESULTS_REL = join('_run', 'vitest-results.json');
  *
  * @param {object|null} parsed — the JSON-reporter output, or null if unparseable/missing
  * @param {{ exitCode: number|null, components: string[] }} ctx
- * @returns {{ ok: boolean, failedComponents: string[] }}
+ * @returns {{ ok: boolean, failedComponents: string[], unmappedSpecs: string[] }}
  */
 export function evaluateCoverageResults(parsed, { exitCode, components }) {
-  if (!parsed || !Array.isArray(parsed.testResults)) return { ok: false, failedComponents: [] };
-  const owners = parsed.testResults.filter(t => t.status === 'failed').map(t => componentOfSpec(t.name));
+  if (!parsed || !Array.isArray(parsed.testResults)) return { ok: false, failedComponents: [], unmappedSpecs: [] };
+  const failed = parsed.testResults.filter(t => t.status === 'failed');
+  const owners = failed.map(t => componentOfSpec(t.name));
   const failedComponents = [...new Set(owners.filter(Boolean))];
+  const unmappedSpecs = failed.filter((t, i) => owners[i] === null).map(t => t.name);
   // A non-zero exit is accounted for only by failed specs that each belong to
   // a selected component; an unmapped failure, or none at all, fails closed.
   const ok = exitCode === 0 || (owners.length > 0 && owners.every(c => c !== null && components.includes(c)));
-  return { ok, failedComponents };
+  return { ok, failedComponents, unmappedSpecs };
+}
+
+/** Why the coverage prerequisite is not ok (U5): the cause names what actually failed. Pure. */
+export function coverageFailureCause({ parsed, evaluated, exitCode, command, resultsPath, components }) {
+  if (!parsed) return `\`${command}\` exited ${exitCode} without a parseable results JSON at ${resultsPath}`;
+  if (evaluated.unmappedSpecs.length) {
+    return `test(s) failed outside any component directory: ${evaluated.unmappedSpecs.join(', ')}`;
+  }
+  const foreign = evaluated.failedComponents.filter(c => !components.includes(c));
+  if (foreign.length) return `test(s) failed in ${foreign.join(', ')} — not in this run's selection`;
+  return `vitest exited ${exitCode} with no failed spec`;
 }
 
 /** What each `requiresBuild` value needs before its row can run. */
@@ -324,7 +324,7 @@ export const PREREQUISITES_FOR = Object.freeze({
 function prerequisiteCommand(requires, componentDir) {
   switch (requires) {
     case 'coverage':
-      return `yarn vitest run --project spec --coverage ${componentDir}`;
+      return `yarn vitest run --project spec --coverage ${componentDir}/`;
     case 'dist':
     case 'cem':
       return 'yarn dx:stencil:once';
@@ -691,11 +691,14 @@ async function runPrerequisites(needed, { components, deps, auditDir }) {
               id,
               ok: false,
               command: argv.join(' '),
-              cause: !parsed
-                ? `\`${argv.join(' ')}\` exited ${res.exitCode} without a parseable results JSON at ${resultsPath}`
-                : evaluated.failedComponents.length
-                  ? `test(s) failed in ${evaluated.failedComponents.join(', ')} — not in this run's selection`
-                  : `vitest exited ${res.exitCode} with no failed spec`,
+              cause: coverageFailureCause({
+                parsed,
+                evaluated,
+                exitCode: res.exitCode,
+                command: argv.join(' '),
+                resultsPath,
+                components,
+              }),
             },
       );
       continue;
@@ -727,26 +730,6 @@ export function resolveComponents(args, deps) {
   if (args.changed) return deps.detectChanged();
   const name = normalizeComponentName(args.component);
   return { ok: true, cause: null, names: name ? [name] : null };
-}
-
-/**
- * `readSources` / `readPrompt` take `(repoRoot, x)` — the signature
- * `currentLegHashes` calls them with at recompute (T1). A reader shaped any
- * other way hashes different sources on the two sides, and every opened row
- * reads as stale on the very run that opened it.
- */
-function openAiLegs(scripts, component, deps) {
-  const legs = scripts.filter(s => s.kind === 'ai-leg');
-  if (!legs.length) return [];
-  const sources = deps.readSources(deps.repoRoot, component);
-  return legs.map(s => ({
-    id: s.id,
-    ...buildAiLegRow({
-      leg: s.leg,
-      idsJudged: s.idsJudged,
-      inputHash: hashLegInput(sources, deps.readPrompt(deps.repoRoot, s.prompt)),
-    }),
-  }));
 }
 
 /** The one shape every refused run returns: no script ran, INCOMPLETE naming the lock (T7). */
@@ -807,8 +790,6 @@ export async function runAudit(args, deps = {}) {
     detectChanged: () => detectChangedComponents(),
     listAll: () => listAllComponents().map(c => c.name),
     ensureStorybook: () => ensureWorktreeStorybook({ repoRoot }),
-    readSources: defaultReadSources,
-    readPrompt: defaultReadPrompt,
     // R3: the worktree lock guards `dist/` and the worktree Storybook record —
     // taken only when this run will build or start Storybook
     // (`touchesWorktree`), never for a `quick` run that touches neither.
@@ -869,13 +850,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
       const runs = [];
       if (!args.all && !args.changed && targetArg) {
         const envelope = { ...combined, target: targetArg, audit: { ...auditBase, component: targetArg } };
-        runs.push(
-          writeRun(auditDir, targetArg, d.runId, envelope, {
-            repoRoot: d.repoRoot,
-            readSources: d.readSources,
-            readPrompt: d.readPrompt,
-          }),
-        );
+        runs.push(writeRun(auditDir, targetArg, d.runId, envelope));
       }
       result.summary = writeSummary(auditDir, {
         depth: args.depth,
@@ -932,8 +907,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
   // R3 / T6: take the worktree lock whenever this run builds `dist/` or starts
   // Storybook — a prerequisite or an `exclusive` build row. A `quick` run
   // touches neither and never blocks on, or is blocked by, one. Released in
-  // `finally` below, before this function returns — no leg is ever dispatched
-  // from inside `runAudit` itself (Decision §3's "no self-block").
+  // `finally` below, before this function returns (Decision §3's "no self-block").
   let lockToken = null;
   if (touchesWorktree(needed, [...sharedScripts, ...plans.flatMap(p => p.scripts)])) {
     const lock = d.acquireLock(d.worktreeLockPath);
@@ -974,7 +948,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
     );
     const perComponentResults = [];
     for (const plan of plans) {
-      const scripts = plan.scripts.filter(s => s.perComponent !== false && s.kind !== 'ai-leg');
+      const scripts = plan.scripts.filter(s => s.perComponent !== false);
       const t = Date.now();
       const results = await runWaves(scripts, { ...common, component: plan.component, figma: plan.figma });
       perComponentResults.push({ plan, results, durationMs: Date.now() - t });
@@ -994,12 +968,12 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
         ci: args.ci,
         noBrowser: args.noBrowser,
         registry: d.registry,
+        repoRoot,
       });
       envelope.audit = {
         ...auditBase,
         component: plan.component,
         figma: plan.figma,
-        aiLegs: openAiLegs(plan.scripts, plan.component, d),
         prerequisites,
       };
       envelope.meta.depth = args.depth;
@@ -1016,6 +990,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
             ci: args.ci,
             noBrowser: args.noBrowser,
             registry: d.registry,
+            repoRoot,
           });
     combined.components = components;
     combined.meta.depth = args.depth;
@@ -1023,13 +998,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
 
     const result = { combined, perComponent };
     if (args.verdict) {
-      const runs = perComponent.map(({ component, envelope }) =>
-        writeRun(auditDir, component, d.runId, envelope, {
-          repoRoot: d.repoRoot,
-          readSources: d.readSources,
-          readPrompt: d.readPrompt,
-        }),
-      );
+      const runs = perComponent.map(({ component, envelope }) => writeRun(auditDir, component, d.runId, envelope));
       // S5 / Decision §2: with zero components selected, no per-component verdict
       // carries the repo-level rows' (03, ...) outcome — `combined` is the only
       // place it lives, so it is handed to writeSummary explicitly.
@@ -1050,18 +1019,12 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
   }
 }
 
-/**
- * Write one component's run inputs and have verdict.mjs compute and write its
- * verdict. `legDeps` (repoRoot / readSources / readPrompt) forwards the same
- * deps `openAiLegs` opened the row's hash with, so the immediate recompute
- * right after opening never reads as "source changed" (R2) — a test's
- * injected fixture deps and production's real ones are each self-consistent.
- */
-function writeRun(auditDir, component, runId, envelope, legDeps) {
+/** Write one component's run inputs and have verdict.mjs compute and write its verdict. */
+function writeRun(auditDir, component, runId, envelope) {
   const runDir = join(auditDir, component, 'runs', runId);
   mkdirSync(runDir, { recursive: true });
   writeFileSync(join(runDir, 'envelope.json'), `${JSON.stringify(envelope, null, 2)}\n`);
-  return { runDir, verdict: writeVerdictForRun(runDir, legDeps) };
+  return { runDir, verdict: writeVerdictForRun(runDir) };
 }
 
 class UsageError extends Error {}
@@ -1134,7 +1097,15 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  *   meta.layer2Required  — true ONLY in interactive local runs (no CI, no
  *                          --no-browser). SKILL.md §BX gates on this flag.
  */
-export function aggregate({ targetArg, results, durationMs, ci = false, noBrowser = false, registry = AUDIT_SCRIPTS }) {
+export function aggregate({
+  targetArg,
+  results,
+  durationMs,
+  ci = false,
+  noBrowser = false,
+  registry = AUDIT_SCRIPTS,
+  repoRoot = REPO_ROOT,
+}) {
   const summary = { errors: 0, warnings: 0, info: 0, incomplete: 0 };
   const blockers = [];
   const findingsByTool = {};
@@ -1195,7 +1166,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
       row.requires = script.requiresBuild;
       row.prerequisite = prerequisiteCommand(
         script.requiresBuild,
-        r.component ? `src/components/${r.component}` : 'src/components',
+        r.component ? componentDirFor(repoRoot, r.component) : 'src/components',
       );
     }
     if (script?.recordMeta && r.meta) {
@@ -1306,7 +1277,6 @@ if (isDirectRun) {
   });
 }
 
-// `parseCli` and `hashLegInput` now live in lib/cli-args.mjs and
-// lib/leg-input.mjs respectively (Decisions §7, §8); re-exported here so
+// `parseCli` now lives in lib/cli-args.mjs (Decision §8); re-exported here so
 // existing importers of run-all.mjs keep working unchanged.
-export { TOOL, AUDIT_SCRIPTS, parseCli, hashLegInput };
+export { TOOL, AUDIT_SCRIPTS, parseCli };

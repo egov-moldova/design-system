@@ -1,6 +1,6 @@
 ---
 name: a11y-verifier
-description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. When dispatched as the `ai-wcag` / `ai-media` leg of `--depth deep`, writes `ai-findings.json` closing the row(s) it was opened for; it never invokes `verdict.mjs` / `yarn audit:component` and never stops on its exit code. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. When dispatched as the advisory WCAG / media leg of `--depth deep`, writes `ai-findings.json` for the run it is given; it never invokes `verdict.mjs` / `yarn audit:component` and never stops on its exit code. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, Skill
 model: sonnet
 ---
@@ -30,27 +30,23 @@ below.
 
 ## AI-leg contract (when dispatched at `--depth deep`)
 
-The orchestrator (`run-all.mjs`) opens `ai-wcag` (`idsJudged: ['DX-wcag']`) and
-`ai-media` (`idsJudged: ['DX-media']`) rows for this leg before dispatch and
-records their `inputHash`. This agent NEVER runs `verdict.mjs` or `yarn
-audit:component`, and never stops on either's exit code — only `verdict.mjs`
-computes `state`. Its own job is to close the row(s): write
+This leg is advisory (Decision 12, `2026-09-22-audit-depths-sentinel-fixes.md`): no row waits
+on it and its findings never move the state. This agent NEVER runs `verdict.mjs` or `yarn
+audit:component`, and never stops on either's exit code — only `verdict.mjs` computes
+`state`. Its job is to write its findings for the run the dispatcher names (`<runDir>`:
+`components[].runDir` in `audit/_run/summary.json`):
 
 ```
-audit/<component>/runs/<run>/ai/a11y-verifier/ai-findings.json
+<runDir>/ai/a11y-verifier/ai-findings.json
 ```
 
-with the shape `verdict.mjs`'s `closeAiRow` requires:
+in this shape:
 
 ```json
 {
   "schemaVersion": "1.0.0",
   "leg": "a11y-verifier",
   "idsJudged": ["DX-wcag", "DX-media"],
-  "inputHash": "<the hash from the opened row, when known — omit if not passed; optional and
-    informational only, kept for a human reading the file — the verdict never consults it,
-    since the recompute re-hashes the current sources itself (Decision §7,
-    `2026-09-22-audit-depths-sentinel-fixes.md`)>",
   "findings": [
     { "severity": "error", "code": "A11Y-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
     { "question": "...", "options": ["...", "..."] }
@@ -63,20 +59,15 @@ interpolated by the shell. The body must be one valid JSON document — strings 
 newlines, so no line inside it can equal the delimiter:
 
 ```bash
-mkdir -p audit/<component>/runs/<run>/ai/a11y-verifier
-cat <<'AI_FINDINGS_JSON_END' > audit/<component>/runs/<run>/ai/a11y-verifier/ai-findings.json
+mkdir -p <runDir>/ai/a11y-verifier
+cat <<'AI_FINDINGS_JSON_END' > <runDir>/ai/a11y-verifier/ai-findings.json
 { ... the JSON above ... }
 AI_FINDINGS_JSON_END
 ```
 
-`idsJudged` must list every id the row was opened for (a leg opened for both
-`ai-wcag` and `ai-media` in the same dispatch lists both). A `findings` entry
-with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"`
-closes as a blocking `FAIL` at `deep` (never at `quick`/`standard`, where
-every leg's findings are advisory only). An unclosed row — no
-`ai-findings.json`, or one that omits a judged id — leaves the verdict
-`INCOMPLETE` on the next `yarn audit:component --recompute <component>`
-recompute; this leg does not run that recompute itself.
+`idsJudged` lists the ids this dispatch judged (`DX-wcag`, `DX-media`, or both). Every
+valid finding — an error, a `question` + `options`, anything — is listed under "Advisory"
+once the dispatcher re-renders the brief; a malformed one is named in the verdict's notes.
 
 ## Procedure
 

@@ -49,27 +49,20 @@ yarn audit:component $ARGUMENTS --depth deep --json
 ```
 
 Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
-`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). An exit `3` with
-this invocation's `--json` stdout carrying `components[].awaitingLegs: true`
-means every `INCOMPLETE` entry is an opened `ai-*` row (Decision §11,
-`2026-09-22-audit-depths-sentinel-fixes.md`): invoke
-`/audit-component $ARGUMENTS --depth deep` (or follow `audit-component.md`
-steps inline if calling another slash command isn't supported in your
-harness) for the judgment-only legs, each of which writes
-`audit/$ARGUMENTS/runs/<run>/ai/<leg>/ai-findings.json`. Do not start a
-second fresh run while one is already `awaitingLegs`. Once every opened row
-is closed, recompute and STOP on a non-zero exit:
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Any non-zero exit —
+STOP; read `audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
+`audit/$ARGUMENTS/fix-brief.md` for every entry. The verdict never waits on an
+AI leg: at `deep` they are advisory (Decision 12,
+`2026-09-22-audit-depths-sentinel-fixes.md`). For their judgment, follow
+[`/audit-component`](audit-component.md) steps 2–3 — never its step 1, the gate
+above already ran; each leg writes
+`<runDir>/ai/<leg>/ai-findings.json`, where `<runDir>` is `components[].runDir`
+in `audit/_run/summary.json`. Then re-render the brief so those findings appear
+under "Advisory":
 
 ```bash
-yarn audit:component --recompute $ARGUMENTS --json
+yarn audit:component --run-dir <runDir> --json
 ```
-
-`--recompute <component>` always targets this component's latest run (read
-from `audit/_run/summary.json`) — a fixed string, never a `<run>`
-placeholder; `--run-dir <runDir>` stays available for explicitly targeting an
-older run. Any other non-zero exit from the first run — STOP; read
-`audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
-`audit/$ARGUMENTS/fix-brief.md` for every entry.
 
 The audit identifies all issues across structure, tokens, CSS, TypeScript, accessibility, security, performance, stories, tests.
 

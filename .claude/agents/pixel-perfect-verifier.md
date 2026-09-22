@@ -30,26 +30,23 @@ When the audit dispatches this agent, Storybook belongs to the audit's worktree:
 
 ## AI-leg contract (when dispatched at `--depth deep`)
 
-The audit orchestrator (`scripts/audit/run-all.mjs`) opens the `ai-figma-themes` row
-(`idsJudged: ['DX-figma-themes']`) for this leg before dispatch and records its `inputHash`. This
-agent NEVER runs `verdict.mjs` or `yarn audit:component`, and never stops on either's exit code —
-only `verdict.mjs` computes the state. Its job is to close the row by writing
+This leg is advisory (Decision 12, `2026-09-22-audit-depths-sentinel-fixes.md`): no row waits on
+it and its findings never move the state. This agent NEVER runs `verdict.mjs` or `yarn
+audit:component`, and never stops on either's exit code — only `verdict.mjs` computes the state.
+Its job is to write its findings for the run the dispatcher names (`<runDir>`:
+`components[].runDir` in `audit/_run/summary.json`):
 
 ```
-audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
+<runDir>/ai/pixel-perfect-verifier/ai-findings.json
 ```
 
-in the shape `verdict.mjs`'s `closeAiRow` requires:
+in this shape:
 
 ```json
 {
   "schemaVersion": "1.0.0",
   "leg": "pixel-perfect-verifier",
   "idsJudged": ["DX-figma-themes"],
-  "inputHash": "<the hash from the opened row, when passed — omit otherwise; optional and
-    informational only, kept for a human reading the file — the verdict never consults it,
-    since the recompute re-hashes the current sources itself (Decision §7,
-    `2026-09-22-audit-depths-sentinel-fixes.md`)>",
   "findings": [
     { "severity": "error", "code": "PIXEL-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
     { "question": "...", "options": ["...", "..."] }
@@ -62,16 +59,15 @@ Write it with `Bash` (this agent has no `Write` tool) using a quoted heredoc del
 document — strings escape their own newlines, so no line inside it can equal the delimiter:
 
 ```bash
-mkdir -p audit/<component>/runs/<run>/ai/pixel-perfect-verifier
-cat <<'AI_FINDINGS_JSON_END' > audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
+mkdir -p <runDir>/ai/pixel-perfect-verifier
+cat <<'AI_FINDINGS_JSON_END' > <runDir>/ai/pixel-perfect-verifier/ai-findings.json
 { ... the JSON above ... }
 AI_FINDINGS_JSON_END
 ```
 
-A finding with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"` is a blocking
-`FAIL` at `deep`. A missing file, or one that omits `DX-figma-themes`, leaves the verdict
-`INCOMPLETE` on the next `yarn audit:component --recompute <component>` recompute, which this
-leg does not run.
+Every valid finding — an error, a `question` + `options`, anything — is listed under
+"Advisory" once the dispatcher re-renders the brief; a malformed one is named in the verdict's
+notes.
 
 ## Procedure
 

@@ -12,7 +12,7 @@
  *   audit/<component>/verdict.json          stable path, rewritten every run
  *   audit/<component>/fix-brief.md          stable path, rewritten every run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
- *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, nothing else
+ *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
  *   audit/_run/summary.json                 worst state over the components of the last run
  *
  * State, first match wins: INCOMPLETE → FAIL → NEEDS-DECISION → PASS.
@@ -21,11 +21,9 @@
  * Usage:
  *   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
  *     Runs run-all.mjs with --verdict, then exits with the worst state's code.
- *   node scripts/audit/verdict.mjs --recompute <component> [--json]
- *     Recomputes the component's latest run (its runDir in audit/_run/summary.json) — e.g.
- *     after the deep AI legs wrote their ai-findings.json. The command every verify names.
  *   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--json]
- *     Recomputes the named runs.
+ *     Re-renders the named runs' verdict and brief, e.g. to fold in the advisory
+ *     ai-findings.json an AI leg wrote after the run.
  *
  * Exit codes (lib/exit-codes.mjs STATE_EXIT_CODES): 0 PASS, 1 FAIL, 3 INCOMPLETE,
  * 4 NEEDS-DECISION, 2 usage / internal error. On several components the worst state decides.
@@ -40,7 +38,6 @@ import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import { headManifestRelPath, manifestRelPath } from './lib/figma-manifest.mjs';
 import {
   AI_FINDINGS_SCHEMA_VERSION,
-  AI_LEG_STATUS,
   LEVEL,
   ROW_STATUS,
   SCHEMA_VERSION,
@@ -48,7 +45,6 @@ import {
   VERDICT_SCHEMA_VERSION,
 } from './lib/json-output.mjs';
 import { renderFixBrief } from './lib/fix-brief.mjs';
-import { currentLegHashes, defaultReadPrompt, defaultReadSources } from './lib/leg-input.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -63,26 +59,13 @@ const STANDARD = [...QUICK, '06', '08', '13', '18', '09', '10', '11', '12', '15'
  *   live Figma reference check           → figma-refs (`figma-refs.mjs --check`, file version recorded)
  *   adapter smoke build, React           → adapter-react (`yarn build.react`: wrapper + its typecheck)
  *   adapter smoke build, vanilla         → adapter-vanilla (`yarn build.web` only; no vanilla-specific rules)
- *   stencil-compliance manual rows       → ai-stencil      (leg: stencil-compliance skill)
- *   full WCAG                            → ai-wcag         (leg: a11y-verifier)
- *   reduced-motion / forced-colors / 320 px / RTL → ai-media (leg: a11y-verifier)
- *   every Figma state × both themes      → ai-figma-themes (leg: pixel-perfect-verifier)
- *   archetype judgment (CX)              → ai-archetype    (leg: audit-component, the skill session)
- *   security                             → ai-security     (leg: audit-component, the skill session)
  *   E2E when present                     → e2e, deferred (DEFERRED_CHECKS)
+ * The AI legs (stencil-compliance manual rows, full WCAG, media conditions,
+ * Figma states × themes, archetype, security) are advisory at every depth,
+ * `deep` included — no row is opened for them and they never move `state`
+ * (Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md`).
  */
-const DEEP = [
-  ...STANDARD,
-  'figma-refs',
-  'adapter-react',
-  'adapter-vanilla',
-  'ai-stencil',
-  'ai-wcag',
-  'ai-media',
-  'ai-figma-themes',
-  'ai-archetype',
-  'ai-security',
-];
+const DEEP = [...STANDARD, 'figma-refs', 'adapter-react', 'adapter-vanilla'];
 
 export const REQUIRED_CHECKS = Object.freeze({ quick: QUICK, standard: STANDARD, deep: DEEP });
 
@@ -94,20 +77,9 @@ export const DEFERRED_CHECKS = Object.freeze({
 });
 
 /** Ids that compare against Figma — excused by --no-figma, a committed design "none", or no manifest at HEAD. */
-export const FIGMA_IDS = Object.freeze(['11', '15', 'figma-refs', 'ai-figma-themes']);
+export const FIGMA_IDS = Object.freeze(['11', '15', 'figma-refs']);
 /** Ids that need a browser — excused by --ci, the CI env var, or --no-browser (Decision §6). */
-export const BROWSER_IDS = Object.freeze([
-  '09',
-  '10',
-  '11',
-  '12',
-  '15',
-  '19',
-  'ai-wcag',
-  'ai-media',
-  'ai-figma-themes',
-  'ai-archetype',
-]);
+export const BROWSER_IDS = Object.freeze(['09', '10', '11', '12', '15', '19']);
 
 /**
  * The excuse that lets a required id not run, or null. These and nothing
@@ -160,12 +132,11 @@ function verifyCommand(component, depth, id) {
 }
 
 /**
- * Decision 11: a fixed string, so verdict.json stays byte-identical and no
- * command carries a `<run>` placeholder — `--recompute` reads the component's
- * latest runDir from `_run/summary.json` itself.
+ * Re-renders a run with the advisory findings a leg wrote after it. A fixed
+ * string (no run path), so verdict.json stays byte-identical across runs.
  */
-function recomputeCommand(component) {
-  return `yarn audit:component --recompute ${component}`;
+function rerenderCommand() {
+  return 'yarn audit:component --run-dir <runDir from audit/_run/summary.json>';
 }
 
 function freshRunCommand(component, depth) {
@@ -221,7 +192,7 @@ function aiFailOrDecision(f, leg, component) {
     check: `ai ${leg}`,
     component,
     source: `AI leg ${leg}`,
-    verify: `re-dispatch the ${leg} leg, then: ${recomputeCommand(component)}`,
+    verify: `re-dispatch the ${leg} leg, then: ${rerenderCommand()}`,
     owner: leg,
   });
 }
@@ -232,7 +203,8 @@ function aiFailOrDecision(f, leg, component) {
  * carrying a non-empty `question` renders as NEEDS-DECISION instead, whose
  * fields (`node`, `options`) are always defaulted by aiFailOrDecision, so it
  * needs no shape check here. Pure. Returns a cause string, or null when the
- * finding's shape is safe to render.
+ * finding's shape is safe to render — an AI finding that fails it is listed as
+ * a note, never rendered.
  */
 function findingShapeIssue(f, index) {
   if (!f || typeof f !== 'object') return `finding[${index}] is not an object`;
@@ -244,43 +216,6 @@ function findingShapeIssue(f, index) {
 }
 
 /**
- * Close an opened AI-leg row with its leg's ai-findings.json (Design §1). A
- * row closes only when the file names the leg, lists every id the row
- * judges, carries a known major schemaVersion, and — when it states one —
- * the input hash the row was opened with. A finding whose shape would make
- * the fix brief unrenderable (missing `severity`, or missing both `message`
- * and `actual`) also leaves the row unclosed, named by its index. Pure.
- *
- * @returns {{ closed: true, file: object } | { closed: false, cause: string }}
- */
-export function closeAiRow(row, aiFiles) {
-  const file = aiFiles.find(a => a.leg === row.leg);
-  if (!file) return { closed: false, cause: `no ai-findings.json from leg ${row.leg}` };
-  if (!file.data) return { closed: false, cause: `ai-findings.json from leg ${row.leg} is unreadable` };
-  const data = file.data;
-  if (major(data.schemaVersion) !== major(AI_FINDINGS_SCHEMA_VERSION)) {
-    return {
-      closed: false,
-      cause: `ai-findings.json schemaVersion ${data.schemaVersion} has an unknown major version`,
-    };
-  }
-  if (data.leg !== row.leg) return { closed: false, cause: `ai-findings.json names leg ${data.leg}, not ${row.leg}` };
-  const judged = new Set(Array.isArray(data.idsJudged) ? data.idsJudged : []);
-  const missing = row.idsJudged.filter(id => !judged.has(id));
-  if (missing.length) return { closed: false, cause: `ai-findings.json does not list ${missing.join(', ')}` };
-  // The leg's own self-reported `inputHash` is never consulted (Decision §7,
-  // plan `2026-09-22-audit-depths-sentinel-fixes.md`): a recompute re-hashes
-  // the current sources itself and compares against the row's recorded hash
-  // (computeVerdict's `currentHashes`), which a self-report cannot add to.
-  if (!Array.isArray(data.findings)) return { closed: false, cause: 'ai-findings.json has no findings array' };
-  for (const [i, f] of data.findings.entries()) {
-    const issue = findingShapeIssue(f, i);
-    if (issue) return { closed: false, cause: `ai-findings.json from leg ${row.leg}: ${issue}` };
-  }
-  return { closed: true, file: data };
-}
-
-/**
  * Compute a component's verdict from one run's inputs. Pure: the same inputs
  * give the same object, and nothing that varies between identical runs
  * (timestamps, durations, stderr text, the run directory) is read.
@@ -289,17 +224,8 @@ export function closeAiRow(row, aiFiles) {
  * @param {object|null} opts.envelope — run-all's per-component envelope
  * @param {Array<{leg: string, data: object|null}>} [opts.aiFiles]
  * @param {string} [opts.component] — used when the envelope is missing
- * @param {Record<string,string>|null} [opts.currentHashes] — id → current
- *   `sha256:...` of what an `ai-*` leg judges, as of right now (`lib/leg-input.mjs`
- *   `currentLegHashes`). `null` skips the staleness check entirely (Decision §7).
  */
-export function computeVerdict({
-  envelope,
-  aiFiles = [],
-  component: fallbackComponent = null,
-  currentHashes = null,
-  run = null,
-}) {
+export function computeVerdict({ envelope, aiFiles = [], component: fallbackComponent = null }) {
   const audit = envelope?.audit ?? {};
   const component = audit.component ?? fallbackComponent ?? envelope?.target ?? 'unknown';
   const depth = audit.depth ?? 'standard';
@@ -320,10 +246,7 @@ export function computeVerdict({
   const addExcuse = e => {
     if (!excuses.includes(e)) excuses.push(e);
   };
-  // `awaiting` is true only for an opened `ai-*` row whose current source hash
-  // still matches — the one shape `awaitingLegs` (Decision §1) counts. It is
-  // stripped before the entries are numbered, so it never reaches verdict.json.
-  const addIncomplete = (entry, awaiting = false) => incomplete.push({ ...entry, awaiting });
+  const addIncomplete = entry => incomplete.push(entry);
   const addWarnings = (list, check, verify) => {
     for (const f of [...list].sort(compareFindings)) {
       warnings.push({ check, code: f.code, message: f.message || f.fix || 'warning', verify });
@@ -361,9 +284,8 @@ export function computeVerdict({
   const resultRows = envelope?.results ?? [];
   const byId = new Map(resultRows.map(r => [r.id, r]));
   const findingsByTool = envelope?.findingsByTool ?? {};
-  const aiRequired = required.filter(id => id.startsWith('ai-'));
   const scriptIds = [
-    ...required.filter(id => !id.startsWith('ai-')),
+    ...required,
     ...resultRows
       .map(r => r.id)
       .filter(id => !required.includes(id))
@@ -425,6 +347,10 @@ export function computeVerdict({
       });
     } else if (row.status === ROW_STATUS.OK) {
       const allFindings = findingsByTool[row.name] ?? [];
+      // Decision 13: a check that does not apply says why, on its row — never
+      // a state change, never a warning.
+      const notApplicable = allFindings.filter(f => f.notApplicable === true);
+      if (notApplicable.length) out.note = notApplicable.map(f => f.message).join('; ');
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
       // warnings below. On a row the depth does not require it is a warning
@@ -466,104 +392,25 @@ export function computeVerdict({
     rows.push(out);
   }
 
-  // AI legs: declared rows at deep only; advisory everywhere else (Decision §5).
-  const openedLegs = audit.aiLegs ?? [];
-  const legs = [];
-  // One leg can own several rows (a11y-verifier: ai-wcag + ai-media) from a single file;
-  // its findings are read once, not once per row it closes.
-  const legsRead = new Set();
-  if (depth === 'deep') {
-    for (const id of aiRequired) {
-      const excuse = excuseFor(id, ctx);
-      const opened = openedLegs.find(r => r.id === id);
-      if (excuse) {
-        addExcuse(excuse);
-        rows.push({ id, name: null, required: true, status: ROW_STATUS.SKIPPED, excuse });
-        continue;
-      }
-      if (!opened) {
-        rows.push({ id, name: null, required: true, status: ROW_STATUS.SKIPPED });
-        if (envelope && envelope.preflight?.ok !== false) {
-          // Never opened at all is not "awaiting" a leg's return (Decision §1
-          // of this plan) — it is a leg the orchestrator should have dispatched.
-          addIncomplete({
-            kind: STATE.INCOMPLETE,
-            check: id,
-            cause: 'required AI leg was never opened by the orchestrator',
-            prerequisite: 'none',
-            verify: verifyCommand(component, depth, id),
-          });
-        }
-        continue;
-      }
-      // R2 (Decision §7): the recompute's own re-hash of the current sources
-      // decides staleness, never the leg's self-reported inputHash. A mismatch
-      // leaves the row unclosed and is not "awaiting legs" — the sources moved
-      // under it, so re-dispatching the same leg would judge stale code.
-      const currentHash = currentHashes ? (currentHashes[id] ?? null) : null;
-      const hashStale = currentHash !== null && Boolean(opened.inputHash) && currentHash !== opened.inputHash;
-      const closure = hashStale
-        ? { closed: false, cause: `source changed since run ${run ?? '<run>'} — start a fresh run` }
-        : closeAiRow(opened, aiFiles);
-      legs.push({
-        id,
-        leg: opened.leg,
-        idsJudged: opened.idsJudged,
-        inputHash: opened.inputHash,
-        status: closure.closed ? AI_LEG_STATUS.CLOSED : AI_LEG_STATUS.OPEN,
-      });
-      rows.push({
-        id,
-        name: opened.leg,
-        required: true,
-        status: closure.closed ? ROW_STATUS.OK : ROW_STATUS.MISSING_PREREQ,
-      });
-      if (!closure.closed) {
-        addIncomplete(
-          {
-            kind: STATE.INCOMPLETE,
-            check: `${id} ${opened.leg}`,
-            cause: hashStale ? closure.cause : `missing-prereq (${closure.cause})`,
-            prerequisite: hashStale
-              ? `a fresh run: ${freshRunCommand(component, depth)}`
-              : `dispatch the ${opened.leg} leg; it writes ai/${opened.leg}/ai-findings.json under the runDir listed in audit/_run/summary.json`,
-            // T20: a stale row needs a fresh run — a recompute would re-hash
-            // the same moved sources and stay stale.
-            verify: hashStale ? freshRunCommand(component, depth) : recomputeCommand(component),
-          },
-          !hashStale,
-        );
-        continue;
-      }
-      if (legsRead.has(opened.leg)) continue;
-      legsRead.add(opened.leg);
-      for (const f of [...closure.file.findings].sort(compareFindings)) {
-        const entry = aiFailOrDecision(f, opened.leg, component);
-        if (entry.kind === STATE.NEEDS_DECISION) decisions.push(entry);
-        else if (f.severity === 'error') fails.push(entry);
-        else advisory.push(entry);
-      }
+  // AI legs: advisory at every depth, deep included (Decision 12) — a leg's
+  // findings are listed, never state-changing.
+  for (const file of [...aiFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
+    if (!file.data || major(file.data.schemaVersion) !== major(AI_FINDINGS_SCHEMA_VERSION)) {
+      notes.push(`ai-findings.json from leg ${file.leg} ignored: unreadable or unknown major schemaVersion`);
+      continue;
     }
-  } else {
-    for (const file of [...aiFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
-      if (!file.data || major(file.data.schemaVersion) !== major(AI_FINDINGS_SCHEMA_VERSION)) {
-        notes.push(`ai-findings.json from leg ${file.leg} ignored: unreadable or unknown major schemaVersion`);
-        continue;
-      }
-      const rawFindings = Array.isArray(file.data.findings) ? file.data.findings : [];
-      const validFindings = [];
-      rawFindings.forEach((f, i) => {
-        const issue = findingShapeIssue(f, i);
-        if (issue) notes.push(`ai-findings.json from leg ${file.leg}: ${issue} — finding ignored`);
-        else validFindings.push(f);
-      });
-      // Advisory only — never state-changing at quick/standard (Decision §5).
-      // A question-shaped finding renders as an advisory decision entry
-      // rather than being forced through the FAIL shape (S3): `aiFailOrDecision`
-      // already picks the right shape and never needs severity/actual for one.
-      for (const f of validFindings.sort(compareFindings)) {
-        advisory.push(aiFailOrDecision(f, file.leg, component));
-      }
+    const rawFindings = Array.isArray(file.data.findings) ? file.data.findings : [];
+    const validFindings = [];
+    rawFindings.forEach((f, i) => {
+      const issue = findingShapeIssue(f, i);
+      if (issue) notes.push(`ai-findings.json from leg ${file.leg}: ${issue} — finding ignored`);
+      else validFindings.push(f);
+    });
+    // A question-shaped finding renders as an advisory decision entry rather
+    // than being forced through the FAIL shape (S3): `aiFailOrDecision`
+    // picks the shape and never needs severity/actual for one.
+    for (const f of validFindings.sort(compareFindings)) {
+      advisory.push(aiFailOrDecision(f, file.leg, component));
     }
   }
 
@@ -594,25 +441,14 @@ export function computeVerdict({
         ? STATE.NEEDS_DECISION
         : STATE.PASS;
   const level = state === STATE.PASS ? levelFor({ depth, browserWaiver, noFigma }) : null;
-  // Decision §1: true only when every INCOMPLETE entry is an opened `ai-*`
-  // row whose hash still matches — never a constant, never vacuous over an
-  // empty list (a PASS/FAIL run has no INCOMPLETE entries at all).
-  const awaitingLegs = incomplete.length > 0 && incomplete.every(e => e.awaiting);
 
   const number = (list, prefix) => list.map((e, i) => ({ id: `${prefix}${i + 1}`, ...e }));
-  const entries = [
-    ...number(
-      incomplete.map(({ awaiting, ...e }) => e),
-      'I',
-    ),
-    ...number(fails, 'F'),
-    ...number(decisions, 'D'),
-  ];
+  const entries = [...number(incomplete, 'I'), ...number(fails, 'F'), ...number(decisions, 'D')];
 
   const headlineParts = [`${state}@${depth}`];
   if (level) headlineParts.push(level);
   headlineParts.push(...excuses);
-  if (depth === 'deep') headlineParts.push('ai-legs: self-attested');
+  if (depth === 'deep') headlineParts.push('ai-legs: advisory');
 
   const verdict = {
     schemaVersion: VERDICT_SCHEMA_VERSION,
@@ -624,7 +460,6 @@ export function computeVerdict({
   verdict.headline = headlineParts.join(' · ');
   verdict.excuses = excuses;
   verdict.notes = notes;
-  verdict.awaitingLegs = awaitingLegs;
   verdict.warnings = warnings;
   verdict.figma = figma
     ? {
@@ -637,7 +472,6 @@ export function computeVerdict({
         fileVersion: figmaFileVersion(resultRows),
       }
     : null;
-  if (depth === 'deep') verdict.aiLegs = { attestation: 'self-attested', legs };
   verdict.rows = rows;
   verdict.entries = entries;
   verdict.advisory = number(advisory, 'A');
@@ -658,17 +492,8 @@ export function levelFor({ depth, browserWaiver, noFigma }) {
 
 // ─── I/O: the only writer ────────────────────────────────────────────────
 
-/**
- * Read a run directory's inputs, plus the current input hash of every `ai-*`
- * id (R2, Decision §7) — computed here, the I/O layer, and handed to the
- * pure `computeVerdict` as `currentHashes`. `repoRoot` / `readSources` /
- * `readPrompt` are an injection seam for tests; production always re-hashes
- * the real, current source tree.
- */
-export function readRunInputs(
-  runDir,
-  { component = null, repoRoot = REPO_ROOT, readSources = defaultReadSources, readPrompt = defaultReadPrompt } = {},
-) {
+/** Read a run directory's inputs: its envelope and every leg's ai-findings.json. */
+export function readRunInputs(runDir) {
   const envelopePath = join(runDir, 'envelope.json');
   let envelope = null;
   if (existsSync(envelopePath)) {
@@ -693,24 +518,20 @@ export function readRunInputs(
       aiFiles.push({ leg, data });
     }
   }
-  const resolvedComponent = component ?? envelope?.audit?.component ?? basename(resolve(runDir, '..', '..'));
-  const currentHashes = currentLegHashes(repoRoot, resolvedComponent, { readSources, readPrompt });
-  return { envelope, aiFiles, currentHashes };
+  return { envelope, aiFiles };
 }
 
 /**
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
- * levels up, so the stable paths never depend on the run name. `legDeps`
- * (`repoRoot` / `readSources` / `readPrompt`) forwards to `readRunInputs`'s
- * re-hash — an injection seam for tests, unset in production.
+ * levels up, so the stable paths never depend on the run name.
  */
-export function writeVerdictForRun(runDir, legDeps = {}) {
+export function writeVerdictForRun(runDir) {
   const absRun = resolve(runDir);
   const componentDir = resolve(absRun, '..', '..');
   const component = basename(componentDir);
-  const { envelope, aiFiles, currentHashes } = readRunInputs(absRun, { component, ...legDeps });
-  const verdict = computeVerdict({ envelope, aiFiles, component, currentHashes, run: basename(absRun) });
+  const { envelope, aiFiles } = readRunInputs(absRun);
+  const verdict = computeVerdict({ envelope, aiFiles, component });
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
@@ -748,7 +569,6 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
     state: verdict.state,
     ...(verdict.level ? { level: verdict.level } : {}),
     headline: verdict.headline,
-    awaitingLegs: verdict.awaitingLegs,
     runDir: callerRunDir(resolve(runDir)),
   }));
   const components = [...kept, ...fresh].sort((a, b) =>
@@ -776,14 +596,13 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
 
 const USAGE = `Usage:
   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
-  node scripts/audit/verdict.mjs --recompute <component> [--audit-dir <dir>] [--json]
   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--audit-dir <dir>] [--json]
 
 The first form runs run-all.mjs with --verdict and exits with the worst state's
-code; the other two recompute the verdict from a run's inputs (after the deep AI
-legs wrote ai-findings.json) — --recompute takes the component's latest run from
-audit/_run/summary.json, --run-dir names a run explicitly. Exit: 0 PASS, 1 FAIL,
-3 INCOMPLETE, 4 NEEDS-DECISION, 2 usage or internal error.`;
+code; the second re-renders a run's verdict and fix brief from its inputs (e.g.
+after an AI leg wrote its advisory ai-findings.json) — its runDir is listed in
+audit/_run/summary.json. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
+2 usage or internal error.`;
 
 /** Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested. */
 export function printSummary(summary, json) {
@@ -856,30 +675,30 @@ function readSummaryFile(auditDir) {
 
 /**
  * The summary an early exit prints (Decision 11): a caller parsing `--json`
- * stdout for `components[].awaitingLegs` always gets a document, never an
- * empty stdout it would have to tell apart from a crash.
+ * stdout always gets a document, never an empty stdout it would have to tell
+ * apart from a crash.
  */
 function earlyExitSummary(depth, cause) {
   return { schemaVersion: VERDICT_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
 }
 
 /**
- * Recompute each run dir, then rewrite the summary. The components the
- * previous summary listed and this recompute did not touch are kept, so a
- * `--changed` run's legs can be recomputed one component at a time.
+ * Re-render each run dir, then rewrite the summary. The components the
+ * previous summary listed and this invocation did not touch are kept, so a
+ * `--changed` run's components can be re-rendered one at a time.
  */
-function recompute(runDirs, json, auditDir) {
+function rerender(runDirs, json, auditDir) {
   const lock = takeAuditLock(auditDir);
   if (!lock.ok) return lock.exitCode;
   try {
     const runs = runDirs.map(runDir => ({ runDir, verdict: writeVerdictForRun(runDir) }));
-    const recomputed = new Set(runs.map(r => r.verdict.component));
-    const kept = (readSummaryFile(auditDir)?.components ?? []).filter(c => !recomputed.has(c.component));
+    const rendered = new Set(runs.map(r => r.verdict.component));
+    const kept = (readSummaryFile(auditDir)?.components ?? []).filter(c => !rendered.has(c.component));
     const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs, kept });
     // The file keeps every component; this invocation's stdout and exit speak
-    // only for the runs it recomputed, so a caller never stops on another
-    // component's state (or reads its stale awaitingLegs).
-    const own = summary.components.filter(c => recomputed.has(c.component));
+    // only for the runs it re-rendered, so a caller never stops on another
+    // component's state.
+    const own = summary.components.filter(c => rendered.has(c.component));
     const ownSummary = { ...summary, state: worstState(own.map(c => c.state)), components: own };
     delete ownSummary.note;
     printSummary(ownSummary, json);
@@ -887,15 +706,6 @@ function recompute(runDirs, json, auditDir) {
   } finally {
     releaseLock(auditLockPathFor(auditDir), lock.token);
   }
-}
-
-/** Decision 11: the component's runDir as the last summary lists it, or a usage-error reason. */
-export function runDirFromSummary(summary, component, repoRoot = REPO_ROOT) {
-  const entry = summary?.components?.find(c => c.component === component);
-  if (!entry?.runDir) {
-    return { ok: false, reason: `audit/_run/summary.json does not list ${component} — run the audit first` };
-  }
-  return { ok: true, runDir: resolve(repoRoot, entry.runDir) };
 }
 
 function runFresh(argv) {
@@ -907,12 +717,17 @@ function runFresh(argv) {
   // `--depth depp`) must exit 2 before any child process starts, never fall
   // through to "run-all exited without a summary" (which is INCOMPLETE / 3).
   // `parseRunAllCli` exits 2 itself on a usage error (lib/cli-args.mjs).
-  const { depth } = parseRunAllCli(forwarded);
+  const { depth, component, all, changed } = parseRunAllCli(forwarded);
+  // U5: a name run-all cannot resolve exits 2 here too — spawned, it would
+  // exit without a summary, which reads as INCOMPLETE / 3.
+  if (!all && !changed && !normalizeComponentName(component)) {
+    process.stderr.write(`${TOOL}: invalid component name "${component}".\n\n${USAGE}\n`);
+    return EXIT_INTERNAL;
+  }
   // R3: the audit-dir lock guards summary.json/envelope.json/verdict.json —
   // taken around deleting the stale files below, spawning run-all, and
-  // reading the summary; released before this function returns (Decision
-  // §3's "no self-block": a `deep` run's AI legs are dispatched by the
-  // caller, after this call has already returned).
+  // reading the summary; released before this function returns, so an AI leg
+  // a caller dispatches afterwards never waits on it (Decision §3).
   const lock = takeAuditLock(auditDir);
   if (!lock.ok) {
     printSummary(earlyExitSummary(depth, 'the audit-dir lock is held by another audit'), json);
@@ -958,14 +773,13 @@ function main() {
     process.stdout.write(`${USAGE}\n`);
     return 0;
   }
-  if (argv.includes('--run-dir') || argv.includes('--recompute')) {
+  if (argv.includes('--run-dir')) {
     let parsed;
     try {
       parsed = parseArgs({
         args: argv,
         options: {
           'run-dir': { type: 'string', multiple: true },
-          'recompute': { type: 'string' },
           'json': { type: 'boolean', default: false },
           'audit-dir': { type: 'string' },
         },
@@ -981,24 +795,16 @@ function main() {
     };
     const auditRoot = parsed.values['audit-dir'] ? resolve(parsed.values['audit-dir']) : join(REPO_ROOT, 'audit');
     const runDirs = [...(parsed.values['run-dir'] ?? [])];
-    if (parsed.values.recompute !== undefined) {
-      if (runDirs.length) return usageError('--recompute and --run-dir are exclusive');
-      const component = normalizeComponentName(parsed.values.recompute);
-      if (!component) return usageError(`invalid component name "${parsed.values.recompute}"`);
-      const found = runDirFromSummary(readSummaryFile(auditRoot), component);
-      if (!found.ok) return usageError(found.reason);
-      runDirs.push(found.runDir);
-    }
     for (const runDirArg of runDirs) {
       const check = validateRunDirArg(runDirArg, auditRoot);
       if (!check.ok) return usageError(check.reason);
-      // T5: a run dir with no envelope is a mistyped or pruned run — recomputing
+      // T5: a run dir with no envelope is a mistyped or pruned run — re-rendering
       // it would write an INCOMPLETE verdict over the component's real one.
       if (!existsSync(join(runDirArg, 'envelope.json'))) {
         return usageError(`--run-dir has no envelope.json (got "${runDirArg}")`);
       }
     }
-    return recompute(runDirs, parsed.values.json, auditRoot);
+    return rerender(runDirs, parsed.values.json, auditRoot);
   }
   if (argv.length === 0) {
     process.stderr.write(`${USAGE}\n`);
