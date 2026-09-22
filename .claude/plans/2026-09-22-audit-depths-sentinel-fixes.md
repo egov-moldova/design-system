@@ -836,7 +836,17 @@ launching session.
 - U3: `resolveTokensFile` over all 44 components — own file for 40; `mud-text-input` →
   `input.tokens.json`, `mud-accordion-item` → `accordion.tokens.json`, `mud-icon` and
   `mud-logo` → none (not-applicable note). Live `standard`: row 13 `ok` on text-input and
-  accordion-item (diffed), `ok` + note on icon.
+  accordion-item, `ok` + note on icon.
+
+  **Corrected 2026-09-22 (round 4 finding, confirmed by re-running the row).** The line above
+  originally read "row 13 `ok` on text-input and accordion-item (diffed)". They were not
+  diffed: the row resolved a tokens file for both and then found no block for them in the
+  Figma export, so it returned `TOKEN-DIFF-NO-FIGMA-BLOCK` at `info` and the row read as a
+  pass having compared nothing. That is true of every component with a tokens file, because
+  the export carries no component blocks at all — `node -p
+  "Object.keys(require('./tokens-tokenhaus.json')).join('|')"` → 8 global foundation keys.
+  Sweeping the row over all 44 components: 42 `NO-FIGMA-BLOCK`, 2 `NO-CURRENT`, 0 diffed.
+  What U3 did verify is the RESOLUTION step (which file the CSS prefix picks), not a diff.
 - U4: live check 19 on `mud-tooltip`: `bx4 {opened: true, declaresPopup: true, stillOpen:
   false, focusTrappedInClosedOverlay: false}`. accordion-item row 19 `ok`, no ESCAPE-NO-CLOSE.
 - U5: coverage cause text, the printed prerequisite path and the invalid-name exit were already
@@ -873,6 +883,66 @@ Chromium launch+newPage+close: 382 292 208 185 ms
   `scope-check --phase 6 --base 7062855` exit 0.
 - Grading: carried by the merge gate (sentinel round 4, past the cap on the owner's descope
   decision), which dispatches `/code-review` and a fresh-eyes critic over this phase.
+
+#### Round 4 remediation (2026-09-22)
+
+Sentinel round 4 returned two legs — a fresh-eyes critic and `/code-review xhigh`; the security
+and four diff-reviewer legs each stalled at 600 s and were not retried. Between them the two
+legs raised 10 must-fix findings and 3 recommendations. The owner asked for all 13 fixed, then
+for round 5 to be recorded as WAIVED rather than run. Commits `93a0bc8`, `d71d985`, `10bd316`.
+
+Rows 13 and 19 — what a check did not do is now on the record:
+
+- Row 13 returned `TOKEN-DIFF-NO-FIGMA-BLOCK` at `info` for every component holding a tokens
+  file, so the row read as a pass having compared nothing. It is a not-applicable carrying its
+  reason. Sweep over all 44 components: 42 `NO-FIGMA-BLOCK`, 2 `NO-CURRENT`, 0 silent.
+- Decision 13's third case is implemented, with one refinement the decision did not have in
+  front of it: `mud-icon`'s only own-prefixed read is `var(--icon-color, currentColor)`. A
+  fallback makes a custom property optional by construction, so it is published styling API and
+  cannot be a missing token; the INCOMPLETE is owed to a FALLBACK-LESS `--<bare>-*` read with no
+  tokens file behind it. `undeclaredCustomProperties` splits the two and the message names the
+  property either way. No component in the repo is in the noTarget case today; the test
+  reproduces it against real CSS by pointing `tokensDir` at an empty directory.
+- `notApplicable` forces severity `info` in `finding()`, and `verdict.mjs` keeps such a finding
+  out of the graded set, so "did not apply" and "failed" can no longer both be true.
+- Row 19's popup markers were searched across the whole light subtree, where slotted author
+  content could make any container look like it declares a popup. The search is the host plus
+  its shadow root. `grep -rln "shadow: false\|scoped: true" 'src/components/*/[a-z]*.tsx'` → none,
+  and no story slots a marker, so nothing live is lost: live row 19 still reports
+  `declaresPopup: true` for `mud-tooltip` (its `role="tooltip"` is in the shadow root) and
+  `mud-modal`, and `mud-accordion-item` now reads "opened but declares no popup surface".
+- BX4's focus-trap panel used four dialog selectors while `declaresPopup` accepted eight, so a
+  trap inside a menu, listbox or tooltip left the panel null and went unreported. Both read
+  `POPUP_SURFACE_SELECTOR` now — `POPUP_MARKERS` minus `aria-haspopup`, which marks the trigger
+  and is the correct focus-restore target.
+
+Re-rendering a run:
+
+- `--run-dir` rewrote `verdict.json` from whatever run it was handed, so a path from an old log
+  replaced the current verdict and exited on the older run's state. A run older than the one
+  `summary.json` lists is refused with exit 2 (verified live: exit 2, verdict left at PASS).
+  Newer still promotes — that is how the current run is set.
+- The advisory `verify:` command carried `--run-dir <runDir from audit/_run/summary.json>`, a
+  placeholder in a field documented as executable as written. `--rerender <component>` does the
+  lookup itself: runnable as printed, and identical across runs, so byte-identity holds.
+- Both `Skill('audit-component')` invocations now pass `--run-dir` for real. The skill is a
+  fresh context and reads only its arguments, so "the caller already ran the gate" had no
+  carrier; `callers.spec.mjs` asserts every invocation carries it.
+- Six docs still described the two-phase deep flow Decision 12 removed. Rewritten, and the
+  deny-list now covers `ai-wcag`, `ai-media`, `ai-stencil`, `aiLegs` and "closes that row"
+  beside `awaitingLegs` and `--recompute`.
+
+The three recommendations:
+
+- Row 12's `--all` handed every component to `Promise.all`: 44 Chromium processes at four pages
+  each. `componentConcurrency` splits a core-derived page budget across components.
+- `resolveTokensFile` reused `tokenOwner` from `lib/token-match.mjs` instead of rebuilding
+  longest-prefix matching. Resolution is unchanged for all 44 components (before/after diff).
+- The U6 probe lived at `/tmp/claude-501/perf.sh`, which no one could re-run.
+  `scripts/audit/measure-run-cost.mjs` replaces it: median wall-clock, peak RSS and slowest
+  rows per component × depth, `--out`/`--compare` for the pair, and it exits 1 if two
+  repetitions of a cell differ by a byte. Live: `mud-button @ quick 2407 ms (median of 3) ·
+  763 MB · verdict identical`.
 
 ## Execution matrix
 
