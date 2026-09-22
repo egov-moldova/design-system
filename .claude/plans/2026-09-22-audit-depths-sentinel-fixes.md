@@ -1,6 +1,6 @@
 # audit-component depths — fixes from the PR #115 merge gate
 
-**Reviewed:** preflight cfb1f13, critic de4695d
+**Reviewed:** preflight cfb1f13, critic de4695d, critic 938c59a — round cap reached; a fourth round past the cap ordered by the owner 2026-09-22
 
 ## Goal
 
