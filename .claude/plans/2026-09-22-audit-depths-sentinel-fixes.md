@@ -476,6 +476,42 @@ median: 2160 ms → bar = 2160 × 1.5 = 3240 ms
   APPROVE-WITH-NITS, runs `gh pr ready 115 --repo egov-moldova/design-system` (owner asked for
   this); REQUEST-CHANGES → fix, sentinel round 3 at most, then back to the owner.
 
+#### Phase 4 results (2026-09-22, Node 24.19.0, Phases 1–3 at 3abe94b, 864dfd2, 5e83c61)
+
+Regression floor:
+
+- `node --test "scripts/__tests__/**/*.spec.mjs"`: 1324/1324 pass (1204 at Phase 0).
+- `node node_modules/vitest/vitest.mjs run --project spec`: 48 files, 1987/1987 pass.
+- Lint: `eslint "src/**/*.{ts,tsx}" --max-warnings 0` (the `lint.js` scope) exit 0;
+  `prettier --check .` clean. `eslint scripts .claude` reports 26 errors, all in files no phase
+  touched (fixtures and older scripts; the one in `12-console-errors.mjs:29` predates this plan).
+- `node scripts/audit/seeded-defects.mjs`: 4/4 — only after the INCOMPLETE seed moved. S11 made
+  a failing spec its component's own `COVERAGE-TESTS-FAILED` (a FAIL), so the old seed (a
+  throwing spec) no longer reached INCOMPLETE (3/4). The seed is now a type error in the
+  component, which fails the `dx:stencil:once` prerequisite; entry `I3`, `09` `missing-prereq`,
+  verify flips 1 → 0.
+- Byte-identity, two `--depth standard` runs on `mud-banner`: **`cmp` differs**, at one line —
+  `runDir` (`audit/mud-banner/runs/<run>`, Decision 10). With `runDir` removed the two files are
+  identical. Decision 10 and this bar conflict; left to the owner.
+- `quick` on `mud-button`, one warm-up discarded, n=5 (Phase 0 command): 2193 2164 2118 2149
+  2165 ms, all exit 0; median 2164 ms ≤ 3240 ms.
+- `--depth standard --changed` with two components: not measured — `listChangedComponents()`
+  returns `[]` on this branch (no `src/` diff against `main`) and `src/` is out of scope.
+
+R-rows:
+
+- R1: fixed — `a11y-verifier.md` names `.audit-storybook.json`; the S14/R1 grep pair reads 4/3 and 0/0.
+- R2: fixed — `verdict.spec.mjs` S4 stale-hash fixture; `lib/leg-input.mjs` re-hash in `readRunInputs`.
+- R3: fixed — `run-all.spec.mjs` "R3 locks" and "R3 worktree lock", `verdict.spec.mjs` "R3: takeAuditLock".
+- R4: fixed — `verdict.spec.mjs` "R4" and the fix-brief warnings case.
+- R5: fixed — `pre-pr-check.md` runs the audit once; `verdict.spec.mjs` "R5" (stale envelope removed).
+- R6: fixed — `09-a11y-tree.spec.mjs` `bx2StatusFor` / `bx3StatusFor`; `run-all.spec.mjs` waiver + `--figma-dir` case.
+- R7: fixed — `AI_LEG_STATUS` in `lib/json-output.mjs`; `lib-json-output.spec.mjs` and `verdict.spec.mjs` "R7".
+- R8: fixed — both AI-leg contracts write `ai-findings.json` through `cat <<'EOF' >`.
+- R9: fixed — `seeded-defects.spec.mjs` `shouldSignalRecordedPid` cases; `startTime` in `.audit-storybook.json`.
+- R10: fixed — A4 kept for the names eslint misses; `17-adapter-contract.spec.mjs` subset test.
+- R11: fixed — `audit-component/SKILL.md` fix loop runs only `verdict.json`'s `verify` values.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |

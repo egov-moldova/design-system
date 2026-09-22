@@ -24,7 +24,7 @@ two things only: the AI judgment legs at `deep`, and a synthesis over the result
    | --- | --- | --- |
    | 0 | `PASS` | Every required check ran and nothing blocks. Carries a `level`. |
    | 1 | `FAIL` | At least one blocking finding. |
-   | 3 | `INCOMPLETE` | A required check crashed, lacked its prerequisite, or did not run without an excuse. |
+   | 3 | `INCOMPLETE` | A required check crashed, lacked its prerequisite, did not run without an excuse, or found nothing to check (a `noTarget` finding: no story, no reference, no coverage entry). |
    | 4 | `NEEDS-DECISION` | An open design question — the audit never picks an option. |
    | 2 | — | Usage or internal error. |
 
@@ -64,7 +64,7 @@ evidence or a committed `design: "none"`.
 | `--depth <d>` | `quick` / `standard` / `deep`. `--fast` is a deprecated alias of `--depth quick`; `--e2e` folds into `deep`. |
 | `--no-figma` | Excuses 11, 15, `figma-refs`, `ai-figma-themes` for this run. `deep` is capped at `MERGE-READY`. |
 | `--no-browser`, `--ci`, or `CI` set in the environment | Excuses Wave C and the browser AI legs; the headline prints `browser: waived (flag)` or `(CI env)`; level capped at `CLEAN-STATIC`. |
-| `--changed` / `--all` | One pipeline and one `verdict.json` per component; repo-level rows run once. |
+| `--changed` / `--all` | One pipeline and one `verdict.json` per component; repo-level rows run once and count toward the state. `--changed` selecting nothing is `PASS` with "no components selected" printed; a changed-set detector that failed is `INCOMPLETE`. One audit per worktree: a second one finding the lock live is `INCOMPLETE`. |
 | `--skip` / `--only` | Local iteration. Dropping a required id makes the state `INCOMPLETE`, never `PASS`. |
 
 A component with no design commits `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`
@@ -167,7 +167,7 @@ session's `audit-component` file (at `quick` / `standard`, advisory).
 | 12 | Generated `HTMLMud…Element` type | lint `@stencil/element-type` |
 | 13 | `import type` | lint `consistent-type-imports` |
 | 14 | `Record<>` maps, `?.` with `??`, `?` on optional props | ref judgment |
-| 15 | Stencil decorator audit | `02`, `16`, `17` (A3, A4); `manual` rows → `ai-stencil` |
+| 15 | Stencil decorator audit | `02`, `16`, `17` (A3, A4 — A4 checks the reserved names lint `@stencil/reserved-member-names` misses, and `@Event` names, which that rule never checks); `manual` rows → `ai-stencil` |
 | 16 | Lifecycle leak / re-attach safety | `02` `ANTIPATTERN-007-LIFECYCLE-LEAK`; LC2 → `ai-stencil` |
 | 17 | Reactivity mutation, `@State` only for render | `02` `ANTIPATTERN-005-ARRAY-MUTATION`; S1–S3 → `ai-stencil` |
 | 18 | Form callbacks present | `16` `STENCIL-FORM-CALLBACKS` |
@@ -185,7 +185,7 @@ session's `audit-component` file (at `quick` / `standard`, advisory).
 | 30 | `docs.source` dynamic / typed / composite override | `05` |
 | 31 | Story typing (`Meta<Args>`, `args: any`, `typeof meta`, eslint wrap), raw story values, argTypes | ref judgment |
 | 32 | Spec anti-patterns, test content | ref judgment |
-| 33 | Coverage gate | `06` (warning below its threshold) |
+| 33 | Coverage gate | `06` (warning below its threshold, listed under the brief's "Warnings (non-blocking)"; a failing spec of the component is `COVERAGE-TESTS-FAILED`, an error) |
 | 34 | Spec file missing | `01` `STRUCTURE-MISSING-REQUIRED` |
 | 35 | Navigate to the story, snapshot | `09`, `19` BX1 |
 | 36 | Console messages | `12` (errors; `console.warn` is info) |

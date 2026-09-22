@@ -87,13 +87,13 @@ scripts/__tests__/audit/             — smoke tests (one per script)
 scripts/__tests__/scaffold/          — scaffolder smoke tests
 ```
 
-## Standard JSON envelope (schemaVersion 1.0.0)
+## Standard JSON envelope (schemaVersion 1.3.0)
 
 Every script emits this shape (`scripts/audit/lib/json-output.mjs`):
 
 ```json
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.3.0",
   "tool": "stencil-antipatterns",
   "target": "mud-button",
   "ok": true,
@@ -122,6 +122,10 @@ Every script emits this shape (`scripts/audit/lib/json-output.mjs`):
 Per-script extras land under `meta` (e.g. `meta.contract` for
 `14-component-contract`, `meta.pairs` for `10-contrast-pairs`,
 `meta.diff` for `13-token-diff`).
+
+A finding with `noTarget: true` says the script found nothing to check — no story, no
+reference, no coverage entry, no token export. On a row the depth requires, the verdict
+reads it as `INCOMPLETE` (the fix is a missing input), never as a pass with a warning.
 
 ### Exit codes
 
@@ -229,10 +233,16 @@ node scripts/audit/run-all.mjs --all --depth quick --no-browser --out reports/au
 | `--verdict`, `--audit-dir <dir>` | Also write the run inputs and have `verdict.mjs` write the verdict (what `yarn audit:component` does). |
 
 **Prerequisites** (`standard`+, only those the selected rows need): `yarn dx:prepare`,
-`yarn dx:stencil:once` (writes `dist/` and `.storybook/custom-elements.json`), the component's own
-coverage (`yarn vitest run --project spec --coverage <dir>`), and a Storybook. A failed
+`yarn dx:stencil:once` (writes `dist/` and `.storybook/custom-elements.json`), one coverage run
+over every selected component, and a Storybook. A failed
 prerequisite makes the rows that need it `missing-prereq`, never a silent skip. `figma-refs`
 needs `FIGMA_TOKEN`.
+
+The coverage run writes its test results to `audit/_run/vitest-results.json` (deleted before
+each run). A failing spec under `src/components/<name>/` gives that component's `06` row an
+error `COVERAGE-TESTS-FAILED` naming the spec; the other components read their coverage as
+usual. A coverage run that writes no results, or fails in a spec no selected component owns,
+leaves every `06` row `missing-prereq`.
 
 **Figma inputs come from `HEAD` only.** Each manifest is read with `git show HEAD:<path>` into
 `.audit-figma/<component>/manifest@HEAD.json` and passed to 11, 15 and `figma-refs` via
@@ -241,7 +251,7 @@ component with no design commits `{ "figma": { "design": "none", "reason": "…"
 
 **Storybook belongs to this worktree.** Several worktrees share port 6007, and a bare TCP probe
 cannot tell whose Storybook answers. `run-all` reuses a server only when this worktree's
-`.audit-storybook.json` (`{ port, pid }`, git-ignored) names a live process that answers on its
+`.audit-storybook.json` (`{ port, pid, startTime }`, git-ignored) names a live process that answers on its
 port; otherwise it starts `storybook dev` on a free port, records it, and passes it to every Wave C
 script via `--port`. The server is left running for the next audit.
 
@@ -249,7 +259,7 @@ The orchestrator returns one combined envelope:
 
 ```json
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.3.0",
   "tool": "run-all",
   "target": "mud-button",
   "ok": false,
@@ -306,7 +316,8 @@ The only writer of `verdict.json`. It rebuilds the file from its inputs on every
 run, so a hand-edited or model-written verdict never survives the next run.
 
 - **State**, first match wins: `INCOMPLETE` (a row crashed, missed its
-  prerequisite, or a required id did not run without an excuse) → `FAIL` (any
+  prerequisite, a required id did not run without an excuse, or a required row
+  reported a `noTarget` finding) → `FAIL` (any
   blocking error finding) → `NEEDS-DECISION` (no Figma manifest at `HEAD` at
   `standard`+, or an AI leg's open question at `deep`) → `PASS`.
 - **Level**, on `PASS` only: `CLEAN-STATIC` (`quick`, or any browser-waived
@@ -316,10 +327,25 @@ run, so a hand-edited or model-written verdict never survives the next run.
   `--no-browser` / `--ci` / `CI` (browser ids). Each is printed in the headline.
 - **AI findings** are advisory at `quick` / `standard`. At `deep` each `ai-*`
   row closes only with the leg's `ai-findings.json` naming the leg, every id the
-  row judges, a known major `schemaVersion` and a matching `inputHash`; an
-  `error` finding sets `FAIL`, one with `question` + `options` sets
-  `NEEDS-DECISION`, and none clears a script `FAIL`. The headline prints
-  `ai-legs: self-attested`.
+  row judges and a known major `schemaVersion`, and only while the sources the
+  row was opened on are unchanged — the verdict re-hashes them itself; a leg's
+  own `inputHash` is informational. A changed source leaves the row open with
+  "source changed since run <run> — start a fresh run". An `error` finding sets
+  `FAIL`, one with `question` + `options` sets `NEEDS-DECISION`, and none clears
+  a script `FAIL`. The headline prints `ai-legs: self-attested`.
+- **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3 with
+  `awaitingLegs: true` in `verdict.json` — true only when every `INCOMPLETE`
+  entry is an opened `ai-*` row on unchanged sources. The caller then dispatches
+  the legs and recomputes with `--run-dir <verdict.runDir>`; exit 3 without
+  `awaitingLegs` is a stop. `runDir` is the repo-relative
+  `audit/<component>/runs/<run>`; `--run-dir` accepts only that shape, under
+  `--audit-dir` when one is given.
+- **Warnings** never change the state. `verdict.json` lists them under
+  `warnings`, and the brief renders them as "Warnings (non-blocking)" with their
+  row and `verify:` command.
+- **`--changed` selecting nothing** is `PASS` with "no components selected"
+  printed; the repo-level rows (`03`) still count toward the state. A changed-set
+  detector that failed (no base ref, `git diff` failed) is `INCOMPLETE`.
 - `verdict.json` excludes timestamps, durations, stderr text and the run
   name, so identical inputs give byte-identical files.
 
@@ -335,6 +361,15 @@ Stable paths (git-ignored `audit/`):
 
 There is no re-check mode: each fix-brief entry's `verify:` command is the
 per-fix check, and only a full run at the same depth can write `PASS`.
+
+**One audit per worktree.** A run that builds or starts Storybook holds
+`audit/_run/.worktree.lock` (it guards `dist/` and the Storybook record); a fresh
+run and a `--run-dir` recompute hold `<audit dir>/_run/.lock` (it guards
+`_run/summary.json`, `_run/envelope.json`, `_run/vitest-results.json` and each
+`verdict.json`). A second audit that finds a live lock is `INCOMPLETE`, naming the
+holder's pid and the lock path; a lock whose pid is dead or was reused is taken
+over. `audit/<component>/runs/` is disposable and safe to delete — no retention is
+automated.
 
 ## Browser scripts — Playwright is loaded lazily
 
