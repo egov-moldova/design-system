@@ -5,7 +5,7 @@
  *  - DEFAULT_BASE_URL         — http://localhost:6007
  *  - isStorybookReachable     — async TCP probe; resolves true/false
  *  - storyUrl                 — build iframe URL for a Storybook story id
- *  - inferStoryId             — best-effort `<category>-<bare>--<exportName>` builder
+ *  - storyIdFor               — the story id Storybook itself serves (its own toId)
  *
  *  - ensureWorktreeStorybook — reuse or start THIS worktree's Storybook (Design §9)
  *
@@ -18,6 +18,7 @@ import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { storyNameFromExport, toId } from 'storybook/internal/csf/csf-utils';
 
 export const DEFAULT_PORT = 6007;
 export const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}`;
@@ -67,31 +68,34 @@ export function storyUrl({ storyId, baseUrl = DEFAULT_BASE_URL, viewMode = 'stor
 }
 
 /**
- * Best-effort story id constructor matching Storybook's own kebab-case rules.
- * Used as a fallback when the caller doesn't have a story export name.
+ * The story id Storybook itself will serve, from a `title` and an export name.
+ * The one builder — `05-story-exports.mjs` re-exports it as `buildStoryId`,
+ * and every browser row navigates to what it returns.
  *
- *   inferStoryId('Atoms/Button', 'Default')
- *     → 'atoms-button--default'
- *   inferStoryId('Molecules/Tooltip', 'AllPlacements')
- *     → 'molecules-tooltip--all-placements'
+ *   storyIdFor('Atoms/Button', 'Default')       → 'atoms-button--default'
+ *   storyIdFor('Molecules/Tooltip', 'AllPlacements')
+ *                                               → 'molecules-tooltip--all-placements'
+ *   storyIdFor('Atoms/InfoBox', 'Default')      → 'atoms-infobox--default'
  *
- * For canonical mapping, prefer scripts/audit/05-story-exports.mjs which
- * parses the actual *.stories.ts file.
+ * That last one is why this delegates instead of kebab-casing. Storybook
+ * treats the two halves differently: an export name goes through
+ * `storyNameFromExport`, which splits `AllPlacements` into words first, while
+ * a title is only lowercased — so `InfoBox` is `infobox`, not `info-box`. The
+ * audit's own kebab-case split both, and every browser row for a component
+ * whose title is one PascalCase word made of several words navigated to a
+ * story that does not exist. Storybook answered `NoStoryMatchError` in the
+ * page, which nothing read until row 12 began capturing load-time console
+ * output. Baseline: `node -e "…toId(t, storyNameFromExport(e))…"` over the
+ * live index — 15 of 435 ids did not exist, all of mud-info-box and
+ * mud-inline-message; `scripts/__tests__/audit/story-id.spec.mjs` holds it.
  */
-export function inferStoryId(title, exportName) {
+export function storyIdFor(title, exportName) {
   if (!title || !exportName) return null;
-  const titlePart = title.split('/').map(kebabCase).join('-');
-  return `${titlePart}--${kebabCase(exportName)}`;
+  return toId(title, storyNameFromExport(exportName));
 }
 
-function kebabCase(s) {
-  return s
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-}
+/** @deprecated Use {@link storyIdFor}; kept because three rows import this name. */
+export const inferStoryId = storyIdFor;
 
 /** Git-ignored record of the Storybook this worktree started: `{ port, pid }`. */
 export const STORYBOOK_RECORD = '.audit-storybook.json';

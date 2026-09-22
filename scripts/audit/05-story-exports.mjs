@@ -28,6 +28,7 @@ import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
+import { storyIdFor } from './lib/storybook-helpers.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { createSourceFile, getLineNumber } from './lib/ts-parser.mjs';
@@ -420,28 +421,12 @@ function hasExport(node) {
 }
 
 /**
- * Build a Storybook story ID. Storybook lowercases + kebab-cases title and
- * concatenates with `--<storyName-kebab>`.
- *
- *   "Atoms/Button"   + "Default"      → "atoms-button--default"
- *   "Molecules/Tooltip" + "AllSizes"  → "molecules-tooltip--all-sizes"
+ * Build a Storybook story ID — `storyIdFor` in `lib/storybook-helpers.mjs`,
+ * which delegates to Storybook's own `toId`. Re-exported under this name
+ * because every caller and test of this module already uses it, and because
+ * two copies of the rule are what let this one drift (see that function).
  */
-export function buildStoryId(title, storyName) {
-  const titlePart = title
-    .split('/')
-    .map(s => kebabCase(s))
-    .join('-');
-  return `${titlePart}--${kebabCase(storyName)}`;
-}
-
-function kebabCase(s) {
-  return s
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-}
+export const buildStoryId = storyIdFor;
 
 /**
  * Coverage check: for each STANDARD_STORIES entry, does an exported name match?
