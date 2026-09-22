@@ -583,6 +583,10 @@ export const EdgeCases: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          'Figma Edge Cases (663:12428) states the rule this story demonstrates: “Labels for segmented controls should be concise and brief to fit within the available space. Aim to use short labels to ensure readability. However, if a longer label is unavoidable, truncate the text on the first line with an ellipsis.”\n\nTruncation only happens once something constrains the width — the control hugs its content, so given room the long labels simply make it wider. The first two cells sit in the 329px box the design pins, with the labels the design uses.',
+      },
       source: {
         code: `<!-- Long labels truncate with ellipsis. -->
 <mud-segmented-control aria-label="Truncare" value="a"></mud-segmented-control>
