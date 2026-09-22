@@ -25,7 +25,7 @@ let selectInstanceCounter = 0;
  *
  * @element mud-select
  *
- * @slot - (default) Direct `<option>` children, used as the option list when the `options` prop is unset or empty. Not rendered directly: each option's `value`, text and `disabled` are read when children are added or removed. Options inside `<optgroup>` and the `selected` attribute are ignored; set `value` on the host instead.
+ * @slot - (default) The option list, written as the markup a native `<select>` takes: `<option>`, `<optgroup label="…">` and `<hr>`. Not rendered directly — each option's `value`, text, `disabled` and `selected` are read, and re-read whenever the markup changes. Used unless the deprecated `options` prop is set.
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
  * @slot icon-start - Leading `mud-icon` rendered inside the control row.
@@ -110,8 +110,13 @@ export class MudSelect {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Declarative option list. When omitted the component falls back to its
-   * default slot, allowing `<option>` children for HTML-native composition.
+   * Declarative option list.
+   *
+   * @deprecated Write the options as markup instead — `<option>`, `<optgroup>`
+   * and `<hr>` children, the same list a native `<select>` takes. Markup also
+   * expresses grouping and `selected`, which this array cannot. Still honoured,
+   * and still wins over markup when both are present, so existing callers keep
+   * working; scheduled for removal in the next major.
    */
   @Prop() options?: SelectOption[];
 
