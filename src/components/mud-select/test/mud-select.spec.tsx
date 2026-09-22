@@ -12,8 +12,8 @@ const baseOptions: SelectOption[] = [
   { value: 'opt-4', label: 'Option 4' },
 ];
 
-const queryTrigger = (root: Element | null | undefined): HTMLButtonElement | null =>
-  (root?.shadowRoot?.querySelector('button.trigger') ?? null) as HTMLButtonElement | null;
+const queryTrigger = (root: Element | null | undefined): HTMLInputElement | null =>
+  (root?.shadowRoot?.querySelector('input.trigger') ?? null) as HTMLInputElement | null;
 
 const queryListbox = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.listbox') ?? null) as HTMLElement | null;
@@ -116,7 +116,8 @@ describe('mud-select', () => {
       const { root } = await render(<mud-select label="x" placeholder="Pick one"></mud-select>);
       await setOptions(root, baseOptions);
       const trigger = queryTrigger(root);
-      expect(trigger?.textContent).toContain('Pick one');
+      expect(trigger?.getAttribute('placeholder')).toBe('Pick one');
+      expect(trigger?.getAttribute('value')).toBe('');
       expect(root?.classList.contains('is-placeholder')).toBe(true);
     });
 
@@ -124,7 +125,7 @@ describe('mud-select', () => {
       const { root } = await render(<mud-select label="x" value="opt-2"></mud-select>);
       await setOptions(root, baseOptions);
       const trigger = queryTrigger(root);
-      expect(trigger?.textContent).toContain('Option 2');
+      expect(trigger?.getAttribute('value')).toBe('Option 2');
       expect(root?.classList.contains('is-placeholder')).toBe(false);
     });
 

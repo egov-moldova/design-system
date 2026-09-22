@@ -119,7 +119,9 @@ did not ask for.
   `<input role="combobox" aria-autocomplete="list" aria-expanded aria-controls aria-activedescendant>`.
   When `searchable` is false, add `inputmode="none"` and `aria-readonly="true"` and discard input
   events. Typography, padding and height are unchanged, so no state's rendering moves.
-  Verify: `node scripts/audit/15-style-parity.mjs mud-select --json`
+  Verify: style parity needs the manifest task 14 adds, so instead diff the built component
+  against the previous build across placeholder, filled, disabled, invalid and large — the
+  replacement is only safe if that comes back at zero differing pixels.
 
 - [ ] **9. Filtering.** Case- and diacritic-insensitive substring match over the option label
   and value joined by a space, which is react-select's default `stringify`. The remaining

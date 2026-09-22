@@ -161,7 +161,7 @@ export class MudSelect {
   private readonly triggerId = `mud-select-trigger-${this.instanceId}`;
   private readonly listboxId = `mud-select-listbox-${this.instanceId}`;
   private initialValue: string = '';
-  private triggerEl?: HTMLButtonElement;
+  private triggerEl?: HTMLInputElement;
   private listboxEl?: HTMLElement;
   private stopAriaLabel?: () => void;
   private optionsObserver?: MutationObserver;
@@ -652,7 +652,7 @@ export class MudSelect {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const opts = this.resolvedOptions();
     const selected = opts.find(opt => opt.value === this.value);
-    const triggerText = selected?.label ?? this.placeholder ?? '';
+    const triggerText = selected?.label ?? '';
     const isPlaceholder = !selected;
     const activeDescendantId =
       this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
@@ -696,17 +696,29 @@ export class MudSelect {
               <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
             </span>
 
-            <button
+            {/* An input, not a button: ARIA 1.2 names <input role="combobox"> as
+                the pattern, and it is the element a filter can later be typed
+                into. Until then it is not editable — `readonly` plus
+                `inputmode="none"` keep the caret and the on-screen keyboard
+                away while leaving it focusable and keyboard-operable. */}
+            <input
               ref={el => (this.triggerEl = el)}
               id={this.triggerId}
-              class="trigger"
+              class={{ 'trigger': true, 'is-placeholder': isPlaceholder }}
               part="trigger"
-              type="button"
+              type="text"
               role="combobox"
+              autocomplete="off"
+              spellcheck={false}
+              inputmode="none"
+              readOnly={true}
+              value={triggerText}
+              placeholder={this.placeholder}
               aria-haspopup="listbox"
               aria-expanded={this.open ? 'true' : 'false'}
               aria-controls={this.listboxId}
               aria-activedescendant={activeDescendantId}
+              aria-autocomplete="list"
               aria-label={ariaLabelAttr}
               aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
               aria-describedby={this.describedBy()}
@@ -718,9 +730,7 @@ export class MudSelect {
               onKeyDown={this.handleTriggerKeyDown}
               onFocus={this.handleTriggerFocus}
               onBlur={this.handleTriggerBlur}
-            >
-              <span class={{ 'trigger-text': true, 'is-placeholder': isPlaceholder }}>{triggerText}</span>
-            </button>
+            />
 
             <span class="control-icon control-icon-end" aria-hidden="true">
               <mud-icon class="chevron" name="chevron-bottom" size={iconSize} />

@@ -193,7 +193,10 @@
   flex: 1 1 auto;
   min-inline-size: 0;
   inline-size: 100%;
-  block-size: 100%;
+  /* Its natural line-height box, centred by `.control`'s flex — stretching it to
+     the full row instead leaves the browser to centre the text itself, which
+     lands a pixel lower than the rest of the design system. */
+  block-size: auto;
   padding: 0;
   margin: 0;
   border: 0;
@@ -208,8 +211,15 @@
   -webkit-appearance: none;
   cursor: pointer;
   text-align: start;
-  display: flex;
-  align-items: center;
+  /* An input cannot hold a child to truncate, so it truncates itself. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trigger::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
 }
 
 .trigger:disabled {
@@ -227,15 +237,9 @@
   outline: none;
 }
 
-.trigger-text {
-  flex: 1 1 auto;
-  min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.trigger-text.is-placeholder {
+/* No selection: the field shows its placeholder, which needs the muted colour
+   even where `::placeholder` does not reach. */
+.trigger.is-placeholder {
   color: var(--_text-placeholder);
 }
 
