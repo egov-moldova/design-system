@@ -146,7 +146,11 @@
         "$type": "dimension",
         "$comment": "Figma selection-menu uses spacing/4 between options."
       },
-      "marginBlockStart": { "$value": "{spacing.4}", "$type": "dimension" },
+      "marginBlockStart": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma Behavior/custom 454:5975 stacks the field and the selection-menu with spacing/8 — measured on the export at 8.0px from the input's bottom edge to the menu card."
+      },
       "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
       "maxBlockSize": { "$value": "320px", "$type": "dimension" }
     },
