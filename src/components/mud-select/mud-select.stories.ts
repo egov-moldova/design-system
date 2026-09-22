@@ -405,3 +405,140 @@ export const EdgeCases: Story = {
     },
   },
 };
+
+/** A select whose options are written as markup rather than passed as data. */
+const markupSelect = (attrs: string, options: string) =>
+  /*html*/ `<mud-select id="${nextId()}" ${attrs}>${options}</mud-select>`;
+
+const FOOD_OPTIONS = /*html*/ `
+  <option value="">Choose a food</option>
+  <hr />
+  <optgroup label="Fruit">
+    <option value="apple">Apples</option>
+    <option value="banana">Bananas</option>
+    <option value="cherry">Cherries</option>
+  </optgroup>
+  <hr />
+  <optgroup label="Vegetables">
+    <option value="artichoke">Artichokes</option>
+    <option value="broccoli">Broccoli</option>
+  </optgroup>
+  <hr />
+  <optgroup label="Meat">
+    <option value="beef">Beef</option>
+    <option value="chicken" selected>Chicken</option>
+    <option value="pork" disabled>Pork</option>
+  </optgroup>
+`;
+
+const CITY_OPTIONS = /*html*/ `
+  <optgroup label="Nord">
+    <option value="balti">Bălți</option>
+    <option value="soroca">Soroca</option>
+    <option value="edinet">Edineț</option>
+  </optgroup>
+  <optgroup label="Centru">
+    <option value="chisinau">Chișinău</option>
+    <option value="orhei">Orhei</option>
+    <option value="ungheni">Ungheni</option>
+  </optgroup>
+  <optgroup label="Sud">
+    <option value="cahul">Cahul</option>
+    <option value="comrat">Comrat</option>
+  </optgroup>
+`;
+
+export const NativeMarkup: Story = {
+  name: 'Native Markup',
+  render: () =>
+    wrap(
+      [
+        cell('option + optgroup + hr', markupSelect('size="large" label="Your favorite food"', FOOD_OPTIONS)),
+        cell(
+          'open, showing group headings',
+          markupSelect('size="large" label="Your favorite food" open', FOOD_OPTIONS),
+        ),
+        cell(
+          'hr between ungrouped options',
+          markupSelect(
+            'size="large" label="Sort by" open',
+            /*html*/ `
+              <option value="recent" selected>Most recent</option>
+              <option value="name">Name</option>
+              <hr />
+              <option value="clear">Clear sorting</option>
+            `,
+          ),
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Options are written as the markup a native `<select>` takes. `<optgroup>` becomes a named group, `<hr>` a rule, and `selected` sets the starting value — here Chicken. Rules with nothing to divide are dropped, so the three `<hr>`s next to headings do not double the rule each heading draws.',
+      },
+      source: {
+        code: `<mud-select size="large" label="Your favorite food">${FOOD_OPTIONS}</mud-select>`,
+      },
+    },
+  },
+};
+
+export const Searchable: Story = {
+  name: 'Searchable',
+  render: () =>
+    wrap(
+      [
+        cell('type to filter', markupSelect('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS)),
+        cell('open', markupSelect('size="large" label="Oraș" searchable placeholder="Caută" open', CITY_OPTIONS)),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'With `searchable`, the control itself is the query box. Matching ignores case and diacritics, so `chisinau` finds Chișinău and `balti` finds Bălți; a group disappears when none of its options match. Without `searchable`, the same keystrokes jump the highlight instead, as a native `<select>` does.',
+      },
+      source: {
+        code: '<mud-select size="large" label="Oraș" searchable placeholder="Caută">…</mud-select>',
+      },
+    },
+  },
+};
+
+export const NoResults: Story = {
+  name: 'No Results',
+  render: () =>
+    wrap(
+      cell(
+        'nothing matches the query',
+        markupSelect('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit" open', CITY_OPTIONS),
+      ),
+    ),
+  play: async ({ canvasElement }) => {
+    const select = canvasElement.querySelector('mud-select');
+    if (!select) return;
+    // The shadow root is not there until the component upgrades, and a play
+    // function that runs too early would quietly do nothing.
+    await customElements.whenDefined('mud-select');
+    await (select as HTMLElement & { componentOnReady?: () => Promise<unknown> }).componentOnReady?.();
+    const input = select.shadowRoot?.querySelector('input.trigger') as HTMLInputElement | null;
+    if (!input) return;
+    input.value = 'zzz';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story: 'The empty state is `empty-label`, a prop with the Romanian default `Nicio opțiune`.',
+      },
+      source: {
+        code: '<mud-select label="Oraș" searchable empty-label="Niciun oraș găsit">…</mud-select>',
+      },
+    },
+  },
+};
