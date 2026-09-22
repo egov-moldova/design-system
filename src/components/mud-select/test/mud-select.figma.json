@@ -64,7 +64,13 @@
   },
   "defaults": {
     "story": "atoms-input-select--default",
-    "capture": { "selector": "mud-select", "bleed": "auto" }
+    "capture": {
+      "selector": "mud-select .control",
+      "bleed": "auto",
+      "note": "Every cited node is the Figma \"Input\" frame (159:1117 is 282x48, padding 0 16px, no label and no assistive text), so the capture is the control box, not the whole host. Capturing `mud-select` compared a 1216x140 field against a 282x48 reference and could never pass."
+    },
+    "mask": ["mud-select .trigger"],
+    "maskNote": "The placeholder / selected text is mock content, and Figma rasterises glyphs differently from Chromium: unmasked it contributed ~1.2% of anti-aliasing against a mostly-empty 282x48 canvas. Masked pixels are still reported, and style parity checks the text properties exactly."
   },
   "shared": {
     "large-label": [
@@ -85,9 +91,11 @@
     {
       "name": "default-large",
       "node": "159:1117",
-      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select></div>",
       "expect": [
-        { "use": "large-label" },
+        {
+          "use": "large-label"
+        },
         {
           "target": "mud-select .control",
           "styles": {
@@ -103,7 +111,10 @@
         },
         {
           "target": "mud-select .trigger",
-          "styles": { "fontSize": "16px", "lineHeight": "24px" },
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
           "note": "Figma 159:1120 sets the placeholder in Desktop/Body/Default (16/24) for Large."
         },
         {
@@ -116,9 +127,11 @@
     {
       "name": "default-medium",
       "node": "6173:5579",
-      "html": "<mud-select size=\"medium\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
+      "html": "<div style=\"width:282px\"><mud-select size=\"medium\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select></div>",
       "expect": [
-        { "use": "large-label" },
+        {
+          "use": "large-label"
+        },
         {
           "target": "mud-select .control",
           "styles": {
@@ -134,7 +147,10 @@
         },
         {
           "target": "mud-select .trigger",
-          "styles": { "fontSize": "14px", "lineHeight": "20px" },
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
           "note": "Figma 6173:5582 drops the Medium placeholder to Desktop/Body/Small (14/20)."
         }
       ]
@@ -144,7 +160,10 @@
       "node": "159:1127",
       "pixel": false,
       "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
-      "interaction": { "type": "hover", "target": "mud-select .control" },
+      "interaction": {
+        "type": "hover",
+        "target": "mud-select .control"
+      },
       "expect": [
         {
           "target": "mud-select .control",
@@ -164,7 +183,10 @@
       "node": "159:1137",
       "pixel": false,
       "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select>",
-      "interaction": { "type": "focus", "target": "mud-select .trigger" },
+      "interaction": {
+        "type": "focus",
+        "target": "mud-select .trigger"
+      },
       "expect": [
         {
           "target": "mud-select .control",
@@ -181,7 +203,7 @@
     {
       "name": "filled-large",
       "node": "159:1163",
-      "html": "<mud-select size=\"large\" label=\"Label\" value=\"a\"><option value=\"a\">Placeholder</option></mud-select>",
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" value=\"a\"><option value=\"a\">Placeholder</option></mud-select></div>",
       "expect": [
         {
           "target": "mud-select .control",
@@ -193,7 +215,9 @@
         },
         {
           "target": "mud-select .trigger",
-          "styles": { "color": "rgb(18, 18, 18)" },
+          "styles": {
+            "color": "rgb(18, 18, 18)"
+          },
           "note": "Figma 159:1166 paints a filled value #121212, against the placeholder's #757575."
         }
       ]
@@ -201,7 +225,7 @@
     {
       "name": "disabled-large",
       "node": "159:1185",
-      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" disabled><option value=\"a\">Option A</option></mud-select>",
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" disabled><option value=\"a\">Option A</option></mud-select></div>",
       "expect": [
         {
           "target": "mud-select .control",
@@ -214,7 +238,9 @@
         },
         {
           "target": "mud-select .trigger",
-          "styles": { "color": "rgb(178, 178, 178)" },
+          "styles": {
+            "color": "rgb(178, 178, 178)"
+          },
           "note": "Figma 159:1188 sets the disabled placeholder to #B2B2B2."
         }
       ]
@@ -222,7 +248,7 @@
     {
       "name": "destructive-large",
       "node": "159:1212",
-      "html": "<mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" invalid error-text=\"Error message displayed here\"><option value=\"a\">Option A</option></mud-select>",
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" invalid error-text=\"Error message displayed here\"><option value=\"a\">Option A</option></mud-select></div>",
       "expect": [
         {
           "target": "mud-select .control",
