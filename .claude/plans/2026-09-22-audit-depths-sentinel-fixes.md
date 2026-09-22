@@ -215,8 +215,8 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
 - Regression floor: `yarn test:scripts` all pass, `yarn test` all pass, `yarn lint` clean,
   `node scripts/audit/seeded-defects.mjs` 4/4, two `--depth standard` runs on `mud-banner`
   byte-identical `verdict.json` (`cmp`), `quick` on `mud-button` median over n=5 runs
-  (`/usr/bin/time` around `node scripts/audit/verdict.mjs mud-button --depth quick`) ≤ the
-  Phase 0 re-baseline × 1.5, recorded in a `derived` fence. `--depth standard --changed` with two
+  (the Phase 0 results command, one warm-up discarded) ≤ 3240 ms (the Phase 0 median 2160 ms ×
+  1.5). `--depth standard --changed` with two
   components is timed once and recorded (S11 changes that path; no threshold, a measurement).
 
 Numeric tolerances: none beyond the floor above.
@@ -262,11 +262,22 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - Modify: `.claude/plans/2026-09-22-audit-depths-sentinel-fixes.md`
 - Read only: `package.json`
 
-- [ ] `git merge upstream/main` (the repo's convention for this, e.g. `a06df23`); the only file
+- [x] `git merge upstream/main` (the repo's convention for this, e.g. `a06df23`); the only file
   changed on both sides is `.claude/skills/stencil-compliance/SKILL.md`, and the merge-tree probe
   is clean. Verify: `yarn test:scripts` and `yarn lint` pass on the merge commit.
-- [ ] Re-baseline `quick` on `mud-button` on the merged tree (n=5 median, the acceptance bar's
+- [x] Re-baseline `quick` on `mud-button` on the merged tree (n=5 median, the acceptance bar's
   instrument); record it under `#### Phase 0 results` in a `derived` fence with the command.
+
+#### Phase 0 results (2026-09-22, Node 24.19.0, merge commit 222165c)
+
+- Merge of `upstream/main` (d2da933): clean; `yarn test:scripts` 1204/1204, `yarn lint` exit 0.
+- `quick` baseline, one warm-up run discarded, then n=5:
+
+```derived
+command: for i in 1 2 3 4 5; do s=$(node -e 'console.log(Date.now())'); node scripts/audit/verdict.mjs mud-button --depth quick >/dev/null 2>&1; e=$?; t=$(node -e 'console.log(Date.now())'); echo "$((t-s)) exit=$e"; done
+output: 2160 2147 2207 2183 2145 (ms), all exit=0
+median: 2160 ms → bar = 2160 × 1.5 = 3240 ms
+```
 
 ### Phase 1 — verdict core
 **Executor**: sonnet, high effort · wave 2
