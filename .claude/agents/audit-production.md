@@ -59,12 +59,12 @@ NEEDS-DECISION, `2` usage/internal error.
   opened row is closed, recompute:
 
   ```bash
-  yarn audit:component --run-dir <verdict.runDir>
+  yarn audit:component --run-dir <runDir>
   ```
 
-  `<verdict.runDir>` is `verdict.json`'s own `runDir` field from the first
-  run — the full `audit/mud-<name>/runs/<run>` form; a bare run id is
-  rejected. STOP if this exit is non-zero.
+  `<runDir>` is this component's `runDir` in `audit/_run/summary.json`
+  (`components[]`) from the first run — the full `audit/mud-<name>/runs/<run>`
+  form; a bare run id is rejected. STOP if this exit is non-zero.
 - Exit `3` with `awaitingLegs: false`, or any other non-zero exit — STOP. In
   either case read `audit/mud-<name>/verdict.json` (`state`, `level`, `rows`,
   `entries`) and `audit/mud-<name>/fix-brief.md` and report them directly —

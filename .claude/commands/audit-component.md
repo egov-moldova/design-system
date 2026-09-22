@@ -48,11 +48,12 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
 3. At `deep`, once every opened row is closed, recompute and STOP on a non-zero exit:
 
    ```bash
-   yarn audit:component --run-dir <verdict.runDir>
+   yarn audit:component --run-dir <runDir>
    ```
 
-   `<verdict.runDir>` is `verdict.json`'s own `runDir` field from step 1 — the full
-   `audit/<component>/runs/<run>` form; a bare run id is rejected.
+   `<runDir>` is this component's `runDir` in `audit/_run/summary.json`
+   (`components[]`) from step 1 — the full `audit/<component>/runs/<run>` form; a
+   bare run id is rejected.
 
 ## Output
 

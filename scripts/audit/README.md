@@ -336,9 +336,11 @@ run, so a hand-edited or model-written verdict never survives the next run.
 - **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3 with
   `awaitingLegs: true` in `verdict.json` — true only when every `INCOMPLETE`
   entry is an opened `ai-*` row on unchanged sources. The caller then dispatches
-  the legs and recomputes with `--run-dir <verdict.runDir>`; exit 3 without
-  `awaitingLegs` is a stop. `runDir` is the repo-relative
-  `audit/<component>/runs/<run>`; `--run-dir` accepts only that shape, under
+  the legs and recomputes with `--run-dir <runDir>`; exit 3 without
+  `awaitingLegs` is a stop. `runDir` is the component's entry in
+  `audit/_run/summary.json` — the repo-relative `audit/<component>/runs/<run>`
+  (absolute when `--audit-dir` is outside the repo). It is kept out of
+  `verdict.json` so that file is byte-identical across runs; `--run-dir` accepts only that shape, under
   `--audit-dir` when one is given.
 - **Warnings** never change the state. `verdict.json` lists them under
   `warnings`, and the brief renders them as "Warnings (non-blocking)" with their

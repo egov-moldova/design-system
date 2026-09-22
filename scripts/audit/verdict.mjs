@@ -684,10 +684,6 @@ export function writeVerdictForRun(runDir, legDeps = {}) {
   const component = basename(componentDir);
   const { envelope, aiFiles, currentHashes } = readRunInputs(absRun, { component, ...legDeps });
   const verdict = computeVerdict({ envelope, aiFiles, component, currentHashes, run: basename(absRun) });
-  // Decision §10: the repo-relative form a caller can pass straight back to
-  // `--run-dir` (S8 validates that shape). Computed here, not in the pure
-  // computeVerdict, since only the I/O layer knows the run directory.
-  verdict.runDir = relative(REPO_ROOT, absRun).split(sep).join('/');
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
@@ -696,6 +692,19 @@ export function writeVerdictForRun(runDir, legDeps = {}) {
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
   return verdict;
+}
+
+/**
+ * The run directory in the form a caller passes straight back to `--run-dir`
+ * (Decision §10): repo-relative with forward slashes when the run sits inside
+ * the repo, absolute otherwise (an `--audit-dir` outside it). It lives in
+ * summary.json, never in verdict.json, which stays a pure function of the
+ * run's inputs and so byte-identical across runs.
+ */
+export function callerRunDir(absRun, repoRoot = REPO_ROOT) {
+  const rel = relative(repoRoot, absRun);
+  if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) return absRun;
+  return rel.split(sep).join('/');
 }
 
 /**
@@ -712,7 +721,7 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
     state: verdict.state,
     ...(verdict.level ? { level: verdict.level } : {}),
     headline: verdict.headline,
-    runDir: relative(auditDir, resolve(runDir)),
+    runDir: callerRunDir(resolve(runDir)),
   }));
   const states = components.map(c => c.state);
   if (preflight) states.push(STATE.INCOMPLETE);

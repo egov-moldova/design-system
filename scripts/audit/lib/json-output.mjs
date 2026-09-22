@@ -97,8 +97,9 @@ export function isValidRowStatus(status) {
 
 /**
  * `schemaVersion` written into `audit/<component>/verdict.json` (Phase 2).
- * 1.1.0 (plan `2026-09-22-audit-depths-sentinel-fixes.md`) added `awaitingLegs`,
- * `warnings` and `runDir` — additive, existing readers are unaffected.
+ * 1.1.0 (plan `2026-09-22-audit-depths-sentinel-fixes.md`) added `awaitingLegs`
+ * and `warnings` — additive, existing readers are unaffected. The run directory
+ * is not here: it is per-run, so it lives in `_run/summary.json`.
  */
 export const VERDICT_SCHEMA_VERSION = '1.1.0';
 

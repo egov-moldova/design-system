@@ -71,7 +71,7 @@ Deep two-phase flow (S4):
 
 | Option | Shape | Cost |
 |---|---|---|
-| A (chosen) | `verdict.json` gains `awaitingLegs: true` when every INCOMPLETE entry is an opened `ai-*` row; state stays INCOMPLETE / exit 3. Callers: exit 3 + `awaitingLegs` → dispatch legs → `yarn audit:component --run-dir <verdict.runDir>` → stop on non-zero. | One additive field + ~3 lines per caller; the branch is readable by a caller, not inferred. |
+| A (chosen) | `verdict.json` gains `awaitingLegs: true` when every INCOMPLETE entry is an opened `ai-*` row; state stays INCOMPLETE / exit 3. Callers: exit 3 + `awaitingLegs` → dispatch legs → `yarn audit:component --run-dir <runDir>` (from `audit/_run/summary.json`) → stop on non-zero. | One additive field + ~3 lines per caller; the branch is readable by a caller, not inferred. |
 | B | New state `AWAITING-LEGS`, exit 5. | Changes the state enum, exit table, every caller and test. |
 | C | Prose only. | Branch rests on a model reading a rule, not a field. |
 
@@ -145,9 +145,12 @@ Recommendation: A — it fails closed exactly where the input is broken and keep
 9. S5's detector → a new `detectChangedComponents()` in `lib/changed-components.mjs` returns
    `{ ok, cause, names }`; `listChangedComponents()` stays a wrapper returning `names`, so the 16
    standalone scripts that call it are untouched.
-10. Callers read two fields of `verdict.json` — `awaitingLegs`, and `runDir` (repo-relative
-   `audit/<component>/runs/<run>`, the value they pass to `--run-dir`) — besides the exit status. This is
-   a stated carve-out from the parent plan's Design §1 ("callers branch on the verdict's exit
+10. Callers read two computed fields besides the exit status: `awaitingLegs` in `verdict.json`,
+   and the component's `runDir` in `audit/_run/summary.json` (repo-relative
+   `audit/<component>/runs/<run>`, absolute when `--audit-dir` is outside the repo — the value
+   they pass to `--run-dir`). `runDir` is per-run, so it stays out of `verdict.json`, which must
+   be byte-identical across runs (owner, 2026-09-22, when the stage found the two in conflict).
+   This is a stated carve-out from the parent plan's Design §1 ("callers branch on the verdict's exit
    status, never on their own reading of the verdict"): the field is computed by the verdict, not
    re-derived by the caller. `callers.spec.mjs`'s header records it.
 
@@ -168,7 +171,8 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
   hash still matches. Fixtures: only opened `ai-*` rows INCOMPLETE → `true`; opened `ai-*` rows
   plus one non-ai INCOMPLETE entry → `false`; an `ai-*` row open on a stale hash → `false`;
   PASS and FAIL → `false`. `callers.spec.mjs` asserts each deep caller names `awaitingLegs`,
-  passes `--run-dir` the verdict's `runDir` (the full `audit/<component>/runs/<run>` form — a
+  passes `--run-dir` the summary's `runDir` and names `audit/_run/summary.json` as its source,
+  never `verdict.runDir` (the full `audit/<component>/runs/<run>` form — a
   bare run id is rejected by S8), and no longer says "re-run the gate above".
 - S5 (`verdict.spec.mjs`, `lib-changed-components.spec.mjs`): zero selected + nothing changed →
   PASS with the note on stdout; zero selected + a 03 error → FAIL; a failing git in
@@ -228,7 +232,7 @@ Numeric tolerances: none beyond the floor above.
   Phase 0 merge.
 - Nothing under `src/`, `tokens/`, `react/` changes.
 - Envelope/verdict changes are additive: `noTarget` on envelope findings bumps `SCHEMA_VERSION`
-  (`scripts/audit/lib/json-output.mjs:31`) one minor; `awaitingLegs`, `warnings` and `runDir` in
+  (`scripts/audit/lib/json-output.mjs:31`) one minor; `awaitingLegs` and `warnings` in
   `verdict.json` bump `VERDICT_SCHEMA_VERSION` (`:82`) one minor.
 - Callers branch on `verdict.mjs`'s exit status, never on their own reading of the verdict,
   except `awaitingLegs` and `runDir` (Decision 10).
@@ -316,9 +320,9 @@ median: 2160 ms → bar = 2160 × 1.5 = 3240 ms
 - [ ] R4 `verdict.json` carries a `warnings` list; the brief renders "Warnings (non-blocking)"
   with row and verify command; state unchanged.
 - [ ] R7 `AI_LEG_STATUS` frozen enum used at every site.
-- [ ] `verdict.json` carries `runDir` (Decision 10).
+- [x] `runDir` in `audit/_run/summary.json`, never in `verdict.json` (Decision 10).
 - [ ] Version bumps per § Global constraints (`SCHEMA_VERSION` for `noTarget`,
-  `VERDICT_SCHEMA_VERSION` for `awaitingLegs` / `warnings` / `runDir`).
+  `VERDICT_SCHEMA_VERSION` for `awaitingLegs` / `warnings`).
 
 ### Phase 2 — orchestrator and scripts
 **Executor**: sonnet, high effort · wave 3
@@ -439,7 +443,7 @@ median: 2160 ms → bar = 2160 × 1.5 = 3240 ms
 - Modify: `.claude/skills/stencil-compliance/SKILL.md`
 - Modify: `scripts/__tests__/audit/callers.spec.mjs`
 
-- [ ] S4 deep callers: exit 3 + `awaitingLegs` → dispatch legs → `--run-dir <verdict.runDir>` → stop on
+- [ ] S4 deep callers: exit 3 + `awaitingLegs` → dispatch legs → `--run-dir <runDir>` (summary) → stop on
   non-zero; exit 3 without it → stop; remove "re-run the gate above"; `callers.spec.mjs`'s
   header records Decision 10's carve-out. Verify: acceptance S4 (callers half).
 - [ ] S14 + R1 port from `.audit-storybook.json`, `--port` passed, HEAD manifest read. Verify:
@@ -492,7 +496,10 @@ Regression floor:
   verify flips 1 → 0.
 - Byte-identity, two `--depth standard` runs on `mud-banner`: **`cmp` differs**, at one line —
   `runDir` (`audit/mud-banner/runs/<run>`, Decision 10). With `runDir` removed the two files are
-  identical. Decision 10 and this bar conflict; left to the owner.
+  identical. Decision 10 and this bar conflicted; the owner chose to move `runDir` into
+  `audit/_run/summary.json` (2026-09-22). Re-measured after the move: both runs exit 0,
+  `PASS@standard · MERGE-READY`, `cmp` identical, no `runDir` in `verdict.json`; the summary
+  carries `audit/mud-banner/runs/<run>`. Script specs 1335/1335.
 - `quick` on `mud-button`, one warm-up discarded, n=5 (Phase 0 command): 2193 2164 2118 2149
   2165 ms, all exit 0; median 2164 ms ≤ 3240 ms.
 - `--depth standard --changed` with two components: not measured — `listChangedComponents()`
@@ -521,7 +528,7 @@ Grade (6809fe4..9f6e749, then 5fb9328):
   `value` (`mud-numeric-input`), latent while no story sets `name`.
 - `fresh-eyes-verify`: FORTIFY (med), 2 above-bar. The stale-source cause printed a literal
   `<run>` — fixed in 5fb9328 (1333/1333). The byte-identity bar vs Decision 10's `runDir` —
-  open, the owner's call.
+  closed by moving `runDir` to the summary (owner's call).
 
 ## Execution matrix
 

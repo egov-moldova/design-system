@@ -59,11 +59,12 @@ supported in your harness) for the judgment-only legs, each of which writes
 is closed, recompute and STOP on a non-zero exit:
 
 ```bash
-yarn audit:component --run-dir <verdict.runDir>
+yarn audit:component --run-dir <runDir>
 ```
 
-`<verdict.runDir>` is `verdict.json`'s own `runDir` field from the first run —
-the full `audit/$ARGUMENTS/runs/<run>` form; a bare run id is rejected. Any
+`<runDir>` is this component's `runDir` in `audit/_run/summary.json`
+(`components[]`) from the first run — the full `audit/$ARGUMENTS/runs/<run>`
+form; a bare run id is rejected. Any
 other non-zero exit from the first run — STOP; read
 `audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
 `audit/$ARGUMENTS/fix-brief.md` for every entry.

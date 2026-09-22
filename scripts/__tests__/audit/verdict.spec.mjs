@@ -23,9 +23,11 @@ import {
   takeAuditLock,
   worstState,
   writeSummary,
+  callerRunDir,
   writeVerdictForRun,
 } from '../../audit/verdict.mjs';
 import { releaseLock } from '../../audit/lib/storybook-helpers.mjs';
+import { REPO_ROOT as AUDIT_REPO_ROOT } from '../../audit/lib/component-paths.mjs';
 import {
   FIGMA_ABSENT,
   FIGMA_DESIGN_NONE,
@@ -598,7 +600,7 @@ describe('verdict: worstState', () => {
 });
 
 describe('verdict: the only writer, byte-identical', () => {
-  it('two runs over envelopes differing only in excluded fields write byte-identical verdict.json (runDir excepted — it is per-run by design, Decision §10)', () => {
+  it('two runs over envelopes differing only in excluded fields write byte-identical verdict.json', () => {
     const auditDir = tmp();
     const outputs = [];
     for (const [run, fixture] of [
@@ -615,13 +617,9 @@ describe('verdict: the only writer, byte-identical', () => {
       readFileSync(join(FIXTURES, 'envelope-a.json')),
       readFileSync(join(FIXTURES, 'envelope-b.json')),
     );
-    const [a, b] = outputs.map(buf => JSON.parse(buf));
-    assert.notEqual(a.runDir, b.runDir, 'runDir should differ between the two runs — it names this run');
-    assert.match(a.runDir, /4242/);
-    assert.match(b.runDir, /5151/);
-    delete a.runDir;
-    delete b.runDir;
-    assert.deepEqual(a, b, 'verdict.json differs between the two runs beyond runDir');
+    assert.ok(outputs[0].equals(outputs[1]), 'verdict.json is not byte-identical across the two runs');
+    const [a] = outputs.map(buf => JSON.parse(buf));
+    assert.equal('runDir' in a, false, 'verdict.json names its run — per-run data belongs in summary.json');
     assert.equal(a.state, 'INCOMPLETE');
     const strippedA = JSON.stringify(a);
     assert.doesNotMatch(strippedA, /durationMs|boom|4242|5151|2026-09-21/);
@@ -696,6 +694,25 @@ describe('S5: writeSummary / printSummary with zero components selected', () => 
     assert.match(textOut, /no components selected/);
     const jsonOut = captureStdout(() => printSummary(summary, true));
     assert.match(jsonOut, /no components selected/);
+  });
+
+  it('each component carries the runDir a caller passes back to --run-dir (Decision §10)', () => {
+    const auditDir = tmp();
+    const runDir = writeRunDir(auditDir, cleanEnvelope());
+    const verdict = writeVerdictForRun(runDir);
+    const summary = writeSummary(auditDir, { depth: 'standard', runs: [{ verdict, runDir }] });
+    // tmp() is outside the repo, so the caller-facing form is absolute.
+    assert.equal(summary.components[0].runDir, resolve(runDir));
+    const onDisk = JSON.parse(readFileSync(join(auditDir, '_run', 'summary.json'), 'utf8'));
+    assert.equal(onDisk.components[0].runDir, resolve(runDir));
+  });
+
+  it('callerRunDir: repo-relative with forward slashes inside the repo, absolute outside it', () => {
+    assert.equal(
+      callerRunDir(join(AUDIT_REPO_ROOT, 'audit', 'mud-fx', 'runs', 'r1'), AUDIT_REPO_ROOT),
+      'audit/mud-fx/runs/r1',
+    );
+    assert.equal(callerRunDir('/elsewhere/audit/mud-fx/runs/r1', AUDIT_REPO_ROOT), '/elsewhere/audit/mud-fx/runs/r1');
   });
 
   it('a non-empty selection never carries the note', () => {
