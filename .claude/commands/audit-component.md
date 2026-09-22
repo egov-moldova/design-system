@@ -40,18 +40,18 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
 2. At `standard`/`deep`, invoke the skill for the judgment the gate cannot script (archetype CX rows, cross-layer synthesis, and — at `deep` — the optional AI legs), telling it the caller already ran the gate and the component's `runDir` (from `components[].runDir` in `audit/_run/summary.json`) so it never starts a second fresh run:
 
    ```text
-   Skill('audit-component', { args: '$ARGUMENTS' })
+   Skill('audit-component', { args: '$ARGUMENTS --run-dir <components[].runDir from audit/_run/summary.json>' })
    ```
 
-   The skill never invokes `verdict.mjs` fresh and never stops on its exit code; each leg it dispatches writes `<runDir>/ai/<leg>/ai-findings.json`.
+   Pass `--run-dir` for real, with the value read from the summary — the rule that the skill starts no second fresh run is only carried by that argument, and without it the skill has nothing to tell the two cases apart. The skill never invokes `verdict.mjs` fresh and never stops on its exit code; each leg it dispatches writes `<runDir>/ai/<leg>/ai-findings.json`.
 
 3. When a leg wrote its file, re-render the brief so its findings appear under "Advisory" (the state does not change):
 
    ```bash
-   yarn audit:component --run-dir <runDir> --json
+   yarn audit:component --rerender <component> --json
    ```
 
-   `<runDir>` is the component's `components[].runDir` in `audit/_run/summary.json` — never a bare run id. With `--changed` / `--all`, re-render each component's run; each invocation's exit speaks only for the runs it names.
+   `--rerender` looks the component's current run up in `audit/_run/summary.json`. With `--changed` / `--all`, pass one `--rerender` per component; each invocation's exit speaks only for the runs it names.
 
 ## Output
 

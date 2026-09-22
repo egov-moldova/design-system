@@ -287,7 +287,7 @@ The orchestrator returns one combined envelope:
 Each `results[]` row carries `status` — `ok` (an envelope arrived, whatever its
 findings), `crashed`, `missing-prereq` or `skipped` — so a crashed script is
 never read as zero errors. With `--verdict` the per-component envelope also
-carries `audit` (depth, excuses, filters, Figma resolution, `aiLegs[]`). Gate on
+carries `audit` (depth, excuses, filters, Figma resolution). Gate on
 `verdict.mjs`, not on `ok` or `blockers`.
 
 ## Waves
@@ -309,7 +309,8 @@ them, and their findings are advisory at every depth (Decision 12 of
 
 ```bash
 yarn audit:component mud-button --depth standard             # run + verdict, exit = state
-node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # re-render a run, e.g. with advisory AI findings
+node scripts/audit/verdict.mjs --rerender mud-button          # re-render its current run, e.g. with advisory AI findings
+node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # the same, run named explicitly
 ```
 
 The only writer of `verdict.json`. It rebuilds the file from its inputs on every
@@ -331,12 +332,15 @@ run, so a hand-edited or model-written verdict never survives the next run.
   `deep` the headline says `ai-legs: advisory` — `PRODUCTION-READY` means the
   scripted rows passed.
 - **Re-render.** A leg that writes after the run is folded in with
-  `yarn audit:component --run-dir <runDir>`, where `<runDir>` is the component's
-  entry in `audit/_run/summary.json` — the repo-relative
-  `audit/<component>/runs/<run>` (absolute when `--audit-dir` is outside the
-  repo). `runDir` is kept out of `verdict.json` so that file is byte-identical
-  across runs; `--run-dir` accepts only that shape, under `--audit-dir` when one
-  is given. Every early exit of a fresh run (lock refusal, run-all crash,
+  `yarn audit:component --rerender <component>`, which looks that component's
+  current run up in `audit/_run/summary.json`. `--run-dir <path>` names the run
+  instead: it accepts only the repo-relative `audit/<component>/runs/<run>`
+  shape (absolute when `--audit-dir` is outside the repo), under `--audit-dir`
+  when one is given, and is REFUSED with exit 2 when the run it names is older
+  than the component's current one — re-rendering an old run would otherwise
+  replace the current verdict with a stale one and exit on the stale state.
+  `runDir` is kept out of `verdict.json` so that file is byte-identical across
+  runs. Every early exit of a fresh run (lock refusal, run-all crash,
   preflight) still prints a summary, with `components: []`.
 - **Not applicable.** A finding marked `notApplicable: true` (severity `info`)
   never moves `state`; its row carries the reason as `note` and the brief lists

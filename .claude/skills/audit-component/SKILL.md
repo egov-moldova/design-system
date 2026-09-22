@@ -13,8 +13,9 @@ synthesis over the results.
 
 ## Procedure
 
-1. **Run the audit** — unless a caller already ran the gate and handed over the component's `runDir`;
-   then skip to step 2 and never start a second fresh run.
+1. **Run the audit** — unless the invocation carries `--run-dir <path>`, which is a caller
+   saying it already ran the gate and naming the run to write into; then skip to step 2 and
+   never start a second fresh run.
 
    ```bash
    yarn audit:component <mud-name> --depth <quick|standard|deep> [--no-figma] [--no-browser]
@@ -34,10 +35,10 @@ synthesis over the results.
    components the worst state decides, and `audit/_run/summary.json` lists each one.
 2. **Read `audit/<component>/fix-brief.md`** — one block per non-PASS entry, each with its
    `verify:` command. `verdict.json` carries the same data for machines.
-3. **At `deep` only, run the AI legs** (§ AI legs) into the run's `runDir`
-   (`components[].runDir` in `audit/_run/summary.json`), then re-render the brief with
-   `node scripts/audit/verdict.mjs --run-dir <runDir>`: their findings land under "Advisory" and
-   the state does not change.
+3. **At `deep` only, run the AI legs** (§ AI legs) into the run's `runDir` (the `--run-dir`
+   argument, else `components[].runDir` in `audit/_run/summary.json`), then re-render the brief
+   with `node scripts/audit/verdict.mjs --rerender <component>`: their findings land under
+   "Advisory" and the state does not change.
 4. **Report the synthesis** ([report-template](references/report-template.md)): the headline
    line verbatim, the brief's path, cross-check correlations, and what was not verified.
 
@@ -129,8 +130,9 @@ A file with an unknown major `schemaVersion`, or a finding missing `severity` an
 verdict's notes. Every valid finding — `severity: "error"`, a `question` + `options`, anything —
 renders under "Advisory" and never changes the state, at any depth.
 
-When every leg has written its file, re-render: `node scripts/audit/verdict.mjs --run-dir <runDir>`
-— its exit is the unchanged state's.
+When every leg has written its file, re-render: `node scripts/audit/verdict.mjs --rerender <component>`
+— its exit is the unchanged state's. `--run-dir <path>` does the same for a named run and is
+refused when that run is older than the component's current one.
 
 ## Fix loop
 

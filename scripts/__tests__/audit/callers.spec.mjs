@@ -188,6 +188,40 @@ describe('callers: T5 / Decision 12 — --run-dir needs an envelope and re-rende
     runVerdict([writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx'))], dir);
     assert.equal(rerenderCli(['--recompute', 'mud-fx'], dir).status, 2);
   });
+
+  it('--run-dir naming a run older than the current one → exit 2, the verdict left standing', () => {
+    // The stale run FAILs and the current one PASSes, so a re-render of the
+    // old run would replace a PASS verdict with a FAIL and exit 1 on it.
+    const dir = auditDir();
+    const stale = writeRunDir(dir, FIXTURE_FOR_STATE.FAIL('mud-fx'), { run: 'run-1' });
+    runVerdict([stale], dir);
+    const current = writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx'), { run: 'run-2' });
+    assert.equal(runVerdict([current], dir).status, 0);
+
+    const res = rerenderCli(['--run-dir', stale], dir);
+    assert.equal(res.status, 2, res.stderr);
+    assert.match(res.stderr, /older than mud-fx's current run/);
+    assert.equal(JSON.parse(readFileSync(join(dir, 'mud-fx', 'verdict.json'), 'utf8')).state, 'PASS');
+    const summary = JSON.parse(readFileSync(join(dir, '_run', 'summary.json'), 'utf8'));
+    assert.match(summary.components[0].runDir, /run-2$/);
+  });
+
+  it('--rerender <component> resolves the current run from summary.json and re-renders it', () => {
+    const dir = auditDir();
+    const runDir = writeRunDir(dir, FIXTURE_FOR_STATE.FAIL('mud-fx'));
+    assert.equal(runVerdict([runDir], dir).status, STATE_EXIT_CODES.FAIL);
+    writeFileSync(join(runDir, 'envelope.json'), JSON.stringify(cleanEnvelope({ component: 'mud-fx' })));
+    const res = rerenderCli(['--rerender', 'mud-fx'], dir);
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(JSON.parse(res.stdout).state, 'PASS');
+  });
+
+  it('--rerender for a component the summary does not list → exit 2, not a state code', () => {
+    const dir = auditDir();
+    const res = rerenderCli(['--rerender', 'mud-fx'], dir);
+    assert.equal(res.status, 2);
+    assert.match(res.stderr, /run the audit first/);
+  });
 });
 
 describe('callers: Decision 11 — every early exit of a fresh run prints a summary with components: []', () => {
@@ -318,13 +352,31 @@ describe('callers: Decision 12 — deep runs the gate once; AI legs are advisory
   const freshGateLines = rel =>
     codeBlocks(readFile(rel))
       .flatMap(b => b.split('\n'))
-      .filter(l => l.includes('yarn audit:component') && !l.includes('--run-dir'));
+      .filter(l => l.includes('yarn audit:component') && !l.includes('--run-dir') && !l.includes('--rerender'));
+
+  /**
+   * Vocabulary of the two-phase `deep` flow Decision 12 removed. Each of these
+   * described a leg CLOSING a row the verdict had left open; under the advisory
+   * regime no such row exists, so a doc still carrying one describes machinery
+   * that is not there. The codes are the removed row ids, `aiLegs` the envelope
+   * field, and the phrase the behaviour itself.
+   */
+  const DEAD_DEEP_FLOW = [
+    'awaitingLegs',
+    '--recompute',
+    'ai-wcag',
+    'ai-media',
+    'ai-stencil',
+    'aiLegs',
+    'closes that row',
+  ];
 
   for (const rel of [...new Set([...GATE_CALLERS, ...LEGS, SKILL])]) {
-    it(`${rel} names neither awaitingLegs nor --recompute`, () => {
+    it(`${rel} names nothing from the removed two-phase deep flow`, () => {
       const text = readFile(rel);
-      assert.ok(!text.includes('awaitingLegs'), `${rel}: still names awaitingLegs`);
-      assert.ok(!text.includes('--recompute'), `${rel}: still names --recompute`);
+      for (const token of DEAD_DEEP_FLOW) {
+        assert.ok(!text.includes(token), `${rel}: still names "${token}" (Decision 12 removed it)`);
+      }
     });
   }
 
@@ -333,18 +385,39 @@ describe('callers: Decision 12 — deep runs the gate once; AI legs are advisory
       assert.equal(freshGateLines(rel).length, 1, freshGateLines(rel).join('\n'));
     });
 
-    it(`${rel} re-renders advisory legs with --run-dir, taking runDir from audit/_run/summary.json`, () => {
+    it(`${rel} re-renders advisory legs with --rerender, never a hand-substituted run path`, () => {
       const text = readFile(rel);
       assert.ok(
-        codeBlocks(text).some(b => /yarn audit:component --run-dir \S+/.test(b)),
-        `${rel}: no code block re-renders with --run-dir`,
+        codeBlocks(text).some(b => /yarn audit:component --rerender \S+/.test(b)),
+        `${rel}: no code block re-renders with --rerender`,
       );
-      assert.ok(text.includes('audit/_run/summary.json'), `${rel}: does not name audit/_run/summary.json`);
       assert.ok(!text.includes('verdict.runDir'), `${rel}: reads runDir from verdict.json`);
     });
   }
 
-  it('the skill never starts a second fresh run when a caller already ran the gate', () => {
-    assert.match(readFile(SKILL), /caller already ran the gate[^\n]*runDir/i);
+  // The rule "a caller that already ran the gate must not make the skill run a
+  // second one" lives in an ARGUMENT or it lives nowhere: the skill is a fresh
+  // context and reads only what the invocation hands it.
+  const SKILL_CALLERS = [...new Set([...GATE_CALLERS, ...DEEP_CALLERS])].filter(rel =>
+    readFile(rel).includes("Skill('audit-component'"),
+  );
+
+  it('at least one caller invokes the skill — otherwise the assertion below is vacuous', () => {
+    assert.ok(SKILL_CALLERS.length > 0);
+  });
+
+  for (const rel of SKILL_CALLERS) {
+    it(`${rel} passes --run-dir into its Skill('audit-component') invocation`, () => {
+      for (const call of readFile(rel).matchAll(/Skill\('audit-component',\s*\{([^}]*)\}\)/g)) {
+        assert.match(call[1], /--run-dir/, `${rel}: Skill() invocation carries no --run-dir: ${call[0]}`);
+      }
+    });
+  }
+
+  it('the skill treats --run-dir as the signal that the gate already ran', () => {
+    const text = readFile(SKILL);
+    const flag = text.indexOf('--run-dir');
+    const rule = text.indexOf('never start a second fresh run');
+    assert.ok(flag >= 0 && rule > flag, 'step 1 must name --run-dir as the condition for that rule');
   });
 });

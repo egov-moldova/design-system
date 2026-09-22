@@ -87,8 +87,11 @@ describe('fix-brief: one shape per state', () => {
     assert.ok(advisoryAt > 0);
     const block = assertShape(brief.slice(advisoryAt), v.advisory[0]);
     // Decision 12: an advisory finding is folded in by re-rendering the run the summary lists.
-    assert.match(block, /re-dispatch the a11y-verifier leg, then: yarn audit:component --run-dir /);
-    assert.match(block, /audit\/_run\/summary\.json/);
+    // Executable as written: the command names the component, and --rerender
+    // looks its current run up in summary.json — never a `<runDir>` the reader
+    // has to substitute by hand.
+    assert.match(block, /re-dispatch the a11y-verifier leg, then: yarn audit:component --rerender mud-fx`/);
+    assert.equal(/<run/.test(block), false);
     assert.doesNotMatch(brief, /--recompute/);
   });
 

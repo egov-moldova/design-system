@@ -61,7 +61,7 @@ never this agent. Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS,
   brief so their findings appear under "Advisory":
 
   ```bash
-  yarn audit:component --run-dir <runDir> --json
+  yarn audit:component --rerender <componentName> --json
   ```
 
 After the gate, only the JUDGMENT-heavy phases remain for AI, since the
@@ -117,7 +117,7 @@ If running without subagent support, fall back to the legacy serial 9-phase exec
 
 ## Phase 1: Code Quality & Architecture
 
-**Invoke**: `Skill('audit-component', { args: '<componentName> --depth deep' })` for the optional AI legs, including the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) leg — telling it the caller already ran the gate and the component's `runDir`, so it never starts a second fresh run. The phase 1 report inherits the gate's verdict (`audit/<componentName>/verdict.json` `rows` / `entries`) plus the skill's advisory findings.
+**Invoke**: `Skill('audit-component', { args: '<componentName> --depth deep --run-dir <components[].runDir from audit/_run/summary.json>' })` for the optional AI legs, including the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) leg. The `--run-dir` argument is what tells the skill the gate already ran and which run to write into; without it passed for real, "never start a second fresh run" is prose the skill cannot act on. The phase 1 report inherits the gate's verdict (`audit/<componentName>/verdict.json` `rows` / `entries`) plus the skill's advisory findings.
 
 Additionally verify these production-only items below.
 

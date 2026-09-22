@@ -13,7 +13,7 @@ the synthesis. The procedure is in [`../SKILL.md`](../SKILL.md).
 | `audit/<component>/verdict.json` | State, level, excuses, rows, entries, advisory. Rewritten from its inputs on every run; a hand-edited copy does not survive the next run. |
 | `audit/<component>/fix-brief.md` | The same entries as a self-contained brief for a fixing session. |
 | `audit/_run/summary.json` | Every component's state and headline, the worst state, each `runDir`. |
-| `audit/<component>/runs/<run>/envelope.json` | Run-all's inputs for that run, incl. `audit.aiLegs[]`. |
+| `audit/<component>/runs/<run>/envelope.json` | Run-all's inputs for that run. |
 | `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | One per AI leg; nothing else writes there. |
 
 The model never writes, edits or paraphrases a verdict. `verdict.json` holds nothing that varies

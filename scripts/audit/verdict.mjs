@@ -21,15 +21,18 @@
  * Usage:
  *   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
  *     Runs run-all.mjs with --verdict, then exits with the worst state's code.
+ *   node scripts/audit/verdict.mjs --rerender <component> [--rerender …] [--json]
+ *     Re-renders that component's current run (from audit/_run/summary.json), e.g.
+ *     to fold in the advisory ai-findings.json an AI leg wrote after the run.
  *   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--json]
- *     Re-renders the named runs' verdict and brief, e.g. to fold in the advisory
- *     ai-findings.json an AI leg wrote after the run.
+ *     The same, with the run named explicitly. Refused when the named run is not
+ *     the component's current one.
  *
  * Exit codes (lib/exit-codes.mjs STATE_EXIT_CODES): 0 PASS, 1 FAIL, 3 INCOMPLETE,
  * 4 NEEDS-DECISION, 2 usage / internal error. On several components the worst state decides.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -132,11 +135,12 @@ function verifyCommand(component, depth, id) {
 }
 
 /**
- * Re-renders a run with the advisory findings a leg wrote after it. A fixed
- * string (no run path), so verdict.json stays byte-identical across runs.
+ * Re-renders a run with the advisory findings a leg wrote after it. Names the
+ * component, never the run path, so the string is both executable as written
+ * and identical across runs — `--rerender` looks the run up in summary.json.
  */
-function rerenderCommand() {
-  return 'yarn audit:component --run-dir <runDir from audit/_run/summary.json>';
+function rerenderCommand(component) {
+  return `yarn audit:component --rerender ${component}`;
 }
 
 function freshRunCommand(component, depth) {
@@ -197,7 +201,7 @@ function aiFailOrDecision(f, leg, component) {
     check: `ai ${leg}`,
     component,
     source: `AI leg ${leg}`,
-    verify: `re-dispatch the ${leg} leg, then: ${rerenderCommand()}`,
+    verify: `re-dispatch the ${leg} leg, then: ${rerenderCommand(component)}`,
     owner: leg,
   });
 }
@@ -606,12 +610,14 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
 
 const USAGE = `Usage:
   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
+  node scripts/audit/verdict.mjs --rerender <component> [--rerender …] [--audit-dir <dir>] [--json]
   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--audit-dir <dir>] [--json]
 
 The first form runs run-all.mjs with --verdict and exits with the worst state's
-code; the second re-renders a run's verdict and fix brief from its inputs (e.g.
-after an AI leg wrote its advisory ai-findings.json) — its runDir is listed in
-audit/_run/summary.json. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
+code. The other two re-render a run's verdict and fix brief from its inputs (e.g.
+after an AI leg wrote its advisory ai-findings.json): --rerender looks the run up
+in audit/_run/summary.json, --run-dir names it and is refused when it is not the
+component's current run. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
 2 usage or internal error.`;
 
 /** Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested. */
@@ -681,6 +687,47 @@ function readSummaryFile(auditDir) {
   } catch {
     return null;
   }
+}
+
+/**
+ * The run `summary.json` currently lists for a component, absolute, or null
+ * when the file or the component is not there. Runs are kept, so a component
+ * directory holds older ones too; this names the one whose verdict is the
+ * component's. The single answer to "which run is current" — `--rerender`
+ * resolves through it and `--run-dir` is refused against it.
+ */
+export function currentRunDirFor(auditDir, component) {
+  const entry = (readSummaryFile(auditDir)?.components ?? []).find(c => c.component === component);
+  return entry?.runDir ? resolve(REPO_ROOT, entry.runDir) : null;
+}
+
+/** When a run's inputs were written — the envelope is written once, at the end of the run. */
+function runWrittenAt(runDirAbs) {
+  try {
+    return statSync(join(runDirAbs, 'envelope.json')).mtimeMs;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Refuse a `--run-dir` that names a run OLDER than the component's current
+ * one. Re-rendering it rewrites `verdict.json` from that run's inputs,
+ * replacing the current verdict with a stale one and exiting on the stale
+ * state — which a caller branching on the exit code then acts on. A newer run
+ * is how the current one is promoted in the first place, so only "older" is
+ * refused, and only when both timestamps are readable: an unknown age, an
+ * absent summary or a component the summary does not list leave no claim to
+ * contradict (a fresh clone, a pruned summary).
+ */
+export function staleRunDirReason(runDirAbs, auditDir) {
+  const abs = resolve(runDirAbs);
+  const component = basename(resolve(abs, '..', '..'));
+  const current = currentRunDirFor(auditDir, component);
+  if (!current || current === abs) return null;
+  const [named, currentAge] = [runWrittenAt(abs), runWrittenAt(current)];
+  if (named === null || currentAge === null || named >= currentAge) return null;
+  return `--run-dir names ${basename(abs)}, which is older than ${component}'s current run ${callerRunDir(current)} (audit/_run/summary.json). Re-rendering it would replace the current verdict with the older run's; pass --rerender ${component} to re-render the current one.`;
 }
 
 /**
@@ -783,13 +830,14 @@ function main() {
     process.stdout.write(`${USAGE}\n`);
     return 0;
   }
-  if (argv.includes('--run-dir')) {
+  if (argv.includes('--run-dir') || argv.includes('--rerender')) {
     let parsed;
     try {
       parsed = parseArgs({
         args: argv,
         options: {
           'run-dir': { type: 'string', multiple: true },
+          'rerender': { type: 'string', multiple: true },
           'json': { type: 'boolean', default: false },
           'audit-dir': { type: 'string' },
         },
@@ -805,6 +853,18 @@ function main() {
     };
     const auditRoot = parsed.values['audit-dir'] ? resolve(parsed.values['audit-dir']) : join(REPO_ROOT, 'audit');
     const runDirs = [...(parsed.values['run-dir'] ?? [])];
+    // `--rerender <component>` is `--run-dir` with the lookup done here: the
+    // entry's `verify` command names the component, which does not vary
+    // between runs, so verdict.json stays byte-identical.
+    for (const name of parsed.values.rerender ?? []) {
+      const component = normalizeComponentName(name);
+      if (!component) return usageError(`--rerender needs a component name (got "${name}")`);
+      const current = currentRunDirFor(auditRoot, component);
+      if (!current) {
+        return usageError(`--rerender ${component}: audit/_run/summary.json lists no run for it — run the audit first`);
+      }
+      runDirs.push(callerRunDir(current));
+    }
     for (const runDirArg of runDirs) {
       const check = validateRunDirArg(runDirArg, auditRoot);
       if (!check.ok) return usageError(check.reason);
@@ -813,6 +873,8 @@ function main() {
       if (!existsSync(join(runDirArg, 'envelope.json'))) {
         return usageError(`--run-dir has no envelope.json (got "${runDirArg}")`);
       }
+      const stale = staleRunDirReason(resolve(runDirArg), auditRoot);
+      if (stale) return usageError(stale);
     }
     return rerender(runDirs, parsed.values.json, auditRoot);
   }
