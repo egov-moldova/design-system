@@ -1297,6 +1297,12 @@ describe('run-all: the command pre-pr-check runs', () => {
       [join(REPO, 'scripts', 'audit', 'run-all.mjs'), '--depth', 'quick', '--changed', '--no-browser', '--json'],
       { cwd: REPO, encoding: 'utf8', env: { ...process.env, CI: '' } },
     );
+    // A shallow CI checkout has neither `main` nor `origin/main`, so `--changed`
+    // has nothing to diff against and run-all exits 2 naming the missing ref.
+    // That is the command working, not failing, and it produces no envelope —
+    // so the rest of this test has nothing to read. Matched on the message
+    // rather than on the code alone: a bare `exit 2` would let any crash pass.
+    if (res.status === 2 && /no base ref resolved/.test(res.stderr)) return;
     assert.ok([0, 1].includes(res.status), `exit ${res.status}: ${res.stderr}`);
     const envelope = JSON.parse(res.stdout);
     assert.equal(typeof envelope.ok, 'boolean');
