@@ -27,6 +27,12 @@ const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
 const queryOptions = (root: Element | null | undefined): HTMLElement[] =>
   Array.from(root?.shadowRoot?.querySelectorAll('.option') ?? []) as HTMLElement[];
 
+const queryGroups = (root: Element | null | undefined): HTMLElement[] =>
+  Array.from(root?.shadowRoot?.querySelectorAll('[role="group"]') ?? []) as HTMLElement[];
+
+const querySeparators = (root: Element | null | undefined): HTMLElement[] =>
+  Array.from(root?.shadowRoot?.querySelectorAll('[role="separator"]') ?? []) as HTMLElement[];
+
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 const setOptions = async (root: Element | null | undefined, opts: SelectOption[]) => {
@@ -556,6 +562,81 @@ describe('mud-select', () => {
       );
       await setOptions(root, baseOptions);
       expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['opt-1', 'opt-2', 'opt-3', 'opt-4']);
+    });
+  });
+
+  describe('groups and separators', () => {
+    const grouped = (
+      <mud-select label="Food">
+        <option value="none">Choose</option>
+        <hr />
+        <optgroup label="Fruit">
+          <option value="apple">Apples</option>
+          <option value="banana">Bananas</option>
+        </optgroup>
+        <hr />
+        <optgroup label="Meat">
+          <option value="beef">Beef</option>
+        </optgroup>
+      </mud-select>
+    );
+
+    it('wraps each optgroup in a named role="group"', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      const groups = queryGroups(root);
+      expect(groups).toHaveLength(2);
+
+      const names = groups.map(group => {
+        const id = group.getAttribute('aria-labelledby');
+        return root?.shadowRoot?.querySelector(`#${id}`)?.textContent?.trim();
+      });
+      expect(names).toEqual(['Fruit', 'Meat']);
+    });
+
+    it('keeps a group heading out of the option list', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      expect(queryOptions(root)).toHaveLength(4);
+    });
+
+    it('puts each group option inside its own group', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      const [fruit, meat] = queryGroups(root);
+      const values = (el: HTMLElement) =>
+        Array.from(el.querySelectorAll('.option')).map(o => o.getAttribute('data-value'));
+      expect(values(fruit)).toEqual(['apple', 'banana']);
+      expect(values(meat)).toEqual(['beef']);
+    });
+
+    it('numbers options across groups in document order', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-option-index'))).toEqual(['0', '1', '2', '3']);
+    });
+
+    it('drops rules that divide nothing', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <hr />
+          <option value="apple">Apples</option>
+          <hr />
+          <hr />
+          <option value="beef">Beef</option>
+          <hr />
+        </mud-select>,
+      );
+      await flush();
+      // Leading, doubled and trailing rules go; the one real divider stays.
+      expect(querySeparators(root)).toHaveLength(1);
+    });
+
+    it('drops a rule that would double a group heading rule', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      // Both <hr>s here sit against a heading, which draws its own rule.
+      expect(querySeparators(root)).toHaveLength(0);
     });
   });
 

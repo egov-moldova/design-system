@@ -3,7 +3,8 @@ import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, 
 
 import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
 import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
-import { entriesFromOptions, markupSelectedValue, readEntriesFromLightDom } from './mud-select.utils';
+import { entriesFromOptions, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
+import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
@@ -616,6 +617,32 @@ export class MudSelect {
     this.selectIndex(index);
   };
 
+  private renderOption = ({ option, index }: SelectRowOption, iconSize: 20 | 24) => {
+    const isSelected = option.value === this.value;
+    const isHighlighted = index === this.highlightedIndex;
+    return (
+      <div
+        id={`${this.listboxId}-opt-${index}`}
+        class={{
+          'option': true,
+          'is-selected': isSelected,
+          'is-highlighted': isHighlighted && !option.disabled,
+          'is-disabled': Boolean(option.disabled),
+        }}
+        role="option"
+        aria-selected={isSelected ? 'true' : 'false'}
+        aria-disabled={option.disabled ? 'true' : null}
+        data-option-index={index}
+        data-value={option.value}
+        onClick={option.disabled ? undefined : this.handleOptionClick(index)}
+        onMouseEnter={option.disabled ? undefined : this.handleOptionPointerEnter(index)}
+      >
+        <span class="option-label">{option.label}</span>
+        {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={iconSize} /> : null}
+      </div>
+    );
+  };
+
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
@@ -720,28 +747,20 @@ export class MudSelect {
                 No options
               </div>
             ) : (
-              opts.map((opt, index) => {
-                const isSelected = opt.value === this.value;
-                const isHighlighted = index === this.highlightedIndex;
+              toRows(this.entries).map((row, rowIndex) => {
+                if (row.kind === 'separator') return <div class="listbox-separator" role="separator"></div>;
+                if (row.kind === 'option') return this.renderOption(row, iconSize);
+
+                // `role="group"` needs a name, and the heading is it — a listbox
+                // child with no role of its own would otherwise be announced as
+                // one more option.
+                const headingId = `${this.listboxId}-group-${rowIndex}`;
                 return (
-                  <div
-                    id={`${this.listboxId}-opt-${index}`}
-                    class={{
-                      'option': true,
-                      'is-selected': isSelected,
-                      'is-highlighted': isHighlighted && !opt.disabled,
-                      'is-disabled': Boolean(opt.disabled),
-                    }}
-                    role="option"
-                    aria-selected={isSelected ? 'true' : 'false'}
-                    aria-disabled={opt.disabled ? 'true' : null}
-                    data-option-index={index}
-                    data-value={opt.value}
-                    onClick={opt.disabled ? undefined : this.handleOptionClick(index)}
-                    onMouseEnter={opt.disabled ? undefined : this.handleOptionPointerEnter(index)}
-                  >
-                    <span class="option-label">{opt.label}</span>
-                    {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={iconSize} /> : null}
+                  <div class="option-group" role="group" aria-labelledby={headingId}>
+                    <div class="group-heading" id={headingId} role="presentation">
+                      <span class="group-label">{row.label}</span>
+                    </div>
+                    {row.options.map(item => this.renderOption(item, iconSize))}
                   </div>
                 );
               })

@@ -271,6 +271,53 @@
   display: none;
 }
 
+/* ---------- groups + separators ---------- */
+
+/* A nested column rather than `display: contents`, whose role is still dropped
+   by some assistive technology — the group has to keep announcing itself. The
+   gap repeats the listbox's so grouped and loose options share one rhythm. */
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--select-listbox-gap);
+}
+
+.group-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--select-group-gap);
+  padding-inline: var(--select-group-padding-inline);
+  padding-block: var(--select-group-padding-block);
+}
+
+.group-label {
+  font-family: var(--select-group-font-family);
+  font-size: var(--select-group-font-size);
+  font-weight: var(--select-group-font-weight);
+  line-height: var(--select-group-line-height);
+  color: var(--select-group-color);
+}
+
+/* A heading carries its own rule, as the Figma Section Heading does. */
+.option-group::before {
+  block-size: var(--select-separator-thickness);
+  margin-block: var(--select-separator-margin-block);
+  background-color: var(--select-separator-color);
+  content: '';
+}
+
+/* A rule against the panel's rounded top edge divides nothing. */
+.option-group:first-child::before {
+  display: none;
+}
+
+.listbox-separator {
+  flex: none;
+  block-size: var(--select-separator-thickness);
+  margin-block: var(--select-separator-margin-block);
+  background-color: var(--select-separator-color);
+}
+
 .listbox-empty {
   padding: var(--spacing-8) var(--spacing-12);
   font-size: var(--_option-font-size);
