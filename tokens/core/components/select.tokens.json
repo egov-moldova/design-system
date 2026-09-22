@@ -232,6 +232,45 @@
         }
       },
       "checkColor": { "$value": "{color.icon.brand.default}", "$type": "color" }
+    },
+    "group": {
+      "paddingInline": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Mirrors menu.heading.paddingInline so a group label aligns with the option labels below it."
+      },
+      "paddingBlock": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Mirrors menu.heading.paddingBlock; also the margin around the rule a heading draws."
+      },
+      "gap": { "$value": "{spacing.4}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "color": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color",
+        "$comment": "Mirrors menu.heading.color — Figma Section Heading label #757575."
+      }
+    },
+    "separator": {
+      "color": {
+        "$value": "{color.border.base.default}",
+        "$type": "color",
+        "$comment": "Mirrors menu.heading.separatorColor — the rule drawn by <hr> and above a group heading."
+      },
+      "thickness": {
+        "$value": "1px",
+        "$type": "dimension",
+        "$comment": "Figma Section Heading separator is a 1px divider."
+      },
+      "marginBlock": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Matches select.listbox.gap so a rule keeps the option rhythm."
+      }
     }
   }
 }
