@@ -96,8 +96,13 @@ Recommendation: A — it fails closed exactly where the input is broken and keep
    (so a direct `run-all` call — including a fix brief's own `verify:` command — holds it while
    it runs prerequisites and writes `dist/`) and by `--run-dir` recompute (it writes the same
    `_run/summary.json` and `verdict.json`); the fresh `verdict.mjs` path gets it through
-   `runAudit`. No self-block: a fresh run releases the lock before any leg is dispatched. One
-   lock closes all three races (summary, Storybook record, `dist/`).
+   `runAudit`. The fresh path takes it in `runFresh` itself, around deleting `_run/summary.json`
+   and `_run/envelope.json`, spawning run-all and reading the summary, and hands ownership to the
+   child through an env token (`AUDIT_LOCK_TOKEN`) that `runAudit` honours instead of taking a
+   second lock. The lock is rooted at the repo root (injectable for tests), never at
+   `--audit-dir`, because `dist/` and the Storybook record are per worktree. No self-block: a
+   fresh run releases the lock before any leg is dispatched. One lock closes all three races
+   (summary, Storybook record, `dist/`).
 4. R10 → Phase 2 compares A4's reserved set with the set `@stencil/reserved-member-names`
    enforces (read from the installed plugin source, cite file:line). Equal or A4 ⊆ eslint →
    delete A4 and map P11 to eslint; A4 covers names eslint does not → keep A4 for that
@@ -107,24 +112,39 @@ Recommendation: A — it fails closed exactly where the input is broken and keep
    target resolved; prerequisite named per script). The seven emit sites today:
    `A11Y-NO-STORY` (09), `CONTRAST-NO-STORY` (10), `PIXEL-NO-STORIES` (11),
    `CONSOLE-NO-STORIES` (12), `INTERACTION-NO-STORY` (19), `COVERAGE-COMPONENT-MISSING` (06),
-   `TOKEN-DIFF-NO-CURRENT` (13). Not a FAIL, because the fix is a missing input.
+   `TOKEN-DIFF-NO-CURRENT` (13), plus `TOKEN-DIFF-NO-FIGMA-EXPORT` (13), `PIXEL-NO-REFERENCES`
+   (11) and BX4's overlay-did-not-open case (19) — ten in all. The shared `finding()` builder
+   (`lib/json-output.mjs:262`) copies a fixed field list, so it gains `noTarget` first. Not a
+   FAIL, because the fix is a missing input.
 6. S11 → keep one vitest coverage run (one startup), add `--coverage.reportOnFailure` and a
    JSON test reporter (`--reporter=json --outputFile=<run dir>/vitest-results.json`). Failed spec
    files map to their component by path (`src/components/<name>/`); that component's 06 row gets
    an error finding `COVERAGE-TESTS-FAILED` (a FAIL owned by the fixer, pointing at the failing
    spec); every other component's 06 reads its own entry from the one summary as today.
-   Per-component `reportsDirectory` was rejected: N vitest startups on `--all`/`--changed`.
+   The prerequisite is `ok` iff the results JSON parsed and (vitest exited 0, or every failed
+   spec maps to a selected component); otherwise `missing-prereq` — a vitest crash that writes no
+   JSON never lets 06 read a stale summary. Results go to `audit/_run/vitest-results.json` (the
+   run dir does not exist yet when prerequisites run). Per-component `reportsDirectory` was
+   rejected: N vitest startups on `--all`/`--changed`.
 7. R2 → the binding is the opened row's recorded hash vs. a re-hash of the current sources at
    recompute; the leg's own `inputHash` is no longer consulted (a self-report adds nothing once
-   the recompute re-hashes). The source walk and `hashLegInput` move from `run-all.mjs` to a new
-   `lib/leg-input.mjs` (run-all imports verdict.mjs, so verdict importing run-all would cycle);
+   the recompute re-hashes). The source walk, `hashLegInput` and the leg→prompt table (today in
+   `AUDIT_SCRIPTS`, run-all.mjs:303-321) move to a new `lib/leg-input.mjs`, so `verdict.mjs`
+   never imports `run-all.mjs` (which pulls in figma-refs and the whole registry);
    `readRunInputs` computes the current hashes and passes them into the pure `computeVerdict`.
-8. S9 → `verdict.mjs` validates the run-all flags before spawning, with the parser `run-all.mjs`
-   exports (`parseCli` / `resolveDepth`), and exits 2 on a usage error. A summary-less run-all
+   A row left open because its hash no longer matches is not "awaiting legs" (Decision 1):
+   `awaitingLegs` is false there and the entry says to start a fresh run.
+8. S9 → `parseCli` and its usage text move from `run-all.mjs` to `lib/cli-args.mjs`, beside
+   `resolveDepth`; `verdict.mjs` validates the run-all flags with it before spawning and exits 2
+   on a usage error. A summary-less run-all
    exit stays INCOMPLETE / 3 (a crash), unchanged.
 9. S5's detector → a new `detectChangedComponents()` in `lib/changed-components.mjs` returns
    `{ ok, cause, names }`; `listChangedComponents()` stays a wrapper returning `names`, so the 16
    standalone scripts that call it are untouched.
+10. Callers read one field of `verdict.json` — `awaitingLegs` — besides the exit status. This is
+   a stated carve-out from the parent plan's Design §1 ("callers branch on the verdict's exit
+   status, never on their own reading of the verdict"): the field is computed by the verdict, not
+   re-derived by the caller. `callers.spec.mjs`'s header records it.
 
 ## Acceptance bar
 
@@ -139,15 +159,18 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
 - S3 (`verdict.spec.mjs`): a question-shaped AI finding at quick/standard renders as an
   advisory decision entry and never throws; at deep it yields NEEDS-DECISION.
 - S4 (`verdict.spec.mjs`, `callers.spec.mjs`): `awaitingLegs` is true only when state is
-  INCOMPLETE, the INCOMPLETE list is non-empty, and every entry is an opened `ai-*` row; a PASS
-  fixture and a FAIL fixture assert `false`. `callers.spec.mjs` asserts each deep caller names
+  INCOMPLETE, the INCOMPLETE list is non-empty, and every entry is an opened `ai-*` row whose
+  hash still matches. Fixtures: only opened `ai-*` rows INCOMPLETE → `true`; opened `ai-*` rows
+  plus one non-ai INCOMPLETE entry → `false`; an `ai-*` row open on a stale hash → `false`;
+  PASS and FAIL → `false`. `callers.spec.mjs` asserts each deep caller names
   `awaitingLegs` and `--run-dir` and no longer says "re-run the gate above".
 - S5 (`verdict.spec.mjs`, `lib-changed-components.spec.mjs`): zero selected + nothing changed →
   PASS with the note on stdout; zero selected + a 03 error → FAIL; a failing git in
   `detectChangedComponents` → INCOMPLETE exit 3.
-- S6 (`verdict.spec.mjs`, per-script specs): a `noTarget: true` finding on a required row →
-  INCOMPLETE; each of the seven emit sites in Decision 5 carries `noTarget: true` (one assertion
-  per script spec, or a source test that parses each site's finding object).
+- S6 (`verdict.spec.mjs`, `lib-json-output.spec.mjs`, per-script specs): `finding({noTarget:
+  true})` emits the field; a `noTarget: true` finding on a required row → INCOMPLETE; each of the
+  ten sites in Decision 5 is asserted on the finding object as emitted through `finding()` (the
+  script's exported function or its `--json` output), never on source text.
 - S7 (`fix-brief.spec.mjs`): every interpolated string in `renderFixBrief` (entry fields, `code`,
   headline, excused and override sections) renders on one line; a value containing `\n### F99`
   leaves the brief's `###` heading count equal to its entry count.
@@ -160,20 +183,23 @@ Zero-tolerance (graded by `yarn test:scripts`; each line has at least one test t
 - S10 (`run-all.spec.mjs`): prerequisites ok + script crash → `crashed`, not `missing-prereq`.
 - S11 (`run-all.spec.mjs`): a JSON-reporter fixture with one failed spec under
   `src/components/mud-b/` → only mud-b's 06 row carries `COVERAGE-TESTS-FAILED`; mud-a reads its
-  coverage from the summary file the test writes to a real path (not a stubbed `runCommand`).
+  coverage from the summary file the test writes to a real path (not a stubbed `runCommand`);
+  a vitest exit with no results JSON → every selected 06 `missing-prereq`.
 - S12 (`19-interaction.spec.mjs`): pure `countRenderedChildren(nodes)` excludes
-  `[data-audit-no-motion]`; pure `judgeBx4Opened(state)` — opened means the host's `open` property
-  is `true` or a `dialog[open]` / `[role="dialog"]` element is visible — and BX4 records
-  `not-applicable` with the reason when it is false; `judgeBx7(submitted, expected)` fails when
+  `[data-audit-no-motion]`; pure `judgeBx4Opened(state)` judges rendered evidence only — a
+  `dialog[open]`, a `:popover-open` element, or a visible `[role=dialog|listbox|menu]` in the
+  shadow or light tree (never the host's `open` property, which the audit itself sets) — and
+  when it is false BX4 emits a `noTarget` finding (INCOMPLETE), not `not-applicable`; `judgeBx7(submitted, expected)` fails when
   the submitted value ≠ the value set. `page.evaluate` bodies call only these.
-- S13 (`grep -c "schemaVersion 1\.2\.0\|SCHEMA_VERSION = '1\.2\.0'" scripts/audit/lib/json-output.mjs`
-  → 2, and `grep -c '"schemaVersion": "1\.1\.0"' scripts/audit/lib/json-output.mjs` → 0).
-- S14 / R1 (`grep -c "audit-storybook.json" .claude/agents/a11y-verifier.md
+- S13 (graded by its own commands: `grep -c "SCHEMA_VERSION = '1\.2\.0'" scripts/audit/lib/json-output.mjs`
+  → 1, `grep -c "schemaVersion 1\.2\.0" scripts/audit/lib/json-output.mjs` → ≥1, and `grep -c '"schemaVersion": "1\.1\.0"' scripts/audit/lib/json-output.mjs` → 0).
+- S14 / R1 (graded by its own commands: `grep -c "audit-storybook.json" .claude/agents/a11y-verifier.md
   .claude/agents/pixel-perfect-verifier.md` → ≥1 each; `grep -c "on port 6007\|Storybook on 6007"`
   over both → 0): both legs take the port from the worktree record, and the pixel-perfect
   procedure passes `--port` and reads the HEAD manifest.
-- Every R-row (`awk '/^#### Phase . results/,/^### /' .claude/plans/2026-09-22-audit-depths-sentinel-fixes.md | grep -oE 'R(1[01]|[1-9])\b' | sort -u | wc -l`
-  → 11): each R-row fixed with a test, or given a one-line disposition, in a `#### Phase N results`.
+- Every R-row (graded by its own command: `grep -oE '^- R(1[01]|[1-9]): (fixed|deferred|dropped) — ' .claude/plans/2026-09-22-audit-depths-sentinel-fixes.md | sort -u | wc -l`
+  → 11): the Phase 4 controller writes one line per R-row, in that exact shape, under
+  `#### Phase 4 results`, citing the test or the reason.
 - Regression floor: `yarn test:scripts` all pass, `yarn test` all pass, `yarn lint` clean,
   `node scripts/audit/seeded-defects.mjs` 4/4, two `--depth standard` runs on `mud-banner`
   byte-identical `verdict.json` (`cmp`), `quick` on `mud-button` median over n=5 runs
@@ -236,6 +262,7 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - Modify: `scripts/audit/verdict.mjs`
 - Modify: `scripts/audit/run-all.mjs`
 - Create: `scripts/audit/lib/leg-input.mjs`
+- Modify: `scripts/audit/lib/cli-args.mjs`
 - Modify: `scripts/audit/lib/fix-brief.mjs`
 - Modify: `scripts/audit/lib/json-output.mjs`
 - Modify: `scripts/audit/lib/figma-manifest.mjs`
@@ -250,16 +277,18 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] S2 empty values render `(empty)`. Verify: acceptance S2.
 - [ ] S3 question-shaped AI finding → decision entry. Verify: acceptance S3.
 - [ ] S4 `awaitingLegs` computed and written. Verify: acceptance S4 (verdict half).
-- [ ] S6 verdict maps `noTarget: true` → INCOMPLETE (Decision 5); such findings never also
-  appear under R4's warnings. Verify: acceptance S6 (verdict half).
+- [ ] S6 `finding()` accepts and emits `noTarget`; the verdict maps `noTarget: true` →
+  INCOMPLETE (Decision 5); such findings never also appear under R4's warnings. Verify:
+  acceptance S6 (builder and verdict halves).
 - [ ] S7 one single-line helper applied to every interpolation in `renderFixBrief`. Verify:
   acceptance S7.
 - [ ] S8 `--run-dir` shape rooted at `--audit-dir`. Verify: acceptance S8.
 - [ ] S9 flags validated before spawning (Decision 8). Verify: acceptance S9.
 - [ ] S13 envelope doc says 1.2.0 and what 1.1.0 / 1.2.0 each added in prose that does not
   repeat the `"schemaVersion": "1.1.0"` example. Verify: acceptance S13.
-- [ ] R2 per Decision 7 (`lib/leg-input.mjs`, re-hash in `readRunInputs`); a mismatch leaves the
-  row unclosed with cause "source changed since run <run>".
+- [ ] R2 per Decision 7 (`lib/leg-input.mjs` with the leg→prompt table, re-hash in
+  `readRunInputs`); a mismatch leaves the row unclosed with cause "source changed since run
+  <run> — start a fresh run", and `awaitingLegs` is false.
 - [ ] R4 `verdict.json` carries a `warnings` list; the brief renders "Warnings (non-blocking)"
   with row and verify command; state unchanged.
 - [ ] R7 `AI_LEG_STATUS` frozen enum used at every site.
@@ -301,17 +330,18 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 
 - [ ] S5 zero selection per Decision 2 and Decision 9 (`writeSummary`, `printSummary`,
   repo-level rows into the summary state). Verify: acceptance S5.
-- [ ] S6 the seven emit sites carry `noTarget: true` (Decision 5). Verify: acceptance S6
-  (script half).
+- [ ] S6 the ten sites carry `noTarget: true` (Decision 5). Verify: acceptance S6 (script
+  half).
 - [ ] S10 crash vs missing-prereq. Verify: acceptance S10.
 - [ ] S11 per Decision 6; confirm `--coverage.reportOnFailure` and the JSON reporter options in
   the installed Vitest (cite file:line) before relying on them. Verify: acceptance S11.
 - [ ] S12 extract `countRenderedChildren`, `judgeBx4Opened`, `judgeBx7`. Verify: acceptance S12.
-- [ ] R3 lock per Decision 3; tests: a second fresh run is refused while the first holds the
-  lock; a stale lock (dead pid, or matching pid with a different start time) is taken over;
-  `--run-dir` recompute takes and releases it.
-- [ ] R5 support: `runFresh` removes a stale `audit/_run/envelope.json` beside `summary.json`
-  before spawning.
+- [ ] R3 lock per Decision 3 (in `runFresh` with the env-token hand-off, and in `runAudit`);
+  tests: two concurrent fresh runs → the second is refused and the first's summary survives; a
+  stale lock (dead pid, or matching pid with a different start time) is taken over; `--run-dir`
+  recompute takes and releases it.
+- [ ] R5 support: `runFresh` removes a stale `audit/_run/envelope.json` beside `summary.json`,
+  inside the lock (Decision 3).
 - [ ] R6 extract 09's BX2/BX3 status assembly into a pure function with tests; add the
   `figmaDir` + absent + waiver `selectScripts` case.
 - [ ] R9 the start time is written where `.audit-storybook.json` is written
@@ -334,7 +364,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - Modify: `scripts/__tests__/audit/callers.spec.mjs`
 
 - [ ] S4 deep callers: exit 3 + `awaitingLegs` → dispatch legs → `--run-dir <run>` → stop on
-  non-zero; remove "re-run the gate above". Verify: acceptance S4 (callers half).
+  non-zero; exit 3 without it → stop; remove "re-run the gate above"; `callers.spec.mjs`'s
+  header records Decision 10's carve-out. Verify: acceptance S4 (callers half).
 - [ ] S14 + R1 port from `.audit-storybook.json`, `--port` passed, HEAD manifest read. Verify:
   acceptance S14 / R1.
 - [ ] R2 follow-through: the three leg contracts (`a11y-verifier.md`, `pixel-perfect-verifier.md`,
@@ -361,6 +392,8 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
   is automated), R4 (warnings section), S11 (`COVERAGE-TESTS-FAILED`), R10's recorded outcome
   (the SKILL.md:168 and wave-2 mapping rows).
 - [ ] Regression floor from the acceptance bar; record numbers under `#### Phase 4 results`.
+- [ ] Write the eleven `- R<n>: fixed|deferred|dropped — <test or reason>` lines under
+  `#### Phase 4 results` (Phases 1–3 own the work; this controller records it).
 - [ ] Grade: `scope-check.mjs` per phase, `/code-review`, then fresh-eyes verify against this plan.
 - [ ] `dan-sentinel` round 2 over `e63c311..HEAD`; APPROVE or APPROVE-WITH-NITS with nits
   recorded → `gh pr ready 115 --repo egov-moldova/design-system` (owner asked for this).
@@ -382,6 +415,9 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
   proven by fixtures and caller-text assertions only.
 - Findings S8–S12 and R2–R3 were found by reading code, not reproduced; each task's first test
   is the reproduction.
+- Decision 5's sites are still an enumeration (ten, found by two review rounds). A structural
+  backstop — each script reports a `checked` count and a required row with zero checked items is
+  INCOMPLETE — would catch the next one; deferred, one meta field per script.
 - AI legs keep unrestricted Bash; the write target for `ai-findings.json` is bounded by prompt
   convention only. Pre-existing, out of this plan's scope (preflight leg 2, finding 2); a
   separate hardening issue.
@@ -391,7 +427,7 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 | # | Question | Instance + fix, or no instance + what was scanned |
 |---|---|---|
 | 1 | Does a fix reuse the defect's own mechanism class? | S6's allowlist relies on each script naming its no-target code; a new script with a new code would be `ok` again — the same silent pass. Round 2 showed a code list is itself a naming convention (it already missed two codes); fix: Decision 5 moves the mechanism to a `noTarget` finding field set at each emit site, with a per-site assertion. R2 drops the leg-supplied hash from the trust path entirely (Decision 7): the recompute re-hashes the sources and compares with the opened row. S4's `awaitingLegs` is a field, but whether a caller obeys it stays prose — the parent plan's accepted limit, restated under Not verified. |
-| 2 | Can a rule's letter be met with its intent violated? | S5: "detector failure → INCOMPLETE" is met vacuously if `listChangedComponents` keeps returning `[]` on a failed `git diff`. Fix: Phase 2 S5 task makes the detector return its status, and the test drives a failing git. S4: `awaitingLegs` must be false when any non-`ai-*` row is INCOMPLETE — acceptance S4 says "iff". |
+| 2 | Can a rule's letter be met with its intent violated? | S5: "detector failure → INCOMPLETE" is met vacuously if `listChangedComponents` keeps returning `[]` on a failed `git diff`. Fix: Phase 2 S5 task makes the detector return its status, and the test drives a failing git. S4: `awaitingLegs` must be false when any non-`ai-*` row is INCOMPLETE or an `ai-*` row is open on a stale hash — acceptance S4 now carries a positive fixture and those two negative ones (round 3 showed "true only when" alone passes a constant `false`). |
 | 3 | Every numeric target has a denominator, a minimum n and an instrument outside what it grades? | The only number is the quick median; it had no n. Fix: acceptance floor now says n=5 and names the instrument. Byte-identity is a boolean over two runs, instrument `cmp`. |
 | 4 | Do two of the plan's own rules interact into an unintended pass? | S6 (no-target → INCOMPLETE) × browser waiver: a waived browser row never runs, so it emits no code and stays excused — intended. S3 (question → decision entry) × S4 (`awaitingLegs`): at deep a question closes its row as NEEDS-DECISION, so `awaitingLegs` is false — intended. R3 (lock) × S4 (`--run-dir`): recompute takes the lock too (it writes the same summary and verdict); it cannot self-block because the fresh run released the lock before the legs were dispatched — a test pins take-and-release (Phase 2 R3). R5 × S6: gating `pre-pr-check` on the envelope's `ok` would miss `noTarget` INCOMPLETE — so R5 branches on the verdict's exit status. R4 (warnings) × S6: a no-target code would appear twice — fixed by the S6 task's "never also listed". |
 
@@ -414,3 +450,13 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
   field covering 06 and 13 too (Decision 5); S12 names its pure extractions; S7 covers every
   interpolation; the R-row and S14 checks are runnable commands; R9 writes the start time where
   the record is written.
+- 2026-09-22 critic 938c59a (round 3, the cap): FORTIFY, 11 findings, all folded. Above the bar:
+  S4's bar passed a constant `false` (positive and mixed fixtures added); the R-row count read
+  the logs (fixed line shape, written by the Phase 4 controller); `finding()` drops `noTarget`
+  (builder task added, scripts graded on emitted findings); BX4's `open`-prop predicate was true
+  by construction (rendered evidence only, not-opened → `noTarget`). Beyond, folded: the lock
+  covers `runFresh` with an env-token hand-off, rooted at the repo; the leg→prompt table moves
+  to `lib/leg-input.mjs`; `parseCli` moves to `lib/cli-args.mjs`; the coverage prerequisite's
+  gate is stated and a no-JSON crash handled; stale-hash rows are not awaiting legs; Decision 10
+  records the callers carve-out; two more no-target sites; S13's count loosened. The structural
+  `checked`-count backstop is deferred (§ Not verified).
