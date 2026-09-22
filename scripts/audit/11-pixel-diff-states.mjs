@@ -368,6 +368,7 @@ async function analyzeStories(target, opts) {
             ? `figma reference dir not found: ${figmaDir}`
             : `No manifest at ${relativeToRepo(manifestPathFor(target.name))} and no --figma-dir.`,
           fix: 'Create the manifest (see .claude/skills/pixel-perfect/SKILL.md), then run scripts/audit/figma-refs.mjs.',
+          noTarget: true,
         }),
       ],
       states: [],
@@ -383,6 +384,7 @@ async function analyzeStories(target, opts) {
           code: 'PIXEL-NO-STORIES',
           file: relativeToRepo(target.paths.stories),
           message: `No stories file found for ${target.name}; nothing to capture.`,
+          noTarget: true,
         }),
       ],
       states: [],

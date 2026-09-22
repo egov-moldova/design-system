@@ -41,6 +41,7 @@ import os from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT } from './lib/component-paths.mjs';
+import { getProcessStartTime } from './lib/storybook-helpers.mjs';
 
 const TOOL = 'seeded-defects';
 
@@ -188,7 +189,32 @@ function seedFigmaCache(tmpDir, component) {
   return true;
 }
 
-function stopStorybook(tmpDir) {
+/**
+ * R9: whether a recorded pid should be signalled — never a bare pid match,
+ * which a process the OS has since recycled that number for would also
+ * satisfy. `record.startTime` (written by `ensureWorktreeStorybook`,
+ * `lib/storybook-helpers.mjs`, via `ps -o lstart= -p`) is compared against
+ * the CURRENT start time of that pid, read the same way. A legacy record
+ * with no `startTime` at all is signalled anyway (there is nothing to
+ * compare against) and the fact is logged, never silently assumed safe.
+ * Pure — exported for tests.
+ *
+ * @returns {{ signal: true, reason?: string } | { signal: false, reason: string }}
+ */
+export function shouldSignalRecordedPid(record, currentStartTime) {
+  if (!record?.pid) return { signal: false, reason: 'no pid in record' };
+  if (!record.startTime) return { signal: true, reason: 'legacy record with no startTime — signalling anyway' };
+  if (currentStartTime === null) return { signal: false, reason: 'pid is not running (no current start time)' };
+  if (currentStartTime !== record.startTime) {
+    return { signal: false, reason: `pid ${record.pid} was reused (start time differs) — not signalling` };
+  }
+  return { signal: true };
+}
+
+function stopStorybook(
+  tmpDir,
+  { startTimeOf = getProcessStartTime, log = m => process.stderr.write(`${TOOL}: ${m}\n`) } = {},
+) {
   const recordPath = join(tmpDir, '.audit-storybook.json');
   if (!existsSync(recordPath)) return;
   let record;
@@ -197,7 +223,12 @@ function stopStorybook(tmpDir) {
   } catch {
     return;
   }
-  if (!record?.pid) return;
+  const decision = shouldSignalRecordedPid(record, record?.pid ? startTimeOf(record.pid) : null);
+  if (!decision.signal) {
+    if (decision.reason) log(decision.reason);
+    return;
+  }
+  if (decision.reason) log(decision.reason);
   for (const signal of ['SIGTERM', 'SIGKILL']) {
     try {
       process.kill(record.pid, signal);

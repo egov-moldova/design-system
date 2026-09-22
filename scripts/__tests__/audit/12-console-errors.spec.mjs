@@ -6,8 +6,31 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import { classifyMessage } from '../../audit/12-console-errors.mjs';
+import { classifyMessage, analyzeComponent } from '../../audit/12-console-errors.mjs';
+
+describe('12-console-errors: S6 — CONSOLE-NO-STORIES carries noTarget (Decision §5)', () => {
+  it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'console-no-stories-'));
+    const storiesPath = join(dir, 'mud-fx.stories.ts');
+    writeFileSync(storiesPath, '// no exports\n');
+    const target = {
+      found: true,
+      name: 'mud-fx',
+      bare: 'fx',
+      exists: { stories: true },
+      paths: { stories: storiesPath },
+    };
+    const { findings } = await analyzeComponent(target, {});
+    const f = findings.find(x => x.code === 'CONSOLE-NO-STORIES');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
 
 describe('12-console-errors: classifyMessage', () => {
   it('classifies error messages as error', () => {

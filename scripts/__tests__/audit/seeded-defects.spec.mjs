@@ -1,6 +1,42 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { briefContainsEntry, findMatchingEntry, parseVerifyCommand } from '../../audit/seeded-defects.mjs';
+import {
+  briefContainsEntry,
+  findMatchingEntry,
+  parseVerifyCommand,
+  shouldSignalRecordedPid,
+} from '../../audit/seeded-defects.mjs';
+
+// ─── R9: shouldSignalRecordedPid — pid-reuse ownership check ──────────────
+
+test('shouldSignalRecordedPid: signals when the current start time matches the recorded one', () => {
+  const record = { pid: 123, startTime: 'Mon Sep 22 10:00:00 2026' };
+  assert.equal(shouldSignalRecordedPid(record, 'Mon Sep 22 10:00:00 2026').signal, true);
+});
+
+test('shouldSignalRecordedPid: refuses when the pid was reused (start time differs)', () => {
+  const record = { pid: 123, startTime: 'Mon Sep 22 10:00:00 2026' };
+  const decision = shouldSignalRecordedPid(record, 'Tue Sep 23 09:00:00 2026');
+  assert.equal(decision.signal, false);
+  assert.match(decision.reason, /reused/);
+});
+
+test('shouldSignalRecordedPid: refuses when the pid is not currently running', () => {
+  const record = { pid: 123, startTime: 'Mon Sep 22 10:00:00 2026' };
+  assert.equal(shouldSignalRecordedPid(record, null).signal, false);
+});
+
+test('shouldSignalRecordedPid: a legacy record with no startTime is signalled anyway, with the fact logged', () => {
+  const record = { pid: 123 };
+  const decision = shouldSignalRecordedPid(record, 'anything');
+  assert.equal(decision.signal, true);
+  assert.match(decision.reason, /legacy record/);
+});
+
+test('shouldSignalRecordedPid: refuses a record with no pid at all', () => {
+  assert.equal(shouldSignalRecordedPid({}, null).signal, false);
+  assert.equal(shouldSignalRecordedPid(null, null).signal, false);
+});
 
 test('parseVerifyCommand splits a node command into argv', () => {
   const { args } = parseVerifyCommand('node scripts/audit/run-all.mjs mud-banner --depth standard --only 02 --json');

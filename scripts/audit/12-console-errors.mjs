@@ -146,6 +146,7 @@ export async function analyzeComponent(target, { baseUrl, warnAsFinding, explici
           code: 'CONSOLE-NO-STORIES',
           file: relativeToRepo(target.paths.stories),
           message: `No stories found for ${target.name}; nothing to audit.`,
+          noTarget: true,
         }),
       ],
       storiesVisited: 0,

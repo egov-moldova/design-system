@@ -163,6 +163,7 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
           code: 'INTERACTION-NO-STORY',
           file: relativeToRepo(target.paths.stories),
           message: `Could not infer a story id for ${target.name}. Pass --story-id explicitly.`,
+          noTarget: true,
         }),
       ],
       checks: null,
@@ -199,9 +200,29 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
     // tell "ran, nothing found" apart from "did not apply here".
     if (isBx4Applicable(contract)) {
       const bx4Data = await runBx4(page, target.name, contract);
-      checks.bx4 = bx4Data;
-      const bx4Finding = judgeBx4Escape(bx4Data);
-      if (bx4Finding) findings.push(finding(bx4Finding));
+      if (bx4Data.opened === false) {
+        // S12: an overlay method that ran but produced no rendered change is a
+        // missing input (the open path could not be exercised), never a
+        // not-applicable component that happens to declare a popup surface.
+        if (bx4Data.declaresPopup) {
+          checks.bx4 = { status: 'incomplete', reason: 'the open method/prop produced no rendered change' };
+          findings.push(
+            finding({
+              severity: 'warning',
+              code: 'INTERACTION-BX4-NOT-OPENED',
+              message:
+                'Component declares an overlay/popup surface but the open method/prop produced no rendered change.',
+              noTarget: true,
+            }),
+          );
+        } else {
+          checks.bx4 = notApplicable('open method/prop produced no rendered change and no popup surface is declared');
+        }
+      } else {
+        checks.bx4 = bx4Data;
+        const bx4Finding = judgeBx4Escape(bx4Data);
+        if (bx4Finding) findings.push(finding(bx4Finding));
+      }
       await applyNoMotionStyle(page); // re-inject: BX4 may have rendered new shadow content.
     } else {
       checks.bx4 = notApplicable('component is not OVERLAY archetype and has no open/close/toggle @Method');
@@ -233,18 +254,33 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
 
 // ─── BX1 — hydration ────────────────────────────────────────────────────────
 
+/**
+ * Count of rendered children, excluding the audit's own injected
+ * `[data-audit-no-motion]` style tag (`applyNoMotionStyle`, 09-a11y-tree.mjs)
+ * — before this (S12), that tag inflated `childCount` by one for every host
+ * whose shadow root it was injected into, so a component rendering nothing
+ * else still "hydrated" with a non-zero count. Pure — exported for tests.
+ * `nodes` is the list of `{ noMotionMark }` descriptors `captureHydration`
+ * collects in the browser (light + shadow children); the browser-side
+ * `page.evaluate` only describes each node, it never counts or filters.
+ */
+export function countRenderedChildren(nodes) {
+  return (nodes ?? []).filter(n => !n?.noMotionMark).length;
+}
+
 async function captureHydration(page, componentName) {
   await page.waitForSelector(componentName, { timeout: 10000 }).catch(() => null);
   await page.waitForTimeout(250);
   return page.evaluate(name => {
     const host = document.querySelector(name);
-    if (!host) return { found: false, hydrated: false, childCount: 0 };
-    const childCount = host.children.length + (host.shadowRoot?.children.length ?? 0);
-    return { found: true, hydrated: host.classList.contains('hydrated'), childCount };
+    if (!host) return { found: false, hydrated: false, nodes: [] };
+    const describe = el => ({ noMotionMark: el.hasAttribute('data-audit-no-motion') });
+    const nodes = [...host.children, ...(host.shadowRoot?.children ?? [])].map(describe);
+    return { found: true, hydrated: host.classList.contains('hydrated'), nodes };
   }, componentName);
 }
 
-/** PASS: found, hydrated, ≥1 child node. Pure — exported for tests. */
+/** PASS: found, hydrated, ≥1 rendered child node. Pure — exported for tests. */
 export function judgeBx1Hydration(data) {
   if (!data?.found) {
     return {
@@ -253,11 +289,12 @@ export function judgeBx1Hydration(data) {
       message: 'Component host not found in the DOM — no point running BX4/BX5/BX7.',
     };
   }
-  if (!data.hydrated || data.childCount < 1) {
+  const childCount = countRenderedChildren(data.nodes);
+  if (!data.hydrated || childCount < 1) {
     return {
       severity: 'error',
       code: 'INTERACTION-BX1-NOT-HYDRATED',
-      message: `Host is missing the "hydrated" class or has no children (hydrated=${data.hydrated}, childCount=${data.childCount}) — audit blocked.`,
+      message: `Host is missing the "hydrated" class or has no rendered children (hydrated=${data.hydrated}, childCount=${childCount}) — audit blocked.`,
     };
   }
   return null;
@@ -272,23 +309,106 @@ export function isBx4Applicable(contract) {
   return (contract.methods ?? []).some(m => /^(open|close|toggle)$/i.test(m.name));
 }
 
+// The evaluate-side walk needs computed style (visibility/display) and
+// `hidden`/`aria-hidden`, which only exist in the browser — it can only
+// describe the tree, never judge it (same constraint as ELEMENT_SIGNATURE_FN
+// above: inlined, no closure over a Node.js helper). `judgeBx4Opened` below is
+// the pure comparison over what this returns.
+const VISIBLE_SIGNATURE_FN = name => {
+  const host = document.querySelector(name);
+  if (!host) return { tags: [], ariaExpanded: null };
+  const isVisible = el => {
+    if (el.hidden || el.getAttribute('aria-hidden') === 'true') return false;
+    const style = getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  };
+  const tags = [];
+  const visit = el => {
+    if (!isVisible(el)) return;
+    tags.push(el.tagName.toLowerCase());
+    for (const child of el.children) visit(child);
+    if (el.shadowRoot) for (const child of el.shadowRoot.children) visit(child);
+  };
+  for (const child of host.children) visit(child);
+  if (host.shadowRoot) for (const child of host.shadowRoot.children) visit(child);
+  const ariaExpandedAttr = host.getAttribute('aria-expanded');
+  return { tags: tags.sort(), ariaExpanded: ariaExpandedAttr === null ? null : ariaExpandedAttr === 'true' };
+};
+
+/**
+ * Whether an overlay actually opened, judged from a rendered change — never
+ * the host's `open` @Prop, which the audit itself set to trigger the attempt
+ * (S12: the old check trusted `host.open` and never looked at the DOM).
+ * `before`/`after` are `{ tags, ariaExpanded }` from `VISIBLE_SIGNATURE_FN`.
+ * True when the visible shadow+light tag list differs, or `aria-expanded`
+ * flips from not-`true` to `true`. Pure — exported for tests.
+ */
+export function judgeBx4Opened(before, after) {
+  if (!before || !after) return false;
+  const beforeSig = (before.tags ?? []).join(',');
+  const afterSig = (after.tags ?? []).join(',');
+  if (beforeSig !== afterSig) return true;
+  return before.ariaExpanded !== true && after.ariaExpanded === true;
+}
+
+/**
+ * True when the contract or the live DOM declares an overlay/popup surface —
+ * a `dialog`/`popover`/`aria-haspopup`/`aria-modal` marker. `dom` is
+ * `{ hasDialog, hasPopover, hasAriaHaspopup, hasAriaModal }`, captured
+ * alongside the visible-tree signature. `contract` is accepted for parity
+ * with the other judge functions and future archetype-based signals; today
+ * only the DOM markers decide. Pure — exported for tests.
+ */
+export function declaresPopup(contract, dom) {
+  return Boolean(dom?.hasDialog || dom?.hasPopover || dom?.hasAriaHaspopup || dom?.hasAriaModal);
+}
+
+async function capturePopupMarkers(page, componentName) {
+  return page.evaluate(name => {
+    const host = document.querySelector(name);
+    if (!host) return { hasDialog: false, hasPopover: false, hasAriaHaspopup: false, hasAriaModal: false };
+    const root = host.shadowRoot ?? host;
+    const has = sel => !!root.querySelector(sel) || host.matches(sel);
+    return {
+      hasDialog: has('dialog, [role="dialog"], [role="alertdialog"]'),
+      hasPopover: has('[popover]'),
+      hasAriaHaspopup: has('[aria-haspopup]'),
+      hasAriaModal: has('[aria-modal="true"]'),
+    };
+  }, componentName);
+}
+
 async function runBx4(page, componentName, contract) {
   // Prefer a method whose name CONTAINS "open" (Stencil components in this
   // codebase name it `openModal`/`open`, never exactly `open` as a method —
   // `open` here is always the @Prop). Falls back to setting the prop
   // directly, which still reaches an `@Watch('open')` handler the same way
-  // a consumer flipping the attribute would.
+  // a consumer flipping the attribute would. A method call always passes a
+  // boolean `true` (S12) — this codebase's open methods take one
+  // (`setOpen(open: boolean)`), and calling with no argument silently opens
+  // nothing for those.
   const openMethod = (contract.methods ?? []).find(m => /open/i.test(m.name))?.name ?? null;
+
+  const before = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+
   await page.evaluate(
     ({ name, method }) => {
       const host = document.querySelector(name);
       if (!host) return;
-      if (method && typeof host[method] === 'function') host[method]();
+      if (method && typeof host[method] === 'function') host[method](true);
       else host.open = true;
     },
     { name: componentName, method: openMethod },
   );
   await page.waitForTimeout(350);
+
+  const afterOpen = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+  const opened = judgeBx4Opened(before, afterOpen);
+
+  if (!opened) {
+    const dom = await capturePopupMarkers(page, componentName);
+    return { opened: false, declaresPopup: declaresPopup(contract, dom) };
+  }
 
   // Capture the open panel/dialog node BEFORE Escape closes it, so the
   // post-Escape check can tell "focus is stranded inside the closed panel"
@@ -310,29 +430,27 @@ async function runBx4(page, componentName, contract) {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(350);
 
-  return page.evaluate(name => {
-    const host = document.querySelector(name);
-    // `open` is the same @Prop this check used to open the overlay — its
-    // host is frequently `display: contents` regardless of open state (the
-    // real show/hide lives on an inner <dialog>/panel), so a computed-
-    // display check on the HOST false-positived here (live Storybook run,
-    // mud-modal, 2026-09-21: `display: 'contents'` both open and closed).
-    // `host.open` is the source of truth.
-    const stillOpen = host ? host.open === true : false;
+  const afterEscape = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+  const focusTrappedInClosedOverlay = await page.evaluate(() => {
     const active = document.activeElement;
     const panel = window.__auditBx4Panel;
     delete window.__auditBx4Panel;
     // Only the panel/dialog content itself is a trap. Focus elsewhere inside
     // the host (e.g. a trigger button) is the correct, expected restore
     // target and is never flagged.
-    const focusTrappedInClosedOverlay = !!active && !!panel && (active === panel || panel.contains(active));
-    return { stillOpen, focusTrappedInClosedOverlay };
-  }, componentName);
+    return !!active && !!panel && (active === panel || panel.contains(active));
+  });
+
+  // Still open, judged the same rendered-change way as the initial open —
+  // never `host.open` (frequently `display: contents` regardless of state;
+  // live Storybook run, mud-modal, 2026-09-21).
+  const stillOpen = judgeBx4Opened(before, afterEscape);
+  return { opened: true, stillOpen, focusTrappedInClosedOverlay };
 }
 
 /** PASS: overlay closes AND focus is not left stranded inside it. Pure — exported for tests. */
 export function judgeBx4Escape(data) {
-  if (!data) return null;
+  if (!data || data.opened === false) return null;
   if (data.stillOpen) {
     return {
       severity: 'error',
@@ -447,9 +565,10 @@ async function runBx7(page, componentName, { isCheckable = false } = {}) {
       form.appendChild(host); // moves the existing (already-hydrated) host into the injected form
       // Checkable controls submit only when `checked` — set it before
       // reading FormData (see isCheckableControl above).
+      const expectedValue = 'audit-value';
       if (isCheckable) host.checked = true;
-      if (host.value !== undefined) host.value = 'audit-value';
-      else if (host.setAttribute) host.setAttribute('value', 'audit-value');
+      if (host.value !== undefined) host.value = expectedValue;
+      else if (host.setAttribute) host.setAttribute('value', expectedValue);
 
       const data = new FormData(form);
       const entry = data.get(resolvedName);
@@ -462,6 +581,7 @@ async function runBx7(page, componentName, { isCheckable = false } = {}) {
         formDataKey: resolvedName,
         formDataHasKey: data.has(resolvedName),
         formDataValue: entry,
+        expectedValue,
         setFormValueCallArgCounts: calls,
       };
     },
@@ -470,9 +590,20 @@ async function runBx7(page, componentName, { isCheckable = false } = {}) {
 }
 
 /**
- * PASS: FormData carries the expected key, and every `setFormValue` call
- * used two arguments (name, state) — never one. `applicable: false` (no
- * resolvable name) is not a finding. Pure — exported for tests.
+ * True when the submitted FormData value does not match the value the audit
+ * set (S12: before this, BX7 only checked the FormData KEY existed, never its
+ * value — a component silently submitting the wrong value passed). Pure —
+ * exported for tests.
+ */
+export function judgeBx7(submitted, expected) {
+  return submitted !== expected;
+}
+
+/**
+ * PASS: FormData carries the expected key with the expected value, and every
+ * `setFormValue` call used two arguments (name, state) — never one.
+ * `applicable: false` (no resolvable name) is not a finding. Pure —
+ * exported for tests.
  */
 export function judgeBx7FormRoundTrip(data) {
   if (!data?.found) return null;
@@ -490,6 +621,13 @@ export function judgeBx7FormRoundTrip(data) {
       severity: 'error',
       code: 'INTERACTION-BX7-SETFORMVALUE-ONE-ARG',
       message: `internals.setFormValue was called with 1 argument ${oneArgCalls.length} time(s) — must always pass (value, state).`,
+    };
+  }
+  if ('expectedValue' in data && judgeBx7(data.formDataValue, data.expectedValue)) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX7-VALUE-MISMATCH',
+      message: `FormData value for "${data.formDataKey}" is ${JSON.stringify(data.formDataValue)}, expected ${JSON.stringify(data.expectedValue)}.`,
     };
   }
   return null;

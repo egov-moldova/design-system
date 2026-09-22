@@ -166,6 +166,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
           code: 'A11Y-NO-STORY',
           file: relativeToRepo(target.paths.stories),
           message: `Could not infer a story id for ${target.name}. Pass --story-id explicitly.`,
+          noTarget: true,
         }),
       ],
       snapshot: null,
@@ -211,10 +212,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
     const expected = computeExpectedTabStops(theme.interactive);
     const bx2 = expected.length === 0 ? null : judgeTabOrder(expected, theme.tabWalk);
     if (bx2) findings.push(finding({ ...bx2, message: `${theme.theme}: ${bx2.message}` }));
-    checks[`bx2-${theme.theme}`] =
-      expected.length === 0
-        ? { status: 'not-applicable', reason: 'no interactive element is expected to take a Tab stop' }
-        : { status: bx2 ? 'fail' : 'ok' };
+    checks[`bx2-${theme.theme}`] = bx2StatusFor(expected, bx2);
 
     // BX3 — every element the Tab walk actually focused has a visible focus ring.
     let bx3Failed = false;
@@ -225,10 +223,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
         findings.push(finding({ ...bx3, message: `${theme.theme}: ${bx3.message}` }));
       }
     }
-    checks[`bx3-${theme.theme}`] =
-      theme.tabWalk.length === 0
-        ? { status: 'not-applicable', reason: 'the Tab walk produced no stops inside the component' }
-        : { status: bx3Failed ? 'fail' : 'ok' };
+    checks[`bx3-${theme.theme}`] = bx3StatusFor(theme.tabWalk, bx3Failed);
   }
 
   return {
@@ -730,6 +725,27 @@ export function judgeFocusRingVisible(step) {
     code: 'A11Y-BX3-FOCUS-RING-INVISIBLE',
     message: `<${step.tag}>${step.role ? ` role=${step.role}` : ''} has no visible focus ring (outlineWidth=${step.outlineWidth}, boxShadow=${step.boxShadow}) (WCAG 2.4.7).`,
   };
+}
+
+/**
+ * R6: BX2's `checks[bx2-<theme>]` assembly, extracted so it is unit-tested
+ * without a browser. Pure. `bx2` is `judgeTabOrder`'s result (or `null` when
+ * it never ran because `expected` is empty).
+ */
+export function bx2StatusFor(expected, bx2) {
+  return expected.length === 0
+    ? { status: 'not-applicable', reason: 'no interactive element is expected to take a Tab stop' }
+    : { status: bx2 ? 'fail' : 'ok' };
+}
+
+/**
+ * R6: BX3's `checks[bx3-<theme>]` assembly, extracted so it is unit-tested
+ * without a browser. Pure.
+ */
+export function bx3StatusFor(tabWalk, bx3Failed) {
+  return tabWalk.length === 0
+    ? { status: 'not-applicable', reason: 'the Tab walk produced no stops inside the component' }
+    : { status: bx3Failed ? 'fail' : 'ok' };
 }
 
 function pickDefaultStoryId(target) {

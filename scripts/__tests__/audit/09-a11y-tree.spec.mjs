@@ -6,6 +6,9 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
   INTERACTIVE_TAGS,
@@ -14,8 +17,63 @@ import {
   judgeTabOrder,
   judgeFocusRingVisible,
   computeExpectedTabStops,
+  bx2StatusFor,
+  bx3StatusFor,
+  analyzeComponent,
 } from '../../audit/09-a11y-tree.mjs';
+
+describe('09-a11y-tree: R6 — bx2StatusFor / bx3StatusFor (extracted status assembly)', () => {
+  it('bx2StatusFor: not-applicable when nothing is expected to take a Tab stop', () => {
+    assert.deepEqual(bx2StatusFor([], null), {
+      status: 'not-applicable',
+      reason: 'no interactive element is expected to take a Tab stop',
+    });
+  });
+
+  it('bx2StatusFor: ok when expected stops exist and judgeTabOrder found nothing', () => {
+    assert.deepEqual(bx2StatusFor([{ tag: 'button' }], null), { status: 'ok' });
+  });
+
+  it('bx2StatusFor: fail when judgeTabOrder returned a finding', () => {
+    assert.deepEqual(bx2StatusFor([{ tag: 'button' }], { code: 'A11Y-BX2-TAB-ORDER-GAP' }), { status: 'fail' });
+  });
+
+  it('bx3StatusFor: not-applicable when the Tab walk produced no stops', () => {
+    assert.deepEqual(bx3StatusFor([], false), {
+      status: 'not-applicable',
+      reason: 'the Tab walk produced no stops inside the component',
+    });
+  });
+
+  it('bx3StatusFor: ok when every step had a visible focus ring', () => {
+    assert.deepEqual(bx3StatusFor([{ tag: 'button' }], false), { status: 'ok' });
+  });
+
+  it('bx3StatusFor: fail when any step lacked a visible focus ring', () => {
+    assert.deepEqual(bx3StatusFor([{ tag: 'button' }], true), { status: 'fail' });
+  });
+});
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
+
+describe('09-a11y-tree: S6 — A11Y-NO-STORY carries noTarget (Decision §5)', () => {
+  it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'a11y-no-story-'));
+    const storiesPath = join(dir, 'mud-fx.stories.ts');
+    writeFileSync(storiesPath, '// no exports\n');
+    const target = {
+      found: true,
+      name: 'mud-fx',
+      bare: 'fx',
+      exists: { stories: true },
+      paths: { stories: storiesPath },
+    };
+    const { findings } = await analyzeComponent(target, {});
+    const f = findings.find(x => x.code === 'A11Y-NO-STORY');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
 
 describe('09-a11y-tree: interactive-element catalogues', () => {
   it('INTERACTIVE_TAGS includes the standard form/link tags', () => {

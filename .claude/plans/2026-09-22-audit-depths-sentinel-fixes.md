@@ -377,6 +377,54 @@ median: 2160 ms → bar = 2160 × 1.5 = 3240 ms
   start time match; a record without a start time (legacy) is signalled and the fact logged.
 - [ ] R10 per Decision 4; record the comparison and its citation under `#### Phase 2 results`.
 
+#### Phase 2 results (2026-09-22, Node 24.19.0)
+
+- S11 Vitest option citations (confirmed in the installed `node_modules/vitest` before relying
+  on them, per the task): `coverage.reportOnFailure` —
+  `node_modules/vitest/dist/chunks/reporters.d.DtoKVV2s.d.ts:799` (`reportOnFailure?: boolean`,
+  inside the coverage config type); `--reporter` and `--outputFile` — both listed by
+  `node_modules/.bin/vitest --help` (`--reporter <name> ... json ...`,
+  `--outputFile <filename/-s>`). One vitest run per `runAudit` call, JSON reporter output at
+  `<auditDir>/_run/vitest-results.json` (`run-all.mjs` `VITEST_RESULTS_REL`), deleted before
+  spawning (`runPrerequisites`'s `coverage` branch). `evaluateCoverageResults` (pure, exported)
+  decides the prerequisite's `ok`: parsed AND (exit 0 OR every failed spec's component is in the
+  selection); a crash with no parseable JSON is never `ok`. `06-test-coverage.mjs` reads the same
+  file (`--vitest-results`, default `audit/_run/vitest-results.json`) and adds
+  `COVERAGE-TESTS-FAILED` (error) for the failing component only, via the pure
+  `failedSpecsForComponent`.
+- R10 per Decision 4: A4's `RESERVED_PUBLIC_MEMBERS` compared against
+  `@stencil/eslint-plugin`'s `reserved-member-names` rule
+  (`node_modules/@stencil/eslint-plugin/dist/index.js:873-950`; enforced at `error` in
+  `eslint.config.mjs:64`). Neither set is a subset of the other — 44 names A4 catches that
+  eslint's jsdom-based walk does not (e.g. `onfocusout`, `requestfullscreen`,
+  `scrollintoview`), 80 names eslint catches that A4 does not (its `GLOBAL_ATTRIBUTES` list —
+  `class`, `id`, `style`, `slot`, `part`, every `aria-*`); the eslint rule also fires only on
+  `@Prop`/`@Method` (`:873`), never `@Event`, which A4 also checks. **A4 is kept, not deleted**;
+  P11 stays mapped to A4, not remapped to eslint. Full citation and the counts:
+  `scripts/audit/17-adapter-contract.mjs`'s header comment above `RESERVED_PUBLIC_MEMBERS`;
+  re-derivable via the test `17-adapter-contract.spec.mjs` § "neither A4's set nor eslint's
+  reserved-member-names set is a subset of the other".
+- Additional `noTarget` emit site found beyond Decision 5's ten, NOT added per the brief's "report
+  rather than silently add" instruction: `15-style-parity.mjs:218` `STYLE-NO-MANIFEST` (a warning,
+  "nothing to verify") — same shape as the ten sites, but unreached through `run-all.mjs`'s normal
+  selection because `15` is in `FIGMA_IDS` and is excused via `excuseFor` before it would ever run
+  with no manifest; only a standalone/manual invocation of `15-style-parity.mjs` can reach it.
+  Left to Phase 4 / the owner to decide whether it is worth a second review round.
+- `--depth standard --changed` with two components, timed once (S11 changes this path; no
+  threshold, a measurement): NOT TAKEN this session — `node -e "import('./scripts/audit/lib/
+  changed-components.mjs').then(m=>console.log(m.listChangedComponents()))"` → `[]` on this
+  branch (no `src/` diff against `main`, and `src/`/`tokens/`/`react/` are out of this phase's
+  scope to seed one). The mechanism this measurement would exercise — one vitest startup
+  regardless of selected-component count — is covered instead by `run-all.spec.mjs`'s "builds
+  only what standard needs, in order" test (asserts exactly one `yarn vitest run …` in
+  `p.commands`) and by the S11 `evaluateCoverageResults` tests above. Left for a session with a
+  real multi-component `--changed` diff, or Phase 4, to record the wall-clock number.
+- Regression floor (this phase's slice): `node --test "scripts/__tests__/**/*.spec.mjs"` —
+  1324/1324 pass. `node node_modules/eslint/bin/eslint.js <files this phase touched>` — 0 new
+  errors (1 pre-existing, `12-console-errors.mjs:29` `DEFAULT_BASE_URL` unused, dated 2026-05-17,
+  before this plan). `node node_modules/prettier/bin/prettier.cjs --check <files this phase
+  touched>` — clean.
+
 ### Phase 3 — callers and legs
 **Executor**: sonnet, medium effort · wave 3 (parallel with Phase 2; disjoint files; needs Phase 1's `awaitingLegs`)
 

@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,11 +21,21 @@ import {
   parseCli,
   runAudit,
   hashLegInput,
+  evaluateCoverageResults,
+  VITEST_RESULTS_REL,
 } from '../../audit/run-all.mjs';
 import { checkEnv, satisfiesRange, formatIncomplete, REQUIRED_DEPS } from '../../audit/lib/env-preflight.mjs';
 import { SCHEMA_VERSION } from '../../audit/lib/json-output.mjs';
 import { resolveDepth } from '../../audit/lib/cli-args.mjs';
-import { ensureWorktreeStorybook, startStorybookProcess } from '../../audit/lib/storybook-helpers.mjs';
+import {
+  ensureWorktreeStorybook,
+  startStorybookProcess,
+  getProcessStartTime,
+  acquireLock,
+  releaseLock,
+  isLockStale,
+  isValidLockToken,
+} from '../../audit/lib/storybook-helpers.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { allLegsClosed, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
 
@@ -155,6 +165,15 @@ describe('run-all: selectScripts', () => {
     const selected = ids({ figmaDir: './refs' }, { status: 'absent' });
     assert.equal(selected.includes('11'), true);
     assert.equal(selected.includes('15'), false);
+  });
+
+  // R6: story mode (--figma-dir + no manifest) is itself excused by a
+  // browser waiver — the two conditions combined must still drop 11, not
+  // re-add it via the story-mode carve-out (selectScripts's `storyMode &&
+  // !args.browserWaiver` clause).
+  it('a browser waiver drops 11 even in story mode (--figma-dir + no manifest)', () => {
+    const selected = ids({ figmaDir: './refs', browserWaiver: 'CI env' }, { status: 'absent' });
+    assert.equal(selected.includes('11'), false);
   });
 
   it("--only and --skip filter the depth's list", () => {
@@ -360,9 +379,21 @@ describe('run-all: aggregate row status (F1, F3)', () => {
     assert.equal(combined.ok, false);
   });
 
-  it('a script with no summary and requiresBuild is "missing-prereq", listed in blockers, counted in summary.incomplete', () => {
-    // id 06 (test-coverage) declares requiresBuild: 'coverage'.
-    const results = [{ id: '06', name: 'test-coverage', wave: 'B', ok: false, exitCode: 2, durationMs: 1 }];
+  it('a failed prerequisite sets status: missing-prereq on the result itself (prerequisiteFailure), before aggregate ever runs', () => {
+    // id 06 (test-coverage) declares requiresBuild: 'coverage'. A genuine prerequisite
+    // failure is decided upstream, in runRow's prerequisiteFailure — its result already
+    // carries `status: 'missing-prereq'`, which aggregate's rowStatus keeps as-is.
+    const results = [
+      {
+        id: '06',
+        name: 'test-coverage',
+        wave: 'B',
+        ok: false,
+        status: 'missing-prereq',
+        exitCode: null,
+        durationMs: 1,
+      },
+    ];
     const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 1 });
     assert.equal(combined.results[0].status, 'missing-prereq');
     assert.ok(combined.blockers.includes('test-coverage/missing-prereq'));
@@ -370,8 +401,24 @@ describe('run-all: aggregate row status (F1, F3)', () => {
     assert.equal(combined.ok, false);
   });
 
+  it('S10: a requiresBuild script that crashed with no summary — prerequisites already ok — is "crashed", never "missing-prereq"', () => {
+    // No `status` on the result (unlike the prerequisiteFailure case above): the
+    // prerequisite itself succeeded, the script ran and produced no readable
+    // envelope. Before the S10 fix, rowStatus mislabeled this "missing-prereq" —
+    // sending a crash to "rebuild the prerequisite" instead of "fix the script".
+    const results = [{ id: '06', name: 'test-coverage', wave: 'B', ok: false, exitCode: 2, durationMs: 1 }];
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 1 });
+    assert.equal(combined.results[0].status, 'crashed');
+    assert.ok(combined.blockers.includes('test-coverage/crashed'));
+    assert.equal(combined.summary.incomplete, 1);
+    assert.equal(combined.ok, false);
+  });
+
   it('sums summary.incomplete across several broken rows and reproduces the Phase 0 06/08 finding', () => {
     // Phase 0 results: a healthy install still has 06 and 08 exit 2 (no coverage / no dist yet).
+    // S10: with no `status` set on the result, the prerequisite already succeeded (a
+    // real prerequisite failure sets `status: 'missing-prereq'` upstream, in
+    // prerequisiteFailure) — these are script crashes.
     const results = [
       { id: '06', name: 'test-coverage', wave: 'B', ok: false, exitCode: 2, durationMs: 1 },
       { id: '08', name: 'bundle-size', wave: 'B', ok: false, exitCode: 2, durationMs: 1 },
@@ -379,7 +426,95 @@ describe('run-all: aggregate row status (F1, F3)', () => {
     ];
     const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 1 });
     assert.equal(combined.summary.incomplete, 2);
-    assert.deepEqual(combined.blockers.sort(), ['bundle-size/missing-prereq', 'test-coverage/missing-prereq']);
+    assert.deepEqual(combined.blockers.sort(), ['bundle-size/crashed', 'test-coverage/crashed']);
+  });
+});
+
+describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-sentinel-fixes.md Decision §6)', () => {
+  it('ok when the run exited 0, regardless of testResults content', () => {
+    const res = evaluateCoverageResults({ testResults: [] }, { exitCode: 0, components: ['mud-a'] });
+    assert.deepEqual(res, { ok: true, failedComponents: [] });
+  });
+
+  it('ok when every failed spec maps to a selected component (a real fixer FAIL, not a prereq failure)', () => {
+    const parsed = {
+      testResults: [{ name: '/repo/src/components/mud-b/test/x.spec.tsx', status: 'failed' }],
+    };
+    const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a', 'mud-b'] });
+    assert.deepEqual(res, { ok: true, failedComponents: ['mud-b'] });
+  });
+
+  it('not ok when a failed spec maps to a component outside the selection', () => {
+    const parsed = {
+      testResults: [{ name: '/repo/src/components/mud-c/test/x.spec.tsx', status: 'failed' }],
+    };
+    const res = evaluateCoverageResults(parsed, { exitCode: 1, components: ['mud-a', 'mud-b'] });
+    assert.equal(res.ok, false);
+    assert.deepEqual(res.failedComponents, ['mud-c']);
+  });
+
+  it('never ok when the results JSON did not parse — a vitest crash never lets 06 read a stale summary', () => {
+    assert.deepEqual(evaluateCoverageResults(null, { exitCode: 0, components: ['mud-a'] }), {
+      ok: false,
+      failedComponents: [],
+    });
+    assert.deepEqual(evaluateCoverageResults({}, { exitCode: 0, components: ['mud-a'] }), {
+      ok: false,
+      failedComponents: [],
+    });
+  });
+});
+
+describe('run-all: runAudit — S11 coverage prerequisite (real pipeline)', () => {
+  it("a stale previous-run results file (with no failures) present before the run is never read as this run's outcome", async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      // The default fixture runCommand deletes nothing on its own — this
+      // proves run-all itself deletes the stale file before spawning
+      // vitest, not that the fixture happens to overwrite it.
+      runCommand: async (cmd, cmdArgs) => {
+        // The coverage command's own invocation still writes a fresh,
+        // all-passed report — this test's subject is the file that existed
+        // BEFORE that call, not this run's own crash-safety.
+        const outputFileArg = cmdArgs.find(a => a.startsWith('--outputFile='));
+        if (outputFileArg) {
+          const outPath = outputFileArg.slice('--outputFile='.length);
+          mkdirSync(dirname(outPath), { recursive: true });
+          writeFileSync(outPath, JSON.stringify({ success: true, testResults: [] }));
+        }
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+    const staleResultsPath = join(p.auditDir, VITEST_RESULTS_REL);
+    mkdirSync(dirname(staleResultsPath), { recursive: true });
+    writeFileSync(
+      staleResultsPath,
+      JSON.stringify({
+        success: false,
+        testResults: [{ name: '/repo/src/components/mud-fx/test/x.spec.tsx', status: 'failed' }],
+      }),
+    );
+    const r = await runAudit(p.args, p.deps);
+    const row = r.combined.results.find(x => x.id === '06');
+    // The stale file said mud-fx failed; the real (fixture) run wrote a clean
+    // report. A row reading the stale file would be missing-prereq or carry a
+    // TESTS-FAILED finding — neither happens.
+    assert.equal(row.status, 'ok');
+  });
+
+  it('a vitest exit with no results JSON at all → every selected 06 is missing-prereq', async () => {
+    const p = pipeline({
+      argv: ['--changed', '--verdict'],
+      changed: ['mud-fx-a', 'mud-fx-b'],
+      // Simulates a vitest crash: exits non-zero, writes no --outputFile at all.
+      runCommand: async () => ({ exitCode: 1, stdout: '', stderr: '' }),
+    });
+    const r = await runAudit(p.args, p.deps);
+    for (const component of ['mud-fx-a', 'mud-fx-b']) {
+      const envelope = r.perComponent.find(pc => pc.component === component).envelope;
+      const row = envelope.results.find(x => x.id === '06');
+      assert.equal(row.status, 'missing-prereq', component);
+    }
   });
 });
 
@@ -500,6 +635,7 @@ function pipeline({
   wt = {},
   registry = FIXTURE_REGISTRY,
   changed = [],
+  detectFail = null,
   runCommand,
   storybook,
 }) {
@@ -519,6 +655,16 @@ function pipeline({
       runCommand ??
       (async (cmd, cmdArgs) => {
         commands.push([cmd, ...cmdArgs].join(' '));
+        // S11: the real `vitest --reporter=json --outputFile=<path>` writes its
+        // own results file; this fixture stands in for that side effect so the
+        // coverage prerequisite's `evaluateCoverageResults` sees a parseable,
+        // all-passed report instead of treating the fixture run as a crash.
+        const outputFileArg = cmdArgs.find(a => a.startsWith('--outputFile='));
+        if (outputFileArg) {
+          const outPath = outputFileArg.slice('--outputFile='.length);
+          mkdirSync(dirname(outPath), { recursive: true });
+          writeFileSync(outPath, JSON.stringify({ success: true, testResults: [] }));
+        }
         return { exitCode: 0, stdout: '', stderr: '' };
       }),
     git: gitArgs => {
@@ -527,7 +673,8 @@ function pipeline({
       return text === undefined ? { status: 128, stdout: '' } : { status: 0, stdout: text };
     },
     readWorkingTree: p => wt[componentOf(p)] ?? null,
-    listChanged: () => changed,
+    detectChanged: () =>
+      detectFail ? { ok: false, cause: detectFail, names: [] } : { ok: true, cause: null, names: changed },
     listAll: () => changed,
     ensureStorybook:
       storybook ??
@@ -639,7 +786,7 @@ describe('run-all: runAudit — standard prerequisites and arguments', () => {
     assert.deepEqual(p.commands, [
       'yarn dx:prepare',
       'yarn dx:stencil:once',
-      'yarn vitest run --project spec --coverage src/components/mud-fx',
+      `yarn vitest run --project spec --coverage --coverage.reportOnFailure --reporter=json --outputFile=${join(p.auditDir, '_run', 'vitest-results.json')} src/components/mud-fx`,
       'storybook',
     ]);
     const argv = name => JSON.parse(infoOf(r.combined, name, 'FIXTURE-ARGV')[0]);
@@ -745,6 +892,158 @@ describe('run-all: runAudit — --changed runs one pipeline per component', () =
     assert.equal(r.combined.results.filter(x => x.id === '03').length, 1);
     assert.deepEqual(r.combined.components, ['mud-fx-a', 'mud-fx-b']);
     for (const { envelope } of r.perComponent) assert.ok(envelope.results.some(x => x.id === '03'));
+  });
+});
+
+describe('storybook-helpers: R3 locks (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3)', () => {
+  function tmpLockPath() {
+    const dir = mkdtempSync(join(tmpdir(), 'lock-spec-'));
+    tmpRoots.push(dir);
+    return join(dir, '_run', '.lock');
+  }
+
+  it('isLockStale: a dead pid is stale', () => {
+    assert.equal(isLockStale({ pid: 1, startTime: 'x' }, null), true);
+  });
+
+  it('isLockStale: a live pid whose start time no longer matches (pid reuse) is stale', () => {
+    assert.equal(isLockStale({ pid: 1, startTime: 'Mon Sep 22 10:00:00 2026' }, 'Tue Sep 23 09:00:00 2026'), true);
+  });
+
+  it('isLockStale: a live pid whose start time still matches is NOT stale', () => {
+    assert.equal(isLockStale({ pid: 1, startTime: 'Mon Sep 22 10:00:00 2026' }, 'Mon Sep 22 10:00:00 2026'), false);
+  });
+
+  it('isLockStale: a legacy record with no startTime at all is treated as live (cannot verify)', () => {
+    assert.equal(isLockStale({ pid: 1 }, 'anything'), false);
+  });
+
+  it('acquireLock: a fresh lock path is taken and the token can release it', () => {
+    const lockPath = tmpLockPath();
+    const lock = acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    assert.equal(lock.ok, true);
+    assert.equal(existsSync(lockPath), true);
+    releaseLock(lockPath, lock.token);
+    assert.equal(existsSync(lockPath), false);
+  });
+
+  it('acquireLock: a live lock refuses, naming the pid and path — the second of two concurrent runs', () => {
+    const lockPath = tmpLockPath();
+    const first = acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1', isAlive: () => true });
+    assert.equal(first.ok, true);
+    const second = acquireLock(lockPath, {
+      pid: 222,
+      startTimeOf: pid => (pid === 111 ? 't1' : 't2'),
+      isAlive: () => true,
+    });
+    assert.equal(second.ok, false);
+    assert.match(second.cause, /pid 111/);
+    assert.match(second.cause, new RegExp(lockPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    // The first run's own lock survives — the refused second run never touched it.
+    assert.equal(existsSync(lockPath), true);
+  });
+
+  it('acquireLock: a stale lock (dead pid) is taken over, not refused', () => {
+    const lockPath = tmpLockPath();
+    acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    const second = acquireLock(lockPath, { pid: 222, startTimeOf: () => 't2', isAlive: () => false });
+    assert.equal(second.ok, true);
+    releaseLock(lockPath, second.token);
+  });
+
+  it('acquireLock: a stale lock (pid reused — start time differs) is taken over', () => {
+    const lockPath = tmpLockPath();
+    acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    const second = acquireLock(lockPath, {
+      pid: 111, // same pid, reused by a different process
+      startTimeOf: () => 't-different',
+      isAlive: () => true,
+    });
+    assert.equal(second.ok, true);
+  });
+
+  it("releaseLock: never releases another holder's lock (wrong token is a no-op)", () => {
+    const lockPath = tmpLockPath();
+    const lock = acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    releaseLock(lockPath, 'forged-token');
+    assert.equal(existsSync(lockPath), true);
+    releaseLock(lockPath, lock.token);
+    assert.equal(existsSync(lockPath), false);
+  });
+
+  it('isValidLockToken: honours a hand-off only when the nonce matches and the pid is alive', () => {
+    const existing = { pid: 111, nonce: 'abc' };
+    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => true }), true);
+    assert.equal(isValidLockToken(existing, 'wrong', { isAlive: () => true }), false, 'forged token');
+    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => false }), false, 'stale token (pid dead)');
+    assert.equal(isValidLockToken(null, 'abc', { isAlive: () => true }), false, 'no lock file at all');
+    assert.equal(isValidLockToken(existing, null, { isAlive: () => true }), false, 'no token handed at all');
+  });
+});
+
+describe('run-all: runAudit — R3 worktree lock', () => {
+  it('a live worktree lock refuses a run that would build or start Storybook — INCOMPLETE, naming pid and path', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--verdict'] });
+    const lockPath = join(p.repoRoot, 'audit', '_run', '.worktree.lock');
+    // Use this test process's REAL start time, so runAudit's own default
+    // `getProcessStartTime(process.pid)` call (no override here) reports it as
+    // live rather than stale-by-pid-reuse.
+    const realStartTime = getProcessStartTime(process.pid);
+    const held = acquireLock(lockPath, { pid: process.pid, startTimeOf: () => realStartTime, isAlive: () => true });
+    assert.equal(held.ok, true);
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.preflight, true);
+    assert.equal(r.summary.state, 'INCOMPLETE');
+    assert.match(r.summary.preflight.cause, new RegExp(`pid ${process.pid}`));
+    releaseLock(lockPath, held.token);
+  });
+
+  it('quick (nothing to build, no Storybook) never takes the worktree lock at all', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--depth', 'quick', '--verdict'] });
+    await runAudit(p.args, p.deps);
+    assert.equal(existsSync(join(p.repoRoot, 'audit', '_run', '.worktree.lock')), false);
+  });
+
+  it('the worktree lock is released after a successful run (no self-block for a later dispatch)', async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      head: { 'mud-fx': manifestText() },
+      wt: { 'mud-fx': manifestText() },
+    });
+    await runAudit(p.args, p.deps);
+    assert.equal(existsSync(join(p.repoRoot, 'audit', '_run', '.worktree.lock')), false);
+  });
+});
+
+describe('run-all: runAudit — S5, zero components selected (plan 2026-09-22-audit-depths-sentinel-fixes.md)', () => {
+  it('--changed selecting nothing, repo-level rows clean → PASS, note printed, 03 still ran once', async () => {
+    const p = pipeline({ argv: ['--changed', '--depth', 'quick', '--verdict'], changed: [] });
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.summary.state, 'PASS');
+    assert.equal(r.summary.note, 'no components selected');
+    assert.equal(r.combined.results.filter(x => x.id === '03').length, 1);
+  });
+
+  it('--changed selecting nothing, a repo-level row (03) errors → FAIL, not PASS', async () => {
+    const p = pipeline({
+      argv: ['--changed', '--depth', 'quick', '--verdict'],
+      changed: [],
+      env: { FIXTURE_FAIL_FOR: '--all' },
+    });
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.summary.state, 'FAIL');
+    assert.equal(r.summary.note, 'no components selected');
+  });
+
+  it('a detector failure (no base ref / git diff failed) → INCOMPLETE, never a vacuous empty-selection PASS', async () => {
+    const p = pipeline({
+      argv: ['--changed', '--depth', 'quick', '--verdict'],
+      detectFail: 'no base ref resolved (tried: main, origin/main)',
+    });
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.preflight, true);
+    assert.equal(r.summary.state, 'INCOMPLETE');
+    assert.match(r.summary.preflight.cause, /no base ref resolved/);
   });
 });
 
@@ -899,6 +1198,7 @@ describe('storybook-helpers: ensureWorktreeStorybook (Design §9, nothing starte
           log.started.push(port);
           return 999;
         },
+        startTimeOf: () => 'Mon Sep 22 10:00:00 2026',
         sleep: async () => {},
         ...over,
       },
@@ -915,7 +1215,7 @@ describe('storybook-helpers: ensureWorktreeStorybook (Design §9, nothing starte
     const { log, opts } = fake({ reachable: async port => port === 6007 || log.started.includes(port) });
     assert.deepEqual(await ensureWorktreeStorybook(opts), { ok: true, port: 51515, reused: false });
     assert.deepEqual(log.started, [51515]);
-    assert.deepEqual(log.written, [{ port: 51515, pid: 999 }]);
+    assert.deepEqual(log.written, [{ port: 51515, pid: 999, startTime: 'Mon Sep 22 10:00:00 2026' }]);
   });
 
   it('starts a new server when the recorded process is dead', async () => {
@@ -940,6 +1240,15 @@ describe('storybook-helpers: ensureWorktreeStorybook (Design §9, nothing starte
     assert.equal(res.ok, false);
     assert.match(res.cause, /spawn error/);
     assert.deepEqual(log.written, [], 'wrote a record despite the spawn failure');
+  });
+
+  it('getProcessStartTime: returns the ps output for a running pid, injected', () => {
+    const line = getProcessStartTime(123, { run: () => ({ status: 0, stdout: 'Mon Sep 22 10:00:00 2026\n' }) });
+    assert.equal(line, 'Mon Sep 22 10:00:00 2026');
+  });
+
+  it('getProcessStartTime: null when ps cannot find the pid (non-zero exit)', () => {
+    assert.equal(getProcessStartTime(999999, { run: () => ({ status: 1, stdout: '' }) }), null);
   });
 
   it('startStorybookProcess: a missing storybook binary (ENOENT) does not crash the process — "error" is handled', async () => {
@@ -973,6 +1282,10 @@ describe('run-all: the command pre-pr-check runs', () => {
 
   it('pre-pr-check.md runs exactly that command', () => {
     const doc = readFileSync(join(REPO, '.claude', 'commands', 'pre-pr-check.md'), 'utf8');
-    assert.match(doc, /^node scripts\/audit\/run-all\.mjs --depth quick --changed --no-browser --json$/m);
+    // R5 (Phase 3, plan 2026-09-22-audit-depths-sentinel-fixes.md): the fast
+    // path runs the audit ONCE through `verdict.mjs` and branches on its exit
+    // status — never the raw `run-all.mjs` invocation this test asserted
+    // before Phase 3 landed.
+    assert.match(doc, /^yarn audit:component --changed --depth quick --no-browser --json$/m);
   });
 });

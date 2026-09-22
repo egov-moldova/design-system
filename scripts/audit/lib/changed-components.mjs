@@ -35,9 +35,35 @@ export function componentsFromDiff(lines, folderExists) {
   return [...names].sort();
 }
 
-export function listChangedComponents({ base = pickBase(gitRefExists) } = {}) {
-  if (!base) return [];
-  const res = spawnSync('git', ['diff', '--name-only', `${base}...HEAD`], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  return componentsFromDiff((res.stdout ?? '').split('\n'), rel => existsSync(path.join(REPO_ROOT, rel)));
+/**
+ * Detect the changed-component set and say whether the detection itself
+ * succeeded — distinct from "it succeeded and found nothing" (plan
+ * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §9). `run-all.mjs`
+ * treats `ok: false` as INCOMPLETE (a broken detector), never as an empty
+ * selection (a clean tree). `refExists` / `diff` are an injection seam for
+ * tests that need to fail the underlying git calls; production always uses
+ * the real ones.
+ *
+ * @returns {{ ok: boolean, cause: string|null, names: string[] }}
+ */
+export function detectChangedComponents({
+  refExists = gitRefExists,
+  diff = base => spawnSync('git', ['diff', '--name-only', `${base}...HEAD`], { encoding: 'utf8' }),
+  folderExists = rel => existsSync(path.join(REPO_ROOT, rel)),
+} = {}) {
+  const base = pickBase(refExists);
+  if (!base) return { ok: false, cause: 'no base ref resolved (tried: main, origin/main)', names: [] };
+  const res = diff(base);
+  if (res.status !== 0) return { ok: false, cause: `git diff ${base}...HEAD exited ${res.status}`, names: [] };
+  return { ok: true, cause: null, names: componentsFromDiff((res.stdout ?? '').split('\n'), folderExists) };
+}
+
+/**
+ * Wrapper kept for the 16 standalone scripts that only need the name list
+ * and treat a broken detector the same as "nothing changed" (plan Decision
+ * §9 — `run-all.mjs` is the one caller that needs `detectChangedComponents`'s
+ * `ok`/`cause` to fail closed).
+ */
+export function listChangedComponents(opts = {}) {
+  return detectChangedComponents(opts).names;
 }

@@ -177,7 +177,8 @@ export function resolveMode(args) {
  * Load `tokens/core/components/<bare>.tokens.json` (current) and the matching
  * block inside the Figma export. Returns { before, after, error? }.
  */
-function loadComponentSources(componentName, figmaExportPath) {
+/** Exported for tests (S6): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` no-target sites. */
+export function loadComponentSources(componentName, figmaExportPath) {
   const bare = bareName(componentName);
   const currentPath = join(REPO_ROOT, 'tokens', 'core', 'components', `${bare}.tokens.json`);
   if (!existsSync(currentPath)) {
@@ -187,6 +188,7 @@ function loadComponentSources(componentName, figmaExportPath) {
         code: 'TOKEN-DIFF-NO-CURRENT',
         file: relativePathFor(currentPath),
         message: `Current tokens file not found for ${componentName}.`,
+        noTarget: true,
       }),
     };
   }
@@ -198,6 +200,7 @@ function loadComponentSources(componentName, figmaExportPath) {
         code: 'TOKEN-DIFF-NO-FIGMA-EXPORT',
         file: figmaExportPath,
         message: `Figma export not found at ${figmaExportPath}. Run \`yarn sync:tokens\` (Tokenhaus pipeline) to refresh it.`,
+        noTarget: true,
       }),
     };
   }

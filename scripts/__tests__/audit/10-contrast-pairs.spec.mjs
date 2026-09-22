@@ -7,6 +7,9 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
   parseColor,
@@ -19,7 +22,28 @@ import {
   resolveBackground,
   DEFAULT_CANVAS,
   findingsFromPairs,
+  analyzeComponent,
 } from '../../audit/10-contrast-pairs.mjs';
+
+describe('10-contrast-pairs: S6 — CONTRAST-NO-STORY carries noTarget (Decision §5)', () => {
+  it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'contrast-no-story-'));
+    const storiesPath = join(dir, 'mud-fx.stories.ts');
+    writeFileSync(storiesPath, '// no exports\n');
+    const target = {
+      found: true,
+      name: 'mud-fx',
+      bare: 'fx',
+      exists: { stories: true },
+      paths: { stories: storiesPath },
+    };
+    const { findings } = await analyzeComponent(target, {});
+    const f = findings.find(x => x.code === 'CONTRAST-NO-STORY');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
 
 describe('10-contrast-pairs: parseColor', () => {
   it('parses 6-digit hex', () => {

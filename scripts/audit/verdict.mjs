@@ -47,6 +47,7 @@ import {
 import { renderFixBrief } from './lib/fix-brief.mjs';
 import { currentLegHashes, defaultReadPrompt, defaultReadSources } from './lib/leg-input.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
+import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
 const TOOL = 'verdict';
 
@@ -691,8 +692,15 @@ export function writeVerdictForRun(runDir, legDeps = {}) {
   return verdict;
 }
 
-/** Write `<auditDir>/_run/summary.json`: every component's state plus the worst one. */
-export function writeSummary(auditDir, { depth, runs, preflight = null }) {
+/**
+ * Write `<auditDir>/_run/summary.json`: every component's state plus the
+ * worst one. `repoLevel` (S5 / Decision §2) is set only when zero components
+ * were selected: `{ ok: boolean }` for run-all's combined envelope of the
+ * repo-level rows (03, the adapter builds) that ran regardless — a failure
+ * there still moves the summary state off PASS even with no per-component
+ * verdict to carry it.
+ */
+export function writeSummary(auditDir, { depth, runs, preflight = null, repoLevel = null }) {
   const components = runs.map(({ verdict, runDir }) => ({
     component: verdict.component,
     state: verdict.state,
@@ -702,6 +710,7 @@ export function writeSummary(auditDir, { depth, runs, preflight = null }) {
   }));
   const states = components.map(c => c.state);
   if (preflight) states.push(STATE.INCOMPLETE);
+  if (repoLevel && !repoLevel.ok) states.push(STATE.FAIL);
   const summary = {
     schemaVersion: VERDICT_SCHEMA_VERSION,
     depth,
@@ -727,7 +736,8 @@ code; the second recomputes the verdict from a run's inputs (after the deep AI
 legs wrote ai-findings.json). Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE,
 4 NEEDS-DECISION, 2 usage or internal error.`;
 
-function printSummary(summary, json) {
+/** Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested. */
+export function printSummary(summary, json) {
   if (json) {
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;
@@ -735,6 +745,7 @@ function printSummary(summary, json) {
   for (const c of summary.components) {
     process.stdout.write(`${c.component}: ${c.headline} — audit/${c.component}/fix-brief.md\n`);
   }
+  if (summary.note) process.stdout.write(`${summary.note}\n`);
   if (summary.preflight) process.stdout.write(`${summary.preflight.message}\n`);
   process.stdout.write(`state: ${summary.state}\n`);
 }
@@ -767,12 +778,37 @@ export function validateRunDirArg(runDirArg, auditRoot) {
   return { ok: true };
 }
 
+/**
+ * R3: the audit-dir lock path, rooted at `auditDir` — `--audit-dir` in tests
+ * keeps every CLI test's lock under a temp dir, never the real worktree's
+ * `audit/_run/`.
+ */
+function auditLockPathFor(auditDir) {
+  return join(auditDir, '_run', '.lock');
+}
+
+/** Take the audit-dir lock or exit 3 (INCOMPLETE) naming the live pid and path. Exported for tests. */
+export function takeAuditLock(auditDir) {
+  const lock = acquireLock(auditLockPathFor(auditDir));
+  if (!lock.ok) {
+    process.stderr.write(`${TOOL}: INCOMPLETE: ${lock.cause}\n`);
+    return { ok: false, exitCode: exitCodeForState(STATE.INCOMPLETE) };
+  }
+  return { ok: true, token: lock.token };
+}
+
 function recompute(runDirs, json) {
-  const runs = runDirs.map(runDir => ({ runDir, verdict: writeVerdictForRun(runDir) }));
   const auditDir = resolve(runDirs[0], '..', '..', '..');
-  const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs });
-  printSummary(summary, json);
-  return exitCodeForState(summary.state);
+  const lock = takeAuditLock(auditDir);
+  if (!lock.ok) return lock.exitCode;
+  try {
+    const runs = runDirs.map(runDir => ({ runDir, verdict: writeVerdictForRun(runDir) }));
+    const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs });
+    printSummary(summary, json);
+    return exitCodeForState(summary.state);
+  } finally {
+    releaseLock(auditLockPathFor(auditDir), lock.token);
+  }
 }
 
 function runFresh(argv) {
@@ -785,25 +821,43 @@ function runFresh(argv) {
   // through to "run-all exited without a summary" (which is INCOMPLETE / 3).
   // `parseRunAllCli` exits 2 itself on a usage error (lib/cli-args.mjs).
   parseRunAllCli(forwarded);
-  const summaryPath = join(auditDir, '_run', 'summary.json');
-  // A summary left by an earlier run must never stand in for this one.
-  rmSync(summaryPath, { force: true });
-  const extra = ['--verdict'];
-  if (json) extra.push('--out', join(auditDir, '_run', 'envelope.json'));
-  const res = spawnSync(
-    process.execPath,
-    [join(REPO_ROOT, 'scripts', 'audit', 'run-all.mjs'), ...forwarded, ...extra],
-    {
-      stdio: ['ignore', json ? 'ignore' : 'inherit', 'inherit'],
-    },
-  );
-  if (!existsSync(summaryPath)) {
-    process.stderr.write(`${TOOL}: run-all exited ${res.status} without writing ${summaryPath} — INCOMPLETE.\n`);
-    return exitCodeForState(STATE.INCOMPLETE);
+  // R3: the audit-dir lock guards summary.json/envelope.json/verdict.json —
+  // taken around deleting the stale files below, spawning run-all, and
+  // reading the summary; released before this function returns (Decision
+  // §3's "no self-block": a `deep` run's AI legs are dispatched by the
+  // caller, after this call has already returned).
+  const lock = takeAuditLock(auditDir);
+  if (!lock.ok) return lock.exitCode;
+  try {
+    const summaryPath = join(auditDir, '_run', 'summary.json');
+    const envelopePath = join(auditDir, '_run', 'envelope.json');
+    // R5: a summary OR envelope left by an earlier run must never stand in for
+    // this one — both live beside each other under `_run/`.
+    rmSync(summaryPath, { force: true });
+    rmSync(envelopePath, { force: true });
+    const extra = ['--verdict'];
+    if (json) extra.push('--out', envelopePath);
+    const res = spawnSync(
+      process.execPath,
+      [join(REPO_ROOT, 'scripts', 'audit', 'run-all.mjs'), ...forwarded, ...extra],
+      {
+        stdio: ['ignore', json ? 'ignore' : 'inherit', 'inherit'],
+        // R3: hand the audit-dir lock this process already holds to the
+        // spawned run-all.mjs, so it never re-acquires (and cannot self-block
+        // on) the same lock this process is about to release once it returns.
+        env: { ...process.env, AUDIT_LOCK_TOKEN: lock.token },
+      },
+    );
+    if (!existsSync(summaryPath)) {
+      process.stderr.write(`${TOOL}: run-all exited ${res.status} without writing ${summaryPath} — INCOMPLETE.\n`);
+      return exitCodeForState(STATE.INCOMPLETE);
+    }
+    const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
+    printSummary(summary, json);
+    return exitCodeForState(summary.state);
+  } finally {
+    releaseLock(auditLockPathFor(auditDir), lock.token);
   }
-  const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
-  printSummary(summary, json);
-  return exitCodeForState(summary.state);
 }
 
 function main() {

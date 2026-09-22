@@ -9,33 +9,60 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  countRenderedChildren,
   judgeBx1Hydration,
   isBx4Applicable,
+  judgeBx4Opened,
+  declaresPopup,
   judgeBx4Escape,
   judgeBx5StructuralDiff,
   isBx7Applicable,
   isCheckableControl,
+  judgeBx7,
   judgeBx7FormRoundTrip,
   notApplicable,
 } from '../../audit/19-interaction.mjs';
 
+describe('19-interaction: countRenderedChildren (S12)', () => {
+  it('counts every node with no exclusion mark', () => {
+    assert.equal(countRenderedChildren([{ noMotionMark: false }, { noMotionMark: false }]), 2);
+  });
+
+  it('excludes the audit-injected [data-audit-no-motion] style node', () => {
+    // Before S12, the injected `<style data-audit-no-motion>` (applyNoMotionStyle,
+    // 09-a11y-tree.mjs) counted as a rendered child of the shadow root.
+    assert.equal(countRenderedChildren([{ noMotionMark: true }]), 0);
+    assert.equal(countRenderedChildren([{ noMotionMark: true }, { noMotionMark: false }]), 1);
+  });
+
+  it('handles an empty or missing list', () => {
+    assert.equal(countRenderedChildren([]), 0);
+    assert.equal(countRenderedChildren(undefined), 0);
+  });
+});
+
 describe('19-interaction: judgeBx1Hydration', () => {
-  it('passes a hydrated host with children', () => {
-    assert.equal(judgeBx1Hydration({ found: true, hydrated: true, childCount: 3 }), null);
+  it('passes a hydrated host with rendered children', () => {
+    assert.equal(judgeBx1Hydration({ found: true, hydrated: true, nodes: [{ noMotionMark: false }] }), null);
   });
 
   it('flags a missing host', () => {
-    const f = judgeBx1Hydration({ found: false, hydrated: false, childCount: 0 });
+    const f = judgeBx1Hydration({ found: false, hydrated: false, nodes: [] });
     assert.equal(f.code, 'INTERACTION-BX1-NOT-FOUND');
   });
 
   it('flags a host without the hydrated class', () => {
-    const f = judgeBx1Hydration({ found: true, hydrated: false, childCount: 2 });
+    const f = judgeBx1Hydration({ found: true, hydrated: false, nodes: [{ noMotionMark: false }] });
     assert.equal(f.code, 'INTERACTION-BX1-NOT-HYDRATED');
   });
 
-  it('flags a hydrated host with zero children', () => {
-    const f = judgeBx1Hydration({ found: true, hydrated: true, childCount: 0 });
+  it('flags a hydrated host with zero rendered children', () => {
+    const f = judgeBx1Hydration({ found: true, hydrated: true, nodes: [] });
+    assert.equal(f.code, 'INTERACTION-BX1-NOT-HYDRATED');
+  });
+
+  it('flags a hydrated host whose only child is the audit-injected style node (S12)', () => {
+    const f = judgeBx1Hydration({ found: true, hydrated: true, nodes: [{ noMotionMark: true }] });
     assert.equal(f.code, 'INTERACTION-BX1-NOT-HYDRATED');
   });
 
@@ -63,21 +90,92 @@ describe('19-interaction: isBx4Applicable', () => {
   it('handles a missing contract', () => {
     assert.equal(isBx4Applicable(null), false);
   });
+
+  // mud-breadcrumb-item: `active` (a plain @Prop, not open/close/toggle) is not
+  // an overlay, and the archetype is not OVERLAY — not applicable.
+  it('mud-breadcrumb-item: active is not an overlay signal → not applicable', () => {
+    assert.equal(isBx4Applicable({ archetype: { value: 'STATUS' }, methods: [], props: [{ name: 'active' }] }), false);
+  });
+});
+
+describe('19-interaction: judgeBx4Opened (S12 — rendered change, never host.open)', () => {
+  it('true when the visible tag signature changes', () => {
+    // mud-accordion-item: setOpen(true) flips `hidden` on the panel
+    // (role="region"), which VISIBLE_SIGNATURE_FN excludes while hidden.
+    const before = { tags: ['button', 'div', 'span'], ariaExpanded: null };
+    const after = { tags: ['button', 'div', 'div', 'div', 'span'], ariaExpanded: null };
+    assert.equal(judgeBx4Opened(before, after), true);
+  });
+
+  it('true when aria-expanded flips from not-true to true', () => {
+    const before = { tags: ['button'], ariaExpanded: false };
+    const after = { tags: ['button'], ariaExpanded: true };
+    assert.equal(judgeBx4Opened(before, after), true);
+  });
+
+  it('false when nothing rendered changes (e.g. mud-tooltip whose open method/prop produced no visible diff)', () => {
+    const same = { tags: ['button', 'span'], ariaExpanded: null };
+    assert.equal(judgeBx4Opened(same, { ...same }), false);
+  });
+
+  it('never reads a host `open` property — it is not part of the signature at all', () => {
+    const before = { tags: ['button'], ariaExpanded: null, open: false };
+    const after = { tags: ['button'], ariaExpanded: null, open: true };
+    assert.equal(judgeBx4Opened(before, after), false);
+  });
+
+  it('handles missing captures', () => {
+    assert.equal(judgeBx4Opened(null, { tags: [] }), false);
+    assert.equal(judgeBx4Opened({ tags: [] }, null), false);
+  });
+});
+
+describe('19-interaction: declaresPopup (S12)', () => {
+  it('true for a dialog/alertdialog role', () => {
+    assert.equal(declaresPopup(null, { hasDialog: true }), true);
+  });
+
+  it('true for a [popover] attribute', () => {
+    assert.equal(declaresPopup(null, { hasPopover: true }), true);
+  });
+
+  it('true for [aria-haspopup]', () => {
+    assert.equal(declaresPopup(null, { hasAriaHaspopup: true }), true);
+  });
+
+  it('true for [aria-modal="true"]', () => {
+    assert.equal(declaresPopup(null, { hasAriaModal: true }), true);
+  });
+
+  it('false when none of the markers are present', () => {
+    assert.equal(
+      declaresPopup(null, { hasDialog: false, hasPopover: false, hasAriaHaspopup: false, hasAriaModal: false }),
+      false,
+    );
+  });
+
+  it('handles a missing dom capture', () => {
+    assert.equal(declaresPopup(null, null), false);
+  });
 });
 
 describe('19-interaction: judgeBx4Escape', () => {
   it('passes when the overlay closes and focus is not left inside it', () => {
-    assert.equal(judgeBx4Escape({ stillOpen: false, focusTrappedInClosedOverlay: false }), null);
+    assert.equal(judgeBx4Escape({ opened: true, stillOpen: false, focusTrappedInClosedOverlay: false }), null);
   });
 
   it('flags a keyboard trap (overlay still open)', () => {
-    const f = judgeBx4Escape({ stillOpen: true, focusTrappedInClosedOverlay: false });
+    const f = judgeBx4Escape({ opened: true, stillOpen: true, focusTrappedInClosedOverlay: false });
     assert.equal(f.code, 'INTERACTION-BX4-ESCAPE-NO-CLOSE');
   });
 
   it('flags focus stranded inside the now-closed overlay', () => {
-    const f = judgeBx4Escape({ stillOpen: false, focusTrappedInClosedOverlay: true });
+    const f = judgeBx4Escape({ opened: true, stillOpen: false, focusTrappedInClosedOverlay: true });
     assert.equal(f.code, 'INTERACTION-BX4-FOCUS-TRAPPED');
+  });
+
+  it('returns null when it never opened (that case is a noTarget finding / not-applicable, decided by the caller)', () => {
+    assert.equal(judgeBx4Escape({ opened: false, declaresPopup: true }), null);
   });
 
   it('returns null for a null capture (not applicable)', () => {
@@ -120,13 +218,26 @@ describe('19-interaction: isBx7Applicable', () => {
   });
 });
 
+describe('19-interaction: judgeBx7 (S12 — value comparison)', () => {
+  it('false when the submitted value matches the expected one', () => {
+    assert.equal(judgeBx7('audit-value', 'audit-value'), false);
+  });
+
+  it('true when the submitted value differs from the expected one', () => {
+    assert.equal(judgeBx7('', 'audit-value'), true);
+    assert.equal(judgeBx7(null, 'audit-value'), true);
+  });
+});
+
 describe('19-interaction: judgeBx7FormRoundTrip', () => {
-  it('passes when FormData carries the key and every setFormValue call used 2 args', () => {
+  it('passes when FormData carries the key, the expected value, and every setFormValue call used 2 args', () => {
     assert.equal(
       judgeBx7FormRoundTrip({
         found: true,
         formDataHasKey: true,
         formDataKey: 'value',
+        formDataValue: 'audit-value',
+        expectedValue: 'audit-value',
         setFormValueCallArgCounts: [2, 2],
       }),
       null,
@@ -148,9 +259,25 @@ describe('19-interaction: judgeBx7FormRoundTrip', () => {
       found: true,
       formDataHasKey: true,
       formDataKey: 'value',
+      formDataValue: 'audit-value',
+      expectedValue: 'audit-value',
       setFormValueCallArgCounts: [2, 1],
     });
     assert.equal(f.code, 'INTERACTION-BX7-SETFORMVALUE-ONE-ARG');
+  });
+
+  // S12: before this fix, only `formDataHasKey` was checked — a component
+  // submitting the wrong value under the right key passed silently.
+  it('flags a submitted value that does not match the value the audit set', () => {
+    const f = judgeBx7FormRoundTrip({
+      found: true,
+      formDataHasKey: true,
+      formDataKey: 'value',
+      formDataValue: 'wrong',
+      expectedValue: 'audit-value',
+      setFormValueCallArgCounts: [2],
+    });
+    assert.equal(f.code, 'INTERACTION-BX7-VALUE-MISMATCH');
   });
 
   it('returns null when not found (not applicable)', () => {

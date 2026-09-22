@@ -47,7 +47,7 @@
  *   node scripts/audit/run-all.mjs mud-button --only 01,02,03 --json
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
@@ -63,8 +63,8 @@ import {
   defaultReadSources,
   hashLegInput,
 } from './lib/leg-input.mjs';
-import { listChangedComponents } from './lib/changed-components.mjs';
-import { ensureWorktreeStorybook } from './lib/storybook-helpers.mjs';
+import { detectChangedComponents } from './lib/changed-components.mjs';
+import { acquireLock, ensureWorktreeStorybook, isValidLockToken, releaseLock } from './lib/storybook-helpers.mjs';
 import { figmaToken } from './figma-refs.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, excuseFor, writeSummary, writeVerdictForRun } from './verdict.mjs';
 
@@ -276,13 +276,43 @@ const AUDIT_SCRIPTS = [
   { id: 'ai-security', wave: 'D', kind: 'ai-leg', name: 'security', ...AI_LEG_TABLE['ai-security'] },
 ];
 
-/** Prerequisite commands, in the order they run. `storybook` is started, not run. */
+/** Prerequisite commands, in the order they run. `storybook` is started, not run;
+ * `coverage` is handled specially in `runPrerequisites` (S11 — its command depends
+ * on the run's `auditDir`, and its `ok` depends on parsing the JSON reporter output). */
 export const PREREQUISITES = Object.freeze({
   'dx:prepare': { command: ['yarn', 'dx:prepare'] },
   'dx:stencil:once': { command: ['yarn', 'dx:stencil:once'] },
-  'coverage': { command: dirs => ['yarn', 'vitest', 'run', '--project', 'spec', '--coverage', ...dirs] },
+  'coverage': { special: true },
   'storybook': { start: true },
 });
+
+/** Relative path of the coverage prerequisite's JSON-reporter output (S11), under `<auditDir>/_run/`. */
+export const VITEST_RESULTS_REL = join('_run', 'vitest-results.json');
+
+/**
+ * S11 (plan `2026-09-22-audit-depths-sentinel-fixes.md` Decision §6): whether
+ * the one vitest run that covers every selected component is `ok` for 06's
+ * prerequisite — the results JSON must have parsed, AND (the run exited 0, or
+ * every failed spec's component is itself in the selection). A vitest crash
+ * that wrote no parseable JSON is never `ok`, regardless of exit code — a
+ * stale previous-run results file must never be read as this run's outcome
+ * (the caller deletes it before spawning). Pure — exported for tests.
+ *
+ * @param {object|null} parsed — the JSON-reporter output, or null if unparseable/missing
+ * @param {{ exitCode: number|null, components: string[] }} ctx
+ * @returns {{ ok: boolean, failedComponents: string[] }}
+ */
+export function evaluateCoverageResults(parsed, { exitCode, components }) {
+  if (!parsed || !Array.isArray(parsed.testResults)) return { ok: false, failedComponents: [] };
+  const failedFiles = parsed.testResults
+    .filter(t => t.status === 'failed')
+    .map(t => String(t.name ?? '').replace(/\\/g, '/'));
+  const failedComponents = [
+    ...new Set(failedFiles.map(f => f.match(/src\/components\/(mud-[a-z0-9-]+)\//)?.[1]).filter(Boolean)),
+  ];
+  const ok = exitCode === 0 || failedComponents.every(c => components.includes(c));
+  return { ok, failedComponents };
+}
 
 /** What each `requiresBuild` value needs before its row can run. */
 export const PREREQUISITES_FOR = Object.freeze({
@@ -395,6 +425,9 @@ function runScript(script, targetArg, opts) {
   if (script.usesManifest && opts.figma?.path) extraArgs.push('--manifest', join(opts.repoRoot, opts.figma.path));
   if (script.id === '11' && opts.figmaDir) extraArgs.push('--figma-dir', opts.figmaDir);
   if (script.requiresBuild === 'browser' && opts.port) extraArgs.push('--port', String(opts.port));
+  // S11: 06 reads the coverage prerequisite's JSON-reporter output for the
+  // COVERAGE-TESTS-FAILED mapping — same `auditDir` the prerequisite wrote it to.
+  if (script.id === '06' && opts.auditDir) extraArgs.push('--vitest-results', join(opts.auditDir, VITEST_RESULTS_REL));
 
   return new Promise(resolve => {
     let stdout = '';
@@ -612,13 +645,57 @@ async function runWaves(scripts, opts) {
 
 // ─── Prerequisites ───────────────────────────────────────────────────────
 
-async function runPrerequisites(needed, { components, deps }) {
+async function runPrerequisites(needed, { components, deps, auditDir }) {
   const prereqs = new Map();
   for (const id of Object.keys(PREREQUISITES)) {
     if (!needed.has(id)) continue;
     if (id === 'storybook') {
       const sb = await deps.ensureStorybook();
       prereqs.set(id, sb.ok ? { id, ok: true, port: sb.port } : { id, ok: false, cause: sb.cause });
+      continue;
+    }
+    if (id === 'coverage') {
+      // S11: one vitest run over every selected component, with a JSON
+      // reporter (never per-component reportsDirectory — N startups on
+      // --all/--changed). Deleted before spawning so a crash that writes no
+      // JSON can never leave a PREVIOUS run's results to be parsed as this
+      // one's (that stale-read is exactly the acceptance-bar case).
+      const resultsPath = join(auditDir, VITEST_RESULTS_REL);
+      rmSync(resultsPath, { force: true });
+      const dirs = components.map(c => componentDirFor(deps.repoRoot, c));
+      const argv = [
+        'yarn',
+        'vitest',
+        'run',
+        '--project',
+        'spec',
+        '--coverage',
+        '--coverage.reportOnFailure',
+        '--reporter=json',
+        `--outputFile=${resultsPath}`,
+        ...dirs,
+      ];
+      const res = await deps.runCommand(argv[0], argv.slice(1), { cwd: deps.repoRoot });
+      let parsed = null;
+      try {
+        parsed = JSON.parse(readFileSync(resultsPath, 'utf8'));
+      } catch {
+        parsed = null;
+      }
+      const evaluated = evaluateCoverageResults(parsed, { exitCode: res.exitCode, components });
+      prereqs.set(
+        id,
+        evaluated.ok
+          ? { id, ok: true, command: argv.join(' ') }
+          : {
+              id,
+              ok: false,
+              command: argv.join(' '),
+              cause: parsed
+                ? `test(s) failed in ${evaluated.failedComponents.join(', ') || '(unmapped spec)'} — not in this run's selection`
+                : `\`${argv.join(' ')}\` exited ${res.exitCode} without a parseable results JSON at ${resultsPath}`,
+            },
+      );
       continue;
     }
     const spec = PREREQUISITES[id].command;
@@ -637,11 +714,17 @@ async function runPrerequisites(needed, { components, deps }) {
 
 // ─── The pipeline ────────────────────────────────────────────────────────
 
+/**
+ * `{ ok: true, names }` | `{ ok: false, cause }` — a `--changed` detector
+ * failure (no base ref, `git diff` failed) is distinct from an empty
+ * selection (Decision §9): `runAudit` maps `ok: false` to INCOMPLETE, never
+ * to "nothing changed, PASS".
+ */
 function resolveComponents(args, deps) {
-  if (args.all) return deps.listAll();
-  if (args.changed) return deps.listChanged();
+  if (args.all) return { ok: true, names: deps.listAll() };
+  if (args.changed) return deps.detectChanged();
   const name = normalizeComponentName(args.component);
-  return name ? [name] : null;
+  return { ok: true, names: name ? [name] : null };
 }
 
 function openAiLegs(scripts, component, deps) {
@@ -681,11 +764,17 @@ export async function runAudit(args, deps = {}) {
       mkdirSync(dirname(p), { recursive: true });
       writeFileSync(p, text);
     },
-    listChanged: () => listChangedComponents(),
+    detectChanged: () => detectChangedComponents(),
     listAll: () => listAllComponents().map(c => c.name),
     ensureStorybook: () => ensureWorktreeStorybook({ repoRoot }),
     readSources: component => defaultReadSources(repoRoot, component),
     readPrompt: rel => defaultReadPrompt(repoRoot, rel),
+    // R3: the worktree lock guards `dist/` and the worktree Storybook record —
+    // taken only when this run will build or start Storybook (`needed.size > 0`
+    // below), never for a `quick` run that touches neither.
+    worktreeLockPath: join(repoRoot, 'audit', '_run', '.worktree.lock'),
+    acquireLock,
+    releaseLock,
     runId: defaultRunId(),
     ...deps,
   };
@@ -724,7 +813,25 @@ export async function runAudit(args, deps = {}) {
     return result;
   }
 
-  const components = resolveComponents(args, d);
+  const detection = resolveComponents(args, d);
+  if (!detection.ok) {
+    // S5 / Decision §9: a broken `--changed` detector (no base ref, `git diff`
+    // failed) is INCOMPLETE — never "nothing changed, PASS". Reuses the
+    // preflight-failure shape: no script has run, so nothing to aggregate.
+    const detectCheck = { cause: detection.cause, command: 'git diff <base>...HEAD' };
+    const message = `INCOMPLETE: ${detection.cause} — run: ${detectCheck.command}`;
+    const combined = buildPreflightFailure({ args, envCheck: detectCheck, message, durationMs: Date.now() - t0 });
+    const result = { combined, perComponent: [], preflight: true };
+    if (args.verdict) {
+      result.summary = writeSummary(auditDir, {
+        depth: args.depth,
+        runs: [],
+        preflight: { cause: detection.cause, command: detectCheck.command, message },
+      });
+    }
+    return result;
+  }
+  const components = detection.names;
   if (!components) throw new UsageError(`invalid component name "${args.component}".`);
 
   // Per-component selection, with Figma inputs resolved from HEAD at standard+.
@@ -748,85 +855,152 @@ export async function runAudit(args, deps = {}) {
   for (const s of [...sharedScripts, ...plans.flatMap(p => p.scripts)]) {
     for (const p of PREREQUISITES_FOR[s.requiresBuild] ?? []) needed.add(p);
   }
-  const prereqs = await runPrerequisites(needed, { components, deps: d });
-  const port = prereqs.get('storybook')?.port ?? null;
-  const common = {
-    repoRoot,
-    scriptsDir: d.scriptsDir,
-    env: d.env,
-    runCommand: d.runCommand,
-    prereqs,
-    port,
-    depth: args.depth,
-    figmaDir: args.figmaDir,
-  };
 
-  // Repo-level rows run once. Wave D's builds rewrite dist/, so they run after every component.
-  const sharedEarly = await runWaves(
-    sharedScripts.filter(s => s.wave !== 'D'),
-    { ...common, component: null },
-  );
-  const perComponentResults = [];
-  for (const plan of plans) {
-    const scripts = plan.scripts.filter(s => s.perComponent !== false && s.kind !== 'ai-leg');
-    const t = Date.now();
-    const results = await runWaves(scripts, { ...common, component: plan.component, figma: plan.figma });
-    perComponentResults.push({ plan, results, durationMs: Date.now() - t });
-  }
-  const sharedLate = await runWaves(
-    sharedScripts.filter(s => s.wave === 'D'),
-    { ...common, component: null },
-  );
-  const shared = [...sharedEarly, ...sharedLate];
-
-  const prerequisites = [...prereqs.values()].map(p => ({ id: p.id, ok: p.ok }));
-  const perComponent = perComponentResults.map(({ plan, results, durationMs }) => {
-    const envelope = aggregate({
-      targetArg: plan.component,
-      results: [...shared, ...results],
-      durationMs,
-      ci: args.ci,
-      noBrowser: args.noBrowser,
-      registry: d.registry,
-    });
-    envelope.audit = {
-      ...auditBase,
-      component: plan.component,
-      figma: plan.figma,
-      aiLegs: openAiLegs(plan.scripts, plan.component, d),
-      prerequisites,
-    };
-    envelope.meta.depth = args.depth;
-    return { component: plan.component, envelope };
-  });
-
-  const combined =
-    perComponent.length === 1 && !args.all && !args.changed
-      ? perComponent[0].envelope
-      : aggregate({
-          targetArg,
-          results: [...shared, ...perComponentResults.flatMap(r => r.results)],
-          durationMs: 0,
-          ci: args.ci,
-          noBrowser: args.noBrowser,
-          registry: d.registry,
+  // R3: take the worktree lock only when this run builds or starts Storybook
+  // (`needed.size > 0`) — a `quick` run touches neither and never blocks on,
+  // or is blocked by, one. Released in `finally` below, before this function
+  // returns — no leg is ever dispatched from inside `runAudit` itself
+  // (Decision §3's "no self-block": deep legs are dispatched by the caller,
+  // after this promise resolves).
+  let lockToken = null;
+  if (needed.size > 0) {
+    const lock = d.acquireLock(d.worktreeLockPath);
+    if (!lock.ok) {
+      const message = `INCOMPLETE: ${lock.cause} — run: (wait for the other audit to finish, or remove ${d.worktreeLockPath} if it is stale)`;
+      const combined = buildPreflightFailure({
+        args,
+        envCheck: { cause: lock.cause, command: null },
+        message,
+        durationMs: Date.now() - t0,
+      });
+      const result = { combined, perComponent: [], preflight: true };
+      if (args.verdict) {
+        result.summary = writeSummary(auditDir, {
+          depth: args.depth,
+          runs: [],
+          preflight: { cause: lock.cause, command: null, message },
         });
-  combined.components = components;
-  combined.meta.depth = args.depth;
-  combined.meta.totalDurationMs = Date.now() - t0;
-
-  const result = { combined, perComponent };
-  if (args.verdict) {
-    const runs = perComponent.map(({ component, envelope }) =>
-      writeRun(auditDir, component, d.runId, envelope, {
-        repoRoot: d.repoRoot,
-        readSources: d.readSources,
-        readPrompt: d.readPrompt,
-      }),
-    );
-    result.summary = writeSummary(auditDir, { depth: args.depth, runs });
+      }
+      return result;
+    }
+    lockToken = lock.token;
   }
-  return result;
+
+  try {
+    const prereqs = await runPrerequisites(needed, { components, deps: d, auditDir });
+    const port = prereqs.get('storybook')?.port ?? null;
+    const common = {
+      repoRoot,
+      scriptsDir: d.scriptsDir,
+      env: d.env,
+      runCommand: d.runCommand,
+      prereqs,
+      port,
+      depth: args.depth,
+      figmaDir: args.figmaDir,
+      auditDir,
+    };
+
+    // Repo-level rows run once. Wave D's builds rewrite dist/, so they run after every component.
+    const sharedEarly = await runWaves(
+      sharedScripts.filter(s => s.wave !== 'D'),
+      { ...common, component: null },
+    );
+    const perComponentResults = [];
+    for (const plan of plans) {
+      const scripts = plan.scripts.filter(s => s.perComponent !== false && s.kind !== 'ai-leg');
+      const t = Date.now();
+      const results = await runWaves(scripts, { ...common, component: plan.component, figma: plan.figma });
+      perComponentResults.push({ plan, results, durationMs: Date.now() - t });
+    }
+    const sharedLate = await runWaves(
+      sharedScripts.filter(s => s.wave === 'D'),
+      { ...common, component: null },
+    );
+    const shared = [...sharedEarly, ...sharedLate];
+
+    const prerequisites = [...prereqs.values()].map(p => ({ id: p.id, ok: p.ok }));
+    const perComponent = perComponentResults.map(({ plan, results, durationMs }) => {
+      const envelope = aggregate({
+        targetArg: plan.component,
+        results: [...shared, ...results],
+        durationMs,
+        ci: args.ci,
+        noBrowser: args.noBrowser,
+        registry: d.registry,
+      });
+      envelope.audit = {
+        ...auditBase,
+        component: plan.component,
+        figma: plan.figma,
+        aiLegs: openAiLegs(plan.scripts, plan.component, d),
+        prerequisites,
+      };
+      envelope.meta.depth = args.depth;
+      return { component: plan.component, envelope };
+    });
+
+    const combined =
+      perComponent.length === 1 && !args.all && !args.changed
+        ? perComponent[0].envelope
+        : aggregate({
+            targetArg,
+            results: [...shared, ...perComponentResults.flatMap(r => r.results)],
+            durationMs: 0,
+            ci: args.ci,
+            noBrowser: args.noBrowser,
+            registry: d.registry,
+          });
+    combined.components = components;
+    combined.meta.depth = args.depth;
+    combined.meta.totalDurationMs = Date.now() - t0;
+
+    const result = { combined, perComponent };
+    if (args.verdict) {
+      // R3: `_run/summary.json`, each component's `verdict.json` and (with
+      // --out) `_run/envelope.json` are guarded by the audit-dir lock. When
+      // `verdict.mjs`'s `runFresh` spawned this process it already holds that
+      // lock and hands its token via `AUDIT_LOCK_TOKEN` — honoured only if
+      // the lock file still names it, live; a forged or stale token, or none
+      // at all (a direct `run-all.mjs --verdict` invocation), takes the lock
+      // here instead, so a concurrent `yarn audit:component` cannot race it.
+      const auditLockPath = join(auditDir, '_run', '.lock');
+      let existingLock = null;
+      try {
+        existingLock = JSON.parse(readFileSync(auditLockPath, 'utf8'));
+      } catch {
+        existingLock = null;
+      }
+      const handedOff = isValidLockToken(existingLock, d.env.AUDIT_LOCK_TOKEN);
+      let auditLockToken = null;
+      if (!handedOff) {
+        const lock = d.acquireLock(auditLockPath);
+        if (!lock.ok) {
+          throw new UsageError(`audit-dir lock: ${lock.cause}`);
+        }
+        auditLockToken = lock.token;
+      }
+      try {
+        const runs = perComponent.map(({ component, envelope }) =>
+          writeRun(auditDir, component, d.runId, envelope, {
+            repoRoot: d.repoRoot,
+            readSources: d.readSources,
+            readPrompt: d.readPrompt,
+          }),
+        );
+        // S5 / Decision §2: with zero components selected, no per-component verdict
+        // carries the repo-level rows' (03, ...) outcome — `combined` is the only
+        // place it lives, so it is handed to writeSummary explicitly.
+        const repoLevel = components.length === 0 ? { ok: combined.ok } : null;
+        result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
+      } finally {
+        if (auditLockToken) d.releaseLock(auditLockPath, auditLockToken);
+      }
+    }
+    return result;
+  } finally {
+    if (lockToken) d.releaseLock(d.worktreeLockPath, lockToken);
+  }
 }
 
 /**
@@ -947,7 +1121,7 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
 
   const rows = results.map(r => {
     const script = scriptsById.get(r.id);
-    const status = rowStatus(r, script);
+    const status = rowStatus(r);
     if (status === ROW_STATUS.CRASHED || status === ROW_STATUS.MISSING_PREREQ) {
       summary.incomplete += 1;
       blockers.push(`${r.name}/${status}`);
@@ -1002,17 +1176,21 @@ export function aggregate({ targetArg, results, durationMs, ci = false, noBrowse
 }
 
 /**
- * Classify a per-script result into the shared row-status enum (F1, F3).
+ * Classify a per-script result into the shared row-status enum (F1, F3, S10).
  * A status the runner already decided (a missing script file is `crashed`, a
- * failed prerequisite `missing-prereq`, a deferred item `skipped`) is kept.
- * Otherwise `status: 'ok'` means an envelope reached us — the script ran,
- * whatever its findings say. No summary reached us at all: a script that
- * declares `requiresBuild` is `missing-prereq`; anything else is `crashed`.
+ * failed prerequisite `missing-prereq` — set by `prerequisiteFailure` in
+ * `runRow`, before the script is even spawned — a deferred item `skipped`) is
+ * kept as-is. Otherwise `status: 'ok'` means an envelope reached us — the
+ * script ran, whatever its findings say. No summary and no status reached us
+ * at all: the prerequisite already succeeded (or the row never had one) by
+ * the time we get here, so this is always the script itself crashing —
+ * `crashed`, never `missing-prereq` (a real prerequisite failure would have
+ * set `r.status` already and returned above).
  */
-function rowStatus(r, script) {
+function rowStatus(r) {
   if (r.status) return r.status;
   if (r.summary !== undefined && r.summary !== null) return ROW_STATUS.OK;
-  return script?.requiresBuild ? ROW_STATUS.MISSING_PREREQ : ROW_STATUS.CRASHED;
+  return ROW_STATUS.CRASHED;
 }
 
 async function emit(combined, args) {

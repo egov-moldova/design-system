@@ -20,9 +20,37 @@ import {
   DEFAULT_PASS,
   DEFAULT_WARN,
   DEFAULT_SCALE,
+  analyzeComponent,
 } from '../../audit/11-pixel-diff-states.mjs';
 
 const tempDirs = [];
+
+describe('11-pixel-diff-states: S6 — PIXEL-NO-REFERENCES / PIXEL-NO-STORIES carry noTarget (Decision §5)', () => {
+  it('no manifest and no --figma-dir emits PIXEL-NO-REFERENCES with noTarget: true, no browser touched', async () => {
+    const target = { found: true, name: 'mud-nonexistent-fixture-xyz', exists: { stories: false }, paths: {} };
+    const opts = { args: { extras: {} } };
+    const { findings } = await analyzeComponent(target, opts);
+    const f = findings.find(x => x.code === 'PIXEL-NO-REFERENCES');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+  });
+
+  it('a --figma-dir but no stories file emits PIXEL-NO-STORIES with noTarget: true, no browser touched', async () => {
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'pixel-no-stories-'));
+    tempDirs.push(dir);
+    const target = {
+      found: true,
+      name: 'mud-nonexistent-fixture-xyz',
+      exists: { stories: false },
+      paths: { stories: path.join(dir, 'missing.stories.ts') },
+    };
+    const opts = { args: { extras: { 'figma-dir': dir } } };
+    const { findings } = await analyzeComponent(target, opts);
+    const f = findings.find(x => x.code === 'PIXEL-NO-STORIES');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+  });
+});
 
 function tempFigmaDir(fileNames) {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'pixel-spec-'));

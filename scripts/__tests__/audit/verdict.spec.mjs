@@ -6,8 +6,9 @@
  */
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
@@ -18,9 +19,13 @@ import {
   computeVerdict,
   excuseFor,
   levelFor,
+  printSummary,
+  takeAuditLock,
   worstState,
+  writeSummary,
   writeVerdictForRun,
 } from '../../audit/verdict.mjs';
+import { releaseLock } from '../../audit/lib/storybook-helpers.mjs';
 import {
   FIGMA_ABSENT,
   FIGMA_DESIGN_NONE,
@@ -635,5 +640,108 @@ describe('verdict: the only writer, byte-identical', () => {
     const runDir = join(auditDir, 'mud-fx', 'runs', 'r');
     mkdirSync(runDir, { recursive: true });
     assert.equal(writeVerdictForRun(runDir).state, 'INCOMPLETE');
+  });
+});
+
+// ─── S5: zero components selected (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §2) ───
+
+function captureStdout(fn) {
+  const chunks = [];
+  const real = process.stdout.write.bind(process.stdout);
+  process.stdout.write = c => {
+    chunks.push(c);
+    return true;
+  };
+  try {
+    fn();
+  } finally {
+    process.stdout.write = real;
+  }
+  return chunks.join('');
+}
+
+describe('S5: writeSummary / printSummary with zero components selected', () => {
+  it('nothing selected, nothing repo-level failed → PASS, with a note', () => {
+    const auditDir = tmp();
+    const summary = writeSummary(auditDir, { depth: 'quick', runs: [] });
+    assert.equal(summary.state, 'PASS');
+    assert.equal(summary.note, 'no components selected');
+    assert.equal(JSON.parse(readFileSync(join(auditDir, '_run', 'summary.json'), 'utf8')).note, summary.note);
+  });
+
+  it('nothing selected but a repo-level row (03) failed → FAIL', () => {
+    const auditDir = tmp();
+    const summary = writeSummary(auditDir, { depth: 'quick', runs: [], repoLevel: { ok: false } });
+    assert.equal(summary.state, 'FAIL');
+    assert.equal(summary.note, 'no components selected');
+  });
+
+  it('the note prints on stdout in text mode too, not only in --json', () => {
+    const auditDir = tmp();
+    const summary = writeSummary(auditDir, { depth: 'quick', runs: [] });
+    const textOut = captureStdout(() => printSummary(summary, false));
+    assert.match(textOut, /no components selected/);
+    const jsonOut = captureStdout(() => printSummary(summary, true));
+    assert.match(jsonOut, /no components selected/);
+  });
+
+  it('a non-empty selection never carries the note', () => {
+    const auditDir = tmp();
+    const runDir = writeRunDir(auditDir, cleanEnvelope());
+    const verdict = writeVerdictForRun(runDir);
+    const summary = writeSummary(auditDir, { depth: 'standard', runs: [{ verdict, runDir }] });
+    assert.equal('note' in summary, false);
+  });
+});
+
+// ─── R3: takeAuditLock (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3) ───
+
+describe('R3: takeAuditLock', () => {
+  it('takes a fresh audit-dir lock, and the token releases it', () => {
+    const auditDir = tmp();
+    const lock = takeAuditLock(auditDir);
+    assert.equal(lock.ok, true);
+    releaseLock(join(auditDir, '_run', '.lock'), lock.token);
+  });
+
+  it('refuses a live lock — INCOMPLETE exit code, naming the pid', () => {
+    const auditDir = tmp();
+    const first = takeAuditLock(auditDir);
+    assert.equal(first.ok, true);
+    const second = takeAuditLock(auditDir);
+    assert.equal(second.ok, false);
+    assert.equal(second.exitCode, 3);
+    releaseLock(join(auditDir, '_run', '.lock'), first.token);
+  });
+
+  it('is rooted at the given auditDir — two different audit dirs never contend', () => {
+    const a = takeAuditLock(tmp());
+    const b = takeAuditLock(tmp());
+    assert.equal(a.ok, true);
+    assert.equal(b.ok, true);
+  });
+});
+
+// ─── R5: runFresh removes a stale audit/_run/envelope.json beside summary.json ───
+
+describe('R5: a stale envelope.json is removed before a fresh run (CLI, real subprocess)', () => {
+  const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+  const VERDICT_CLI = join(REPO_ROOT, 'scripts', 'audit', 'verdict.mjs');
+
+  it("a stale envelope.json from an earlier run is overwritten with this run's own, never left standing", () => {
+    const auditDir = tmp();
+    const runDir = join(auditDir, '_run');
+    mkdirSync(runDir, { recursive: true });
+    writeFileSync(join(runDir, 'summary.json'), JSON.stringify({ stale: true }));
+    writeFileSync(join(runDir, 'envelope.json'), JSON.stringify({ stale: true }));
+    const res = spawnSync(
+      process.execPath,
+      [VERDICT_CLI, 'mud-button', '--depth', 'quick', '--audit-dir', auditDir, '--json'],
+      { encoding: 'utf8' },
+    );
+    assert.equal(res.status, 0, res.stderr);
+    const envelope = JSON.parse(readFileSync(join(runDir, 'envelope.json'), 'utf8'));
+    assert.equal(envelope.stale, undefined);
+    assert.equal(envelope.tool, 'run-all');
   });
 });

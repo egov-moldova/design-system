@@ -10,7 +10,22 @@ import {
   extractComponentBlock,
   flattenDtcg,
   resolveMode,
+  loadComponentSources,
 } from '../../audit/13-token-diff.mjs';
+
+describe('13-token-diff: S6 — TOKEN-DIFF-NO-CURRENT / TOKEN-DIFF-NO-FIGMA-EXPORT carry noTarget (Decision §5)', () => {
+  it('no current tokens file → TOKEN-DIFF-NO-CURRENT, noTarget: true', () => {
+    const { error } = loadComponentSources('mud-nonexistent-fixture-xyz', 'tokenhaus/export.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
+    assert.equal(error.noTarget, true);
+  });
+
+  it('current tokens file exists but the Figma export path does not → TOKEN-DIFF-NO-FIGMA-EXPORT, noTarget: true', () => {
+    const { error } = loadComponentSources('mud-button', 'no/such/figma-export.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-FIGMA-EXPORT');
+    assert.equal(error.noTarget, true);
+  });
+});
 
 describe('13-token-diff: componentRoot', () => {
   it("reads the component file's own root, skipping DTCG `$` metadata", () => {

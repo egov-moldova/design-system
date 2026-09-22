@@ -36,6 +36,28 @@
  *     lower-cased). The compiler only WARNS about a collision; this rule
  *     makes it a finding. `NATIVE_DOM_EVENT_NAMES` (A2) is derived from the
  *     same on-* entries in that citation, so both rules share one source.
+ *     R10 (plan `2026-09-22-audit-depths-sentinel-fixes.md`, Decision §4):
+ *     compared against `@stencil/eslint-plugin`'s own `reserved-member-names`
+ *     rule (`node_modules/@stencil/eslint-plugin/dist/index.js:873-950`,
+ *     `eslint.config.mjs:64`, level `error`, already enforced on every PR).
+ *     Neither set is a subset of the other, so A4 is KEPT, not deleted. Point
+ *     measurement (2026-09-22, re-derivable by diffing `RESERVED_PUBLIC_MEMBERS`
+ *     below against the eslint rule's own `RESERVED_PUBLIC_MEMBERS` at
+ *     `node_modules/@stencil/eslint-plugin/dist/index.js:945-948`, itself
+ *     `GLOBAL_ATTRIBUTES` (:892) ∪ `getHtmlElementProperties()` (a jsdom walk
+ *     of `HTMLElement`/`Element`/`Node`/`EventTarget`, :922-940) ∪ `JSX_KEYS`):
+ *     44 names A4 catches that eslint's rule does not (this codebase's
+ *     curated `ALL_KEYS`, e.g. `onfocusout`, `requestfullscreen`,
+ *     `scrollintoview` — absent from jsdom's `HTMLElement`, which the eslint
+ *     rule walks instead of a real browser's), and 80 names eslint's rule
+ *     catches that A4 does not (its `GLOBAL_ATTRIBUTES` list — `class`, `id`,
+ *     `style`, `slot`, `part`, every `aria-*` attribute — A4 never included
+ *     those). The eslint rule also fires only on `@Prop`/`@Method` decorators
+ *     (`node_modules/@stencil/eslint-plugin/dist/index.js:873`) — never
+ *     `@Event`, which A4 also checks (`kind: 'event'` below) — a second,
+ *     independent reason A4 cannot be deleted. P11
+ *     (`.claude/skills/audit-component/SKILL.md:168`) is NOT remapped to
+ *     eslint; Phase 4 records this outcome in the SKILL.md/wave-2 rows.
  *
  * Not encoded (Design §4): `@Method` async — already `eslint:@stencil/async-
  * methods` (stencil-compliance M1) — and a serializable event `detail` (no

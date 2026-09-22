@@ -49,6 +49,69 @@ describe('17-adapter-contract: RESERVED_PUBLIC_MEMBERS / NATIVE_DOM_EVENT_NAMES'
     assert.equal(RESERVED_PUBLIC_MEMBERS.has('variant'), false);
   });
 
+  // R10 (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §4): compares
+  // A4's RESERVED_PUBLIC_MEMBERS against `@stencil/eslint-plugin`'s own
+  // `reserved-member-names` rule set, computed the same way the rule computes
+  // it (node_modules/@stencil/eslint-plugin/dist/index.js:892-948) — GLOBAL_ATTRIBUTES
+  // ∪ a jsdom walk of HTMLElement/Element/Node/EventTarget ∪ JSX_KEYS. Neither
+  // set is a subset of the other, so A4 is kept (17-adapter-contract.mjs's
+  // header records the citation and the counts this test proves).
+  it("neither A4's set nor eslint's reserved-member-names set is a subset of the other — A4 is kept", async () => {
+    const { JSDOM } = await import('jsdom');
+    const { window: win } = new JSDOM();
+    const { document: doc } = win;
+    const el = doc.createElement('tester-component');
+    const relevantInterfaces = [win.HTMLElement, win.Element, win.Node, win.EventTarget];
+    const props = new Set();
+    let current = el;
+    while (current && relevantInterfaces.some(ri => current instanceof ri)) {
+      Object.getOwnPropertyNames(current).forEach(p => props.add(p));
+      current = Object.getPrototypeOf(current);
+    }
+    const GLOBAL_ATTRIBUTES = [
+      'about',
+      'accessKey',
+      'autocapitalize',
+      'autofocus',
+      'class',
+      'contenteditable',
+      'contextmenu',
+      'dir',
+      'draggable',
+      'enterkeyhint',
+      'hidden',
+      'id',
+      'inert',
+      'inputmode',
+      'itemid',
+      'itemprop',
+      'itemref',
+      'itemscope',
+      'itemtype',
+      'lang',
+      'nonce',
+      'part',
+      'popover',
+      'role',
+      'slot',
+      'spellcheck',
+      'style',
+      'tabindex',
+      'title',
+      'translate',
+      'virtualkeyboardpolicy',
+    ];
+    const JSX_KEYS = ['ref', 'key'];
+    const eslintSet = new Set([...GLOBAL_ATTRIBUTES, ...props, ...JSX_KEYS].map(p => p.toLowerCase()));
+
+    const onlyA4 = [...RESERVED_PUBLIC_MEMBERS].filter(n => !eslintSet.has(n));
+    const onlyEslint = [...eslintSet].filter(n => !RESERVED_PUBLIC_MEMBERS.has(n));
+    assert.ok(onlyA4.length > 0, 'A4 should catch names eslint does not (e.g. onfocusout, requestfullscreen)');
+    assert.ok(onlyEslint.length > 0, "eslint should catch names A4 does not (its GLOBAL_ATTRIBUTES, e.g. 'class')");
+    assert.ok(onlyA4.includes('onfocusout'));
+    assert.ok(onlyEslint.includes('class'));
+  });
+
   it('native event names are derived from the on* handler keys, lower-cased, "on" stripped', () => {
     for (const name of ['click', 'change', 'focus', 'submit', 'input']) {
       assert.ok(NATIVE_DOM_EVENT_NAMES.has(name), `${name} should be a native DOM event`);
