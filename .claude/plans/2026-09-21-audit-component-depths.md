@@ -78,6 +78,9 @@ Owner answers, 2026-09-21:
    a browser-waived run.
 7. AI-leg rows at `deep`: **accepted as self-attested, labelled**. The verdict prints
    `ai-legs: self-attested`, and the residual is listed under Not verified. No hook.
+   **Superseded 2026-09-22** by the owner's descope after the merge gate's third round
+   (`2026-09-22-audit-depths-sentinel-fixes.md`, Decision 12): no `ai-*` row is opened at `deep`;
+   AI-leg findings are advisory at every depth.
 8. `figma-refs --check` (live Figma API): **`deep` only**. At `standard`, Figma parity uses only
    the committed manifest (11, 15). At `deep`, the Figma file version it read is recorded in the
    verdict.

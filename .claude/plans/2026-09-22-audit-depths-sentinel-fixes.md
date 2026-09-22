@@ -699,6 +699,103 @@ Verify, as run:
 - scope-check `--phase 5 --base da6328c`: 24 files in scope. The Files list names 31; the 7 untouched were already conformant (`lib/leg-input.mjs`, `lib/changed-components.mjs`, `wave-2-static-analysis.md`, `lib-changed-components.spec.mjs`), read-only, or this plan.
 - fresh-eyes verify (over da6328c..8a5d456): FORTIFY (med) — the one above-bar finding was this missing results section.
 
+### Phase 6 — descope the deep two-phase flow (owner decision, 2026-09-22)
+**Executor**: dedicated stage, high effort · wave 6
+
+Sentinel reached its 3-round cap (rounds at e63c311, ac89c79, 9ff991d, all REQUEST-CHANGES). Six
+of round 3's eight blocking findings sat in the `deep` two-phase flow (AI legs close rows, then a
+recompute), and each round's fixes there produced new defects. The owner chose to **descope**:
+this PR ships `deep` with AI legs advisory, exactly as at `standard`; the two-phase completion
+becomes a separate issue. The parent plan's Decision §7 (AI-leg rows at `deep`, self-attested)
+is superseded by this decision.
+
+**Decision 12 (supersedes parent Decision §7, fixes-plan Decisions 1, 7, 10, 11 as far as they
+concern AI rows).** At `deep` no `ai-*` row is opened or required. A leg's `ai-findings.json`,
+when present in the run's `ai/` directory, is read exactly as at `standard`: its findings are
+listed under "Advisory" and never move `state`. `deep` still adds its scripted rows (adapter
+builds, `figma-refs`, the full Figma state × theme matrix, the media conditions scripts cover);
+`PRODUCTION-READY` means those scripted rows passed, and the headline says `ai-legs: advisory`.
+Removed with it: `awaitingLegs`, `--recompute`, the leg input hashing (`lib/leg-input.mjs` and
+its callers), `AUDIT_SCRIPTS`' `ai-*` rows, the two-phase caller prose. Kept: `--run-dir`
+(re-render a run's verdict and brief, e.g. to fold in advisory findings written after it),
+the locks, `runDir` in `summary.json`.
+
+**Decision 13 (a visible not-applicable).** A finding marked `notApplicable: true` (severity
+`info`) never moves `state`; `verdict.json` carries it on its row as `note` and the brief lists it
+under "Not applicable" with its reason. `13` resolves the tokens file by the component's CSS
+prefix: the file whose top-level block is referenced by the component's `var(--<prefix>-…)`
+usage (so `mud-text-input` → `input.tokens.json`, `mud-accordion-item` → the `item` block of
+`accordion.tokens.json`); it is `notApplicable` only when the component's CSS references no
+component-scoped variables at all (`mud-icon`, `mud-logo`); a component that references them but
+whose block is found nowhere keeps `noTarget` (INCOMPLETE, named).
+
+**Files**:
+- Modify: `scripts/audit/verdict.mjs`
+- Modify: `scripts/audit/run-all.mjs`
+- Delete: `scripts/audit/lib/leg-input.mjs`
+- Modify: `scripts/audit/lib/json-output.mjs`
+- Modify: `scripts/audit/lib/fix-brief.mjs`
+- Modify: `scripts/audit/13-token-diff.mjs`
+- Modify: `scripts/audit/19-interaction.mjs`
+- Modify: `scripts/__tests__/audit/verdict.spec.mjs`
+- Modify: `scripts/__tests__/audit/run-all.spec.mjs`
+- Modify: `scripts/__tests__/audit/callers.spec.mjs`
+- Modify: `scripts/__tests__/audit/fix-brief.spec.mjs`
+- Modify: `scripts/__tests__/audit/lib-json-output.spec.mjs`
+- Modify: `scripts/__tests__/audit/13-token-diff.spec.mjs`
+- Modify: `scripts/__tests__/audit/19-interaction.spec.mjs`
+- Modify: `scripts/__tests__/audit/seeded-defects.spec.mjs`
+- Modify: `scripts/audit/seeded-defects.mjs`
+- Modify: `.claude/agents/audit-production.md`
+- Modify: `.claude/agents/a11y-verifier.md`
+- Modify: `.claude/agents/pixel-perfect-verifier.md`
+- Modify: `.claude/commands/audit-component.md`
+- Modify: `.claude/commands/migrate-component.md`
+- Modify: `.claude/skills/audit-component/SKILL.md`
+- Modify: `.claude/skills/audit-component/references/report-template.md`
+- Modify: `.claude/skills/stencil-compliance/SKILL.md`
+- Modify: `scripts/audit/README.md`
+- Modify: `.claude/plans/2026-09-22-audit-depths-sentinel-fixes.md`
+- Read only: `tokens/core/components/`
+- Read only: `src/components/`
+
+- [ ] U1 Decision 12 in code: `REQUIRED_CHECKS.deep` loses the `ai-*` ids; run-all opens no AI
+  rows; `computeVerdict` reads `ai/` as advisory at every depth; `awaitingLegs`, `--recompute`,
+  `lib/leg-input.mjs` and their tests removed; headline `ai-legs: advisory`. Schema: removing
+  `awaitingLegs` is a breaking change to a field no released reader uses — bump
+  `VERDICT_SCHEMA_VERSION` to 2.0.0 and say so in its doc block. Tests: a `deep` fixture with no
+  `ai/` directory → PASS `PRODUCTION-READY`; with an error-severity AI finding → still PASS,
+  finding under "Advisory".
+- [ ] U2 Decision 12 in prose: every caller runs the gate once and stops on a non-zero exit; legs
+  at `deep` are optional follow-ups that write `ai-findings.json`, then `yarn audit:component
+  --run-dir <runDir>` re-renders the brief with them as advisory. The skill invoked by a caller
+  never starts a second fresh run (it is told the caller's `runDir`). `callers.spec.mjs` asserts:
+  no caller names `awaitingLegs` or `--recompute`; each deep caller runs the gate exactly once.
+- [ ] U3 Decision 13: `notApplicable` finding field in `finding()`, `note` on the verdict row,
+  "Not applicable" brief section; `13` resolves by CSS prefix. Fixtures from the real repo:
+  `mud-text-input` and `mud-accordion-item` are diffed (not not-applicable), `mud-icon` is
+  `notApplicable` with the reason visible in `verdict.json` and the brief.
+- [ ] U4 BX4 popup markers include `[role=tooltip]`, `[role=menu]`, `[role=listbox]`, and
+  `capturePopupMarkers` queries the light DOM as well as the shadow root. Live check:
+  `mud-tooltip` BX4 runs and passes (it closes on Escape, `mud-tooltip.tsx:532`);
+  `mud-accordion-item` stays not-applicable (region, no popup).
+- [ ] U5 Cheap non-deep fixes from round 3: coverage cause text distinguishes an unmapped failed
+  spec from "no failed spec" (`run-all.mjs:694`); the printed coverage prerequisite carries the
+  trailing slash and the component's real directory (`run-all.mjs:327,1196`); a fresh run with an
+  invalid component name exits 2 (`verdict.mjs:941`); `compareFindings` ties break on the
+  rendered text (`verdict.mjs:329`); `report-template.md:46` names the crashed entry's `log`.
+- Not in this PR (recorded for the follow-up issue): the two-phase `deep` completion, the
+  stale-lock takeover race (narrowed, not closed), `freshRunCommand` dropping waivers,
+  `bx7ExpectedValue`'s type-text guessing, `run-all --out` written outside the lock on the direct
+  path, `--run-dir` symlink resolution.
+
+Verify: `node --test "scripts/__tests__/**/*.spec.mjs"` all pass; `yarn test` all pass; `yarn
+lint` clean; `seeded-defects` holds (update the deep seed if it relied on AI rows); two `--depth
+standard` runs on `mud-banner` `cmp`-identical; `--depth standard` on `mud-text-input`,
+`mud-accordion-item`, `mud-icon`, `mud-tooltip` — record state, row 13 and row 19 for each;
+`--depth deep` on `mud-banner` exits without any `ai-*` INCOMPLETE. Record under
+`#### Phase 6 results`.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |
@@ -709,6 +806,7 @@ Verify, as run:
 | 3 | implementer (prose that must match the code) | sonnet, medium | 3 (parallel with 2) |
 | 4 | docs + verification + gate | session model, high | 4 |
 | 5 | implementer (sentinel round-2 fixes) | session model, high | 5 |
+| 6 | implementer (descope deep, owner decision) | dedicated stage, high | 6 |
 
 ## Not verified
 
