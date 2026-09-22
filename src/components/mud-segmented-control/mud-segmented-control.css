@@ -19,7 +19,7 @@
 
   --_container-bg: var(--segmented-control-container-background);
   --_container-radius: var(--segmented-control-container-border-radius);
-  --_container-padding: var(--segmented-control-container-padding);
+  --_container-padding: var(--segmented-control-container-padding-default);
   --_container-gap: var(--segmented-control-container-gap);
 
   --_segment-radius: var(--segmented-control-segment-border-radius);
@@ -72,9 +72,24 @@
 }
 
 /* Fluid (full-width) — the mobile breakpoint. The host fills its container and
-   the track stretches so the equal-width columns span the full inline size. */
+   the track stretches so the equal-width columns span the full inline size.
+
+   Figma models this as the component set's own `📏 Breakpoint` property rather
+   than as something the component senses, so `fluid` is the consumer's call —
+   and Mobile 4785:15359 is not just a wider Desktop: the track pads 4 instead
+   of 6 and each segment stands 44 tall instead of 40, which is what keeps the
+   touch target comfortable once the segments stop hugging their labels. */
 :host([fluid]) {
   display: block;
+
+  --_container-padding: var(--segmented-control-container-padding-fluid);
+}
+
+/* The 44px rung belongs to the Mobile breakpoint, which Figma draws at one
+   size only. A consumer who asked for `size="sm"` asked for a compact control
+   and keeps it, rather than being handed a taller one by going full-width. */
+:host([fluid]:not([size='sm'])) {
+  --_segment-height: var(--segmented-control-segment-height-fluid);
 }
 
 :host([fluid]) .track {
