@@ -824,6 +824,56 @@ standard` runs on `mud-banner` `cmp`-identical; `--depth standard` on `mud-text-
 `--depth deep` on `mud-banner` exits without any `ai-*` INCOMPLETE. Record under
 `#### Phase 6 results`.
 
+#### Phase 6 results (2026-09-22, Node 24.19.0, HEAD 088756d)
+
+Commits: `1f83244` (U1–U2, and the verdict/brief half of U3), `9516c2b` (U3 in 13, U4, U5),
+`088756d` (U6). The dedicated stage hit its session limit mid-phase; the rest ran in the
+launching session.
+
+- U1/U2: no `ai-*` row at `deep`; `awaitingLegs`, `--recompute`, `lib/leg-input.mjs` gone;
+  `VERDICT_SCHEMA_VERSION` 2.0.0. `--depth deep` on `mud-banner`: exit 0,
+  `PASS@deep · PRODUCTION-READY · ai-legs: advisory`, no INCOMPLETE entry.
+- U3: `resolveTokensFile` over all 44 components — own file for 40; `mud-text-input` →
+  `input.tokens.json`, `mud-accordion-item` → `accordion.tokens.json`, `mud-icon` and
+  `mud-logo` → none (not-applicable note). Live `standard`: row 13 `ok` on text-input and
+  accordion-item (diffed), `ok` + note on icon.
+- U4: live check 19 on `mud-tooltip`: `bx4 {opened: true, declaresPopup: true, stillOpen:
+  false, focusTrappedInClosedOverlay: false}`. accordion-item row 19 `ok`, no ESCAPE-NO-CLOSE.
+- U5: coverage cause text, the printed prerequisite path and the invalid-name exit were already
+  in `1f83244`'s range; the warning sort tie-break landed in `9516c2b` with its test.
+- U6, measured (probe: `/usr/bin/time -l node scripts/audit/verdict.mjs <c> --depth <d>`, one
+  warm-up, n=3; per-row `durationMs`; peak summed RSS of the process tree sampled every 0.2 s):
+
+```derived
+command: /tmp/claude-501/perf.sh (before at 9516c2b, after at 088756d)
+mud-button standard wall: before 27.85 27.86 28.84 s -> after 16.05 15.66 15.64 s
+mud-banner standard wall: before 23.69 23.66 23.59 s -> after 23.24 23.29 23.10 s
+quick wall (both components): before 2.11-2.86 s -> after 2.11-2.44 s (unchanged within noise)
+row 12 alone, mud-button, 18 stories: before 19.44 19.61 s / 250-330 MB tree RSS
+                                      after   7.94  7.89 s / 191-207 MB tree RSS (n=2)
+verdict.json: cmp-identical within every n=3 series, and old-row-12 vs new-row-12 on
+mud-banner and mud-button standard
+Chromium launch+newPage+close: 382 292 208 185 ms
+```
+
+  Changed: row 12 shares one Chromium, a fresh context per story, 4 stories in flight
+  (`mapLimit`), results in story order; console listeners now attach before navigation, so
+  load-time messages count (no finding changed on the two measured components).
+  Rejected, with reasons: a Chromium shared across rows — rows already run concurrently within a
+  wave and a launch costs 0.2–0.4 s, so the saving is at most ~0.3 s of critical path;
+  `eslint --cache` for the lint row — type-aware rules depend on files the cache does not key on,
+  so it could serve stale results; parallelising 11/15 — they already use one browser and their
+  time is the state × theme screenshot work itself. `mud-banner`'s `standard` is bound by 15
+  (16.2 s) and 11 (15.3 s).
+  Tokens: the eight audit prompt files went from 121,617 to 118,019 characters (≈ −900 tokens,
+  `measure-prompt-cost.mjs`, 9ff991d vs HEAD). The larger saving — `deep` no longer requiring
+  six AI legs — is not measured: billed tokens per `deep` run were never measured.
+- Verify: script specs 1375/1375 (+2 for U6 = 1377 at 088756d), `yarn test` (vitest) 1987/1987,
+  `yarn lint` exit 0, `seeded-defects` 4/4, two `standard` runs on `mud-banner` `cmp`-identical,
+  `scope-check --phase 6 --base 7062855` exit 0.
+- Grading: carried by the merge gate (sentinel round 4, past the cap on the owner's descope
+  decision), which dispatches `/code-review` and a fresh-eyes critic over this phase.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |
