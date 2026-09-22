@@ -6,6 +6,7 @@ import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, Select
 import {
   entriesFromOptions,
   filterEntries,
+  foldForSearch,
   markupSelectedValue,
   readEntriesFromLightDom,
   toRows,
@@ -14,6 +15,13 @@ import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
+
+/**
+ * How long a type-ahead buffer survives between keystrokes. Matches the pause a
+ * native `<select>` allows, so "be" + "ef" still reaches Beef but a later "b"
+ * starts again.
+ */
+const TYPEAHEAD_RESET_MS = 500;
 
 /**
  * Select — single-select dropdown atom.
@@ -183,6 +191,8 @@ export class MudSelect {
   private listboxEl?: HTMLElement;
   private stopAriaLabel?: () => void;
   private optionsObserver?: MutationObserver;
+  private typeaheadBuffer: string = '';
+  private typeaheadTimer?: ReturnType<typeof setTimeout>;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
@@ -361,6 +371,7 @@ export class MudSelect {
     this.stopAriaLabel?.();
     this.optionsObserver?.disconnect();
     this.optionsObserver = undefined;
+    if (this.typeaheadTimer !== undefined) clearTimeout(this.typeaheadTimer);
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -531,27 +542,35 @@ export class MudSelect {
     this.setListboxOpen(false);
   };
 
-  private toggleListbox = (ev?: MouseEvent) => {
-    ev?.stopPropagation();
+  /**
+   * One handler for the whole control row, the input included. The chevron and
+   * the icon-start slot sit beside the input, so a click there would otherwise
+   * be dead; letting the input's own click bubble here instead of handling it
+   * separately keeps a single click from being acted on twice.
+   */
+  /**
+   * Takes the browser's default focus handling off the control row and does it
+   * ourselves. Clicking a row whose input already has focus otherwise leaves the
+   * input focused but no longer accepting text — keydown and beforeinput fire,
+   * the edit never lands. react-select prevents the same default for the same
+   * reason.
+   */
+  private handleControlMouseDown = (ev: MouseEvent) => {
     if (this.isInert() || this.readonly) return;
-    this.setListboxOpen(!this.open);
+    ev.preventDefault();
+    this.triggerEl?.focus();
   };
 
-  /**
-   * The trailing chevron and the leading icon-start slot sit *beside* the
-   * trigger button, not inside it — a click there would otherwise be dead.
-   * Forward any click within the control box that didn't land on the button
-   * itself (the button's own `onClick` stops propagation, so this never
-   * double-fires) to the trigger: focus it and toggle the listbox.
-   */
   private handleControlClick = (ev: MouseEvent) => {
-    const target = ev.target as Node | null;
-    if (target && this.triggerEl && (target === this.triggerEl || this.triggerEl.contains(target))) return;
     // Keep this click from reaching the document listener, which would read it
     // as an outside-click and immediately close what we just opened.
     ev.stopPropagation();
     if (this.isInert() || this.readonly) return;
-    this.triggerEl?.focus();
+
+    if (this.host.shadowRoot?.activeElement !== this.triggerEl) this.triggerEl?.focus();
+    // A searchable field that is already open reads the click as the user
+    // placing the caret in their query, not as a request to close.
+    if (this.searchable && this.open) return;
     this.setListboxOpen(!this.open);
   };
 
@@ -563,19 +582,7 @@ export class MudSelect {
     this.highlightedIndex = this.firstEnabledIndex();
   };
 
-  /**
-   * Clicking a searchable control that is already open should move the caret,
-   * not close what the user is typing into.
-   */
-  private handleTriggerClick = (ev: MouseEvent) => {
-    if (this.searchable && this.open && !this.readonly) {
-      ev.stopPropagation();
-      return;
-    }
-    this.toggleListbox(ev);
-  };
-
-  private selectIndex(index: number) {
+  private selectIndex(index: number, { returnFocus = true }: { returnFocus?: boolean } = {}) {
     const opts = this.resolvedOptions();
     const opt = opts[index];
     if (!opt || opt.disabled) return;
@@ -585,12 +592,45 @@ export class MudSelect {
       this.mudChange.emit({ value: next });
     }
     this.query = '';
-    this.closeListbox();
+    this.setListboxOpen(false, { returnFocus });
+  }
+
+  /**
+   * Jumps the highlight to the first option starting with what was typed — what
+   * a native `<select>` does with the same keystrokes. Only when the control is
+   * not searchable; there, the same keys build a query instead.
+   */
+  private handleTypeahead(key: string) {
+    this.typeaheadBuffer += key;
+    if (this.typeaheadTimer !== undefined) clearTimeout(this.typeaheadTimer);
+    this.typeaheadTimer = setTimeout(() => (this.typeaheadBuffer = ''), TYPEAHEAD_RESET_MS);
+
+    const needle = foldForSearch(this.typeaheadBuffer);
+    const match = this.resolvedOptions().findIndex(opt => !opt.disabled && foldForSearch(opt.label).startsWith(needle));
+    if (match < 0) return;
+
+    this.highlightedIndex = match;
+    if (!this.open) this.openListbox();
+    this.scrollHighlightedIntoView();
+  }
+
+  /** A character the user meant as text, rather than a command. */
+  private isTypeaheadKey(ev: KeyboardEvent): boolean {
+    return ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
   }
 
   private handleTriggerKeyDown = (ev: KeyboardEvent) => {
     if (this.isInert() || this.readonly) return;
     const key = ev.key;
+    // Space continues a type-ahead buffer rather than acting on the list, the
+    // same exception react-select makes for a space inside a query.
+    const spaceIsText = key === ' ' && (this.query.length > 0 || this.typeaheadBuffer.length > 0);
+
+    if (!this.searchable && this.isTypeaheadKey(ev) && (key !== ' ' || spaceIsText)) {
+      ev.preventDefault();
+      this.handleTypeahead(key);
+      return;
+    }
 
     if (!this.open) {
       // Closed: arrows + Enter/Space open the listbox and prime the highlight.
@@ -623,7 +663,12 @@ export class MudSelect {
         this.scrollHighlightedIntoView();
         break;
       case 'Enter':
+        ev.preventDefault();
+        if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex);
+        break;
       case ' ':
+        // With a query underway the space belongs to the text, not to the list.
+        if (spaceIsText) return;
         ev.preventDefault();
         if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex);
         break;
@@ -632,8 +677,10 @@ export class MudSelect {
         this.closeListbox();
         break;
       case 'Tab':
-        // Tab closes the listbox but allows focus to move naturally — no focus
-        // return on close.
+        // Tab commits the highlighted option, which is both react-select's
+        // default and what a native <select> does. Focus moves on naturally, so
+        // no focus return on close.
+        if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex, { returnFocus: false });
         this.setListboxOpen(false, { returnFocus: false });
         break;
     }
@@ -751,7 +798,12 @@ export class MudSelect {
         <div class="control-wrapper">
           {/* A click on the non-button chrome (chevron / icon-start) is forwarded
               to the trigger, which stays the keyboard-focusable control. */}
-          <div class="control" part="control" onClick={this.handleControlClick}>
+          <div
+            class="control"
+            part="control"
+            onMouseDown={this.handleControlMouseDown}
+            onClick={this.handleControlClick}
+          >
             <span class="control-icon control-icon-start" aria-hidden={this.hasIconStart ? null : 'true'}>
               <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
             </span>
@@ -786,7 +838,6 @@ export class MudSelect {
               aria-required={this.required ? 'true' : null}
               aria-readonly={this.readonly ? 'true' : null}
               disabled={effectivelyDisabled}
-              onClick={this.handleTriggerClick}
               onInput={this.handleInput}
               onKeyDown={this.handleTriggerKeyDown}
               onFocus={this.handleTriggerFocus}

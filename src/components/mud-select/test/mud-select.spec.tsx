@@ -325,6 +325,67 @@ describe('mud-select', () => {
       await flush();
       expect(onChange.mock.calls[0][0].detail).toEqual({ value: 'opt-4' });
     });
+
+    it('jumps the highlight to what was typed, as a native select does', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="apple">Apples</option>
+          <option value="beef">Beef</option>
+        </mud-select>,
+      );
+      await flush();
+      press(root, 'b');
+      await flush();
+      expect(queryOptions(root)[1]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('folds diacritics in type-ahead too', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" open>
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      press(root, 'b');
+      press(root, 'a');
+      await flush();
+      expect(queryOptions(root)[1]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('lets space continue a type-ahead buffer instead of selecting', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-select label="City" open onMudChange={onChange}>
+          <option value="ny">New York</option>
+          <option value="other">Other</option>
+        </mud-select>,
+      );
+      await flush();
+      for (const key of ['n', 'e', 'w', ' ', 'y']) press(root, key);
+      await flush();
+      // Space belongs to "New York", so nothing was committed by pressing it.
+      expect(onChange).not.toHaveBeenCalled();
+      expect(queryOptions(root)[0]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('commits the highlighted option on Tab', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="apple">Apples</option>
+          <option value="beef">Beef</option>
+        </mud-select>,
+      );
+      await flush();
+      // Opening primes the highlight on the first option, so one ArrowDown
+      // moves it to the second — which is what Tab must commit.
+      press(root, 'ArrowDown');
+      await flush();
+      press(root, 'Tab');
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('beef');
+      expect(root?.classList.contains('is-open')).toBe(false);
+    });
   });
 
   describe('disabled + readonly behaviour', () => {

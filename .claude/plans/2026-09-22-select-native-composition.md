@@ -165,6 +165,14 @@ did not ask for.
   references and `11-pixel-diff-states.mjs` will report `PIXEL-NO-REFERENCE`. Task 14 writes the
   manifest and task 8 runs style parity, which needs no token; the screenshot comparison stays
   unrun until someone with a token runs it.
+- **Clicking a control whose input already has focus.** The browser's default focus handling on
+  `mousedown` over a shadow host leaves an already-focused input unable to accept text: `keydown`
+  and `beforeinput` fire, the edit never lands, and every measurable property — `readOnly`,
+  `disabled`, `shadowRoot.activeElement` — reads normal. Found by clicking a searchable select
+  twice; it is not reproducible on a bare shadow root, so it is ours to handle, and the control row
+  now prevents the default and focuses the input itself, as react-select does. Six click and focus
+  sequences were checked in Chromium; no spec covers it, because mock-doc has no layout and cannot
+  dispatch a real `mousedown`.
 - **Mutation observation, in the spec suite.** The spec environment is mock-doc, which has no
   `MutationObserver`; the component's `typeof` guard turns the observer into a no-op there, so no
   spec can exercise it. Verified instead in headless Chromium against the built component: an
