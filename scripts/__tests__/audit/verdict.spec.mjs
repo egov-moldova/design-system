@@ -775,3 +775,105 @@ describe('R5: a stale envelope.json is removed before a fresh run (CLI, real sub
     assert.equal(envelope.tool, 'run-all');
   });
 });
+
+describe('verdict: Phase 5 (sentinel round 2)', () => {
+  it('T10: a crashed entry names the crash and its log, never a prerequisite', () => {
+    const e = cleanEnvelope();
+    Object.assign(e.results[0], { status: 'crashed', summary: null, exitCode: 2, error: 'boom' });
+    const entry = computeVerdict({ envelope: e }).entries[0];
+    assert.equal(entry.prerequisite, undefined);
+    assert.match(entry.cause, /^crashed \(exit-2\)/);
+    assert.match(entry.log, /envelope\.json/);
+    assert.match(entry.log, new RegExp(`"${e.results[0].id}"`));
+    assert.doesNotThrow(() => renderFixBrief(computeVerdict({ envelope: e })));
+    assert.match(renderFixBrief(computeVerdict({ envelope: e })), /- log: /);
+  });
+
+  it('T10: a missing-prereq entry still carries its prerequisite', () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '06');
+    Object.assign(row, { status: 'missing-prereq', summary: null, exitCode: null, prerequisite: 'yarn x' });
+    const entry = computeVerdict({ envelope: e }).entries[0];
+    assert.equal(entry.prerequisite, 'yarn x');
+    assert.equal(entry.log, undefined);
+  });
+
+  it('T12: warnings are sorted — shuffled findings give the same verdict', () => {
+    const findings = [
+      { severity: 'warning', code: 'W2', message: 'b', file: 'b.tsx', line: 3 },
+      { severity: 'warning', code: 'W1', message: 'a', file: 'a.tsx', line: 10 },
+      { severity: 'warning', code: 'W1', message: 'a', file: 'a.tsx', line: 2 },
+    ];
+    const withWarnings = order => {
+      const e = cleanEnvelope();
+      const row = e.results.find(r => r.id === '02');
+      row.summary = { errors: 0, warnings: 3, info: 0 };
+      e.findingsByTool[row.name] = order.map(i => findings[i]);
+      return computeVerdict({ envelope: e });
+    };
+    const a = withWarnings([0, 1, 2]);
+    const b = withWarnings([2, 0, 1]);
+    assert.deepEqual(a.warnings, b.warnings);
+    assert.deepEqual(
+      a.warnings.map(w => w.message),
+      ['a', 'a', 'b'],
+    );
+  });
+
+  it('T20: a stale-hash entry verifies with a fresh run, not a recompute', () => {
+    const currentHashes = { 'ai-stencil': 'sha256:bbbb' };
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes });
+    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
+    assert.equal(stale.verify, 'yarn audit:component mud-fx --depth deep');
+  });
+
+  it('Decision 11: an awaiting entry verifies with the fixed --recompute string (no <run> placeholder)', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [] });
+    assert.equal(v.awaitingLegs, true);
+    for (const e of v.entries) {
+      assert.equal(e.verify, 'yarn audit:component --recompute mud-fx');
+      assert.ok(!JSON.stringify(e).includes('<run>'), JSON.stringify(e));
+    }
+    assert.ok(!JSON.stringify(v).includes('awaiting"'), 'the per-entry awaiting flag never reaches verdict.json');
+  });
+
+  it('T23: a noTarget finding on a non-required row goes to warnings, not INCOMPLETE', () => {
+    const e = cleanEnvelope({ depth: 'quick' });
+    e.results.push({
+      id: '09',
+      name: 'check-09',
+      wave: 'C',
+      ok: true,
+      status: 'ok',
+      exitCode: 0,
+      durationMs: 1,
+      summary: { errors: 0, warnings: 1, info: 0 },
+      error: null,
+      component: 'mud-fx',
+    });
+    e.findingsByTool['check-09'] = [
+      { severity: 'warning', code: 'A11Y-NO-STORY', message: 'no story', noTarget: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'PASS');
+    assert.equal(v.warnings.length, 1);
+    assert.equal(v.warnings[0].code, 'A11Y-NO-STORY');
+  });
+
+  it("Decision 11: writeSummary carries each component's awaitingLegs", () => {
+    const dir = tmp();
+    const awaiting = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-a', depth: 'deep' }), aiFiles: [] });
+    const pass = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-b' }) });
+    const summary = writeSummary(dir, {
+      depth: 'deep',
+      runs: [
+        { verdict: awaiting, runDir: join(dir, 'mud-a', 'runs', 'r') },
+        { verdict: pass, runDir: join(dir, 'mud-b', 'runs', 'r') },
+      ],
+    });
+    assert.deepEqual(
+      summary.components.map(c => c.awaitingLegs),
+      [true, false],
+    );
+  });
+});

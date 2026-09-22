@@ -50,9 +50,9 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REPO_ROOT, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
-import { EXIT_INTERNAL } from './lib/exit-codes.mjs';
-import { ROW_STATUS, SCHEMA_VERSION, buildAiLegRow, finding, flushStdout } from './lib/json-output.mjs';
+import { REPO_ROOT, componentOfSpec, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
+import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
+import { ROW_STATUS, SCHEMA_VERSION, STATE, buildAiLegRow, finding, flushStdout } from './lib/json-output.mjs';
 import { resolveHeadManifest } from './lib/figma-manifest.mjs';
 import { checkEnv, formatIncomplete } from './lib/env-preflight.mjs';
 import { parseCli } from './lib/cli-args.mjs';
@@ -304,10 +304,7 @@ export const VITEST_RESULTS_REL = join('_run', 'vitest-results.json');
  */
 export function evaluateCoverageResults(parsed, { exitCode, components }) {
   if (!parsed || !Array.isArray(parsed.testResults)) return { ok: false, failedComponents: [] };
-  const failedFiles = parsed.testResults
-    .filter(t => t.status === 'failed')
-    .map(t => String(t.name ?? '').replace(/\\/g, '/'));
-  const owners = failedFiles.map(f => f.match(/src\/(?:components|hidden)\/(mud-[a-z0-9-]+)\//)?.[1] ?? null);
+  const owners = parsed.testResults.filter(t => t.status === 'failed').map(t => componentOfSpec(t.name));
   const failedComponents = [...new Set(owners.filter(Boolean))];
   // A non-zero exit is accounted for only by failed specs that each belong to
   // a selected component; an unmapped failure, or none at all, fails closed.
@@ -663,7 +660,9 @@ async function runPrerequisites(needed, { components, deps, auditDir }) {
       // one's (that stale-read is exactly the acceptance-bar case).
       const resultsPath = join(auditDir, VITEST_RESULTS_REL);
       rmSync(resultsPath, { force: true });
-      const dirs = components.map(c => componentDirFor(deps.repoRoot, c));
+      // T14: vitest keeps a spec whose path CONTAINS a filter, so without the
+      // trailing slash `src/components/mud-button` also runs mud-button-group's.
+      const dirs = components.map(c => `${componentDirFor(deps.repoRoot, c)}/`);
       const argv = [
         'yarn',
         'vitest',
@@ -692,9 +691,11 @@ async function runPrerequisites(needed, { components, deps, auditDir }) {
               id,
               ok: false,
               command: argv.join(' '),
-              cause: parsed
-                ? `test(s) failed in ${evaluated.failedComponents.join(', ') || '(unmapped spec)'} — not in this run's selection`
-                : `\`${argv.join(' ')}\` exited ${res.exitCode} without a parseable results JSON at ${resultsPath}`,
+              cause: !parsed
+                ? `\`${argv.join(' ')}\` exited ${res.exitCode} without a parseable results JSON at ${resultsPath}`
+                : evaluated.failedComponents.length
+                  ? `test(s) failed in ${evaluated.failedComponents.join(', ')} — not in this run's selection`
+                  : `vitest exited ${res.exitCode} with no failed spec`,
             },
       );
       continue;
@@ -716,30 +717,68 @@ async function runPrerequisites(needed, { components, deps, auditDir }) {
 // ─── The pipeline ────────────────────────────────────────────────────────
 
 /**
- * `{ ok: true, names }` | `{ ok: false, cause }` — a `--changed` detector
- * failure (no base ref, `git diff` failed) is distinct from an empty
+ * `{ ok: true, cause: null, names }` | `{ ok: false, cause }` — a `--changed`
+ * detector failure (no base ref, `git diff` failed) is distinct from an empty
  * selection (Decision §9): `runAudit` maps `ok: false` to INCOMPLETE, never
- * to "nothing changed, PASS".
+ * to "nothing changed, PASS". Exported for tests.
  */
-function resolveComponents(args, deps) {
-  if (args.all) return { ok: true, names: deps.listAll() };
+export function resolveComponents(args, deps) {
+  if (args.all) return { ok: true, cause: null, names: deps.listAll() };
   if (args.changed) return deps.detectChanged();
   const name = normalizeComponentName(args.component);
-  return { ok: true, names: name ? [name] : null };
+  return { ok: true, cause: null, names: name ? [name] : null };
 }
 
+/**
+ * `readSources` / `readPrompt` take `(repoRoot, x)` — the signature
+ * `currentLegHashes` calls them with at recompute (T1). A reader shaped any
+ * other way hashes different sources on the two sides, and every opened row
+ * reads as stale on the very run that opened it.
+ */
 function openAiLegs(scripts, component, deps) {
   const legs = scripts.filter(s => s.kind === 'ai-leg');
   if (!legs.length) return [];
-  const sources = deps.readSources(component);
+  const sources = deps.readSources(deps.repoRoot, component);
   return legs.map(s => ({
     id: s.id,
     ...buildAiLegRow({
       leg: s.leg,
       idsJudged: s.idsJudged,
-      inputHash: hashLegInput(sources, deps.readPrompt(s.prompt)),
+      inputHash: hashLegInput(sources, deps.readPrompt(deps.repoRoot, s.prompt)),
     }),
   }));
+}
+
+/** The one shape every refused run returns: no script ran, INCOMPLETE naming the lock (T7). */
+function lockRefusal({ args, cause, lockPath, t0 }) {
+  const message = `INCOMPLETE: ${cause} — run: (wait for the other audit to finish, or remove ${lockPath} if it is stale)`;
+  const combined = buildPreflightFailure({
+    args,
+    envCheck: { cause, command: null },
+    message,
+    durationMs: Date.now() - t0,
+  });
+  return { combined, perComponent: [], preflight: true, lockRefused: true, message, cause };
+}
+
+/**
+ * Whether this run writes under `<auditDir>/_run/` — the summary (`--verdict`)
+ * or the coverage prerequisite's results file — and so must hold the audit-dir
+ * lock (Decision §3). A leg's `--only 09` evidence run writes neither and never
+ * contends with a sibling leg's.
+ */
+function writesRunDir(args, registry) {
+  return (
+    Boolean(args.verdict) ||
+    selectScripts(args, { figma: null, registry }).some(s =>
+      (PREREQUISITES_FOR[s.requiresBuild] ?? []).includes('coverage'),
+    )
+  );
+}
+
+/** Whether this run writes `dist/` or starts Storybook — a prerequisite, or an `exclusive` build row (T6). */
+function touchesWorktree(needed, scripts) {
+  return needed.size > 0 || scripts.some(s => s.exclusive);
 }
 
 /**
@@ -768,11 +807,11 @@ export async function runAudit(args, deps = {}) {
     detectChanged: () => detectChangedComponents(),
     listAll: () => listAllComponents().map(c => c.name),
     ensureStorybook: () => ensureWorktreeStorybook({ repoRoot }),
-    readSources: component => defaultReadSources(repoRoot, component),
-    readPrompt: rel => defaultReadPrompt(repoRoot, rel),
+    readSources: defaultReadSources,
+    readPrompt: defaultReadPrompt,
     // R3: the worktree lock guards `dist/` and the worktree Storybook record —
-    // taken only when this run will build or start Storybook (`needed.size > 0`
-    // below), never for a `quick` run that touches neither.
+    // taken only when this run will build or start Storybook
+    // (`touchesWorktree`), never for a `quick` run that touches neither.
     worktreeLockPath: join(repoRoot, 'audit', '_run', '.worktree.lock'),
     acquireLock,
     releaseLock,
@@ -788,6 +827,39 @@ export async function runAudit(args, deps = {}) {
     filters: { only: [...(args.only ?? [])].sort(), skip: [...(args.skip ?? [])].sort() },
   };
 
+  // T7 / R3: the audit-dir lock guards everything this run writes under
+  // `<auditDir>/_run/` and each `verdict.json`, so it is taken before any work
+  // — a held lock is INCOMPLETE, never a late throw after the builds ran. When
+  // `verdict.mjs`'s `runFresh` spawned this process it already holds that
+  // lock and hands its token via `AUDIT_LOCK_TOKEN` — honoured only if the
+  // lock file still names it (nonce, live pid, same start time); a forged or
+  // stale token, or none at all, takes the lock here instead. Order: the
+  // audit-dir lock first, the worktree lock inside it — the order runFresh
+  // and its child already follow.
+  const auditLockPath = join(auditDir, '_run', '.lock');
+  let auditLockToken = null;
+  if (writesRunDir(args, d.registry)) {
+    let existingLock = null;
+    try {
+      existingLock = JSON.parse(readFileSync(auditLockPath, 'utf8'));
+    } catch {
+      existingLock = null;
+    }
+    if (!isValidLockToken(existingLock, d.env.AUDIT_LOCK_TOKEN)) {
+      const lock = d.acquireLock(auditLockPath);
+      if (!lock.ok) return lockRefusal({ args, cause: lock.cause, lockPath: auditLockPath, t0 });
+      auditLockToken = lock.token;
+    }
+  }
+  try {
+    return await auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBase, t0 });
+  } finally {
+    if (auditLockToken) d.releaseLock(auditLockPath, auditLockToken);
+  }
+}
+
+/** `runAudit`'s body, run while the audit-dir lock (when this run needs it) is held. */
+async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBase, t0 }) {
   const envCheck = d.checkEnv();
   if (!envCheck.ok) {
     const message = formatIncomplete(envCheck);
@@ -857,29 +929,22 @@ export async function runAudit(args, deps = {}) {
     for (const p of PREREQUISITES_FOR[s.requiresBuild] ?? []) needed.add(p);
   }
 
-  // R3: take the worktree lock only when this run builds or starts Storybook
-  // (`needed.size > 0`) — a `quick` run touches neither and never blocks on,
-  // or is blocked by, one. Released in `finally` below, before this function
-  // returns — no leg is ever dispatched from inside `runAudit` itself
-  // (Decision §3's "no self-block": deep legs are dispatched by the caller,
-  // after this promise resolves).
+  // R3 / T6: take the worktree lock whenever this run builds `dist/` or starts
+  // Storybook — a prerequisite or an `exclusive` build row. A `quick` run
+  // touches neither and never blocks on, or is blocked by, one. Released in
+  // `finally` below, before this function returns — no leg is ever dispatched
+  // from inside `runAudit` itself (Decision §3's "no self-block").
   let lockToken = null;
-  if (needed.size > 0) {
+  if (touchesWorktree(needed, [...sharedScripts, ...plans.flatMap(p => p.scripts)])) {
     const lock = d.acquireLock(d.worktreeLockPath);
     if (!lock.ok) {
-      const message = `INCOMPLETE: ${lock.cause} — run: (wait for the other audit to finish, or remove ${d.worktreeLockPath} if it is stale)`;
-      const combined = buildPreflightFailure({
-        args,
-        envCheck: { cause: lock.cause, command: null },
-        message,
-        durationMs: Date.now() - t0,
-      });
-      const result = { combined, perComponent: [], preflight: true };
+      const result = lockRefusal({ args, cause: lock.cause, lockPath: d.worktreeLockPath, t0 });
       if (args.verdict) {
+        // The audit-dir lock is ours (taken in runAudit), so the summary may be written.
         result.summary = writeSummary(auditDir, {
           depth: args.depth,
           runs: [],
-          preflight: { cause: lock.cause, command: null, message },
+          preflight: { cause: lock.cause, command: null, message: result.message },
         });
       }
       return result;
@@ -958,53 +1023,26 @@ export async function runAudit(args, deps = {}) {
 
     const result = { combined, perComponent };
     if (args.verdict) {
-      // R3: `_run/summary.json`, each component's `verdict.json` and (with
-      // --out) `_run/envelope.json` are guarded by the audit-dir lock. When
-      // `verdict.mjs`'s `runFresh` spawned this process it already holds that
-      // lock and hands its token via `AUDIT_LOCK_TOKEN` — honoured only if
-      // the lock file still names it, live; a forged or stale token, or none
-      // at all (a direct `run-all.mjs --verdict` invocation), takes the lock
-      // here instead, so a concurrent `yarn audit:component` cannot race it.
-      const auditLockPath = join(auditDir, '_run', '.lock');
-      let existingLock = null;
-      try {
-        existingLock = JSON.parse(readFileSync(auditLockPath, 'utf8'));
-      } catch {
-        existingLock = null;
-      }
-      const handedOff = isValidLockToken(existingLock, d.env.AUDIT_LOCK_TOKEN);
-      let auditLockToken = null;
-      if (!handedOff) {
-        const lock = d.acquireLock(auditLockPath);
-        if (!lock.ok) {
-          throw new UsageError(`audit-dir lock: ${lock.cause}`);
-        }
-        auditLockToken = lock.token;
-      }
-      try {
-        const runs = perComponent.map(({ component, envelope }) =>
-          writeRun(auditDir, component, d.runId, envelope, {
-            repoRoot: d.repoRoot,
-            readSources: d.readSources,
-            readPrompt: d.readPrompt,
-          }),
-        );
-        // S5 / Decision §2: with zero components selected, no per-component verdict
-        // carries the repo-level rows' (03, ...) outcome — `combined` is the only
-        // place it lives, so it is handed to writeSummary explicitly.
-        const repoLevel =
-          components.length === 0
-            ? {
-                ok: combined.ok,
-                incomplete: combined.results.some(
-                  r => r.status === ROW_STATUS.CRASHED || r.status === ROW_STATUS.MISSING_PREREQ,
-                ),
-              }
-            : null;
-        result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
-      } finally {
-        if (auditLockToken) d.releaseLock(auditLockPath, auditLockToken);
-      }
+      const runs = perComponent.map(({ component, envelope }) =>
+        writeRun(auditDir, component, d.runId, envelope, {
+          repoRoot: d.repoRoot,
+          readSources: d.readSources,
+          readPrompt: d.readPrompt,
+        }),
+      );
+      // S5 / Decision §2: with zero components selected, no per-component verdict
+      // carries the repo-level rows' (03, ...) outcome — `combined` is the only
+      // place it lives, so it is handed to writeSummary explicitly.
+      const repoLevel =
+        components.length === 0
+          ? {
+              ok: combined.ok,
+              incomplete: combined.results.some(
+                r => r.status === ROW_STATUS.CRASHED || r.status === ROW_STATUS.MISSING_PREREQ,
+              ),
+            }
+          : null;
+      result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
     }
     return result;
   } finally {
@@ -1043,7 +1081,8 @@ async function main() {
   if (result.preflight) {
     process.stderr.write(`${TOOL}: ${result.combined.preflight.message}\n`);
     await emit(result.combined, args);
-    process.exit(EXIT_INTERNAL);
+    // T7: another audit holding a lock is INCOMPLETE (3), not an internal error.
+    process.exit(result.lockRefused ? exitCodeForState(STATE.INCOMPLETE) : EXIT_INTERNAL);
   }
   if (result.summary) {
     const auditDir = args.auditDir ?? join(REPO_ROOT, 'audit');

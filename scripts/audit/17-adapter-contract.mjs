@@ -56,8 +56,11 @@
  *     (`node_modules/@stencil/eslint-plugin/dist/index.js:873`) — never
  *     `@Event`, which A4 also checks (`kind: 'event'` below) — a second,
  *     independent reason A4 cannot be deleted. P11
- *     (`.claude/skills/audit-component/SKILL.md:168`) is NOT remapped to
- *     eslint; Phase 4 records this outcome in the SKILL.md/wave-2 rows.
+ *     (`.claude/skills/stencil-compliance/SKILL.md:106`) stays mapped to
+ *     `eslint:@stencil/reserved-member-names` (upstream #110, kept as-is);
+ *     A4 is enforced here alongside it for the reserved names that rule
+ *     misses and for `@Event` members it never reaches. Phase 4 records this
+ *     outcome in the SKILL.md/wave-2 rows.
  *
  * Not encoded (Design §4): `@Method` async — already `eslint:@stencil/async-
  * methods` (stencil-compliance M1) — and a serializable event `detail` (no

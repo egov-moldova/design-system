@@ -7,6 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { join } from 'node:path';
 
 import {
   analyzeComponent,
@@ -14,7 +15,7 @@ import {
   DEFAULT_THRESHOLD,
   failedSpecsForComponent,
 } from '../../audit/06-test-coverage.mjs';
-import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
+import { REPO_ROOT, componentOfSpec, resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 function fakeMetric(pct) {
   return { total: 100, covered: pct, skipped: 0, pct };
@@ -168,31 +169,43 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 });
 
-describe('06-test-coverage: failedSpecsForComponent (S11)', () => {
-  it('maps a failed spec under src/components/<name>/ and excludes other components + passed specs', () => {
+describe('06-test-coverage: failedSpecsForComponent (S11, T18)', () => {
+  const abs = rel => join(REPO_ROOT, rel);
+
+  it('maps a failed spec under src/components/<name>/ to a repo-relative path, excluding other components + passed specs', () => {
     const vitestResults = {
       testResults: [
-        { name: '/repo/src/components/mud-button/test/mud-button.spec.tsx', status: 'failed' },
-        { name: '/repo/src/components/mud-button/test/other.spec.tsx', status: 'passed' },
-        { name: '/repo/src/components/mud-badge/test/mud-badge.spec.tsx', status: 'failed' },
+        { name: abs('src/components/mud-button/test/mud-button.spec.tsx'), status: 'failed' },
+        { name: abs('src/components/mud-button/test/other.spec.tsx'), status: 'passed' },
+        { name: abs('src/components/mud-badge/test/mud-badge.spec.tsx'), status: 'failed' },
+        { name: abs('src/components/mud-button-group/test/mud-button-group.spec.tsx'), status: 'failed' },
       ],
     };
     assert.deepEqual(failedSpecsForComponent(vitestResults, 'mud-button'), [
-      '/repo/src/components/mud-button/test/mud-button.spec.tsx',
+      'src/components/mud-button/test/mud-button.spec.tsx',
     ]);
   });
 
   it('maps a failed spec under src/hidden/<name>/ too', () => {
     const vitestResults = {
-      testResults: [{ name: '/repo/src/hidden/mud-draft/test/mud-draft.spec.tsx', status: 'failed' }],
+      testResults: [{ name: abs('src/hidden/mud-draft/test/mud-draft.spec.tsx'), status: 'failed' }],
     };
     assert.deepEqual(failedSpecsForComponent(vitestResults, 'mud-draft'), [
-      '/repo/src/hidden/mud-draft/test/mud-draft.spec.tsx',
+      'src/hidden/mud-draft/test/mud-draft.spec.tsx',
     ]);
   });
 
   it('handles a missing or malformed report', () => {
     assert.deepEqual(failedSpecsForComponent(null, 'mud-button'), []);
     assert.deepEqual(failedSpecsForComponent({}, 'mud-button'), []);
+  });
+});
+
+describe('component-paths: componentOfSpec (T18 — the one spec→component mapper)', () => {
+  it('names the owning component of a spec path, absolute or relative, or null', () => {
+    assert.equal(componentOfSpec(join(REPO_ROOT, 'src/components/mud-button/test/a.spec.tsx')), 'mud-button');
+    assert.equal(componentOfSpec('src/hidden/mud-draft/x.spec.tsx'), 'mud-draft');
+    assert.equal(componentOfSpec('C:\\r\\src\\components\\mud-button-group\\a.spec.tsx'), 'mud-button-group');
+    assert.equal(componentOfSpec('scripts/__tests__/audit/x.spec.mjs'), null);
   });
 });

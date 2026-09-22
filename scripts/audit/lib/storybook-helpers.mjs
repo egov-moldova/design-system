@@ -274,16 +274,16 @@ export function acquireLock(
     startTimeOf = getProcessStartTime,
     pid = process.pid,
     nonce = randomBytes(8).toString('hex'),
+    readLock = readLockRaw,
   } = {},
 ) {
   mkdirSync(dirname(lockPath), { recursive: true });
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       writeFileSync(lockPath, JSON.stringify({ pid, startTime: startTimeOf(pid), nonce }), { flag: 'wx' });
-      return { ok: true, token: nonce, lockPath };
     } catch (err) {
       if (err.code !== 'EEXIST') throw err;
-      const raw = readLockRaw(lockPath);
+      const raw = readLock(lockPath);
       if (raw === null) continue; // released between our create and our read
       let existing = null;
       try {
@@ -306,7 +306,7 @@ export function acquireLock(
       if (stale) {
         // Another taker may have replaced the stale lock since we read it;
         // delete only the content we judged.
-        if (readLockRaw(lockPath) === raw) rmSync(lockPath, { force: true });
+        if (readLock(lockPath) === raw) rmSync(lockPath, { force: true });
         continue;
       }
       return {
@@ -316,6 +316,23 @@ export function acquireLock(
           : `audit already running: a lock at ${lockPath} is being written`,
       };
     }
+    // T17: two takers that both judged the same stale lock can each pass the
+    // compare above before either deletes it — the second delete then removes
+    // the first taker's fresh lock and both `wx`-create in turn. Only the one
+    // whose nonce is on disk now holds it.
+    let mine = null;
+    try {
+      mine = JSON.parse(readLock(lockPath) ?? 'null');
+    } catch {
+      mine = null;
+    }
+    if (mine?.nonce === nonce) return { ok: true, token: nonce, lockPath };
+    return {
+      ok: false,
+      cause: mine?.pid
+        ? `audit already running: pid ${mine.pid} holds the lock at ${lockPath} (contended)`
+        : `could not take the lock at ${lockPath} (contended)`,
+    };
   }
   return { ok: false, cause: `could not take the lock at ${lockPath} (still contended after taking over a stale one)` };
 }
@@ -335,10 +352,23 @@ export function releaseLock(lockPath, token) {
 /**
  * Whether a token handed to a spawned child (`AUDIT_LOCK_TOKEN`) is a valid
  * hand-off of an already-held lock: the lock file exists, its nonce matches
- * the token, and its pid is alive. A forged, stale, or absent token is never
- * honoured — the child must take the lock itself. Pure over its inputs —
+ * the token, its pid is alive, and that pid's start time is the one recorded
+ * (T28 — a reused pid is not the holder). A forged, stale, or absent token is
+ * never honoured — the child must take the lock itself. Pure over its inputs —
  * exported for tests.
  */
-export function isValidLockToken(existing, token, { isAlive = isProcessAlive } = {}) {
-  return Boolean(existing && token && existing.nonce === token && existing.pid && isAlive(existing.pid));
+export function isValidLockToken(
+  existing,
+  token,
+  { isAlive = isProcessAlive, startTimeOf = getProcessStartTime } = {},
+) {
+  return Boolean(
+    existing &&
+    token &&
+    existing.nonce === token &&
+    existing.pid &&
+    isAlive(existing.pid) &&
+    existing.startTime &&
+    startTimeOf(existing.pid) === existing.startTime,
+  );
 }

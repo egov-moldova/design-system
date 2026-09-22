@@ -74,7 +74,7 @@ audit/<component>/runs/<run>/ai/stencil-compliance/ai-findings.json
 ```
 
 `idsJudged` must equal `["DX-stencil-manual"]`. An unclosed row leaves the
-verdict `INCOMPLETE` on the next `yarn audit:component --run-dir <run>`
+verdict `INCOMPLETE` on the next `yarn audit:component --recompute <component>`
 recompute; this skill does not run that recompute itself.
 
 ## Rule index

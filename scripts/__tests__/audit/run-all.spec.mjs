@@ -22,6 +22,7 @@ import {
   runAudit,
   hashLegInput,
   evaluateCoverageResults,
+  resolveComponents,
   VITEST_RESULTS_REL,
 } from '../../audit/run-all.mjs';
 import { checkEnv, satisfiesRange, formatIncomplete, REQUIRED_DEPS } from '../../audit/lib/env-preflight.mjs';
@@ -38,6 +39,7 @@ import {
 } from '../../audit/lib/storybook-helpers.mjs';
 import { DEFERRED_CHECKS, REQUIRED_CHECKS, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { allLegsClosed, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
+import { defaultReadPrompt, defaultReadSources } from '../../audit/lib/leg-input.mjs';
 
 describe('run-all: AUDIT_SCRIPTS registry', () => {
   it('every entry has id, wave, name; script entries name an .mjs file', () => {
@@ -805,7 +807,7 @@ describe('run-all: runAudit — standard prerequisites and arguments', () => {
     assert.deepEqual(p.commands, [
       'yarn dx:prepare',
       'yarn dx:stencil:once',
-      `yarn vitest run --project spec --coverage --coverage.reportOnFailure --reporter=json --outputFile=${join(p.auditDir, '_run', 'vitest-results.json')} src/components/mud-fx`,
+      `yarn vitest run --project spec --coverage --coverage.reportOnFailure --reporter=json --outputFile=${join(p.auditDir, '_run', 'vitest-results.json')} src/components/mud-fx/`,
       'storybook',
     ]);
     const argv = name => JSON.parse(infoOf(r.combined, name, 'FIXTURE-ARGV')[0]);
@@ -1023,12 +1025,13 @@ describe('storybook-helpers: R3 locks (plan 2026-09-22-audit-depths-sentinel-fix
   });
 
   it('isValidLockToken: honours a hand-off only when the nonce matches and the pid is alive', () => {
-    const existing = { pid: 111, nonce: 'abc' };
-    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => true }), true);
-    assert.equal(isValidLockToken(existing, 'wrong', { isAlive: () => true }), false, 'forged token');
-    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => false }), false, 'stale token (pid dead)');
-    assert.equal(isValidLockToken(null, 'abc', { isAlive: () => true }), false, 'no lock file at all');
-    assert.equal(isValidLockToken(existing, null, { isAlive: () => true }), false, 'no token handed at all');
+    const existing = { pid: 111, nonce: 'abc', startTime: 't1' };
+    const same = { startTimeOf: () => 't1' };
+    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => true, ...same }), true);
+    assert.equal(isValidLockToken(existing, 'wrong', { isAlive: () => true, ...same }), false, 'forged token');
+    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => false, ...same }), false, 'stale token (pid dead)');
+    assert.equal(isValidLockToken(null, 'abc', { isAlive: () => true, ...same }), false, 'no lock file at all');
+    assert.equal(isValidLockToken(existing, null, { isAlive: () => true, ...same }), false, 'no token handed at all');
   });
 });
 
@@ -1338,5 +1341,192 @@ describe('run-all: the command pre-pr-check runs', () => {
     // status — never the raw `run-all.mjs` invocation this test asserted
     // before Phase 3 landed.
     assert.match(doc, /^yarn audit:component --changed --depth quick --no-browser --json$/m);
+  });
+});
+
+describe('run-all: Phase 5 (sentinel round 2)', () => {
+  const H = manifestText();
+  const liveHolder = lockPath => {
+    const realStartTime = getProcessStartTime(process.pid);
+    return acquireLock(lockPath, { pid: process.pid, startTimeOf: () => realStartTime, isAlive: () => true });
+  };
+
+  it('T1: a real two-argument source reader gives the opened row and the in-run re-hash the same value', async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--depth', 'deep', '--verdict'],
+      env: { FIGMA_TOKEN: 'x' },
+      head: { 'mud-fx': H },
+      wt: { 'mud-fx': H },
+    });
+    mkdirSync(join(p.repoRoot, 'src', 'components', 'mud-fx'), { recursive: true });
+    writeFileSync(join(p.repoRoot, 'src', 'components', 'mud-fx', 'mud-fx.tsx'), 'export const x = 1;\n');
+    // The production readers — never an argument-ignoring stub.
+    p.deps.readSources = defaultReadSources;
+    p.deps.readPrompt = defaultReadPrompt;
+    await runAudit(p.args, p.deps);
+    const v = verdictOf(p.auditDir);
+    assert.equal(v.state, 'INCOMPLETE');
+    assert.ok(!v.entries.some(e => /source changed/.test(e.cause)), JSON.stringify(v.entries, null, 2));
+    assert.equal(v.awaitingLegs, true);
+  });
+
+  it('T6: an exclusive adapter build takes the worktree lock even when no prerequisite runs', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--depth', 'deep', '--only', 'adapter-react', '--verdict'] });
+    const held = liveHolder(join(p.repoRoot, 'audit', '_run', '.worktree.lock'));
+    try {
+      const r = await runAudit(p.args, p.deps);
+      assert.equal(r.preflight, true);
+      assert.equal(r.summary.state, 'INCOMPLETE');
+      assert.ok(!p.commands.includes('yarn build.react'), 'the build never ran');
+    } finally {
+      releaseLock(join(p.repoRoot, 'audit', '_run', '.worktree.lock'), held.token);
+    }
+  });
+
+  it('T7: a held audit-dir lock → INCOMPLETE before any work, nothing written under _run/', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--verdict'] });
+    const lockPath = join(p.auditDir, '_run', '.lock');
+    const held = liveHolder(lockPath);
+    try {
+      const r = await runAudit(p.args, p.deps);
+      assert.equal(r.preflight, true);
+      assert.equal(r.lockRefused, true);
+      assert.match(r.combined.preflight.cause, new RegExp(`pid ${process.pid}`));
+      assert.deepEqual(p.commands, [], 'no prerequisite ran');
+      assert.equal(existsSync(join(p.auditDir, '_run', 'summary.json')), false);
+      assert.equal(existsSync(join(p.auditDir, 'mud-fx')), false);
+    } finally {
+      releaseLock(lockPath, held.token);
+    }
+  });
+
+  it('T7: the audit-dir lock is held while the prerequisites write _run/ and released after', async () => {
+    const lockPath = p => join(p.auditDir, '_run', '.lock');
+    let heldDuringCoverage = false;
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      runCommand: async (cmd, cmdArgs) => {
+        const out = cmdArgs.find(a => a.startsWith('--outputFile='));
+        if (out) {
+          heldDuringCoverage = existsSync(lockPath(p));
+          mkdirSync(dirname(out.slice(13)), { recursive: true });
+          writeFileSync(out.slice(13), JSON.stringify({ testResults: [] }));
+        }
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+    await runAudit(p.args, p.deps);
+    assert.equal(heldDuringCoverage, true);
+    assert.equal(existsSync(lockPath(p)), false);
+  });
+
+  it('T26: a forged AUDIT_LOCK_TOKEN is not honoured — runAudit takes the audit-dir lock itself', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--depth', 'quick', '--verdict'], env: { AUDIT_LOCK_TOKEN: 'forged' } });
+    const taken = [];
+    p.deps.acquireLock = path => {
+      taken.push(path);
+      return acquireLock(path);
+    };
+    await runAudit(p.args, p.deps);
+    assert.ok(taken.includes(join(p.auditDir, '_run', '.lock')), taken.join(', '));
+  });
+
+  it('T26: a forged token over a lock another live process holds → refused, not honoured', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--depth', 'quick', '--verdict'], env: { AUDIT_LOCK_TOKEN: 'forged' } });
+    const lockPath = join(p.auditDir, '_run', '.lock');
+    const held = liveHolder(lockPath);
+    try {
+      const r = await runAudit(p.args, p.deps);
+      assert.equal(r.lockRefused, true);
+    } finally {
+      releaseLock(lockPath, held.token);
+    }
+  });
+
+  it('T14: coverage filters carry the trailing slash — a failing sibling spec (mud-button-group) never runs', async () => {
+    const specs = [
+      { name: '/r/src/components/mud-button/test/mud-button.spec.tsx', status: 'passed' },
+      { name: '/r/src/components/mud-button-group/test/mud-button-group.spec.tsx', status: 'failed' },
+    ];
+    let filters = [];
+    const p = pipeline({
+      argv: ['mud-button', '--verdict'],
+      runCommand: async (cmd, cmdArgs) => {
+        const out = cmdArgs.find(a => a.startsWith('--outputFile='));
+        if (out) {
+          filters = cmdArgs.filter(a => a.startsWith('src/'));
+          // vitest keeps a spec when its path contains any filter as a substring.
+          const ran = specs.filter(s => filters.some(f => s.name.includes(f)));
+          mkdirSync(dirname(out.slice(13)), { recursive: true });
+          writeFileSync(out.slice(13), JSON.stringify({ testResults: ran }));
+          return { exitCode: ran.some(s => s.status === 'failed') ? 1 : 0, stdout: '', stderr: '' };
+        }
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+    const r = await runAudit(p.args, p.deps);
+    assert.deepEqual(filters, ['src/components/mud-button/']);
+    assert.equal(r.combined.results.find(x => x.id === '06').status, 'ok');
+  });
+
+  it('T22: a non-zero vitest exit with no failed spec says so in the cause', async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--verdict'],
+      runCommand: async (cmd, cmdArgs) => {
+        const out = cmdArgs.find(a => a.startsWith('--outputFile='));
+        if (out) {
+          mkdirSync(dirname(out.slice(13)), { recursive: true });
+          writeFileSync(out.slice(13), JSON.stringify({ testResults: [] }));
+          return { exitCode: 1, stdout: '', stderr: '' };
+        }
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+    });
+    const r = await runAudit(p.args, p.deps);
+    const row = r.combined.results.find(x => x.id === '06');
+    assert.equal(row.status, 'missing-prereq');
+    assert.match(row.error, /vitest exited 1 with no failed spec/);
+  });
+
+  it('T25: every resolveComponents branch returns cause: null on success', () => {
+    const deps = { listAll: () => ['mud-a'], detectChanged: () => ({ ok: true, cause: null, names: ['mud-b'] }) };
+    assert.deepEqual(resolveComponents({ all: true }, deps), { ok: true, cause: null, names: ['mud-a'] });
+    assert.deepEqual(resolveComponents({ changed: true }, deps), { ok: true, cause: null, names: ['mud-b'] });
+    assert.deepEqual(resolveComponents({ component: 'mud-c' }, deps), { ok: true, cause: null, names: ['mud-c'] });
+  });
+
+  it('T28: isValidLockToken also requires the holder start time to match', () => {
+    const existing = { pid: 111, nonce: 'abc', startTime: 't1' };
+    assert.equal(isValidLockToken(existing, 'abc', { isAlive: () => true, startTimeOf: () => 't1' }), true);
+    assert.equal(
+      isValidLockToken(existing, 'abc', { isAlive: () => true, startTimeOf: () => 't-reused' }),
+      false,
+      'pid reused by another process',
+    );
+    assert.equal(
+      isValidLockToken({ pid: 111, nonce: 'abc' }, 'abc', { isAlive: () => true, startTimeOf: () => 't1' }),
+      false,
+      'a record with no start time cannot prove identity',
+    );
+  });
+
+  it('T17: after taking over a stale lock, a lock whose nonce is not ours is contended, not held', () => {
+    const lockPath = join(mkdtempSync(join(tmpdir(), 'lock-spec-')), '_run', '.lock');
+    tmpRoots.push(dirname(dirname(lockPath)));
+    acquireLock(lockPath, { pid: 111, startTimeOf: () => 't1' });
+    let reads = 0;
+    const r = acquireLock(lockPath, {
+      pid: 222,
+      startTimeOf: () => 't2',
+      isAlive: pid => pid !== 111,
+      // The post-create confirmation read sees a racing taker's lock instead of ours.
+      readLock: path => {
+        reads += 1;
+        const raw = readFileSync(path, 'utf8');
+        return reads >= 3 ? JSON.stringify({ pid: 333, startTime: 't3', nonce: 'theirs' }) : raw;
+      },
+    });
+    assert.equal(r.ok, false);
+    assert.match(r.cause, /contended|pid 333/);
   });
 });

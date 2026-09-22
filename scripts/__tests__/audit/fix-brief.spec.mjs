@@ -81,12 +81,34 @@ describe('fix-brief: one shape per state', () => {
         },
       ],
     });
-    const brief = renderFixBrief(v, { run: 'run-7' });
+    const brief = renderFixBrief(v);
     assert.equal(v.state, 'PASS');
     const advisoryAt = brief.indexOf('## Advisory');
     assert.ok(advisoryAt > 0);
     const block = assertShape(brief.slice(advisoryAt), v.advisory[0]);
-    assert.match(block, /audit\/mud-fx\/runs\/run-7/, 'the run placeholder is filled in the brief');
+    // Decision 11: the recompute is a fixed string — no `<run>` placeholder to fill.
+    assert.match(block, /yarn audit:component --recompute mud-fx/);
+    assert.ok(!brief.includes('<run>'));
+  });
+
+  it('T10: an INCOMPLETE entry with a log instead of a prerequisite renders the log', () => {
+    const block = renderEntry({
+      kind: 'INCOMPLETE',
+      id: 'I1',
+      check: '02 x',
+      cause: 'crashed (exit-2)',
+      log: 'results[id="02"].error',
+      verify: 'v',
+    });
+    assert.match(block, /^- log: results\[id="02"\]\.error$/m);
+    assert.doesNotMatch(block, /prerequisite/);
+  });
+
+  it('T10: an INCOMPLETE entry with neither a prerequisite nor a log is a renderer error', () => {
+    assert.throws(
+      () => renderEntry({ kind: 'INCOMPLETE', id: 'I1', check: 'c', cause: 'x', verify: 'v' }),
+      /missing prerequisite/,
+    );
   });
 
   it('lists the Figma checks that did not run under --no-figma', () => {

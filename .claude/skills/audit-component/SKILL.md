@@ -33,7 +33,9 @@ two things only: the AI judgment legs at `deep`, and a synthesis over the result
 2. **Read `audit/<component>/fix-brief.md`** — one block per non-PASS entry, each with its
    `verify:` command. `verdict.json` carries the same data for machines.
 3. **At `deep` only, run the AI legs** (§ AI legs), then recompute:
-   `node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run>`.
+   `node scripts/audit/verdict.mjs --recompute <component>`. Do not start a second fresh run
+   (step 1 again) while a run is already `awaitingLegs` (read from step 1's `--json` stdout,
+   `components[].awaitingLegs`).
 4. **Report the synthesis** ([report-template](references/report-template.md)): the headline
    line verbatim, the brief's path, cross-check correlations, and what was not verified.
 
@@ -123,21 +125,26 @@ dispatching it from here would recurse.
 }
 ```
 
-A row closes only when the file names its leg, lists every id the row judges, has a known major
-`schemaVersion` and, if it states one, the row's `inputHash`. At `deep`, `severity: "error"`
-→ `FAIL`, a finding with `question` + `options` → `NEEDS-DECISION`, anything else is advisory.
-An AI finding never clears a script `FAIL`. The headline prints `ai-legs: self-attested`: the
-file proves what was submitted, not that a leg ran. At `standard` the session may judge CX the
-same way; those findings render under "Advisory" and never change the state.
+A row closes only when the file names its leg, lists every id the row judges and has a known
+major `schemaVersion`. The recompute binds each row to the opened row's recorded hash by
+re-hashing the current sources at recompute time — the leg's own `inputHash` field is not
+consulted (a self-report adds nothing once the recompute re-hashes); a row left open because
+its hash no longer matches is not `awaitingLegs` and needs a fresh run, not another leg. At
+`deep`, `severity: "error"` → `FAIL`, a finding with `question` + `options` → `NEEDS-DECISION`,
+anything else is advisory. An AI finding never clears a script `FAIL`. The headline prints
+`ai-legs: self-attested`: the file proves what was submitted, not that a leg ran. At `standard`
+the session may judge CX the same way; those findings render under "Advisory" and never change
+the state.
 
 When every leg has written its file:
-`node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run>` — exit code as above.
+`node scripts/audit/verdict.mjs --recompute <component>` — exit code as above.
 
 ## Fix loop
 
 1. Fix one entry at a time. Run the exact string in that entry's `verify` field as read from
-   `verdict.json`'s `entries[]` — never a command retyped or paraphrased from `fix-brief.md`'s
-   prose, which renders the same field for a human and is display text, not the source of truth.
+   `verdict.json`'s `entries[]` — a fixed command, never a `<run>` placeholder (Decision 11) and
+   never a command retyped or paraphrased from `fix-brief.md`'s prose, which renders the same
+   field for a human and is display text, not the source of truth.
 2. When every `verify:` passes, re-run the whole audit at the same depth (at `deep`, legs too:
    the source changed, so the input hash did). Only a full run can write `PASS`.
 

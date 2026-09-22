@@ -21,8 +21,11 @@
  * Usage:
  *   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
  *     Runs run-all.mjs with --verdict, then exits with the worst state's code.
+ *   node scripts/audit/verdict.mjs --recompute <component> [--json]
+ *     Recomputes the component's latest run (its runDir in audit/_run/summary.json) — e.g.
+ *     after the deep AI legs wrote their ai-findings.json. The command every verify names.
  *   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--json]
- *     Recomputes from a run's inputs — e.g. after the deep AI legs wrote their ai-findings.json.
+ *     Recomputes the named runs.
  *
  * Exit codes (lib/exit-codes.mjs STATE_EXIT_CODES): 0 PASS, 1 FAIL, 3 INCOMPLETE,
  * 4 NEEDS-DECISION, 2 usage / internal error. On several components the worst state decides.
@@ -156,8 +159,17 @@ function verifyCommand(component, depth, id) {
   return `node scripts/audit/run-all.mjs ${component} --depth ${depth} --only ${id} --json`;
 }
 
-function rerunVerdictCommand(component) {
-  return `node scripts/audit/verdict.mjs --run-dir audit/${component}/runs/<run>`;
+/**
+ * Decision 11: a fixed string, so verdict.json stays byte-identical and no
+ * command carries a `<run>` placeholder — `--recompute` reads the component's
+ * latest runDir from `_run/summary.json` itself.
+ */
+function recomputeCommand(component) {
+  return `yarn audit:component --recompute ${component}`;
+}
+
+function freshRunCommand(component, depth) {
+  return `yarn audit:component ${component} --depth ${depth}`;
 }
 
 /** Map the orchestrator's HEAD copy back to the manifest a fixer edits (Design §8). */
@@ -209,7 +221,7 @@ function aiFailOrDecision(f, leg, component) {
     check: `ai ${leg}`,
     component,
     source: `AI leg ${leg}`,
-    verify: `re-dispatch the ${leg} leg, then: ${rerunVerdictCommand(component)}`,
+    verify: `re-dispatch the ${leg} leg, then: ${recomputeCommand(component)}`,
     owner: leg,
   });
 }
@@ -308,14 +320,14 @@ export function computeVerdict({
   const addExcuse = e => {
     if (!excuses.includes(e)) excuses.push(e);
   };
-  // Parallel to `incomplete`: true for an entry that is an opened `ai-*` row
-  // whose current source hash still matches — the only shape `awaitingLegs`
-  // (Decision §1) counts. Every other INCOMPLETE cause (a non-ai row, a leg
-  // never opened, a stale hash) pushes `false`.
-  const awaitingFlags = [];
-  const addIncomplete = (entry, awaiting = false) => {
-    incomplete.push(entry);
-    awaitingFlags.push(awaiting);
+  // `awaiting` is true only for an opened `ai-*` row whose current source hash
+  // still matches — the one shape `awaitingLegs` (Decision §1) counts. It is
+  // stripped before the entries are numbered, so it never reaches verdict.json.
+  const addIncomplete = (entry, awaiting = false) => incomplete.push({ ...entry, awaiting });
+  const addWarnings = (list, check, verify) => {
+    for (const f of [...list].sort(compareFindings)) {
+      warnings.push({ check, code: f.code, message: f.message || f.fix || 'warning', verify });
+    }
   };
 
   if (!envelope) {
@@ -324,7 +336,7 @@ export function computeVerdict({
       check: 'run-all',
       cause: 'no envelope for this run — the orchestrator did not finish',
       prerequisite: 'none',
-      verify: `yarn audit:component ${component} --depth ${depth}`,
+      verify: freshRunCommand(component, depth),
     });
   } else if (major(envelope.schemaVersion) !== major(SCHEMA_VERSION)) {
     addIncomplete({
@@ -332,7 +344,7 @@ export function computeVerdict({
       check: 'run-all',
       cause: `envelope schemaVersion ${envelope.schemaVersion} has an unknown major version`,
       prerequisite: 'none',
-      verify: `yarn audit:component ${component} --depth ${depth}`,
+      verify: freshRunCommand(component, depth),
     });
   }
   if (envelope?.preflight && envelope.preflight.ok === false) {
@@ -341,7 +353,7 @@ export function computeVerdict({
       check: 'env-preflight',
       cause: envelope.preflight.cause,
       prerequisite: envelope.preflight.command,
-      verify: `yarn audit:component ${component} --depth ${depth}`,
+      verify: freshRunCommand(component, depth),
     });
   }
 
@@ -397,19 +409,28 @@ export function computeVerdict({
     if (row.deferred) out.deferred = row.deferred;
     if (row.status === ROW_STATUS.CRASHED || row.status === ROW_STATUS.MISSING_PREREQ) {
       out.errorClass = errorClass(row);
+      // T10: a prerequisite is only the fix for `missing-prereq`; a crash is
+      // diagnosed from the script's stderr, which the envelope keeps (the
+      // verdict keeps only its class — stderr varies between identical runs).
+      const fix =
+        row.status === ROW_STATUS.MISSING_PREREQ
+          ? { prerequisite: row.prerequisite ?? 'none' }
+          : { log: `results[id="${id}"].error in envelope.json of the runDir listed in audit/_run/summary.json` };
       addIncomplete({
         kind: STATE.INCOMPLETE,
         check: `${id} ${row.name}`,
         cause: `${row.status} (${out.errorClass})`,
-        prerequisite: row.prerequisite ?? 'none',
+        ...fix,
         verify: verifyCommand(component, depth, id),
       });
     } else if (row.status === ROW_STATUS.OK) {
       const allFindings = findingsByTool[row.name] ?? [];
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
-      // warnings below.
+      // warnings below. On a row the depth does not require it is a warning
+      // (T23): nothing was owed, but nothing was checked either.
       const noTargetFindings = allFindings.filter(f => f.noTarget === true);
+      if (!isRequired) addWarnings(noTargetFindings, `${id} ${row.name}`, verifyCommand(component, depth, id));
       if (isRequired) {
         for (const f of noTargetFindings) {
           addIncomplete({
@@ -435,14 +456,11 @@ export function computeVerdict({
             }),
           );
         }
-        for (const f of allFindings.filter(f => f.severity === 'warning' && f.noTarget !== true)) {
-          warnings.push({
-            check: `${id} ${row.name}`,
-            code: f.code,
-            message: f.message || f.fix || 'warning',
-            verify: verifyCommand(component, depth, id),
-          });
-        }
+        addWarnings(
+          allFindings.filter(f => f.severity === 'warning' && f.noTarget !== true),
+          `${id} ${row.name}`,
+          verifyCommand(component, depth, id),
+        );
       }
     }
     rows.push(out);
@@ -507,9 +525,11 @@ export function computeVerdict({
             check: `${id} ${opened.leg}`,
             cause: hashStale ? closure.cause : `missing-prereq (${closure.cause})`,
             prerequisite: hashStale
-              ? `a fresh run: yarn audit:component ${component} --depth ${depth}`
-              : `dispatch the ${opened.leg} leg; it writes audit/${component}/runs/<run>/ai/${opened.leg}/ai-findings.json`,
-            verify: rerunVerdictCommand(component),
+              ? `a fresh run: ${freshRunCommand(component, depth)}`
+              : `dispatch the ${opened.leg} leg; it writes ai/${opened.leg}/ai-findings.json under the runDir listed in audit/_run/summary.json`,
+            // T20: a stale row needs a fresh run — a recompute would re-hash
+            // the same moved sources and stay stale.
+            verify: hashStale ? freshRunCommand(component, depth) : recomputeCommand(component),
           },
           !hashStale,
         );
@@ -577,10 +597,17 @@ export function computeVerdict({
   // Decision §1: true only when every INCOMPLETE entry is an opened `ai-*`
   // row whose hash still matches — never a constant, never vacuous over an
   // empty list (a PASS/FAIL run has no INCOMPLETE entries at all).
-  const awaitingLegs = incomplete.length > 0 && awaitingFlags.every(Boolean);
+  const awaitingLegs = incomplete.length > 0 && incomplete.every(e => e.awaiting);
 
   const number = (list, prefix) => list.map((e, i) => ({ id: `${prefix}${i + 1}`, ...e }));
-  const entries = [...number(incomplete, 'I'), ...number(fails, 'F'), ...number(decisions, 'D')];
+  const entries = [
+    ...number(
+      incomplete.map(({ awaiting, ...e }) => e),
+      'I',
+    ),
+    ...number(fails, 'F'),
+    ...number(decisions, 'D'),
+  ];
 
   const headlineParts = [`${state}@${depth}`];
   if (level) headlineParts.push(level);
@@ -687,7 +714,7 @@ export function writeVerdictForRun(runDir, legDeps = {}) {
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict, { run: basename(absRun) });
+  const brief = renderFixBrief(verdict);
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
@@ -715,14 +742,18 @@ export function callerRunDir(absRun, repoRoot = REPO_ROOT) {
  * there still moves the summary state off PASS even with no per-component
  * verdict to carry it.
  */
-export function writeSummary(auditDir, { depth, runs, preflight = null, repoLevel = null }) {
-  const components = runs.map(({ verdict, runDir }) => ({
+export function writeSummary(auditDir, { depth, runs, preflight = null, repoLevel = null, kept = [] }) {
+  const fresh = runs.map(({ verdict, runDir }) => ({
     component: verdict.component,
     state: verdict.state,
     ...(verdict.level ? { level: verdict.level } : {}),
     headline: verdict.headline,
+    awaitingLegs: verdict.awaitingLegs,
     runDir: callerRunDir(resolve(runDir)),
   }));
+  const components = [...kept, ...fresh].sort((a, b) =>
+    a.component < b.component ? -1 : a.component > b.component ? 1 : 0,
+  );
   const states = components.map(c => c.state);
   if (preflight) states.push(STATE.INCOMPLETE);
   if (repoLevel?.incomplete) states.push(STATE.INCOMPLETE);
@@ -745,12 +776,14 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
 
 const USAGE = `Usage:
   node scripts/audit/verdict.mjs <component | --changed | --all> [--depth quick|standard|deep] [run-all options]
-  node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--json]
+  node scripts/audit/verdict.mjs --recompute <component> [--audit-dir <dir>] [--json]
+  node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--audit-dir <dir>] [--json]
 
 The first form runs run-all.mjs with --verdict and exits with the worst state's
-code; the second recomputes the verdict from a run's inputs (after the deep AI
-legs wrote ai-findings.json). Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE,
-4 NEEDS-DECISION, 2 usage or internal error.`;
+code; the other two recompute the verdict from a run's inputs (after the deep AI
+legs wrote ai-findings.json) — --recompute takes the component's latest run from
+audit/_run/summary.json, --run-dir names a run explicitly. Exit: 0 PASS, 1 FAIL,
+3 INCOMPLETE, 4 NEEDS-DECISION, 2 usage or internal error.`;
 
 /** Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested. */
 export function printSummary(summary, json) {
@@ -813,18 +846,50 @@ export function takeAuditLock(auditDir) {
   return { ok: true, token: lock.token };
 }
 
-function recompute(runDirs, json) {
-  const auditDir = resolve(runDirs[0], '..', '..', '..');
+function readSummaryFile(auditDir) {
+  try {
+    return JSON.parse(readFileSync(join(auditDir, '_run', 'summary.json'), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The summary an early exit prints (Decision 11): a caller parsing `--json`
+ * stdout for `components[].awaitingLegs` always gets a document, never an
+ * empty stdout it would have to tell apart from a crash.
+ */
+function earlyExitSummary(depth, cause) {
+  return { schemaVersion: VERDICT_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
+}
+
+/**
+ * Recompute each run dir, then rewrite the summary. The components the
+ * previous summary listed and this recompute did not touch are kept, so a
+ * `--changed` run's legs can be recomputed one component at a time.
+ */
+function recompute(runDirs, json, auditDir) {
   const lock = takeAuditLock(auditDir);
   if (!lock.ok) return lock.exitCode;
   try {
     const runs = runDirs.map(runDir => ({ runDir, verdict: writeVerdictForRun(runDir) }));
-    const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs });
+    const recomputed = new Set(runs.map(r => r.verdict.component));
+    const kept = (readSummaryFile(auditDir)?.components ?? []).filter(c => !recomputed.has(c.component));
+    const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs, kept });
     printSummary(summary, json);
     return exitCodeForState(summary.state);
   } finally {
     releaseLock(auditLockPathFor(auditDir), lock.token);
   }
+}
+
+/** Decision 11: the component's runDir as the last summary lists it, or a usage-error reason. */
+export function runDirFromSummary(summary, component, repoRoot = REPO_ROOT) {
+  const entry = summary?.components?.find(c => c.component === component);
+  if (!entry?.runDir) {
+    return { ok: false, reason: `audit/_run/summary.json does not list ${component} — run the audit first` };
+  }
+  return { ok: true, runDir: resolve(repoRoot, entry.runDir) };
 }
 
 function runFresh(argv) {
@@ -836,14 +901,17 @@ function runFresh(argv) {
   // `--depth depp`) must exit 2 before any child process starts, never fall
   // through to "run-all exited without a summary" (which is INCOMPLETE / 3).
   // `parseRunAllCli` exits 2 itself on a usage error (lib/cli-args.mjs).
-  parseRunAllCli(forwarded);
+  const { depth } = parseRunAllCli(forwarded);
   // R3: the audit-dir lock guards summary.json/envelope.json/verdict.json —
   // taken around deleting the stale files below, spawning run-all, and
   // reading the summary; released before this function returns (Decision
   // §3's "no self-block": a `deep` run's AI legs are dispatched by the
   // caller, after this call has already returned).
   const lock = takeAuditLock(auditDir);
-  if (!lock.ok) return lock.exitCode;
+  if (!lock.ok) {
+    printSummary(earlyExitSummary(depth, 'the audit-dir lock is held by another audit'), json);
+    return lock.exitCode;
+  }
   try {
     const summaryPath = join(auditDir, '_run', 'summary.json');
     const envelopePath = join(auditDir, '_run', 'envelope.json');
@@ -865,7 +933,9 @@ function runFresh(argv) {
       },
     );
     if (!existsSync(summaryPath)) {
-      process.stderr.write(`${TOOL}: run-all exited ${res.status} without writing ${summaryPath} — INCOMPLETE.\n`);
+      const cause = `run-all exited ${res.status} without writing ${summaryPath}`;
+      process.stderr.write(`${TOOL}: ${cause} — INCOMPLETE.\n`);
+      printSummary(earlyExitSummary(depth, cause), json);
       return exitCodeForState(STATE.INCOMPLETE);
     }
     const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
@@ -882,13 +952,14 @@ function main() {
     process.stdout.write(`${USAGE}\n`);
     return 0;
   }
-  if (argv.includes('--run-dir')) {
+  if (argv.includes('--run-dir') || argv.includes('--recompute')) {
     let parsed;
     try {
       parsed = parseArgs({
         args: argv,
         options: {
           'run-dir': { type: 'string', multiple: true },
+          'recompute': { type: 'string' },
           'json': { type: 'boolean', default: false },
           'audit-dir': { type: 'string' },
         },
@@ -898,15 +969,28 @@ function main() {
       process.stderr.write(`${TOOL}: ${err.message}\n\n${USAGE}\n`);
       return EXIT_INTERNAL;
     }
+    const usageError = reason => {
+      process.stderr.write(`${TOOL}: ${reason}\n\n${USAGE}\n`);
+      return EXIT_INTERNAL;
+    };
     const auditRoot = parsed.values['audit-dir'] ? resolve(parsed.values['audit-dir']) : join(REPO_ROOT, 'audit');
-    for (const runDirArg of parsed.values['run-dir']) {
+    const runDirs = [...(parsed.values['run-dir'] ?? [])];
+    if (parsed.values.recompute !== undefined) {
+      if (runDirs.length) return usageError('--recompute and --run-dir are exclusive');
+      const found = runDirFromSummary(readSummaryFile(auditRoot), parsed.values.recompute);
+      if (!found.ok) return usageError(found.reason);
+      runDirs.push(found.runDir);
+    }
+    for (const runDirArg of runDirs) {
       const check = validateRunDirArg(runDirArg, auditRoot);
-      if (!check.ok) {
-        process.stderr.write(`${TOOL}: ${check.reason}\n\n${USAGE}\n`);
-        return EXIT_INTERNAL;
+      if (!check.ok) return usageError(check.reason);
+      // T5: a run dir with no envelope is a mistyped or pruned run — recomputing
+      // it would write an INCOMPLETE verdict over the component's real one.
+      if (!existsSync(join(runDirArg, 'envelope.json'))) {
+        return usageError(`--run-dir has no envelope.json (got "${runDirArg}")`);
       }
     }
-    return recompute(parsed.values['run-dir'], parsed.values.json);
+    return recompute(runDirs, parsed.values.json, auditRoot);
   }
   if (argv.length === 0) {
     process.stderr.write(`${USAGE}\n`);

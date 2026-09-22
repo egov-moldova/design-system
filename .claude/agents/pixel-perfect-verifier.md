@@ -58,19 +58,20 @@ in the shape `verdict.mjs`'s `closeAiRow` requires:
 ```
 
 Write it with `Bash` (this agent has no `Write` tool) using a quoted heredoc delimiter, so no
-`$`/backtick in a finding's text is interpolated by the shell:
+`$`/backtick in a finding's text is interpolated by the shell. The body must be one valid JSON
+document — strings escape their own newlines, so no line inside it can equal the delimiter:
 
 ```bash
 mkdir -p audit/<component>/runs/<run>/ai/pixel-perfect-verifier
-cat <<'EOF' > audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
+cat <<'AI_FINDINGS_JSON_END' > audit/<component>/runs/<run>/ai/pixel-perfect-verifier/ai-findings.json
 { ... the JSON above ... }
-EOF
+AI_FINDINGS_JSON_END
 ```
 
 A finding with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"` is a blocking
 `FAIL` at `deep`. A missing file, or one that omits `DX-figma-themes`, leaves the verdict
-`INCOMPLETE` on the next `yarn audit:component --run-dir <run>` recompute, which this leg does
-not run.
+`INCOMPLETE` on the next `yarn audit:component --recompute <component>` recompute, which this
+leg does not run.
 
 ## Procedure
 
@@ -79,10 +80,12 @@ not run.
    the matching failure mode below if either is missing; do not start or stop Storybook yourself.
    `FIGMA_TOKEN` is needed for references; the official Figma MCP only when the manifest is
    missing or a state must be read from Figma.
-2. **Manifest** — `src/components/<name>/test/<name>.figma.json`.
+2. **Manifest** — `.audit-figma/<name>/manifest@HEAD.json` (HEAD only, Design §8, `run-all.mjs` —
+   the deep run that opened this leg's row already wrote it; never the working-tree manifest at
+   `src/components/<name>/test/<name>.figma.json`).
    - Exists → continue.
    - Missing → return `manifest-missing` with the list of Figma variants (name + node id) from `mcp__figma__get_metadata`. **Do not draft values**: a manifest value must be copied from Figma by whoever writes it, and `src/` is the orchestrator's.
-3. **References, then coverage** — `node scripts/audit/figma-refs.mjs <name>` (REST with `FIGMA_TOKEN`), then `node scripts/audit/figma-refs.mjs <name> --check --json`; report every `FIGMA-*` finding. No token → `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
+3. **References, then coverage** — `node scripts/audit/figma-refs.mjs <name> --manifest .audit-figma/<name>/manifest@HEAD.json` (REST with `FIGMA_TOKEN`), then `node scripts/audit/figma-refs.mjs <name> --manifest .audit-figma/<name>/manifest@HEAD.json --check --json`; report every `FIGMA-*` finding. No token → `FIGMA-NO-TOKEN`; continue with style parity and list every pixel state under Not verified. `.audit-figma/` is git-ignored scratch output, not source.
 4. **Style parity** — `node scripts/audit/15-style-parity.mjs <name> --port <this worktree's port> --manifest .audit-figma/<name>/manifest@HEAD.json --json`. Figma inputs come from HEAD only (Design §8, `run-all.mjs`); the HEAD copy was already written by the deep run that opened this leg's row — never fall back to the working-tree manifest at `src/components/<name>/test/<name>.figma.json`.
 5. **Screenshot diff** — `node scripts/audit/11-pixel-diff-states.mjs <name> --port <this worktree's port> --manifest .audit-figma/<name>/manifest@HEAD.json --json`. `Read` the diff image of every `WARNING` / `FAIL` state; handle `PIXEL-SIZE-MISMATCH` before percentages.
 6. **Judge** each finding (skill step 6): drift / not in design / design question / tooling limit. Token names come from the `STYLE-MISMATCH` row (`observedTokens`, `expectedTokens`); report them as given and do not guess a token the row does not name.

@@ -5,7 +5,7 @@
  * session is enough to start fixing without re-running the audit:
  *
  *   FAIL            ID · severity · check · location · expected (value + source) · actual · verify · owner
- *   INCOMPLETE      ID · check · cause · prerequisite · verify
+ *   INCOMPLETE      ID · check · cause · prerequisite (or, for a crash, log) · verify
  *   NEEDS-DECISION  ID · node (or "no manifest") · question · options — the audit never picks one
  *   Advisory        AI findings at quick / standard, in the FAIL shape; they never change the state
  *
@@ -20,6 +20,14 @@ export const BRIEF_FIELDS = Object.freeze({
   [STATE.INCOMPLETE]: Object.freeze(['check', 'cause', 'prerequisite', 'verify']),
   [STATE.NEEDS_DECISION]: Object.freeze(['node', 'question', 'options']),
 });
+
+/** A field another field may stand in for: a crashed row has a log to read, not a prerequisite to run (T10). */
+const FIELD_ALTERNATE = Object.freeze({ prerequisite: 'log' });
+
+function fieldFor(entry, field) {
+  const alt = FIELD_ALTERNATE[field];
+  return alt && !present(entry[field]) && present(entry[alt]) ? alt : field;
+}
 
 // A field is "present" once it is set — an empty string is a legitimate value
 // (an empty `actual`, e.g.), never a missing one (S2). Only `undefined` /
@@ -54,13 +62,14 @@ export function renderEntry(entry) {
   const fields = BRIEF_FIELDS[entry.kind];
   if (!fields) throw new Error(`fix-brief: unknown entry kind "${entry.kind}"`);
   if (!present(entry.id)) throw new Error('fix-brief: entry has no id');
-  const missing = fields.filter(f => !present(entry[f]));
+  const resolved = fields.map(f => fieldFor(entry, f));
+  const missing = resolved.filter(f => !present(entry[f]));
   if (missing.length) {
     throw new Error(`fix-brief: ${entry.kind} entry ${entry.id} is missing ${missing.join(', ')}`);
   }
   const codeSuffix = entry.code ? ` · ${line(entry.code)}` : '';
   const lines = [`### ${entry.id} · ${entry.kind}${codeSuffix}`, ''];
-  for (const field of fields) {
+  for (const field of resolved) {
     const value = entry[field];
     if (field === 'expected') {
       lines.push(`- expected: ${line(value.value)} (source: ${line(value.source)})`);
@@ -76,17 +85,8 @@ export function renderEntry(entry) {
   return `${lines.join('\n')}\n`;
 }
 
-function substituteRun(entry, run) {
-  if (!run || typeof entry.verify !== 'string') return entry;
-  return { ...entry, verify: entry.verify.replace('<run>', run) };
-}
-
-/**
- * Render the whole brief. `run` (the run directory name) only fills the
- * `<run>` placeholder in re-verdict commands; it never reaches verdict.json.
- * Pure — exported for tests.
- */
-export function renderFixBrief(verdict, { run = null } = {}) {
+/** Render the whole brief. Pure — exported for tests. */
+export function renderFixBrief(verdict) {
   const c = verdict.component;
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,
@@ -147,14 +147,14 @@ export function renderFixBrief(verdict, { run = null } = {}) {
     const list = entries.filter(e => e.kind === kind);
     if (!list.length) continue;
     out.push(`## ${title} (${list.length})`, '');
-    for (const e of list) out.push(renderEntry(substituteRun(e, run)));
+    for (const e of list) out.push(renderEntry(e));
   }
   if (!entries.length) out.push('Nothing to fix.', '');
 
   const advisory = verdict.advisory ?? [];
   if (advisory.length) {
     out.push(`## Advisory — AI findings, they do not change the state at ${verdict.depth} (${advisory.length})`, '');
-    for (const e of advisory) out.push(renderEntry(substituteRun(e, run)));
+    for (const e of advisory) out.push(renderEntry(e));
   }
   return `${out.join('\n').replace(/\n+$/, '')}\n`;
 }

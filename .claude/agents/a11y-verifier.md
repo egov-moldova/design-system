@@ -59,13 +59,14 @@ with the shape `verdict.mjs`'s `closeAiRow` requires:
 ```
 
 Write it with `Bash` using a quoted heredoc delimiter, so no `$`/backtick in a finding's text is
-interpolated by the shell:
+interpolated by the shell. The body must be one valid JSON document — strings escape their own
+newlines, so no line inside it can equal the delimiter:
 
 ```bash
 mkdir -p audit/<component>/runs/<run>/ai/a11y-verifier
-cat <<'EOF' > audit/<component>/runs/<run>/ai/a11y-verifier/ai-findings.json
+cat <<'AI_FINDINGS_JSON_END' > audit/<component>/runs/<run>/ai/a11y-verifier/ai-findings.json
 { ... the JSON above ... }
-EOF
+AI_FINDINGS_JSON_END
 ```
 
 `idsJudged` must list every id the row was opened for (a leg opened for both
@@ -74,8 +75,8 @@ with a `question` closes as `NEEDS-DECISION`; one with `severity: "error"`
 closes as a blocking `FAIL` at `deep` (never at `quick`/`standard`, where
 every leg's findings are advisory only). An unclosed row — no
 `ai-findings.json`, or one that omits a judged id — leaves the verdict
-`INCOMPLETE` on the next `yarn audit:component --run-dir <run>` recompute;
-this leg does not run that recompute itself.
+`INCOMPLETE` on the next `yarn audit:component --recompute <component>`
+recompute; this leg does not run that recompute itself.
 
 ## Procedure
 

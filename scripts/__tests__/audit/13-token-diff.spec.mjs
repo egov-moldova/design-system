@@ -13,11 +13,15 @@ import {
   loadComponentSources,
 } from '../../audit/13-token-diff.mjs';
 
-describe('13-token-diff: S6 — TOKEN-DIFF-NO-CURRENT / TOKEN-DIFF-NO-FIGMA-EXPORT carry noTarget (Decision §5)', () => {
-  it('no current tokens file → TOKEN-DIFF-NO-CURRENT, noTarget: true', () => {
-    const { error } = loadComponentSources('mud-nonexistent-fixture-xyz', 'tokenhaus/export.json');
+describe('13-token-diff: T3 — TOKEN-DIFF-NO-CURRENT is not-applicable, not noTarget (Decision §5 corrected)', () => {
+  // mud-icon has no tokens/core/components/icon.tokens.json — nothing to diff,
+  // never an INCOMPLETE-producing missing input (that would send every icon-
+  // only component to "resolve the missing input" for a file it legitimately
+  // has none of).
+  it('no current tokens file (mud-icon) → TOKEN-DIFF-NO-CURRENT, not noTarget', () => {
+    const { error } = loadComponentSources('mud-icon', 'tokenhaus/export.json');
     assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
-    assert.equal(error.noTarget, true);
+    assert.notEqual(error.noTarget, true);
   });
 
   it('current tokens file exists but the Figma export path does not → TOKEN-DIFF-NO-FIGMA-EXPORT, noTarget: true', () => {

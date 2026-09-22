@@ -309,7 +309,8 @@ and the `audit-component` skill's legs close them.
 
 ```bash
 yarn audit:component mud-button --depth standard             # run + verdict, exit = state
-node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # recompute from a run's inputs
+node scripts/audit/verdict.mjs --recompute mud-button         # recompute the component's latest run
+node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # recompute an explicit run
 ```
 
 The only writer of `verdict.json`. It rebuilds the file from its inputs on every
@@ -329,19 +330,29 @@ run, so a hand-edited or model-written verdict never survives the next run.
   row closes only with the leg's `ai-findings.json` naming the leg, every id the
   row judges and a known major `schemaVersion`, and only while the sources the
   row was opened on are unchanged — the verdict re-hashes them itself; a leg's
-  own `inputHash` is informational. A changed source leaves the row open with
-  "source changed since run <run> — start a fresh run". An `error` finding sets
-  `FAIL`, one with `question` + `options` sets `NEEDS-DECISION`, and none clears
-  a script `FAIL`. The headline prints `ai-legs: self-attested`.
-- **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3 with
-  `awaitingLegs: true` in `verdict.json` — true only when every `INCOMPLETE`
-  entry is an opened `ai-*` row on unchanged sources. The caller then dispatches
-  the legs and recomputes with `--run-dir <runDir>`; exit 3 without
-  `awaitingLegs` is a stop. `runDir` is the component's entry in
-  `audit/_run/summary.json` — the repo-relative `audit/<component>/runs/<run>`
-  (absolute when `--audit-dir` is outside the repo). It is kept out of
-  `verdict.json` so that file is byte-identical across runs; `--run-dir` accepts only that shape, under
-  `--audit-dir` when one is given.
+  own `inputHash` is informational. A changed source leaves the row open with a
+  stale-hash entry whose `verify` is the fresh-run command
+  `yarn audit:component <component> --depth <depth>` — that row is not
+  `awaitingLegs` (below). An `error` finding sets `FAIL`, one with `question` +
+  `options` sets `NEEDS-DECISION`, and none clears a script `FAIL`. The headline
+  prints `ai-legs: self-attested`.
+- **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3.
+  `awaitingLegs` is not in `verdict.json` — it is computed fresh on every
+  invocation and returned in `components[].awaitingLegs` of that invocation's
+  `--json` stdout summary, true only when every `INCOMPLETE` entry is an
+  opened `ai-*` row on unchanged sources; a caller reading an earlier run's
+  `verdict.json` would be reading a value that can go stale the moment a
+  source changes. The caller then dispatches the legs and recomputes with
+  `yarn audit:component --recompute <component>`, a fixed string that reads
+  the component's latest `runDir` from `audit/_run/summary.json` itself — no
+  caller ever interpolates a `<run>` placeholder. `--run-dir <runDir>` stays
+  for explicitly targeting an older run; `<runDir>` is the component's entry
+  in `audit/_run/summary.json` — the repo-relative `audit/<component>/runs/<run>`
+  (absolute when `--audit-dir` is outside the repo). `runDir` is kept out of
+  `verdict.json` so that file is byte-identical across runs; both flags accept
+  only that shape, under `--audit-dir` when one is given. Exit 3 without
+  `awaitingLegs` is a stop. Every early exit of a fresh run (lock refusal,
+  run-all crash, preflight) still prints a summary, with `components: []`.
 - **Warnings** never change the state. `verdict.json` lists them under
   `warnings`, and the brief renders them as "Warnings (non-blocking)" with their
   row and `verify:` command.
@@ -366,7 +377,7 @@ per-fix check, and only a full run at the same depth can write `PASS`.
 
 **One audit per worktree.** A run that builds or starts Storybook holds
 `audit/_run/.worktree.lock` (it guards `dist/` and the Storybook record); a fresh
-run and a `--run-dir` recompute hold `<audit dir>/_run/.lock` (it guards
+run and a `--recompute` / `--run-dir` recompute hold `<audit dir>/_run/.lock` (it guards
 `_run/summary.json`, `_run/envelope.json`, `_run/vitest-results.json` and each
 `verdict.json`). A second audit that finds a live lock is `INCOMPLETE`, naming the
 holder's pid and the lock path; a lock whose pid is dead or was reused is taken

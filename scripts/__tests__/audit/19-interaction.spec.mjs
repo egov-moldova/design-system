@@ -15,11 +15,13 @@ import {
   judgeBx4Opened,
   declaresPopup,
   judgeBx4Escape,
+  bx4Outcome,
   judgeBx5StructuralDiff,
   isBx7Applicable,
   isCheckableControl,
   judgeBx7,
   judgeBx7FormRoundTrip,
+  bx7ExpectedValue,
   notApplicable,
 } from '../../audit/19-interaction.mjs';
 
@@ -183,6 +185,45 @@ describe('19-interaction: judgeBx4Escape', () => {
   });
 });
 
+describe('19-interaction: bx4Outcome (T15 — not-opened branch, T2 — Escape gated on declaresPopup)', () => {
+  it('not opened + declares a popup → INTERACTION-BX4-NOT-OPENED, noTarget: true', () => {
+    const { checks, finding } = bx4Outcome({ opened: false, declaresPopup: true });
+    assert.equal(checks.status, 'incomplete');
+    assert.equal(finding.code, 'INTERACTION-BX4-NOT-OPENED');
+    assert.equal(finding.noTarget, true);
+  });
+
+  it('not opened + no popup declared → not-applicable, no finding', () => {
+    const { checks, finding } = bx4Outcome({ opened: false, declaresPopup: false });
+    assert.equal(checks.status, 'not-applicable');
+    assert.equal(finding, null);
+  });
+
+  // T2: mud-accordion-item opens (archetype OVERLAY, `open` boolean prop) but
+  // is an inline disclosure — no dialog/popover/aria-haspopup/aria-modal
+  // marker — so Escape-to-close (a popup/dialog convention, WCAG 2.1.2) does
+  // not apply to it. Before the fix this produced a false ESCAPE-NO-CLOSE.
+  it('opened but declares no popup surface (mud-accordion-item) → not-applicable, no ESCAPE-NO-CLOSE', () => {
+    const { checks, finding } = bx4Outcome({ opened: true, declaresPopup: false, stillOpen: true });
+    assert.equal(checks.status, 'not-applicable');
+    assert.equal(finding, null);
+  });
+
+  it('opened and declares a popup, Escape fails to close → ESCAPE-NO-CLOSE', () => {
+    const data = { opened: true, declaresPopup: true, stillOpen: true, focusTrappedInClosedOverlay: false };
+    const { checks, finding } = bx4Outcome(data);
+    assert.equal(checks, data);
+    assert.equal(finding.code, 'INTERACTION-BX4-ESCAPE-NO-CLOSE');
+  });
+
+  it('opened and declares a popup, Escape closes cleanly → checks carry the data, no finding', () => {
+    const data = { opened: true, declaresPopup: true, stillOpen: false, focusTrappedInClosedOverlay: false };
+    const { checks, finding } = bx4Outcome(data);
+    assert.equal(checks, data);
+    assert.equal(finding, null);
+  });
+});
+
 describe('19-interaction: judgeBx5StructuralDiff', () => {
   it('passes when light and dark trees match', () => {
     const signature = { count: 3, tags: ['button', 'div', 'span'] };
@@ -310,6 +351,26 @@ describe('19-interaction: isCheckableControl (Finding 1 — checked-based form r
 
   it('handles a missing contract', () => {
     assert.equal(isCheckableControl(null), false);
+  });
+});
+
+describe('19-interaction: bx7ExpectedValue (T11 — value suited to the declared prop type)', () => {
+  it('picks a numeric string for a number-typed value prop', () => {
+    assert.equal(bx7ExpectedValue('number'), '42');
+  });
+
+  it('picks a valid date literal for a date-typed value prop', () => {
+    assert.equal(bx7ExpectedValue('Date'), '2026-01-01');
+  });
+
+  it('picks a valid time literal for a time-typed value prop', () => {
+    assert.equal(bx7ExpectedValue('time'), '12:00');
+  });
+
+  it('falls back to a plain string for string/undeclared types', () => {
+    assert.equal(bx7ExpectedValue('string'), 'audit-value');
+    assert.equal(bx7ExpectedValue(null), 'audit-value');
+    assert.equal(bx7ExpectedValue(undefined), 'audit-value');
   });
 });
 

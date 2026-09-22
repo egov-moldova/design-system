@@ -197,32 +197,14 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
     // BX4 — escape / activation (conditional: OVERLAY archetype or an
     // open/close/toggle @Method). Not applicable to every component — record
     // that in `checks.bx4` rather than omitting the key, so a reader can
-    // tell "ran, nothing found" apart from "did not apply here".
+    // tell "ran, nothing found" apart from "did not apply here". The
+    // not-opened vs opened judgment is `bx4Outcome` (T15/T2), pure and
+    // exported for tests — this call site only wires its result in.
     if (isBx4Applicable(contract)) {
       const bx4Data = await runBx4(page, target.name, contract);
-      if (bx4Data.opened === false) {
-        // S12: an overlay method that ran but produced no rendered change is a
-        // missing input (the open path could not be exercised), never a
-        // not-applicable component that happens to declare a popup surface.
-        if (bx4Data.declaresPopup) {
-          checks.bx4 = { status: 'incomplete', reason: 'the open method/prop produced no rendered change' };
-          findings.push(
-            finding({
-              severity: 'warning',
-              code: 'INTERACTION-BX4-NOT-OPENED',
-              message:
-                'Component declares an overlay/popup surface but the open method/prop produced no rendered change.',
-              noTarget: true,
-            }),
-          );
-        } else {
-          checks.bx4 = notApplicable('open method/prop produced no rendered change and no popup surface is declared');
-        }
-      } else {
-        checks.bx4 = bx4Data;
-        const bx4Finding = judgeBx4Escape(bx4Data);
-        if (bx4Finding) findings.push(finding(bx4Finding));
-      }
+      const outcome = bx4Outcome(bx4Data);
+      checks.bx4 = outcome.checks;
+      if (outcome.finding) findings.push(finding(outcome.finding));
       await applyNoMotionStyle(page); // re-inject: BX4 may have rendered new shadow content.
     } else {
       checks.bx4 = notApplicable('component is not OVERLAY archetype and has no open/close/toggle @Method');
@@ -238,7 +220,11 @@ export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
     // A further "no resolvable name" not-applicable case is decided live,
     // inside runBx7, once the story's actual DOM state is known.
     if (isBx7Applicable(contract)) {
-      const bx7Data = await runBx7(page, target.name, { isCheckable: isCheckableControl(contract) });
+      // T11: the value prop's declared type decides what BX7 submits (a
+      // number-typed prop needs a numeric string, a date/time-typed prop a
+      // parseable literal) — see bx7ExpectedValue.
+      const valueType = (contract.props ?? []).find(p => p.name === 'value')?.type ?? null;
+      const bx7Data = await runBx7(page, target.name, { isCheckable: isCheckableControl(contract), valueType });
       checks.bx7 = bx7Data.applicable === false ? notApplicable(bx7Data.reason) : bx7Data;
       const bx7Finding = judgeBx7FormRoundTrip(bx7Data);
       if (bx7Finding) findings.push(finding(bx7Finding));
@@ -389,6 +375,22 @@ async function runBx4(page, componentName, contract) {
   // nothing for those.
   const openMethod = (contract.methods ?? []).find(m => /open/i.test(m.name))?.name ?? null;
 
+  // T4: some stories render the overlay already open (a Storybook control
+  // default) — capturing `before` against an already-open host means the
+  // later open call is a no-op and `judgeBx4Opened` sees no change, a false
+  // "did not open" (live Storybook run, mud-tooltip, 2026-09-22). Close it
+  // first and wait, so `before` is genuinely closed.
+  await page.evaluate(
+    ({ name, method }) => {
+      const host = document.querySelector(name);
+      if (!host) return;
+      if (method && typeof host[method] === 'function') host[method](false);
+      else host.open = false;
+    },
+    { name: componentName, method: openMethod },
+  );
+  await page.waitForTimeout(350);
+
   const before = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
 
   await page.evaluate(
@@ -404,10 +406,11 @@ async function runBx4(page, componentName, contract) {
 
   const afterOpen = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
   const opened = judgeBx4Opened(before, afterOpen);
+  const dom = await capturePopupMarkers(page, componentName);
+  const popup = declaresPopup(contract, dom);
 
   if (!opened) {
-    const dom = await capturePopupMarkers(page, componentName);
-    return { opened: false, declaresPopup: declaresPopup(contract, dom) };
+    return { opened: false, declaresPopup: popup };
   }
 
   // Capture the open panel/dialog node BEFORE Escape closes it, so the
@@ -445,7 +448,7 @@ async function runBx4(page, componentName, contract) {
   // never `host.open` (frequently `display: contents` regardless of state;
   // live Storybook run, mud-modal, 2026-09-21).
   const stillOpen = judgeBx4Opened(before, afterEscape);
-  return { opened: true, stillOpen, focusTrappedInClosedOverlay };
+  return { opened: true, declaresPopup: popup, stillOpen, focusTrappedInClosedOverlay };
 }
 
 /** PASS: overlay closes AND focus is not left stranded inside it. Pure — exported for tests. */
@@ -467,6 +470,52 @@ export function judgeBx4Escape(data) {
     };
   }
   return null;
+}
+
+/**
+ * Decide `checks.bx4` and the optional finding from `runBx4`'s captured
+ * data. Two branches:
+ *
+ * Not opened (S12): an overlay method that ran but produced no rendered
+ * change is a missing input (the open path could not be exercised) when the
+ * component declares a popup surface — `INTERACTION-BX4-NOT-OPENED`,
+ * `noTarget: true`. Anything else that opened nothing is simply not
+ * applicable.
+ *
+ * Opened (T2): Escape-to-close is a popup/dialog convention (WCAG 2.1.2's
+ * keyboard-trap failure mode) — judged only when the component declares a
+ * popup surface (`declaresPopup`). A disclosure that opens without one
+ * (mud-accordion-item: an inline `<div role="region">`, no dialog/popover/
+ * aria-haspopup/aria-modal marker) is not expected to close on Escape;
+ * judging it against that convention produced a false ESCAPE-NO-CLOSE.
+ *
+ * Pure — exported for tests.
+ */
+export function bx4Outcome(bx4Data) {
+  if (bx4Data.opened === false) {
+    if (bx4Data.declaresPopup) {
+      return {
+        checks: { status: 'incomplete', reason: 'the open method/prop produced no rendered change' },
+        finding: {
+          severity: 'warning',
+          code: 'INTERACTION-BX4-NOT-OPENED',
+          message: 'Component declares an overlay/popup surface but the open method/prop produced no rendered change.',
+          noTarget: true,
+        },
+      };
+    }
+    return {
+      checks: notApplicable('open method/prop produced no rendered change and no popup surface is declared'),
+      finding: null,
+    };
+  }
+  if (!bx4Data.declaresPopup) {
+    return {
+      checks: notApplicable('component opened but declares no popup surface — Escape-to-close does not apply'),
+      finding: null,
+    };
+  }
+  return { checks: bx4Data, finding: judgeBx4Escape(bx4Data) };
 }
 
 // ─── BX5 — light/dark structural diff ──────────────────────────────────────
@@ -528,9 +577,28 @@ export function isCheckableControl(contract) {
   return (contract?.props ?? []).some(p => p.name === 'checked');
 }
 
-async function runBx7(page, componentName, { isCheckable = false } = {}) {
+/**
+ * A submission value suited to the `value` prop's declared TypeScript type
+ * (T11) — a `number`-typed prop coerces/rejects the plain string
+ * `'audit-value'` the same way a real consumer's numeric assignment would
+ * behave, and a `Date`/date-or-time-typed prop needs a parseable literal.
+ * `judgeBx7` compares `formDataValue` (always a string, from FormData)
+ * against this SAME return value, never a re-parsed one — the normalised
+ * form on both sides of the comparison is this string. Pure — exported for
+ * tests.
+ */
+export function bx7ExpectedValue(valueType) {
+  const t = (valueType ?? '').toLowerCase();
+  if (/number/.test(t)) return '42';
+  if (/date/.test(t)) return '2026-01-01';
+  if (/time/.test(t)) return '12:00';
+  return 'audit-value';
+}
+
+async function runBx7(page, componentName, { isCheckable = false, valueType = null } = {}) {
+  const expectedValue = bx7ExpectedValue(valueType);
   return page.evaluate(
-    ({ name, isCheckable }) => {
+    ({ name, isCheckable, expectedValue }) => {
       const host = document.querySelector(name);
       if (!host) return { found: false, applicable: false, reason: 'component host not found' };
 
@@ -565,7 +633,6 @@ async function runBx7(page, componentName, { isCheckable = false } = {}) {
       form.appendChild(host); // moves the existing (already-hydrated) host into the injected form
       // Checkable controls submit only when `checked` — set it before
       // reading FormData (see isCheckableControl above).
-      const expectedValue = 'audit-value';
       if (isCheckable) host.checked = true;
       if (host.value !== undefined) host.value = expectedValue;
       else if (host.setAttribute) host.setAttribute('value', expectedValue);
@@ -585,7 +652,7 @@ async function runBx7(page, componentName, { isCheckable = false } = {}) {
         setFormValueCallArgCounts: calls,
       };
     },
-    { name: componentName, isCheckable },
+    { name: componentName, isCheckable, expectedValue },
   );
 }
 

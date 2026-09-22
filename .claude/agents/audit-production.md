@@ -51,20 +51,23 @@ computes `state` — never this agent. Exit codes
 (`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4`
 NEEDS-DECISION, `2` usage/internal error.
 
-- Exit `3` with `verdict.json`'s `awaitingLegs: true` — every `INCOMPLETE`
-  entry is an opened `ai-*` row awaiting its leg (Decision §1,
+- Exit `3` with this invocation's `--json` stdout carrying
+  `components[].awaitingLegs: true` — every `INCOMPLETE` entry is an opened
+  `ai-*` row awaiting its leg (Decision §11,
   `2026-09-22-audit-depths-sentinel-fixes.md`): dispatch the legs below, each
   of which writes `audit/mud-<name>/runs/<run>/ai/<leg>/ai-findings.json`
-  without invoking `verdict.mjs` or stopping on its exit code. Once every
-  opened row is closed, recompute:
+  without invoking `verdict.mjs` or stopping on its exit code. Do not start a
+  second fresh run while one is already `awaitingLegs`. Once every opened row
+  is closed, recompute:
 
   ```bash
-  yarn audit:component --run-dir <runDir>
+  yarn audit:component --recompute mud-<name>
   ```
 
-  `<runDir>` is this component's `runDir` in `audit/_run/summary.json`
-  (`components[]`) from the first run — the full `audit/mud-<name>/runs/<run>`
-  form; a bare run id is rejected. STOP if this exit is non-zero.
+  `--recompute <component>` always targets this component's latest run (read
+  from `audit/_run/summary.json`) — a fixed string, never a `<run>`
+  placeholder; `--run-dir <runDir>` stays available for explicitly targeting
+  an older run. STOP if this exit is non-zero.
 - Exit `3` with `awaitingLegs: false`, or any other non-zero exit — STOP. In
   either case read `audit/mud-<name>/verdict.json` (`state`, `level`, `rows`,
   `entries`) and `audit/mud-<name>/fix-brief.md` and report them directly —

@@ -30,10 +30,16 @@
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
-import { resolveComponentPaths, listAllComponents, relativeToRepo, REPO_ROOT } from './lib/component-paths.mjs';
+import {
+  resolveComponentPaths,
+  listAllComponents,
+  relativeToRepo,
+  componentOfSpec,
+  REPO_ROOT,
+} from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
@@ -163,17 +169,16 @@ function readVitestResults(path) {
 }
 
 /**
- * The relative spec file paths, from a vitest JSON-reporter report, whose
- * test suite failed AND lives under `src/components/<componentName>/` or
- * `src/hidden/<componentName>/`. Pure —
- * exported for tests.
+ * The repo-relative spec file paths, from a vitest JSON-reporter report
+ * (which names specs absolutely), whose test suite failed AND belongs to
+ * `componentName` (`componentOfSpec`, shared with run-all's coverage
+ * prerequisite). Pure — exported for tests.
  */
 export function failedSpecsForComponent(vitestResults, componentName) {
-  const markers = [`src/components/${componentName}/`, `src/hidden/${componentName}/`];
   return (vitestResults?.testResults ?? [])
-    .filter(t => t.status === 'failed')
-    .map(t => String(t.name ?? '').replace(/\\/g, '/'))
-    .filter(name => markers.some(m => name.includes(m)));
+    .filter(t => t.status === 'failed' && componentOfSpec(t.name) === componentName)
+    .map(t => String(t.name ?? ''))
+    .map(name => (isAbsolute(name) ? relativeToRepo(name) : name.replace(/\\/g, '/')));
 }
 
 /**

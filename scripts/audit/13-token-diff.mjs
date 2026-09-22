@@ -182,13 +182,17 @@ export function loadComponentSources(componentName, figmaExportPath) {
   const bare = bareName(componentName);
   const currentPath = join(REPO_ROOT, 'tokens', 'core', 'components', `${bare}.tokens.json`);
   if (!existsSync(currentPath)) {
+    // T3 (Decision §5 corrected): a component with no own tokens file has
+    // nothing to diff — that is not a missing INPUT (`noTarget`, which
+    // `verdict.mjs` turns into an INCOMPLETE row), it is the row not
+    // applying to this component at all (e.g. mud-icon, which carries no
+    // component-level tokens file by design).
     return {
       error: finding({
-        severity: 'warning',
+        severity: 'info',
         code: 'TOKEN-DIFF-NO-CURRENT',
         file: relativePathFor(currentPath),
-        message: `Current tokens file not found for ${componentName}.`,
-        noTarget: true,
+        message: `No current tokens file for ${componentName} — nothing to diff (not applicable).`,
       }),
     };
   }
