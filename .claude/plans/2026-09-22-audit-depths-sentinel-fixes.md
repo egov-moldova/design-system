@@ -884,7 +884,41 @@ Chromium launch+newPage+close: 382 292 208 185 ms
 - Grading: carried by the merge gate (sentinel round 4, past the cap on the owner's descope
   decision), which dispatches `/code-review` and a fresh-eyes critic over this phase.
 
-#### Round 4 remediation (2026-09-22)
+### Phase 7 — sentinel round 4 remediation (owner decision, 2026-09-22)
+**Executor**: session, high effort · wave 7
+
+The owner asked for round 4's 10 must-fix findings and 3 recommendations to be fixed with tests
+and targeted live verification, then for round 5 to be recorded as WAIVED rather than run.
+
+**Files**:
+
+- Modify: `scripts/audit/13-token-diff.mjs`
+- Modify: `scripts/audit/19-interaction.mjs`
+- Modify: `scripts/audit/12-console-errors.mjs`
+- Modify: `scripts/audit/05-story-exports.mjs`
+- Modify: `scripts/audit/verdict.mjs`
+- Modify: `scripts/audit/lib/json-output.mjs`
+- Modify: `scripts/audit/lib/storybook-helpers.mjs`
+- Modify: `scripts/audit/README.md`
+- Create: `scripts/audit/measure-run-cost.mjs`
+- Create: `scripts/__tests__/audit/measure-run-cost.spec.mjs`
+- Create: `scripts/__tests__/audit/story-id.spec.mjs`
+- Modify: `scripts/__tests__/audit/13-token-diff.spec.mjs`
+- Modify: `scripts/__tests__/audit/19-interaction.spec.mjs`
+- Modify: `scripts/__tests__/audit/12-console-errors.spec.mjs`
+- Modify: `scripts/__tests__/audit/05-story-exports.spec.mjs`
+- Modify: `scripts/__tests__/audit/callers.spec.mjs`
+- Modify: `scripts/__tests__/audit/fix-brief.spec.mjs`
+- Modify: `.claude/commands/audit-component.md`
+- Modify: `.claude/commands/migrate-component.md`
+- Modify: `.claude/agents/audit-production.md`
+- Modify: `.claude/agents/a11y-verifier.md`
+- Modify: `.claude/skills/LOCAL-SETUP.md`
+- Modify: `.claude/skills/audit-component/SKILL.md`
+- Modify: `.claude/skills/audit-component/references/report-template.md`
+- Modify: `.claude/plans/2026-09-22-audit-depths-sentinel-fixes.md`
+
+#### Phase 7 results (2026-09-22)
 
 Sentinel round 4 returned two legs — a fresh-eyes critic and `/code-review xhigh`; the security
 and four diff-reviewer legs each stalled at 600 s and were not retried. Between them the two
@@ -943,6 +977,30 @@ The three recommendations:
   rows per component × depth, `--out`/`--compare` for the pair, and it exits 1 if two
   repetitions of a cell differ by a byte. Live: `mud-button @ quick 2407 ms (median of 3) ·
   763 MB · verdict identical`.
+
+Found while checking the round's own residual risk, and fixed in the same round (`86d951d`):
+
+- **Two components' browser rows were auditing a page that does not exist.** The full-library
+  row-12 run that was meant to widen the listener-timing check from 2/44 to 44/44 returned 16
+  errors, 15 of them `NoStoryMatchError`. The audit builds a story id by kebab-casing both
+  `title` and the export name; Storybook splits only the export name into words and lowercases
+  a title segment whole, so `Atoms/InfoBox` is `atoms-infobox`, not `atoms-info-box`. 15 of the
+  repo's 435 derived ids did not exist — every story of `mud-info-box` and `mud-inline-message`
+  — and the rows scored an empty page as a clean one. `storyIdFor` delegates to Storybook's own
+  `toId`/`storyNameFromExport` and is now the single builder; `05-story-exports.mjs` held a
+  second copy of the same rule, which is what let it drift. After: 435 stories, 1 finding, and
+  that one is a real `play()` assertion in `mud-accordion-item`'s `slotted-disabled-contract`
+  story — pre-existing component behaviour, since this branch touches no file under `src/`.
+  Both components then audit clean: `PASS@standard · MERGE-READY`.
+
+- Verify (Phase 7): script specs 1417/1417, `yarn test` (vitest) 1987/1987, `yarn lint` exit 0,
+  `seeded-defects` 4/4, two live `standard` runs on `mud-banner` byte-identical
+  (`measure-run-cost.mjs`, 25.1 s median, exit 0), row 13 swept over all 44 components (0 silent
+  rows), row 19 live on six components (tooltip and modal still `declaresPopup: true`,
+  accordion-item correctly not), `--run-dir` stale-guard and `--rerender` exercised live
+  (exit 2 / exit 2 / exit 4, current verdict left standing), row 12 `--all` 44 components /
+  435 stories in 169 s at 397 MB peak.
+- Grading: round 5 WAIVED on the owner's decision (see § Review log).
 
 ## Execution matrix
 
