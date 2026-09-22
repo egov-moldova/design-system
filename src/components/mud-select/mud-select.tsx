@@ -894,12 +894,22 @@ export class MudSelect {
             }
           >
             {opts.length === 0 ? (
-              <div class="listbox-empty" role="presentation">
+              // `role="option"`, not `presentation`: a listbox must own at least one
+              // option, and an empty one owning only a presentational node is
+              // invalid (axe `aria-required-children`). `aria-disabled` says it
+              // cannot be chosen, and the keyboard agrees — it walks the option
+              // model, which is empty here, so nothing can land on this row.
+              <div class="listbox-empty" role="option" aria-disabled="true" aria-selected="false">
                 {this.emptyLabel}
               </div>
             ) : (
               toRows(this.visibleEntries()).map((row, rowIndex) => {
-                if (row.kind === 'separator') return <div class="listbox-separator" role="separator"></div>;
+                // `role="presentation"`, not `separator`: ARIA 1.2 lets a listbox own
+                // only `option` and `group`, so a separator child makes the whole
+                // listbox invalid (axe `aria-required-children`). The rule is a
+                // visual grouping cue — the grouping itself is carried by
+                // `role="group"` — so it has nothing to say to a screen reader.
+                if (row.kind === 'separator') return <div class="listbox-separator" role="presentation"></div>;
                 if (row.kind === 'option') return this.renderOption(row, iconSize);
 
                 // `role="group"` needs a name, and the heading is it — a listbox

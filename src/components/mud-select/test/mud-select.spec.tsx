@@ -38,7 +38,9 @@ const queryGroups = (root: Element | null | undefined): HTMLElement[] =>
   Array.from(root?.shadowRoot?.querySelectorAll('[role="group"]') ?? []) as HTMLElement[];
 
 const querySeparators = (root: Element | null | undefined): HTMLElement[] =>
-  Array.from(root?.shadowRoot?.querySelectorAll('[role="separator"]') ?? []) as HTMLElement[];
+  // Not `[role="separator"]`: a listbox may own only `option` and `group`, so the
+  // rule renders as presentation. See the note at its render site.
+  Array.from(root?.shadowRoot?.querySelectorAll('.listbox-separator') ?? []) as HTMLElement[];
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
@@ -736,6 +738,28 @@ describe('mud-select', () => {
       // Both <hr>s here sit against a heading, which draws its own rule.
       expect(querySeparators(root)).toHaveLength(0);
     });
+
+    it('gives the listbox only children a listbox may own', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="none">Choose</option>
+          <hr />
+          <option value="apple">Apples</option>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      const listbox = queryListbox(root)!;
+      const roles = Array.from(listbox.querySelectorAll('[role]')).map(el => el.getAttribute('role'));
+      // ARIA 1.2 lets a listbox own `option` and `group`. Anything else — a
+      // `separator` for the rule, say — invalidates the whole listbox, which is
+      // what axe's `aria-required-children` reports.
+      expect(roles.every(role => role === 'option' || role === 'group' || role === 'presentation')).toBe(true);
+      expect(roles).not.toContain('separator');
+      expect(querySeparators(root)).toHaveLength(1);
+    });
   });
 
   describe('filtering', () => {
@@ -821,7 +845,12 @@ describe('mud-select', () => {
       await flush();
       await type(root, 'zzz');
       expect(queryOptions(root)).toHaveLength(0);
-      expect(root?.shadowRoot?.querySelector('.listbox-empty')).toBeTruthy();
+      const empty = root?.shadowRoot?.querySelector('.listbox-empty');
+      expect(empty).toBeTruthy();
+      // A listbox must own an option, so the empty row is one — disabled, and
+      // outside the model the keyboard walks. See the note at its render site.
+      expect(empty?.getAttribute('role')).toBe('option');
+      expect(empty?.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('opens the listbox as soon as the user types', async () => {
