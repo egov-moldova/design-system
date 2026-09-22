@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  bx4CloseStep,
   countRenderedChildren,
   judgeBx1Hydration,
   isBx4Applicable,
@@ -221,6 +222,25 @@ describe('19-interaction: bx4Outcome (T15 — not-opened branch, T2 — Escape g
     const { checks, finding } = bx4Outcome(data);
     assert.equal(checks, data);
     assert.equal(finding, null);
+  });
+});
+
+describe('19-interaction: bx4CloseStep (T4 — close before the baseline, never by calling an open method)', () => {
+  it('an `open` prop closes by the prop, even beside an argument-less openModal() (mud-modal)', () => {
+    const contract = { props: [{ name: 'open' }], methods: [{ name: 'openModal' }, { name: 'closeModal' }] };
+    assert.deepEqual(bx4CloseStep(contract), { via: 'prop' });
+  });
+
+  it('no `open` prop → a close method, called with no argument', () => {
+    assert.deepEqual(bx4CloseStep({ props: [], methods: [{ name: 'openModal' }, { name: 'closeModal' }] }), {
+      via: 'method',
+      name: 'closeModal',
+    });
+  });
+
+  it('only an open method → nothing is called; the baseline is taken as rendered', () => {
+    assert.deepEqual(bx4CloseStep({ props: [], methods: [{ name: 'openModal' }] }), { via: 'none' });
+    assert.deepEqual(bx4CloseStep(null), { via: 'none' });
   });
 });
 

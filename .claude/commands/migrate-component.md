@@ -45,7 +45,7 @@ List missing files.
 Run the deterministic gate:
 
 ```bash
-yarn audit:component $ARGUMENTS --depth deep
+yarn audit:component $ARGUMENTS --depth deep --json
 ```
 
 Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
@@ -61,7 +61,7 @@ second fresh run while one is already `awaitingLegs`. Once every opened row
 is closed, recompute and STOP on a non-zero exit:
 
 ```bash
-yarn audit:component --recompute $ARGUMENTS
+yarn audit:component --recompute $ARGUMENTS --json
 ```
 
 `--recompute <component>` always targets this component's latest run (read

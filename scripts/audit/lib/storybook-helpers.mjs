@@ -352,8 +352,8 @@ export function releaseLock(lockPath, token) {
 /**
  * Whether a token handed to a spawned child (`AUDIT_LOCK_TOKEN`) is a valid
  * hand-off of an already-held lock: the lock file exists, its nonce matches
- * the token, its pid is alive, and that pid's start time is the one recorded
- * (T28 — a reused pid is not the holder). A forged, stale, or absent token is
+ * the token, its pid is alive, and — when one was recorded — that pid's start
+ * time is the one recorded (T28 — a reused pid is not the holder). A forged, stale, or absent token is
  * never honoured — the child must take the lock itself. Pure over its inputs —
  * exported for tests.
  */
@@ -368,7 +368,8 @@ export function isValidLockToken(
     existing.nonce === token &&
     existing.pid &&
     isAlive(existing.pid) &&
-    existing.startTime &&
-    startTimeOf(existing.pid) === existing.startTime,
+    // A holder on a host without `ps` recorded no start time; its nonce is
+    // then the only proof, and refusing it would refuse every hand-off there.
+    (!existing.startTime || startTimeOf(existing.pid) === existing.startTime),
   );
 }

@@ -29,10 +29,10 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
 
 ## Execution
 
-1. Run the gate once:
+1. Run the gate once — skip this step when a caller already ran it and its `--json` stdout says `components[].awaitingLegs: true` (a second fresh run would open new rows and orphan the legs already dispatched):
 
    ```bash
-   yarn audit:component $ARGUMENTS
+   yarn audit:component $ARGUMENTS --json
    ```
 
    Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4` NEEDS-DECISION, `2` usage/internal error. At `--depth deep`, an exit `3` with this invocation's `--json` stdout carrying `components[].awaitingLegs: true` means every `INCOMPLETE` entry is an opened `ai-*` row (Decision §11, `2026-09-22-audit-depths-sentinel-fixes.md`) — go to step 2, then step 3. Never read `awaitingLegs` from a `verdict.json` an earlier run left behind. Any other non-zero exit — STOP. Read `audit/<component>/verdict.json` (`state`, `level`, `headline`, `rows`, `entries`) and `audit/<component>/fix-brief.md` — never re-derive the verdict by hand.
@@ -48,10 +48,13 @@ Audit the component identified by `$ARGUMENTS` (folder name plus optional flags)
 3. At `deep`, once every opened row is closed, recompute and STOP on a non-zero exit:
 
    ```bash
-   yarn audit:component --recompute $ARGUMENTS
+   yarn audit:component --recompute <component> --json
    ```
 
-   `--recompute <component>` always targets that component's latest run (read from
+   `<component>` is the component name alone — `$ARGUMENTS` also carries `--depth` and the
+   other flags, which `--recompute` rejects (exit 2). With `--changed` / `--all`, recompute
+   each component whose `awaitingLegs` was true; each invocation's exit speaks only for the
+   component it recomputed. `--recompute <component>` always targets that component's latest run (read from
    `audit/_run/summary.json`) — a fixed string, never a `<run>` placeholder. Do not start a
    second fresh run (`yarn audit:component $ARGUMENTS`) while a run is already
    `awaitingLegs`; `--run-dir <runDir>` stays available for explicitly targeting an older run.

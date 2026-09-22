@@ -364,6 +364,21 @@ async function capturePopupMarkers(page, componentName) {
   }, componentName);
 }
 
+/**
+ * How BX4 closes the host before its baseline (T4). Never the open method with
+ * `false`: `openModal()` takes no argument and would OPEN the modal, leaving
+ * the later open call a no-op and the component falsely "not opened". The
+ * `open` prop when declared, else a `close*` method with no argument, else
+ * nothing (the baseline is taken as rendered). Pure.
+ *
+ * @returns {{ via: 'prop' } | { via: 'method', name: string } | { via: 'none' }}
+ */
+export function bx4CloseStep(contract) {
+  if ((contract?.props ?? []).some(p => p.name === 'open')) return { via: 'prop' };
+  const closeMethod = (contract?.methods ?? []).find(m => /close/i.test(m.name))?.name;
+  return closeMethod ? { via: 'method', name: closeMethod } : { via: 'none' };
+}
+
 async function runBx4(page, componentName, contract) {
   // Prefer a method whose name CONTAINS "open" (Stencil components in this
   // codebase name it `openModal`/`open`, never exactly `open` as a method —
@@ -380,14 +395,15 @@ async function runBx4(page, componentName, contract) {
   // later open call is a no-op and `judgeBx4Opened` sees no change, a false
   // "did not open" (live Storybook run, mud-tooltip, 2026-09-22). Close it
   // first and wait, so `before` is genuinely closed.
+  const close = bx4CloseStep(contract);
   await page.evaluate(
-    ({ name, method }) => {
+    ({ name, step }) => {
       const host = document.querySelector(name);
       if (!host) return;
-      if (method && typeof host[method] === 'function') host[method](false);
-      else host.open = false;
+      if (step.via === 'prop') host.open = false;
+      else if (step.via === 'method' && typeof host[step.name] === 'function') host[step.name]();
     },
-    { name: componentName, method: openMethod },
+    { name: componentName, step: close },
   );
   await page.waitForTimeout(350);
 

@@ -183,9 +183,16 @@ describe('callers: T5 / Decision 11 — --run-dir needs an envelope; --recompute
     const a = writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx-a'));
     const b = writeRunDir(dir, FIXTURE_FOR_STATE.FAIL('mud-fx-b'));
     runVerdict([a, b], dir);
+    // The exit and stdout are this recompute's own — a caller stops on mud-fx-b's
+    // FAIL when it recomputes mud-fx-b, never while recomputing a passing mud-fx-a.
     const res = recomputeCli(['--recompute', 'mud-fx-a'], dir);
-    assert.equal(res.status, STATE_EXIT_CODES.FAIL, res.stderr);
+    assert.equal(res.status, 0, res.stderr);
+    assert.deepEqual(
+      JSON.parse(res.stdout).components.map(c => c.component),
+      ['mud-fx-a'],
+    );
     const summary = JSON.parse(readFileSync(join(dir, '_run', 'summary.json'), 'utf8'));
+    assert.equal(summary.state, 'FAIL', 'the summary file still carries every component');
     assert.deepEqual(
       summary.components.map(c => c.component),
       ['mud-fx-a', 'mud-fx-b'],
@@ -200,6 +207,13 @@ describe('callers: T5 / Decision 11 — --run-dir needs an envelope; --recompute
     assert.equal(res.status, 2);
     assert.match(res.stderr, /mud-other/);
     assert.equal(existsSync(join(dir, 'mud-other')), false);
+  });
+
+  it('--recompute normalizes the component name like a fresh run does (`@mud-fx`, `fx`)', () => {
+    const dir = auditDir();
+    runVerdict([writeRunDir(dir, FIXTURE_FOR_STATE.PASS('mud-fx'))], dir);
+    assert.equal(recomputeCli(['--recompute', '@mud-fx'], dir).status, 0);
+    assert.equal(recomputeCli(['--recompute', 'fx'], dir).status, 0);
   });
 
   it('--recompute with no summary at all → exit 2', () => {

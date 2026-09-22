@@ -35,7 +35,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { REPO_ROOT } from './lib/component-paths.mjs';
+import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import { headManifestRelPath, manifestRelPath } from './lib/figma-manifest.mjs';
 import {
@@ -876,8 +876,14 @@ function recompute(runDirs, json, auditDir) {
     const recomputed = new Set(runs.map(r => r.verdict.component));
     const kept = (readSummaryFile(auditDir)?.components ?? []).filter(c => !recomputed.has(c.component));
     const summary = writeSummary(auditDir, { depth: runs[0].verdict.depth, runs, kept });
-    printSummary(summary, json);
-    return exitCodeForState(summary.state);
+    // The file keeps every component; this invocation's stdout and exit speak
+    // only for the runs it recomputed, so a caller never stops on another
+    // component's state (or reads its stale awaitingLegs).
+    const own = summary.components.filter(c => recomputed.has(c.component));
+    const ownSummary = { ...summary, state: worstState(own.map(c => c.state)), components: own };
+    delete ownSummary.note;
+    printSummary(ownSummary, json);
+    return exitCodeForState(ownSummary.state);
   } finally {
     releaseLock(auditLockPathFor(auditDir), lock.token);
   }
@@ -977,7 +983,9 @@ function main() {
     const runDirs = [...(parsed.values['run-dir'] ?? [])];
     if (parsed.values.recompute !== undefined) {
       if (runDirs.length) return usageError('--recompute and --run-dir are exclusive');
-      const found = runDirFromSummary(readSummaryFile(auditRoot), parsed.values.recompute);
+      const component = normalizeComponentName(parsed.values.recompute);
+      if (!component) return usageError(`invalid component name "${parsed.values.recompute}"`);
+      const found = runDirFromSummary(readSummaryFile(auditRoot), component);
       if (!found.ok) return usageError(found.reason);
       runDirs.push(found.runDir);
     }

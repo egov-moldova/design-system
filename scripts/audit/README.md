@@ -337,9 +337,9 @@ run, so a hand-edited or model-written verdict never survives the next run.
   `options` sets `NEEDS-DECISION`, and none clears a script `FAIL`. The headline
   prints `ai-legs: self-attested`.
 - **Two-phase `deep`.** The first `deep` run opens the AI rows and exits 3.
-  `awaitingLegs` is not in `verdict.json` — it is computed fresh on every
-  invocation and returned in `components[].awaitingLegs` of that invocation's
-  `--json` stdout summary, true only when every `INCOMPLETE` entry is an
+  `awaitingLegs` is written to `verdict.json` too, but a caller reads it from
+  `components[].awaitingLegs` of its own invocation's `--json` stdout summary —
+  computed on that invocation, true only when every `INCOMPLETE` entry is an
   opened `ai-*` row on unchanged sources; a caller reading an earlier run's
   `verdict.json` would be reading a value that can go stale the moment a
   source changes. The caller then dispatches the legs and recomputes with

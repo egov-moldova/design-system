@@ -40,7 +40,7 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 Run the deterministic gate once:
 
 ```bash
-yarn audit:component mud-<name> --depth deep
+yarn audit:component mud-<name> --depth deep --json
 ```
 
 This is `scripts/audit/verdict.mjs`: it drives `run-all.mjs --depth deep`
@@ -61,7 +61,7 @@ NEEDS-DECISION, `2` usage/internal error.
   is closed, recompute:
 
   ```bash
-  yarn audit:component --recompute mud-<name>
+  yarn audit:component --recompute mud-<name> --json
   ```
 
   `--recompute <component>` always targets this component's latest run (read

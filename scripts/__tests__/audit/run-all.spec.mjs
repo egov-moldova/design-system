@@ -1503,10 +1503,15 @@ describe('run-all: Phase 5 (sentinel round 2)', () => {
       false,
       'pid reused by another process',
     );
+    // A host without `ps` records no start time; the random nonce alone then
+    // proves the hand-off — refusing it would make every fresh audit INCOMPLETE there.
     assert.equal(
-      isValidLockToken({ pid: 111, nonce: 'abc' }, 'abc', { isAlive: () => true, startTimeOf: () => 't1' }),
-      false,
-      'a record with no start time cannot prove identity',
+      isValidLockToken({ pid: 111, nonce: 'abc', startTime: null }, 'abc', {
+        isAlive: () => true,
+        startTimeOf: () => null,
+      }),
+      true,
+      'no start time recorded (no ps)',
     );
   });
 
