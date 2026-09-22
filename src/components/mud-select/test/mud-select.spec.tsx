@@ -416,6 +416,85 @@ describe('mud-select', () => {
     });
   });
 
+  describe('native markup composition', () => {
+    it('reads flat <option> children as rows', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana">Bananas</option>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.textContent?.trim())).toEqual(['Apples', 'Bananas']);
+    });
+
+    it('falls back to the text as the value when <option> has none', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option>Apples</option>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root)[0]?.getAttribute('data-value')).toBe('Apples');
+    });
+
+    it('reads options nested inside <optgroup>', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="none">Choose</option>
+          <optgroup label="Fruit">
+            <option value="apple">Apples</option>
+            <option value="banana">Bananas</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['none', 'apple', 'banana', 'beef']);
+    });
+
+    it('disables every option of a disabled <optgroup>', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <optgroup label="Fruit" disabled>
+            <option value="apple">Apples</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      const [apple, beef] = queryOptions(root);
+      expect(apple?.getAttribute('aria-disabled')).toBe('true');
+      expect(beef?.getAttribute('aria-disabled')).toBeNull();
+    });
+
+    it('keeps an <optgroup> without a label as a plain run of options', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <optgroup>
+            <option value="apple">Apples</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['apple']);
+    });
+
+    it('still lets the deprecated options prop win over markup', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+        </mud-select>,
+      );
+      await setOptions(root, baseOptions);
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['opt-1', 'opt-2', 'opt-3', 'opt-4']);
+    });
+  });
+
   describe('slots', () => {
     it('forwards content into the icon-start slot', async () => {
       const { root } = await render(

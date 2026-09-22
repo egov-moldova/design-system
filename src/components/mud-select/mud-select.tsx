@@ -1,8 +1,9 @@
 import type { EventEmitter } from '@stencil/core';
 import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
-import { SELECT_SIZES, SELECT_VARIANTS } from './mud-select.types';
-import type { SelectChangeDetail, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
+import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
+import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
+import { entriesFromOptions, readEntriesFromLightDom } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
@@ -120,7 +121,7 @@ export class MudSelect {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private highlightedIndex: number = -1;
-  @State() private slotOptions: SelectOption[] = [];
+  @State() private entries: SelectEntry[] = [];
   /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the trigger when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   /** True when the listbox is flipped above the control (not enough room below). */
@@ -164,7 +165,7 @@ export class MudSelect {
 
   componentWillLoad() {
     this.initialValue = this.value;
-    this.refreshSlotOptions();
+    this.refreshEntries();
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
     if (this.open) this.primeHighlight();
@@ -238,6 +239,7 @@ export class MudSelect {
 
   @Watch('options')
   handleOptionsChange() {
+    this.refreshEntries();
     if (this.open && this.highlightedIndex < 0) this.primeHighlight();
   }
 
@@ -355,7 +357,7 @@ export class MudSelect {
     this.hasIconStart = this.slotHasContent(ev);
   };
   private onDefaultSlotChange = () => {
-    this.refreshSlotOptions();
+    this.refreshEntries();
   };
 
   private slotHasContent(ev: Event): boolean {
@@ -366,19 +368,18 @@ export class MudSelect {
     });
   }
 
-  private refreshSlotOptions() {
-    const children = Array.from(this.host.children).filter(
-      el => el.tagName === 'OPTION' || el.tagName === 'CORE-OPTION',
-    ) as HTMLOptionElement[];
-    this.slotOptions = children.map(el => ({
-      value: el.getAttribute('value') ?? el.textContent?.trim() ?? '',
-      label: (el.textContent ?? '').trim(),
-      disabled: el.hasAttribute('disabled'),
-    }));
+  /**
+   * Rebuilds the rendered model. The deprecated `options` prop still wins over
+   * markup so existing callers keep their behaviour.
+   */
+  private refreshEntries() {
+    this.entries =
+      this.options && this.options.length > 0 ? entriesFromOptions(this.options) : readEntriesFromLightDom(this.host);
   }
 
+  /** The choices, in render order — what `highlightedIndex` and `value` index into. */
   private resolvedOptions(): SelectOption[] {
-    return this.options && this.options.length > 0 ? this.options : this.slotOptions;
+    return this.entries.filter(isOptionEntry);
   }
 
   private resolvedVariant(): SelectVariant {
