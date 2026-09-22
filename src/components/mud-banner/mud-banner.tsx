@@ -25,6 +25,9 @@ import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
  * - `info` → `role="status"` + `aria-live="polite"`
  * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
  *
+ * Give the banner an accessible name by setting the native `aria-label`
+ * attribute on the host directly — the platform keeps it there untouched.
+ *
  * @element mud-banner
  *
  * @slot - (default) The banner message. Plain text or rich inline content.
@@ -74,9 +77,6 @@ export class MudBanner {
    * `icon-start` slot is populated.
    */
   @Prop() iconName?: IconName;
-
-  /** Forwarded to the host as `aria-label`. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /**
    * Close-button accessible label. Defaults to the Romanian "Închide".

@@ -2,6 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from './mud-input-chip.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import type {
   InputChipAddDetail,
   InputChipChangeDetail,
@@ -105,14 +106,15 @@ export class MudInputChip {
    */
   @Prop() separators: string = ',';
 
-  /** Accessible name; mirrors to the group's `aria-label` when no visible label. */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * group when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudInputChipElement;
@@ -145,29 +147,20 @@ export class MudInputChip {
   private readonly liveId = `mud-input-chip-live-${this.instanceId}`;
   private nativeInput?: HTMLInputElement;
   private initialChips: string[] = [];
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialChips = [...this.chips];
     this.syncFormValue(this.chips);
     this.syncValidity(this.chips);
-  }
-
-  private captureAriaLabel() {
-    const hostAttr = this.host.getAttribute('aria-label');
-    if (hostAttr && hostAttr.length > 0) {
-      this.resolvedAriaLabel = hostAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  syncAriaLabelProp(next?: string) {
-    // Only override resolvedAriaLabel when the prop is actually set —
-    // captureAriaLabel strips the attribute, which would otherwise null this out.
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('required')

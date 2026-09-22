@@ -65,7 +65,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Prop | P7: A prop with neither a default nor `?` needs `!` under `strict` | `tsc` | — |
 | @Prop | P9: Enum props import their values from `mud-<name>.enums.ts` or a union type | `manual` | [decorators P9](references/decorators.md#prop) |
 | @Prop | P10: Every `@Prop()` has JSDoc | `script-04:JSDOC-PROP-MISSING` | `JSDOC-PROP-MISSING` |
-| @Prop | P11: Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual` | [decorators P11](references/decorators.md#prop) |
+| @Prop | P11: Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); read the host's `aria-label` through `src/utils/aria-label.ts`, and give a case-insensitive false positive a line-level disable that states why | `eslint:@stencil/reserved-member-names` | [decorators P11](references/decorators.md#prop) |
 | @Prop | P12: Props are public (no `private`/`protected` modifier) | `eslint:@stencil/props-must-be-public` | — |
 | @Prop | P13: Prop names are camelCase; the attribute is derived as kebab-case | `manual` | [decorators P13](references/decorators.md#prop) |
 | @Prop | P14: A prop with a default documents it with `@default` | `script-04:JSDOC-PROP-DEFAULT-TAG` | `JSDOC-PROP-DEFAULT-TAG` |

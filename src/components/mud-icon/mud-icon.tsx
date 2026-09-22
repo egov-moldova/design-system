@@ -2,6 +2,7 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import defaultManifest from './assets/icons.manifest.json';
 import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
+import { observeAriaLabel } from '../../utils/aria-label';
 import {
   ICON_VARIANTS,
   isIconName,
@@ -65,16 +66,18 @@ export class MudIcon {
    */
   @Prop({ reflect: true }) disabled: boolean = false;
 
-  /**
-   * Accessible label. When provided, the icon is announced; when omitted it is decorative.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private svgElement: Element | null = null;
+
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property). When
+   * set, the icon is announced; when omitted it is decorative.
+   */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudIconElement;
 
   private svgCacheKey: string = '';
+  private stopAriaLabel?: () => void;
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -97,6 +100,16 @@ export class MudIcon {
 
   async componentWillLoad(): Promise<void> {
     await this.loadSvg();
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
+      keepOnHost: true,
+    });
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   componentWillRender() {
@@ -190,12 +203,10 @@ export class MudIcon {
       return <Host aria-hidden="true" />;
     }
 
-    const isDecorative = !this.ariaLabel;
+    const isDecorative = !this.resolvedAriaLabel;
 
     const hostAttrs: Record<string, string | number | ((ev: KeyboardEvent) => void)> = {};
-    if (!isDecorative) {
-      hostAttrs['aria-label'] = this.ariaLabel as string;
-    } else {
+    if (isDecorative) {
       hostAttrs['aria-hidden'] = 'true';
     }
     if (this.interactive) {

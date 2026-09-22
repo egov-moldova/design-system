@@ -59,7 +59,9 @@ export default tseslint.config(
       '@stencil/single-export': 'error',
       '@stencil/props-must-be-public': 'error',
       '@stencil/methods-must-be-public': 'error',
-      // reserved-member-names stays off: 35 public @Prop names would need breaking renames (#88).
+      // Components read the native `aria-label` instead of an `ariaLabel` prop (#88); the rule's
+      // case-insensitive false positives carry a line-level disable with the measured reason.
+      '@stencil/reserved-member-names': 'error',
       '@stencil/required-jsdoc': 'off',
       '@stencil/dependency-suggestions': 'off',
 

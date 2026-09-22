@@ -12,6 +12,7 @@ import type {
   PhoneInputType,
   PhoneInputVariant,
 } from './mud-phone-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let phoneInputInstanceCounter = 0;
 
@@ -320,14 +321,6 @@ export class MudPhoneInput {
   /** Placeholder shown when the local segment is empty. Defaults to the country's mask. */
   @Prop() placeholder?: string;
 
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when
-   * no visible label is present. Setting `aria-label` directly on the host
-   * also works — captured on connect into `resolvedAriaLabel` and stripped
-   * to avoid Stencil's attribute-observer / render-loop antipattern.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -335,6 +328,7 @@ export class MudPhoneInput {
   @State() private highlightedIndex: number = -1;
   @State() private countryIso: string = 'MD';
   @State() private liveAnnouncement: string = '';
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the internal control when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   @State() private searchQuery: string = '';
 
@@ -384,32 +378,23 @@ export class MudPhoneInput {
   private listboxEl?: HTMLElement;
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.countryIso = this.resolveInitialCountry();
     this.initialCountry = this.countryIso;
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
     if (this.open && this.type === 'international') this.primeHighlight();
-  }
-
-  private captureAriaLabel() {
-    const hostAttr = this.host.getAttribute('aria-label');
-    if (hostAttr && hostAttr.length > 0) {
-      this.resolvedAriaLabel = hostAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  syncAriaLabelProp(next?: string) {
-    // Only override resolvedAriaLabel when the prop is actually set —
-    // captureAriaLabel strips the attribute, which would otherwise null this out.
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('required')

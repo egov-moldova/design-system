@@ -24,9 +24,10 @@ element:
   `type` and `semantic` axes.
 
 Tags are decorative by default. When a tag conveys a dynamic state
-to assistive tech ("Procesare în curs"), set `aria-label` and the
-host will adopt `role="status"` automatically — otherwise the host
-stays silent so visual-only tags don't pollute the a11y tree.
+to assistive tech ("Procesare în curs"), set the native `aria-label`
+attribute and the host will adopt `role="status"` automatically —
+otherwise the host stays silent so visual-only tags don't pollute the
+a11y tree.
 
 For horizontally stacked groups (8 px gutter, wrap on overflow),
 compose multiple tags inside a `mud-tag-group` slot wrapper —
@@ -35,15 +36,14 @@ attribute on the parent.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                                                                                                        | Type                                                                   | Default     |
-| ----------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------- |
-| `ariaLabel` | `aria-label` | Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").                               | `string \| undefined`                                                  | `undefined` |
-| `disabled`  | `disabled`   | Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag. | `boolean`                                                              | `false`     |
-| `label`     | `label`      | Fallback label text rendered when the default slot is empty. Plain text only.                                                                                                                      | `string \| undefined`                                                  | `undefined` |
-| `semantic`  | `semantic`   | Semantic color role.                                                                                                                                                                               | `"accent" \| "brand" \| "danger" \| "muted" \| "neutral" \| "success"` | `'neutral'` |
-| `size`      | `size`       | Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.                                                                                                        | `"md" \| "sm"`                                                         | `'md'`      |
-| `type`      | `type`       | Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border.   | `"outlined" \| "strong" \| "subtle"`                                   | `'subtle'`  |
-| `variant`   | `variant`    | Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.                                                                      | `"info" \| "status"`                                                   | `'status'`  |
+| Property   | Attribute  | Description                                                                                                                                                                                        | Type                                                                   | Default     |
+| ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------- |
+| `disabled` | `disabled` | Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag. | `boolean`                                                              | `false`     |
+| `label`    | `label`    | Fallback label text rendered when the default slot is empty. Plain text only.                                                                                                                      | `string \| undefined`                                                  | `undefined` |
+| `semantic` | `semantic` | Semantic color role.                                                                                                                                                                               | `"accent" \| "brand" \| "danger" \| "muted" \| "neutral" \| "success"` | `'neutral'` |
+| `size`     | `size`     | Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.                                                                                                        | `"md" \| "sm"`                                                         | `'md'`      |
+| `type`     | `type`     | Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border.   | `"outlined" \| "strong" \| "subtle"`                                   | `'subtle'`  |
+| `variant`  | `variant`  | Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.                                                                      | `"info" \| "status"`                                                   | `'status'`  |
 
 
 ## Slots

@@ -405,6 +405,7 @@ describe('mud-input-chip', () => {
       // Native label association (<label for=>) is hidden because hasVisibleLabel() is false;
       // the input carries the accessible name via aria-label.
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Destinatari');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('omits aria-label on the input when a visible label is provided', async () => {

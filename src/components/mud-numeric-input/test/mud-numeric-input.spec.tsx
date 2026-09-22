@@ -487,10 +487,11 @@ describe('mud-numeric-input', () => {
     });
 
     it('uses aria-label as the accessible name when no visible label is present', async () => {
-      const { root } = await render(<mud-numeric-input ariaLabel="Quantity"></mud-numeric-input>);
+      const { root } = await render(<mud-numeric-input aria-label="Quantity"></mud-numeric-input>);
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Quantity');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('exposes Romanian aria-labels on stepper buttons by default', async () => {

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { TAG_SEMANTICS, TAG_SIZES, TAG_TYPES, TAG_VARIANTS } from './mud-tag.types';
 import type { TagSemantic, TagSize, TagType, TagVariant } from './mud-tag.types';
@@ -498,5 +499,30 @@ export const Group: Story = {
 </div>`.trim(),
       },
     },
+  },
+};
+
+/**
+ * The host carries the role, so the native `aria-label` stays on it; setting one after load turns
+ * the tag into a polite `status` region, and clearing it turns that off again.
+ */
+export const AccessibleName: Story = {
+  name: 'Accessible Name (aria-label)',
+  render: () => /*html*/ `<mud-tag>Procesare</mud-tag>`,
+  parameters: {
+    controls: { disable: true },
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('mud-tag') as HTMLElement;
+
+    await waitFor(() => expect(host.shadowRoot).not.toBeNull());
+    await expect(host.getAttribute('role')).toBeNull();
+
+    host.ariaLabel = 'Procesare în curs';
+    await waitFor(() => expect(host.getAttribute('role')).toBe('status'));
+    await expect(host.getAttribute('aria-label')).toBe('Procesare în curs');
+
+    host.removeAttribute('aria-label');
+    await waitFor(() => expect(host.getAttribute('role')).toBeNull());
   },
 };

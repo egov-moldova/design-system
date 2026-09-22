@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+### Changed — components read the native `aria-label` instead of an `ariaLabel` prop
+
+An `ariaLabel` prop shadowed the platform's own `HTMLElement.ariaLabel`, which the Stencil ESLint
+plugin flags as a reserved member name. These components no longer declare it and read
+the host's native `aria-label` attribute instead: `mud-avatar`, `mud-badge`, `mud-banner`,
+`mud-checkbox`, `mud-date-input`, `mud-file-input`, `mud-icon`, `mud-input-chip`, `mud-link`,
+`mud-logo`, `mud-menu`, `mud-numeric-input`, `mud-phone-input`, `mud-radio`, `mud-search-input`,
+`mud-segmented-control`, `mud-select`, `mud-separator`, `mud-sidebar`, `mud-stepper`,
+`mud-switch`, `mud-table`, `mud-tabs`, `mud-tag`, `mud-text-input`, `mud-textarea`, `mud-toast`
+and `mud-tooltip`.
+
+Where the name belongs to an inner element (a form control, a list, a landmark), the component
+moves it there and off the host, and now also follows later changes to the attribute.
+`mud-checkbox`, `mud-date-input`, `mud-link`, `mud-menu`, `mud-sidebar` and `mud-tooltip` start
+moving it off the host with this change; the other components already did.
+
+**Migration:** HTML using `aria-label="…"` needs no change. Setting the property
+(`el.ariaLabel = '…'`) keeps working at runtime, because the browser reflects it to the attribute.
+What changes is the typing: `ariaLabel` is gone from these components in `components.d.ts`, so
+Stencil TSX that passes `ariaLabel={…}` stops compiling — pass `aria-label={…}` instead.
+
+Where the label is moved off the host, the attribute is no longer there afterwards: reading
+`el.ariaLabel` back returns `null`, and removing the attribute (or setting the property to `null`)
+does nothing. Clear such a label by setting it to an empty string. For `mud-checkbox`, `mud-date-input`,
+`mud-link`, `mud-menu`, `mud-sidebar` and `mud-tooltip` this replaces clearing by removal, which worked before.
+
 ### Removed — `mud-cookie-banner` and `mud-receipt`
 
 The cookie banner and the receipt card are product-level compositions, not building blocks, so

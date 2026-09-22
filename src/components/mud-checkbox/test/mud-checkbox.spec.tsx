@@ -206,6 +206,7 @@ describe('mud-checkbox', () => {
     it('uses explicit aria-label when no visible label is rendered', async () => {
       const { root } = await render(<mud-checkbox aria-label="Selectează rândul"></mud-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Selectează rândul');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('falls back to the label prop as input aria-label when no slot + no aria-label', async () => {

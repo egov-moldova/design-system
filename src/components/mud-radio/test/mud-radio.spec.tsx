@@ -248,6 +248,7 @@ describe('mud-radio', () => {
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Opțiunea A');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('falls back to the label prop as input aria-label when neither slot nor aria-label is set', async () => {

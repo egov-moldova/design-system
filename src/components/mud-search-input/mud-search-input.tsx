@@ -9,6 +9,7 @@ import type {
   SearchInputShape,
   SearchInputSize,
 } from './mud-search-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let searchInputInstanceCounter = 0;
 
@@ -154,19 +155,13 @@ export class MudSearchInput {
   /** Native `minlength` constraint. */
   @Prop({ attribute: 'minlength' }) minLength?: number;
 
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Captured into `resolvedAriaLabel` on mount and
-   * the host attribute is stripped to avoid Stencil's auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private hasIconStartSlot: boolean = false;
   @State() private hasIconEndSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the internal control when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudSearchInputElement;
@@ -196,28 +191,20 @@ export class MudSearchInput {
   private readonly helperId = `mud-search-input-helper-${this.instanceId}`;
   private initialValue: string = '';
   private nativeEl?: HTMLInputElement;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
-  }
-
-  /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
-   */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
   }
 
   /**
@@ -269,15 +256,6 @@ export class MudSearchInput {
   @Watch('required')
   handleRequiredChange() {
     this.syncValidity();
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
   }
 
   formDisabledCallback(disabled: boolean) {

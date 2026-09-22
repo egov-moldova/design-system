@@ -29,6 +29,9 @@ import type { ToastVariant } from './mud-toast.types';
  * - `info` / `success` → `role="status"` + `aria-live="polite"`
  * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
  *
+ * Set the native `aria-label` attribute on the host for an explicit accessible
+ * name when the body content alone is not descriptive enough.
+ *
  * @element mud-toast
  *
  * @slot - (default) The message body. Plain text or rich inline content.
@@ -72,13 +75,6 @@ export class MudToast {
    * is populated, this prop is ignored.
    */
   @Prop() iconName?: IconName;
-
-  /**
-   * Forwarded to the host as `aria-label`. Use this to give the entire
-   * toast an explicit accessible name when the body content alone is
-   * not descriptive enough.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /**
    * Close-button accessible label. Defaults to the Romanian "Închide".

@@ -2,6 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import type { SwitchChangeDetail } from './mud-switch.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let switchInstanceCounter = 0;
 
@@ -67,26 +68,19 @@ export class MudSwitch {
    */
   @Prop() label?: string;
 
-  /**
-   * Consumer-set `aria-label` on the host. The component caches the value
-   * (see `resolvedAriaLabel`) and strips the host attribute on mount to
-   * avoid the `aria-prohibited-attr` axe rule on the custom-element host.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
-  /** Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`. */
+  /** Consumer-set `aria-labelledby`. Same strip + cache pattern as `aria-label`. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
-  // See mud-radio.tsx for the rationale on these three pieces of cached
-  // state. Summary: axe `aria-prohibited-attr` flags `aria-label` /
-  // `aria-labelledby` on a custom-element host (implicit `generic` role);
-  // axe `label` cannot walk slots to find the projected label's text. We
-  // cache the consumer's ARIA attrs and mirror the flattened slot text
-  // onto the internal input's `aria-label` so AT and axe both see a
-  // discoverable accessible name on the actual radio control.
+  // See mud-radio.tsx for the rationale on these pieces of cached state.
+  // Summary: `observeAriaLabel` reads + strips the host's `aria-label`
+  // (axe `aria-prohibited-attr` flags it on a custom-element host's implicit
+  // `generic` role); axe `label` cannot walk slots to find the projected
+  // label's text, so we also mirror the flattened slot text onto the internal
+  // input's `aria-label` so AT and axe both see a discoverable accessible name
+  // on the actual switch control.
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
   @State() private slottedLabelText: string = '';
@@ -108,6 +102,7 @@ export class MudSwitch {
   private readonly inputId = `mud-switch-input-${this.instanceId}`;
   private readonly labelId = `mud-switch-label-${this.instanceId}`;
   private initialChecked: boolean = false;
+  private stopAriaLabel?: () => void;
 
   @Watch('checked')
   handleCheckedChange() {
@@ -119,15 +114,7 @@ export class MudSwitch {
     this.syncFormValue();
   }
 
-  // Cache + strip consumer-set aria attributes — see @State JSDoc above.
-  @Watch('ariaLabel')
-  syncAriaLabel(next?: string) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-      if (this.host.hasAttribute('aria-label')) this.host.removeAttribute('aria-label');
-    }
-  }
-
+  // Cache + strip the consumer-set aria-labelledby — see @State JSDoc above.
   @Watch('ariaLabelledby')
   syncAriaLabelledby(next?: string) {
     if (next && next.length > 0) {
@@ -136,11 +123,18 @@ export class MudSwitch {
     }
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
   componentWillLoad() {
     this.initialChecked = this.checked;
     this.syncFormValue();
     // Initial strip — @Watch only fires on subsequent prop changes.
-    this.syncAriaLabel(this.ariaLabel);
     this.syncAriaLabelledby(this.ariaLabelledby);
   }
 

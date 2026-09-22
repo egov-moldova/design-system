@@ -3,6 +3,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h
 
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let checkboxInstanceCounter = 0;
 
@@ -110,9 +111,6 @@ export class MudCheckbox {
    */
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
-  /** Accessible name override. Used when no visible label is present. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   /** Accessible name id reference. Forwarded to the internal control. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
@@ -120,6 +118,8 @@ export class MudCheckbox {
   @State() private hasSupportingSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), used as the accessible-name override. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudCheckboxElement;
 
@@ -140,6 +140,7 @@ export class MudCheckbox {
   private readonly errorId = `mud-checkbox-error-${this.instanceId}`;
   private initialChecked: boolean = false;
   private nativeRef?: HTMLInputElement;
+  private stopAriaLabel?: () => void;
 
   // Validation lives at the @Prop boundary — bad enum values warn and fall back.
   @Watch('size')
@@ -174,6 +175,14 @@ export class MudCheckbox {
   @Watch('required')
   handleRequiredChange() {
     this.updateValidity(this.checked);
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
   }
 
   componentWillLoad() {
@@ -290,10 +299,10 @@ export class MudCheckbox {
     const showSupporting = this.hasSupportingSlot && !showError;
     // aria-label resolution priority:
     //   slot present                 → omit (aria-labelledby points at slot)
-    //   explicit ariaLabel override → ariaLabel
+    //   explicit aria-label override → resolvedAriaLabel
     //   label prop fallback         → label
     //   nothing                      → undefined
-    const ariaLabelAttr = showLabel ? undefined : (this.ariaLabel ?? this.label?.trim() ?? undefined);
+    const ariaLabelAttr = showLabel ? undefined : (this.resolvedAriaLabel ?? this.label?.trim() ?? undefined);
     const ariaLabelledbyAttr = showLabel ? this.labelId : this.ariaLabelledby;
     const ariaDescribedbyAttr = showError ? this.errorId : showSupporting ? this.supportingId : undefined;
 

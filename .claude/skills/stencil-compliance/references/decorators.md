@@ -69,7 +69,7 @@ Reference: <https://stenciljs.com/docs/properties>.
 | P7  | A prop with neither a default nor `?` needs `!` under `strict`                                                                            | `tsc`                                         |
 | P9  | Enum props import their values from `mud-<name>.enums.ts` or a union type                                                                 | `manual`                                      |
 | P10 | Every `@Prop()` has JSDoc | `script-04:JSDOC-PROP-MISSING` |
-| P11 | Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); renaming the existing ones is tracked in [#88](https://github.com/egov-moldova/design-system/issues/88) | `manual`                                      |
+| P11 | Public members do not use names `HTMLElement` already declares (`ariaLabel`, `title`, …); read the host's `aria-label` through `src/utils/aria-label.ts`, and give a case-insensitive false positive a line-level disable that states why | `eslint:@stencil/reserved-member-names` |
 | P12 | Props are public (no `private`/`protected` modifier)                                                                                      | `eslint:@stencil/props-must-be-public`        |
 | P13 | Prop names are camelCase; the attribute is derived as kebab-case | `manual` |
 | P14 | A prop with a default documents it with `@default` | `script-04:JSDOC-PROP-DEFAULT-TAG` |
@@ -229,10 +229,6 @@ Reference: <https://stenciljs.com/docs/host-element>. Full rules:
 | --- | ------------------------------------------------------------------------------------- | ------------------------------- |
 | EL1 | Typed with the generated element interface: `@Element() host!: HTMLMudBadgeElement;`  | `eslint:@stencil/element-type`  |
 | EL2 | `!` on the field                                                                      | `tsc`                           |
-
-Where the host is passed to a DOM API typed `Element` and the component declares `ariaLabel`, cast
-at the call site (`this.host as unknown as Element`) — the prop's `string | undefined` type conflicts
-with `Element.ariaLabel`.
 
 ---
 

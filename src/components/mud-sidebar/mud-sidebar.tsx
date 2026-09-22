@@ -1,8 +1,13 @@
-import { Component, Element, h, Host, Prop, Watch } from '@stencil/core';
+import { Component, Element, h, Host, Prop, State, Watch } from '@stencil/core';
+
+import { observeAriaLabel } from '../../utils/aria-label';
 
 /**
  * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
  * sections and `mud-sidebar-item` rows.
+ *
+ * Set the native `aria-label` attribute on the host for an accessible name on
+ * the navigation landmark.
  *
  * @element mud-sidebar
  * @slot - `mud-sidebar-group` and/or `mud-sidebar-item` elements.
@@ -17,14 +22,24 @@ export class MudSidebar {
   /** Collapse to the icon-only compact rail. */
   @Prop({ reflect: true }) collapsed = false;
 
-  /** Accessible name for the navigation landmark. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /** The host's `aria-label`, forwarded onto the inner `<nav>` landmark. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudSidebarElement;
+
+  private stopAriaLabel?: () => void;
 
   @Watch('collapsed')
   handleCollapsedChange(): void {
     this.propagateCollapsed();
+  }
+
+  connectedCallback(): void {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback(): void {
+    this.stopAriaLabel?.();
   }
 
   componentDidLoad(): void {
@@ -45,7 +60,7 @@ export class MudSidebar {
   render() {
     return (
       <Host>
-        <nav class="sidebar" part="sidebar" aria-label={this.ariaLabel ?? undefined}>
+        <nav class="sidebar" part="sidebar" aria-label={this.resolvedAriaLabel}>
           <slot onSlotchange={this.handleSlotChange}></slot>
         </nav>
       </Host>

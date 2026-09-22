@@ -239,10 +239,10 @@ describe('mud-link', () => {
     });
   });
 
-  describe('aria-label prop', () => {
-    it('forwards ariaLabel prop to internal control aria-label', async () => {
+  describe('aria-label attribute', () => {
+    it('forwards aria-label attribute to internal control aria-label', async () => {
       const { root } = await render(
-        <mud-link href="#" ariaLabel="Read the privacy policy">
+        <mud-link href="#" aria-label="Read the privacy policy">
           Privacy
         </mud-link>,
       );
@@ -271,14 +271,8 @@ describe('mud-link', () => {
       expect(warnSpy).not.toHaveBeenCalled();
     });
 
-    it('does not warn when ariaLabel is provided', async () => {
-      await render(<mud-link href="#" ariaLabel="External resource"></mud-link>);
-      expect(warnSpy).not.toHaveBeenCalled();
-    });
-
-    it('does not warn when host aria-label attribute is set directly', async () => {
-      // Exercises the hasAccessibleName() branch reading host.hasAttribute('aria-label').
-      await render(<mud-link href="#" aria-label="From host attr"></mud-link>);
+    it('does not warn when aria-label is provided', async () => {
+      await render(<mud-link href="#" aria-label="External resource"></mud-link>);
       expect(warnSpy).not.toHaveBeenCalled();
     });
 

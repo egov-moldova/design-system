@@ -3,6 +3,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '
 
 import { TABS_SIZES } from './mud-tabs.types';
 import type { TabDescriptor, TabsChangeDetail, TabsSize } from './mud-tabs.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let tabsInstanceCounter = 0;
 
@@ -64,19 +65,16 @@ export class MudTabs {
    */
   @Prop() tabs?: TabDescriptor[];
 
-  /**
-   * Accessible name for the tablist. Captured into `resolvedAriaLabel` on
-   * mount and the host attribute is stripped to avoid Stencil's
-   * auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
   /** Id of an external labelling element (overrides `aria-label`). */
   @Prop() ariaLabelledby?: string;
 
   @State() private hasOverflow: boolean = false;
   @State() private canScrollStart: boolean = false;
   @State() private canScrollEnd: boolean = false;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * inner `role="tablist"` element.
+   */
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
   /**
@@ -97,9 +95,14 @@ export class MudTabs {
   private resizeObserver?: ResizeObserver;
   private mutationObserver?: MutationObserver;
   private scrollRafId?: number;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
 
   componentWillLoad() {
-    this.captureAriaAttrs();
+    this.captureAriaLabelledby();
   }
 
   componentDidLoad() {
@@ -109,32 +112,17 @@ export class MudTabs {
 
   /**
    * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` / `aria-labelledby` that creates an observer loop. Capture
-   * each consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
+   * `aria-labelledby` that creates an observer loop. Capture the
+   * consumer-provided value into a state field, then strip the attribute so
+   * the loop never fires.
    */
-  private captureAriaAttrs() {
-    const labelAttr = this.host.getAttribute('aria-label');
-    if (labelAttr) {
-      this.resolvedAriaLabel = labelAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-
+  private captureAriaLabelledby() {
     const labelledbyAttr = this.host.getAttribute('aria-labelledby');
     if (labelledbyAttr) {
       this.resolvedAriaLabelledby = labelledbyAttr;
       this.host.removeAttribute('aria-labelledby');
     } else if (this.ariaLabelledby) {
       this.resolvedAriaLabelledby = this.ariaLabelledby;
-    }
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
     }
   }
 
@@ -165,6 +153,7 @@ export class MudTabs {
     if (this.resizeObserver) this.resizeObserver.disconnect();
     if (this.mutationObserver) this.mutationObserver.disconnect();
     if (this.scrollRafId !== undefined) cancelAnimationFrame(this.scrollRafId);
+    this.stopAriaLabel?.();
   }
 
   @Watch('size')

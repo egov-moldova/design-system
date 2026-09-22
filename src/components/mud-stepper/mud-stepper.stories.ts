@@ -162,7 +162,7 @@ const meta: Meta<StepperArgs> = {
     },
     ariaLabel: {
       control: 'text',
-      description: 'Accessible name for the list landmark.',
+      description: 'Native `aria-label` attribute on the host — accessible name for the list landmark.',
       table: { defaultValue: { summary: 'Progress tracker' } },
     },
   },

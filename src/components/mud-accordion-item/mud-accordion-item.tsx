@@ -129,6 +129,8 @@ export class MudAccordionItem {
    * Stable identifier used by the parent `mud-accordion` when emitting
    * `mudChange`. Auto-generated if omitted.
    */
+  // The rule matches names case-insensitively; no browser defines `HTMLElement.itemId` (#88).
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop({ reflect: true, mutable: true }) itemId?: string;
 
   /**

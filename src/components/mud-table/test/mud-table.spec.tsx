@@ -137,11 +137,12 @@ describe('mud-table', () => {
       expect(bodyRows[1]?.textContent ?? '').toContain('mihai@gov.md');
     });
 
-    it('reflects ariaLabel onto the <table>', async () => {
+    it('reflects the aria-label attribute onto the <table>', async () => {
       const { root, waitForChanges } = await render(<mud-table aria-label="Tabel principal" />);
       setProps(root, { columns, rows });
       await waitForChanges();
       expect(queryTable(root)?.getAttribute('aria-label')).toBe('Tabel principal');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('adds prepended selection column when selectable', async () => {
