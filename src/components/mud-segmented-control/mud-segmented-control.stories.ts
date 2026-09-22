@@ -511,16 +511,44 @@ export const EdgeCases: Story = {
     wrap(
       [
         cell(
-          'long label truncates with ellipsis',
-          renderControlHtml(
-            'sc-ec-truncate',
-            [
-              { value: 'a', label: 'Solicitări recente' },
-              { value: 'b', label: 'Solicitări finalizate' },
-              { value: 'c', label: 'Solicitări în așteptare îndelungată' },
-            ],
-            { value: 'a', ariaLabel: 'Truncare etichetă' },
-          ),
+          'long label truncates with ellipsis (329px, per Figma 663:12433)',
+          // A width, because the control hugs its content: given room, long
+          // labels simply make it wider and nothing truncates. Figma's own edge
+          // case pins 329px around two segments, which is what forces the case.
+          // Not `fluid` — that is the Mobile breakpoint and pads 4; this edge
+          // case is the Desktop variant, constrained.
+          /*html*/ `
+            <div style="inline-size: 329px;">
+              ${renderControlHtml(
+                'sc-ec-truncate',
+                [
+                  {
+                    value: 'a',
+                    label:
+                      'Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.',
+                  },
+                  { value: 'b', label: 'Services, Always at Your Fingertips' },
+                ],
+                { value: 'a', ariaLabel: 'Truncare etichetă' },
+              )}
+            </div>
+          `,
+        ),
+        cell(
+          'long labels, three segments',
+          /*html*/ `
+            <div style="inline-size: 329px;">
+              ${renderControlHtml(
+                'sc-ec-truncate-3',
+                [
+                  { value: 'a', label: 'Solicitări recente' },
+                  { value: 'b', label: 'Solicitări finalizate' },
+                  { value: 'c', label: 'Solicitări în așteptare îndelungată' },
+                ],
+                { value: 'a', ariaLabel: 'Truncare etichetă (3)' },
+              )}
+            </div>
+          `,
         ),
         cell(
           'no selection (uncontrolled start)',
