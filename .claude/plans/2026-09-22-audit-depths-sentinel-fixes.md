@@ -1,6 +1,6 @@
 # audit-component depths — fixes from the PR #115 merge gate
 
-**Reviewed:** preflight cfb1f13, critic de4695d, critic 938c59a — round cap reached; a fourth round past the cap ordered by the owner 2026-09-22
+**Reviewed:** preflight cfb1f13, critic de4695d, critic 938c59a, critic 78d432c — round cap reached, a fourth round ordered by the owner, then the loop brake; closed by the owner, who said go to implementation 2026-09-22
 
 ## Goal
 
@@ -412,9 +412,10 @@ Homes swept: `scripts/audit/`, `scripts/audit/lib/`, `scripts/__tests__/audit/`.
 - [ ] Write the eleven `- R<n>: fixed|deferred|dropped — <test or reason>` lines under
   `#### Phase 4 results` (Phases 1–3 own the work; this controller records it).
 - [ ] Grade: `scope-check.mjs` per phase, `/code-review`, then fresh-eyes verify against this plan.
-- [ ] `dan-sentinel` round 2 over `e63c311..HEAD`; APPROVE or APPROVE-WITH-NITS with nits
-  recorded → `gh pr ready 115 --repo egov-moldova/design-system` (owner asked for this).
-  REQUEST-CHANGES → fix, round 3 at most (sentinel cap), then back to the owner.
+- [ ] Close with the completion report. The outward steps are NOT this phase's: the launching
+  session pushes, runs `dan-sentinel` round 2 over `e63c311..HEAD` and, on APPROVE or
+  APPROVE-WITH-NITS, runs `gh pr ready 115 --repo egov-moldova/design-system` (owner asked for
+  this); REQUEST-CHANGES → fix, sentinel round 3 at most, then back to the owner.
 
 ## Execution matrix
 
