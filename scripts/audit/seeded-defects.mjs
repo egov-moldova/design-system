@@ -16,7 +16,9 @@
  *   3. Figma       — a CSS value that no longer matches the committed manifest
  *                    (STYLE-MISMATCH, Wave C / 15)
  *   4. INCOMPLETE  — a required row's own prerequisite fails to build
- *                    (test-coverage / 06, missing-prereq)
+ *                    (a type error fails `dx:stencil:once`; a11y-tree / 09,
+ *                    missing-prereq). A failing spec no longer serves: it is
+ *                    the component's own COVERAGE-TESTS-FAILED, a FAIL.
  *
  * Mechanics: never touches the caller's working tree. Everything happens in a
  * detached `git worktree` under `os.tmpdir()`, torn down at the end (also on
@@ -143,13 +145,13 @@ const DEFECTS = [
   {
     id: 'incomplete',
     layer: 'INCOMPLETE (removed prerequisite)',
-    file: c => `src/components/${c}/test/${c}.spec.tsx`,
-    mutate: (source, c) => {
-      const anchor = `describe('${c}', () => {\n`;
-      const injected = `${anchor}  it('seeded-defect: prerequisite broken', () => {\n    throw new Error('seeded-defect: prerequisite broken');\n  });\n\n`;
+    file: c => `src/components/${c}/${c}.tsx`,
+    mutate: source => {
+      const anchor = `  @Event() mudDismiss!: EventEmitter<void>;\n`;
+      const injected = `${anchor}\n  private readonly seededPrerequisiteBreak: number = 'seeded-defect: prerequisite broken';\n`;
       return replaceOnce(source, anchor, injected, 'incomplete');
     },
-    findEntry: verdict => findMatchingEntry(verdict, { kind: 'INCOMPLETE', checkIncludes: '06' }),
+    findEntry: verdict => findMatchingEntry(verdict, { kind: 'INCOMPLETE', checkIncludes: '09' }),
   },
 ];
 
