@@ -512,6 +512,17 @@ R-rows:
 - R10: fixed — A4 kept for the names eslint misses; `17-adapter-contract.spec.mjs` subset test.
 - R11: fixed — `audit-component/SKILL.md` fix loop runs only `verdict.json`'s `verify` values.
 
+Grade (6809fe4..9f6e749, then 5fb9328):
+
+- Scope: every phase's changed paths are inside its **Files** list (no stray path).
+- `/code-review medium`: 6 findings. Fixed in 9f6e749: `src/hidden/` specs unmapped by the
+  coverage prerequisite, lock double-holder paths, standalone 06 reading a stale results file,
+  zero selection + crashed repo row read as FAIL. Open: BX7 writes a string into a number-typed
+  `value` (`mud-numeric-input`), latent while no story sets `name`.
+- `fresh-eyes-verify`: FORTIFY (med), 2 above-bar. The stale-source cause printed a literal
+  `<run>` — fixed in 5fb9328 (1333/1333). The byte-identity bar vs Decision 10's `runDir` —
+  open, the owner's call.
+
 ## Execution matrix
 
 | Phase | Shape | Model / effort | Wave |
