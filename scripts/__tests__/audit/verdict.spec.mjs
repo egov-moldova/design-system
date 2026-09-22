@@ -415,6 +415,13 @@ describe('verdict: S4 — awaitingLegs, true only when every INCOMPLETE entry is
     assert.equal(v.awaitingLegs, false);
   });
 
+  it('stale hash: the cause names the run it was opened in when the caller knows it', () => {
+    const currentHashes = { 'ai-stencil': 'sha256:bbbb' };
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: [], currentHashes, run: 'r-2026' });
+    const stale = v.entries.find(e => e.check.startsWith('ai-stencil'));
+    assert.equal(stale.cause, 'source changed since run r-2026 — start a fresh run');
+  });
+
   it('PASS → false', () => {
     assert.equal(
       computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: allLegsClosed() }).awaitingLegs,

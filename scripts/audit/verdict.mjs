@@ -281,7 +281,13 @@ export function closeAiRow(row, aiFiles) {
  *   `sha256:...` of what an `ai-*` leg judges, as of right now (`lib/leg-input.mjs`
  *   `currentLegHashes`). `null` skips the staleness check entirely (Decision §7).
  */
-export function computeVerdict({ envelope, aiFiles = [], component: fallbackComponent = null, currentHashes = null }) {
+export function computeVerdict({
+  envelope,
+  aiFiles = [],
+  component: fallbackComponent = null,
+  currentHashes = null,
+  run = null,
+}) {
   const audit = envelope?.audit ?? {};
   const component = audit.component ?? fallbackComponent ?? envelope?.target ?? 'unknown';
   const depth = audit.depth ?? 'standard';
@@ -479,7 +485,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       const currentHash = currentHashes ? (currentHashes[id] ?? null) : null;
       const hashStale = currentHash !== null && Boolean(opened.inputHash) && currentHash !== opened.inputHash;
       const closure = hashStale
-        ? { closed: false, cause: 'source changed since run <run> — start a fresh run' }
+        ? { closed: false, cause: `source changed since run ${run ?? '<run>'} — start a fresh run` }
         : closeAiRow(opened, aiFiles);
       legs.push({
         id,
@@ -677,7 +683,7 @@ export function writeVerdictForRun(runDir, legDeps = {}) {
   const componentDir = resolve(absRun, '..', '..');
   const component = basename(componentDir);
   const { envelope, aiFiles, currentHashes } = readRunInputs(absRun, { component, ...legDeps });
-  const verdict = computeVerdict({ envelope, aiFiles, component, currentHashes });
+  const verdict = computeVerdict({ envelope, aiFiles, component, currentHashes, run: basename(absRun) });
   // Decision §10: the repo-relative form a caller can pass straight back to
   // `--run-dir` (S8 validates that shape). Computed here, not in the pure
   // computeVerdict, since only the I/O layer knows the run directory.
