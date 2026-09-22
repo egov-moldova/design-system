@@ -1,0 +1,411 @@
+{
+  "component": "mud-breadcrumb",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "81:805",
+        "reason": "Level 4 instance inside the Desktop container — the same .breadcrumb-item as 81:714, differing only in its Label."
+      },
+      {
+        "node": "81:808",
+        "reason": "Level 5 instance inside the Desktop container — same component as 81:714."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "molecules-breadcrumb--default",
+    "viewport": {
+      "width": 1280,
+      "height": 600
+    },
+    "capture": {
+      "selector": "mud-breadcrumb",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "desktop",
+      "node": "81:801",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .trail",
+          "node": "81:801",
+          "styles": {
+            "display": "flex",
+            "alignItems": "center",
+            "columnGap": "4px"
+          },
+          "note": "Figma 81:801 lays the trail out as a row, centred, with a 4px gap and hug sizing."
+        }
+      ]
+    },
+    {
+      "name": "item-enabled",
+      "node": "81:714",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb-item:nth-of-type(1) .crumb",
+          "node": "81:714",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#757575",
+            "textContent": "Level 1"
+          },
+          "note": "Figma 81:714 sets the label in Desktop/Body/Small (Onest Regular 400, 14/20) filled #757575."
+        }
+      ]
+    },
+    {
+      "name": "item-active",
+      "node": "81:763",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level",
+              "active": true
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb--active",
+          "node": "81:763",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#121212",
+            "textContent": "Active Level"
+          },
+          "note": "Figma 81:763 switches to Desktop/Body/Small 500 (Medium) filled #121212."
+        }
+      ]
+    },
+    {
+      "name": "item-hover",
+      "node": "81:717",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb-item:nth-of-type(1) .crumb",
+          "node": "81:717",
+          "styles": {
+            "color": "#383838",
+            "textDecorationLine": "underline"
+          },
+          "note": "Figma 81:717 draws a 1px #383838 Underline frame under the label; the component uses a real text-decoration, which is the same 1px rule under the same glyphs."
+        }
+      ],
+      "interaction": {
+        "type": "hover",
+        "target": "mud-breadcrumb .crumb-item:nth-of-type(1) .crumb"
+      }
+    },
+    {
+      "name": "item-focus",
+      "node": "81:720",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb a.crumb",
+          "node": "81:720",
+          "styles": {
+            "boxShadow": "0 0 0 1px #FFFFFF, 0 0 0 3px #3379DB"
+          },
+          "note": "Figma effect on 81:720 is \"Focus Ring/Small\" — 0 0 0 3px #3379DB then 0 0 0 1px #FFFFFF. Per the pixel-perfect gotcha on stacked rings its render is the white halo inside a blue band ending 3px out, which in CSS is 0 0 0 1px #FFF, 0 0 0 3px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-breadcrumb a.crumb"
+      }
+    },
+    {
+      "name": "item-disabled",
+      "node": "607:6014",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1",
+              "disabled": true
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb--disabled",
+          "node": "607:6014",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 607:6014 greys the label to #B2B2B2 and keeps Desktop/Body/Small."
+        }
+      ]
+    },
+    {
+      "name": "item-visited",
+      "node": "607:6019",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1",
+              "visited": true
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb--visited",
+          "node": "607:6019",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#AA18CE"
+          },
+          "note": "Figma 607:6019 fills the label #AA18CE and keeps Desktop/Body/Small."
+        }
+      ]
+    },
+    {
+      "name": "separator-icon",
+      "node": "81:714",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ]
+        }
+      },
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-breadcrumb .separator mud-icon",
+          "node": "81:714",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 81:714 carries the trailing \"16/chevron-right-small\" glyph in a 16x16 box. The component renders it as a separate separator item rather than inside the crumb; the glyph box is what is compared."
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "node": "232:5283",
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#3"
+            },
+            {
+              "label": "Active Level"
+            }
+          ],
+          "responsive": true
+        }
+      },
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .back-link mud-icon",
+          "node": "232:5283",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 232:5283 replaces the whole trail with a 20x20 \"20/chevron-left-small\" plus one item, so the back glyph is 20px, not the 16px the desktop trail uses."
+        },
+        {
+          "target": "mud-breadcrumb .back-link",
+          "node": "232:5283",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "columnGap": "4px"
+          },
+          "note": "Figma 232:5283 keeps the 4px gap and the Desktop/Body/Small text of the desktop item."
+        }
+      ]
+    }
+  ]
+}
