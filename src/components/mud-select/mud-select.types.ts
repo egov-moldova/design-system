@@ -4,21 +4,12 @@ export const SELECT_VARIANTS = ['default', 'destructive'] as const;
 export type SelectSize = (typeof SELECT_SIZES)[number];
 export type SelectVariant = (typeof SELECT_VARIANTS)[number];
 
-/**
- * A single choice.
- *
- * Also the element type of the deprecated `options` prop, which is why it stays
- * a standalone interface rather than being folded into `SelectOptionEntry`.
- */
-export interface SelectOption {
+/** A choosable row — one `<option>`. */
+export interface SelectOptionEntry {
+  kind: 'option';
   value: string;
   label: string;
   disabled?: boolean;
-}
-
-/** A choosable row — one `<option>`, or one entry of the `options` prop. */
-export interface SelectOptionEntry extends SelectOption {
-  kind: 'option';
   /**
    * The markup carried `selected`. Read once, at load, to seed `value` when the
    * host has no `value` attribute; ignored afterwards, so a re-read of the light

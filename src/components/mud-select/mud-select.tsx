@@ -14,15 +14,8 @@ import {
 } from '@stencil/core';
 
 import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
-import type { SelectChangeDetail, SelectEntry, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
-import {
-  entriesFromOptions,
-  filterEntries,
-  foldForSearch,
-  markupSelectedValue,
-  readEntriesFromLightDom,
-  toRows,
-} from './mud-select.utils';
+import type { SelectChangeDetail, SelectEntry, SelectOptionEntry, SelectSize, SelectVariant } from './mud-select.types';
+import { filterEntries, foldForSearch, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
 import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
@@ -52,7 +45,7 @@ const TYPEAHEAD_RESET_MS = 500;
  *
  * @element mud-select
  *
- * @slot - (default) The option list, written as the markup a native `<select>` takes: `<option>`, `<optgroup label="…">` and `<hr>`. Not rendered directly — each option's `value`, text, `disabled` and `selected` are read, and re-read whenever the markup changes. Used unless the deprecated `options` prop is set.
+ * @slot - (default) The option list, written as the markup a native `<select>` takes: `<option>`, `<optgroup label="…">` and `<hr>`. Not rendered directly — each option's `value`, text, `disabled` and `selected` are read, and re-read whenever the markup changes.
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
  * @slot icon-start - Leading `mud-icon` rendered inside the control row.
@@ -165,17 +158,6 @@ export class MudSelect {
    * @default false
    */
   @Prop({ reflect: true }) searchable: boolean = false;
-
-  /**
-   * Declarative option list.
-   *
-   * @deprecated Write the options as markup instead — `<option>`, `<optgroup>`
-   * and `<hr>` children, the same list a native `<select>` takes. Markup also
-   * expresses grouping and `selected`, which this array cannot. Still honoured,
-   * and still wins over markup when both are present, so existing callers keep
-   * working; scheduled for removal in the next major.
-   */
-  @Prop() options?: SelectOption[];
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -325,12 +307,6 @@ export class MudSelect {
   @Watch('required')
   handleRequiredChange() {
     this.syncValidity();
-  }
-
-  @Watch('options')
-  handleOptionsChange() {
-    this.refreshEntries();
-    if (this.open && this.highlightedIndex < 0) this.primeHighlight();
   }
 
   @Watch('open')
@@ -496,13 +472,9 @@ export class MudSelect {
     if (selected !== undefined) this.value = selected;
   }
 
-  /**
-   * Rebuilds the rendered model. The deprecated `options` prop still wins over
-   * markup so existing callers keep their behaviour.
-   */
+  /** Rebuilds the rendered model from the markup the consumer wrote. */
   private refreshEntries() {
-    this.entries =
-      this.options && this.options.length > 0 ? entriesFromOptions(this.options) : readEntriesFromLightDom(this.host);
+    this.entries = readEntriesFromLightDom(this.host);
   }
 
   /**
@@ -515,7 +487,7 @@ export class MudSelect {
   }
 
   /** The choices, in render order — what `highlightedIndex` and `value` index into. */
-  private resolvedOptions(): SelectOption[] {
+  private resolvedOptions(): SelectOptionEntry[] {
     return this.visibleEntries().filter(isOptionEntry);
   }
 

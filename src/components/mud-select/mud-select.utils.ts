@@ -1,4 +1,4 @@
-import type { SelectEntry, SelectOption, SelectOptionEntry } from './mud-select.types';
+import type { SelectEntry, SelectOptionEntry } from './mud-select.types';
 
 /** One choice, paired with its position in the flat option list. */
 export interface SelectRowOption {
@@ -100,10 +100,6 @@ export const readEntriesFromLightDom = (host: Element): SelectEntry[] => {
 export const markupSelectedValue = (entries: SelectEntry[]): string | undefined =>
   entries.find((entry): entry is SelectOptionEntry => entry.kind === 'option' && !!entry.selected && !entry.disabled)
     ?.value;
-
-/** Wraps the deprecated `options` prop in the entry model. */
-export const entriesFromOptions = (options: SelectOption[]): SelectEntry[] =>
-  options.map(option => ({ kind: 'option', ...option }) as SelectOptionEntry);
 
 /**
  * Rebuilds the nesting the flat model threw away, so a group can render as one

@@ -3,14 +3,21 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 import '../mud-select';
 
 import { SELECT_SIZES, SELECT_VARIANTS } from '../mud-select.types';
-import type { SelectOption } from '../mud-select.types';
 
-const baseOptions: SelectOption[] = [
+const baseOptions = [
   { value: 'opt-1', label: 'Option 1' },
   { value: 'opt-2', label: 'Option 2' },
   { value: 'opt-3', label: 'Option 3', disabled: true },
   { value: 'opt-4', label: 'Option 4' },
 ];
+
+/** `baseOptions` as children, which is the only way to give the component a list. */
+const baseMarkup = () =>
+  baseOptions.map(option => (
+    <option value={option.value} disabled={option.disabled}>
+      {option.label}
+    </option>
+  ));
 
 const queryTrigger = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.trigger') ?? null) as HTMLInputElement | null;
@@ -34,11 +41,6 @@ const querySeparators = (root: Element | null | undefined): HTMLElement[] =>
   Array.from(root?.shadowRoot?.querySelectorAll('[role="separator"]') ?? []) as HTMLElement[];
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
-
-const setOptions = async (root: Element | null | undefined, opts: SelectOption[]) => {
-  (root as unknown as { options: SelectOption[] }).options = opts;
-  await flush();
-};
 
 describe('mud-select', () => {
   describe('defaults + prop reflection', () => {
@@ -113,8 +115,11 @@ describe('mud-select', () => {
     });
 
     it('shows the placeholder when no value is selected', async () => {
-      const { root } = await render(<mud-select label="x" placeholder="Pick one"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" placeholder="Pick one">
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       expect(trigger?.getAttribute('placeholder')).toBe('Pick one');
       expect(trigger?.getAttribute('value')).toBe('');
@@ -122,8 +127,11 @@ describe('mud-select', () => {
     });
 
     it('shows the selected option label when value is set', async () => {
-      const { root } = await render(<mud-select label="x" value="opt-2"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" value="opt-2">
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       expect(trigger?.getAttribute('value')).toBe('Option 2');
       expect(root?.classList.contains('is-placeholder')).toBe(false);
@@ -163,16 +171,14 @@ describe('mud-select', () => {
 
   describe('listbox behaviour', () => {
     it('keeps the listbox hidden by default', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const listbox = queryListbox(root);
       expect(listbox?.hasAttribute('hidden')).toBe(true);
       expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('false');
     });
 
     it('opens the listbox when the trigger is clicked', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const trigger = queryTrigger(root)!;
       trigger.click();
       await flush();
@@ -183,8 +189,7 @@ describe('mud-select', () => {
     });
 
     it('opens the listbox when the trailing chevron (outside the button) is clicked', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const chevronWrap = root?.shadowRoot?.querySelector('.control-icon-end') as HTMLElement;
       chevronWrap.click();
       await flush();
@@ -193,8 +198,11 @@ describe('mud-select', () => {
     });
 
     it('does not open on chevron click when disabled', async () => {
-      const { root } = await render(<mud-select label="x" disabled></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" disabled>
+          {baseMarkup()}
+        </mud-select>,
+      );
       (root?.shadowRoot?.querySelector('.control-icon-end') as HTMLElement)?.click();
       await flush();
       expect(queryListbox(root)?.hasAttribute('hidden')).toBe(true);
@@ -203,8 +211,11 @@ describe('mud-select', () => {
     it('emits mudOpen / mudClose when toggling', async () => {
       const onOpen = vi.fn();
       const onClose = vi.fn();
-      const { root } = await render(<mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root)!;
       trigger.click();
       await flush();
@@ -215,8 +226,11 @@ describe('mud-select', () => {
     });
 
     it('renders one role="option" per resolved option', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const options = queryOptions(root);
       expect(options.length).toBe(baseOptions.length);
       options.forEach((opt, i) => {
@@ -226,16 +240,22 @@ describe('mud-select', () => {
     });
 
     it('marks the matching option as selected', async () => {
-      const { root } = await render(<mud-select label="x" value="opt-2" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" value="opt-2" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const selected = queryOptions(root).find(o => o.getAttribute('aria-selected') === 'true');
       expect(selected?.getAttribute('data-value')).toBe('opt-2');
     });
 
     it('selects an option on click and emits mudChange', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const second = queryOptions(root)[1];
       second.click();
       await flush();
@@ -247,8 +267,11 @@ describe('mud-select', () => {
 
     it('does not select disabled options', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const disabled = queryOptions(root).find(o => o.classList.contains('is-disabled'))!;
       disabled.click();
       await flush();
@@ -268,24 +291,25 @@ describe('mud-select', () => {
     };
 
     it('opens the listbox on ArrowDown when closed', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       press(root, 'ArrowDown');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(true);
     });
 
     it('opens the listbox on Enter when closed', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       press(root, 'Enter');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(true);
     });
 
     it('closes the listbox on Escape', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'Escape');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
@@ -293,8 +317,11 @@ describe('mud-select', () => {
 
     it('selects the highlighted option on Enter', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'ArrowDown'); // highlight idx 1
       await flush();
       press(root, 'Enter');
@@ -305,8 +332,11 @@ describe('mud-select', () => {
 
     it('Home / End jump to the first / last enabled option', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'End');
       await flush();
       press(root, 'Enter');
@@ -316,8 +346,11 @@ describe('mud-select', () => {
 
     it('ArrowUp / ArrowDown skip disabled options', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open value="opt-2" onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open value="opt-2" onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       // highlight starts at opt-2 (index 1); ArrowDown should skip opt-3 (disabled) to opt-4.
       press(root, 'ArrowDown');
       await flush();
@@ -398,16 +431,22 @@ describe('mud-select', () => {
     });
 
     it('does not open on click when disabled', async () => {
-      const { root } = await render(<mud-select label="x" disabled></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" disabled>
+          {baseMarkup()}
+        </mud-select>,
+      );
       queryTrigger(root)?.click();
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
     });
 
     it('does not open on click when readonly', async () => {
-      const { root } = await render(<mud-select label="x" readonly></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" readonly>
+          {baseMarkup()}
+        </mud-select>,
+      );
       queryTrigger(root)?.click();
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
@@ -467,16 +506,22 @@ describe('mud-select', () => {
     });
 
     it('wires aria-controls to the listbox id', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       const listbox = queryListbox(root);
       expect(trigger?.getAttribute('aria-controls')).toBe(listbox?.id);
     });
 
     it('sets aria-activedescendant when an option is highlighted', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       const desc = trigger?.getAttribute('aria-activedescendant');
       expect(desc).toBeTruthy();
@@ -614,16 +659,6 @@ describe('mud-select', () => {
       );
       await flush();
       expect((root as unknown as { value: string }).value).toBe('');
-    });
-
-    it('still lets the deprecated options prop win over markup', async () => {
-      const { root } = await render(
-        <mud-select label="Food">
-          <option value="apple">Apples</option>
-        </mud-select>,
-      );
-      await setOptions(root, baseOptions);
-      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['opt-1', 'opt-2', 'opt-3', 'opt-4']);
     });
   });
 
