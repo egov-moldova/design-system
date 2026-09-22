@@ -26,13 +26,13 @@
  *   node scripts/audit/13-token-diff.mjs mud-button --json
  *   node scripts/audit/13-token-diff.mjs --from a.json --to b.json --json
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
-import { normalizeComponentName, bareName, REPO_ROOT } from './lib/component-paths.mjs';
+import { normalizeComponentName, bareName, REPO_ROOT, resolveComponentPaths } from './lib/component-paths.mjs';
 
 const TOOL = 'token-diff';
 
@@ -177,22 +177,81 @@ export function resolveMode(args) {
  * Load `tokens/core/components/<bare>.tokens.json` (current) and the matching
  * block inside the Figma export. Returns { before, after, error? }.
  */
-/** Exported for tests (S6): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` no-target sites. */
+const TOKENS_DIR = join(REPO_ROOT, 'tokens', 'core', 'components');
+
+const kebab = key => key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
+/**
+ * Which tokens file a component's CSS draws on (Decision 13). Its own
+ * `<bare>.tokens.json` when present; otherwise the file whose root key — or
+ * root key plus one child, kebab-cased (`accordion` + `item` →
+ * `accordion-item`) — prefixes the most `var(--…)` names the component's CSS
+ * uses without defining them itself (`mud-text-input` → `input.tokens.json`).
+ * `file: null` means the CSS uses no component tokens at all (`mud-icon`,
+ * whose `--icon-size` is its own local property).
+ *
+ * @returns {{ file: string | null, abs: string | null }}
+ */
+export function resolveTokensFile(componentName, { tokensDir = TOKENS_DIR } = {}) {
+  const bare = bareName(componentName);
+  const own = join(tokensDir, `${bare}.tokens.json`);
+  if (existsSync(own)) return { file: relativePathFor(own), abs: own };
+
+  const resolved = resolveComponentPaths(componentName);
+  const css = resolved.found
+    ? readdirSync(resolved.root)
+        .filter(f => f.endsWith('.css'))
+        .map(f => readFileSync(join(resolved.root, f), 'utf8'))
+        .join('\n')
+    : '';
+  const defined = new Set([...css.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
+  const used = [...new Set([...css.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map(m => m[1]))].filter(v => !defined.has(v));
+
+  let best = { count: 0, abs: null };
+  for (const f of existsSync(tokensDir)
+    ? readdirSync(tokensDir)
+        .filter(n => n.endsWith('.tokens.json'))
+        .sort()
+    : []) {
+    const abs = join(tokensDir, f);
+    let doc;
+    try {
+      doc = JSON.parse(readFileSync(abs, 'utf8'));
+    } catch {
+      continue;
+    }
+    const prefixes = [];
+    for (const root of Object.keys(doc).filter(k => !k.startsWith('$'))) {
+      prefixes.push(`--${kebab(root)}-`);
+      const node = doc[root];
+      if (node && typeof node === 'object') {
+        for (const child of Object.keys(node).filter(k => !k.startsWith('$'))) {
+          prefixes.push(`--${kebab(root)}-${kebab(child)}-`);
+        }
+      }
+    }
+    const count = used.filter(v => prefixes.some(p => v.startsWith(p))).length;
+    if (count > best.count) best = { count, abs };
+  }
+  return best.abs ? { file: relativePathFor(best.abs), abs: best.abs } : { file: null, abs: null };
+}
+
+/** Exported for tests (S6, Decision 13): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` sites. */
 export function loadComponentSources(componentName, figmaExportPath) {
   const bare = bareName(componentName);
-  const currentPath = join(REPO_ROOT, 'tokens', 'core', 'components', `${bare}.tokens.json`);
-  if (!existsSync(currentPath)) {
-    // T3 (Decision §5 corrected): a component with no own tokens file has
-    // nothing to diff — that is not a missing INPUT (`noTarget`, which
-    // `verdict.mjs` turns into an INCOMPLETE row), it is the row not
-    // applying to this component at all (e.g. mud-icon, which carries no
-    // component-level tokens file by design).
+  const { abs: currentPath } = resolveTokensFile(componentName);
+  if (!currentPath) {
+    // Decision 13: the component's CSS uses no component-scoped tokens, so
+    // there is nothing to diff. Visible as a not-applicable note on the row —
+    // never a silent pass, never a `noTarget` INCOMPLETE for a file the
+    // component legitimately has none of.
     return {
       error: finding({
         severity: 'info',
         code: 'TOKEN-DIFF-NO-CURRENT',
-        file: relativePathFor(currentPath),
-        message: `No current tokens file for ${componentName} — nothing to diff (not applicable).`,
+        file: relativePathFor(join(TOKENS_DIR, `${bare}.tokens.json`)),
+        message: `${componentName} uses no component tokens (no var(--…) in its CSS matches a file in tokens/core/components/) — token diff not applicable.`,
+        notApplicable: true,
       }),
     };
   }

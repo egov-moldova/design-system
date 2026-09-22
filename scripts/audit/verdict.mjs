@@ -156,7 +156,12 @@ function locationOf(f, component) {
 }
 
 function compareFindings(a, b) {
-  const key = f => [f.file ?? '', String(f.line ?? '').padStart(8, '0'), f.code ?? '', f.message ?? ''].join('\u0000');
+  // Tie-break on the text the brief renders (`message || fix`) and then `fix`,
+  // so two findings that differ only in their fix never sort by input order.
+  const key = f =>
+    [f.file ?? '', String(f.line ?? '').padStart(8, '0'), f.code ?? '', f.message || f.fix || '', f.fix ?? ''].join(
+      '\u0000',
+    );
   return key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0;
 }
 

@@ -11,17 +11,37 @@ import {
   flattenDtcg,
   resolveMode,
   loadComponentSources,
+  resolveTokensFile,
 } from '../../audit/13-token-diff.mjs';
 
-describe('13-token-diff: T3 — TOKEN-DIFF-NO-CURRENT is not-applicable, not noTarget (Decision §5 corrected)', () => {
-  // mud-icon has no tokens/core/components/icon.tokens.json — nothing to diff,
-  // never an INCOMPLETE-producing missing input (that would send every icon-
-  // only component to "resolve the missing input" for a file it legitimately
-  // has none of).
-  it('no current tokens file (mud-icon) → TOKEN-DIFF-NO-CURRENT, not noTarget', () => {
+describe('13-token-diff: U3 — the tokens file resolves by the component CSS prefix (Decision 13)', () => {
+  it('a component with its own file uses it (mud-button → button.tokens.json)', () => {
+    assert.equal(resolveTokensFile('mud-button').file, 'tokens/core/components/button.tokens.json');
+  });
+
+  it('mud-text-input resolves to input.tokens.json through its var(--input-…) usage', () => {
+    assert.equal(resolveTokensFile('mud-text-input').file, 'tokens/core/components/input.tokens.json');
+  });
+
+  it('mud-accordion-item resolves to accordion.tokens.json through its var(--accordion-item-…) usage', () => {
+    assert.equal(resolveTokensFile('mud-accordion-item').file, 'tokens/core/components/accordion.tokens.json');
+  });
+
+  it('mud-icon uses no component tokens (its --icon-size is defined in its own CSS) → no file', () => {
+    assert.equal(resolveTokensFile('mud-icon').file, null);
+  });
+
+  it('mud-icon → TOKEN-DIFF-NO-CURRENT as a visible notApplicable finding, never noTarget', () => {
     const { error } = loadComponentSources('mud-icon', 'tokenhaus/export.json');
     assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
+    assert.equal(error.severity, 'info');
+    assert.equal(error.notApplicable, true);
     assert.notEqual(error.noTarget, true);
+  });
+
+  it('mud-text-input is diffed, not not-applicable', () => {
+    const res = loadComponentSources('mud-text-input', 'no/such/figma-export.json');
+    assert.equal(res.error.code, 'TOKEN-DIFF-NO-FIGMA-EXPORT', 'reached the export step, so a tokens file was found');
   });
 
   it('current tokens file exists but the Figma export path does not → TOKEN-DIFF-NO-FIGMA-EXPORT, noTarget: true', () => {

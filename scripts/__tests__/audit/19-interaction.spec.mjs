@@ -15,6 +15,7 @@ import {
   isBx4Applicable,
   judgeBx4Opened,
   declaresPopup,
+  POPUP_MARKERS,
   judgeBx4Escape,
   bx4Outcome,
   judgeBx5StructuralDiff,
@@ -148,6 +149,23 @@ describe('19-interaction: declaresPopup (S12)', () => {
 
   it('true for [aria-modal="true"]', () => {
     assert.equal(declaresPopup(null, { hasAriaModal: true }), true);
+  });
+
+  it('U4: true for a tooltip / menu / listbox role (WCAG 1.4.13 dismissible content)', () => {
+    assert.equal(declaresPopup(null, { hasPopupRole: true }), true);
+  });
+
+  it('U4: the marker selectors name the tooltip, menu and listbox roles', () => {
+    for (const role of ['tooltip', 'menu', 'listbox']) {
+      assert.ok(POPUP_MARKERS.hasPopupRole.includes(`[role="${role}"]`), role);
+    }
+    assert.deepEqual(Object.keys(POPUP_MARKERS).sort(), [
+      'hasAriaHaspopup',
+      'hasAriaModal',
+      'hasDialog',
+      'hasPopover',
+      'hasPopupRole',
+    ]);
   });
 
   it('false when none of the markers are present', () => {

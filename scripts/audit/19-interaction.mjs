@@ -346,22 +346,36 @@ export function judgeBx4Opened(before, after) {
  * only the DOM markers decide. Pure — exported for tests.
  */
 export function declaresPopup(contract, dom) {
-  return Boolean(dom?.hasDialog || dom?.hasPopover || dom?.hasAriaHaspopup || dom?.hasAriaModal);
+  return Boolean(dom?.hasDialog || dom?.hasPopover || dom?.hasAriaHaspopup || dom?.hasAriaModal || dom?.hasPopupRole);
 }
 
+/**
+ * The DOM markers that declare a popup surface, i.e. content Escape must
+ * dismiss. `hasPopupRole` (U4) covers tooltips (WCAG 1.4.13) and floating
+ * menus / listboxes, which carry no dialog or popover marker.
+ */
+export const POPUP_MARKERS = Object.freeze({
+  hasDialog: 'dialog, [role="dialog"], [role="alertdialog"]',
+  hasPopover: '[popover]',
+  hasAriaHaspopup: '[aria-haspopup]',
+  hasAriaModal: '[aria-modal="true"]',
+  hasPopupRole: '[role="tooltip"], [role="menu"], [role="listbox"]',
+});
+
 async function capturePopupMarkers(page, componentName) {
-  return page.evaluate(name => {
-    const host = document.querySelector(name);
-    if (!host) return { hasDialog: false, hasPopover: false, hasAriaHaspopup: false, hasAriaModal: false };
-    const root = host.shadowRoot ?? host;
-    const has = sel => !!root.querySelector(sel) || host.matches(sel);
-    return {
-      hasDialog: has('dialog, [role="dialog"], [role="alertdialog"]'),
-      hasPopover: has('[popover]'),
-      hasAriaHaspopup: has('[aria-haspopup]'),
-      hasAriaModal: has('[aria-modal="true"]'),
-    };
-  }, componentName);
+  return page.evaluate(
+    ({ name, markers }) => {
+      const host = document.querySelector(name);
+      const out = Object.fromEntries(Object.keys(markers).map(k => [k, false]));
+      if (!host) return out;
+      // Both trees: a slotted trigger (light DOM) can carry `aria-haspopup`
+      // while the surface itself renders in the shadow root.
+      const has = sel => host.matches(sel) || !!host.querySelector(sel) || !!host.shadowRoot?.querySelector(sel);
+      for (const [k, sel] of Object.entries(markers)) out[k] = has(sel);
+      return out;
+    },
+    { name: componentName, markers: POPUP_MARKERS },
+  );
 }
 
 /**

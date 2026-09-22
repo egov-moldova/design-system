@@ -206,3 +206,14 @@ describe('fix-brief: a missing field fails the renderer', () => {
     assert.throws(() => renderEntry({ ...complete.FAIL, expected: { value: 'x' } }), /missing expected/);
   });
 });
+
+describe('fix-brief: Decision 13 — a not-applicable row is listed with its reason', () => {
+  it('renders a "Not applicable" section naming the row and the reason', () => {
+    const v = computeVerdict({ envelope: cleanEnvelope() });
+    const row = v.rows.find(r => r.id === '13') ?? v.rows[0];
+    row.note = 'mud-fx uses no component tokens — token diff not applicable';
+    const brief = renderFixBrief(v, { run: 'r1' });
+    assert.match(brief, /## Not applicable/);
+    assert.ok(brief.includes(`- ${row.id} `) && brief.includes('token diff not applicable'));
+  });
+});

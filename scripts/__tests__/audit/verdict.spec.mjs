@@ -701,6 +701,21 @@ describe('verdict: Phase 5 (sentinel round 2)', () => {
     );
   });
 
+  it('U5: warnings that differ only in their fix text still sort deterministically', () => {
+    const findings = [
+      { severity: 'warning', code: 'W', file: 'a.tsx', line: 1, fix: 'zeta' },
+      { severity: 'warning', code: 'W', file: 'a.tsx', line: 1, fix: 'alpha' },
+    ];
+    const run = order => {
+      const e = cleanEnvelope();
+      const row = e.results.find(r => r.id === '02');
+      row.summary = { errors: 0, warnings: 2, info: 0 };
+      e.findingsByTool[row.name] = order.map(i => findings[i]);
+      return computeVerdict({ envelope: e }).warnings;
+    };
+    assert.deepEqual(run([0, 1]), run([1, 0]));
+  });
+
   it('T23: a noTarget finding on a non-required row goes to warnings, not INCOMPLETE', () => {
     const e = cleanEnvelope({ depth: 'quick' });
     e.results.push({
