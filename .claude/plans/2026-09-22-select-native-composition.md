@@ -74,23 +74,23 @@ did not ask for.
 
 ## Tasks
 
-- [ ] **1. Group and separator tokens.** Add `select.group.*` (paddingInline `{spacing.16}`,
+- [x] **1. Group and separator tokens.** Add `select.group.*` (paddingInline `{spacing.16}`,
   paddingBlock `{spacing.4}`, gap `{spacing.4}`, fontFamily `{fontFamily.primary}`, fontSize
   `{fontSize.14}`, lineHeight `{lineHeight.20}`, fontWeight `{fontWeight.medium}`, color
   `{color.text.base.tertiary}`) and `select.separator.color` (`{color.border.base.default}`),
   mirroring `menu.heading.*`. Each token carries a `$comment` naming the Figma node it came from.
   Verify: `yarn tokens.build && yarn tokens.lint.all`
 
-- [ ] **2. `SelectEntry` model.** Replace `SelectOption[]` internally with a discriminated union of
+- [x] **2. `SelectEntry` model.** Replace `SelectOption[]` internally with a discriminated union of
   `{ kind: 'option' | 'group' | 'separator' }`. `SelectOption` stays exported for the deprecated
   `options` prop. Verify: `yarn test.dev src/components/mud-select`
 
-- [ ] **3. Light-DOM reader.** Walk `host.children`: `OPTION` becomes an option, `OPTGROUP` becomes
+- [x] **3. Light-DOM reader.** Walk `host.children`: `OPTION` becomes an option, `OPTGROUP` becomes
   a heading plus its `OPTION` descendants (inheriting the group's `disabled`), `HR` becomes a
   separator. Collapse separators that are leading, trailing, or adjacent to a heading — a native
   `<select>` renders no rule in those positions either. Verify: `yarn test.dev src/components/mud-select`
 
-- [ ] **4. Mutation observation.** `slotchange` does not fire when an `<option>` is added inside an
+- [x] **4. Mutation observation.** `slotchange` does not fire when an `<option>` is added inside an
   `<optgroup>`, because the assigned node (the `optgroup`) did not change. Observe the host with
   `{ childList: true, subtree: true, attributes: true, attributeFilter: ['value', 'label', 'disabled', 'selected'] }`
   plus `characterData: true`, since relabelling an option in place is neither a child-list nor an
@@ -98,24 +98,24 @@ did not ask for.
   `node scripts/audit/run-all.mjs mud-select --only 02 --json` (`ANTIPATTERN-007-LIFECYCLE-LEAK`
   must be absent) — and a browser, per the note below.
 
-- [ ] **5. `selected` as a value source.** When the host has no `value` attribute, the first
+- [x] **5. `selected` as a value source.** When the host has no `value` attribute, the first
   non-disabled `<option selected>` supplies the initial value. "Set no value" means a `value` that is
   both empty and absent as an attribute: an attribute check alone is not enough, because JSX and
   frameworks set the property before any attribute exists, and the markup selection would clobber
   it. Verify: `yarn test.dev src/components/mud-select`
 
-- [ ] **6. Deprecate `options`.** Mark the prop `@deprecated` in its JSDoc, naming markup as the
+- [x] **6. Deprecate `options`.** Mark the prop `@deprecated` in its JSDoc, naming markup as the
   replacement. Precedence is unchanged. Verify: `yarn build && git diff --stat src/components/mud-select/readme.md` (the
   `docs-readme` target only runs under `--docs`, which only the full build passes)
 
-- [ ] **7. Render groups and separators.** A group renders `role="group"` with `aria-labelledby`
+- [x] **7. Render groups and separators.** A group renders `role="group"` with `aria-labelledby`
   pointing at its heading; the heading itself is `role="presentation"` and carries the separator
   rule above its label, as `mud-menu-item` does. `<hr>` renders `role="separator"`. The group is a
   nested flex column repeating the listbox gap — not `display: contents`, whose role handling in
   assistive technology has been unreliable. Keyboard navigation continues to walk the flat option
   list. Verify: `node scripts/audit/run-all.mjs mud-select --only 09 --json`
 
-- [ ] **8. The control becomes an input.** Replace the trigger `<button>` with
+- [x] **8. The control becomes an input.** Replace the trigger `<button>` with
   `<input role="combobox" aria-autocomplete="list" aria-expanded aria-controls aria-activedescendant>`.
   When `searchable` is false, add `inputmode="none"` and `aria-readonly="true"` and discard input
   events. Typography, padding and height are unchanged, so no state's rendering moves.
@@ -123,7 +123,7 @@ did not ask for.
   against the previous build across placeholder, filled, disabled, invalid and large — the
   replacement is only safe if that comes back at zero differing pixels.
 
-- [ ] **9. Filtering.** Case- and diacritic-insensitive substring match over the option label
+- [x] **9. Filtering.** Case- and diacritic-insensitive substring match over the option label
   and value joined by a space, which is react-select's default `stringify`. The remaining
   `createFilter` defaults are kept: `ignoreCase`, `ignoreAccents`, `trim`, `matchFrom: 'any'`.
   Diacritics are stripped with `normalize('NFD')` and a combining-mark regex
@@ -133,7 +133,7 @@ did not ask for.
   A group whose options all fail the filter disappears along with its heading, as react-select's
   `buildCategorizedOptions` does. Verify: `yarn test.dev src/components/mud-select`
 
-- [ ] **10. Keyboard and input lifecycle.** ArrowDown/ArrowUp open the list or move the highlight;
+- [x] **10. Keyboard and input lifecycle.** ArrowDown/ArrowUp open the list or move the highlight;
   Home/End jump; Enter selects the highlighted option; Escape closes; Tab selects the highlighted
   option and closes, which is both react-select's `tabSelectsValue` default and what a native
   `<select>` does. Space selects only when the query is empty — with text typed it must insert a space, which is
@@ -142,20 +142,20 @@ did not ask for.
   When `searchable` is false, typing drives type-ahead instead of a query. Verify:
   `yarn test.dev src/components/mud-select`
 
-- [ ] **11. Localised strings.** `'No options'`, `'Options'` and `'Selectați o opțiune.'` are
+- [x] **11. Localised strings.** `'No options'`, `'Options'` and `'Selectați o opțiune.'` are
   literals today, which Critical Rule 13 forbids. Each becomes a `@Prop()` with a Romanian default
   and `@default` in its JSDoc: `empty-label`, `listbox-label`, `required-message`. Verify:
   `node scripts/audit/run-all.mjs mud-select --only 04 --json && yarn lint`
 
-- [ ] **12. Stories.** Add `WithGroups` (the classic food/fruit/vegetable markup), `Searchable`, and
+- [x] **12. Stories.** Add `WithGroups` (the classic food/fruit/vegetable markup), `Searchable`, and
   `NoResults`. Verify: `node scripts/audit/05-story-exports.mjs mud-select --json`
 
-- [ ] **13. Specs.** Cover the reader (optgroup nesting, hr collapsing, inherited disabled),
+- [x] **13. Specs.** Cover the reader (optgroup nesting, hr collapsing, inherited disabled),
   `selected` precedence, mutation observation, filter normalisation including the two Romanian
   spellings, the space-key rule, and the ARIA group wiring. Verify:
   `yarn test.dev src/components/mud-select --coverage` at or above the 80% line floor
 
-- [ ] **14. Figma state manifest.** `mud-select` has never been pixel-verified — there is no
+- [x] **14. Figma state manifest.** `mud-select` has never been pixel-verified — there is no
   `test/mud-select.figma.json`. Add one covering the 20 variants of `159:1112`, plus open states
   citing `172:3093`. Verify: `node scripts/audit/figma-refs.mjs mud-select --check --json`
 
