@@ -15,24 +15,37 @@ type SelectArgs = {
   disabled: boolean;
   readonly: boolean;
   invalid: boolean;
+  searchable: boolean;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
-const optionsJson =
-  '[{"value":"opt-1","label":"Option 1"},{"value":"opt-2","label":"Option 2"},{"value":"opt-3","label":"Option 3"},{"value":"opt-4","label":"Option 4"},{"value":"opt-5","label":"Option 5"}]';
+/**
+ * The option list the generic stories share, written as the markup a native
+ * `<select>` takes. Every story is the markup a consumer would write — there is
+ * no data prop to set, so what the docs source shows is what runs.
+ */
+const OPTIONS = /*html*/ `
+  <option value="opt-1">Option 1</option>
+  <option value="opt-2">Option 2</option>
+  <option value="opt-3">Option 3</option>
+  <option value="opt-4">Option 4</option>
+  <option value="opt-5">Option 5</option>
+`;
 
-const setOptionsScript = (id: string) =>
-  /*html*/ `<script>(function(){const el=document.getElementById('${id}');if(el)el.options=${optionsJson};})();</script>`;
+/** One select, attributes first and options as children. */
+const select = (attrs: string, options: string = OPTIONS) => /*html*/ `<mud-select ${attrs}>${options}</mud-select>`;
 
-let storyInstance = 0;
-const nextId = () => `mud-select-story-${++storyInstance}`;
+/**
+ * The shared list, shortened for a source block whose point is the attributes
+ * rather than the options.
+ */
+const OPTIONS_ELIDED = '\n  <option value="opt-1">Option 1</option>\n  <!-- … -->\n';
 
-const renderSelect = (args: SelectArgs) => {
-  const id = nextId();
-  return /*html*/ `
-    <mud-select
-      id="${id}"
+const sourceFor = (attrs: string, options: string = OPTIONS_ELIDED) => `<mud-select ${attrs}>${options}</mud-select>`;
+
+const renderSelect = (args: SelectArgs) =>
+  select(`
       variant="${args.variant}"
       size="${args.size}"
       label="${args.label}"
@@ -44,10 +57,8 @@ const renderSelect = (args: SelectArgs) => {
       ${args.disabled ? 'disabled' : ''}
       ${args.readonly ? 'readonly' : ''}
       ${args.invalid ? 'invalid' : ''}
-    ></mud-select>
-    ${setOptionsScript(id)}
-  `;
-};
+      ${args.searchable ? 'searchable' : ''}
+    `);
 
 const docsSourceDefault = (args: SelectArgs) => {
   const attrs = [
@@ -62,10 +73,11 @@ const docsSourceDefault = (args: SelectArgs) => {
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
+    args.searchable ? 'searchable' : '',
   ]
     .filter(Boolean)
     .join(' ');
-  return `<mud-select ${attrs}></mud-select>`;
+  return sourceFor(attrs, OPTIONS);
 };
 
 const meta: Meta<SelectArgs> = {
@@ -93,6 +105,7 @@ const meta: Meta<SelectArgs> = {
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    searchable: { control: 'boolean', description: 'Lets the user narrow the list by typing into the control.' },
   },
 };
 
@@ -114,9 +127,14 @@ export const Default: Story = {
     disabled: false,
     readonly: false,
     invalid: false,
+    searchable: false,
   },
   parameters: {
     docs: {
+      description: {
+        story:
+          'Options are the component’s children, exactly as a native `<select>` takes them: `<option>`, `<optgroup label="…">`, `<hr>`, and `selected` for the starting value.',
+      },
       source: {
         type: 'dynamic',
         transform: (_code: string, { args }: { args: SelectArgs }) => docsSourceDefault(args),
@@ -138,27 +156,20 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
-const optionsTag = (id: string) => setOptionsScript(id);
-
-const selectMarkup = (attrs: string) => {
-  const id = nextId();
-  return /*html*/ `<mud-select id="${id}" ${attrs}></mud-select>${optionsTag(id)}`;
-};
-
 export const AllVariants: Story = {
   name: 'All Variants',
   render: () =>
     wrap(
       SELECT_VARIANTS.map(variant =>
-        cell(variant, selectMarkup(`variant="${variant}" size="large" label="Label" placeholder="Placeholder"`)),
+        cell(variant, select(`variant="${variant}" size="large" label="Label" placeholder="Placeholder"`)),
       ).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: SELECT_VARIANTS.map(
-          v => `<mud-select variant="${v}" size="large" label="Label" placeholder="Placeholder"></mud-select>`,
+        code: SELECT_VARIANTS.map(v =>
+          sourceFor(`variant="${v}" size="large" label="Label" placeholder="Placeholder"`),
         ).join('\n'),
       },
     },
@@ -169,17 +180,13 @@ export const AllSizes: Story = {
   name: 'All Sizes',
   render: () =>
     wrap(
-      SELECT_SIZES.map(size => cell(size, selectMarkup(`size="${size}" label="Label" placeholder="Placeholder"`))).join(
-        '',
-      ),
+      SELECT_SIZES.map(size => cell(size, select(`size="${size}" label="Label" placeholder="Placeholder"`))).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: SELECT_SIZES.map(
-          s => `<mud-select size="${s}" label="Label" placeholder="Placeholder"></mud-select>`,
-        ).join('\n'),
+        code: SELECT_SIZES.map(s => sourceFor(`size="${s}" label="Label" placeholder="Placeholder"`)).join('\n'),
       },
     },
   },
@@ -190,14 +197,14 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('default: default', selectMarkup(`size="large" label="Label" placeholder="Placeholder"`)),
-        cell('default: filled', selectMarkup(`size="large" label="Label" value="opt-2"`)),
-        cell('default: disabled', selectMarkup(`size="large" label="Label" placeholder="Placeholder" disabled`)),
-        cell('default: readonly', selectMarkup(`size="large" label="Label" value="opt-2" readonly`)),
-        cell('default: mandatory', selectMarkup(`size="large" label="Label" placeholder="Placeholder" required`)),
+        cell('default: default', select(`size="large" label="Label" placeholder="Placeholder"`)),
+        cell('default: filled', select(`size="large" label="Label" value="opt-2"`)),
+        cell('default: disabled', select(`size="large" label="Label" placeholder="Placeholder" disabled`)),
+        cell('default: readonly', select(`size="large" label="Label" value="opt-2" readonly`)),
+        cell('default: mandatory', select(`size="large" label="Label" placeholder="Placeholder" required`)),
         cell(
           'destructive: default',
-          selectMarkup(`variant="destructive" size="large" label="Label" placeholder="Placeholder"`),
+          select(`variant="destructive" size="large" label="Label" placeholder="Placeholder"`),
         ),
       ].join(''),
     ),
@@ -206,12 +213,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select size="large" label="Label" placeholder="Placeholder"></mud-select>',
-          '<mud-select size="large" label="Label" value="opt-2"></mud-select>',
-          '<mud-select size="large" label="Label" placeholder="Placeholder" disabled></mud-select>',
-          '<mud-select size="large" label="Label" value="opt-2" readonly></mud-select>',
-          '<mud-select size="large" label="Label" placeholder="Placeholder" required></mud-select>',
-          '<mud-select variant="destructive" size="large" label="Label" placeholder="Placeholder"></mud-select>',
+          sourceFor('size="large" label="Label" placeholder="Placeholder"'),
+          sourceFor('size="large" label="Label" value="opt-2"'),
+          sourceFor('size="large" label="Label" placeholder="Placeholder" disabled'),
+          sourceFor('size="large" label="Label" value="opt-2" readonly'),
+          sourceFor('size="large" label="Label" placeholder="Placeholder" required'),
+          sourceFor('variant="destructive" size="large" label="Label" placeholder="Placeholder"'),
         ].join('\n'),
       },
     },
@@ -225,13 +232,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          selectMarkup(
-            `size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`,
-          ),
+          select(`size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`),
         ),
         cell(
           'mandatory',
-          selectMarkup(`size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required`),
+          select(`size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required`),
         ),
       ].join(''),
     ),
@@ -240,8 +245,8 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></mud-select>',
-          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required></mud-select>',
+          sourceFor('size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"'),
+          sourceFor('size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required'),
         ].join('\n'),
       },
     },
@@ -255,13 +260,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          selectMarkup(
-            `size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"`,
-          ),
+          select(`size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"`),
         ),
         cell(
           'explicit destructive',
-          selectMarkup(
+          select(
             `size="large" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid`,
           ),
         ),
@@ -272,43 +275,44 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"></mud-select>',
-          '<mud-select size="large" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid></mud-select>',
+          sourceFor(
+            'size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"',
+          ),
+          sourceFor(
+            'size="large" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid',
+          ),
         ].join('\n'),
       },
     },
   },
 };
 
+const ICON_START = /*html*/ `<mud-icon slot="icon-start" name="house" size="20"></mud-icon>`;
+const ICON_SEARCH = /*html*/ `<mud-icon slot="icon-start" name="search" size="20"></mud-icon>`;
+
 export const WithIcons: Story = {
   name: 'With Icons',
-  render: () => {
-    const id1 = nextId();
-    const id2 = nextId();
-    return wrap(
+  render: () =>
+    wrap(
       [
         cell(
           'icon-start',
-          /*html*/ `<mud-select id="${id1}" size="large" label="Country" placeholder="Pick a country">
-            <mud-icon slot="icon-start" name="house" size="20"></mud-icon>
-          </mud-select>${optionsTag(id1)}`,
+          select('size="large" label="Country" placeholder="Pick a country"', `${ICON_START}${OPTIONS}`),
         ),
-        cell(
-          'with selected value',
-          /*html*/ `<mud-select id="${id2}" size="large" label="Plan" value="opt-1">
-            <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
-          </mud-select>${optionsTag(id2)}`,
-        ),
+        cell('with selected value', select('size="large" label="Plan" value="opt-1"', `${ICON_SEARCH}${OPTIONS}`)),
       ].join(''),
-    );
-  },
+    ),
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          'A slotted icon sits alongside the options in the light DOM. Only `<option>`, `<optgroup>` and `<hr>` are read as choices, so anything else in there — an icon, a comment — is left alone.',
+      },
       source: {
         code: [
-          '<mud-select size="large" label="Country" placeholder="Pick a country"><mud-icon slot="icon-start" name="house" size="20"></mud-icon></mud-select>',
-          '<mud-select size="large" label="Plan" value="opt-1"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-select>',
+          sourceFor('size="large" label="Country" placeholder="Pick a country"', `\n  ${ICON_START}${OPTIONS_ELIDED}`),
+          sourceFor('size="large" label="Plan" value="opt-1"', `\n  ${ICON_SEARCH}${OPTIONS_ELIDED}`),
         ].join('\n'),
       },
     },
@@ -317,58 +321,46 @@ export const WithIcons: Story = {
 
 export const Open: Story = {
   name: 'Open Listbox',
-  render: () => {
-    const id1 = nextId();
-    const id2 = nextId();
-    return wrap(
+  render: () =>
+    wrap(
       [
-        cell(
-          'open: default (no selection)',
-          /*html*/ `<mud-select id="${id1}" size="large" label="Label" placeholder="Placeholder" open></mud-select>${optionsTag(id1)}`,
-        ),
-        cell(
-          'open: with selection',
-          /*html*/ `<mud-select id="${id2}" size="large" label="Label" value="opt-1" open></mud-select>${optionsTag(id2)}`,
-        ),
+        cell('open: default (no selection)', select('size="large" label="Label" placeholder="Placeholder" open')),
+        cell('open: with selection', select('size="large" label="Label" value="opt-1" open')),
       ].join(''),
-    );
-  },
+    ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
         code: [
-          '<mud-select size="large" label="Label" placeholder="Placeholder" open></mud-select>',
-          '<mud-select size="large" label="Label" value="opt-1" open></mud-select>',
+          sourceFor('size="large" label="Label" placeholder="Placeholder" open'),
+          sourceFor('size="large" label="Label" value="opt-1" open'),
         ].join('\n'),
       },
     },
   },
 };
 
+const COUNTRY_OPTIONS = /*html*/ `
+  <option value="opt-1">Moldova (Republica Moldova)</option>
+  <option value="opt-2">România</option>
+  <option value="opt-3">Ucraina</option>
+  <option value="opt-4">A very long option label that should truncate before the trailing chevron icon</option>
+  <option value="opt-5">Federația Rusă</option>
+`;
+
 export const WithLongOptions: Story = {
   name: 'With Long Options',
-  render: () => {
-    const id = nextId();
-    const longOptions = JSON.stringify([
-      { value: 'opt-1', label: 'Moldova (Republica Moldova)' },
-      { value: 'opt-2', label: 'România' },
-      { value: 'opt-3', label: 'Ucraina' },
-      { value: 'opt-4', label: 'A very long option label that should truncate before the trailing chevron icon' },
-      { value: 'opt-5', label: 'Federația Rusă' },
-    ]);
-    return /*html*/ `
+  render: () => /*html*/ `
       <div style="padding: var(--spacing-24); max-width: 320px;">
-        <mud-select id="${id}" size="large" label="Pick a country" value="opt-4"></mud-select>
-        <script>(function(){const el=document.getElementById('${id}');if(el)el.options=${longOptions};})();</script>
+        ${select('size="large" label="Pick a country" value="opt-4"', COUNTRY_OPTIONS)}
       </div>
-    `;
-  },
+    `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-select size="large" label="Pick a country" value="opt-4"></mud-select>',
+        code: sourceFor('size="large" label="Pick a country" value="opt-4"', COUNTRY_OPTIONS),
       },
     },
   },
@@ -381,16 +373,17 @@ export const EdgeCases: Story = {
       [
         cell(
           'label truncation (single line)',
-          selectMarkup(
+          select(
             `size="large" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services" placeholder="Placeholder"`,
           ),
         ),
         cell(
           'helper truncation (two lines)',
-          selectMarkup(
+          select(
             `size="large" label="Label" placeholder="Placeholder" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."`,
           ),
         ),
+        cell('no options at all', select('size="large" label="Label" placeholder="Placeholder" open', '')),
       ].join(''),
     ),
   parameters: {
@@ -398,17 +391,14 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select size="large" label="…long label…" placeholder="Placeholder"></mud-select>',
-          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="…long helper text…"></mud-select>',
+          sourceFor('size="large" label="…long label…" placeholder="Placeholder"'),
+          sourceFor('size="large" label="Label" placeholder="Placeholder" helper-text="…long helper text…"'),
+          '<mud-select size="large" label="Label" placeholder="Placeholder" open></mud-select>',
         ].join('\n'),
       },
     },
   },
 };
-
-/** A select whose options are written as markup rather than passed as data. */
-const markupSelect = (attrs: string, options: string) =>
-  /*html*/ `<mud-select id="${nextId()}" ${attrs}>${options}</mud-select>`;
 
 const FOOD_OPTIONS = /*html*/ `
   <option value="">Choose a food</option>
@@ -453,14 +443,11 @@ export const NativeMarkup: Story = {
   render: () =>
     wrap(
       [
-        cell('option + optgroup + hr', markupSelect('size="large" label="Your favorite food"', FOOD_OPTIONS)),
-        cell(
-          'open, showing group headings',
-          markupSelect('size="large" label="Your favorite food" open', FOOD_OPTIONS),
-        ),
+        cell('option + optgroup + hr', select('size="large" label="Your favorite food"', FOOD_OPTIONS)),
+        cell('open, showing group headings', select('size="large" label="Your favorite food" open', FOOD_OPTIONS)),
         cell(
           'hr between ungrouped options',
-          markupSelect(
+          select(
             'size="large" label="Sort by" open',
             /*html*/ `
               <option value="recent" selected>Most recent</option>
@@ -480,7 +467,147 @@ export const NativeMarkup: Story = {
           'Options are written as the markup a native `<select>` takes. `<optgroup>` becomes a named group, `<hr>` a rule, and `selected` sets the starting value — here Chicken. Rules with nothing to divide are dropped, so the three `<hr>`s next to headings do not double the rule each heading draws.',
       },
       source: {
-        code: `<mud-select size="large" label="Your favorite food">${FOOD_OPTIONS}</mud-select>`,
+        code: sourceFor('size="large" label="Your favorite food"', FOOD_OPTIONS),
+      },
+    },
+  },
+};
+
+/**
+ * A list that arrives as data — from an API, a store, a fixture. There is no
+ * data prop to hand it to: the consumer renders the options, which is one `map`
+ * in any framework and exactly what a native `<select>` asks for.
+ */
+const CITIES = [
+  { value: 'chisinau', label: 'Chișinău' },
+  { value: 'balti', label: 'Bălți' },
+  { value: 'cahul', label: 'Cahul' },
+  { value: 'comrat', label: 'Comrat' },
+  { value: 'ungheni', label: 'Ungheni' },
+];
+
+const optionsFromData = (rows: { value: string; label: string }[]) =>
+  rows.map(row => /*html*/ `<option value="${row.value}">${row.label}</option>`).join('');
+
+export const OptionsFromData: Story = {
+  name: 'Options From Data',
+  render: () =>
+    wrap(
+      cell(
+        'rendered from an array',
+        select('size="large" label="Oraș" placeholder="Alege un oraș"', optionsFromData(CITIES)),
+      ),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The component takes no option data — a list held in state becomes markup at the call site, and the select re-reads it whenever the rendered children change. In JSX: `{cities.map(c => <option value={c.id}>{c.name}</option>)}`.',
+      },
+      source: {
+        code: [
+          'const cities = [{ value: "chisinau", label: "Chișinău" }, /* … */];',
+          '',
+          '<mud-select size="large" label="Oraș" placeholder="Alege un oraș">',
+          '  {cities.map(city => <option value={city.value}>{city.label}</option>)}',
+          '</mud-select>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+const DISABLED_OPTIONS = /*html*/ `
+  <option value="pickup">Ridicare personală</option>
+  <option value="courier" disabled>Curier (indisponibil azi)</option>
+  <optgroup label="Poștă" disabled>
+    <option value="post-standard">Standard</option>
+    <option value="post-express">Express</option>
+  </optgroup>
+`;
+
+export const DisabledOptions: Story = {
+  name: 'Disabled Options',
+  render: () =>
+    wrap(
+      [
+        cell('closed', select('size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS)),
+        cell('open', select('size="large" label="Livrare" placeholder="Alege metoda" open', DISABLED_OPTIONS)),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          '`disabled` on an `<option>` makes that one choice unselectable; `disabled` on an `<optgroup>` disables every option under it, and an option cannot opt back in — the same rule a native `<select>` applies. Keyboard navigation skips them all.',
+      },
+      source: {
+        code: sourceFor('size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS),
+      },
+    },
+  },
+};
+
+/**
+ * Appending an `<option>` inside an existing `<optgroup>` is not a slot change —
+ * the assigned node, the `optgroup`, did not change — so the component watches
+ * the host for mutations instead. This story is where that stays honest.
+ */
+const ADD_OPTION = `
+  const group = document.querySelector('#mud-select-dynamic optgroup');
+  const n = group.children.length + 1;
+  const option = document.createElement('option');
+  option.value = 'oras-' + n;
+  option.textContent = 'Oraș ' + n;
+  group.appendChild(option);
+`;
+
+const REMOVE_OPTION = `
+  const group = document.querySelector('#mud-select-dynamic optgroup');
+  if (group.children.length > 1) group.lastElementChild.remove();
+`;
+
+const TOGGLE_DISABLED = `
+  const first = document.querySelector('#mud-select-dynamic option');
+  first.toggleAttribute('disabled');
+`;
+
+export const DynamicOptions: Story = {
+  name: 'Dynamic Options',
+  render: () => /*html*/ `
+      <div id="mud-select-dynamic" style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px;">
+        <mud-select size="large" label="Oraș" placeholder="Alege un oraș" open>
+          <optgroup label="Nord">
+            <option value="balti">Bălți</option>
+          </optgroup>
+        </mud-select>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-12);">
+          <mud-button size="sm" variant="secondary" onclick="${ADD_OPTION}">Adaugă opțiune</mud-button>
+          <mud-button size="sm" variant="secondary" onclick="${REMOVE_OPTION}">Elimină ultima</mud-button>
+          <mud-button size="sm" variant="secondary" onclick="${TOGGLE_DISABLED}">Comută disabled</mud-button>
+        </div>
+      </div>
+    `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The listbox follows the markup while the page is running. Adding an `<option>` inside an `<optgroup>`, removing one, or flipping `disabled` all reach the rendered rows — none of which `slotchange` reports, so the component observes the host directly.',
+      },
+      source: {
+        code: [
+          '<mud-select size="large" label="Oraș" placeholder="Alege un oraș">',
+          '  <optgroup label="Nord">',
+          '    <option value="balti">Bălți</option>',
+          '  </optgroup>',
+          '</mud-select>',
+          '',
+          '// Anything that changes the children reaches the list.',
+          'select.querySelector("optgroup").appendChild(newOption);',
+        ].join('\n'),
       },
     },
   },
@@ -491,8 +618,8 @@ export const Searchable: Story = {
   render: () =>
     wrap(
       [
-        cell('type to filter', markupSelect('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS)),
-        cell('open', markupSelect('size="large" label="Oraș" searchable placeholder="Caută" open', CITY_OPTIONS)),
+        cell('type to filter', select('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS)),
+        cell('open', select('size="large" label="Oraș" searchable placeholder="Caută" open', CITY_OPTIONS)),
       ].join(''),
     ),
   parameters: {
@@ -503,7 +630,7 @@ export const Searchable: Story = {
           'With `searchable`, the control itself is the query box. Matching ignores case and diacritics, so `chisinau` finds Chișinău and `balti` finds Bălți; a group disappears when none of its options match. Without `searchable`, the same keystrokes jump the highlight instead, as a native `<select>` does.',
       },
       source: {
-        code: '<mud-select size="large" label="Oraș" searchable placeholder="Caută">…</mud-select>',
+        code: sourceFor('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS),
       },
     },
   },
@@ -515,17 +642,17 @@ export const NoResults: Story = {
     wrap(
       cell(
         'nothing matches the query',
-        markupSelect('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit" open', CITY_OPTIONS),
+        select('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit" open', CITY_OPTIONS),
       ),
     ),
   play: async ({ canvasElement }) => {
-    const select = canvasElement.querySelector('mud-select');
-    if (!select) return;
+    const target = canvasElement.querySelector('mud-select');
+    if (!target) return;
     // The shadow root is not there until the component upgrades, and a play
     // function that runs too early would quietly do nothing.
     await customElements.whenDefined('mud-select');
-    await (select as HTMLElement & { componentOnReady?: () => Promise<unknown> }).componentOnReady?.();
-    const input = select.shadowRoot?.querySelector('input.trigger') as HTMLInputElement | null;
+    await (target as HTMLElement & { componentOnReady?: () => Promise<unknown> }).componentOnReady?.();
+    const input = target.shadowRoot?.querySelector('input.trigger') as HTMLInputElement | null;
     if (!input) return;
     input.value = 'zzz';
     input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -537,7 +664,61 @@ export const NoResults: Story = {
         story: 'The empty state is `empty-label`, a prop with the Romanian default `Nicio opțiune`.',
       },
       source: {
-        code: '<mud-select label="Oraș" searchable empty-label="Niciun oraș găsit">…</mud-select>',
+        code: sourceFor('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit"', CITY_OPTIONS),
+      },
+    },
+  },
+};
+
+const FORM_CITY_OPTIONS = /*html*/ `
+  <optgroup label="Nord">
+    <option value="balti">Bălți</option>
+    <option value="soroca">Soroca</option>
+  </optgroup>
+  <optgroup label="Centru">
+    <option value="chisinau" selected>Chișinău</option>
+    <option value="orhei">Orhei</option>
+  </optgroup>
+`;
+
+const SUBMIT_HANDLER = `
+  event.preventDefault();
+  const data = new FormData(event.target);
+  const out = document.getElementById('mud-select-form-output');
+  out.textContent = JSON.stringify(Object.fromEntries(data.entries()), null, 2);
+`;
+
+export const InForm: Story = {
+  name: 'In Form',
+  render: () => /*html*/ `
+      <form
+        style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); max-width: 420px;"
+        onsubmit="${SUBMIT_HANDLER}"
+      >
+        ${select('name="oras" size="large" label="Oraș" placeholder="Alege un oraș" required', FORM_CITY_OPTIONS)}
+        ${select('name="livrare" size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS)}
+        <div style="display: flex; gap: var(--spacing-12);">
+          <mud-button variant="primary" size="md" type="submit">Trimite</mud-button>
+          <mud-button variant="secondary" size="md" type="reset">Resetează</mud-button>
+        </div>
+        <pre id="mud-select-form-output" style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary); margin: 0;"></pre>
+      </form>
+    `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The select participates in a form the way the native element does: `name` carries the value into `FormData`, `required` blocks submission until something is chosen, and Reset returns the field to the `<option selected>` the page shipped with — Chișinău here, not the empty placeholder.',
+      },
+      source: {
+        code: [
+          '<form>',
+          `  ${sourceFor('name="oras" size="large" label="Oraș" required', '\n    <option value="chisinau" selected>Chișinău</option>\n    <!-- … -->\n  ')}`,
+          '  <mud-button variant="primary" type="submit">Trimite</mud-button>',
+          '  <mud-button variant="secondary" type="reset">Resetează</mud-button>',
+          '</form>',
+        ].join('\n'),
       },
     },
   },
