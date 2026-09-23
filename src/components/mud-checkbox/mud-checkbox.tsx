@@ -391,20 +391,30 @@ export class MudCheckbox {
     // CSS-drawn `.arc`.
     if (this.indeterminate) {
       return (
-        <svg class="glyph glyph-indeterminate" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-          <path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+        // `minus-small` from the icon set, for the reason the tick below carries:
+        // Figma draws this one with 20/minus-small (13:128).
+        <svg class="glyph glyph-indeterminate" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M6.1 12a.9.9 0 0 1 .9-.9h10a.9.9 0 1 1 0 1.8H7a.9.9 0 0 1-.9-.9z"
+          />
         </svg>
       );
     }
     return (
-      <svg class="glyph glyph-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      // The path is `checkmark-small` from the icon set, copied rather than
+      // routed through `mud-icon`: Figma draws the tick with that very glyph
+      // (13:123 uses 20/checkmark-small), and a hand-rolled stroke sat a pixel
+      // short of it. Copying keeps the tick synchronous, which is why it was
+      // inline to begin with.
+      <svg class="glyph glyph-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
-          d="M3.5 8.5l3 3 6-6"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          fill="none"
+          fill="currentColor"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M18.593 6.523a.9.9 0 0 1 .084 1.27l-8.4 9.6a.9.9 0 0 1-1.313.043l-3.6-3.6a.9.9 0 1 1 1.272-1.272l2.92 2.92 7.767-8.877a.9.9 0 0 1 1.27-.084z"
         />
       </svg>
     );
