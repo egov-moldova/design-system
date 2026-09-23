@@ -146,7 +146,11 @@
         "$type": "dimension",
         "$comment": "Figma selection-menu uses spacing/4 between options."
       },
-      "marginBlockStart": { "$value": "{spacing.4}", "$type": "dimension" },
+      "marginBlockStart": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma Behavior/custom 454:5975 stacks the field and the selection-menu with spacing/8 — measured on the export at 8.0px from the input's bottom edge to the menu card."
+      },
       "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
       "maxBlockSize": { "$value": "320px", "$type": "dimension" }
     },
@@ -166,7 +170,17 @@
       "paddingInline": {
         "$value": "{spacing.16}",
         "$type": "dimension",
-        "$comment": "Figma menu-item-selection uses spacing/16 left/right."
+        "$comment": "Figma menu-item-selection starts every row at spacing/16."
+      },
+      "paddingInlineEnd": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma .menu-item-selection State=Default is padding 12px 24px 12px 16px — a row with no trailing checkmark keeps 24px. Mirrors menu.item.paddingInlineEnd."
+      },
+      "paddingInlineEndTrailing": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma .menu-item-selection State=Selected is padding 12px 16px — the checkmark occupies what the 24px reserves. Mirrors menu.item.paddingInlineEndTrailing."
       },
       "paddingBlock": {
         "$value": "{spacing.12}",
@@ -232,6 +246,45 @@
         }
       },
       "checkColor": { "$value": "{color.icon.brand.default}", "$type": "color" }
+    },
+    "group": {
+      "paddingInline": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Mirrors menu.heading.paddingInline so a group label aligns with the option labels below it."
+      },
+      "paddingBlock": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Mirrors menu.heading.paddingBlock; also the margin around the rule a heading draws."
+      },
+      "gap": { "$value": "{spacing.4}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "color": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color",
+        "$comment": "Mirrors menu.heading.color — Figma Section Heading label #757575."
+      }
+    },
+    "separator": {
+      "color": {
+        "$value": "{color.border.base.default}",
+        "$type": "color",
+        "$comment": "Mirrors menu.heading.separatorColor — the rule drawn by <hr> and above a group heading."
+      },
+      "thickness": {
+        "$value": "1px",
+        "$type": "dimension",
+        "$comment": "Figma Section Heading separator is a 1px divider."
+      },
+      "marginBlock": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Matches select.listbox.gap so a rule keeps the option rhythm."
+      }
     }
   }
 }

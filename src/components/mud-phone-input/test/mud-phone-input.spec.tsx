@@ -183,7 +183,8 @@ describe('mud-phone-input', () => {
       expect(trigger).toBeTruthy();
       expect(trigger?.tagName).toBe('BUTTON');
       expect(trigger?.getAttribute('role')).toBe('combobox');
-      expect(trigger?.getAttribute('aria-haspopup')).toBe('listbox');
+      // ARIA 1.2 implies `aria-haspopup="listbox"` for a combobox, so it is left off.
+      expect(trigger?.hasAttribute('aria-haspopup')).toBe(false);
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
 

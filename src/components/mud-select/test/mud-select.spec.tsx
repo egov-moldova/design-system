@@ -3,17 +3,24 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 import '../mud-select';
 
 import { SELECT_SIZES, SELECT_VARIANTS } from '../mud-select.types';
-import type { SelectOption } from '../mud-select.types';
 
-const baseOptions: SelectOption[] = [
+const baseOptions = [
   { value: 'opt-1', label: 'Option 1' },
   { value: 'opt-2', label: 'Option 2' },
   { value: 'opt-3', label: 'Option 3', disabled: true },
   { value: 'opt-4', label: 'Option 4' },
 ];
 
-const queryTrigger = (root: Element | null | undefined): HTMLButtonElement | null =>
-  (root?.shadowRoot?.querySelector('button.trigger') ?? null) as HTMLButtonElement | null;
+/** `baseOptions` as children, which is the only way to give the component a list. */
+const baseMarkup = () =>
+  baseOptions.map(option => (
+    <option value={option.value} disabled={option.disabled}>
+      {option.label}
+    </option>
+  ));
+
+const queryTrigger = (root: Element | null | undefined): HTMLInputElement | null =>
+  (root?.shadowRoot?.querySelector('input.trigger') ?? null) as HTMLInputElement | null;
 
 const queryListbox = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.listbox') ?? null) as HTMLElement | null;
@@ -27,12 +34,15 @@ const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
 const queryOptions = (root: Element | null | undefined): HTMLElement[] =>
   Array.from(root?.shadowRoot?.querySelectorAll('.option') ?? []) as HTMLElement[];
 
-const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+const queryGroups = (root: Element | null | undefined): HTMLElement[] =>
+  Array.from(root?.shadowRoot?.querySelectorAll('[role="group"]') ?? []) as HTMLElement[];
 
-const setOptions = async (root: Element | null | undefined, opts: SelectOption[]) => {
-  (root as unknown as { options: SelectOption[] }).options = opts;
-  await flush();
-};
+const querySeparators = (root: Element | null | undefined): HTMLElement[] =>
+  // Not `[role="separator"]`: a listbox may own only `option` and `group`, so the
+  // rule renders as presentation. See the note at its render site.
+  Array.from(root?.shadowRoot?.querySelectorAll('.listbox-separator') ?? []) as HTMLElement[];
+
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 describe('mud-select', () => {
   describe('defaults + prop reflection', () => {
@@ -84,7 +94,8 @@ describe('mud-select', () => {
       const trigger = queryTrigger(root);
       expect(trigger).toBeTruthy();
       expect(trigger?.getAttribute('role')).toBe('combobox');
-      expect(trigger?.getAttribute('aria-haspopup')).toBe('listbox');
+      // ARIA 1.2 implies `aria-haspopup="listbox"` for a combobox, so it is left off.
+      expect(trigger?.hasAttribute('aria-haspopup')).toBe(false);
     });
 
     it('renders the label text via `label` prop', async () => {
@@ -107,18 +118,25 @@ describe('mud-select', () => {
     });
 
     it('shows the placeholder when no value is selected', async () => {
-      const { root } = await render(<mud-select label="x" placeholder="Pick one"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" placeholder="Pick one">
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
-      expect(trigger?.textContent).toContain('Pick one');
+      expect(trigger?.getAttribute('placeholder')).toBe('Pick one');
+      expect(trigger?.getAttribute('value')).toBe('');
       expect(root?.classList.contains('is-placeholder')).toBe(true);
     });
 
     it('shows the selected option label when value is set', async () => {
-      const { root } = await render(<mud-select label="x" value="opt-2"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" value="opt-2">
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
-      expect(trigger?.textContent).toContain('Option 2');
+      expect(trigger?.getAttribute('value')).toBe('Option 2');
       expect(root?.classList.contains('is-placeholder')).toBe(false);
     });
 
@@ -156,16 +174,14 @@ describe('mud-select', () => {
 
   describe('listbox behaviour', () => {
     it('keeps the listbox hidden by default', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const listbox = queryListbox(root);
       expect(listbox?.hasAttribute('hidden')).toBe(true);
       expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('false');
     });
 
     it('opens the listbox when the trigger is clicked', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const trigger = queryTrigger(root)!;
       trigger.click();
       await flush();
@@ -176,8 +192,7 @@ describe('mud-select', () => {
     });
 
     it('opens the listbox when the trailing chevron (outside the button) is clicked', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       const chevronWrap = root?.shadowRoot?.querySelector('.control-icon-end') as HTMLElement;
       chevronWrap.click();
       await flush();
@@ -186,8 +201,11 @@ describe('mud-select', () => {
     });
 
     it('does not open on chevron click when disabled', async () => {
-      const { root } = await render(<mud-select label="x" disabled></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" disabled>
+          {baseMarkup()}
+        </mud-select>,
+      );
       (root?.shadowRoot?.querySelector('.control-icon-end') as HTMLElement)?.click();
       await flush();
       expect(queryListbox(root)?.hasAttribute('hidden')).toBe(true);
@@ -196,8 +214,11 @@ describe('mud-select', () => {
     it('emits mudOpen / mudClose when toggling', async () => {
       const onOpen = vi.fn();
       const onClose = vi.fn();
-      const { root } = await render(<mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root)!;
       trigger.click();
       await flush();
@@ -208,8 +229,11 @@ describe('mud-select', () => {
     });
 
     it('renders one role="option" per resolved option', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const options = queryOptions(root);
       expect(options.length).toBe(baseOptions.length);
       options.forEach((opt, i) => {
@@ -219,16 +243,22 @@ describe('mud-select', () => {
     });
 
     it('marks the matching option as selected', async () => {
-      const { root } = await render(<mud-select label="x" value="opt-2" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" value="opt-2" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const selected = queryOptions(root).find(o => o.getAttribute('aria-selected') === 'true');
       expect(selected?.getAttribute('data-value')).toBe('opt-2');
     });
 
     it('selects an option on click and emits mudChange', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const second = queryOptions(root)[1];
       second.click();
       await flush();
@@ -240,8 +270,11 @@ describe('mud-select', () => {
 
     it('does not select disabled options', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const disabled = queryOptions(root).find(o => o.classList.contains('is-disabled'))!;
       disabled.click();
       await flush();
@@ -261,24 +294,25 @@ describe('mud-select', () => {
     };
 
     it('opens the listbox on ArrowDown when closed', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       press(root, 'ArrowDown');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(true);
     });
 
     it('opens the listbox on Enter when closed', async () => {
-      const { root } = await render(<mud-select label="x"></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(<mud-select label="x">{baseMarkup()}</mud-select>);
       press(root, 'Enter');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(true);
     });
 
     it('closes the listbox on Escape', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'Escape');
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
@@ -286,8 +320,11 @@ describe('mud-select', () => {
 
     it('selects the highlighted option on Enter', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'ArrowDown'); // highlight idx 1
       await flush();
       press(root, 'Enter');
@@ -298,8 +335,11 @@ describe('mud-select', () => {
 
     it('Home / End jump to the first / last enabled option', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       press(root, 'End');
       await flush();
       press(root, 'Enter');
@@ -309,14 +349,78 @@ describe('mud-select', () => {
 
     it('ArrowUp / ArrowDown skip disabled options', async () => {
       const onChange = vi.fn();
-      const { root } = await render(<mud-select label="x" open value="opt-2" onMudChange={onChange}></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open value="opt-2" onMudChange={onChange}>
+          {baseMarkup()}
+        </mud-select>,
+      );
       // highlight starts at opt-2 (index 1); ArrowDown should skip opt-3 (disabled) to opt-4.
       press(root, 'ArrowDown');
       await flush();
       press(root, 'Enter');
       await flush();
       expect(onChange.mock.calls[0][0].detail).toEqual({ value: 'opt-4' });
+    });
+
+    it('jumps the highlight to what was typed, as a native select does', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="apple">Apples</option>
+          <option value="beef">Beef</option>
+        </mud-select>,
+      );
+      await flush();
+      press(root, 'b');
+      await flush();
+      expect(queryOptions(root)[1]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('folds diacritics in type-ahead too', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" open>
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      press(root, 'b');
+      press(root, 'a');
+      await flush();
+      expect(queryOptions(root)[1]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('lets space continue a type-ahead buffer instead of selecting', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-select label="City" open onMudChange={onChange}>
+          <option value="ny">New York</option>
+          <option value="other">Other</option>
+        </mud-select>,
+      );
+      await flush();
+      for (const key of ['n', 'e', 'w', ' ', 'y']) press(root, key);
+      await flush();
+      // Space belongs to "New York", so nothing was committed by pressing it.
+      expect(onChange).not.toHaveBeenCalled();
+      expect(queryOptions(root)[0]?.classList.contains('is-highlighted')).toBe(true);
+    });
+
+    it('commits the highlighted option on Tab', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="apple">Apples</option>
+          <option value="beef">Beef</option>
+        </mud-select>,
+      );
+      await flush();
+      // Opening primes the highlight on the first option, so one ArrowDown
+      // moves it to the second — which is what Tab must commit.
+      press(root, 'ArrowDown');
+      await flush();
+      press(root, 'Tab');
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('beef');
+      expect(root?.classList.contains('is-open')).toBe(false);
     });
   });
 
@@ -330,16 +434,22 @@ describe('mud-select', () => {
     });
 
     it('does not open on click when disabled', async () => {
-      const { root } = await render(<mud-select label="x" disabled></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" disabled>
+          {baseMarkup()}
+        </mud-select>,
+      );
       queryTrigger(root)?.click();
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
     });
 
     it('does not open on click when readonly', async () => {
-      const { root } = await render(<mud-select label="x" readonly></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" readonly>
+          {baseMarkup()}
+        </mud-select>,
+      );
       queryTrigger(root)?.click();
       await flush();
       expect(root?.classList.contains('is-open')).toBe(false);
@@ -399,20 +509,406 @@ describe('mud-select', () => {
     });
 
     it('wires aria-controls to the listbox id', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       const listbox = queryListbox(root);
       expect(trigger?.getAttribute('aria-controls')).toBe(listbox?.id);
     });
 
     it('sets aria-activedescendant when an option is highlighted', async () => {
-      const { root } = await render(<mud-select label="x" open></mud-select>);
-      await setOptions(root, baseOptions);
+      const { root } = await render(
+        <mud-select label="x" open>
+          {baseMarkup()}
+        </mud-select>,
+      );
       const trigger = queryTrigger(root);
       const desc = trigger?.getAttribute('aria-activedescendant');
       expect(desc).toBeTruthy();
       expect(root?.shadowRoot?.getElementById(desc!)).toBeTruthy();
+    });
+  });
+
+  describe('native markup composition', () => {
+    it('reads flat <option> children as rows', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana">Bananas</option>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.textContent?.trim())).toEqual(['Apples', 'Bananas']);
+    });
+
+    it('falls back to the text as the value when <option> has none', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option>Apples</option>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root)[0]?.getAttribute('data-value')).toBe('Apples');
+    });
+
+    it('reads options nested inside <optgroup>', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="none">Choose</option>
+          <optgroup label="Fruit">
+            <option value="apple">Apples</option>
+            <option value="banana">Bananas</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['none', 'apple', 'banana', 'beef']);
+    });
+
+    it('disables every option of a disabled <optgroup>', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <optgroup label="Fruit" disabled>
+            <option value="apple">Apples</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      const [apple, beef] = queryOptions(root);
+      expect(apple?.getAttribute('aria-disabled')).toBe('true');
+      expect(beef?.getAttribute('aria-disabled')).toBeNull();
+    });
+
+    it('keeps an <optgroup> without a label as a plain run of options', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <optgroup>
+            <option value="apple">Apples</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['apple']);
+    });
+
+    it('starts on the option marked selected', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana" selected>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('banana');
+    });
+
+    it('finds a selected option nested in an optgroup', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="none">Choose</option>
+          <optgroup label="Fruit">
+            <option value="banana" selected>
+              Bananas
+            </option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('banana');
+    });
+
+    it('lets an explicit value beat selected, set as a property', async () => {
+      const { root } = await render(
+        <mud-select label="Food" value="apple">
+          <option value="apple">Apples</option>
+          <option value="banana" selected>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('apple');
+    });
+
+    it('ignores selected on a disabled option', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+          <option value="banana" selected disabled>
+            Bananas
+          </option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+    });
+
+    it('leaves value empty when no option is marked selected', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <option value="apple">Apples</option>
+        </mud-select>,
+      );
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+    });
+  });
+
+  describe('groups and separators', () => {
+    const grouped = (
+      <mud-select label="Food">
+        <option value="none">Choose</option>
+        <hr />
+        <optgroup label="Fruit">
+          <option value="apple">Apples</option>
+          <option value="banana">Bananas</option>
+        </optgroup>
+        <hr />
+        <optgroup label="Meat">
+          <option value="beef">Beef</option>
+        </optgroup>
+      </mud-select>
+    );
+
+    it('wraps each optgroup in a named role="group"', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      const groups = queryGroups(root);
+      expect(groups).toHaveLength(2);
+
+      const names = groups.map(group => {
+        const id = group.getAttribute('aria-labelledby');
+        return root?.shadowRoot?.querySelector(`#${id}`)?.textContent?.trim();
+      });
+      expect(names).toEqual(['Fruit', 'Meat']);
+    });
+
+    it('keeps a group heading out of the option list', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      expect(queryOptions(root)).toHaveLength(4);
+    });
+
+    it('puts each group option inside its own group', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      const [fruit, meat] = queryGroups(root);
+      const values = (el: HTMLElement) =>
+        Array.from(el.querySelectorAll('.option')).map(o => o.getAttribute('data-value'));
+      expect(values(fruit)).toEqual(['apple', 'banana']);
+      expect(values(meat)).toEqual(['beef']);
+    });
+
+    it('numbers options across groups in document order', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      expect(queryOptions(root).map(el => el.getAttribute('data-option-index'))).toEqual(['0', '1', '2', '3']);
+    });
+
+    it('drops rules that divide nothing', async () => {
+      const { root } = await render(
+        <mud-select label="Food">
+          <hr />
+          <option value="apple">Apples</option>
+          <hr />
+          <hr />
+          <option value="beef">Beef</option>
+          <hr />
+        </mud-select>,
+      );
+      await flush();
+      // Leading, doubled and trailing rules go; the one real divider stays.
+      expect(querySeparators(root)).toHaveLength(1);
+    });
+
+    it('drops a rule that would double a group heading rule', async () => {
+      const { root } = await render(grouped);
+      await flush();
+      // Both <hr>s here sit against a heading, which draws its own rule.
+      expect(querySeparators(root)).toHaveLength(0);
+    });
+
+    it('gives the listbox only children a listbox may own', async () => {
+      const { root } = await render(
+        <mud-select label="Food" open>
+          <option value="none">Choose</option>
+          <hr />
+          <option value="apple">Apples</option>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      const listbox = queryListbox(root)!;
+      const roles = Array.from(listbox.querySelectorAll('[role]')).map(el => el.getAttribute('role'));
+      // ARIA 1.2 lets a listbox own `option` and `group`. Anything else — a
+      // `separator` for the rule, say — invalidates the whole listbox, which is
+      // what axe's `aria-required-children` reports.
+      expect(roles.every(role => role === 'option' || role === 'group' || role === 'presentation')).toBe(true);
+      expect(roles).not.toContain('separator');
+      expect(querySeparators(root)).toHaveLength(1);
+    });
+  });
+
+  describe('filtering', () => {
+    const type = async (root: Element | null | undefined, text: string) => {
+      const input = queryTrigger(root);
+      if (!input) throw new Error('no trigger');
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+    };
+
+    const cities = (
+      <mud-select label="Oraș" searchable placeholder="Caută">
+        <option value="chisinau">Chișinău</option>
+        <option value="balti">Bălți</option>
+        <option value="tandarei">Țăndărei</option>
+        <option value="orhei">Orhei</option>
+      </mud-select>
+    );
+
+    it('narrows the list to what matches', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'orhei');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['orhei']);
+    });
+
+    it('matches Romanian text typed without diacritics', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'chisinau');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['chisinau']);
+    });
+
+    it('matches comma-below and cedilla spellings alike', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable>
+          <option value="comma">Țăndărei</option>
+          {/* The legacy cedilla spelling of the same name. */}
+          <option value="cedilla">Ţăndărei</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'tandarei');
+      expect(queryOptions(root)).toHaveLength(2);
+    });
+
+    it('ignores case and surrounding space', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, '  BĂLȚI  ');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['balti']);
+    });
+
+    it('matches the value as well as the label', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'balti');
+      expect(queryOptions(root).map(el => el.getAttribute('data-value'))).toEqual(['balti']);
+    });
+
+    it('drops a group whose options all fail the filter', async () => {
+      const { root } = await render(
+        <mud-select label="Food" searchable>
+          <optgroup label="Fruit">
+            <option value="apple">Apples</option>
+          </optgroup>
+          <optgroup label="Meat">
+            <option value="beef">Beef</option>
+          </optgroup>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'apple');
+      const groups = queryGroups(root);
+      expect(groups).toHaveLength(1);
+      const id = groups[0]?.getAttribute('aria-labelledby');
+      expect(root?.shadowRoot?.querySelector(`#${id}`)?.textContent?.trim()).toBe('Fruit');
+    });
+
+    it('shows the empty state when nothing matches', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'zzz');
+      expect(queryOptions(root)).toHaveLength(0);
+      const empty = root?.shadowRoot?.querySelector('.listbox-empty');
+      expect(empty).toBeTruthy();
+      // A listbox must own an option, so the empty row is one — disabled, and
+      // outside the model the keyboard walks. See the note at its render site.
+      expect(empty?.getAttribute('role')).toBe('option');
+      expect(empty?.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    it('opens the listbox as soon as the user types', async () => {
+      const { root } = await render(cities);
+      await flush();
+      expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('false');
+      await type(root, 'or');
+      expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('does not filter when searchable is off', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș">
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'orhei');
+      expect(queryOptions(root)).toHaveLength(2);
+    });
+
+    it('opens on an empty field so typing starts a query, not an edit', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable value="orhei" open>
+          <option value="orhei">Orhei</option>
+          <option value="balti">Bălți</option>
+        </mud-select>,
+      );
+      await flush();
+      const input = queryTrigger(root);
+      // Were the label still in the field, the first keystroke would append to it.
+      expect(input?.getAttribute('value')).toBe('');
+      expect(input?.getAttribute('placeholder')).toBe('Orhei');
+    });
+
+    it('keeps showing the selection when the query matches nothing', async () => {
+      const { root } = await render(
+        <mud-select label="Oraș" searchable value="orhei" open>
+          <option value="orhei">Orhei</option>
+        </mud-select>,
+      );
+      await flush();
+      await type(root, 'zzz');
+      expect(queryOptions(root)).toHaveLength(0);
+      // The selection is looked up in the whole model, so an empty result does
+      // not make the field look cleared.
+      expect(queryTrigger(root)?.getAttribute('placeholder')).toBe('Orhei');
+    });
+
+    it('clears the query on selection so the label is what shows', async () => {
+      const { root } = await render(cities);
+      await flush();
+      await type(root, 'orhei');
+      (queryOptions(root)[0] as HTMLElement).click();
+      await flush();
+      expect(queryTrigger(root)?.getAttribute('value')).toBe('Orhei');
+      expect(queryOptions(root)).toHaveLength(4);
     });
   });
 
