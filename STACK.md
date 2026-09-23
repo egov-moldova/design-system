@@ -16,7 +16,7 @@ Versions below are copied from `package.json`; when they disagree, `package.json
 | Design tokens | Style Dictionary | `^5.5.3` (DTCG `$value`/`$type`) |
 | Test runner | Vitest via `@stencil/vitest` | `^4.1.11` / `^1.15.1` |
 | Browser tests | `@vitest/browser-playwright` | `^4.1.11` |
-| Lint (JS/TS) | ESLint | `^10.10.0` (+ `oxlint`, `@stencil/eslint-plugin`) |
+| Lint (JS/TS) | ESLint | `^10.10.0` (+ `@stencil/eslint-plugin`) |
 | Lint (CSS) | stylelint | `^17.15.0` (+ `stylelint-declaration-strict-value`) |
 | Format | Prettier | `^3.9.6` (+ `@prettier/plugin-oxc`) |
 | Build orchestration | Wireit | `^0.14.13` |
