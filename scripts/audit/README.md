@@ -410,9 +410,12 @@ previous run` section inside the report block (`fix-brief.md`, before
   word, but it always sits after a fixed status prefix ("newly reported:",
   "no longer reported:", …), so the claim is the renderer's, never the
   finding's. Finding text is kept in `record.json` and re-rendered later, so
-  every rendered value has markdown image/link openers (`![`, `](`) and
-  HTML tag or comment openers (`<` before a letter, `!`, `/`, `?`)
-  backslash-escaped: a previewer never fetches a URL a finding carried.
+  every rendered value has link/image openers (`](` → `]&#40;`) and HTML tag
+  or comment openers (`<` before a letter, `!`, `/`, `?` → `&lt;`) turned
+  into entities: a previewer never fetches a URL a finding carried. Entities,
+  not backslashes, so a backslash already in the text or a table cell's
+  escaping cannot revive the tag. Text inside backticks (a `verify:`
+  command) is left exactly as written.
 - Nothing prunes `runs/`; `record.json` adds one small file per run beside
   the existing `envelope.json` and `ai/`. Deleting `audit/<component>/runs/`
   (already safe, above) also resets this comparison — the next run then

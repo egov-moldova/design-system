@@ -142,6 +142,13 @@ export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
 export const RUN_RECORD_SCHEMA_VERSION = '1.0.0';
 
 /**
+ * What a Not-compared line says for an AI leg that did not write this run.
+ * `run-record.mjs` writes it and `fix-brief.mjs` keys the re-render hint on
+ * it; both read it from here, so rewording it cannot silently drop the hint.
+ */
+export const LEG_NOT_WRITTEN = 'did not write';
+
+/**
  * Build a normalized result object from raw findings.
  *
  * @param {object} opts

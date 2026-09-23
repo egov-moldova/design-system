@@ -17,7 +17,7 @@
  * check and an index of every entry — closed by REPORT_END. The terminal prints that block and the skill pastes it
  * inline, so no session ever rebuilds the table in its own words.
  */
-import { ROW_STATUS, STATE } from './json-output.mjs';
+import { LEG_NOT_WRITTEN, ROW_STATUS, STATE } from './json-output.mjs';
 
 /** The fields each entry kind must carry (Design §2). */
 export const BRIEF_FIELDS = Object.freeze({
@@ -56,22 +56,33 @@ function present(value) {
  * `renderFixBrief`. Pure.
  */
 export function line(value) {
+  // Markdown links, images and raw HTML are made inert too: an AI leg's finding
+  // text is kept in record.json and re-rendered in later briefs, and a
+  // previewer fetches `![x](https://…)` or `<img src=…>` the moment the file is
+  // opened, while `<!--` hides everything after it. Entities, never backslash
+  // escapes: a backslash already in the text, or cell() doubling backslashes,
+  // would turn `\<` back into a live tag, while `&lt;` stays text whatever
+  // precedes it. Only `](` and a `<` that opens a tag or comment are rewritten,
+  // so `rgb(0, 0, 0)` or `a < b` read unchanged. Inside backticks use code().
+  return code(value)
+    .replace(/\]\(/g, ']&#40;')
+    .replace(/<(?=[A-Za-z!/?])/g, '&lt;');
+}
+
+/**
+ * `line()` for text inside a code span (a `verify:` command, the re-render
+ * command): one line, control characters neutralised, and no markdown
+ * rewriting — a code span renders literally, so an entity there would corrupt
+ * the command a reader copies. Pure.
+ */
+export function code(value) {
   if (value === '') return '(empty)';
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
   // AI leg's finding could move the cursor and overwrite the real headline.
-  // Markdown links, images and raw HTML are made inert too: an AI leg's finding
-  // text is kept in record.json and re-rendered in later briefs, and a
-  // previewer fetches `![x](https://…)` or `<img src=…>` the moment the file is
-  // opened, while `<!--` hides everything after it. Only `![`, `](` and a `<`
-  // that opens a tag or comment are escaped, so values like `rgb(0, 0, 0)` or
-  // `a < b` read unchanged.
   return String(value)
     .replace(/\r\n|\r|\n/g, ' ⏎ ')
-    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�')
-    .replace(/!\[/g, '!\\[')
-    .replace(/\]\(/g, ']\\(')
-    .replace(/<(?=[A-Za-z!/?])/g, '\\<');
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
 }
 
 /**
@@ -97,7 +108,7 @@ export function renderEntry(entry) {
       lines.push('- options:');
       value.forEach((o, i) => lines.push(`  ${i + 1}. ${line(o)}`));
     } else if (field === 'verify') {
-      lines.push(`- verify: \`${line(value)}\``);
+      lines.push(`- verify: \`${code(value)}\``);
     } else {
       lines.push(`- ${field}: ${line(value)}`);
     }
@@ -343,8 +354,8 @@ export function renderChanges(changes) {
         // Re-rendering helps only when this run's leg has not written yet; a
         // malformed file needs the leg re-dispatched, which a re-render cannot do.
         const rerender =
-          n.scope.startsWith('leg:') && n.current === 'did not write'
-            ? ` (\`${rerenderCommand(line(changes.component))}\`)`
+          n.scope.startsWith('leg:') && n.current === LEG_NOT_WRITTEN
+            ? ` (\`${rerenderCommand(code(changes.component))}\`)`
             : '';
         return `- ${line(n.scope)} — previous: ${line(n.previous)}, now: ${line(n.current)}${rerender}`;
       }),
@@ -432,7 +443,7 @@ export function renderFixBrief(verdict, changes = null) {
   if (warnings.length) {
     out.push(`## Warnings (non-blocking) (${warnings.length})`, '');
     for (const w of warnings) {
-      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: \`${line(w.verify)}\`)`);
+      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: \`${code(w.verify)}\`)`);
     }
     out.push('');
   }

@@ -13,10 +13,10 @@
  * recomputed verdict (Problem, this plan). Comparing two records is then a
  * pure data operation with no knowledge of verdict-computation rules at all.
  */
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { rowIdOf, rowResults } from './fix-brief.mjs';
-import { RUN_RECORD_SCHEMA_VERSION, SCHEMA_VERSION, STATE, schemaMajor } from './json-output.mjs';
+import { LEG_NOT_WRITTEN, RUN_RECORD_SCHEMA_VERSION, SCHEMA_VERSION, STATE, schemaMajor } from './json-output.mjs';
 
 // ─── Finding identity (Design §3) ─────────────────────────────────────────
 
@@ -189,16 +189,26 @@ function recordShapeIssue(record) {
  */
 export function listRunNames(componentDir) {
   const runsDir = join(componentDir, 'runs');
-  let entries;
+  let names;
   try {
-    entries = readdirSync(runsDir, { withFileTypes: true });
+    names = readdirSync(runsDir);
   } catch (err) {
     if (err.code === 'ENOENT') return [];
     throw err;
   }
-  return entries
-    .filter(e => e.isDirectory() && existsSync(join(runsDir, e.name, 'envelope.json')))
-    .map(e => e.name)
+  // statSync, not existsSync: existsSync reads EACCES/EIO as "absent", which
+  // would silently drop an unreadable newer run and let an older one pass as
+  // newest. Only "not there" (ENOENT, or ENOTDIR for a file entry) means "not a
+  // run"; anything else throws. statSync follows a symlinked run directory.
+  return names
+    .filter(name => {
+      try {
+        return statSync(join(runsDir, name, 'envelope.json')).isFile();
+      } catch (err) {
+        if (err.code === 'ENOENT' || err.code === 'ENOTDIR') return false;
+        throw err;
+      }
+    })
     .sort();
 }
 
@@ -255,7 +265,7 @@ function describeScope(scope, present, record, rowsMap) {
     if (present) return 'wrote';
     const leg = scope.slice('leg:'.length);
     const entry = (record.legs ?? []).find(l => l.leg === leg);
-    if (!entry) return 'did not write';
+    if (!entry) return LEG_NOT_WRITTEN;
     // A leg graded on its own (no cause) that still lacks the scope means the
     // run itself graded nothing (an unreadable envelope, a failed preflight).
     return entry.cause ? `wrote a file not compared (${entry.cause})` : 'wrote, but that run graded nothing';

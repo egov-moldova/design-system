@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
 import { buildRunRecord, compareRecords, findPreviousRecord } from '../../audit/lib/run-record.mjs';
-import { renderChanges } from '../../audit/lib/fix-brief.mjs';
+import { renderChanges, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import { computeLegRecords, computeVerdict, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { RUN_RECORD_SCHEMA_VERSION } from '../../audit/lib/json-output.mjs';
 import { mismatchFinding } from '../../audit/15-style-parity.mjs';
@@ -905,8 +905,35 @@ describe('run-record: what the section names', () => {
       depth: 'deep',
       component: 'mud-fx',
     });
-    assert.doesNotMatch(section, /(?<!\\)<img/);
-    assert.doesNotMatch(section, /(?<!\\)<!--/);
+    // No literal tag opener survives at all — whatever precedes it.
+    assert.doesNotMatch(section, /<img|<!--/);
+    assert.match(section, /&lt;img/);
     assert.match(section, /a < b/);
+  });
+
+  it('neither a backslash in the text nor a table cell turns an escaped tag back into live HTML', () => {
+    const hostile = '\\<img src="https://attacker.example/p.png"> <!-- hide';
+    const section = renderChanges({
+      baseline: { run: 'r1', headline: 'PASS@standard' },
+      headline: 'PASS@standard',
+      rowChanges: [{ id: '02', name: hostile, previous: 'pass', current: 'fail' }],
+      notCompared: [],
+      added: [{ scope: 'row:02', key: 'k', label: hostile, count: 1 }],
+      gone: [],
+      countChanged: [],
+      textChanged: [],
+      unchanged: 0,
+      skippedEmpty: 0,
+      depth: 'standard',
+      component: 'mud-fx',
+    });
+    assert.doesNotMatch(section, /<img|<!--/);
+    const brief = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02', { message: hostile }) }));
+    assert.doesNotMatch(brief, /<img|<!--(?! end of report -->)/);
+  });
+
+  it('a command inside backticks is left exactly as written', () => {
+    const brief = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02') }));
+    assert.match(brief, /- verify: `node scripts\/audit\/run-all\.mjs mud-fx --depth standard --only 02 --json`/);
   });
 });
