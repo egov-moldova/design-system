@@ -14,8 +14,7 @@
  *
  * The brief opens with a report block (plan
  * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
- * check, an index of every entry — and `## Changes since the previous run`,
- * closed by REPORT_END. The terminal prints that block and the skill pastes it
+ * check and an index of every entry — closed by REPORT_END. The terminal prints that block and the skill pastes it
  * inline, so no session ever rebuilds the table in its own words.
  */
 import { ROW_STATUS, STATE } from './json-output.mjs';
@@ -109,7 +108,7 @@ function cell(value) {
 }
 
 /** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
-export function rowIdOf(check) {
+function rowIdOf(check) {
   return String(check ?? '').split(' ')[0];
 }
 
@@ -118,10 +117,11 @@ export function rowIdOf(check) {
  * disagree with the entries below it: `excused` · `deferred` (run-all emits a
  * deferred row as `skipped`, which must not read as a required check that did
  * not run) · a non-ok status (`crashed`, `missing-prereq`, `skipped`) ·
- * `incomplete` · `fail` · `warn` · `report-only (<n> errors, <n> warnings)` —
- * a `blocking: false` row whose findings never become entries or warnings,
- * taken from the row's own counts so they are not hidden — · `pass`, first
- * match wins.
+ * `incomplete` · `fail` · `warn` · `not graded (<n> errors, <n> warnings)` —
+ * the script counted findings that became no entry or warning (a
+ * `blocking: false` row, or findings filed under another name), shown from
+ * the row's own counts so they are never hidden behind a `pass` — · `pass`,
+ * first match wins.
  * `fails` / `warns` count this row's FAIL entries and warnings. Pure.
  *
  * @returns {Map<string, { result: string, fails: number, warns: number }>}
@@ -150,7 +150,7 @@ export function rowResults(verdict) {
     else if (incomplete.get(r.id)) result = 'incomplete';
     else if (f) result = 'fail';
     else if (w) result = 'warn';
-    else if (r.errors || r.warnings) result = `report-only (${r.errors} errors, ${r.warnings} warnings)`;
+    else if (r.errors || r.warnings) result = `not graded (${r.errors} errors, ${r.warnings} warnings)`;
     out.set(r.id, { result, fails: f, warns: w });
   }
   return out;
@@ -203,67 +203,9 @@ export function renderSummary(verdict) {
   return out;
 }
 
-/**
- * The `## Changes since …` section from `run-delta.mjs`'s `diffVerdicts`
- * result, or the reason there is none. Every interpolated value goes through
- * `cell()`. Pure.
- */
-export function renderChanges(changes) {
-  if (!changes) return [];
-  if (changes.status !== 'compared') {
-    return ['## Changes since the previous run', '', `Not compared: ${cell(changes.reason)}.`];
-  }
-  const b = changes.baseline;
-  const out = [`## Changes since the previous ${cell(b.depth)} run (${cell(b.run)})`, ''];
-  out.push(
-    changes.state.from === changes.state.to
-      ? `State: unchanged — ${cell(changes.state.to)}`
-      : `State: ${cell(changes.state.from)} → ${cell(changes.state.to)}`,
-  );
-  const { rows, gone, added, changed, warnings, advisory } = changes;
-  if (warnings.from !== warnings.to) out.push(`Warnings: ${warnings.from} → ${warnings.to}`);
-  if (advisory.from !== advisory.to) {
-    out.push(`Advisory items: ${advisory.from} → ${advisory.to} (AI output, counted, not paired item by item)`);
-  }
-  if (!rows.length && !gone.length && !added.length && !changed.length) {
-    out.push('', 'No check result or entry changed.');
-    return out;
-  }
-  if (rows.length) {
-    out.push('', '| # | Check | Before | Now |', '| --- | --- | --- | --- |');
-    for (const r of rows) out.push(`| ${cell(r.id)} | ${cell(r.name)} | ${cell(r.from)} | ${cell(r.to)} |`);
-  }
-  const describe = e => `${cell(e.check ?? e.kind)} · ${cell(e.location ?? e.node ?? e.cause)}`;
-  const valueOf = e => cell(e.actual ?? e.question ?? e.cause);
-  if (gone.length) {
-    out.push(
-      '',
-      `No longer reported (${gone.length}) — the row's result now says why; this is not a claim it was fixed:`,
-    );
-    for (const { entry: e, rowNow } of gone) {
-      const why = rowNow === null ? '' : ` (row now: ${cell(rowNow)})`;
-      out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}${why}`);
-    }
-  }
-  if (added.length) {
-    out.push('', `Newly reported (${added.length}):`);
-    for (const e of added) out.push(`- ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
-  }
-  if (changed.length) {
-    out.push('', `Changed value (${changed.length}):`);
-    for (const c of changed) out.push(`- ${cell(c.id)} · ${describe(c.entry)}: ${cell(c.from)} → ${cell(c.to)}`);
-  }
-  return out;
-}
-
-/**
- * Render the whole brief. `changes` (optional) is `run-delta.mjs`'s comparison
- * with the previous run — the only part of the brief that depends on a run
- * other than this one; `verdict.json` never does. Pure — exported for tests.
- */
-export function renderFixBrief(verdict, { changes = null } = {}) {
+/** Render the whole brief. Pure — exported for tests. */
+export function renderFixBrief(verdict) {
   const c = verdict.component;
-  const changeLines = renderChanges(changes);
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,
     '',
@@ -271,7 +213,6 @@ export function renderFixBrief(verdict, { changes = null } = {}) {
     '',
     ...renderSummary(verdict),
     '',
-    ...(changeLines.length ? [...changeLines, ''] : []),
     REPORT_END,
     '',
     `Verdict: \`audit/${c}/verdict.json\`. When every \`verify:\` below passes, re-run the whole audit at the same`,

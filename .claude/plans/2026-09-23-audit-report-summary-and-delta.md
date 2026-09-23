@@ -26,26 +26,11 @@ what changed since the previous run of the same depth.
    counts — so the table cannot disagree with the entries; a non-ok row shows its status; Note carries
    `excuse`/`deferred`/`note`), and an index table of every entry and advisory item
    (`ID | Kind | Check | Where | Actual | Owner`). Cell values go through `line()` plus `|` escaping.
-2. **Changes since the previous run.** New pure module `scripts/audit/lib/run-delta.mjs`:
-   - `findBaselineRun(runDir, envelope)` — newest sibling run whose name sorts before the
-     current one (names are ISO timestamps + pid, lexically ordered), with a readable
-     `envelope.json`, the same `audit.depth`, no `--only`/`--skip` filters, `preflight.ok !== false`
-     and a non-empty `results[]` (an aborted run is never a baseline — preflight finding 1). A
-     filtered current run is never compared.
-   - The baseline verdict is recomputed with today's `computeVerdict` from that run's inputs
-     (`readRunInputs`) — no extra state file, and `--rerender` of the same run finds the same
-     baseline, so the section is stable across re-renders.
-   - `diffVerdicts(prev, cur, { run, compareAdvisory })` → state change, rows whose Result/E/W changed, and entries keyed by a
-     stable identity (FAIL: kind·check·code·location; INCOMPLETE: kind·check·cause; NEEDS-DECISION:
-     kind·node·question, advisory or not; advisory FAIL: kind·check·code only — an AI leg's
-     location and wording vary between dispatches, preflight finding 2; `#n` suffix on duplicate
-     keys): resolved, new,
-     and changed (same key, different `actual`). Warnings compare by count only (their message
-     embeds the measured value, so it is not an identity).
-   - Rendered as `## Changes since the previous <depth> run (<run>)` right after the summary, or one
-     line saying why there is no comparison.
+2. **Changes since the previous run — descoped (2026-09-23, owner decision).** Three sentinel rounds
+   each reproduced new cases where comparing two recomputed verdicts reported something that did
+   not happen (see § Sentinel rounds below). Removed from this PR; the comparison is its own issue.
 3. **`verdict.json` is untouched** — still a pure function of its run's inputs, byte-identical
-   across identical runs. Only `fix-brief.md` depends on sibling runs; its header comment says so.
+   across identical runs.
 4. **Terminal.** In text mode `printSummary` prints, per component, the brief's report block (from
    `## Summary` to an explicit `<!-- end of report -->` marker) under the existing headline line.
    `--json` output is unchanged.
@@ -61,10 +46,6 @@ Zero tolerance:
   `advisory[]` id appears exactly once in the index.
 - A cell value containing `|` or a newline cannot break the table (spec).
 - Rerendering the same run twice yields byte-identical `fix-brief.md`.
-- A filtered (`--only`/`--skip`) run or a different-depth sibling is never used as a baseline (spec).
-- An aborted sibling (preflight failed, or no results) is never used as a baseline (spec: `scripts/__tests__/audit/run-delta.spec.mjs`).
-- An advisory FAIL re-worded or moved by a re-dispatched leg is neither resolved nor new; two different advisory questions on one node are never paired (spec: `scripts/__tests__/audit/run-delta.spec.mjs`).
-- Every value interpolated into the Changes section goes through the same `|`/newline escaping (spec: `scripts/__tests__/audit/run-delta.spec.mjs`).
 - `--json` stdout unchanged.
 - `node --test "scripts/__tests__/audit/**/*.spec.mjs"` passes; `yarn lint` clean on touched files.
 
@@ -80,14 +61,10 @@ Tolerances: none numeric — the output is deterministic.
 
 1. `lib/fix-brief.mjs`: `renderSummary`, table escaping, report block with end marker, optional
    `changes` argument to `renderFixBrief`.
-2. `lib/run-delta.mjs`: `findBaselineRun`, `diffVerdicts`; `renderChanges` lives in `fix-brief.mjs`
-   beside the other renderers.
+2. ~~`lib/run-delta.mjs`~~ — descoped with Decision 2.
 3. `verdict.mjs`: `writeVerdictForRun` computes the delta and passes it; `printSummary` prints the
    report block in text mode.
-4. Specs: one new `run-delta.spec.mjs` for the whole report block — summary coverage, escaping,
-   baseline selection, key stability, resolved/new/changed, rerender stability, the terminal block.
-   Consolidated there rather than spread over `fix-brief.spec.mjs` / `verdict.spec.mjs` (verify
-   finding 1): the block is one feature and its specs share fixtures.
+4. Specs: `report-block.spec.mjs` — summary coverage, escaping, hostile text, the terminal block.
 5. `SKILL.md` step 4 + `references/report-template.md` synthesis section.
 
 ## Preflight (2026-09-23)
@@ -102,7 +79,9 @@ drifts.
 FORTIFY (med): one finding, test placement — resolved by updating Task 4 above. A first verify pass
 (ungraded) found advisory NEEDS-DECISION entries keyed on node only; fixed in `entryKey` with a spec.
 
-## Sentinel round 1 (2026-09-23, range c8fb93b..7cfda57)
+## Sentinel rounds
+
+### Round 1 (2026-09-23, range c8fb93b..7cfda57)
 
 REQUEST-CHANGES. `/code-review xhigh` reproduced false "Resolved" claims: an aborted current run,
 a row excused or crashed this run, advisory items before this run's legs wrote, and a moved line.
@@ -112,7 +91,7 @@ compared only once legs wrote, FAIL identity drops the line, per-row counts show
 missing entirely reads absent, the recompute error is named, the end marker is matched as a whole
 line, and control characters are neutralised. Deferred and report-only rows now read as such.
 
-## Sentinel round 2 (2026-09-23, 7cfda57..336d7d0) — the design changed
+### Round 2 (2026-09-23, 7cfda57..336d7d0) — the design changed
 
 REQUEST-CHANGES again, and the pattern is the finding: every round reproduced a new case where
 inferring "resolved" was wrong — same-code findings paired by position once the line left the key,
@@ -129,6 +108,15 @@ recompute error is named, whole-line markers, control characters neutralised. Al
 a11y-verifier text (Enter and Space are not scripted; BX3 accepts a transparent outline), the
 printed headline is neutralised too, `\|` in a cell, report-only rows with only warnings, one
 shared `schemaMajor`, and the baseline envelope is parsed once.
+
+### Round 3 (2026-09-23, 336d7d0..7eb80db) — at cap, section descoped
+
+Three wrong reports reproduced again: same-code findings with no line still paired by position,
+the advisory count reading as dropping to 0 before a deep run's legs wrote, and a check made
+required after the baseline ran producing an INCOMPLETE the baseline never had. At the round cap
+the owner chose to remove the "Changes since" section, keep the report block, fix the remaining
+findings that apply to it, and record the next round WAIVED. `run-delta.mjs` and its specs are
+gone; the report block's specs moved to `report-block.spec.mjs`.
 
 ## Not verified
 

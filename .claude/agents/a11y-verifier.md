@@ -188,13 +188,17 @@ This is where the agent's value lands. For each script finding, decide:
 
 - Use `mcp__playwright__browser_press_key({ key: "Tab" })` + `browser_evaluate`
   to verify Tab order is logical. Script cannot judge "logical for user workflow".
-- **Scripted, not judged here**: BX1–BX7 are scripted verdict rows — see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md) §BX; Escape is BX4. They press neither Enter nor Space, and BX3 accepts an outline whose colour is `transparent`, so this agent still judges what follows: whether the Tab order is logical, whether Shift+Tab walks back, and the two bullets below.
-- Confirm `:focus-visible` styles render — script reports the computed
-  `outlineWidth` / `outlineStyle` / `outlineColor`; if any is `none` / `0px` /
-  `transparent`, that's a focus-ring gap (SC 2.4.7), and a visible ring still
-  needs 3:1 against its background (SC 1.4.11).
-- Test Enter, Space and Arrow keys only for composite widgets (tabs, select,
-  radio group, menu).
+- **Scripted, not judged here**: BX1–BX7 are scripted verdict rows — see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md) §BX. The scripts press only Tab and Escape, and Escape (BX4) only on overlays and components with an open / close / toggle method; BX3 passes a ring drawn by an outline or a `box-shadow`, even one whose colour is `transparent`. So this agent still judges: whether the Tab order is logical, whether Shift+Tab walks back, and the two bullets below.
+- Confirm the focus ring is visible while focused (SC 2.4.7) and reaches 3:1
+  against its background (SC 1.4.11). A component may draw it with
+  `box-shadow` instead of `outline` (mud-menu-item, mud-radio,
+  mud-accordion-item do), so `outlineStyle: none` alone is not a gap — read
+  the focused element's `box-shadow` too, and a `transparent` colour on either
+  is.
+- Test Enter and Space activation on every interactive element, Arrow keys
+  inside composite widgets (tabs, select, radio group, menu), and Escape on a
+  composite popup that is not an overlay and has no open / close / toggle
+  method.
 
 **Reduced motion**:
 

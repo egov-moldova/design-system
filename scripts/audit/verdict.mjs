@@ -10,8 +10,7 @@
  *
  * Layout (git-ignored):
  *   audit/<component>/verdict.json          stable path, rewritten every run
- *   audit/<component>/fix-brief.md          stable path, rewritten every run; its "Changes since"
- *                                           section compares with the previous comparable run
+ *   audit/<component>/fix-brief.md          stable path, rewritten every run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
  *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
  *   audit/_run/summary.json                 worst state over the components of the last run
@@ -50,7 +49,6 @@ import {
   schemaMajor,
 } from './lib/json-output.mjs';
 import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
-import { diffVerdicts, findBaselineRun } from './lib/run-delta.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -117,8 +115,6 @@ export function worstState(states) {
   for (const s of states) if (STATE_ORDER.indexOf(s) < STATE_ORDER.indexOf(worst)) worst = s;
   return worst;
 }
-
-const major = schemaMajor;
 
 /** Stderr text varies between identical runs; the verdict keeps only its class. */
 function errorClass(row) {
@@ -270,7 +266,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       prerequisite: 'none',
       verify: freshRunCommand(component, depth),
     });
-  } else if (major(envelope.schemaVersion) !== major(SCHEMA_VERSION)) {
+  } else if (schemaMajor(envelope.schemaVersion) !== schemaMajor(SCHEMA_VERSION)) {
     addIncomplete({
       kind: STATE.INCOMPLETE,
       check: 'run-all',
@@ -415,7 +411,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   // AI legs: advisory at every depth, deep included (Decision 12) — a leg's
   // findings are listed, never state-changing.
   for (const file of [...aiFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
-    if (!file.data || major(file.data.schemaVersion) !== major(AI_FINDINGS_SCHEMA_VERSION)) {
+    if (!file.data || schemaMajor(file.data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
       notes.push(`ai-findings.json from leg ${file.leg} ignored: unreadable or unknown major schemaVersion`);
       continue;
     }
@@ -523,11 +519,6 @@ export function readRunInputs(runDir) {
       envelope = null;
     }
   }
-  return { envelope, aiFiles: readAiFiles(runDir) };
-}
-
-/** The `ai/<leg>/ai-findings.json` files of one run; an unreadable one is `data: null`. */
-function readAiFiles(runDir) {
   const aiDir = join(runDir, 'ai');
   const aiFiles = [];
   if (existsSync(aiDir)) {
@@ -543,30 +534,7 @@ function readAiFiles(runDir) {
       aiFiles.push({ leg, data });
     }
   }
-  return aiFiles;
-}
-
-/**
- * The brief's "Changes since" input: this run's verdict against the previous
- * comparable run's, recomputed from that run's inputs with today's rules
- * (lib/run-delta.mjs). A baseline whose verdict cannot be computed is named
- * with its error — never folded into "no earlier run", which would hide a
- * broken recompute behind an ordinary-looking first run.
- */
-function changesSincePreviousRun(absRun, verdict, envelope) {
-  const baseline = findBaselineRun(absRun, envelope);
-  if (!baseline.dir) return { status: 'none', reason: baseline.reason };
-  let prev;
-  try {
-    prev = computeVerdict({
-      envelope: baseline.envelope,
-      aiFiles: readAiFiles(baseline.dir),
-      component: verdict.component,
-    });
-  } catch (err) {
-    return { status: 'none', reason: `baseline run ${baseline.run} could not be recomputed: ${err.message}` };
-  }
-  return diffVerdicts(prev, verdict, { run: baseline.run });
+  return { envelope, aiFiles };
 }
 
 /**
@@ -583,7 +551,7 @@ export function writeVerdictForRun(runDir) {
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict, envelope) });
+  const brief = renderFixBrief(verdict);
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);

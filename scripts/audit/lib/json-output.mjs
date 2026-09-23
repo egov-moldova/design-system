@@ -44,8 +44,7 @@ export const SCHEMA_VERSION = '1.4.0';
 
 /**
  * The major number of a `<major>.<minor>.<patch>` schema version, or null for
- * anything else. The one rule for "is this document a version I can read" —
- * verdict.mjs and run-delta.mjs both decide with it, so they cannot disagree.
+ * anything else — the one rule for "is this document a version I can read".
  */
 export function schemaMajor(version) {
   const m = String(version ?? '').match(/^(\d+)\./);
