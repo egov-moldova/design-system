@@ -101,7 +101,12 @@ constraint 2 of the issue.
      one line: `"No longer reported" means the check that reported it last time did not report it
      this time; the audit does not say why.`
    - A not-compared leg line names the re-render command: `yarn audit:component --rerender <c>`.
-   - Every value goes through `line()` / `cell()`. The words `fixed` and `resolved` never appear.
+   - Every value goes through `line()` / `cell()`. The renderer's own words never include `fixed` or
+     `resolved`. A quoted label is a finding's text, including an AI leg's free prose, so it may
+     contain either word. It is data, rendered as found and never rewritten: rewriting it would
+     misquote the finding. It always sits after a fixed status prefix (`newly reported:` /
+     `no longer reported:` / `reported n → m times:`), so the status comes from the renderer and
+     never from the finding.
 7. **Writing.** `writeVerdictForRun` computes the verdict, the record, the baseline, the changes
    and the brief first, then writes `verdict.json`, `fix-brief.md` and `runs/<run>/record.json`.
    A render failure writes none of them. `readRunInputs` does not read `record.json`, so
@@ -110,28 +115,35 @@ constraint 2 of the issue.
 
 ## Acceptance bar
 
-Zero tolerance (each item has a spec in `scripts/__tests__/audit/run-record.spec.mjs` unless
-noted):
-- Each false case from PR #115's rounds reports no claim about the affected finding and lists the
-  scope under Not compared: a row excused, crashed, deferred, report-only, dropped by `--only`, or
-  noTarget this run; a leg that wrote last run and not yet this run; `--no-figma` now vs not then.
-- Two findings with the same code in one file with no line, one gone → `reported 2 → 1 times`,
-  and no line says which one. The same finding at a shifted line → `unchanged`.
-- A row absent in the baseline record (made required later) → a row change with `—` and no
-  finding claim.
-- A settled figma-gate NEEDS-DECISION (both runs checked it) → `no longer reported`.
-- Baseline selection: newest older same-depth record; another depth skipped; unreadable skipped;
-  newer run name never used; incompatible major → "Not compared", no fall-through.
-- No `fixed` / `resolved` in any rendered section across the spec's fixtures.
-- Hostile text (`|`, `\|`, newline, ESC) in a label cannot add a column, row or heading.
-- `verdict.json` is byte-identical with and without a previous run present (purity). The existing
-  byte-identical spec in `verdict.spec.mjs` stays green.
-- Re-rendering the same run twice → byte-identical `fix-brief.md` and `record.json`.
-- Commands, each exit 0:
-  - `node --test "scripts/__tests__/audit/*.spec.mjs"`
-  - `npx eslint scripts/audit scripts/__tests__/audit`
-  - `npx prettier --check scripts/audit scripts/__tests__/audit .claude/skills/audit-component .claude/plans/2026-09-23-audit-run-delta.md`
-  - `yarn docs:check`
+Zero tolerance. Every spec item is graded by `node --test "scripts/__tests__/audit/*.spec.mjs"`,
+which runs `run-record.spec.mjs` (new) and `verdict.spec.mjs`:
+- `run-record.spec.mjs` false cases: each false case from PR #115's rounds makes no claim about the
+  affected finding and lists the scope under Not compared. The cases: a row excused, crashed,
+  deferred, report-only, dropped by `--only`, or noTarget this run; a leg that wrote last run and
+  not yet this run; `--no-figma` now vs not then.
+- `run-record.spec.mjs` identity: two findings with the same code in one file with no line, one
+  gone → `reported 2 → 1 times`, and no line says which one. The same finding at a shifted line →
+  `unchanged`.
+- `run-record.spec.mjs` required-later: a row absent in the baseline record → a row change with `—`
+  and no finding claim.
+- `run-record.spec.mjs` settled decision: a figma-gate NEEDS-DECISION that both runs checked →
+  `no longer reported`.
+- `run-record.spec.mjs` baseline selection: the newest older same-depth record wins; a record at
+  another depth is skipped; an unreadable one is skipped; a newer run name is never used; an
+  incompatible major → "Not compared", with no fall-through.
+- `run-record.spec.mjs` wording: the renderer's own text never contains `fixed` or `resolved`.
+  Asserted on every fixture's section with each quoted label cut out. A spec case gives an AI leg
+  the message `appears resolved upstream`: that text appears only inside its quoted label, and the
+  section adds no status word of its own. Quoted values are data and are not rewritten.
+- `run-record.spec.mjs` hostile text: `|`, `\|`, a newline or ESC in a label cannot add a column,
+  a row or a heading.
+- `run-record.spec.mjs` purity: `verdict.json` is byte-identical with and without a previous run
+  present. `verdict.spec.mjs`'s existing byte-identical spec stays green.
+- `run-record.spec.mjs` determinism: re-rendering the same run twice gives byte-identical
+  `fix-brief.md` and `record.json`.
+- `npx eslint scripts/audit scripts/__tests__/audit` exits 0.
+- `npx prettier --check scripts/audit scripts/__tests__/audit .claude/skills/audit-component .claude/plans/2026-09-23-audit-run-delta.md` exits 0.
+- `yarn docs:check` exits 0.
 
 Tolerances: none. The output is deterministic.
 
@@ -149,6 +161,8 @@ Tolerances: none. The output is deterministic.
 
 ### Phase 1: record, compare, render (implementer)
 
+**Executor:** implementer · sonnet · high · wave 1
+
 **Files:** `scripts/audit/lib/run-record.mjs` (new), `scripts/audit/lib/json-output.mjs`,
 `scripts/audit/lib/fix-brief.mjs`, `scripts/audit/verdict.mjs`,
 `scripts/__tests__/audit/run-record.spec.mjs` (new), plus existing specs under
@@ -165,6 +179,8 @@ Owner cell.
 
 ### Phase 2: docs (implementer)
 
+**Executor:** implementer · sonnet · medium · wave 2
+
 **Files:** `scripts/audit/README.md`, `.claude/skills/audit-component/references/report-template.md`,
 `.claude/skills/audit-component/SKILL.md` (only if step 4's wording needs the new section named).
 
@@ -173,6 +189,10 @@ Owner cell.
 2. The report-block description gains `## Changes since the previous run`: what the words mean,
    that only checks graded in both runs are compared, that the first run after an upgrade
    compares nothing, and that deleting `runs/` resets the baseline.
+3. Retention, stated as it is: nothing prunes `runs/`, which already held `envelope.json` and
+   `ai/` per run before this change. `record.json` adds one small file per run. Cleanup is manual
+   (`rm -rf audit/<component>/runs`), and the next run then compares nothing. The baseline lookup
+   reads names newest-first and stops at the first same-depth record, so it seldom walks far.
 
 ## Execution matrix
 
