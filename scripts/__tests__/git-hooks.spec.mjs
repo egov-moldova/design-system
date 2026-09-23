@@ -80,7 +80,8 @@ function merge(dir) {
 
 describe('commit-msg hook: commitlint config', () => {
   it('rejects a message that is not a Conventional Commit', () => {
-    assert.notEqual(commitlint('bad message\n'), 0);
+    // 1 is a rule rejection; with no config found commitlint exits 9 ("Please add rules").
+    assert.equal(commitlint('bad message\n'), 1);
   });
 
   it('accepts a Conventional Commit', () => {
