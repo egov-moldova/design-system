@@ -256,28 +256,18 @@ export const Active: Story = {
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <mud-file-input
-        size="lg"
+        class="is-active-demo"
         supported-formats-text="Formate acceptate: jpg, png, pdf"
         max-size-text="Mărime maximă: 100 MB"
       ></mud-file-input>
     </div>
   `,
-  play: async ({ canvasElement }) => {
-    // canvasElement is a real DOM node — Storybook lets us drive a real
-    // dragenter against the dropzone, which sets the @State and triggers a
-    // re-render. We wait one microtask for hydration, then dispatch.
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    const host = canvasElement.querySelector('mud-file-input') as HTMLElement | null;
-    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
-    if (!dropzone) return;
-    dropzone.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
-  },
   parameters: {
     controls: { disable: true },
     docs: {
       description: {
         story:
-          'Drag-over presentation. When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, the icon-circle and CTA collapse to a single line of `dropzone-active-text`, and the caption row hides.',
+          'Drag-over presentation, painted statically by the `is-active-demo` class (a real dragenter cannot be scripted from a story). When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, and the icon-circle and CTA collapse to a single line of `dropzone-active-text`. The captions stay, as in Figma 262:6719.',
       },
       source: {
         code: '<mud-file-input size="lg"></mud-file-input>\n<!-- visible state after drag-over: see Figma Active -->',

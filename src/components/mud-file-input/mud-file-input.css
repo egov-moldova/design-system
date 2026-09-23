@@ -5,8 +5,6 @@
   --_dropzone-gap: var(--file-input-dropzone-gap-md);
   --_dropzone-radius: var(--file-input-dropzone-border-radius);
   --_dropzone-border-width: var(--file-input-dropzone-border-width-default);
-  --_dropzone-border-width-emphasized: var(--file-input-dropzone-border-width-emphasized);
-  --_focus-ring-width: var(--file-input-dropzone-focus-ring-width);
   --_dropzone-transition-duration: var(--file-input-dropzone-transition-duration);
   --_dropzone-transition-easing: var(--file-input-dropzone-transition-timing-function);
 
@@ -38,7 +36,6 @@
   --_border-color-hover: var(--file-input-border-hover);
   --_border-color-focus: var(--file-input-border-focus);
   --_border-color-active: var(--file-input-border-active);
-  --_focus-ring-color: var(--file-input-focus-ring-default);
 
   display: flex;
   flex-direction: column;
@@ -66,7 +63,6 @@
   --_border-color: var(--file-input-border-invalid);
   --_border-color-hover: var(--file-input-border-invalid);
   --_border-color-focus: var(--file-input-border-invalid);
-  --_focus-ring-color: var(--file-input-focus-ring-invalid);
 }
 
 /* ---------- Label ---------- */
@@ -123,14 +119,19 @@
   padding-block: var(--_dropzone-padding-block);
   padding-inline: var(--_dropzone-padding-inline);
   background-color: var(--_bg);
-  /* Dashed border per Figma drop-zone affordance — pulled to the token contract. */
-  border: var(--_dropzone-border-width) dashed var(--_border-color);
+  /* The dashed affordance is an outline pulled inside the box rather than a
+     border. A Figma stroke sits inside the frame and moves nothing, while a CSS
+     border would add its width to the height — 2px taller than 262:6717 — and
+     a 1.5px border is floored to 1px by Chromium anyway. `outline` takes the
+     dash, honours the radius, and stays out of the layout. */
+  outline: var(--_dropzone-border-width) dashed var(--_border-color);
+  outline-offset: calc(-1 * var(--_dropzone-border-width));
   border-radius: var(--_dropzone-radius);
   text-align: center;
   cursor: pointer;
   user-select: none;
   transition:
-    border-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
+    outline-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
     background-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
     box-shadow var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
 }
@@ -139,33 +140,31 @@
    border (real hover still works via `:hover`). */
 :host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone,
 :host(.is-hover-demo:not(.is-disabled)) .dropzone {
-  border-color: var(--_border-color-hover);
+  outline-color: var(--_border-color-hover);
 }
 
-/* `.is-focus-demo` mirrors the focus visual for static story capture. */
+/* Figma 616:7146 leaves the resting dashed stroke alone and rings the drop zone
+   with the shared two-band focus ring. `.is-focus-demo` mirrors it for static
+   story capture. */
 :host(.is-focused:not(.is-disabled)) .dropzone,
 :host(.is-focus-demo:not(.is-disabled)) .dropzone {
-  outline: none;
-  border-style: solid;
-  border-color: var(--_border-color-focus);
   box-shadow:
-    inset 0 0 0 calc(var(--_dropzone-border-width-emphasized) - var(--_dropzone-border-width))
-      var(--_border-color-focus),
-    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+    0 0 0 var(--file-input-focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--file-input-focus-ring-width-inner) + var(--file-input-focus-ring-width-outer))
+      var(--focus-ring-color-outer);
 }
 
-/* Figma "Active" state — drag-over. Solid emphasized brand-blue border + tinted bg. */
+/* Figma "Active" state — drag-over (262:6720). The one variant whose stroke is
+   solid, over the brand-tinted fill. */
 :host(.is-active:not(.is-disabled)) .dropzone {
-  border-style: solid;
-  border-color: var(--_border-color-active);
+  outline-style: solid;
+  outline-color: var(--_border-color-active);
   background-color: var(--_bg-active);
-  box-shadow: inset 0 0 0 calc(var(--_dropzone-border-width-emphasized) - var(--_dropzone-border-width))
-    var(--_border-color-active);
 }
 
 :host(.is-disabled) .dropzone {
   background-color: var(--file-input-background-disabled);
-  border-color: var(--file-input-border-disabled);
+  outline-color: var(--file-input-border-disabled);
   cursor: not-allowed;
 }
 
@@ -257,7 +256,7 @@
   font: inherit;
   color: var(--_cta-link-color);
   text-decoration: underline;
-  text-underline-offset: var(--spacing-2);
+  text-underline-offset: var(--file-input-dropzone-cta-link-underline-offset);
   cursor: pointer;
 }
 
@@ -265,9 +264,11 @@
   color: var(--_cta-link-color-hover);
 }
 
+/* Figma 616:7146 rings the drop zone and nothing else. The link is what the
+   keyboard reaches, and its focus is what raises `.is-focused` on the host, so
+   an outline here would draw a second indicator inside the first. */
 .dropzone-cta__link:focus-visible {
-  outline: var(--border-width-2) solid var(--_cta-link-color);
-  outline-offset: var(--spacing-2);
+  outline: none;
 }
 
 :host(.is-disabled) .dropzone-cta__link,
@@ -284,7 +285,10 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--file-input-caption-gap);
-  margin-block-start: var(--file-input-caption-margin-block-start);
+  /* Figma 262:6717 puts 12px between the drop zone and the captions. The host is
+     a flex column whose own gap already contributes `field-gap`, so the margin
+     carries only the remainder and the token stays the Figma number. */
+  margin-block-start: calc(var(--file-input-caption-margin-block-start) - var(--file-input-field-gap));
   font-family: var(--file-input-caption-font-family);
   font-size: var(--file-input-caption-font-size);
   line-height: var(--file-input-caption-line-height);

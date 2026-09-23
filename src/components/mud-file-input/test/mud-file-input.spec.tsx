@@ -444,14 +444,25 @@ describe('mud-file-input', () => {
       expect(queryChooseFilesLink(root)).toBeNull();
     });
 
-    it('hides the captions row while active (drag-over)', async () => {
+    it('keeps the captions row while active (drag-over)', async () => {
       const { root } = await render(
         <mud-file-input label="x" supported-formats-text="Formate acceptate: jpg, png"></mud-file-input>,
       );
       expect(queryCaptions(root)).toBeTruthy();
       drag(root, 'enter');
       await flush();
-      expect(queryCaptions(root)).toBeNull();
+      // Figma 262:6719 keeps both captions under the active frame — a drag
+      // replaces the icon and the call to action, not the supporting text.
+      expect(queryCaptions(root)).toBeTruthy();
+    });
+
+    it('paints the active state statically for `is-active-demo`', async () => {
+      const { root } = await render(
+        <mud-file-input class="is-active-demo" label="x" dropzone-active-text="Release to upload"></mud-file-input>,
+      );
+
+      expect(queryDropzoneText(root)?.textContent).toContain('Release to upload');
+      expect(queryDropzoneIcon(root)).toBeNull();
     });
 
     it('ignores drag events when disabled', async () => {
