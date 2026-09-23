@@ -363,13 +363,19 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       // The envelope's counts come from the script's own summary, taken
       // before this exclusion — a not-applicable finding that bypassed
       // `finding()` would otherwise leave `errors` contradicting the state.
-      // So would a required row's noTarget finding: it becomes an INCOMPLETE
-      // entry below, never a graded error or warning. On a row the depth does
-      // not require it stays counted — it lands in the warnings there.
-      const uncounted = f => doesNotApply(f) || (isRequired && f.noTarget === true);
-      const countOf = sev => allFindings.filter(f => uncounted(f) && f.severity === sev).length;
-      out.errors = Math.max(0, out.errors - countOf('error'));
-      out.warnings = Math.max(0, out.warnings - countOf('warning'));
+      // So would a noTarget finding, whatever its severity: on a required row
+      // it becomes an INCOMPLETE entry below, never counted; on a row the
+      // depth does not require it becomes a warning, so it counts as one.
+      // scripts/__tests__/audit/verdict.spec.mjs "noTarget … counts" covers both.
+      const noTarget = f => f.noTarget === true && !doesNotApply(f);
+      const countOf = (sev, pred) => allFindings.filter(f => pred(f) && f.severity === sev).length;
+      const movedToWarnings = isRequired ? 0 : countOf('error', noTarget);
+      out.errors = Math.max(0, out.errors - countOf('error', doesNotApply) - countOf('error', noTarget));
+      out.warnings = Math.max(
+        0,
+        out.warnings - countOf('warning', doesNotApply) - (isRequired ? countOf('warning', noTarget) : 0),
+      );
+      out.warnings += movedToWarnings;
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
       // warnings below. On a row the depth does not require it is a warning
