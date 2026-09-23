@@ -95,6 +95,12 @@
   display: none;
 }
 
+/* The helper row is hidden the same way, so the slot that detects slotted
+   helper content is in the tree before that content arrives. */
+:host(:not(.has-helper)) .assistive-helper {
+  display: none;
+}
+
 /* ---------- Control row ---------- */
 
 .control {
