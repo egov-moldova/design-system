@@ -31,9 +31,10 @@
             "boxHeight": "156px",
             "outlineStyle": "dashed",
             "outlineColor": "#B2B2B2",
+            "outlineWidth": "1px",
             "borderTopLeftRadius": "8px"
           },
-          "note": "Figma 262:6705 fills #FFFFFF, pads 32px 24px, gaps 20px and strokes 1.5px #B2B2B2 dashed 6,4 at radius 8px. The stroke width is asserted separately because Chromium floors it."
+          "note": "Figma 262:6705 fills #FFFFFF, pads 32px 24px, gaps 20px and strokes 1.5px #B2B2B2 dashed 6,4 at radius 8px. Two things the browser will not reproduce: Chromium floors a 1.5px stroke to 1px at every device scale, which is the 1px asserted here, and the length of a CSS dash is the engine's to choose, so Figma's 6,4 rhythm cannot be asked for. Both show up in the pixel diff as a dotted edge."
         },
         {
           "target": "mud-file-input .dropzone-icon",
