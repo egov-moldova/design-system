@@ -193,7 +193,9 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
   let names;
   try {
     names = readdirSync(join(componentDir, 'runs'));
-  } catch {
+  } catch (err) {
+    // No runs/ yet is "no baseline"; any other failure is the caller's to render as Not compared.
+    if (err.code !== 'ENOENT') throw err;
     names = [];
   }
   names = names
@@ -206,8 +208,10 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
     let raw;
     try {
       raw = readFileSync(join(componentDir, 'runs', name, 'record.json'), 'utf8');
-    } catch {
-      continue; // no record.json (a run from before this change, or a failed write) — skip
+    } catch (err) {
+      // no record.json (a run from before this change, or a failed write) — skip
+      if (err.code === 'ENOENT') continue;
+      return { unusable: { run: name, cause: `record.json cannot be read: ${err.code ?? err.message}` } };
     }
     let record;
     try {
@@ -215,9 +219,11 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
     } catch (err) {
       return { unusable: { run: name, cause: `record.json does not parse: ${err.message}` } };
     }
+    // A record that names another depth is skipped before its shape is judged:
+    // it could never be this depth's baseline, usable or not.
+    if (typeof record?.depth === 'string' && record.depth !== depth) continue;
     const cause = recordShapeIssue(record);
     if (cause) return { unusable: { run: name, cause } };
-    if (record.depth !== depth) continue; // a record at another depth — skip
     if (record.scopes.length === 0) {
       skippedEmpty++;
       continue;
@@ -229,16 +235,17 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
 
 // ─── The comparison (Design §5) ────────────────────────────────────────────
 
-function describeScope(scope, present, otherRecord, otherRowsMap) {
+/** What one side (`record`, whose rows are `rowsMap`) recorded for a scope graded on one side only. */
+function describeScope(scope, present, record, rowsMap) {
   if (scope === 'figma-gate') return present ? 'checked' : 'not checked';
   if (scope.startsWith('leg:')) {
     if (present) return 'wrote';
     const leg = scope.slice('leg:'.length);
-    const entry = (otherRecord.legs ?? []).find(l => l.leg === leg);
+    const entry = (record.legs ?? []).find(l => l.leg === leg);
     return entry ? `wrote a file not compared (${entry.cause})` : 'did not write';
   }
   if (scope.startsWith('row:')) {
-    const row = otherRowsMap.get(scope.slice('row:'.length));
+    const row = rowsMap.get(scope.slice('row:'.length));
     return row ? row.result : 'not in that run';
   }
   return present ? 'present' : 'absent';
@@ -304,8 +311,8 @@ export function compareRecords(current, previous) {
     }
     notCompared.push({
       scope,
-      current: describeScope(scope, curScopes.has(scope), current, prevRows),
-      previous: describeScope(scope, prevScopes.has(scope), previous, curRows),
+      current: describeScope(scope, curScopes.has(scope), current, curRows),
+      previous: describeScope(scope, prevScopes.has(scope), previous, prevRows),
     });
   }
 
@@ -331,12 +338,19 @@ export function compareRecords(current, previous) {
     } else if (cCount !== pCount) {
       countChanged.push({ scope, key, previousCount: pCount, currentCount: cCount, label: c.labels[0] });
     } else {
-      const curSorted = [...c.labels].sort();
-      const prevSorted = [...p.labels].sort();
-      if (JSON.stringify(curSorted) !== JSON.stringify(prevSorted)) {
-        textChanged.push({ scope, key, previous: prevSorted[0], current: curSorted[0] });
+      // Labels both sides share are dropped as a multiset, so the entry shows
+      // only the text that actually differs, never the same label twice.
+      const prevOnly = [...p.labels].sort();
+      const curOnly = [];
+      for (const label of [...c.labels].sort()) {
+        const i = prevOnly.indexOf(label);
+        if (i === -1) curOnly.push(label);
+        else prevOnly.splice(i, 1);
+      }
+      if (curOnly.length > 0) {
+        textChanged.push({ scope, key, previous: prevOnly.join('; '), current: curOnly.join('; ') });
       } else {
-        unchanged += cCount;
+        unchanged++;
       }
     }
   }

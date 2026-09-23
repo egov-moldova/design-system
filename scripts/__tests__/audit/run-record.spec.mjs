@@ -434,7 +434,92 @@ describe('run-record: the golden record', () => {
     assert.deepEqual(cmp.gone, []);
     assert.deepEqual(cmp.countChanged, []);
     assert.deepEqual(cmp.textChanged, []);
-    assert.equal(cmp.unchanged, r.findings.length);
+    assert.equal(cmp.unchanged, new Set(r.findings.map(f => `${f.scope}\u0000${f.key}`)).size);
+  });
+});
+
+// ─── Code-review round over the first implementation ───────────────────────
+
+describe('run-record: comparison edge cases', () => {
+  it('a row graded only in the previous run shows each side its own result under Not compared', () => {
+    const crashedNow = withError(cleanEnvelope(), '05');
+    Object.assign(
+      crashedNow.results.find(r => r.id === '05'),
+      { status: 'crashed', summary: null, exitCode: 2, error: 'boom' },
+    );
+    const previous = record(withError(cleanEnvelope(), '05'), { run: 'r1' });
+    const current = record(crashedNow, { run: 'r2' });
+    const cmp = compareRecords(current, previous);
+    const entry = cmp.notCompared.find(n => n.scope === 'row:05');
+    const change = cmp.rowChanges.find(r => r.id === '05');
+    assert.deepEqual([entry.previous, entry.current], [change.previous, change.current]);
+    assert.equal(entry.current, 'crashed');
+  });
+
+  it('text changed on a key with several findings shows only the labels that differ', () => {
+    const r = (run, labels) => ({
+      schemaVersion: RUN_RECORD_SCHEMA_VERSION,
+      run,
+      component: 'mud-fx',
+      depth: 'standard',
+      state: 'FAIL',
+      headline: 'FAIL@standard',
+      rows: [],
+      scopes: ['row:02'],
+      legs: [],
+      findings: labels.map(label => ({ scope: 'row:02', key: '["fail","X"]', label })),
+    });
+    const cmp = compareRecords(r('r2', ['A', 'C']), r('r1', ['A', 'B']));
+    assert.deepEqual(
+      cmp.textChanged.map(t => [t.previous, t.current]),
+      [['B', 'C']],
+    );
+    assert.equal(cmp.unchanged, 0);
+  });
+
+  it('unchanged counts identities, like every other count on its line', () => {
+    const dup = () => ({ severity: 'error', code: 'DUP', file: 'x.tsx', fix: 'f' });
+    const e = withError(cleanEnvelope(), '02');
+    e.results.find(r => r.id === '02').summary = { errors: 3, warnings: 0, info: 0 };
+    e.findingsByTool['check-02'] = [dup(), dup(), dup()];
+    const cmp = compareRecords(record(e, { run: 'r2' }), record(e, { run: 'r1' }));
+    assert.equal(cmp.unchanged, 1);
+  });
+
+  it('no baseline because every earlier record graded nothing → says so and counts them', () => {
+    const section = renderChanges({ baseline: null, skippedEmpty: 2, depth: 'deep', component: 'mud-fx' });
+    assert.match(section, /2 graded nothing and were skipped/);
+    assert.doesNotMatch(section, /left a record under/);
+  });
+
+  it('an unreadable newest record (read error) → unusable, no fall-through', () => {
+    const dir = tmp();
+    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
+    // A directory where the file should be: readFileSync fails with EISDIR.
+    mkdirSync(join(dir, 'runs', 'r2', 'record.json'), { recursive: true });
+    const found = findPreviousRecord(dir, 'r3', 'standard');
+    assert.equal(found.unusable?.run, 'r2');
+    assert.match(found.unusable.cause, /cannot be read/);
+  });
+
+  it('a mis-shaped record at another depth is skipped, not unusable', () => {
+    const dir = tmp();
+    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
+    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    writeFileSync(join(dir, 'runs', 'r2', 'record.json'), JSON.stringify({ depth: 'quick', scopes: 'oops' }));
+    const found = findPreviousRecord(dir, 'r3', 'standard');
+    assert.equal(found.record?.run, 'r1');
+  });
+
+  it('a runs/ that cannot be listed (not ENOENT) throws, for writeVerdictForRun to render as Not compared', () => {
+    const auditDir = tmp();
+    const runA = writeRunDir(auditDir, cleanEnvelope(), { run: 'r1' });
+    // findPreviousRecord lists runs/ under the component dir; make the listing fail.
+    const probe = join(runA, 'record-probe');
+    writeFileSync(probe, '');
+    assert.throws(() => findPreviousRecord(probe, 'r1', 'standard'), { code: 'ENOTDIR' });
   });
 });
 

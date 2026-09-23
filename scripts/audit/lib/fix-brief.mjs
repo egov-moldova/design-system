@@ -282,7 +282,9 @@ export function renderChanges(changes) {
   }
   if (changes.baseline === null) {
     out.push(
-      `No earlier run at ${line(changes.depth)} left a record under audit/${line(changes.component)}/runs/ — nothing to compare.`,
+      changes.skippedEmpty > 0
+        ? `No earlier run at ${line(changes.depth)} left a record that graded anything under audit/${line(changes.component)}/runs/ (${changes.skippedEmpty} graded nothing and were skipped) — nothing to compare.`
+        : `No earlier run at ${line(changes.depth)} left a record under audit/${line(changes.component)}/runs/ — nothing to compare.`,
     );
     return out.join('\n');
   }
