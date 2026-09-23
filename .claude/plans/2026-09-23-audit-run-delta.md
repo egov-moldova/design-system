@@ -1,7 +1,8 @@
 # Audit: show what changed since the previous run (issue #126)
 
-**Reviewed:** preflight 3b3f231 critic 92cf52e critic fea13bc critic 326ce0b — after the 3-round cap
-Dan asked for round 4; its findings are folded in and the implementation go is Dan's
+**Reviewed:** preflight 3b3f231 critic 92cf52e critic fea13bc critic 326ce0b — the 3-round cap ended
+the loop; Dan asked for round 4, its findings are folded in at 876ee2b, and Dan gave the go for
+implementation in a dedicated stage (2026-09-23)
 **Base:** PR #139 (`70439fa`, result icons in `lib/fix-brief.mjs`) — this branch sits on it; rebase onto
 `upstream/main` once #139 merges. Nothing here edits the lines #139 changed except by adding beside them.
 
