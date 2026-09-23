@@ -1,0 +1,426 @@
+{
+  "component": "mud-numeric-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "6173:3298",
+        "reason": "Default/Hover/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6173:3309",
+        "reason": "Default/Focus/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "210:2291",
+        "reason": "Default/Loading/Large — the loading variant replaces the trailing area with a spinner whose size and colour belong to mud-spinner's own design; nothing here pins it, so it is left uncovered rather than guessed."
+      },
+      {
+        "node": "6173:3323",
+        "reason": "Default/Loading/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6173:3337",
+        "reason": "Default/Filled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6173:3349",
+        "reason": "Default/Read Only/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "3301:10513",
+        "reason": "Destructive/Read Only/Large — Destructive differs from Default only in the border colour, which destructive-large pins; the read only treatment itself is pinned by readonly-large."
+      },
+      {
+        "node": "3301:10547",
+        "reason": "Success/Read Only/Large — Success differs from Default only in the border colour, which success-large pins; the read only treatment itself is pinned by readonly-large."
+      },
+      {
+        "node": "6173:3385",
+        "reason": "Default/Disabled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "210:2327",
+        "reason": "Destructive/Disabled/Large — the component paints the disabled design over the variant colours, so it renders what disabled-large pins."
+      },
+      {
+        "node": "6173:3395",
+        "reason": "Destructive/Disabled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:29607",
+        "reason": "Success/Disabled/Large — the component paints the disabled design over the variant colours, so it renders what disabled-large pins."
+      },
+      {
+        "node": "6173:3405",
+        "reason": "Success/Disabled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6173:3415",
+        "reason": "Destructive/Default/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "470:31138",
+        "reason": "Destructive/Hover/Large — Destructive differs from Default only in the border colour, which destructive-large pins; the hover treatment itself is pinned by hover-large."
+      },
+      {
+        "node": "6173:3426",
+        "reason": "Destructive/Hover/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6173:3437",
+        "reason": "Success/Default/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "470:31149",
+        "reason": "Success/Hover/Large — Success differs from Default only in the border colour, which success-large pins; the hover treatment itself is pinned by hover-large."
+      },
+      {
+        "node": "6173:3448",
+        "reason": "Success/Hover/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "210:2348",
+        "reason": "Destructive/Filled/Large — Destructive differs from Default only in the border colour, which destructive-large pins; the filled treatment itself is pinned by filled-large."
+      },
+      {
+        "node": "6173:3459",
+        "reason": "Destructive/Filled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:29626",
+        "reason": "Success/Filled/Large — Success differs from Default only in the border colour, which success-large pins; the filled treatment itself is pinned by filled-large."
+      },
+      {
+        "node": "6173:3471",
+        "reason": "Success/Filled/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "210:2360",
+        "reason": "Destructive/Focus/Large — Destructive differs from Default only in the border colour, which destructive-large pins; the focus treatment itself is pinned by focus-large."
+      },
+      {
+        "node": "6173:3483",
+        "reason": "Destructive/Focus/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:29637",
+        "reason": "Success/Focus/Large — Success differs from Default only in the border colour, which success-large pins; the focus treatment itself is pinned by focus-large."
+      },
+      {
+        "node": "6173:3497",
+        "reason": "Success/Focus/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "210:2374",
+        "reason": "Destructive/Loading/Large — the loading variant replaces the trailing area with a spinner whose size and colour belong to mud-spinner's own design; nothing here pins it, so it is left uncovered rather than guessed."
+      },
+      {
+        "node": "6173:3511",
+        "reason": "Destructive/Loading/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:29650",
+        "reason": "Success/Loading/Large — the loading variant replaces the trailing area with a spinner whose size and colour belong to mud-spinner's own design; nothing here pins it, so it is left uncovered rather than guessed."
+      },
+      {
+        "node": "6173:3525",
+        "reason": "Success/Loading/Medium — the Medium column differs from Large only in height, inline padding, leading-icon size and control font size, all of which default-medium pins."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "atoms-input-numeric--default",
+    "capture": {
+      "selector": "mud-numeric-input",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Every fixture pins the component to the 200px the Figma set draws at (210:2266) and slots the \"lei\" unit, because `👁️ Suffix` is the one boolean the set leaves true by default. Figma's own numeric-input carries no stepper buttons — the component agrees, `show-steppers` defaults to false — so no fixture sets it.",
+    "pixelNote": "Every pixel state lands around 1%: a Figma stroke sits inside the frame while the CSS border adds to it, so the content box is a pixel narrower on each side and the value and the unit sit a pixel in from where Figma draws them. The frame itself matches exactly. The whole bordered-input family (select, text input, this one) is built the same way, so moving the stroke out of the layout is a decision for the family, not for one component."
+  },
+  "states": [
+    {
+      "name": "default-large",
+      "node": "210:2266",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "210:2270",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#D9D9D9",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 210:2270 is 48px tall, pads 0 16px, gaps 8px and strokes 1px #D9D9D9 at radius 8px over white."
+        },
+        {
+          "target": "mud-numeric-input .label",
+          "node": "210:2268",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838",
+            "columnGap": "4px"
+          },
+          "note": "Figma 210:2268 is Desktop/Body/Small — regular, not medium — in #383838, and 210:2267 gaps the label and its asterisk by 4px."
+        },
+        {
+          "target": "mud-numeric-input .native",
+          "node": "210:2273",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "Figma 210:2273 is Desktop/Body/Default. Its #757575 is the placeholder colour, which lives on ::placeholder and no computed style can reach — the filled state pins the value colour instead."
+        },
+        {
+          "target": "mud-numeric-input",
+          "node": "210:2266",
+          "styles": {
+            "rowGap": "8px"
+          },
+          "note": "Figma 210:2266 stacks label, input and assistive text 8px apart."
+        }
+      ]
+    },
+    {
+      "name": "default-medium",
+      "node": "6173:3287",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"md\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "6173:3291",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "12px",
+            "paddingRight": "12px",
+            "columnGap": "8px",
+            "borderTopColor": "#D9D9D9"
+          },
+          "note": "Figma 6173:3291 drops to 40px and pads 0 12px; the gap, stroke and radius do not change."
+        },
+        {
+          "target": "mud-numeric-input .native",
+          "node": "6173:3295",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 6173:3295 is Desktop/Body/Small, one step down from the Large rung."
+        }
+      ]
+    },
+    {
+      "name": "hover-large",
+      "node": "470:31127",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-numeric-input .control"
+      },
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "470:31131",
+          "styles": {
+            "borderTopColor": "#444444",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 470:31131 strokes the frame 2px #444444. A Figma stroke is inside the box and moves nothing, while a 2px CSS border would push the content in by a pixel, so the component keeps a 1px border and paints the second pixel with an inset shadow on ::after."
+        }
+      ]
+    },
+    {
+      "name": "focus-large",
+      "node": "210:2277",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-numeric-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "210:2281",
+          "styles": {
+            "borderTopColor": "#0058D2",
+            "boxShadow": "0px 0px 0px 4px #ccdef6"
+          },
+          "note": "Figma 210:2281 strokes 2px #0058D2 and carries Focus Ring/Large/Default, `0 0 0 4px #CCDEF6`. The second border pixel is an inset shadow on ::after, so the outer ring is the only shadow on the control itself."
+        }
+      ]
+    },
+    {
+      "name": "filled-large",
+      "node": "210:2305",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" value=\"12345\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "210:2309",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "borderTopColor": "#D9D9D9"
+          },
+          "note": "Figma 210:2309 keeps the resting white fill and #D9D9D9 stroke once a value is present."
+        },
+        {
+          "target": "mud-numeric-input .native",
+          "node": "210:2312",
+          "styles": {
+            "color": "#121212"
+          },
+          "note": "Figma 210:2312 darkens the entered value to #121212, against the #757575 the placeholder uses."
+        }
+      ]
+    },
+    {
+      "name": "readonly-large",
+      "node": "461:30907",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" readonly value=\"12345\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "461:30911",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopStyle": "none",
+            "boxHeight": "48px"
+          },
+          "note": "Figma 461:30911 fills #F5F5F5 and carries NO stroke at all — read-only is the one state with no border."
+        },
+        {
+          "target": "mud-numeric-input .native",
+          "node": "461:30915",
+          "styles": {
+            "color": "#121212"
+          },
+          "note": "Figma 461:30915 keeps the value at full contrast; read-only is not a dimmed state."
+        }
+      ]
+    },
+    {
+      "name": "disabled-large",
+      "node": "210:2317",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" disabled value=\"12345\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "210:2321",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9",
+            "borderTopWidth": "1px"
+          },
+          "note": "Figma 210:2321 fills #F1F1F1 and keeps the resting 1px #D9D9D9 stroke."
+        },
+        {
+          "target": "mud-numeric-input .native",
+          "node": "210:2324",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 210:2324 greys the value to #B2B2B2."
+        },
+        {
+          "target": "mud-numeric-input .label",
+          "node": "210:2319",
+          "styles": {
+            "color": "#383838"
+          },
+          "note": "Figma 210:2319 leaves the label at #383838 when the field is disabled — the frame greys, the label does not."
+        }
+      ]
+    },
+    {
+      "name": "destructive-large",
+      "node": "210:2337",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" variant=\"destructive\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "210:2341",
+          "styles": {
+            "borderTopColor": "#D92D20",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 210:2341, the Input frame of 210:2337, strokes #D92D20 over the resting white fill (read through the docs instance I3340:8292;210:2341)."
+        }
+      ]
+    },
+    {
+      "name": "success-large",
+      "node": "457:29616",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" variant=\"success\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .control",
+          "node": "457:29620",
+          "styles": {
+            "borderTopColor": "#027948",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 457:29620, the Input frame of 457:29616, strokes #027948 over the resting white fill (read through the docs instance I3340:9329;457:29620)."
+        }
+      ]
+    },
+    {
+      "name": "suffix-large",
+      "node": "210:2274",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .suffix",
+          "node": "210:2274",
+          "styles": {
+            "fontSize": "18px",
+            "lineHeight": "28px",
+            "fontWeight": "500",
+            "color": "#757575"
+          },
+          "note": "Figma 210:2274 is the .suffix instance, whose text is Desktop/Body/Large 500 — 18px over 28px at weight 500 — and it keeps that rung on the Medium field too (6173:3296)."
+        }
+      ],
+      "pixel": false,
+      "pixelNote": "The cited node is a sub-element of the field (the unit instance / the inline-message instance), so its canvas never matches a whole-component capture. Its values are pinned by style parity."
+    },
+    {
+      "name": "assistive-large",
+      "node": "210:2276",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" helper-text=\"Helper message displayed here\"></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .assistive-text",
+          "node": "210:2276",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          },
+          "note": "Figma I210:2276;132:4103 is the inline-message component's Desktop/Body/Small in #383838."
+        },
+        {
+          "target": "mud-numeric-input .assistive",
+          "node": "210:2276",
+          "styles": {
+            "columnGap": "6px"
+          },
+          "note": "Figma 210:2276 gaps the optional icon and the message by 6px."
+        }
+      ],
+      "pixel": false,
+      "pixelNote": "The cited node is a sub-element of the field (the unit instance / the inline-message instance), so its canvas never matches a whole-component capture. Its values are pinned by style parity."
+    }
+  ]
+}
