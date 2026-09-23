@@ -12,7 +12,7 @@ For complex multi-phase workflows (Figma → code → QA pipelines, full product
 
 | Slash Command | Description | When to Use | Complexity |
 |---|---|---|---|
-| `/audit-component` | Deterministic production-readiness audit for a component. Runs `yarn audit:component <name> --depth <d>` (`scripts/audit/verdict.mjs`), which computes `state` (`INCOMPLETE`/`FAIL`/`NEEDS-DECISION`/`PASS`) and, on `PASS`, `level` (`CLEAN-STATIC`/`MERGE-READY`/`PRODUCTION-READY`) — never the model. Flags: `--depth quick\|standard\|deep` (default `standard`); `--fast` (deprecated alias of `--depth quick`), `--e2e` (deprecated alias, folds into `--depth deep`), `--no-figma`, `--no-browser`/`--ci`. | Before PR, after major changes, or on-demand review | Low |
+| `/audit-component` | Served by the skill ([`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md)); no command file. Deterministic production-readiness audit for a component: `yarn audit:component <name> --depth <d>` (`scripts/audit/verdict.mjs`) computes `state` and, on `PASS`, `level` — never the model. Depths and flags: the skill's § Depths and § Flags and excuses. | Before PR, after major changes, or on-demand review | Low (quick) – High (deep) |
 | `/audit-accessibility` | Deep WCAG 2.2 AA audit — keyboard, ARIA, contrast, screen reader | Accessibility review before shipping | Medium |
 | `/update-tokens` | Create or modify design tokens without touching component code | Token-only changes — color, spacing, typography | Low |
 | `/fix-visual-bug` | Diagnose & fix visual bugs via token → CSS → TSX root cause tracing | Something looks wrong — color, spacing, size off | Medium |

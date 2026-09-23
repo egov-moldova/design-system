@@ -584,19 +584,14 @@ yarn npm audit
 
 Plus the `yarn audit:component mud-<name> --depth deep` gate and the `audit-component` skill invocation in Phase 1.
 
-## Phase 11.5: Layer 2 Verification (interactive only — skipped in CI)
+## Phase 11.5: Interaction and judgment rows
 
-For local runs (where `run-all.mjs` envelope has `meta.layer2Required: true`),
-execute Layer 2 of the `audit-component` skill: §BX (mandatory MCP browser
-checklist) + §CX (archetype-specific checks) + §DX (discretionary).
-
-See [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §Layer 2 for the canonical procedure. The archetype is read from
-`envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`
-(emitted by script 14). Surface BX/CX/DX results in the final report's Check
-Matrix; a failing BX row escalates the overall verdict to "Block".
-
-Skip in CI runs (`envelope.meta.ciDetected === true`) — those produce a
-Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
+Nothing to run here. BX1–BX7 are scripted verdict rows at `standard`+ (`19-interaction`,
+see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md)
+§BX); the `deep` gate in Phase 1 already ran them. CX/DX judgment is the `audit-component`
+skill's advisory legs, already dispatched in Phase 1 ([§ AI legs](../skills/audit-component/SKILL.md)).
+Report both in the final report's Check Matrix as the verdict and the legs recorded them;
+neither this phase nor any leg finding changes `state`.
 
 ## Phase 11: Final Report
 

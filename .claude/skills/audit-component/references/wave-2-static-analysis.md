@@ -4,8 +4,8 @@ The static judgment of the `audit-component` skill: what a reviewer checks in a 
 source that no script decides. Everything a script decides is a verdict row and is listed only
 as a pointer here. Load this file when judging a component's source at any depth. Record each
 judgment as a finding in the session's `audit-component` `ai-findings.json` (contract in
-[`../SKILL.md`](../SKILL.md)): at `quick` / `standard` it is advisory, at `deep` an `error`
-finding sets `FAIL`. Cite the rule's file and line in `expected.source`.
+[`../SKILL.md`](../SKILL.md)): it is advisory at every depth, and an `error` finding does not
+change the state (Decision 12). Cite the rule's file and line in `expected.source`.
 
 ---
 

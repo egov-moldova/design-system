@@ -53,9 +53,15 @@ Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
 STOP; read `audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
 `audit/$ARGUMENTS/fix-brief.md` for every entry. The verdict never waits on an
 AI leg: at `deep` they are advisory (Decision 12,
-`2026-09-22-audit-depths-sentinel-fixes.md`). For their judgment, follow
-[`/audit-component`](audit-component.md) steps 2–3 — never its step 1, the gate
-above already ran; each leg writes
+`2026-09-22-audit-depths-sentinel-fixes.md`). For their judgment, invoke the skill's
+[§ AI legs](../skills/audit-component/SKILL.md) with the run the gate above
+already wrote, so it never starts a second fresh run:
+
+```text
+Skill('audit-component', { args: '$ARGUMENTS --depth deep --run-dir <components[].runDir from audit/_run/summary.json>' })
+```
+
+Each leg writes
 `<runDir>/ai/<leg>/ai-findings.json`, where `<runDir>` is `components[].runDir`
 in `audit/_run/summary.json`. Then re-render the brief so those findings appear
 under "Advisory":

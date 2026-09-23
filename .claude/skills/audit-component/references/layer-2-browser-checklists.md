@@ -42,8 +42,8 @@ confirm the page URL names it before reading any value.
 | **ACTION** | Click and Enter / Space fire the contract's `@Event()` | Disabled blocks click and keyboard | Loading (if a prop) blocks interaction and sets `aria-busy="true"` | Icon-only variant has an accessible name |
 | **CONTAINER** | Slotted content does not overflow at 320 px | Every token defined in one theme is defined in the other | Empty slot renders a graceful empty state | N/A |
 
-Severity: a failed CX check is `"severity": "error"` (at `deep` it sets `FAIL`); OVERLAY CX1
-included. A check that cannot be decided from the component alone (the design is silent) is a
+Severity: a failed CX check is `"severity": "error"`, OVERLAY CX1 included; like every AI
+finding it is advisory at every depth and does not change the state (Decision 12). A check that cannot be decided from the component alone (the design is silent) is a
 decision: `question` + `options`, never a guess. An N/A cell still appears in `idsJudged`.
 
 ## §DX — what each `deep` leg judges

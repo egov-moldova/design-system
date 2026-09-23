@@ -284,7 +284,6 @@ describe('callers: S9 — a usage error in fresh mode exits 2 before run-all is 
 // `run-all --only` evidence runs and never invoke the gate.
 const GATE_CALLERS = [
   '.claude/commands/pre-pr-check.md',
-  '.claude/commands/audit-component.md',
   '.claude/agents/audit-production.md',
   '.claude/agents/new-component.md',
   '.claude/agents/refactor-component.md',
@@ -298,11 +297,20 @@ const LEGS = [
 
 /** The GATE_CALLERS that run `--depth deep`: they run the gate once and stop on a non-zero exit;
  * AI legs are optional advisory follow-ups re-rendered with `--run-dir` (Decision 12). */
-const DEEP_CALLERS = [
-  '.claude/agents/audit-production.md',
-  '.claude/commands/audit-component.md',
-  '.claude/commands/migrate-component.md',
-];
+const DEEP_CALLERS = ['.claude/agents/audit-production.md', '.claude/commands/migrate-component.md'];
+
+describe('callers: /audit-component has one authored entry point', () => {
+  it('the skill exists and no same-named command file does', () => {
+    assert.ok(
+      existsSync(join(REPO_ROOT, '.claude/skills/audit-component/SKILL.md')),
+      'the audit-component skill is missing',
+    );
+    assert.ok(
+      !existsSync(join(REPO_ROOT, '.claude/commands/audit-component.md')),
+      '.claude/commands/audit-component.md exists: the audit-component skill shadows a same-named command, so the file is never loaded — it would be dead code drifting from the skill',
+    );
+  });
+});
 
 /** The `audit-production` PASS/FAIL/WARN table header this plan replaces (Design §1 / Phase 5 task 2). */
 const PASS_FAIL_WARN_HEADER = '**Pass/Fail criteria**:';

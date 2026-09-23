@@ -11,7 +11,7 @@ Refactor an existing component to align with latest patterns from `AGENTS.md`. A
 
 ## Step 1: Run Audit First
 
-Invoke `/audit-component --depth standard` (or follow `audit-component.md` steps inline) on the target component. Wait for the audit report before proceeding.
+Invoke the `audit-component` skill (`/audit-component <mud-name> --depth standard`) on the target component. Wait for the audit report before proceeding.
 
 ## Step 1.5: Capture Pre-Refactor Baseline
 
