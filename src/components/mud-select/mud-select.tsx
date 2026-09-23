@@ -1,11 +1,32 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  readTask,
+  State,
+  Watch,
+  h,
+} from '@stencil/core';
 
-import { SELECT_SIZES, SELECT_VARIANTS } from './mud-select.types';
-import type { SelectChangeDetail, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
+import { SELECT_SIZES, SELECT_VARIANTS, isOptionEntry } from './mud-select.types';
+import type { SelectChangeDetail, SelectEntry, SelectOptionEntry, SelectSize, SelectVariant } from './mud-select.types';
+import { filterEntries, foldForSearch, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
+import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
 
 let selectInstanceCounter = 0;
+
+/**
+ * How long a type-ahead buffer survives between keystrokes. Matches the pause a
+ * native `<select>` allows, so "be" + "ef" still reaches Beef but a later "b"
+ * starts again.
+ */
+const TYPEAHEAD_RESET_MS = 500;
 
 /**
  * Select — single-select dropdown atom.
@@ -24,7 +45,7 @@ let selectInstanceCounter = 0;
  *
  * @element mud-select
  *
- * @slot - (default) Direct `<option>` children, used as the option list when the `options` prop is unset or empty. Not rendered directly: each option's `value`, text and `disabled` are read when children are added or removed. Options inside `<optgroup>` and the `selected` attribute are ignored; set `value` on the host instead.
+ * @slot - (default) The option list, written as the markup a native `<select>` takes: `<option>`, `<optgroup label="…">` and `<hr>`. Not rendered directly — each option's `value`, text, `disabled` and `selected` are read, and re-read whenever the markup changes.
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
  * @slot icon-start - Leading `mud-icon` rendered inside the control row.
@@ -109,10 +130,34 @@ export class MudSelect {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Declarative option list. When omitted the component falls back to its
-   * default slot, allowing `<option>` children for HTML-native composition.
+   * Shown in place of the list when nothing matches the query.
+   * @default 'Nicio opțiune'
    */
-  @Prop() options?: SelectOption[];
+  @Prop({ attribute: 'empty-label' }) emptyLabel: string = 'Nicio opțiune';
+
+  /**
+   * Names the listbox for assistive technology when the field has no visible
+   * label and no `aria-label` to borrow.
+   * @default 'Opțiuni'
+   */
+  @Prop({ attribute: 'listbox-label' }) listboxLabel: string = 'Opțiuni';
+
+  /**
+   * Validation message reported when the field is `required` and nothing is
+   * selected.
+   * @default 'Selectați o opțiune.'
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage: string = 'Selectați o opțiune.';
+
+  /**
+   * Lets the user narrow the list by typing into the control.
+   *
+   * Off by default: turning it on makes the control a text field, which changes
+   * how every existing select behaves — including raising an on-screen keyboard
+   * on touch — so it is the consumer's call, not a default.
+   * @default false
+   */
+  @Prop({ reflect: true }) searchable: boolean = false;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -120,7 +165,9 @@ export class MudSelect {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private highlightedIndex: number = -1;
-  @State() private slotOptions: SelectOption[] = [];
+  @State() private entries: SelectEntry[] = [];
+  /** What the user has typed. Empty unless `searchable` and the user is typing. */
+  @State() private query: string = '';
   /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the trigger when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   /** True when the listbox is flipped above the control (not enough room below). */
@@ -154,17 +201,43 @@ export class MudSelect {
   private readonly triggerId = `mud-select-trigger-${this.instanceId}`;
   private readonly listboxId = `mud-select-listbox-${this.instanceId}`;
   private initialValue: string = '';
-  private triggerEl?: HTMLButtonElement;
+  private triggerEl?: HTMLInputElement;
   private listboxEl?: HTMLElement;
   private stopAriaLabel?: () => void;
+  private optionsObserver?: MutationObserver;
+  private typeaheadBuffer: string = '';
+  private typeaheadTimer?: ReturnType<typeof setTimeout>;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.observeOptions();
+  }
+
+  /**
+   * `slotchange` is not enough on its own. Appending an `<option>` inside an
+   * `<optgroup>` leaves the slot's assigned nodes untouched — the `optgroup`
+   * itself did not change — so the event never fires and the listbox keeps
+   * showing a stale list. The same goes for flipping `disabled` or rewriting an
+   * option's text, neither of which is a slot change at all.
+   */
+  private observeOptions() {
+    if (typeof MutationObserver === 'undefined') return;
+    this.optionsObserver = new MutationObserver(() => this.refreshEntries());
+    this.optionsObserver.observe(this.host, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['value', 'label', 'disabled', 'selected'],
+    });
   }
 
   componentWillLoad() {
+    this.refreshEntries();
+    this.adoptMarkupSelection();
+    // Captured after the markup has had its say, so a form reset restores what
+    // the page shipped with — which is what resetting a native <select> does.
     this.initialValue = this.value;
-    this.refreshSlotOptions();
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
     if (this.open) this.primeHighlight();
@@ -194,7 +267,7 @@ export class MudSelect {
     if (!this.internals) return;
     const value = (this.value ?? '').trim();
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Selectați o opțiune.', this.triggerEl);
+      this.internals.setValidity({ valueMissing: true }, this.requiredMessage, this.triggerEl);
       return;
     }
     this.internals.setValidity({});
@@ -236,11 +309,6 @@ export class MudSelect {
     this.syncValidity();
   }
 
-  @Watch('options')
-  handleOptionsChange() {
-    if (this.open && this.highlightedIndex < 0) this.primeHighlight();
-  }
-
   @Watch('open')
   handleOpenChange(next: boolean) {
     // Thin sync only — open/close imperative work lives in setListboxOpen().
@@ -275,6 +343,18 @@ export class MudSelect {
    */
   private positionListbox = () => {
     if (!this.open || typeof window === 'undefined') return;
+    // `componentDidRender` calls this, so the measurement runs INSIDE the render
+    // cycle: writing `dropUp` / `listboxMaxBlockSize` straight from here makes
+    // Stencil log `the state/prop "listboxMaxBlockSize" changed during
+    // rendering` and schedules a second pass on every open. `readTask` moves the
+    // DOM read — and the writes that follow it — into the next read frame, which
+    // is the batching API for exactly this (AGENTS.md rule API5). It also keeps
+    // the scroll / resize listeners off the layout-thrash path.
+    readTask(() => this.measureListbox());
+  };
+
+  private measureListbox() {
+    if (!this.open || typeof window === 'undefined') return;
     const control = this.host.shadowRoot?.querySelector('.control') as HTMLElement | null;
     const listbox = this.listboxEl;
     if (!control || !listbox) return;
@@ -294,10 +374,17 @@ export class MudSelect {
 
     const dropUp = spaceBelow < wanted && spaceAbove > spaceBelow;
     const available = dropUp ? spaceAbove : spaceBelow;
+    const maxBlockSize = Math.round(Math.max(MIN_HEIGHT, Math.min(HARD_CAP, available)));
 
-    this.dropUp = dropUp;
-    this.listboxMaxBlockSize = Math.round(Math.max(MIN_HEIGHT, Math.min(HARD_CAP, available)));
-  };
+    // Guarded, because `componentDidRender` calls this inside the render cycle:
+    // an unconditional write there makes Stencil log "the state/prop
+    // \"listboxMaxBlockSize\" changed during rendering" and schedules a second
+    // render pass on every open. Writing only on a real change settles in one.
+    // Still guarded: on scroll / resize the measurement usually lands on the same
+    // numbers, and an unconditional write would re-render the listbox each frame.
+    if (this.dropUp !== dropUp) this.dropUp = dropUp;
+    if (this.listboxMaxBlockSize !== maxBlockSize) this.listboxMaxBlockSize = maxBlockSize;
+  }
 
   componentDidRender() {
     if (this.open) this.positionListbox();
@@ -309,6 +396,9 @@ export class MudSelect {
       window.removeEventListener('scroll', this.positionListbox, true);
     }
     this.stopAriaLabel?.();
+    this.optionsObserver?.disconnect();
+    this.optionsObserver = undefined;
+    if (this.typeaheadTimer !== undefined) clearTimeout(this.typeaheadTimer);
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -355,7 +445,7 @@ export class MudSelect {
     this.hasIconStart = this.slotHasContent(ev);
   };
   private onDefaultSlotChange = () => {
-    this.refreshSlotOptions();
+    this.refreshEntries();
   };
 
   private slotHasContent(ev: Event): boolean {
@@ -366,19 +456,39 @@ export class MudSelect {
     });
   }
 
-  private refreshSlotOptions() {
-    const children = Array.from(this.host.children).filter(
-      el => el.tagName === 'OPTION' || el.tagName === 'CORE-OPTION',
-    ) as HTMLOptionElement[];
-    this.slotOptions = children.map(el => ({
-      value: el.getAttribute('value') ?? el.textContent?.trim() ?? '',
-      label: (el.textContent ?? '').trim(),
-      disabled: el.hasAttribute('disabled'),
-    }));
+  /**
+   * Seeds `value` from `<option selected>`, the way a native `<select>` starts on
+   * its selected option.
+   *
+   * Only when the author set no value. A non-empty `value` is explicit however it
+   * arrived, which matters because a framework — and JSX — sets the property
+   * before the attribute exists, so an attribute check alone would clobber it.
+   * The attribute is still consulted, since `value=""` is an explicit empty
+   * choice that the reflected default is otherwise indistinguishable from.
+   */
+  private adoptMarkupSelection() {
+    if (this.value !== '' || this.host.hasAttribute('value')) return;
+    const selected = markupSelectedValue(this.entries);
+    if (selected !== undefined) this.value = selected;
   }
 
-  private resolvedOptions(): SelectOption[] {
-    return this.options && this.options.length > 0 ? this.options : this.slotOptions;
+  /** Rebuilds the rendered model from the markup the consumer wrote. */
+  private refreshEntries() {
+    this.entries = readEntriesFromLightDom(this.host);
+  }
+
+  /**
+   * The model after the query — what is rendered, and what the keyboard walks.
+   * Everything downstream indexes into this, never into the unfiltered list, so
+   * a highlight always points at a row the user can see.
+   */
+  private visibleEntries(): SelectEntry[] {
+    return this.searchable && this.query.trim().length > 0 ? filterEntries(this.entries, this.query) : this.entries;
+  }
+
+  /** The choices, in render order — what `highlightedIndex` and `value` index into. */
+  private resolvedOptions(): SelectOptionEntry[] {
+    return this.visibleEntries().filter(isOptionEntry);
   }
 
   private resolvedVariant(): SelectVariant {
@@ -440,6 +550,9 @@ export class MudSelect {
   private setListboxOpen(next: boolean, opts: { returnFocus?: boolean } = {}) {
     if (this.open === next) return;
     this.open = next;
+    // A query outlives nothing: a closed listbox showing a filtered label would
+    // be lying about what is selected.
+    if (!next) this.query = '';
     if (!next && opts.returnFocus !== false) this.triggerEl?.focus();
   }
 
@@ -452,31 +565,47 @@ export class MudSelect {
     this.setListboxOpen(false);
   };
 
-  private toggleListbox = (ev?: MouseEvent) => {
-    ev?.stopPropagation();
+  /**
+   * One handler for the whole control row, the input included. The chevron and
+   * the icon-start slot sit beside the input, so a click there would otherwise
+   * be dead; letting the input's own click bubble here instead of handling it
+   * separately keeps a single click from being acted on twice.
+   */
+  /**
+   * Takes the browser's default focus handling off the control row and does it
+   * ourselves. Clicking a row whose input already has focus otherwise leaves the
+   * input focused but no longer accepting text — keydown and beforeinput fire,
+   * the edit never lands. react-select prevents the same default for the same
+   * reason.
+   */
+  private handleControlMouseDown = (ev: MouseEvent) => {
     if (this.isInert() || this.readonly) return;
-    this.setListboxOpen(!this.open);
+    ev.preventDefault();
+    this.triggerEl?.focus();
   };
 
-  /**
-   * The trailing chevron and the leading icon-start slot sit *beside* the
-   * trigger button, not inside it — a click there would otherwise be dead.
-   * Forward any click within the control box that didn't land on the button
-   * itself (the button's own `onClick` stops propagation, so this never
-   * double-fires) to the trigger: focus it and toggle the listbox.
-   */
   private handleControlClick = (ev: MouseEvent) => {
-    const target = ev.target as Node | null;
-    if (target && this.triggerEl && (target === this.triggerEl || this.triggerEl.contains(target))) return;
     // Keep this click from reaching the document listener, which would read it
     // as an outside-click and immediately close what we just opened.
     ev.stopPropagation();
     if (this.isInert() || this.readonly) return;
-    this.triggerEl?.focus();
+
+    if (this.host.shadowRoot?.activeElement !== this.triggerEl) this.triggerEl?.focus();
+    // A searchable field that is already open reads the click as the user
+    // placing the caret in their query, not as a request to close.
+    if (this.searchable && this.open) return;
     this.setListboxOpen(!this.open);
   };
 
-  private selectIndex(index: number) {
+  private handleInput = (ev: Event) => {
+    if (!this.searchable || this.readonly || this.isInert()) return;
+    this.query = (ev.target as HTMLInputElement).value;
+    if (!this.open) this.setListboxOpen(true);
+    // The old highlight indexed the unfiltered list; re-aim it at the new first row.
+    this.highlightedIndex = this.firstEnabledIndex();
+  };
+
+  private selectIndex(index: number, { returnFocus = true }: { returnFocus?: boolean } = {}) {
     const opts = this.resolvedOptions();
     const opt = opts[index];
     if (!opt || opt.disabled) return;
@@ -485,12 +614,46 @@ export class MudSelect {
       this.value = next;
       this.mudChange.emit({ value: next });
     }
-    this.closeListbox();
+    this.query = '';
+    this.setListboxOpen(false, { returnFocus });
+  }
+
+  /**
+   * Jumps the highlight to the first option starting with what was typed — what
+   * a native `<select>` does with the same keystrokes. Only when the control is
+   * not searchable; there, the same keys build a query instead.
+   */
+  private handleTypeahead(key: string) {
+    this.typeaheadBuffer += key;
+    if (this.typeaheadTimer !== undefined) clearTimeout(this.typeaheadTimer);
+    this.typeaheadTimer = setTimeout(() => (this.typeaheadBuffer = ''), TYPEAHEAD_RESET_MS);
+
+    const needle = foldForSearch(this.typeaheadBuffer);
+    const match = this.resolvedOptions().findIndex(opt => !opt.disabled && foldForSearch(opt.label).startsWith(needle));
+    if (match < 0) return;
+
+    this.highlightedIndex = match;
+    if (!this.open) this.openListbox();
+    this.scrollHighlightedIntoView();
+  }
+
+  /** A character the user meant as text, rather than a command. */
+  private isTypeaheadKey(ev: KeyboardEvent): boolean {
+    return ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
   }
 
   private handleTriggerKeyDown = (ev: KeyboardEvent) => {
     if (this.isInert() || this.readonly) return;
     const key = ev.key;
+    // Space continues a type-ahead buffer rather than acting on the list, the
+    // same exception react-select makes for a space inside a query.
+    const spaceIsText = key === ' ' && (this.query.length > 0 || this.typeaheadBuffer.length > 0);
+
+    if (!this.searchable && this.isTypeaheadKey(ev) && (key !== ' ' || spaceIsText)) {
+      ev.preventDefault();
+      this.handleTypeahead(key);
+      return;
+    }
 
     if (!this.open) {
       // Closed: arrows + Enter/Space open the listbox and prime the highlight.
@@ -523,7 +686,12 @@ export class MudSelect {
         this.scrollHighlightedIntoView();
         break;
       case 'Enter':
+        ev.preventDefault();
+        if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex);
+        break;
       case ' ':
+        // With a query underway the space belongs to the text, not to the list.
+        if (spaceIsText) return;
         ev.preventDefault();
         if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex);
         break;
@@ -532,8 +700,10 @@ export class MudSelect {
         this.closeListbox();
         break;
       case 'Tab':
-        // Tab closes the listbox but allows focus to move naturally — no focus
-        // return on close.
+        // Tab commits the highlighted option, which is both react-select's
+        // default and what a native <select> does. Focus moves on naturally, so
+        // no focus return on close.
+        if (this.highlightedIndex >= 0) this.selectIndex(this.highlightedIndex, { returnFocus: false });
         this.setListboxOpen(false, { returnFocus: false });
         break;
     }
@@ -568,6 +738,32 @@ export class MudSelect {
     this.selectIndex(index);
   };
 
+  private renderOption = ({ option, index }: SelectRowOption, iconSize: 20 | 24) => {
+    const isSelected = option.value === this.value;
+    const isHighlighted = index === this.highlightedIndex;
+    return (
+      <div
+        id={`${this.listboxId}-opt-${index}`}
+        class={{
+          'option': true,
+          'is-selected': isSelected,
+          'is-highlighted': isHighlighted && !option.disabled,
+          'is-disabled': Boolean(option.disabled),
+        }}
+        role="option"
+        aria-selected={isSelected ? 'true' : 'false'}
+        aria-disabled={option.disabled ? 'true' : null}
+        data-option-index={index}
+        data-value={option.value}
+        onClick={option.disabled ? undefined : this.handleOptionClick(index)}
+        onMouseEnter={option.disabled ? undefined : this.handleOptionPointerEnter(index)}
+      >
+        <span class="option-label">{option.label}</span>
+        {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={iconSize} /> : null}
+      </div>
+    );
+  };
+
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
@@ -576,8 +772,17 @@ export class MudSelect {
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const opts = this.resolvedOptions();
-    const selected = opts.find(opt => opt.value === this.value);
-    const triggerText = selected?.label ?? this.placeholder ?? '';
+    // From the whole model, not the filtered view: a query that matches nothing
+    // must not make the current selection look as though it had been cleared.
+    const selected = this.entries.filter(isOptionEntry).find(opt => opt.value === this.value);
+    const canType = this.searchable && !this.readonly && !effectivelyDisabled;
+    // Open and searchable, the field is the query box: it starts empty however
+    // full the selection is, so the first keystroke begins a query instead of
+    // being appended to the selected label. The selection steps back to the
+    // placeholder, where it stays readable. Closed, the field is the selection.
+    const showsQuery = canType && this.open;
+    const triggerText = showsQuery ? this.query : (selected?.label ?? '');
+    const placeholderText = showsQuery ? (selected?.label ?? this.placeholder) : this.placeholder;
     const isPlaceholder = !selected;
     const activeDescendantId =
       this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
@@ -616,22 +821,45 @@ export class MudSelect {
         <div class="control-wrapper">
           {/* A click on the non-button chrome (chevron / icon-start) is forwarded
               to the trigger, which stays the keyboard-focusable control. */}
-          <div class="control" part="control" onClick={this.handleControlClick}>
+          <div
+            class="control"
+            part="control"
+            onMouseDown={this.handleControlMouseDown}
+            onClick={this.handleControlClick}
+          >
             <span class="control-icon control-icon-start" aria-hidden={this.hasIconStart ? null : 'true'}>
               <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
             </span>
 
-            <button
+            {/* An input, not a button: ARIA 1.2 names <input role="combobox"> as
+                the pattern, and a filter has to be typed into something. Without
+                `searchable` it is not editable — `readonly` plus
+                `inputmode="none"` keep the caret and the on-screen keyboard
+                away while leaving it focusable and keyboard-operable.
+
+                No `aria-haspopup`: ARIA 1.2 gives `role="combobox"` an implicit
+                `listbox` popup, which is what this one is, and APG's combobox
+                examples leave it off for that reason. Writing it out also costs
+                something — axe's `aria-valid-attr-value` stops resolving
+                `aria-controls` once the attribute is present, since a popup may
+                be built on demand, and reports the reference as needing review. */}
+            <input
               ref={el => (this.triggerEl = el)}
               id={this.triggerId}
-              class="trigger"
+              class={{ 'trigger': true, 'is-placeholder': isPlaceholder && !showsQuery }}
               part="trigger"
-              type="button"
+              type="text"
               role="combobox"
-              aria-haspopup="listbox"
+              autocomplete="off"
+              spellcheck={false}
+              inputmode={canType ? undefined : 'none'}
+              readOnly={!canType}
+              value={triggerText}
+              placeholder={placeholderText}
               aria-expanded={this.open ? 'true' : 'false'}
               aria-controls={this.listboxId}
               aria-activedescendant={activeDescendantId}
+              aria-autocomplete="list"
               aria-label={ariaLabelAttr}
               aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
               aria-describedby={this.describedBy()}
@@ -639,13 +867,11 @@ export class MudSelect {
               aria-required={this.required ? 'true' : null}
               aria-readonly={this.readonly ? 'true' : null}
               disabled={effectivelyDisabled}
-              onClick={this.toggleListbox}
+              onInput={this.handleInput}
               onKeyDown={this.handleTriggerKeyDown}
               onFocus={this.handleTriggerFocus}
               onBlur={this.handleTriggerBlur}
-            >
-              <span class={{ 'trigger-text': true, 'is-placeholder': isPlaceholder }}>{triggerText}</span>
-            </button>
+            />
 
             <span class="control-icon control-icon-end" aria-hidden="true">
               <mud-icon class="chevron" name="chevron-bottom" size={iconSize} />
@@ -659,7 +885,7 @@ export class MudSelect {
             part="listbox"
             role="listbox"
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Options') : undefined}
+            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? this.listboxLabel) : undefined}
             hidden={!this.open}
             style={
               this.listboxMaxBlockSize
@@ -668,32 +894,34 @@ export class MudSelect {
             }
           >
             {opts.length === 0 ? (
-              <div class="listbox-empty" role="presentation">
-                No options
+              // `role="option"`, not `presentation`: a listbox must own at least one
+              // option, and an empty one owning only a presentational node is
+              // invalid (axe `aria-required-children`). `aria-disabled` says it
+              // cannot be chosen, and the keyboard agrees — it walks the option
+              // model, which is empty here, so nothing can land on this row.
+              <div class="listbox-empty" role="option" aria-disabled="true" aria-selected="false">
+                {this.emptyLabel}
               </div>
             ) : (
-              opts.map((opt, index) => {
-                const isSelected = opt.value === this.value;
-                const isHighlighted = index === this.highlightedIndex;
+              toRows(this.visibleEntries()).map((row, rowIndex) => {
+                // `role="presentation"`, not `separator`: ARIA 1.2 lets a listbox own
+                // only `option` and `group`, so a separator child makes the whole
+                // listbox invalid (axe `aria-required-children`). The rule is a
+                // visual grouping cue — the grouping itself is carried by
+                // `role="group"` — so it has nothing to say to a screen reader.
+                if (row.kind === 'separator') return <div class="listbox-separator" role="presentation"></div>;
+                if (row.kind === 'option') return this.renderOption(row, iconSize);
+
+                // `role="group"` needs a name, and the heading is it — a listbox
+                // child with no role of its own would otherwise be announced as
+                // one more option.
+                const headingId = `${this.listboxId}-group-${rowIndex}`;
                 return (
-                  <div
-                    id={`${this.listboxId}-opt-${index}`}
-                    class={{
-                      'option': true,
-                      'is-selected': isSelected,
-                      'is-highlighted': isHighlighted && !opt.disabled,
-                      'is-disabled': Boolean(opt.disabled),
-                    }}
-                    role="option"
-                    aria-selected={isSelected ? 'true' : 'false'}
-                    aria-disabled={opt.disabled ? 'true' : null}
-                    data-option-index={index}
-                    data-value={opt.value}
-                    onClick={opt.disabled ? undefined : this.handleOptionClick(index)}
-                    onMouseEnter={opt.disabled ? undefined : this.handleOptionPointerEnter(index)}
-                  >
-                    <span class="option-label">{opt.label}</span>
-                    {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={iconSize} /> : null}
+                  <div class="option-group" role="group" aria-labelledby={headingId}>
+                    <div class="group-heading" id={headingId} role="presentation">
+                      <span class="group-label">{row.label}</span>
+                    </div>
+                    {row.options.map(item => this.renderOption(item, iconSize))}
                   </div>
                 );
               })

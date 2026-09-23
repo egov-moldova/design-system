@@ -54,6 +54,7 @@
 | `_agents/typescript-strict.md` | All 7 TypeScript strict mode rules + checklist (canonical location) | **When writing `.tsx` or `.stories.ts` files** |
 | `_agents/shadow-dom-patterns.md` | Dual selector pattern for slots with default content | **When writing CSS for components with slot defaults** |
 | `_agents/anti-patterns.md` | All 25 forbidden patterns | **Before writing component code** |
+| `_agents/localization.md` | Every user-facing string is a prop with a Romanian default: what counts as copy, and the violations left in the codebase | **When adding or changing any label, message, `aria-label` or screen-reader text** |
 
 ### Quality Assurance
 
@@ -96,6 +97,7 @@ Claude Code commands, subagents, skills and MCP servers are described in `CLAUDE
 10. **Minimal Builds**: Use `yarn tokens.build` (~5s) or Stencil watch (~2-5s) during dev; full `yarn build` only for final QA
 11. **Change Scope**: A PR touches only files the task required. `yarn format` is repo-wide (`prettier --write .`) — harmless while the repo is Prettier-clean, but if it rewrites files your task never touched, that drift ships as its own `style:` PR, never mixed into yours. Check `git diff --stat main...HEAD` before opening a PR. See `_agents/verification-git.md`.
 12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egov-moldova/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
+13. **Locale-First**: Every user-facing string — label, message, `aria-label`, screen-reader text — is a `@Prop()` with a Romanian (`ro-RO`) default and `@default` in its JSDoc. Never a literal in JSX, never returned from a method, never hidden in a `@State` default: if a consumer cannot pass it in, it is a bug. Full rule: `_agents/localization.md`.
 
 ---
 

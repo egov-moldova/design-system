@@ -1,0 +1,340 @@
+{
+  "component": "mud-segmented-control",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "661:10149",
+        "reason": "Segment Count=3, Breakpoint=Desktop — the count is a Figma authoring convenience, not a design axis: every count repeats the same item at the same padding and gap, which desktop-default pins."
+      },
+      {
+        "node": "661:10158",
+        "reason": "Segment Count=4, Breakpoint=Desktop — same reasoning as the 3-segment variant."
+      },
+      {
+        "node": "663:12299",
+        "reason": "Segment Count=5, Breakpoint=Desktop — same reasoning; five is the documented maximum, not a different design."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "atoms-segmented-control--default",
+    "capture": {
+      "selector": "mud-segmented-control",
+      "bleed": 0,
+      "note": "The host is the track, and the Figma container nodes are the same box (661:10143 exports at 154x52, 4785:15359 at 343x52). No bleed: the selected segment's Drop Shadow/100 falls inside the track's own padding, so Figma's render bounds do not grow either."
+    }
+  },
+  "shared": {
+    "two-labels": [
+      {
+        "target": "mud-segmented-control .track",
+        "styles": {
+          "columnGap": "6px",
+          "backgroundColor": "rgb(241, 241, 241)",
+          "borderTopLeftRadius": "9999px"
+        },
+        "note": "Figma segmented-control 661:10142 — the track is a #F1F1F1 pill with spacing/6 between segments in both breakpoints."
+      },
+      {
+        "target": "mud-segmented-control .segment--selected",
+        "styles": {
+          "backgroundColor": "rgb(30, 30, 30)",
+          "color": "rgb(255, 255, 255)",
+          "fontFamily": "Onest",
+          "fontSize": "14px",
+          "lineHeight": "20px",
+          "fontWeight": "500",
+          "paddingLeft": "16px",
+          "paddingRight": "16px",
+          "columnGap": "6px",
+          "borderTopLeftRadius": "9999px",
+          "boxShadow": "rgba(0, 0, 0, 0.16) 0px 1px 3px 0px, rgba(0, 0, 0, 0.3) 0px 0px 0.5px 0px"
+        },
+        "note": "Figma .segmented-control-item Mode=On 663:10947: #1E1E1E under Desktop/Body/Small 500, padding 0 16, gap 6, and Drop Shadow/100 — which on this component reads 0 1px 3px rgba(0,0,0,.16), 0 0 .5px rgba(0,0,0,.3)."
+      },
+      {
+        "target": "mud-segmented-control .segment:not(.segment--selected)",
+        "styles": {
+          "backgroundColor": "rgb(241, 241, 241)",
+          "color": "rgb(56, 56, 56)",
+          "fontWeight": "400",
+          "fontSize": "14px",
+          "lineHeight": "20px"
+        },
+        "note": "Figma Mode=Off 663:10949 keeps the track's own fill and drops the label to Desktop/Body/Small at #383838."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "desktop-default",
+      "node": "661:10143",
+      "html": "<mud-segmented-control aria-label=\"Filtru\"></mud-segmented-control>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "expect": [
+        {
+          "use": "two-labels"
+        },
+        {
+          "target": "mud-segmented-control .track",
+          "styles": {
+            "padding": "6px"
+          },
+          "note": "Figma Breakpoint=Desktop 661:10143 pads the track with spacing/6."
+        },
+        {
+          "target": "mud-segmented-control .segment",
+          "styles": {
+            "boxHeight": "40px"
+          },
+          "note": "Figma item 663:10959 stands 40px tall on Desktop — the documented minimum click target."
+        }
+      ]
+    },
+    {
+      "name": "mobile-default",
+      "node": "4785:15359",
+      "html": "<div style=\"width:343px\"><mud-segmented-control aria-label=\"Filtru\" fluid></mud-segmented-control></div>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "expect": [
+        {
+          "use": "two-labels"
+        },
+        {
+          "target": "mud-segmented-control .track",
+          "styles": {
+            "padding": "4px",
+            "boxWidth": "343px"
+          },
+          "note": "Figma Breakpoint=Mobile 4785:15359 is 343 wide and pads with spacing/4, which is what makes room for the taller segment inside the same 52px pill."
+        },
+        {
+          "target": "mud-segmented-control .segment",
+          "styles": {
+            "boxHeight": "44px"
+          },
+          "note": "Figma item 4785:15360 grows to 44px on Mobile, and each segment fills its share rather than hugging its label."
+        }
+      ]
+    },
+    {
+      "name": "item-hover",
+      "node": "663:10952",
+      "pixel": false,
+      "html": "<mud-segmented-control aria-label=\"Filtru\"></mud-segmented-control>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "interaction": {
+        "type": "hover",
+        "target": "mud-segmented-control .segment:not(.segment--selected)"
+      },
+      "expect": [
+        {
+          "target": "mud-segmented-control .segment:not(.segment--selected)",
+          "styles": {
+            "backgroundColor": "rgb(217, 217, 217)"
+          },
+          "note": "Figma Mode=Off State=Hover 663:10952 fills #D9D9D9."
+        }
+      ]
+    },
+    {
+      "name": "item-focus-off",
+      "node": "663:10954",
+      "pixel": false,
+      "html": "<mud-segmented-control aria-label=\"Filtru\"></mud-segmented-control>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "interaction": {
+        "type": "focus",
+        "target": "mud-segmented-control .segment:not(.segment--selected)"
+      },
+      "expect": [
+        {
+          "target": "mud-segmented-control .segment:not(.segment--selected)",
+          "styles": {
+            "backgroundColor": "rgb(241, 241, 241)",
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 2px, rgb(51, 121, 219) 0px 0px 0px 5px"
+          },
+          "note": "Figma Focus Ring/Medium reads 0 0 0 5px rgba(51,121,219,1), 0 0 0 2px #FFF. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order — see the stacked-focus-ring note in the pixel-perfect skill."
+        }
+      ]
+    },
+    {
+      "name": "item-focus-on",
+      "node": "663:10956",
+      "pixel": false,
+      "html": "<mud-segmented-control aria-label=\"Filtru\"></mud-segmented-control>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "interaction": {
+        "type": "focus",
+        "target": "mud-segmented-control .segment--selected"
+      },
+      "expect": [
+        {
+          "target": "mud-segmented-control .segment--selected",
+          "styles": {
+            "backgroundColor": "rgb(30, 30, 30)",
+            "boxShadow": "rgba(0, 0, 0, 0.16) 0px 1px 3px 0px, rgba(0, 0, 0, 0.3) 0px 0px 0.5px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(51, 121, 219) 0px 0px 0px 5px"
+          },
+          "note": "Figma Mode=On State=Focus 663:10956 keeps the Drop Shadow/100 lift under the focus ring."
+        }
+      ]
+    },
+    {
+      "name": "item-with-icon",
+      "node": "663:10947",
+      "pixel": false,
+      "html": "<mud-segmented-control aria-label=\"Filtru\"></mud-segmented-control>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Label",
+              "iconName": "cross-small"
+            },
+            {
+              "value": "b",
+              "label": "Label"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-segmented-control .segment--selected",
+          "styles": {
+            "flexDirection": "row",
+            "alignItems": "center",
+            "columnGap": "6px"
+          },
+          "note": "Figma 663:10947 lays the leading icon and the label in a row with spacing/6 — in every variant of 663:10946, at both breakpoints. There is no stacked variant in the design."
+        },
+        {
+          "target": "mud-segmented-control .segment--selected .segment__icon",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma renders the leading icon at 20x20 (the 20/cross-small instance 10473:1447)."
+        }
+      ]
+    },
+    {
+      "name": "edge-truncation",
+      "node": "663:12433",
+      "pixel": false,
+      "pixelNote": "No screenshot diff: the Figma frame and its own note disagree. The note beside 663:12440 asks for the label to \"truncate the text on the first line with an ellipsis\", but the render of 663:12433 shows the first segment stretched across the whole 329px, the second pushed out of the frame and the text cut mid-word with no ellipsis — an auto-layout artifact of the mock, not a design. The component follows the note, so the capture differs from the reference by 34% on purpose. Style parity below still pins the geometry and the truncation.",
+      "html": "<div style=\"inline-size:329px\"><mud-segmented-control aria-label=\"Truncare\"></mud-segmented-control></div>",
+      "props": {
+        "mud-segmented-control": {
+          "segments": [
+            {
+              "value": "a",
+              "label": "Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information."
+            },
+            {
+              "value": "b",
+              "label": "Services, Always at Your Fingertips"
+            }
+          ],
+          "value": "a"
+        }
+      },
+      "expect": [
+        {
+          "use": "two-labels"
+        },
+        {
+          "target": "mud-segmented-control .track",
+          "styles": {
+            "padding": "6px",
+            "boxWidth": "329px"
+          },
+          "note": "Figma Edge Cases 663:12433 constrains the Desktop variant to 329px — not the Mobile one, so the track still pads 6."
+        },
+        {
+          "target": "mud-segmented-control .segment--selected .segment__label-text",
+          "styles": {
+            "overflow": "hidden",
+            "textOverflow": "ellipsis",
+            "whiteSpace": "nowrap"
+          },
+          "note": "A label too long for its segment truncates on the first line with an ellipsis, which is what the Edge Cases note beside 663:12433 asks for. Without this the label used to run over the icon and onto the track."
+        }
+      ]
+    }
+  ]
+}

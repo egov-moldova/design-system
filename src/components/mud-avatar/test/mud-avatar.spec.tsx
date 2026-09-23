@@ -184,6 +184,35 @@ describe('mud-avatar', () => {
       expect(queryPhoto(root)).toBeNull();
       expect(queryIcon(root)).toBeTruthy();
     });
+
+    it('falls back to initials when the image fails to load', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      expect(queryPhoto(root)).toBeTruthy();
+
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+
+      // A portrait that 404s must not leave an empty circle behind.
+      expect(queryPhoto(root)).toBeNull();
+      expect(queryInitials(root)?.textContent).toBe('IP');
+    });
+
+    it('retries the photo when `src` changes after a failure', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+      expect(queryPhoto(root)).toBeNull();
+
+      // A new URL deserves its own attempt; the failure must not be sticky.
+      (root as HTMLMudAvatarElement).src = 'https://example.com/ion.png';
+      await waitForChanges();
+
+      expect(queryPhoto(root)?.getAttribute('src')).toBe('https://example.com/ion.png');
+    });
   });
 
   describe('type="icon" rendering', () => {
@@ -218,6 +247,32 @@ describe('mud-avatar', () => {
       const { root } = await render(
         <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
       );
+      expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
+    });
+
+    it('follows a later `name` change instead of freezing on the first one', async () => {
+      const { root, waitForChanges } = await render(<mud-avatar name="Ion Popescu"></mud-avatar>);
+      expect(root?.getAttribute('aria-label')).toBe('Ion Popescu');
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // The host's own `aria-label` write is read back by whatever names the
+      // host. Treating that echo as the consumer's label pinned the name to
+      // whoever rendered first, so a recycled element announced the wrong
+      // person. `nameHostWithFallback` tells the two apart by provenance.
+      expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
+    });
+
+    it('keeps a consumer `aria-label` across a `name` change', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
+      );
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // Their label is theirs: re-applying the fallback must not overwrite it.
       expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
     });
 

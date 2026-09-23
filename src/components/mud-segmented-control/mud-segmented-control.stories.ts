@@ -7,6 +7,7 @@ type StoryArgs = {
   size: SegmentedControlSize;
   disabled: boolean;
   fluid: boolean;
+  stacked: boolean;
   value: string;
   ariaLabel: string;
 };
@@ -48,6 +49,7 @@ const renderControlHtml = (
     value="${args.value}"
     ${args.disabled ? 'disabled' : ''}
     ${args.fluid ? 'fluid' : ''}
+    ${args.stacked ? 'stacked' : ''}
     aria-label="${args.ariaLabel ?? 'Filtru'}"
   ></mud-segmented-control>
   ${renderControlScript(elId, segments)}
@@ -505,22 +507,90 @@ export const WithIcons: Story = {
   },
 };
 
+export const Stacked: Story = {
+  name: 'Stacked',
+  render: () => {
+    const segments: SegmentedControlSegment[] = [
+      { value: 'cetatean', label: 'Cetățean', iconName: 'bullet-list' },
+      { value: 'afacere', label: 'Afacere', iconName: 'map-pin' },
+      { value: 'institutii', label: 'Instituții', iconName: 'dot-grid' },
+    ];
+    return wrap(
+      [
+        cell(
+          'stacked — 288px (a 320px phone)',
+          /*html*/ `
+            <div style="inline-size: 288px;">
+              ${renderControlHtml('sc-stacked', segments, { value: 'cetatean', stacked: true, fluid: true, ariaLabel: 'Tip (stacked)' })}
+            </div>
+          `,
+        ),
+        cell(
+          'the same row, for comparison',
+          /*html*/ `
+            <div style="inline-size: 288px;">
+              ${renderControlHtml('sc-stacked-row', segments, { value: 'cetatean', fluid: true, ariaLabel: 'Tip (row)' })}
+            </div>
+          `,
+        ),
+      ].join(''),
+    );
+  },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The control stacks by itself when a row will not fit: it measures what the row would need — the widest segment, since the track keeps its columns equal — against the space it has, and moves the icons above the labels only then. Resize the canvas and watch the first cell flip at around 300px.\n\nNot a Figma variant. The design set draws one row at both breakpoints and answers a long label with an ellipsis, which runs out on a narrow phone: three segments with icons need 382px where a 320px device offers 288, and truncating leaves “Ce…”, “Af…”, “Ins…” to choose between. Stacking brings the same three to 258px and keeps every word. The `stacked` attribute pins the layout where a row would still fit. Pending design sign-off.',
+      },
+    },
+  },
+};
+
 export const EdgeCases: Story = {
   name: 'EdgeCases',
   render: () =>
     wrap(
       [
         cell(
-          'long label truncates with ellipsis',
-          renderControlHtml(
-            'sc-ec-truncate',
-            [
-              { value: 'a', label: 'Solicitări recente' },
-              { value: 'b', label: 'Solicitări finalizate' },
-              { value: 'c', label: 'Solicitări în așteptare îndelungată' },
-            ],
-            { value: 'a', ariaLabel: 'Truncare etichetă' },
-          ),
+          'long label truncates with ellipsis (329px, per Figma 663:12433)',
+          // A width, because the control hugs its content: given room, long
+          // labels simply make it wider and nothing truncates. Figma's own edge
+          // case pins 329px around two segments, which is what forces the case.
+          // Not `fluid` — that is the Mobile breakpoint and pads 4; this edge
+          // case is the Desktop variant, constrained.
+          /*html*/ `
+            <div style="inline-size: 329px;">
+              ${renderControlHtml(
+                'sc-ec-truncate',
+                [
+                  {
+                    value: 'a',
+                    label:
+                      'Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.',
+                  },
+                  { value: 'b', label: 'Services, Always at Your Fingertips' },
+                ],
+                { value: 'a', ariaLabel: 'Truncare etichetă' },
+              )}
+            </div>
+          `,
+        ),
+        cell(
+          'long labels, three segments',
+          /*html*/ `
+            <div style="inline-size: 329px;">
+              ${renderControlHtml(
+                'sc-ec-truncate-3',
+                [
+                  { value: 'a', label: 'Solicitări recente' },
+                  { value: 'b', label: 'Solicitări finalizate' },
+                  { value: 'c', label: 'Solicitări în așteptare îndelungată' },
+                ],
+                { value: 'a', ariaLabel: 'Truncare etichetă (3)' },
+              )}
+            </div>
+          `,
         ),
         cell(
           'no selection (uncontrolled start)',
@@ -555,6 +625,10 @@ export const EdgeCases: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          'Figma Edge Cases (663:12428) states the rule this story demonstrates: “Labels for segmented controls should be concise and brief to fit within the available space. Aim to use short labels to ensure readability. However, if a longer label is unavoidable, truncate the text on the first line with an ellipsis.”\n\nTruncation only happens once something constrains the width — the control hugs its content, so given room the long labels simply make it wider. The first two cells sit in the 329px box the design pins, with the labels the design uses.',
+      },
       source: {
         code: `<!-- Long labels truncate with ellipsis. -->
 <mud-segmented-control aria-label="Truncare" value="a"></mud-segmented-control>

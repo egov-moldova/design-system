@@ -1,66 +1,210 @@
 {
   "segmentedControl": {
     "container": {
-      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-      "backgroundDisabled": { "$value": "{color.background.disabled.default}", "$type": "color" },
-      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
-      "padding": { "$value": "{spacing.6}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
-      "transitionDuration": { "$value": "150ms", "$type": "duration" },
-      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+      "background": {
+        "$value": "{color.background.base.tertiary}",
+        "$type": "color"
+      },
+      "backgroundDisabled": {
+        "$value": "{color.background.disabled.default}",
+        "$type": "color"
+      },
+      "borderRadius": {
+        "$value": "{borderRadius.full}",
+        "$type": "dimension"
+      },
+      "padding": {
+        "default": {
+          "$value": "{spacing.6}",
+          "$type": "dimension",
+          "$comment": "Figma segmented-control Breakpoint=Desktop 661:10143 pads the track with spacing/6."
+        },
+        "fluid": {
+          "$value": "{spacing.4}",
+          "$type": "dimension",
+          "$comment": "Figma Breakpoint=Mobile 4785:15359 drops the track padding to spacing/4, which buys the taller segment its room inside the same pill."
+        }
+      },
+      "gap": {
+        "$value": "{spacing.6}",
+        "$type": "dimension"
+      },
+      "transitionDuration": {
+        "$value": "150ms",
+        "$type": "duration"
+      },
+      "transitionTimingFunction": {
+        "$value": "ease-out",
+        "$type": "cubicBezier"
+      }
     },
     "segment": {
       "height": {
-        "md": { "$value": "{spacing.40}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.32}", "$type": "dimension" }
+        "md": {
+          "$value": "{spacing.40}",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "{spacing.32}",
+          "$type": "dimension"
+        },
+        "fluid": {
+          "$value": "44px",
+          "$type": "dimension",
+          "$comment": "Figma Breakpoint=Mobile 4785:15360 sets the segment to 44px — a literal, since the spacing scale steps 40 → 48 and has no 44."
+        },
+        "stacked": {
+          "$value": "56px",
+          "$type": "dimension",
+          "$comment": "Not from Figma: 20px icon + spacing/4 + 20px line box, with spacing/6 above and below. A literal, since the spacing scale has no 56 between 48 and 64."
+        }
       },
-      "minWidth": { "$value": "68px", "$type": "dimension" },
+      "minWidth": {
+        "$value": "68px",
+        "$type": "dimension"
+      },
       "paddingInline": {
-        "md": { "$value": "{spacing.16}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.12}", "$type": "dimension" }
+        "md": {
+          "$value": "{spacing.16}",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "{spacing.12}",
+          "$type": "dimension"
+        },
+        "stacked": {
+          "$value": "{spacing.8}",
+          "$type": "dimension",
+          "$comment": "Not from Figma: the design has no stacked layout. Halving the inline padding is what buys the room — three segments spend 96px on side padding at spacing/16, and the labels themselves need only 167px."
+        }
       },
-      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
+      "gap": {
+        "$value": "{spacing.6}",
+        "$type": "dimension"
+      },
+      "borderRadius": {
+        "$value": "{borderRadius.full}",
+        "$type": "dimension"
+      },
+      "gapStacked": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Not from Figma: vertical distance between the icon and the label when they stack. spacing/4 keeps the pair reading as one unit against the spacing/6 the row uses horizontally."
+      }
     },
     "label": {
-      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontFamily": {
+        "$value": "{fontFamily.primary}",
+        "$type": "fontFamily"
+      },
       "fontSize": {
-        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
-        "sm": { "$value": "{fontSize.14}", "$type": "dimension" }
+        "md": {
+          "$value": "{fontSize.14}",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "{fontSize.14}",
+          "$type": "dimension"
+        }
       },
       "lineHeight": {
-        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
-        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" }
+        "md": {
+          "$value": "{lineHeight.20}",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "{lineHeight.20}",
+          "$type": "dimension"
+        }
       },
-      "fontWeightSelected": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
-      "fontWeightUnselected": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+      "fontWeightSelected": {
+        "$value": "{fontWeight.medium}",
+        "$type": "fontWeight"
+      },
+      "fontWeightUnselected": {
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight"
+      }
     },
     "selected": {
-      "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
-      "backgroundHover": { "$value": "{color.background.base-inverse.default-hover}", "$type": "color" },
-      "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
-      "shadow": { "$value": "0px 0px 0.25px rgba(0, 0, 0, 0.30), 0px 1px 1.5px rgba(0, 0, 0, 0.16)", "$type": "string" }
+      "background": {
+        "$value": "{color.background.base-inverse.default}",
+        "$type": "color"
+      },
+      "backgroundHover": {
+        "$value": "{color.background.base-inverse.default-hover}",
+        "$type": "color"
+      },
+      "color": {
+        "$value": "{color.text.base-inverse.default}",
+        "$type": "color"
+      },
+      "shadow": {
+        "$value": "0px 1px 3px 0px rgba(0, 0, 0, 0.16), 0px 0px 0.5px 0px rgba(0, 0, 0, 0.3)",
+        "$type": "string",
+        "$comment": "Figma Drop Shadow/100 as it resolves on .segmented-control-item 663:10947. Kept as a literal because the repo's `dropShadow.100` primitive holds a different value (0 2px 8px rgba(19,22,29,.06), 0 4px 8px 1px rgba(19,22,29,.04)) — the two disagree, and reconciling the primitive is a design-system decision, not this component's."
+      }
     },
     "unselected": {
-      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-      "backgroundHover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
-      "color": { "$value": "{color.text.base.secondary}", "$type": "color" },
-      "colorHover": { "$value": "{color.text.base.default}", "$type": "color" }
+      "background": {
+        "$value": "{color.background.base.tertiary}",
+        "$type": "color"
+      },
+      "backgroundHover": {
+        "$value": "{color.background.base.tertiary-hover}",
+        "$type": "color"
+      },
+      "color": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
+      },
+      "colorHover": {
+        "$value": "{color.text.base.default}",
+        "$type": "color"
+      }
     },
     "disabled": {
-      "background": { "$value": "{color.background.disabled.default}", "$type": "color" },
-      "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      "background": {
+        "$value": "{color.background.disabled.default}",
+        "$type": "color"
+      },
+      "color": {
+        "$value": "{color.text.disabled.default}",
+        "$type": "color"
+      }
     },
     "separator": {
-      "color": { "$value": "{color.border.base.default}", "$type": "color" },
-      "width": { "$value": "{borderWidth.1}", "$type": "dimension" },
-      "height": { "$value": "{spacing.16}", "$type": "dimension" }
+      "color": {
+        "$value": "{color.border.base.default}",
+        "$type": "color"
+      },
+      "width": {
+        "$value": "{borderWidth.1-5}",
+        "$type": "dimension",
+        "$comment": "Figma Separator 663:11242 strokes 1.5px. It is a painted pseudo-element, not a border, so Chromium renders the half pixel."
+      },
+      "height": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      }
     },
     "focusRing": {
-      "innerWidth": { "$value": "{focusRing.width.inner}", "$type": "dimension" },
-      "outerWidth": { "$value": "{focusRing.width.outer}", "$type": "dimension" },
-      "innerColor": { "$value": "{focusRing.color.inner}", "$type": "color" },
-      "outerColor": { "$value": "{focusRing.color.outer}", "$type": "color" }
+      "innerWidth": {
+        "$value": "{focusRing.width.inner}",
+        "$type": "dimension"
+      },
+      "outerWidth": {
+        "$value": "{focusRing.width.outer}",
+        "$type": "dimension"
+      },
+      "innerColor": {
+        "$value": "{focusRing.color.inner}",
+        "$type": "color"
+      },
+      "outerColor": {
+        "$value": "{focusRing.color.outer}",
+        "$type": "color"
+      }
     }
   }
 }
