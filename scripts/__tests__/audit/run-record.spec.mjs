@@ -6,7 +6,7 @@
  * produces, never a hand-rolled verdict shape of the test's own invention.
  */
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +34,14 @@ function tmp() {
   return dir;
 }
 after(() => tmpRoots.forEach(d => rmSync(d, { recursive: true, force: true })));
+
+/** A run dir as run-all leaves it: `envelope.json` is what makes a directory a run (`listRunNames`). */
+function runDirAt(componentDir, run) {
+  const dir = join(componentDir, 'runs', run);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, 'envelope.json'), '{}');
+  return dir;
+}
 
 /** Build a record straight from an envelope, with no AI legs unless given. */
 function record(envelope, { run = '2026-09-23T10-00-00-000Z-1', aiFiles = [], legs = null } = {}) {
@@ -236,6 +244,22 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.added.length, 0);
   });
 
+  it("an AI leg's decision is scoped to its leg and compares across runs", () => {
+    const leg = 'audit-component';
+    const at = (run, question) =>
+      record(cleanEnvelope({ depth: 'deep' }), {
+        run,
+        aiFiles: [
+          { leg, data: aiFindings(leg, { findings: [{ code: 'CX2', node: '1:2', question, options: ['a'] }] }) },
+        ],
+      });
+    const current = at('r2', 'Trap focus inside the dialog?');
+    assert.ok(current.findings.some(f => f.scope === `leg:${leg}`));
+    const cmp = compareRecords(current, at('r1', 'Should focus be trapped?'));
+    assert.equal(cmp.gone.length, 0);
+    assert.equal(cmp.added.length, 0);
+  });
+
   it('a leg with a shape-rejected finding → Not compared', () => {
     const leg = 'a11y-verifier';
     const bad = [{ leg, data: aiFindings(leg, { findings: [{ code: 'CX1' }] }) }]; // missing severity/message
@@ -245,7 +269,7 @@ describe('run-record: finding identity', () => {
     assert.ok(!current.scopes.includes(`leg:${leg}`));
     const cmp = compareRecords(current, previous);
     const nc = cmp.notCompared.find(n => n.scope === `leg:${leg}`);
-    assert.equal(nc.current, 'wrote a file not compared (1 findings ignored)');
+    assert.equal(nc.current, 'wrote a file not compared (1 finding ignored)');
     assert.equal(nc.previous, 'wrote');
   });
 });
@@ -257,10 +281,10 @@ describe('run-record: baseline robustness', () => {
     const dir = tmp();
     // r1 (older, valid) is the eventual baseline; r2 (newer, empty scopes) is
     // visited first in the newest-to-oldest scan and must be skipped+counted.
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     const good = record(cleanEnvelope(), { run: 'r1' });
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(good));
-    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    runDirAt(dir, 'r2');
     writeFileSync(
       join(dir, 'runs', 'r2', 'record.json'),
       JSON.stringify({
@@ -279,10 +303,10 @@ describe('run-record: baseline robustness', () => {
 
   it('a corrupt newest record → unusable, no fall-through to an older good one', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     const good = record(cleanEnvelope(), { run: 'r1' });
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(good));
-    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    runDirAt(dir, 'r2');
     writeFileSync(join(dir, 'runs', 'r2', 'record.json'), '{ not json');
     const found = findPreviousRecord(dir, 'r3', 'standard');
     assert.ok(found.unusable);
@@ -292,9 +316,9 @@ describe('run-record: baseline robustness', () => {
 
   it('a mis-shaped newest record (missing depth) → unusable, no fall-through', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
-    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    runDirAt(dir, 'r2');
     writeFileSync(
       join(dir, 'runs', 'r2', 'record.json'),
       JSON.stringify({ schemaVersion: RUN_RECORD_SCHEMA_VERSION, scopes: [], rows: [], findings: [] }),
@@ -306,9 +330,9 @@ describe('run-record: baseline robustness', () => {
 
   it('an incompatible schemaVersion major on the newest record → unusable, no fall-through', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
-    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    runDirAt(dir, 'r2');
     const future = { ...record(cleanEnvelope(), { run: 'r2' }), schemaVersion: '2.0.0' };
     writeFileSync(join(dir, 'runs', 'r2', 'record.json'), JSON.stringify(future));
     const found = findPreviousRecord(dir, 'r3', 'standard');
@@ -318,7 +342,7 @@ describe('run-record: baseline robustness', () => {
 
   it('a record at another depth is skipped, not treated as unusable', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     writeFileSync(
       join(dir, 'runs', 'r1', 'record.json'),
       JSON.stringify(record(cleanEnvelope({ depth: 'quick' }), { run: 'r1' })),
@@ -379,8 +403,7 @@ describe('run-record: baseline robustness', () => {
       legs: 'oops',
       findings: [],
     };
-    const legacyDir = join(auditDir, 'mud-fx', 'runs', '2026-09-22T10-00-00-000Z-0');
-    mkdirSync(legacyDir, { recursive: true });
+    const legacyDir = runDirAt(join(auditDir, 'mud-fx'), '2026-09-22T10-00-00-000Z-0');
     writeFileSync(join(legacyDir, 'record.json'), JSON.stringify(legacy));
     const aiDir = join(runA, 'ai', 'a11y-verifier');
     mkdirSync(aiDir, { recursive: true });
@@ -497,9 +520,10 @@ describe('run-record: comparison edge cases', () => {
 
   it('an unreadable newest record (read error) → unusable, no fall-through', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
     // A directory where the file should be: readFileSync fails with EISDIR.
+    runDirAt(dir, 'r2');
     mkdirSync(join(dir, 'runs', 'r2', 'record.json'), { recursive: true });
     const found = findPreviousRecord(dir, 'r3', 'standard');
     assert.equal(found.unusable?.run, 'r2');
@@ -508,21 +532,56 @@ describe('run-record: comparison edge cases', () => {
 
   it('a mis-shaped record at another depth is skipped, not unusable', () => {
     const dir = tmp();
-    mkdirSync(join(dir, 'runs', 'r1'), { recursive: true });
+    runDirAt(dir, 'r1');
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
-    mkdirSync(join(dir, 'runs', 'r2'), { recursive: true });
+    runDirAt(dir, 'r2');
     writeFileSync(join(dir, 'runs', 'r2', 'record.json'), JSON.stringify({ depth: 'quick', scopes: 'oops' }));
     const found = findPreviousRecord(dir, 'r3', 'standard');
     assert.equal(found.record?.run, 'r1');
   });
 
-  it('a runs/ that cannot be listed (not ENOENT) throws, for writeVerdictForRun to render as Not compared', () => {
+  it('findPreviousRecord throws when runs/ cannot be listed (not ENOENT)', () => {
     const auditDir = tmp();
     const runA = writeRunDir(auditDir, cleanEnvelope(), { run: 'r1' });
     // findPreviousRecord lists runs/ under the component dir; make the listing fail.
     const probe = join(runA, 'record-probe');
     writeFileSync(probe, '');
     assert.throws(() => findPreviousRecord(probe, 'r1', 'standard'), { code: 'ENOTDIR' });
+  });
+
+  it(
+    'writeVerdictForRun: an unlistable runs/ renders Not compared, still writes verdict.json, and writes no record.json',
+    { skip: process.getuid?.() === 0 ? 'root ignores directory permissions' : false },
+    () => {
+      const auditDir = tmp();
+      const runA = writeRunDir(auditDir, cleanEnvelope(), { run: 'r1' });
+      const runsDir = dirname(runA);
+      // Execute but no read: the run's own files stay reachable, the listing fails with EACCES.
+      chmodSync(runsDir, 0o311);
+      try {
+        writeVerdictForRun(runA);
+      } finally {
+        chmodSync(runsDir, 0o755);
+      }
+      const brief = readFileSync(join(auditDir, 'mud-fx', 'fix-brief.md'), 'utf8');
+      assert.match(brief, /Not compared: .*EACCES/);
+      assert.ok(existsSync(join(auditDir, 'mud-fx', 'verdict.json')));
+      assert.ok(!existsSync(join(runA, 'record.json')), 'an unproven newest run must not write its record');
+    },
+  );
+
+  it('entries under runs/ that are not runs (a .DS_Store file, a folder with no envelope) are ignored', () => {
+    const auditDir = tmp();
+    const componentDir = join(auditDir, 'mud-fx');
+    mkdirSync(join(componentDir, 'runs', 'notes'), { recursive: true });
+    writeFileSync(join(componentDir, 'runs', '.DS_Store'), '');
+    const runA = writeRunDir(auditDir, cleanEnvelope(), { run: '2026-09-23T10-00-00-000Z-1' });
+    writeVerdictForRun(runA);
+    const brief = readFileSync(join(componentDir, 'fix-brief.md'), 'utf8');
+    assert.match(brief, /nothing to compare/);
+    assert.doesNotMatch(brief, /\.DS_Store|notes/);
+    // `notes` sorts after every run id, yet it is not a newer run: the record is still written.
+    assert.ok(existsSync(join(runA, 'record.json')));
   });
 });
 
@@ -577,7 +636,7 @@ describe('run-record: a settled figma-gate decision', () => {
 describe('run-record: baseline selection', () => {
   it('the newest older same-depth record wins; a run with no record.json is skipped; a newer run is never used', () => {
     const dir = tmp();
-    for (const run of ['r1', 'r2', 'r4']) mkdirSync(join(dir, 'runs', run), { recursive: true });
+    for (const run of ['r1', 'r2', 'r4']) runDirAt(dir, run);
     writeFileSync(join(dir, 'runs', 'r1', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r1' })));
     // r2 has no record.json at all — skipped, not unusable.
     writeFileSync(join(dir, 'runs', 'r4', 'record.json'), JSON.stringify(record(cleanEnvelope(), { run: 'r4' })));
@@ -654,6 +713,31 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
 });
 
 describe('run-record: hostile text cannot add a column, a row or a heading', () => {
+  it("an AI leg's markdown image or link in a finding renders inert in later briefs", () => {
+    const leg = 'a11y-verifier';
+    const message = 'focus lost ![b](https://attacker.example/x.png) [c](javascript:alert(1)) rgb(0, 0, 0)';
+    const current = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r2',
+      aiFiles: [
+        { leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX9', file: 'a.tsx', message }] }) },
+      ],
+    });
+    const previous = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r1',
+      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+    });
+    const section = renderChanges({
+      ...compareRecords(current, previous),
+      skippedEmpty: 0,
+      depth: 'deep',
+      component: 'mud-fx',
+    });
+    assert.match(section, /newly reported: .*CX9/);
+    assert.doesNotMatch(section, /!\[b\]\(/);
+    assert.doesNotMatch(section, /\[c\]\(/);
+    assert.match(section, /rgb\(0, 0, 0\)/);
+  });
+
   it('a pipe, an escaped pipe, a newline and an ESC in a row name stay inside their own cell', () => {
     const changes = {
       baseline: { run: 'r1', headline: 'PASS@standard' },

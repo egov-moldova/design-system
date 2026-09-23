@@ -60,9 +60,15 @@ export function line(value) {
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
   // AI leg's finding could move the cursor and overwrite the real headline.
+  // Markdown link and image openers are broken too: an AI leg's finding text is
+  // kept in record.json and re-rendered in later briefs, and a previewer fetches
+  // `![x](https://…)` the moment the file is opened. `](` and `![` are the only
+  // sequences escaped, so values like `rgb(0, 0, 0)` read unchanged.
   return String(value)
     .replace(/\r\n|\r|\n/g, ' ⏎ ')
-    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�')
+    .replace(/!\[/g, '!\\[')
+    .replace(/\]\(/g, ']\\(');
 }
 
 /**
@@ -298,7 +304,8 @@ export function renderChanges(changes) {
     `Compared with run ${line(changes.baseline.run)}: ${line(changes.baseline.headline)} → ${line(changes.headline)}`,
   );
   if (changes.skippedEmpty > 0) {
-    out.push(`(${changes.skippedEmpty} later runs graded nothing and were skipped)`);
+    const n = changes.skippedEmpty;
+    out.push(`(${n} later ${n === 1 ? 'run' : 'runs'} graded nothing and ${n === 1 ? 'was' : 'were'} skipped)`);
   }
   if (changes.rowChanges.length) {
     out.push(

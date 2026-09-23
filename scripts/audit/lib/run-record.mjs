@@ -13,7 +13,7 @@
  * recomputed verdict (Problem, this plan). Comparing two records is then a
  * pure data operation with no knowledge of verdict-computation rules at all.
  */
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { rowIdOf, rowResults } from './fix-brief.mjs';
 import { RUN_RECORD_SCHEMA_VERSION, SCHEMA_VERSION, STATE, schemaMajor } from './json-output.mjs';
@@ -181,6 +181,28 @@ function recordShapeIssue(record) {
 }
 
 /**
+ * The run directories under `<componentDir>/runs/`, sorted by name. A run is a
+ * directory holding `envelope.json`, which run-all writes before anything else
+ * in it. Anything else there (a Finder `.DS_Store`, a notes folder) is not a
+ * run, and must neither become a baseline nor count as a newer run. No
+ * `runs/` yet → `[]`. Any other listing failure throws for the caller.
+ */
+export function listRunNames(componentDir) {
+  const runsDir = join(componentDir, 'runs');
+  let entries;
+  try {
+    entries = readdirSync(runsDir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
+  return entries
+    .filter(e => e.isDirectory() && existsSync(join(runsDir, e.name, 'envelope.json')))
+    .map(e => e.name)
+    .sort();
+}
+
+/**
  * The previous run's record for `componentDir` at `depth`, searched
  * newest-to-oldest among `runs/*` names strictly less than `currentRun`
  * (string order; run ids are ISO timestamps, so this is chronological). Reads
@@ -189,17 +211,9 @@ function recordShapeIssue(record) {
  * @returns {{ record: object|null, skippedEmpty: number } | { unusable: { run: string, cause: string } }}
  */
 export function findPreviousRecord(componentDir, currentRun, depth) {
-  let names;
-  try {
-    names = readdirSync(join(componentDir, 'runs'));
-  } catch (err) {
-    // No runs/ yet is "no baseline"; any other failure is the caller's to render as Not compared.
-    if (err.code !== 'ENOENT') throw err;
-    names = [];
-  }
-  names = names
+  // A listing failure other than a missing runs/ throws, for the caller to render as Not compared.
+  const names = listRunNames(componentDir)
     .filter(n => n < currentRun)
-    .sort()
     .reverse();
 
   let skippedEmpty = 0;

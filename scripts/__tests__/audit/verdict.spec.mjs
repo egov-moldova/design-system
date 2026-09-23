@@ -261,6 +261,9 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
     assert.equal(v.state, 'PASS');
     assert.equal(v.advisory[0].kind, 'NEEDS-DECISION');
+    // run-record.mjs scopes this decision as `leg:<owner>`; without it the
+    // decision could never be compared between runs.
+    assert.equal(v.advisory[0].owner, 'audit-component');
     assert.doesNotThrow(() => renderFixBrief(v));
   });
 

@@ -53,7 +53,7 @@ import {
   schemaMajor,
 } from './lib/json-output.mjs';
 import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
-import { buildRunRecord, compareRecords, findPreviousRecord } from './lib/run-record.mjs';
+import { buildRunRecord, compareRecords, findPreviousRecord, listRunNames } from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -258,7 +258,7 @@ export function computeLegRecords(aiFiles = []) {
       }
       const badCount = data.findings.filter((f, i) => findingShapeIssue(f, i)).length;
       if (badCount > 0) {
-        return { leg, graded: false, cause: `${badCount} findings ignored` };
+        return { leg, graded: false, cause: `${badCount} ${badCount === 1 ? 'finding' : 'findings'} ignored` };
       }
       return { leg, graded: true, cause: null };
     })
@@ -592,13 +592,17 @@ export function readRunInputs(runDir) {
  * this run is the only one there.
  */
 function isNewestRun(componentDir, run) {
-  let names;
+  // A listing that fails is not proof the run is newest: writing its record
+  // then could overwrite a baseline a later run already compared against, so
+  // the answer fails closed. A missing runs/ is [] (listRunNames), not a failure.
   try {
-    names = readdirSync(join(componentDir, 'runs'));
-  } catch {
-    return true;
+    return listRunNames(componentDir).every(n => n <= run);
+  } catch (err) {
+    process.stderr.write(
+      `${TOOL}: record.json not written for ${run}: runs/ cannot be listed: ${err.code ?? err.message}\n`,
+    );
+    return false;
   }
-  return names.every(n => n <= run);
 }
 
 /**
@@ -641,6 +645,11 @@ export function writeVerdictForRun(runDir) {
     // written: it is valid on its own, and skipping it would leave the same
     // broken baseline in place for every later run.
     changes = { error: err.message ?? String(err) };
+    // The brief carries only the message; stderr carries where it happened,
+    // since exit codes deliberately do not change and nothing else reports it.
+    process.stderr.write(
+      `${TOOL}: changes since the previous run not compared for ${component} ${run}: ${err.stack ?? err}\n`,
+    );
   }
 
   // Render before writing either stable file: a render failure (an entry the
