@@ -1,6 +1,6 @@
 # audit-component — one entry point, callers and references brought in line with Decision 12
 
-**Reviewed:** none
+**Reviewed:** preflight d5b8c47 — two legs, CONFIRM (high) each, zero findings; round closed (`gate-ledger.mjs open` exit 0)
 
 ## Goal
 
@@ -24,8 +24,11 @@ historical table that no run consults. Owner request 2026-09-23 ("recomandarea t
      the skill (no such section: `grep -c "Layer 2" SKILL.md` → 0), calls BX a "mandatory MCP
      browser checklist" (BX1–BX7 are scripted rows that never use the shared MCP browser,
      `references/layer-2-browser-checklists.md:12-14`), and says a failing BX row escalates the
-     verdict to "Block". Its trigger `meta.layer2Required: true` is never emitted
-     (`scripts/audit/run-all.mjs:1083` hard-codes `false`), so the phase is also unreachable.
+     verdict to "Block". Its trigger `meta.layer2Required` is `true` on every local run with a
+     browser (`scripts/audit/run-all.mjs:1192`: `!ci && !noBrowser`; `:1083` is the early-exit
+     envelope), so the phase fires on the common path and pushes the agent onto the shared MCP
+     browser. The envelope field itself is left as is: it is script output other readers may
+     consume, and removing it is outside this plan.
    - `.claude/agents/a11y-verifier.md:191` points at the same non-existent "§BX mandatory
      browser checklist ... with exact MCP call signatures".
    - `.claude/agents/refactor-component.md:14` offers "or follow `audit-component.md` steps
@@ -60,23 +63,15 @@ to `audit-component`.
 Each command runs as written, from the repo root; exit 0 is PASS. B4–B6 were run before the
 change (2026-09-23) and each found the defects named in § Problem, so each discriminates.
 
-- **B1** — command file gone:
-  `test ! -e .claude/commands/audit-component.md`
-- **B2** — caller and doc-check specs pass:
-  `node --test scripts/__tests__/audit/callers.spec.mjs scripts/__tests__/check-ai-docs.spec.mjs`
-- **B3** — doc links and paths resolve:
-  `yarn docs:check`
-- **B4** — no reference to the deleted file:
-  `! git grep -nE 'commands/audit-component\.md|\(audit-component\.md\)|audit-component\.md. steps' -- .claude CLAUDE.md AGENTS.md _agents src/components/AGENTS.md ':!.claude/plans'`
-- **B5** — no stale Layer 2 / MCP-driven BX instruction:
-  `! git grep -nE '§Layer 2|Layer 2 of the|mandatory MCP browser|mandatory browser checklist|layer2Required' -- .claude/agents .claude/skills`
+- **B1** — command file gone: `test ! -e .claude/commands/audit-component.md`
+- **B2** — caller and doc-check specs pass: `node --test scripts/__tests__/audit/callers.spec.mjs scripts/__tests__/check-ai-docs.spec.mjs`
+- **B3** — doc links and paths resolve: `yarn docs:check`
+- **B4** — no reference to the deleted file: `! git grep -nE 'commands/audit-component\.md|\(audit-component\.md\)|audit-component\.md. steps' -- .claude CLAUDE.md AGENTS.md _agents src/components/AGENTS.md ':!.claude/plans'`
+- **B5** — no stale Layer 2 / MCP-driven BX instruction: `! git grep -nE '§Layer 2|Layer 2 of the|mandatory MCP browser|mandatory browser checklist|layer2Required' -- .claude/agents .claude/skills`
 - **B6** — no reference says an AI finding sets FAIL (so the rewrite must not say "never sets
-  `FAIL`" either; phrase it as "does not change the state"):
-  `! git grep -n 'sets .FAIL.' -- .claude/skills/audit-component`
-- **B7** — skill prompt shrinks from 17,149 bytes:
-  `test "$(wc -c < .claude/skills/audit-component/SKILL.md)" -le 12500`
-- **B8** — formatting:
-  `npx prettier --check .claude/skills/audit-component .claude/agents/audit-production.md .claude/agents/a11y-verifier.md .claude/agents/refactor-component.md .claude/commands/migrate-component.md .claude/commands/README.md .claude/skills/LOCAL-SETUP.md CLAUDE.md scripts/__tests__/audit/callers.spec.mjs`
+  `FAIL`" either; phrase it as "does not change the state"): `! git grep -n 'sets .FAIL.' -- .claude/skills/audit-component`
+- **B7** — skill prompt shrinks from 17,149 bytes: `test "$(wc -c < .claude/skills/audit-component/SKILL.md)" -le 12500`
+- **B8** — formatting: `npx prettier --check .claude/skills/audit-component .claude/agents/audit-production.md .claude/agents/a11y-verifier.md .claude/agents/refactor-component.md .claude/commands/migrate-component.md .claude/commands/README.md .claude/skills/LOCAL-SETUP.md CLAUDE.md scripts/__tests__/audit/callers.spec.mjs`
 - **B9** — the new absence test is live: recreate `.claude/commands/audit-component.md` with any
   content, run B2's command and see it exit non-zero naming the new test; delete the file and
   run B2 again (exit 0). Record both exits in the report.
@@ -148,6 +143,10 @@ change (2026-09-23) and each found the defects named in § Problem, so each disc
    - `LOCAL-SETUP.md:83` and `CLAUDE.md:18`: the skill *is* `/audit-component` and runs the
      script-computed audit; drop "wraps the slash command logic" / "3-wave".
 6. Run B1–B9. Commit the named paths.
+
+## reuse-candidates: check-migration-map.md
+
+- `references/check-migration-map.md` — homes swept: `.claude/skills/audit-component/references/` (3 files), `scripts/audit/CLEANUP.md`, `scripts/audit/README.md`. Candidate: `wave-2-static-analysis.md`; match tier: topic-adjacent (static judgment rules, not a migration record). Verdict: create — the table is history keyed by old check number, and appending it to a file loaded "when judging a component's source" would re-add the cost this plan removes.
 
 ## Self-refute log
 
