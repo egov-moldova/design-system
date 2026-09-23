@@ -9,6 +9,7 @@ only `cor-tooltip` imported, are deleted. None of it was built, tested, linted o
 `cor-illustration`'s `assetsDirs` copied 36 SVGs into `dist/collection/legacy/`, which the
 package published.
 
-**Migration:** none for `mud-*` consumers. Anything that loaded a file from
-`dist/collection/legacy/` directly loses it. The sources stay in history at `328b233`:
+**Migration:** none. The package's `exports` map never exposed `dist/collection/`, so no
+package import could reach those SVGs; only a copy that read the installed files by path loses
+them. The sources stay in history at `328b233`:
 `git show 328b233:<path>`.
