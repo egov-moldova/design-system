@@ -52,7 +52,7 @@ import {
   VERDICT_SCHEMA_VERSION,
   schemaMajor,
 } from './lib/json-output.mjs';
-import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
+import { REPORT_END, line, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
 import { buildRunRecord, compareRecords, findPreviousRecord, listRunNames } from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
@@ -135,15 +135,6 @@ function verifyCommand(component, depth, id) {
   return `node scripts/audit/run-all.mjs ${component} --depth ${depth} --only ${id} --json`;
 }
 
-/**
- * Re-renders a run with the advisory findings a leg wrote after it. Names the
- * component, never the run path, so the string is both executable as written
- * and identical across runs — `--rerender` looks the run up in summary.json.
- */
-function rerenderCommand(component) {
-  return `yarn audit:component --rerender ${component}`;
-}
-
 function freshRunCommand(component, depth) {
   return `yarn audit:component ${component} --depth ${depth}`;
 }
@@ -190,8 +181,12 @@ function failEntry({ f, check, component, source, verify, owner }) {
   // key needs the finding's own message, never `actual` — for 15-style-parity
   // `actual` is the bare rendered value and every finding sits on the manifest
   // file, so only `message` carries `state › target › prop` (Design §3).
-  // `renderEntry` prints only `BRIEF_FIELDS`, so the brief is unchanged.
-  if (f.message !== undefined) entry.message = mapManifestPath(String(f.message), component);
+  // `renderEntry` prints only `BRIEF_FIELDS`, so the brief is unchanged. Only
+  // when `actual` came from elsewhere: otherwise `actual` already IS the
+  // message, and the identity key falls back to it.
+  if (f.message !== undefined && f.actual !== undefined) {
+    entry.message = mapManifestPath(String(f.message), component);
+  }
   return entry;
 }
 
@@ -622,10 +617,11 @@ export function writeVerdictForRun(runDir) {
   const { envelope, aiFiles } = readRunInputs(absRun);
   const verdict = computeVerdict({ envelope, aiFiles, component });
 
-  // Building the record, finding the baseline and comparing all run inside
-  // one try: a throw from any of them — including a readdir/read failure
-  // under runs/ — must never block verdict.json or the rest of the brief, and
-  // renders as `Not compared: <cause>` instead (Design §7).
+  // Building the record, finding the baseline, comparing AND rendering the
+  // Changes section all run inside one try: a throw from any of them — a
+  // readdir/read failure under runs/, or a baseline record.json whose values
+  // the renderer cannot shape — must never block verdict.json or the rest of
+  // the brief, and renders as `Not compared: <cause>` instead (Design §7).
   let record = null;
   let changes = null;
   try {
@@ -635,11 +631,14 @@ export function writeVerdictForRun(runDir) {
     changes = found.unusable
       ? { unusable: found.unusable, depth: verdict.depth, component: verdict.component }
       : {
-          ...compareRecords(record, found.record),
+          // The header names the directory the baseline was found in, not the
+          // `run` the file claims: a copied or hand-edited record could lie.
+          ...compareRecords(record, found.record && { ...found.record, run: found.run }),
           skippedEmpty: found.skippedEmpty,
           depth: verdict.depth,
           component: verdict.component,
         };
+    renderChanges(changes);
   } catch (err) {
     // A record that built before the lookup or comparison threw is still
     // written: it is valid on its own, and skipping it would leave the same

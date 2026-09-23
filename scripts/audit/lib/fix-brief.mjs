@@ -60,15 +60,18 @@ export function line(value) {
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
   // AI leg's finding could move the cursor and overwrite the real headline.
-  // Markdown link and image openers are broken too: an AI leg's finding text is
-  // kept in record.json and re-rendered in later briefs, and a previewer fetches
-  // `![x](https://…)` the moment the file is opened. `](` and `![` are the only
-  // sequences escaped, so values like `rgb(0, 0, 0)` read unchanged.
+  // Markdown links, images and raw HTML are made inert too: an AI leg's finding
+  // text is kept in record.json and re-rendered in later briefs, and a
+  // previewer fetches `![x](https://…)` or `<img src=…>` the moment the file is
+  // opened, while `<!--` hides everything after it. Only `![`, `](` and a `<`
+  // that opens a tag or comment are escaped, so values like `rgb(0, 0, 0)` or
+  // `a < b` read unchanged.
   return String(value)
     .replace(/\r\n|\r|\n/g, ' ⏎ ')
     .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�')
     .replace(/!\[/g, '!\\[')
-    .replace(/\]\(/g, ']\\(');
+    .replace(/\]\(/g, ']\\(')
+    .replace(/<(?=[A-Za-z!/?])/g, '\\<');
 }
 
 /**
@@ -100,6 +103,17 @@ export function renderEntry(entry) {
     }
   }
   return `${lines.join('\n')}\n`;
+}
+
+/**
+ * Re-renders a run with the advisory findings a leg wrote after it. Names the
+ * component, never the run path, so the string is both executable as written
+ * and identical across runs — `--rerender` looks the run up in summary.json.
+ * One home for the command: entry `verify:` lines (verdict.mjs) and the
+ * Changes section both use it.
+ */
+export function rerenderCommand(component) {
+  return `yarn audit:component --rerender ${component}`;
 }
 
 /** Closes the report block — the part `printSummary` prints and the skill pastes inline. */
@@ -281,6 +295,7 @@ function validateChanges(changes) {
  * Every interpolation goes through `line()` / `cell()`. Pure.
  */
 export function renderChanges(changes) {
+  validateChanges(changes);
   const out = ['## Changes since the previous run', ''];
   if ('error' in changes) {
     out.push(`Not compared: ${line(changes.error)}`);
@@ -289,7 +304,7 @@ export function renderChanges(changes) {
   if (changes.baseline === null) {
     out.push(
       changes.skippedEmpty > 0
-        ? `No earlier run at ${line(changes.depth)} left a record that graded anything under audit/${line(changes.component)}/runs/ (${changes.skippedEmpty} graded nothing and were skipped) — nothing to compare.`
+        ? `No earlier run at ${line(changes.depth)} left a record that graded anything under audit/${line(changes.component)}/runs/ (${changes.skippedEmpty} graded nothing and ${changes.skippedEmpty === 1 ? 'was' : 'were'} skipped) — nothing to compare.`
         : `No earlier run at ${line(changes.depth)} left a record under audit/${line(changes.component)}/runs/ — nothing to compare.`,
     );
     return out.join('\n');
@@ -325,9 +340,12 @@ export function renderChanges(changes) {
       'Not compared:',
       '',
       ...changes.notCompared.map(n => {
-        const rerender = n.scope.startsWith('leg:')
-          ? ` (\`yarn audit:component --rerender ${line(changes.component)}\`)`
-          : '';
+        // Re-rendering helps only when this run's leg has not written yet; a
+        // malformed file needs the leg re-dispatched, which a re-render cannot do.
+        const rerender =
+          n.scope.startsWith('leg:') && n.current === 'did not write'
+            ? ` (\`${rerenderCommand(line(changes.component))}\`)`
+            : '';
         return `- ${line(n.scope)} — previous: ${line(n.previous)}, now: ${line(n.current)}${rerender}`;
       }),
     );
@@ -358,7 +376,6 @@ export function renderChanges(changes) {
  * Design §6. Pure — exported for tests.
  */
 export function renderFixBrief(verdict, changes = null) {
-  if (changes !== null) validateChanges(changes);
   const c = verdict.component;
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,

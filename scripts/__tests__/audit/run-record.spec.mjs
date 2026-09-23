@@ -710,6 +710,30 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
       assert.doesNotMatch(withoutQuoted, FORBIDDEN, section);
     }
   });
+
+  it('the no-baseline, unusable, error and Not compared wordings never use "fixed" or "resolved"', () => {
+    const base = { depth: 'deep', component: 'mud-fx' };
+    const leg = 'a11y-verifier';
+    const withLeg = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r1',
+      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+    });
+    const sections = [
+      renderChanges({ baseline: null, skippedEmpty: 0, ...base }),
+      renderChanges({ baseline: null, skippedEmpty: 1, ...base }),
+      renderChanges({ unusable: { run: 'r1', cause: 'x' }, ...base }),
+      renderChanges({ error: 'x' }),
+      renderChanges({
+        ...compareRecords(record(cleanEnvelope({ depth: 'deep' }), { run: 'r2' }), withLeg),
+        skippedEmpty: 1,
+        ...base,
+      }),
+    ];
+    for (const section of sections) {
+      assert.doesNotMatch(sectionWithoutQuotedText(section, ['PASS@deep']), FORBIDDEN, section);
+    }
+    assert.match(sections[1], /1 graded nothing and was skipped/);
+  });
 });
 
 describe('run-record: hostile text cannot add a column, a row or a heading', () => {
@@ -755,8 +779,7 @@ describe('run-record: hostile text cannot add a column, a row or a heading', () 
     };
     const section = renderChanges(changes);
     const tableLines = section.split('\n').filter(l => l.startsWith('|'));
-    for (const l of tableLines)
-      assert.equal(l.match(/(?<!\\)\|/g)?.length ?? 0, l === tableLines[0] || l === tableLines[1] ? 5 : 5);
+    for (const l of tableLines) assert.equal(l.match(/(?<!\\)\|/g)?.length ?? 0, 5);
     assert.equal((section.match(/^### /gm) || []).length, 0);
     assert.equal((section.match(/^## /gm) || []).length, 1);
   });
@@ -792,5 +815,98 @@ describe('run-record: purity and determinism', () => {
     const recordSecond = readFileSync(join(runB, 'record.json'));
     assert.ok(briefFirst.equals(briefSecond));
     assert.ok(recordFirst.equals(recordSecond));
+  });
+});
+
+// ─── Sentinel round on PR #140 ──────────────────────────────────────────────
+
+describe('run-record: a baseline the renderer cannot shape never blocks the verdict', () => {
+  for (const [what, mutate] of [
+    ['no headline', r => delete r.headline],
+    ['a numeric row result', r => (r.rows[0].result = 7)],
+  ]) {
+    it(`a record.json with ${what} → Not compared, verdict.json written, this run's record written`, () => {
+      const auditDir = tmp();
+      const componentDir = join(auditDir, 'mud-fx');
+      const bad = record(withError(cleanEnvelope(), '02'), { run: '2026-09-22T10-00-00-000Z-0' });
+      mutate(bad);
+      writeFileSync(join(runDirAt(componentDir, '2026-09-22T10-00-00-000Z-0'), 'record.json'), JSON.stringify(bad));
+      const runB = writeRunDir(auditDir, cleanEnvelope(), { run: '2026-09-23T10-00-00-000Z-1' });
+      writeVerdictForRun(runB);
+      assert.match(readFileSync(join(componentDir, 'fix-brief.md'), 'utf8'), /Not compared: /);
+      assert.ok(existsSync(join(componentDir, 'verdict.json')));
+      // This run's own record supersedes the bad one as the next baseline.
+      assert.ok(existsSync(join(runB, 'record.json')));
+    });
+  }
+});
+
+describe('run-record: what the section names', () => {
+  it('a row skipped now keeps the check name the other run recorded', () => {
+    const previous = record(cleanEnvelope(), { run: 'r1' });
+    const e = cleanEnvelope({ filters: { only: [], skip: ['02'] } });
+    e.results = e.results.filter(r => r.id !== '02');
+    const cmp = compareRecords(record(e, { run: 'r2' }), previous);
+    const change = cmp.rowChanges.find(r => r.id === '02');
+    assert.equal(change.name, 'check-02');
+    assert.equal(change.current, 'skipped');
+  });
+
+  it('a well-formed leg in a run that graded nothing reads "wrote, but that run graded nothing"', () => {
+    const leg = 'a11y-verifier';
+    const files = [{ leg, data: aiFindings(leg, { findings: [] }) }];
+    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', aiFiles: files });
+    const broken = cleanEnvelope({ depth: 'deep' });
+    broken.preflight = { ok: false, cause: 'no dist', command: 'yarn build' };
+    const current = record(broken, { run: 'r2', aiFiles: files });
+    const nc = compareRecords(current, previous).notCompared.find(n => n.scope === `leg:${leg}`);
+    assert.equal(nc.current, 'wrote, but that run graded nothing');
+  });
+
+  it('the header names the directory the baseline was found in, not the run the file claims', () => {
+    const auditDir = tmp();
+    const componentDir = join(auditDir, 'mud-fx');
+    const kept = record(cleanEnvelope(), { run: 'some-other-name' });
+    writeFileSync(join(runDirAt(componentDir, '2026-09-22T10-00-00-000Z-0'), 'record.json'), JSON.stringify(kept));
+    writeVerdictForRun(writeRunDir(auditDir, cleanEnvelope(), { run: '2026-09-23T10-00-00-000Z-1' }));
+    const brief = readFileSync(join(componentDir, 'fix-brief.md'), 'utf8');
+    assert.match(brief, /Compared with run 2026-09-22T10-00-00-000Z-0:/);
+    assert.doesNotMatch(brief, /some-other-name/);
+  });
+
+  it('the re-render hint appears only when this run has not written the leg yet', () => {
+    const leg = 'a11y-verifier';
+    const wrote = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r1',
+      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+    });
+    const none = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2' });
+    const base = { skippedEmpty: 0, depth: 'deep', component: 'mud-fx' };
+    assert.match(renderChanges({ ...compareRecords(none, wrote), ...base }), /--rerender mud-fx/);
+    assert.doesNotMatch(renderChanges({ ...compareRecords(wrote, none), ...base }), /--rerender/);
+  });
+
+  it('raw HTML in a finding (an <img>, an HTML comment) renders inert', () => {
+    const leg = 'a11y-verifier';
+    const message = 'x <img src="https://attacker.example/p.png"> <!-- hide --> a < b';
+    const current = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r2',
+      aiFiles: [
+        { leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX8', file: 'a.tsx', message }] }) },
+      ],
+    });
+    const previous = record(cleanEnvelope({ depth: 'deep' }), {
+      run: 'r1',
+      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+    });
+    const section = renderChanges({
+      ...compareRecords(current, previous),
+      skippedEmpty: 0,
+      depth: 'deep',
+      component: 'mud-fx',
+    });
+    assert.doesNotMatch(section, /(?<!\\)<img/);
+    assert.doesNotMatch(section, /(?<!\\)<!--/);
+    assert.match(section, /a < b/);
   });
 });

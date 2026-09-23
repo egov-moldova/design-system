@@ -384,7 +384,11 @@ previous run` section inside the report block (`fix-brief.md`, before
 - No earlier record at this depth (a fresh component, or the first run after
   this feature shipped) → "nothing to compare". The newest earlier record
   unreadable or at a different schema major → "Not compared", and the search
-  never falls through to an older one.
+  never falls through to an older one. A run is a `runs/` directory holding
+  `envelope.json`; anything else there (a `.DS_Store`, a notes folder) is
+  ignored. Any failure while comparing or rendering this section, including a
+  baseline whose values the renderer cannot shape, reads "Not compared:
+  <cause>" (also on stderr) and never blocks `verdict.json`.
 - Otherwise: the two headlines, a table of every row whose result changed
   (`—` on the side that did not run it), a "Not compared" list for scopes
   graded in only one run, and finding counts — newly reported, no longer
@@ -405,7 +409,10 @@ previous run` section inside the report block (`fix-brief.md`, before
   finding label is a check's or an AI leg's text and may contain either
   word, but it always sits after a fixed status prefix ("newly reported:",
   "no longer reported:", …), so the claim is the renderer's, never the
-  finding's.
+  finding's. Finding text is kept in `record.json` and re-rendered later, so
+  every rendered value has markdown image/link openers (`![`, `](`) and
+  HTML tag or comment openers (`<` before a letter, `!`, `/`, `?`)
+  backslash-escaped: a previewer never fetches a URL a finding carried.
 - Nothing prunes `runs/`; `record.json` adds one small file per run beside
   the existing `envelope.json` and `ai/`. Deleting `audit/<component>/runs/`
   (already safe, above) also resets this comparison — the next run then

@@ -208,7 +208,7 @@ export function listRunNames(componentDir) {
  * (string order; run ids are ISO timestamps, so this is chronological). Reads
  * files and writes none; its skip / unusable / baseline rules are Design §4.
  *
- * @returns {{ record: object|null, skippedEmpty: number } | { unusable: { run: string, cause: string } }}
+ * @returns {{ record: object|null, run: string|null, skippedEmpty: number } | { unusable: { run: string, cause: string } }}
  */
 export function findPreviousRecord(componentDir, currentRun, depth) {
   // A listing failure other than a missing runs/ throws, for the caller to render as Not compared.
@@ -241,9 +241,9 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
       skippedEmpty++;
       continue;
     }
-    return { record, skippedEmpty };
+    return { record, run: name, skippedEmpty };
   }
-  return { record: null, skippedEmpty };
+  return { record: null, run: null, skippedEmpty };
 }
 
 // ─── The comparison (Design §5) ────────────────────────────────────────────
@@ -255,7 +255,10 @@ function describeScope(scope, present, record, rowsMap) {
     if (present) return 'wrote';
     const leg = scope.slice('leg:'.length);
     const entry = (record.legs ?? []).find(l => l.leg === leg);
-    return entry ? `wrote a file not compared (${entry.cause})` : 'did not write';
+    if (!entry) return 'did not write';
+    // A leg graded on its own (no cause) that still lacks the scope means the
+    // run itself graded nothing (an unreadable envelope, a failed preflight).
+    return entry.cause ? `wrote a file not compared (${entry.cause})` : 'wrote, but that run graded nothing';
   }
   if (scope.startsWith('row:')) {
     const row = rowsMap.get(scope.slice('row:'.length));
@@ -308,7 +311,8 @@ export function compareRecords(current, previous) {
     const curResult = c ? c.result : '—';
     const prevResult = p ? p.result : '—';
     if (curResult !== prevResult) {
-      rowChanges.push({ id, name: (c ?? p)?.name ?? null, previous: prevResult, current: curResult });
+      // A row skipped or excused now carries `name: null`; the other run's name still says which check.
+      rowChanges.push({ id, name: c?.name ?? p?.name ?? null, previous: prevResult, current: curResult });
     }
   }
 
