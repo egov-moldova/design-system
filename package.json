@@ -93,6 +93,8 @@
     "test:scripts": "wireit",
     "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
+    "changelog.check": "node scripts/changelog-release.mjs --check",
+    "changelog.release": "node scripts/changelog-release.mjs",
     "check": "wireit",
     "check.ci": "wireit",
     "check.verify": "wireit",
