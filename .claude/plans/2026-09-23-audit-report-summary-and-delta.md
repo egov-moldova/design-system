@@ -27,7 +27,7 @@ what changed since the previous run of the same depth.
    `excuse`/`deferred`/`note`), and an index table of every entry and advisory item
    (`ID | Kind | Check | Where | Actual | Owner`). Cell values go through `line()` plus `|` escaping.
 2. **Changes since the previous run.** New pure module `scripts/audit/lib/run-delta.mjs`:
-   - `findBaselineRun(runsDir, currentRun, depth)` — newest sibling run whose name sorts before the
+   - `findBaselineRun(runDir, envelope)` — newest sibling run whose name sorts before the
      current one (names are ISO timestamps + pid, lexically ordered), with a readable
      `envelope.json`, the same `audit.depth`, no `--only`/`--skip` filters, `preflight.ok !== false`
      and a non-empty `results[]` (an aborted run is never a baseline — preflight finding 1). A
@@ -35,7 +35,7 @@ what changed since the previous run of the same depth.
    - The baseline verdict is recomputed with today's `computeVerdict` from that run's inputs
      (`readRunInputs`) — no extra state file, and `--rerender` of the same run finds the same
      baseline, so the section is stable across re-renders.
-   - `diffVerdicts(prev, cur)` → state change, rows whose Result/E/W changed, and entries keyed by a
+   - `diffVerdicts(prev, cur, { run, compareAdvisory })` → state change, rows whose Result/E/W changed, and entries keyed by a
      stable identity (FAIL: kind·check·code·location; INCOMPLETE: kind·check·cause; NEEDS-DECISION:
      kind·node·question, advisory or not; advisory FAIL: kind·check·code only — an AI leg's
      location and wording vary between dispatches, preflight finding 2; `#n` suffix on duplicate
@@ -80,7 +80,8 @@ Tolerances: none numeric — the output is deterministic.
 
 1. `lib/fix-brief.mjs`: `renderSummary`, table escaping, report block with end marker, optional
    `changes` argument to `renderFixBrief`.
-2. `lib/run-delta.mjs`: `findBaselineRun`, `diffVerdicts`, `renderChanges`.
+2. `lib/run-delta.mjs`: `findBaselineRun`, `diffVerdicts`; `renderChanges` lives in `fix-brief.mjs`
+   beside the other renderers.
 3. `verdict.mjs`: `writeVerdictForRun` computes the delta and passes it; `printSummary` prints the
    report block in text mode.
 4. Specs: one new `run-delta.spec.mjs` for the whole report block — summary coverage, escaping,
@@ -100,6 +101,16 @@ drifts.
 
 FORTIFY (med): one finding, test placement — resolved by updating Task 4 above. A first verify pass
 (ungraded) found advisory NEEDS-DECISION entries keyed on node only; fixed in `entryKey` with a spec.
+
+## Sentinel round 1 (2026-09-23, range c8fb93b..7cfda57)
+
+REQUEST-CHANGES. `/code-review xhigh` reproduced false "Resolved" claims: an aborted current run,
+a row excused or crashed this run, advisory items before this run's legs wrote, and a moved line.
+The errors lens flagged a swallowed baseline-recompute exception. All fixed with a spec each:
+the current run must be comparable, a not-run row's findings are "not re-checked", advisory is
+compared only once legs wrote, FAIL identity drops the line, per-row counts show, a baseline row
+missing entirely reads absent, the recompute error is named, the end marker is matched as a whole
+line, and control characters are neutralised. Deferred and report-only rows now read as such.
 
 ## Not verified
 

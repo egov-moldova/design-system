@@ -388,6 +388,18 @@ describe('callers: Decision 12 — deep runs the gate once; AI legs are advisory
     });
   }
 
+  // The skill is the one /audit-component entry point since its command file
+  // was deleted, so it carries the gate-caller contract that file did. "Ready
+  // to merge" is left out on purpose: the skill's history section quotes it as
+  // the failure the scripted verdict removed.
+  it(`${SKILL} runs the gate once and carries no old criteria`, () => {
+    assert.equal(freshGateLines(SKILL).length, 1, freshGateLines(SKILL).join('\n'));
+    const text = readFile(SKILL);
+    for (const token of ['summary.errors', PASS_FAIL_WARN_HEADER]) {
+      assert.ok(!text.includes(token), `${SKILL}: still contains deny-listed token "${token}"`);
+    }
+  });
+
   for (const rel of DEEP_CALLERS) {
     it(`${rel} runs the gate exactly once`, () => {
       assert.equal(freshGateLines(rel).length, 1, freshGateLines(rel).join('\n'));

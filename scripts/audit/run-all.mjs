@@ -1088,14 +1088,15 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
 /**
  * Merge per-script results into a single envelope. Pure — exported for tests.
  *
- * `ci` and `noBrowser` drive two meta fields that the audit-component skill
- * reads to decide whether to execute Layer 2 (MCP browser checks):
+ * `ci` and `noBrowser` drive two meta fields kept as script-output signal;
+ * no `.claude/` file reads either since the BX rows became scripted verdict
+ * rows (`grep -rn layer2Required .claude` → no hits):
  *
  *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
  *                          at the time of invocation. Surfaces to CI dashboards
  *                          so misconfigured runners are visible.
  *   meta.layer2Required  — true ONLY in interactive local runs (no CI, no
- *                          --no-browser). SKILL.md §BX gates on this flag.
+ *                          --no-browser).
  */
 export function aggregate({
   targetArg,

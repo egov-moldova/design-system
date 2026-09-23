@@ -189,11 +189,10 @@ This is where the agent's value lands. For each script finding, decide:
 - Use `mcp__playwright__browser_press_key({ key: "Tab" })` + `browser_evaluate`
   to verify Tab order is logical. Script cannot judge "logical for user workflow".
 - **Scripted, not judged here**: BX1–BX7 (focusability, focus-visible, Escape, …) are scripted verdict rows — see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md) §BX. This agent judges only what those scripts cannot: whether the Tab order is logical, whether Shift+Tab walks back, and UI / focus-ring contrast (SC 1.4.11).
-- Confirm `:focus-visible` styles render — script reports the computed
-  `outlineWidth` / `outlineStyle` / `outlineColor`; if any is `none` / `0px` /
-  `transparent`, that's a focus-ring gap.
-- Test interaction keys (Enter, Space, Escape, Arrow) only for composite
-  widgets (tabs, select, radio group, menu).
+- Read the focus ring's contrast from the script's computed `outlineColor`
+  against the background (SC 1.4.11) — whether it renders at all is BX3's row.
+- Arrow-key movement inside composite widgets (tabs, select, radio group,
+  menu) only; Enter, Space and Escape are BX rows.
 
 **Reduced motion**:
 

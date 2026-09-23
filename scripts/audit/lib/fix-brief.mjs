@@ -58,7 +58,12 @@ function present(value) {
  */
 function line(value) {
   if (value === '') return '(empty)';
-  return String(value).replace(/\r\n|\r|\n/g, ' ⏎ ');
+  // Control characters are neutralised too: this text reaches a terminal
+  // (printSummary), where an ESC sequence from a story's console message or an
+  // AI leg's finding could move the cursor and overwrite the real headline.
+  return String(value)
+    .replace(/\r\n|\r|\n/g, ' ⏎ ')
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
 }
 
 /**
@@ -102,15 +107,18 @@ function cell(value) {
 }
 
 /** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
-function rowIdOf(check) {
+export function rowIdOf(check) {
   return String(check ?? '').split(' ')[0];
 }
 
 /**
- * Each row's result, derived from the verdict itself — never from the script's
- * own counts — so the table can never disagree with the entries below it:
- * `excused` · a non-ok status (`crashed`, `missing-prereq`, `skipped`) ·
- * `incomplete` · `fail` · `warn` · `deferred` · `pass`, first match wins.
+ * Each row's result, derived from the verdict itself so the table can never
+ * disagree with the entries below it: `excused` · `deferred` (run-all emits a
+ * deferred row as `skipped`, which must not read as a required check that did
+ * not run) · a non-ok status (`crashed`, `missing-prereq`, `skipped`) ·
+ * `incomplete` · `fail` · `warn` · `report-only (<n> errors)` — a
+ * `blocking: false` row whose errors never become FAIL entries, taken from the
+ * row's own count so they are not hidden — · `pass`, first match wins.
  * `fails` / `warns` count this row's FAIL entries and warnings. Pure.
  *
  * @returns {Map<string, { result: string, fails: number, warns: number }>}
@@ -134,11 +142,12 @@ export function rowResults(verdict) {
     const w = warns.get(r.id) ?? 0;
     let result = 'pass';
     if (r.excuse) result = 'excused';
+    else if (r.deferred) result = 'deferred';
     else if (r.status !== ROW_STATUS.OK) result = r.status;
     else if (incomplete.get(r.id)) result = 'incomplete';
     else if (f) result = 'fail';
     else if (w) result = 'warn';
-    else if (r.deferred) result = 'deferred';
+    else if (r.errors) result = `report-only (${r.errors} errors)`;
     out.set(r.id, { result, fails: f, warns: w });
   }
   return out;
@@ -208,9 +217,10 @@ export function renderChanges(changes) {
       ? `State: unchanged — ${cell(changes.state.to)}`
       : `State: ${cell(changes.state.from)} → ${cell(changes.state.to)}`,
   );
-  const { rows, resolved, added, changed, warnings } = changes;
+  const { rows, resolved, unchecked, added, changed, warnings } = changes;
   if (warnings.from !== warnings.to) out.push(`Warnings: ${warnings.from} → ${warnings.to}`);
-  if (!rows.length && !resolved.length && !added.length && !changed.length) {
+  if (!changes.advisoryCompared) out.push('Advisory: not compared — this run has no AI leg output yet.');
+  if (!rows.length && !resolved.length && !unchecked.length && !added.length && !changed.length) {
     out.push('', 'No check result or entry changed.');
     return out;
   }
@@ -224,13 +234,21 @@ export function renderChanges(changes) {
     out.push('', `Resolved (${resolved.length}):`);
     for (const e of resolved) out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
   }
+  if (unchecked.length) {
+    out.push('', `Not re-checked this run — their row was excused or produced no result (${unchecked.length}):`);
+    for (const e of unchecked) out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
+  }
   if (added.length) {
     out.push('', `New (${added.length}):`);
     for (const e of added) out.push(`- ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
   }
   if (changed.length) {
     out.push('', `Changed (${changed.length}):`);
-    for (const c of changed) out.push(`- ${cell(c.id)} · ${describe(c.entry)}: ${cell(c.from)} → ${cell(c.to)}`);
+    for (const c of changed) {
+      const moved = c.fromLocation !== c.entry.location ? ` (was at ${cell(c.fromLocation)})` : '';
+      const value = c.from !== c.to ? `: ${cell(c.from)} → ${cell(c.to)}` : '';
+      out.push(`- ${cell(c.id)} · ${describe(c.entry)}${moved}${value}`);
+    }
   }
   return out;
 }

@@ -546,24 +546,20 @@ export function readRunInputs(runDir) {
 /**
  * The brief's "Changes since" input: this run's verdict against the previous
  * comparable run's, recomputed from that run's inputs with today's rules
- * (lib/run-delta.mjs). A baseline whose verdict cannot be computed is skipped
- * for the next older one.
+ * (lib/run-delta.mjs). A baseline whose verdict cannot be computed is named
+ * with its error — never folded into "no earlier run", which would hide a
+ * broken recompute behind an ordinary-looking first run.
  */
-function changesSincePreviousRun(absRun, verdict) {
-  const computed = new Map();
-  const baselineVerdict = dir => {
-    if (!computed.has(dir)) {
-      try {
-        computed.set(dir, computeVerdict({ ...readRunInputs(dir), component: verdict.component }));
-      } catch {
-        computed.set(dir, null);
-      }
-    }
-    return computed.get(dir);
-  };
-  const baseline = findBaselineRun(absRun, { accept: dir => baselineVerdict(dir) !== null });
+function changesSincePreviousRun(absRun, verdict, { envelope, aiFiles }) {
+  const baseline = findBaselineRun(absRun, envelope);
   if (!baseline.dir) return { status: 'none', reason: baseline.reason };
-  return diffVerdicts(baselineVerdict(baseline.dir), verdict, { run: baseline.run });
+  let prev;
+  try {
+    prev = computeVerdict({ ...readRunInputs(baseline.dir), component: verdict.component });
+  } catch (err) {
+    return { status: 'none', reason: `baseline run ${baseline.run} could not be recomputed: ${err.message}` };
+  }
+  return diffVerdicts(prev, verdict, { run: baseline.run, compareAdvisory: aiFiles.length > 0 });
 }
 
 /**
@@ -580,7 +576,7 @@ export function writeVerdictForRun(runDir) {
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict) });
+  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict, { envelope, aiFiles }) });
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
@@ -653,19 +649,23 @@ component's current run. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
 
 /**
  * The report block of a component's fix brief — `## Summary` up to
- * REPORT_END — or null when the brief is absent or has none. Exported for tests.
+ * REPORT_END — or null when the brief is absent or has none; any other read
+ * error throws. Both markers are matched as whole lines: `line()` maps every
+ * newline inside a value, so no finding's text can forge one and end the
+ * block early. Exported for tests.
  */
 export function readReportBlock(auditDir, component) {
   let brief;
   try {
     brief = readFileSync(join(auditDir, component, 'fix-brief.md'), 'utf8');
-  } catch {
-    return null;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
   }
-  const start = brief.indexOf('## Summary');
-  const end = brief.indexOf(REPORT_END);
+  const start = brief.indexOf('\n## Summary\n');
+  const end = brief.indexOf(`\n${REPORT_END}\n`);
   if (start < 0 || end < start) return null;
-  return brief.slice(start, end).trimEnd();
+  return brief.slice(start + 1, end).trimEnd();
 }
 
 /**
@@ -680,8 +680,13 @@ export function printSummary(summary, json, auditDir = null) {
   }
   for (const c of summary.components) {
     process.stdout.write(`${c.component}: ${c.headline} — audit/${c.component}/fix-brief.md\n`);
-    const block = auditDir ? readReportBlock(auditDir, c.component) : null;
-    if (block) process.stdout.write(`\n${block}\n\n`);
+    if (!auditDir) continue;
+    try {
+      const block = readReportBlock(auditDir, c.component);
+      if (block) process.stdout.write(`\n${block}\n\n`);
+    } catch (err) {
+      process.stdout.write(`  (report block unavailable: ${err.code ?? err.message})\n`);
+    }
   }
   if (summary.note) process.stdout.write(`${summary.note}\n`);
   if (summary.preflight) process.stdout.write(`${summary.preflight.message}\n`);
