@@ -12,21 +12,33 @@
   },
   "defaults": {
     "story": "atoms-checkbox--default",
-    "capture": { "selector": "mud-checkbox .box", "bleed": "auto" },
-    "captureNote": "Every state in Sizes and States cites the checkbox frame itself (13:122 exports at 24x24), so the capture is the box, not the whole label row."
+    "capture": {
+      "selector": "mud-checkbox .box",
+      "bleed": "auto"
+    },
+    "captureNote": "Every state in Sizes and States cites the checkbox frame itself (13:122 exports at 24x24), so the capture is the box, not the whole label row.",
+    "fixtureNote": "The label-group fixtures slot their text. `label` and `supporting-text` are accessible-name fallbacks that render nothing visible, so a fixture using them would assert typography on an empty node. The text itself is not asserted: it lives in the light DOM, and a shadow element wrapping a <slot> reports no textContent of its own."
   },
   "shared": {
     "box-md": [
       {
         "target": "mud-checkbox .box",
-        "styles": { "boxWidth": "24px", "boxHeight": "24px", "borderTopLeftRadius": "6px" },
+        "styles": {
+          "boxWidth": "24px",
+          "boxHeight": "24px",
+          "borderTopLeftRadius": "6px"
+        },
         "note": "Figma checkbox 13:122 — Medium is 24x24 at border-radius/6."
       }
     ],
     "box-sm": [
       {
         "target": "mud-checkbox .box",
-        "styles": { "boxWidth": "20px", "boxHeight": "20px", "borderTopLeftRadius": "6px" },
+        "styles": {
+          "boxWidth": "20px",
+          "boxHeight": "20px",
+          "borderTopLeftRadius": "6px"
+        },
         "note": "Figma checkbox 403:21785 — Small is 20x20 at the same radius."
       }
     ]
@@ -37,10 +49,15 @@
       "node": "13:122",
       "html": "<mud-checkbox></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
-          "styles": { "borderTopWidth": "2px", "borderTopColor": "rgb(178, 178, 178)" },
+          "styles": {
+            "borderTopWidth": "2px",
+            "borderTopColor": "rgb(178, 178, 178)"
+          },
           "note": "Figma 13:122 strokes 2px #B2B2B2 and leaves the fill empty."
         }
       ]
@@ -50,8 +67,16 @@
       "node": "403:21785",
       "html": "<mud-checkbox size=\"sm\"></mud-checkbox>",
       "expect": [
-        { "use": "box-sm" },
-        { "target": "mud-checkbox .box", "styles": { "borderTopWidth": "2px", "borderTopColor": "rgb(178, 178, 178)" } }
+        {
+          "use": "box-sm"
+        },
+        {
+          "target": "mud-checkbox .box",
+          "styles": {
+            "borderTopWidth": "2px",
+            "borderTopColor": "rgb(178, 178, 178)"
+          }
+        }
       ]
     },
     {
@@ -59,10 +84,14 @@
       "node": "13:123",
       "html": "<mud-checkbox checked></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
-          "styles": { "backgroundColor": "rgb(0, 88, 210)" },
+          "styles": {
+            "backgroundColor": "rgb(0, 88, 210)"
+          },
           "note": "Figma 13:123 fills #0058D2 and drops the stroke."
         }
       ]
@@ -72,8 +101,15 @@
       "node": "403:21788",
       "html": "<mud-checkbox size=\"sm\" checked></mud-checkbox>",
       "expect": [
-        { "use": "box-sm" },
-        { "target": "mud-checkbox .box", "styles": { "backgroundColor": "rgb(0, 88, 210)" } }
+        {
+          "use": "box-sm"
+        },
+        {
+          "target": "mud-checkbox .box",
+          "styles": {
+            "backgroundColor": "rgb(0, 88, 210)"
+          }
+        }
       ]
     },
     {
@@ -81,10 +117,14 @@
       "node": "13:128",
       "html": "<mud-checkbox indeterminate></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
-          "styles": { "backgroundColor": "rgb(0, 88, 210)" },
+          "styles": {
+            "backgroundColor": "rgb(0, 88, 210)"
+          },
           "note": "Figma 13:128 carries the same brand fill as Checked, with 20/minus-small in place of the tick."
         }
       ]
@@ -94,7 +134,9 @@
       "node": "13:125",
       "html": "<mud-checkbox disabled></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
           "styles": {
@@ -111,10 +153,15 @@
       "node": "13:126",
       "html": "<mud-checkbox disabled checked></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
-          "styles": { "backgroundColor": "rgb(241, 241, 241)", "borderTopColor": "rgb(217, 217, 217)" },
+          "styles": {
+            "backgroundColor": "rgb(241, 241, 241)",
+            "borderTopColor": "rgb(217, 217, 217)"
+          },
           "note": "Figma 13:126 — a disabled checkbox keeps the disabled surface whether or not it is ticked."
         }
       ]
@@ -124,10 +171,15 @@
       "node": "340:10808",
       "html": "<mud-checkbox invalid></mud-checkbox>",
       "expect": [
-        { "use": "box-md" },
+        {
+          "use": "box-md"
+        },
         {
           "target": "mud-checkbox .box",
-          "styles": { "borderTopWidth": "2px", "borderTopColor": "rgb(217, 45, 32)" },
+          "styles": {
+            "borderTopWidth": "2px",
+            "borderTopColor": "rgb(217, 45, 32)"
+          },
           "note": "Figma 340:10808 strokes #D92D20 and leaves the fill empty."
         }
       ]
@@ -137,11 +189,16 @@
       "node": "51:404",
       "pixel": false,
       "html": "<mud-checkbox></mud-checkbox>",
-      "interaction": { "type": "focus", "target": "mud-checkbox input.native" },
+      "interaction": {
+        "type": "focus",
+        "target": "mud-checkbox input.native"
+      },
       "expect": [
         {
           "target": "mud-checkbox .box",
-          "styles": { "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px" },
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px"
+          },
           "note": "Figma Focus Ring/Small reads 0 0 0 3px rgba(51,121,219,1), 0 0 0 1px #FFF. Its render is a 1px white halo inside a blue band ending 3px out, which in CSS is the reverse order — see the stacked-focus-ring note in the pixel-perfect skill."
         }
       ]
@@ -151,7 +208,10 @@
       "node": "51:405",
       "pixel": false,
       "html": "<mud-checkbox checked></mud-checkbox>",
-      "interaction": { "type": "focus", "target": "mud-checkbox input.native" },
+      "interaction": {
+        "type": "focus",
+        "target": "mud-checkbox input.native"
+      },
       "expect": [
         {
           "target": "mud-checkbox .box",
@@ -167,11 +227,14 @@
       "name": "label-md",
       "node": "13:131",
       "pixel": false,
-      "html": "<mud-checkbox label=\"Transforming Services\"></mud-checkbox>",
+      "html": "<mud-checkbox><span slot=\"label\">Transforming Services</span></mud-checkbox>",
       "expect": [
         {
           "target": "mud-checkbox .root",
-          "styles": { "columnGap": "12px", "alignItems": "center" },
+          "styles": {
+            "columnGap": "12px",
+            "alignItems": "center"
+          },
           "note": "Figma checkbox-label 13:131 puts spacing/12 between the box and the label, centred on each other."
         },
         {
@@ -191,16 +254,23 @@
       "name": "label-sm",
       "node": "1512:8587",
       "pixel": false,
-      "html": "<mud-checkbox size=\"sm\" label=\"Transforming Services\"></mud-checkbox>",
+      "html": "<mud-checkbox size=\"sm\"><span slot=\"label\">Transforming Services</span></mud-checkbox>",
       "expect": [
         {
           "target": "mud-checkbox .root",
-          "styles": { "columnGap": "12px" },
+          "styles": {
+            "columnGap": "12px"
+          },
           "note": "Figma 1512:8587 keeps spacing/12 at Small — the gap does not shrink with the box."
         },
         {
           "target": "mud-checkbox .label",
-          "styles": { "fontSize": "14px", "lineHeight": "20px", "fontWeight": "500", "color": "rgb(18, 18, 18)" },
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "rgb(18, 18, 18)"
+          },
           "note": "Figma 1512:8589 drops the Small label to Desktop/Body/Small 500."
         }
       ]
@@ -209,16 +279,23 @@
       "name": "label-supporting-md",
       "node": "13:143",
       "pixel": false,
-      "html": "<mud-checkbox label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"></mud-checkbox>",
+      "html": "<mud-checkbox><span slot=\"label\">Transforming Services</span><span slot=\"supporting-text\">Moldova’s digital evolution is at the heart of seamless public service delivery.</span></mud-checkbox>",
       "expect": [
         {
           "target": "mud-checkbox .text",
-          "styles": { "rowGap": "2px" },
+          "styles": {
+            "rowGap": "2px"
+          },
           "note": "Figma 13:145 stacks label and supporting text with spacing/2."
         },
         {
           "target": "mud-checkbox .supporting",
-          "styles": { "fontSize": "14px", "lineHeight": "20px", "fontWeight": "400", "color": "rgb(117, 117, 117)" },
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "rgb(117, 117, 117)"
+          },
           "note": "Figma 13:147 sets the Medium supporting text in Desktop/Body/Small at #757575."
         }
       ]
@@ -227,11 +304,16 @@
       "name": "label-supporting-sm",
       "node": "1512:8611",
       "pixel": false,
-      "html": "<mud-checkbox size=\"sm\" label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"></mud-checkbox>",
+      "html": "<mud-checkbox size=\"sm\"><span slot=\"label\">Transforming Services</span><span slot=\"supporting-text\">Moldova’s digital evolution is at the heart of seamless public service delivery.</span></mud-checkbox>",
       "expect": [
         {
           "target": "mud-checkbox .supporting",
-          "styles": { "fontSize": "12px", "lineHeight": "16px", "fontWeight": "400", "color": "rgb(117, 117, 117)" },
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "rgb(117, 117, 117)"
+          },
           "note": "Figma 1512:8615 drops the Small supporting text to Desktop/Caption/Medium."
         }
       ]
