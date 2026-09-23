@@ -36,7 +36,7 @@ const captionStyle =
 const stackStyle = 'display: flex; flex-direction: column; gap: var(--spacing-16); max-width: 560px;';
 
 const meta: Meta<InfoBoxArgs> = {
-  title: 'Atoms/InfoBox',
+  title: 'Components/InfoBox',
   component: 'mud-info-box',
   parameters: {
     layout: 'padded',

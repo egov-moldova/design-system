@@ -77,7 +77,7 @@ const docsSourceDefault = (args: FileInputArgs) => {
 };
 
 const meta: Meta<FileInputArgs> = {
-  title: 'Atoms/Input/File',
+  title: 'Components/Input/File',
   component: 'mud-file-input',
   argTypes: {
     size: {

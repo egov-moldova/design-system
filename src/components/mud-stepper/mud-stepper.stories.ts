@@ -132,7 +132,7 @@ const docsSourceDefault = (args: StepperArgs) => `<mud-stepper id="my-tracker"
 </script>`;
 
 const meta: Meta<StepperArgs> = {
-  title: 'Molecules/Stepper',
+  title: 'Components/Stepper',
   component: 'mud-stepper',
   argTypes: {
     steps: {

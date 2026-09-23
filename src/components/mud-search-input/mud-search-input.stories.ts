@@ -56,7 +56,7 @@ const docsSourceDefault = (args: SearchArgs) => {
 };
 
 const meta: Meta<SearchArgs> = {
-  title: 'Atoms/Input/Search',
+  title: 'Components/Input/Search',
   component: 'mud-search-input',
   argTypes: {
     shape: {

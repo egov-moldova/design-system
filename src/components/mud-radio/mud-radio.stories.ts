@@ -84,7 +84,7 @@ const docsSourceDefault = (args: RadioArgs) =>
     .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<RadioArgs> = {
-  title: 'Atoms/Radio',
+  title: 'Components/Radio',
   component: 'mud-radio',
   argTypes: {
     size: {

@@ -50,7 +50,7 @@ const cellLabelStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center; margin-top: var(--spacing-4);';
 
 const meta: Meta<PaginationArgs> = {
-  title: 'Molecules/Pagination',
+  title: 'Components/Pagination',
   component: 'mud-pagination',
   argTypes: {
     size: {

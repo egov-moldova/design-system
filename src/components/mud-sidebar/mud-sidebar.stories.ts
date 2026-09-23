@@ -518,7 +518,7 @@ const docsSourceAllItemFeatures = /*html*/ `<!-- Icon + label (active — icon r
 // ---------------------------------------------------------------------------
 
 const meta: Meta<SidebarArgs> = {
-  title: 'Organisms/Sidebar',
+  title: 'Components/Sidebar',
   component: 'mud-sidebar',
   subcomponents: { 'mud-sidebar-group': 'mud-sidebar-group', 'mud-sidebar-item': 'mud-sidebar-item' },
   argTypes: {

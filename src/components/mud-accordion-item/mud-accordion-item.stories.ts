@@ -55,7 +55,7 @@ const docsSourceStates = /*html*/ `<mud-accordion mode="multiple">
 </mud-accordion>`;
 
 const meta: Meta<AccordionItemArgs> = {
-  title: 'Molecules/Accordion Item',
+  title: 'Components/Accordion Item',
   component: 'mud-accordion-item',
   // The item's API table is rendered on the Accordion docs page (mud-accordion.mdx),
   // because the item is not usable outside a `mud-accordion`. A second autodocs page

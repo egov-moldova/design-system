@@ -28,7 +28,7 @@ const cellStyle = 'display: flex; flex-direction: column; gap: var(--spacing-8);
 const rowStyle = 'display: flex; flex-wrap: wrap; gap: var(--spacing-32) var(--spacing-48);';
 
 const meta: Meta<InlineMessageArgs> = {
-  title: 'Atoms/InlineMessage',
+  title: 'Components/InlineMessage',
   component: 'mud-inline-message',
   parameters: {
     layout: 'padded',

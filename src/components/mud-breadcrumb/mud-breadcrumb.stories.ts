@@ -318,7 +318,7 @@ const renderSlotMode = () => /*html*/ `
 `;
 
 const meta: Meta<BreadcrumbArgs> = {
-  title: 'Molecules/Breadcrumb',
+  title: 'Components/Breadcrumb',
   component: 'mud-breadcrumb',
   subcomponents: { 'mud-breadcrumb-item': 'mud-breadcrumb-item' },
   argTypes: {

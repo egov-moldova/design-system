@@ -38,7 +38,7 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
 `;
 
 const meta: Meta<DatePickerArgs> = {
-  title: 'Molecules/Date Picker',
+  title: 'Components/Date Picker',
   component: 'mud-date-picker',
   argTypes: {
     mode: {

@@ -28,7 +28,7 @@ const renderSeparator = (args: SeparatorArgs) => /*html*/ `
 `;
 
 const meta: Meta<SeparatorArgs> = {
-  title: 'Atoms/Separator',
+  title: 'Components/Separator',
   component: 'mud-separator',
   argTypes: {
     orientation: {

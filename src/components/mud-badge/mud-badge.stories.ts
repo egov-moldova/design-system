@@ -24,7 +24,7 @@ const renderBadge = (args: BadgeArgs) => {
 };
 
 const meta: Meta<BadgeArgs> = {
-  title: 'Atoms/Badge',
+  title: 'Components/Badge',
   component: 'mud-badge',
   argTypes: {
     type: {

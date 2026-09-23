@@ -93,7 +93,7 @@ No official Figma MCP → you cannot extract the design: **stop** and tell the u
 
 Authoring rules:
 
-- **Story ids**: take them from `node scripts/audit/05-story-exports.mjs mud-x --json` — the id comes from the story title (`Molecules/Date Picker` → `molecules-date-picker--default`), not from the tag name.
+- **Story ids**: take them from `node scripts/audit/05-story-exports.mjs mud-x --json` — the id comes from the story title (`Components/Date Picker` → `components-date-picker--default`), not from the tag name.
 - **`html` fixtures** make a state deterministic: set every attribute the Figma frame implies (locale, value, dates, variant). The fixture replaces the story canvas; the story only has to load the component.
 - **`clock`** freezes `Date` for anything that shows "today".
 - **`interaction`**: `hover`, `focus` (keyboard focus — matches `:focus-visible`), `press` (mouse held down), `click` (changes state: open a view). A list runs in order, e.g. two clicks to reach a year view.

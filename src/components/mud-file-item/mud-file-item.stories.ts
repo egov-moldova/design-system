@@ -43,7 +43,7 @@ const docsSourceDefault = (args: FileItemArgs) => {
 };
 
 const meta: Meta<FileItemArgs> = {
-  title: 'Atoms/File Item',
+  title: 'Components/File Item',
   component: 'mud-file-item',
   argTypes: {
     state: {

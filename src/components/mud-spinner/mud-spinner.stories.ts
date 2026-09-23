@@ -27,7 +27,7 @@ const swatchStyle = (variant: SpinnerVariant) => {
 };
 
 const meta: Meta<SpinnerArgs> = {
-  title: 'Atoms/Spinner',
+  title: 'Components/Spinner',
   component: 'mud-spinner',
   argTypes: {
     size: {

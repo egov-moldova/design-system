@@ -80,7 +80,7 @@ const renderModal = (args: ModalArgs) => /*html*/ `
 `;
 
 const meta: Meta<ModalArgs> = {
-  title: 'Molecules/Modal',
+  title: 'Components/Modal',
   component: 'mud-modal',
   parameters: {
     layout: 'padded',

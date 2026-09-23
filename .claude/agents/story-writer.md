@@ -79,7 +79,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: '<AtomicLevel>/<Name>', // e.g. 'Atoms/Badge' — no mud prefix
+  title: 'Components/<Name>', // e.g. 'Components/Badge' — no mud prefix
   component: '<componentName>',
   argTypes: {
     // ... per prop: control, options, description, table.defaultValue
@@ -111,7 +111,7 @@ Then in the story: `import { SPINNER_SIZES as SIZES } from './...types';` and us
 
 **Rules**:
 
-- Title: `Atoms/Badge`, `Molecules/Accordion Item` — atomic hierarchy, no `mud` prefix
+- Title: `Components/Badge`, `Components/Accordion Item` — single flat category, no `mud` prefix
 - `component`: string tag name (NOT JS reference)
 - `render`: function with HTML template strings, prefixed `/*html*/` for IDE syntax highlighting
 - Typed `args: Args` parameter (no bare `args =>`)

@@ -136,7 +136,7 @@ const docsSourceCustomLabel = /*html*/ `<!-- The default slot accepts any inline
 </mud-service-button>`;
 
 const meta: Meta<ServiceButtonArgs> = {
-  title: 'Atoms/Service Button',
+  title: 'Components/Service Button',
   component: 'mud-service-button',
   argTypes: {
     appearance: {

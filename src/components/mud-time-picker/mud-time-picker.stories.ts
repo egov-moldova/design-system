@@ -34,7 +34,7 @@ const docsSourceDefault = (args: TimePickerArgs) => {
 };
 
 const meta: Meta<TimePickerArgs> = {
-  title: 'Molecules/Time Picker',
+  title: 'Components/Time Picker',
   component: 'mud-time-picker',
   argTypes: {
     value: { control: 'text', description: 'Selected time, `HH:MM` (24-hour).' },

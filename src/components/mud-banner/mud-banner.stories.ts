@@ -32,7 +32,7 @@ const sectionStyle = 'display: flex; flex-direction: column; gap: var(--spacing-
 const MESSAGE = 'Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.';
 
 const meta: Meta<BannerArgs> = {
-  title: 'Atoms/Banner',
+  title: 'Components/Banner',
   component: 'mud-banner',
   parameters: {
     layout: 'fullscreen',

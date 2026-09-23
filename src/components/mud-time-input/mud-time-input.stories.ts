@@ -64,7 +64,7 @@ const docsSourceDefault = (args: TimeInputArgs) => {
 };
 
 const meta: Meta<TimeInputArgs> = {
-  title: 'Atoms/Input/Time',
+  title: 'Components/Input/Time',
   component: 'mud-time-input',
   argTypes: {
     variant: {

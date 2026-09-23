@@ -8,7 +8,7 @@ type LogoArgs = {
 };
 
 const meta: Meta<LogoArgs> = {
-  title: 'Atoms/Logo',
+  title: 'Components/Logo',
   component: 'mud-logo',
   argTypes: {
     name: {
