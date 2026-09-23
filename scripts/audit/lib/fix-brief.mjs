@@ -107,8 +107,13 @@ function cell(value) {
   return line(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
 }
 
-/** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
-function rowIdOf(check) {
+/**
+ * The row id an entry or warning belongs to: `check` is `<id> <name>` or a
+ * bare `<id>`. Exported for `run-record.mjs` (plan `2026-09-23-audit-run-delta.md`
+ * Global constraints: `rowResults` / `rowIdOf` stay here, `run-record.mjs`
+ * imports them rather than copying either).
+ */
+export function rowIdOf(check) {
   return String(check ?? '').split(' ')[0];
 }
 
@@ -217,8 +222,134 @@ export function renderSummary(verdict) {
   return out;
 }
 
-/** Render the whole brief. Pure — exported for tests. */
-export function renderFixBrief(verdict) {
+/**
+ * `changes` (any value other than `null`) must be one of the four shapes
+ * `renderChanges` declares — anything else is a programming error, thrown
+ * here rather than rendered as if it were one of them.
+ */
+function validateChanges(changes) {
+  if (!changes || typeof changes !== 'object') {
+    throw new Error('fix-brief: changes must be null or an object');
+  }
+  if ('error' in changes) {
+    if (typeof changes.error !== 'string') throw new Error('fix-brief: changes.error must be a string');
+    return;
+  }
+  if (changes.baseline === null) return;
+  if (changes.unusable) {
+    if (typeof changes.unusable.run !== 'string' || typeof changes.unusable.cause !== 'string') {
+      throw new Error('fix-brief: changes.unusable needs run and cause');
+    }
+    return;
+  }
+  const arrays = ['rowChanges', 'notCompared', 'added', 'gone', 'countChanged', 'textChanged'];
+  const missing = arrays.filter(k => !Array.isArray(changes[k]));
+  if (
+    !changes.baseline ||
+    typeof changes.baseline.run !== 'string' ||
+    typeof changes.baseline.headline !== 'string' ||
+    typeof changes.unchanged !== 'number' ||
+    missing.length
+  ) {
+    throw new Error(
+      `fix-brief: changes has an unrecognised shape${missing.length ? ` (missing ${missing.join(', ')})` : ''}`,
+    );
+  }
+}
+
+/**
+ * Render the `## Changes since the previous run` section from a `changes`
+ * value (plan `2026-09-23-audit-run-delta.md` Design §6):
+ *   - `null` → no section at all (caller — `renderFixBrief` — never invokes this then).
+ *   - `{ error }` → the record/baseline/comparison step threw; `verdict.json`
+ *     was still written (Design §7).
+ *   - `{ baseline: null, depth, component }` → no earlier run left a record.
+ *   - `{ unusable: { run, cause }, depth }` → the newest earlier record cannot
+ *     be read; the search never falls through to an older one.
+ *   - otherwise → the full comparison (`compareRecords`'s return, plus `depth`
+ *     and `component` the caller attaches) is rendered as a table, a
+ *     Not-compared list and the findings counts/bullets.
+ * The renderer's own words never include "fixed" or "resolved" — a quoted
+ * label is a finding's text and may contain either, but it always sits after
+ * a fixed status prefix, so the status itself is never claimed by a finding.
+ * Every interpolation goes through `line()` / `cell()`. Pure.
+ */
+export function renderChanges(changes) {
+  const out = ['## Changes since the previous run', ''];
+  if ('error' in changes) {
+    out.push(`Not compared: ${line(changes.error)}`);
+    return out.join('\n');
+  }
+  if (changes.baseline === null) {
+    out.push(
+      `No earlier run at ${line(changes.depth)} left a record under audit/${line(changes.component)}/runs/ — nothing to compare.`,
+    );
+    return out.join('\n');
+  }
+  if (changes.unusable) {
+    out.push(
+      `The previous run at ${line(changes.depth)} (${line(changes.unusable.run)}) has a record this version cannot read (${line(changes.unusable.cause)}). Not compared.`,
+    );
+    return out.join('\n');
+  }
+  out.push(
+    `Compared with run ${line(changes.baseline.run)}: ${line(changes.baseline.headline)} → ${line(changes.headline)}`,
+  );
+  if (changes.skippedEmpty > 0) {
+    out.push(`(${changes.skippedEmpty} later runs graded nothing and were skipped)`);
+  }
+  if (changes.rowChanges.length) {
+    out.push(
+      '',
+      '| # | Check | Previous | Now |',
+      '| --- | --- | --- | --- |',
+      ...changes.rowChanges.map(r => {
+        const prevCell = r.previous === '—' ? '—' : `${resultIcon(r.previous)} ${cell(r.previous)}`;
+        const curCell = r.current === '—' ? '—' : `${resultIcon(r.current)} ${cell(r.current)}`;
+        return `| ${cell(r.id)} | ${cell(r.name)} | ${prevCell} | ${curCell} |`;
+      }),
+    );
+  }
+  if (changes.notCompared.length) {
+    out.push(
+      '',
+      'Not compared:',
+      '',
+      ...changes.notCompared.map(n => {
+        const rerender = n.scope.startsWith('leg:')
+          ? ` (\`yarn audit:component --rerender ${line(changes.component)}\`)`
+          : '';
+        return `- ${line(n.scope)} — previous: ${line(n.previous)}, now: ${line(n.current)}${rerender}`;
+      }),
+    );
+  }
+  out.push(
+    '',
+    `Findings in checks both runs graded: ${changes.added.length} newly reported · ${changes.gone.length} no longer reported · ` +
+      `${changes.countChanged.length} reported a different number of times · ${changes.textChanged.length} with changed text · ` +
+      `${changes.unchanged} unchanged`,
+  );
+  for (const a of changes.added) out.push(`- newly reported: ${line(a.label)}${a.count > 1 ? ` ×${a.count}` : ''}`);
+  for (const g of changes.gone) out.push(`- no longer reported: ${line(g.label)}${g.count > 1 ? ` ×${g.count}` : ''}`);
+  for (const c of changes.countChanged) {
+    out.push(`- reported ${c.previousCount} → ${c.currentCount} times: ${line(c.label)}`);
+  }
+  for (const t of changes.textChanged) out.push(`- text changed: ${line(t.previous)} → ${line(t.current)}`);
+  out.push(
+    '',
+    '"No longer reported" means no finding with this identity was reported this time by a check both runs graded; the audit does not say why.',
+  );
+  return out.join('\n');
+}
+
+/**
+ * Render the whole brief. `changes` is the `## Changes since the previous
+ * run` section's data (`null` renders nothing; any other shape than
+ * `renderChanges` declares throws) — plan `2026-09-23-audit-run-delta.md`
+ * Design §6. Pure — exported for tests.
+ */
+export function renderFixBrief(verdict, changes = null) {
+  if (changes !== null) validateChanges(changes);
   const c = verdict.component;
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,
@@ -227,6 +358,7 @@ export function renderFixBrief(verdict) {
     '',
     ...renderSummary(verdict),
     '',
+    ...(changes === null ? [] : [renderChanges(changes), '']),
     REPORT_END,
     '',
     `Verdict: \`audit/${c}/verdict.json\`. When every \`verify:\` below passes, re-run the whole audit at the same`,

@@ -13,6 +13,9 @@
  *   audit/<component>/fix-brief.md          stable path, rewritten every run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
  *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
+ *   audit/<component>/runs/<run>/record.json  written by this module (plan
+ *     2026-09-23-audit-run-delta.md Design §1); read only by a later run's
+ *     comparison (lib/run-record.mjs), never an input to verdict.json itself
  *   audit/_run/summary.json                 worst state over the components of the last run
  *
  * State, first match wins: INCOMPLETE → FAIL → NEEDS-DECISION → PASS.
@@ -45,10 +48,12 @@ import {
   ROW_STATUS,
   SCHEMA_VERSION,
   STATE,
+  SUMMARY_SCHEMA_VERSION,
   VERDICT_SCHEMA_VERSION,
   schemaMajor,
 } from './lib/json-output.mjs';
 import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
+import { buildRunRecord, compareRecords, findPreviousRecord } from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -170,7 +175,7 @@ function failEntry({ f, check, component, source, verify, owner }) {
     f.expected && typeof f.expected === 'object'
       ? { value: String(f.expected.value), source: mapManifestPath(f.expected.source, component) }
       : { value: f.fix ? `no ${f.code} finding — ${f.fix}` : `no ${f.code} finding`, source };
-  return {
+  const entry = {
     kind: STATE.FAIL,
     severity: f.severity,
     check,
@@ -181,6 +186,13 @@ function failEntry({ f, check, component, source, verify, owner }) {
     verify,
     owner,
   };
+  // Additive, VERDICT_SCHEMA_VERSION 2.1.0: `run-record.mjs`'s finding-identity
+  // key needs the finding's own message, never `actual` — for 15-style-parity
+  // `actual` is the bare rendered value and every finding sits on the manifest
+  // file, so only `message` carries `state › target › prop` (Design §3).
+  // `renderEntry` prints only `BRIEF_FIELDS`, so the brief is unchanged.
+  if (f.message !== undefined) entry.message = mapManifestPath(String(f.message), component);
+  return entry;
 }
 
 function aiFailOrDecision(f, leg, component) {
@@ -190,6 +202,8 @@ function aiFailOrDecision(f, leg, component) {
       node: f.node ?? 'n/a',
       question: f.question,
       options: Array.isArray(f.options) && f.options.length ? f.options.map(String) : ['(the leg listed no options)'],
+      // Additive, 2.1.0: lets run-record.mjs scope this decision to `leg:<leg>`.
+      owner: leg,
     };
   }
   return failEntry({
@@ -218,6 +232,37 @@ function findingShapeIssue(f, index) {
   if (typeof f.severity !== 'string' || !f.severity) missing.push('severity');
   if (f.message === undefined && f.actual === undefined) missing.push('message or actual');
   return missing.length ? `finding[${index}] (${f.code ?? 'no code'}) missing ${missing.join(', ')}` : null;
+}
+
+/**
+ * Per-leg grading for `run-record.mjs`'s `leg:<leg>` scope (Design §2), using
+ * this module's own `findingShapeIssue` and AI schema check — the one place
+ * that rule lives, so `run-record.mjs` never imports this module (a cycle).
+ * A leg is graded only when its file is readable at a matching schema major,
+ * its `findings` is an array (zero findings is fine), and no finding fails
+ * `findingShapeIssue` — stricter than `computeVerdict`'s advisory rendering,
+ * which still lists the well-shaped findings of a leg that also wrote a bad
+ * one. Pure. Sorted by leg for determinism.
+ *
+ * @param {Array<{leg: string, data: object|null}>} aiFiles
+ * @returns {Array<{leg: string, graded: boolean, cause: string|null}>}
+ */
+export function computeLegRecords(aiFiles = []) {
+  return [...aiFiles]
+    .map(({ leg, data }) => {
+      if (!data || schemaMajor(data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
+        return { leg, graded: false, cause: 'unreadable or unknown schema' };
+      }
+      if (!Array.isArray(data.findings)) {
+        return { leg, graded: false, cause: 'findings is not a list' };
+      }
+      const badCount = data.findings.filter((f, i) => findingShapeIssue(f, i)).length;
+      if (badCount > 0) {
+        return { leg, graded: false, cause: `${badCount} findings ignored` };
+      }
+      return { leg, graded: true, cause: null };
+    })
+    .sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0));
 }
 
 /**
@@ -540,23 +585,78 @@ export function readRunInputs(runDir) {
 }
 
 /**
+ * Whether `run` is the newest run directory under `<componentDir>/runs`
+ * (Design §7) — record.json is written only then, so re-rendering an older
+ * run (`--run-dir`) never overwrites the baseline a later run already
+ * compared against. Missing `runs/` (a fresh component dir) reads as "yes":
+ * this run is the only one there.
+ */
+function isNewestRun(componentDir, run) {
+  let names;
+  try {
+    names = readdirSync(join(componentDir, 'runs'));
+  } catch {
+    return true;
+  }
+  return names.every(n => n <= run);
+}
+
+/**
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
- * levels up, so the stable paths never depend on the run name.
+ * levels up, so the stable paths never depend on the run name. Also builds
+ * and writes that run's `record.json` and, when a usable baseline exists,
+ * renders the brief's `## Changes since the previous run` section (plan
+ * `2026-09-23-audit-run-delta.md` Design §7).
  */
 export function writeVerdictForRun(runDir) {
   const absRun = resolve(runDir);
   const componentDir = resolve(absRun, '..', '..');
   const component = basename(componentDir);
+  const run = basename(absRun);
   const { envelope, aiFiles } = readRunInputs(absRun);
   const verdict = computeVerdict({ envelope, aiFiles, component });
-  // Render before writing either file: a render failure (an entry the renderer
-  // cannot shape) must never leave a freshly-written verdict.json beside a
-  // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict);
+
+  // Building the record, finding the baseline and comparing all run inside
+  // one try: a throw from any of them — including a readdir/read failure
+  // under runs/ — must never block verdict.json or the rest of the brief, and
+  // renders as `Not compared: <cause>` instead (Design §7).
+  let record = null;
+  let changes = null;
+  try {
+    const legs = computeLegRecords(aiFiles);
+    record = buildRunRecord({ run, verdict, envelope, legs });
+    const found = findPreviousRecord(componentDir, run, verdict.depth);
+    changes = found.unusable
+      ? { unusable: found.unusable, depth: verdict.depth, component: verdict.component }
+      : {
+          ...compareRecords(record, found.record),
+          skippedEmpty: found.skippedEmpty,
+          depth: verdict.depth,
+          component: verdict.component,
+        };
+  } catch (err) {
+    changes = { error: err.message ?? String(err) };
+  }
+
+  // Render before writing either stable file: a render failure (an entry the
+  // renderer cannot shape) must never leave a freshly-written verdict.json
+  // beside a stale fix-brief.md — throwing here leaves both exactly as they
+  // were, and skips writing record.json too.
+  const brief = renderFixBrief(verdict, changes);
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
+
+  if (record && isNewestRun(componentDir, run)) {
+    try {
+      writeFileSync(join(absRun, 'record.json'), `${JSON.stringify(record, null, 2)}\n`);
+    } catch (err) {
+      // A failure writing record.json alone changes no exit code (Design §7):
+      // the next run then names an older baseline, or none.
+      process.stderr.write(`${TOOL}: record.json not written for ${run}: ${err.message ?? err}\n`);
+    }
+  }
   return verdict;
 }
 
@@ -597,7 +697,7 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
   if (repoLevel?.incomplete) states.push(STATE.INCOMPLETE);
   else if (repoLevel && !repoLevel.ok) states.push(STATE.FAIL);
   const summary = {
-    schemaVersion: VERDICT_SCHEMA_VERSION,
+    schemaVersion: SUMMARY_SCHEMA_VERSION,
     depth,
     state: worstState(states),
     components,
@@ -774,7 +874,7 @@ export function staleRunDirReason(runDirAbs, auditDir) {
  * apart from a crash.
  */
 function earlyExitSummary(depth, cause) {
-  return { schemaVersion: VERDICT_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
+  return { schemaVersion: SUMMARY_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
 }
 
 /**

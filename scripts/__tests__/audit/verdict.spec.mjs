@@ -302,8 +302,17 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     assert.ok(!v.rows.some(r => r.id.startsWith('ai-')));
   });
 
-  it('verdict.json schemaVersion is 2.0.0 (awaitingLegs removed — a breaking change)', () => {
-    assert.equal(computeVerdict({ envelope: cleanEnvelope() }).schemaVersion, '2.0.0');
+  it('verdict.json schemaVersion is 2.1.0 (2.0.0: awaitingLegs removed — a breaking change; 2.1.0: additive owner/message)', () => {
+    assert.equal(computeVerdict({ envelope: cleanEnvelope() }).schemaVersion, '2.1.0');
+  });
+});
+
+describe('verdict: summary.json schemaVersion is unpinned from verdict.json (plan 2026-09-23-audit-run-delta.md)', () => {
+  it("summary.json keeps its own SUMMARY_SCHEMA_VERSION (2.0.0), unaffected by VERDICT_SCHEMA_VERSION's 2.1.0 bump", () => {
+    const dir = tmp();
+    const summary = writeSummary(dir, { depth: 'quick', runs: [] });
+    assert.equal(summary.schemaVersion, '2.0.0');
+    assert.equal(JSON.parse(readFileSync(join(dir, '_run', 'summary.json'), 'utf8')).schemaVersion, '2.0.0');
   });
 });
 
