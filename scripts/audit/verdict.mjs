@@ -360,27 +360,20 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       const doesNotApply = f => f.notApplicable === true && f.noTarget !== true;
       const notApplicable = allFindings.filter(doesNotApply);
       if (notApplicable.length) out.note = notApplicable.map(f => f.message).join('; ');
-      // The envelope's counts come from the script's own summary, taken
-      // before this exclusion — a not-applicable finding that bypassed
-      // `finding()` would otherwise leave `errors` contradicting the state.
-      // So would a noTarget finding, whatever its severity: on a required row
-      // it becomes an INCOMPLETE entry below, never counted; on a row the
-      // depth does not require it becomes a warning, so it counts as one.
-      // scripts/__tests__/audit/verdict.spec.mjs "noTarget … counts" covers both.
-      const noTarget = f => f.noTarget === true && !doesNotApply(f);
-      const countOf = (sev, pred) => allFindings.filter(f => pred(f) && f.severity === sev).length;
-      const movedToWarnings = isRequired ? 0 : countOf('error', noTarget);
-      out.errors = Math.max(0, out.errors - countOf('error', doesNotApply) - countOf('error', noTarget));
-      out.warnings = Math.max(
-        0,
-        out.warnings - countOf('warning', doesNotApply) - (isRequired ? countOf('warning', noTarget) : 0),
-      );
-      out.warnings += movedToWarnings;
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
       // FAIL — the fix is a missing input, and it never also lands in R4's
       // warnings below. On a row the depth does not require it is a warning
       // (T23): nothing was owed, but nothing was checked either.
       const noTargetFindings = allFindings.filter(f => f.noTarget === true);
+      const graded = allFindings.filter(f => f.noTarget !== true && !doesNotApply(f));
+      // The row's counts come from the same groups that produce its entries —
+      // graded errors and warnings, plus every noTarget finding where it is
+      // reported as a warning — never from the script's own summary, which
+      // counts not-applicable and noTarget findings too. Subtracting each
+      // exclusion from that summary drifted every time a finding kind was
+      // added (plan `2026-09-23-audit-report-summary-and-delta.md`).
+      out.errors = graded.filter(f => f.severity === 'error').length;
+      out.warnings = graded.filter(f => f.severity === 'warning').length + (isRequired ? 0 : noTargetFindings.length);
       if (!isRequired) addWarnings(noTargetFindings, `${id} ${row.name}`, verifyCommand(component, depth, id));
       if (isRequired) {
         for (const f of noTargetFindings) {
@@ -394,7 +387,6 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
         }
       }
       if (row.blocking !== false) {
-        const graded = allFindings.filter(f => f.noTarget !== true && !doesNotApply(f));
         const found = graded.filter(f => f.severity === 'error').sort(compareFindings);
         for (const f of found) {
           fails.push(

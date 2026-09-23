@@ -369,7 +369,7 @@ describe('verdict: R4 — script warnings, non-blocking', () => {
     assert.match(v.warnings[0].verify, /run-all\.mjs mud-fx --depth standard --only 02/);
   });
 
-  it('noTarget findings leave a required row counts: a real error beside them still counts', () => {
+  it("a required row's counts leave out its noTarget findings, and a real error beside them still counts", () => {
     const e = cleanEnvelope();
     const row = e.results.find(r => r.id === '02');
     row.summary = { errors: 2, warnings: 1, info: 0 };
@@ -407,6 +407,35 @@ describe('verdict: R4 — script warnings, non-blocking', () => {
     assert.equal(v.warnings.length, 2);
     const out = v.rows.find(r => r.id === '09');
     assert.deepEqual([out.errors, out.warnings], [0, 2]);
+  });
+
+  it('row counts come from the findings the verdict reports, whatever the script summary says', () => {
+    const e = cleanEnvelope({ depth: 'quick' });
+    const lying = e.results.find(r => r.id === '02');
+    lying.summary = { errors: 0, warnings: 0, info: 0 };
+    e.findingsByTool[lying.name] = [
+      { severity: 'error', code: 'REAL', message: 'a real error', file: 'x.tsx', line: 3 },
+      { severity: 'error', code: 'NA', message: 'does not apply', notApplicable: true },
+    ];
+    e.results.push({
+      id: '09',
+      name: 'check-09',
+      wave: 'C',
+      ok: true,
+      status: 'ok',
+      exitCode: 0,
+      durationMs: 1,
+      summary: { errors: 0, warnings: 0, info: 1 },
+      error: null,
+      component: 'mud-fx',
+    });
+    e.findingsByTool['check-09'] = [{ severity: 'info', code: 'NO-STORY', message: 'no story', noTarget: true }];
+    const v = computeVerdict({ envelope: e });
+    const byId = id => v.rows.find(r => r.id === id);
+    assert.deepEqual([byId('02').errors, byId('02').warnings], [1, 0]);
+    assert.equal(v.entries.filter(x => x.kind === 'FAIL').length, 1);
+    assert.equal(v.warnings.filter(w => w.check.startsWith('09 ')).length, 1);
+    assert.deepEqual([byId('09').errors, byId('09').warnings], [0, 1]);
   });
 
   it('a noTarget finding never also appears in warnings, even at warning severity', () => {

@@ -20,8 +20,9 @@
  *           verdict schemas this module also defines (see below).
  *   1.3.0 — a finding may carry `noTarget: true`: "this required row checked
  *           nothing" (plan `2026-09-22-audit-depths-sentinel-fixes.md`
- *           Decision §5). `verdict.mjs` maps it to an INCOMPLETE entry
- *           instead of counting it toward the row's errors/warnings.
+ *           Decision §5). `verdict.mjs` maps it to an INCOMPLETE entry on a
+ *           required row, never a counted error or warning; on a row the
+ *           depth does not require, to a warning, counted as one.
  *   1.4.0 — a finding may carry `notApplicable: true` (severity `info`): the
  *           check does not apply to this component, and the message says why
  *           (Decision 13). `verdict.mjs` shows it as the row's `note`.
