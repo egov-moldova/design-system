@@ -85,9 +85,12 @@ export function code(value) {
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
   // AI leg's finding could move the cursor and overwrite the real headline.
+  // Unicode line/paragraph separators count as newlines, and bidi controls are
+  // neutralised like C0/C1: a right-to-left override lets a finding display
+  // text other than its bytes (Trojan Source) in a terminal or a previewer.
   return String(value)
-    .replace(/\r\n|\r|\n/g, ' ⏎ ')
-    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
+    .replace(/\r\n|\r|\n|\u2028|\u2029/g, ' ⏎ ')
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '\ufffd');
 }
 
 /**

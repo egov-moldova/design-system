@@ -1056,6 +1056,15 @@ describe('fix-brief escaping: properties over 3000 generated hostile strings', (
     }
   });
 
+  it('code() keeps every value on one line and drops bidi controls (Trojan Source)', () => {
+    const tricky = ['a\u2028b', 'a\u2029b', 'run \u202eevil\u2066x\u2069', '\u200e\u200fz'];
+    for (const s of [...inputs, ...tricky]) {
+      const out = code(s);
+      assert.doesNotMatch(out, /[\r\n\u2028\u2029]/, JSON.stringify(s));
+      assert.doesNotMatch(out, /[\u200e\u200f\u202a-\u202e\u2066-\u2069]/, JSON.stringify(s));
+    }
+  });
+
   it('codeSpan() never lets a backtick in the value close the span, and keeps the value as written', () => {
     for (const s of inputs) {
       const span = codeSpan(s);
