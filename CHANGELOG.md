@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Removed — the archived `cor-*` sources, and 36 illustration SVGs they leaked into the package
+
+`src/legacy/` (61 `cor-*` components) and its tokens, `tokens/legacy/` and `tokens/legacy.dark/`,
+are deleted, along with `src/utils/css-helpers.ts` and `src/utils/token-parser.ts`, which only
+`cor-tooltip` imported. None of it was built, tested, linted or exported, but
+`cor-illustration`'s `assetsDirs` copied 36 SVGs into `dist/collection/legacy/`, which the
+package published.
+
+**Migration:** none for `mud-*` consumers. Anything that loaded a file from
+`dist/collection/legacy/` directly loses it. The sources stay in history at `328b233`:
+`git show 328b233:src/legacy/<path>`.
+
 ### Changed — components read the native `aria-label` instead of an `ariaLabel` prop
 
 An `ariaLabel` prop shadowed the platform's own `HTMLElement.ariaLabel`, which the Stencil ESLint

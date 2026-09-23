@@ -18,7 +18,6 @@ export default tseslint.config(
       'www/**',
       'loader/**',
       'storybook-static/**',
-      'src/legacy/**',
       '**/*.md',
       '**/*.css',
       'src/components.d.ts',

@@ -37,7 +37,7 @@ Auto-detect from the prompt, with `--mode=<value>` as escape hatch:
 | Mode | Trigger keywords / context | Sections emitted |
 |---|---|---|
 | `new` | "Create mud-X", "new component", no existing component named | Full template |
-| `redesign` | "Redesign mud-X", target in `src/legacy/`, Figma reference for new design | Visual Changes + API Changes + Migration |
+| `redesign` | "Redesign mud-X", target in `src/components/`, Figma reference for a new design of the whole component | Visual Changes + API Changes + Migration |
 | `modify` | "Add variant", "add prop", target in `src/components/` already exists | API Changes + Behavior delta |
 | `fix` | "Fix", "bug", "regression", file path in prompt | Symptom + root cause + regression test |
 | `tokens` | "Update tokens", "rename token", no TSX/CSS changes | Token Diff only |
@@ -60,16 +60,15 @@ Archetype determines: which CSS Pattern (A/B/C), which sections are required, wh
 
 ## 2bis. Step 0.5 — Snapshot
 
-Run 8 lookups in parallel against the working tree per [`references/codebase-snapshots.md`](references/codebase-snapshots.md):
+Run 7 lookups in parallel against the working tree per [`references/codebase-snapshots.md`](references/codebase-snapshots.md):
 
 1. `Glob src/components/mud-*/mud-*.tsx` → `componentInventory.production`
-2. `Glob src/legacy/mud-*/mud-*.tsx` → `componentInventory.legacy`
-3. `Glob tokens/core/components/*.tokens.json` → `tokenInventory`
-4. `Read src/legacy/shared.constants.ts` → `slotConstants`
-5. `Read tokens/core/color.tokens.json` → `colorTokens`
-6. `Read tokens/core/sizes.tokens.json` → `sizeTokens`
-7. `Read tokens/core/font.tokens.json` → `fontTokens`
-8. `Glob src/utils/*.ts` → `utilsInventory`
+2. `Glob tokens/core/components/*.tokens.json` → `tokenInventory`
+3. `Grep "export const VALID_[A-Z_]*TAGS" src/components/**/*.types.ts` → `slotConstants`
+4. `Read tokens/core/color.tokens.json` → `colorTokens`
+5. `Read tokens/core/sizes.tokens.json` → `sizeTokens`
+6. `Read tokens/core/font.tokens.json` → `fontTokens`
+7. `Glob src/utils/*.ts` → `utilsInventory`
 
 Total wall time: ~2s. All payloads are passed to Steps 2 and 4. Failed lookups emit a one-line warning in `## Validation Issues` and return an empty payload; other lookups continue.
 
@@ -133,7 +132,7 @@ Run the 7-point validator from [`references/codebase-snapshots.md`](references/c
 
 | # | Check | Against |
 |---|---|---|
-| V1 | Every `mud-X` referenced exists in `componentInventory` (production ∪ legacy) OR appears in `## Build Order` | snapshot |
+| V1 | Every `mud-X` referenced exists in `componentInventory.production` OR appears in `## Build Order` | snapshot |
 | V2 | Every `cor.<comp>.<...>` token path matches the regex in [`token-mapping-table.md`](references/token-mapping-table.md) § 1 | draft |
 | V3 | Every slot validation constant cited exists in `slotConstants` | snapshot |
 | V4 | No raw color descriptor outside cited tokens | draft + `colorTokens` |
