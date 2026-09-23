@@ -183,9 +183,8 @@ function recordShapeIssue(record) {
 /**
  * The previous run's record for `componentDir` at `depth`, searched
  * newest-to-oldest among `runs/*` names strictly less than `currentRun`
- * (string order; run ids are ISO timestamps, so this is chronological). Pure
- * I/O, no interpretation beyond reading files — the search itself is the only
- * side effect.
+ * (string order; run ids are ISO timestamps, so this is chronological). Reads
+ * files and writes none; its skip / unusable / baseline rules are Design §4.
  *
  * @returns {{ record: object|null, skippedEmpty: number } | { unusable: { run: string, cause: string } }}
  */

@@ -29,10 +29,9 @@ same inputs give byte-identical files.
 - `## Summary` — a counts line; one table row per check (`# | Check | Required | Result | Fail |
   Warn | Note`), each result derived from the verdict's own entries and warnings; an index of every
   entry and advisory item (`ID | Kind | Check | Where | Actual | Owner`).
-- `## Changes since the previous run` — present only when an earlier same-depth run left a usable
-  `record.json` to compare against (absent on the first run after this feature shipped, after
-  `runs/` was deleted, or when the newest earlier record cannot be read — each case says so in
-  words, never a blank section). Compares only what **both** runs graded: which rows' results
+- `## Changes since the previous run` — always present. With no usable earlier same-depth
+  `record.json` (the first run after this feature shipped, after `runs/` was deleted, or when the
+  newest earlier record cannot be read) it says why in one line instead of comparing. Compares only what **both** runs graded: which rows' results
   changed, what was graded in only one run ("Not compared"), and findings newly reported / no
   longer reported / reported a different number of times / with changed text, by an identity that
   drops line numbers and any measured number (so two findings differing only in a number count

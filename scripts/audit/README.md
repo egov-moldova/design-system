@@ -370,9 +370,11 @@ per-fix check, and only a full run at the same depth can write `PASS`.
 
 ### Changes since the previous run
 
-Every run writes `record.json`: the scopes it graded — a required row that
-actually ran (not excused, crashed, deferred, `noTarget`, or dropped by
-`--only`/`--skip`), each AI leg whose file parsed at a matching schema, and
+Every run writes `record.json` (a re-render of an older run leaves its record
+untouched): the scopes it graded — a required row that actually ran (not
+excused, crashed, deferred, `noTarget`, or dropped by `--only`/`--skip`), each
+AI leg whose file parsed at a matching schema with a `findings` list and no
+finding rejected by the shape check, and
 the Figma gate at `standard`+ — plus the identity of every finding it
 reported. `verdict.mjs` looks up the newest earlier `runs/*` record at the
 **same depth** and, when one is usable, renders a `## Changes since the

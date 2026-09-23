@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { basename, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
@@ -396,6 +396,9 @@ describe('run-record: baseline robustness', () => {
     assert.ok(readFileSync(join(auditDir, 'mud-fx', 'verdict.json'), 'utf8').length > 0);
     const brief = readFileSync(join(auditDir, 'mud-fx', 'fix-brief.md'), 'utf8');
     assert.match(brief, /Not compared: /);
+    // The record built before the comparison threw is still written, so the
+    // next run compares against it rather than the broken legacy record.
+    assert.equal(JSON.parse(readFileSync(join(runA, 'record.json'), 'utf8')).run, basename(runA));
   });
 });
 

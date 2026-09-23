@@ -333,3 +333,16 @@ file.
    sits under Not compared, with no finding claim.
 
 ## Not verified (to fill at close)
+
+- **Bar row `npx eslint scripts/audit scripts/__tests__/audit` exits 0: not met, pre-existing.** It
+  exits 1 with 18 errors at 42c0df8 (before any change here, measured in a clean worktree) and 18
+  after; none is in a file this change touches, and eslint over the changed files exits 0. Fixing
+  them is out of this change's scope (AGENTS.md rule 11).
+- **Design 6 deviation, deliberate:** a throw from the baseline lookup or the comparison still
+  writes the run's own `record.json` when it built. Skipping it would pin every later run to the
+  same broken baseline. `run-record.spec.mjs` asserts it.
+- No end-to-end run on a real component (`audit/` needs a full build); every path is covered through
+  `writeVerdictForRun` on temp run dirs.
+- Not done (optional): pinning a digest of the golden record's keys to the schema major, so a key
+  recipe change without a major bump fails even after the fixture is regenerated; one `runs/`
+  listing shared by the baseline lookup and the newest-run guard.

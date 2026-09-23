@@ -605,8 +605,9 @@ function isNewestRun(componentDir, run) {
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
  * levels up, so the stable paths never depend on the run name. Also builds
- * and writes that run's `record.json` and, when a usable baseline exists,
- * renders the brief's `## Changes since the previous run` section (plan
+ * that run's `record.json` (written only when the run is the newest under
+ * `runs/`) and always renders the brief's `## Changes since the previous run`
+ * section, whose text names the case when there is nothing to compare (plan
  * `2026-09-23-audit-run-delta.md` Design §7).
  */
 export function writeVerdictForRun(runDir) {
@@ -636,6 +637,9 @@ export function writeVerdictForRun(runDir) {
           component: verdict.component,
         };
   } catch (err) {
+    // A record that built before the lookup or comparison threw is still
+    // written: it is valid on its own, and skipping it would leave the same
+    // broken baseline in place for every later run.
     changes = { error: err.message ?? String(err) };
   }
 
