@@ -39,22 +39,57 @@
     },
     "avatar": {
       "size": {
-        "md": { "$value": "28px", "$type": "dimension" },
-        "sm": { "$value": "22px", "$type": "dimension" }
+        "md": {
+          "$value": "{spacing.24}",
+          "$type": "dimension",
+          "$comment": "Figma 203:2083 (input-chip Type=Avatar) sizes the avatar 24x24 inside the 36px pill, leaving 6px above and below."
+        },
+        "sm": {
+          "$value": "{spacing.20}",
+          "$type": "dimension",
+          "$comment": "No Figma design for the sm rung; scaled from the 24px md avatar by the same 8px the container height drops."
+        }
       }
     },
     "count": {
+      "$comment": "The chip's counter is numbered-badge Size=Medium / Style=Light (Figma 149:4937, instanced at 255:6433). Style=Light is white on both chip modes, so these values do not vary with `selected`.",
       "size": {
-        "md": { "$value": "18px", "$type": "dimension" },
-        "sm": { "$value": "16px", "$type": "dimension" }
+        "md": {
+          "$value": "{spacing.16}",
+          "$type": "dimension",
+          "$comment": "Figma 255:6433 is 16px tall and the badge set floors its md width at 16px."
+        },
+        "sm": {
+          "$value": "{spacing.16}",
+          "$type": "dimension",
+          "$comment": "No Figma design for the sm rung; it reuses the one designed badge rung."
+        }
       },
       "fontSize": {
         "md": { "$value": "{fontSize.12}", "$type": "dimension" },
         "sm": { "$value": "{fontSize.12}", "$type": "dimension" }
       },
+      "lineHeight": {
+        "md": {
+          "$value": "{lineHeight.16}",
+          "$type": "dimension",
+          "$comment": "Figma I255:6433;149:4938 is Desktop/Caption/Medium 500 — 12px over a 16px line box."
+        },
+        "sm": { "$value": "{lineHeight.16}", "$type": "dimension" }
+      },
       "paddingInline": {
-        "md": { "$value": "{spacing.4}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.4}", "$type": "dimension" }
+        "md": { "$value": "{spacing.2}", "$type": "dimension", "$comment": "Figma 255:6433 pads 0 2px." },
+        "sm": { "$value": "{spacing.2}", "$type": "dimension" }
+      },
+      "background": {
+        "$value": "{color.background.base.default}",
+        "$type": "color",
+        "$comment": "Figma 255:6433 / 255:6455 — Style=Light fills #FFFFFF on the light chip and on the dark selected chip alike."
+      },
+      "color": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma I255:6433;149:4938 keeps the counter text #121212 in both chip modes."
       }
     },
     "label": {
@@ -92,10 +127,6 @@
       }
     },
     "input": {
-      "minWidth": {
-        "md": { "$value": "64px", "$type": "dimension" },
-        "sm": { "$value": "56px", "$type": "dimension" }
-      },
       "background": {
         "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
         "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" }
@@ -105,6 +136,45 @@
       },
       "icon": {
         "default": { "$value": "{color.icon.base.default}", "$type": "color" }
+      },
+      "avatar": {
+        "$comment": "Figma 203:2082 (input-chip Type=Avatar) is a different surface from the simple pill: white, outlined, and tighter on both ends.",
+        "background": {
+          "$value": "{color.background.base.default}",
+          "$type": "color",
+          "$comment": "Figma 203:2082 fills #FFFFFF."
+        },
+        "borderColor": {
+          "$value": "{color.border.base.default}",
+          "$type": "color",
+          "$comment": "Figma 203:2082 strokes #D9D9D9."
+        },
+        "borderWidth": {
+          "$value": "{borderWidth.1-5}",
+          "$type": "dimension",
+          "$comment": "Figma 203:2082 strokes 1.5px, inside the box. Chromium floors a 1.5px border to 1px, so the CSS paints it as an inset shadow."
+        },
+        "gap": {
+          "md": {
+            "$value": "{spacing.6}",
+            "$type": "dimension",
+            "$comment": "Figma 203:2082 gaps 6px between avatar, label and cross."
+          },
+          "sm": { "$value": "{spacing.4}", "$type": "dimension", "$comment": "No Figma design for the sm rung." }
+        },
+        "paddingInlineRemove": {
+          "md": {
+            "$value": "{spacing.8}",
+            "$type": "dimension",
+            "$comment": "Figma 203:2082 pads 8px after the cross, against the simple variant's 12px."
+          },
+          "sm": { "$value": "{spacing.6}", "$type": "dimension", "$comment": "No Figma design for the sm rung." }
+        },
+        "disabledOpacity": {
+          "$value": "0.6",
+          "$type": "number",
+          "$comment": "Figma 203:2087 fades the avatar to 60% instead of recolouring it."
+        }
       },
       "remove": {
         "size": {
@@ -124,6 +194,19 @@
           "default": { "$value": "{color.icon.base.default}", "$type": "color" },
           "hover": { "$value": "{color.icon.base.default}", "$type": "color" },
           "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
+        },
+        "focusRing": {
+          "$comment": "Figma 205:2477 rings the 20px close circle with Focus Ring/Small, not the chip with the Focus Ring/Medium the filter chip uses (255:6438). The global --focus-ring-width-* pair is the Medium ring, so the close carries its own.",
+          "widthInner": {
+            "$value": "{borderWidth.1}",
+            "$type": "dimension",
+            "$comment": "Focus Ring/Small renders a 1px white halo."
+          },
+          "widthOuter": {
+            "$value": "{borderWidth.2}",
+            "$type": "dimension",
+            "$comment": "The blue band ends 3px out, so it adds 2px beyond the white halo."
+          }
         }
       }
     },
