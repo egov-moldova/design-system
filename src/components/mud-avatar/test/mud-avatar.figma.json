@@ -1,0 +1,1066 @@
+{
+  "component": "mud-avatar",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-avatar--default",
+    "capture": {
+      "selector": "mud-avatar",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "initials-xs",
+      "node": "203:2131",
+      "html": "<mud-avatar type=\"initials\" size=\"xs\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2131",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "203:2131",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 12/16 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        }
+      ]
+    },
+    {
+      "name": "initials-xs-focus",
+      "node": "1046:46748",
+      "html": "<mud-avatar type=\"initials\" size=\"xs\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46748",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "1046:46748",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 12/16 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46748",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "initials-sm",
+      "node": "203:2113",
+      "html": "<mud-avatar type=\"initials\" size=\"sm\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2113",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "203:2113",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 14/20 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        }
+      ]
+    },
+    {
+      "name": "initials-sm-focus",
+      "node": "1046:46720",
+      "html": "<mud-avatar type=\"initials\" size=\"sm\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46720",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "1046:46720",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 14/20 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46720",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "initials-md",
+      "node": "203:2117",
+      "html": "<mud-avatar type=\"initials\" size=\"md\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2117",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "203:2117",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 14/20 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        }
+      ]
+    },
+    {
+      "name": "initials-md-focus",
+      "node": "1046:46726",
+      "html": "<mud-avatar type=\"initials\" size=\"md\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46726",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "1046:46726",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 14/20 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46726",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "initials-lg",
+      "node": "203:2121",
+      "html": "<mud-avatar type=\"initials\" size=\"lg\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2121",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "203:2121",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 16/24 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        }
+      ]
+    },
+    {
+      "name": "initials-lg-focus",
+      "node": "1046:46732",
+      "html": "<mud-avatar type=\"initials\" size=\"lg\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46732",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "1046:46732",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 16/24 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46732",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "initials-xl",
+      "node": "204:708",
+      "html": "<mud-avatar type=\"initials\" size=\"xl\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:708",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "204:708",
+          "styles": {
+            "fontSize": "18px",
+            "lineHeight": "28px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 18/28 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        }
+      ]
+    },
+    {
+      "name": "initials-xl-focus",
+      "node": "1046:46738",
+      "html": "<mud-avatar type=\"initials\" size=\"xl\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46738",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar .initials",
+          "node": "1046:46738",
+          "styles": {
+            "fontSize": "18px",
+            "lineHeight": "28px",
+            "fontWeight": "500",
+            "color": "#383838",
+            "textContent": "OP"
+          },
+          "note": "Figma text style for this rung is 18/28 Onest Medium 500 in #383838. \"OP\" is Figma's mock text; the fixture uses name=\"Olga Popescu\" so the glyphs match for the pixel diff."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46738",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "icon-xs",
+      "node": "204:739",
+      "html": "<mud-avatar type=\"icon\" size=\"xs\" aria-label=\"User\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:739",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "204:739",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma places the \"16/person\" glyph in this variant, a 16x16 box."
+        }
+      ]
+    },
+    {
+      "name": "icon-xs-focus",
+      "node": "1046:46751",
+      "html": "<mud-avatar type=\"icon\" size=\"xs\" aria-label=\"User\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46751",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "1046:46751",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma places the \"16/person\" glyph in this variant, a 16x16 box."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46751",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "icon-sm",
+      "node": "204:727",
+      "html": "<mud-avatar type=\"icon\" size=\"sm\" aria-label=\"User\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:727",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "204:727",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma places the \"20/person\" glyph in this variant, a 20x20 box."
+        }
+      ]
+    },
+    {
+      "name": "icon-sm-focus",
+      "node": "1046:46723",
+      "html": "<mud-avatar type=\"icon\" size=\"sm\" aria-label=\"User\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46723",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "1046:46723",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma places the \"20/person\" glyph in this variant, a 20x20 box."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46723",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "icon-md",
+      "node": "204:730",
+      "html": "<mud-avatar type=\"icon\" size=\"md\" aria-label=\"User\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:730",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "204:730",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma places the \"20/person\" glyph in this variant, a 20x20 box."
+        }
+      ]
+    },
+    {
+      "name": "icon-md-focus",
+      "node": "1046:46729",
+      "html": "<mud-avatar type=\"icon\" size=\"md\" aria-label=\"User\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46729",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "1046:46729",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma places the \"20/person\" glyph in this variant, a 20x20 box."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46729",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "icon-lg",
+      "node": "204:733",
+      "html": "<mud-avatar type=\"icon\" size=\"lg\" aria-label=\"User\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:733",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "204:733",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma places the \"24/person\" glyph in this variant, a 24x24 box."
+        }
+      ]
+    },
+    {
+      "name": "icon-lg-focus",
+      "node": "1046:46735",
+      "html": "<mud-avatar type=\"icon\" size=\"lg\" aria-label=\"User\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46735",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "1046:46735",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma places the \"24/person\" glyph in this variant, a 24x24 box."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46735",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "icon-xl",
+      "node": "204:736",
+      "html": "<mud-avatar type=\"icon\" size=\"xl\" aria-label=\"User\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:736",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "204:736",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma places the \"24/person\" glyph in this variant, a 24x24 box."
+        }
+      ]
+    },
+    {
+      "name": "icon-xl-focus",
+      "node": "1046:46741",
+      "html": "<mud-avatar type=\"icon\" size=\"xl\" aria-label=\"User\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46741",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills this variant #F1F1F1. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar mud-icon",
+          "node": "1046:46741",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma places the \"24/person\" glyph in this variant, a 24x24 box."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46741",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      }
+    },
+    {
+      "name": "photo-xs",
+      "node": "203:2128",
+      "html": "<mud-avatar type=\"photo\" size=\"xs\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2128",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "203:2128",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        }
+      ],
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-xs-focus",
+      "node": "1046:46746",
+      "html": "<mud-avatar type=\"photo\" size=\"xs\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46746",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "1046:46746",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46746",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      },
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-sm",
+      "node": "203:2125",
+      "html": "<mud-avatar type=\"photo\" size=\"sm\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2125",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "203:2125",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        }
+      ],
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-sm-focus",
+      "node": "1046:46744",
+      "html": "<mud-avatar type=\"photo\" size=\"sm\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46744",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "1046:46744",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46744",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      },
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-md",
+      "node": "203:2135",
+      "html": "<mud-avatar type=\"photo\" size=\"md\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2135",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "203:2135",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        }
+      ],
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-md-focus",
+      "node": "1046:46754",
+      "html": "<mud-avatar type=\"photo\" size=\"md\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46754",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "1046:46754",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46754",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      },
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-lg",
+      "node": "203:2138",
+      "html": "<mud-avatar type=\"photo\" size=\"lg\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "203:2138",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "203:2138",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        }
+      ],
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-lg-focus",
+      "node": "1046:46756",
+      "html": "<mud-avatar type=\"photo\" size=\"lg\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46756",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "1046:46756",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46756",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      },
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-xl",
+      "node": "204:702",
+      "html": "<mud-avatar type=\"photo\" size=\"xl\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "204:702",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "204:702",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        }
+      ],
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    },
+    {
+      "name": "photo-xl-focus",
+      "node": "1046:46758",
+      "html": "<mud-avatar type=\"photo\" size=\"xl\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\" name=\"Olga Popescu\" tabindex=\"0\"></mud-avatar>",
+      "expect": [
+        {
+          "target": "mud-avatar",
+          "node": "1046:46758",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "backgroundColor": "#00000000",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma fills the Image variants with a photo, so the container tint is not visible; the component drops the tint to transparent. Figma gives borderRadius 999px on every variant of 203:2112; the token --avatar-container-border-radius resolves to 9999px. Both exceed half of every rung (12-36px), so Chromium clamps each to the same full circle - recorded as an interpretation, not drift."
+        },
+        {
+          "target": "mud-avatar img.photo",
+          "node": "1046:46758",
+          "styles": {
+            "boxWidth": "72px",
+            "boxHeight": "72px",
+            "objectFit": "cover"
+          },
+          "note": "Figma fills the circle edge to edge with the image (scaleMode FILL)."
+        },
+        {
+          "target": "mud-avatar",
+          "node": "1046:46758",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma effect \"Focus Ring/Medium\" lists 0 0 0 5px #3379DB then 0 0 0 2px #FFFFFF. Per the pixel-perfect gotcha on stacked rings, its render is the white halo inside a blue band ending 5px out, which in CSS is 0 0 0 2px #FFF, 0 0 0 5px #3379DB."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-avatar"
+      },
+      "mask": ["mud-avatar img.photo"],
+      "maskNote": "Figma's portrait is mock data; the fixture uses a flat placeholder, so the image area is masked for the pixel diff. Style parity still checks the box."
+    }
+  ]
+}

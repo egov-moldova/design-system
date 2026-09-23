@@ -122,12 +122,11 @@
 .icon {
   color: var(--avatar-icon-color);
   pointer-events: none;
-}
 
-/* `xs` is the one rung whose token (12px) sits below mud-icon's smallest `size`,
-   so it is the one rung where the avatar has to override the icon's own box.
-   Every other rung is set by ICON_SIZE_FOR, which matches the token. */
-:host([size='xs']) .icon {
+  /* The box comes from the token on every rung, so `--avatar-icon-size-*` stays
+     the single source of truth and cannot drift from ICON_SIZE_FOR, which only
+     picks the nearest mud-icon glyph scale. mud-icon sizes its own svg to 100%
+     of its host box, so pinning the box scales the glyph with it. */
   inline-size: var(--_icon-size);
   block-size: var(--_icon-size);
 }
