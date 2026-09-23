@@ -113,6 +113,24 @@
       },
       "marginInlineStart": { "$value": "{spacing.4}", "$type": "dimension" }
     },
+    "clearButton": {
+      "$comment": "Figma 210:2287 (the .clear-button instance, 210:2176) is a constant 20px pill — 2px of padding around a 16px `cross-small` — with a subtle oval at rest. It does not scale with the field, which is why these values carry no size rung. Same affordance and same values as the search input's iconEndClear.",
+      "size": { "$value": "{spacing.20}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.2}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.icon.base.tertiary}", "$type": "color" },
+        "hover": { "$value": "{color.icon.base.default}", "$type": "color" }
+      },
+      "background": {
+        "default": {
+          "$value": "{color.background.transparent.inactive}",
+          "$type": "color",
+          "$comment": "Figma 210:2287 fills the pill rgba(18, 18, 18, 0.1) at rest — the affordance is visible before it is hovered."
+        },
+        "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" }
+      }
+    },
     "stepper": {
       "width": {
         "md": { "$value": "{spacing.24}", "$type": "dimension" },

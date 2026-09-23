@@ -818,7 +818,8 @@ export class MudNumericInput {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
-              <mud-icon name="cross-small" size={this.size === 'lg' ? 20 : 16} />
+              {/* Figma 210:2287 keeps the glyph at 16px on both field sizes. */}
+              <mud-icon name="cross-small" size={16} />
             </button>
           ) : null}
 

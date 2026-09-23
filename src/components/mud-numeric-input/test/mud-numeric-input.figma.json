@@ -421,6 +421,36 @@
       ],
       "pixel": false,
       "pixelNote": "The cited node is a sub-element of the field (the unit instance / the inline-message instance), so its canvas never matches a whole-component capture. Its values are pinned by style parity."
+    },
+    {
+      "name": "clear-button",
+      "node": "210:2287",
+      "pixel": false,
+      "pixelNote": "The cited node is the clear affordance inside the field, so its canvas never matches a whole-component capture. Its values are pinned by style parity.",
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" clearable value=\"12345\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .clear-button",
+          "node": "210:2287",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "backgroundColor": "rgba(18, 18, 18, 0.1)",
+            "paddingTop": "2px",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 210:2287 is the .clear-button instance (210:2176): a 20px pill filled rgba(18, 18, 18, 0.1) at rest, with 2px of padding around a 16px cross. It is the same size on the Medium field, so it does not scale with the control. Figma writes radius 999px; the token resolves to 9999px and both clamp to the same circle."
+        },
+        {
+          "target": "mud-numeric-input .clear-button mud-icon",
+          "node": "210:2171",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 210:2171 is the 16/cross-small the clear pill insets by 2px on every side."
+        }
+      ]
     }
   ]
 }
