@@ -267,16 +267,19 @@ Internal contributors with write access to this repo should continue branching d
 ## Submitting a Pull Request
 
 1. Before opening a PR, run the full local verify gate: `yarn check` (format + typecheck + lint + test), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components/*/readme.md` — these are auto-generated and must stay in sync with source.
-2. Push your branch and open a PR against `main`. Describe what changed and why, and note the test plan (what you ran, e.g. `yarn check`, `yarn build`, manual Storybook verification).
-3. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase, or to clear merge conflicts as in step 5).
-4. A maintainer reviews and merges once the checklist is satisfied.
-5. If GitHub reports conflicts after another PR has merged — usually only in component readmes or the top of `CHANGELOG.md` — run `yarn sync:main` on your branch, then `git push --force-with-lease`. It rebases onto `main`, so this is the one force push step 3 expects; do it once, right before merge, not after every review round. It resolves those mechanical conflicts, rebuilds and commits the generated files, and runs lint, typecheck and tests. A conflict in any other file stops it: resolve it, `git add`, then `yarn sync:main --continue`. Details: `_agents/generated-files.md`.
+2. If the change is visible to consumers, add a changelog fragment under `changes/` instead of editing `CHANGELOG.md`. See [`changes/README.md`](changes/README.md) for the format.
+3. Push your branch and open a PR against `main`. Describe what changed and why, and note the test plan (what you ran, e.g. `yarn check`, `yarn build`, manual Storybook verification).
+4. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase, or to clear merge conflicts as in step 6).
+5. A maintainer reviews and merges once the checklist is satisfied.
+6. If GitHub reports conflicts after another PR has merged — usually only in component readmes — run `yarn sync:main` on your branch, then `git push --force-with-lease`. It rebases onto `main`, so this is the one force push step 4 expects; do it once, right before merge, not after every review round. It resolves those mechanical conflicts, rebuilds and commits the generated files, and runs lint, typecheck and tests. A conflict in any other file stops it: resolve it, `git add`, then `yarn sync:main --continue`. Details: `_agents/generated-files.md`.
 
 ---
 
 ## Publishing
 
 Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Release configuration lives in the Azure DevOps `Design.System` operations repository. Its development and production pipelines run manually, check out `main` from this GitHub repository through a service connection, stamp the checked-out `package.json`, build the library, validate the package, and publish it. They never commit generated versions back to GitHub.
+
+Because of that, cut the changelog in a release PR before running the production pipeline: `yarn changelog.release <x.y.z>` moves the fragments in `changes/` into a new `## <x.y.z> — <date>` section of `CHANGELOG.md` and deletes them. Use the same version the pipeline will publish. Development (`-dev.N`) releases skip this step. Details: [`changes/README.md`](changes/README.md).
 
 For example, with npm `latest` at `1.1.9`, development releases use valid SemVer prereleases such as `1.1.10-dev.1`, `1.1.10-dev.2`, and so on under the `dev` dist-tag. Production publishes `1.1.10` under `latest`. The default release base is the next patch after npm `latest`; maintainers can provide an explicit future `x.y.z` base for minor or major releases.
 

@@ -24,6 +24,29 @@ jobs:
       - name: Check AI docs against the repo
         run: yarn docs:check
 
+  changelog:
+    name: Changelog fragments
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the breaking-change check reads every commit since the base branch.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      - name: Validate fragments
+        run: yarn changelog.check
+
+      # A commit marked breaking (`feat!:`, `BREAKING CHANGE:` footer) needs a
+      # fragment with `breaking: true` in this PR: it carries the migration note.
+      - name: Require a fragment for breaking changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: yarn changelog.check --base "origin/$BASE_REF"
+
   typecheck:
     name: Typecheck
     timeout-minutes: 10
