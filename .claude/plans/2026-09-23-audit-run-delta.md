@@ -53,32 +53,56 @@ constraint 2 of the issue.
      findings included.
    - `figma-gate`: `depth !== 'quick' && !noFigma`. This covers the "no manifest" NEEDS-DECISION.
 3. **Finding identity.** `key` is a JSON array string. `fileOf(location)` strips a trailing
-   `:<line>` or `:<line>:<col>`:
-   - FAIL entry: `['fail', code, fileOf(location), actual, expected.value]`, scope `row:<rowIdOf(check)>`.
-   - warning: `['warning', code, message]`, scope `row:<rowIdOf(check)>`.
-   - Figma-gate NEEDS-DECISION entry: `['decision', node, question]`, scope `figma-gate`.
-   - advisory FAIL: `['fail', code, fileOf(location), actual]`, scope `leg:<owner>`.
-   - advisory NEEDS-DECISION: `['decision', node, question]`, scope `leg:<owner>`. To make this
-     possible, `aiFailOrDecision` adds `owner: leg` to the decision shape (additive).
-     `VERDICT_SCHEMA_VERSION` 2.0.0 → 2.1.0. The index table's Owner column then shows the leg
-     where it shows `—` today.
+   `:<line>` or `:<line>:<col>`. `stable(text)` replaces every run of digits (with an optional
+   decimal part) by `#`, so a measured value never enters a key.
+   Why: only `15-style-parity.mjs` sets `actual`; every other FAIL's `actual` is its message
+   (`verdict.mjs:180`), and messages embed measurements such as a pixel-diff %, bundle KB, a
+   coverage % or a contrast ratio (`11-pixel-diff-states.mjs:553`, `08-bundle-size.mjs:119`,
+   `06-test-coverage.mjs:269`, `10-contrast-pairs.mjs:496`).
+   - FAIL entry: `['fail', code, fileOf(location), stable(actual), stable(expected.value)]`, scope
+     `row:<rowIdOf(check)>`.
+   - warning: `['warning', code, stable(message)]`, scope `row:<rowIdOf(check)>`. Verdict warnings
+     carry no file (`verdict.mjs:257`), so the same warning in two files is counted, not told
+     apart. This is accepted and documented in Phase 2.
+   - Figma-gate NEEDS-DECISION entry: `['decision', node]`, scope `figma-gate`. There is at most
+     one per run, and its question gains a suffix when the manifest is uncommitted
+     (`verdict.mjs:440`), so the question stays out of the key.
+   - advisory FAIL: `['fail', code, fileOf(location)]`, scope `leg:<owner>`. An AI leg's prose is
+     reworded on every re-dispatch, so the prose stays out of the key.
+   - advisory NEEDS-DECISION: `['decision', node]`, scope `leg:<owner>`. To make this possible,
+     `aiFailOrDecision` adds `owner: leg` to the decision shape (additive). `VERDICT_SCHEMA_VERSION`
+     goes from 2.0.0 to 2.1.0. A new `SUMMARY_SCHEMA_VERSION = '2.0.0'` takes over at
+     `verdict.mjs:600` and `:777`, so `summary.json` stays byte-for-byte unchanged. The index
+     table's Owner column then shows the leg where it shows `—` today.
    - INCOMPLETE entries are not keyed. Their row's result change carries them.
-   - `label` is human text made from the same fields plus the check (`<check> · <code> · <file> — <actual>`,
-     or `<node> — <question>`). Equal keys always have equal labels.
+   - `label` is the finding's raw text, measurements included: `<check> · <code> · <file> — <actual>`,
+     or `<node> — <question>`.
 
    The line is deliberately NOT in the key. A shift caused by an unrelated edit leaves the finding
    unchanged. Findings that share a key cannot be told apart, so they are **counted, never paired**:
    the comparison reports "reported 2 → 1 times" and never which one went. This rules out
-   positional pairing by construction.
+   positional pairing by construction. The trade is stated: two findings that differ only in a
+   number (a state named `size-32` vs `size-48`) share a key and are counted together.
+   The key recipe and `stable()` are part of the record format. Changing either needs a major bump
+   of `RUN_RECORD_SCHEMA_VERSION`, and a golden-record spec fails until it gets one.
 4. **The baseline.** `findPreviousRecord(componentDir, currentRun, depth)` lists `runs/*` names
    `< currentRun` (string order; `defaultRunId` is an ISO timestamp, so it is chronological), from
-   newest to oldest. It skips a dir with no readable `record.json`, or whose record lacks a `depth`
-   string. It skips a record at another depth. The first remaining one is the baseline. If that
-   record's `schemaVersion` major differs, the result is `{ incompatible: { run, schemaVersion } }`.
-   It never falls through to an older record. None found → `null`.
+   newest to oldest, and takes the first match:
+   - no `record.json` (a run from before this change, or a failed write) → skip;
+   - a record at another depth → skip;
+   - a record with an empty `scopes` → skip and count it. This is a run that graded nothing: a
+     preflight failure, or an envelope that could not be read;
+   - a record that does not parse, lacks `depth`/`scopes`/`rows`/`findings` of the right types, or
+     has another `schemaVersion` major → stop with `{ unusable: { run, cause } }`, never falling
+     through to an older record;
+   - otherwise → the baseline, together with the count of skipped runs that graded nothing.
+
+   None found → `null`, along with that same count.
+   Note: a record without `depth` does not parse into a usable record and stops the search with
+   its cause.
 5. **The comparison.** `compareRecords(current, previous)` is pure and returns
-   `{ baseline: null } | { incompatible } | { baseline: { run, headline }, headline, rowChanges,
-   notCompared, added, gone, countChanged, unchanged }`:
+   `{ baseline: null } | { unusable } | { baseline: { run, headline }, skippedEmpty, headline,
+   rowChanges, notCompared, added, gone, countChanged, textChanged, unchanged }`:
    - `rowChanges`: every row id in either record whose result differs, with `'—'` for a row
      absent on one side. A check made required after the baseline ran therefore reads as
      "— → incomplete", with no claim about its findings.
@@ -86,27 +110,36 @@ constraint 2 of the issue.
      result, or `not in that run`; a leg `wrote` / `did not write`; the figma gate `checked` /
      `not checked`).
    - Findings are compared only within scopes graded in both runs, as multisets by `(scope, key)`:
-     `added` (count 0 → n), `gone` (n → 0), `countChanged` (n → m), `unchanged` (a number).
+     `added` (count 0 → n), `gone` (n → 0), `countChanged` (n → m). Where the counts are equal,
+     the sorted raw labels are compared too: they differ → `textChanged` (previous and current
+     labels, e.g. `4.2% diff` → `3.1% diff`); otherwise the finding counts toward `unchanged`
+     (a number).
    - All lists are sorted by `(scope, key)`. The output is deterministic.
 6. **Rendering.** `renderFixBrief(verdict, changes = null)` renders `renderChanges(changes)` after
    the summary tables, before `REPORT_END`. `null` renders nothing, so existing callers and specs
    stay valid. Wording:
    - no baseline: `No earlier run at <depth> left a record under audit/<c>/runs/ — nothing to compare.`
-   - incompatible: `The previous run at <depth> (<run>) was recorded in format <v>; this run writes <v>. Not compared.`
-   - otherwise: `Compared with run <run>: <prev headline> → <headline>`, a `| # | Check | Previous | Now |`
-     table of `rowChanges` (icons via `resultIcon` for real results only), a `Not compared` list,
-     and the counts line `Findings in checks both runs graded: n newly reported · n no longer reported
-     · n reported a different number of times · n unchanged`. Then bullets `- newly reported: <label>`
-     (`×n` when n > 1), `- no longer reported: <label>`, `- reported <n> → <m> times: <label>`. Last,
-     one line: `"No longer reported" means the check that reported it last time did not report it
-     this time; the audit does not say why.`
+   - unusable: `The previous run at <depth> (<run>) has a record this version cannot read (<cause>). Not compared.`
+   - A comparison that throws is caught in `writeVerdictForRun` and rendered as
+     `Not compared: <error message>`. The error never blocks `verdict.json` or the rest of the brief.
+   - otherwise: `Compared with run <run>: <prev headline> → <headline>`, followed by
+     `(<n> later runs graded nothing and were skipped)` when n > 0. Then a
+     `| # | Check | Previous | Now |` table of `rowChanges` (icons via `resultIcon` for real results
+     only), a `Not compared` list, and the counts line `Findings in checks both runs graded: n newly
+     reported · n no longer reported · n reported a different number of times · n with changed text
+     · n unchanged`. Then bullets: `- newly reported: <label>` (`×n` when n > 1),
+     `- no longer reported: <label>`, `- reported <n> → <m> times: <label>`,
+     `- text changed: <previous label> → <label>`. Last, one line: `"No longer reported" means no
+     finding with this identity was reported this time by a check both runs graded; the audit does
+     not say why.`
    - A not-compared leg line names the re-render command: `yarn audit:component --rerender <c>`.
    - Every value goes through `line()` / `cell()`. The renderer's own words never include `fixed` or
      `resolved`. A quoted label is a finding's text, including an AI leg's free prose, so it may
      contain either word. It is data, rendered as found and never rewritten: rewriting it would
      misquote the finding. It always sits after a fixed status prefix (`newly reported:` /
-     `no longer reported:` / `reported n → m times:`), so the status comes from the renderer and
-     never from the finding.
+     `no longer reported:` / `reported n → m times:` / `text changed:`), so the status comes from
+     the renderer and never from the finding. The same holds for the two headlines and the row
+     names, which carry manifest text (an excuse reason, `verdict.mjs:100`).
 7. **Writing.** `writeVerdictForRun` computes the verdict, the record, the baseline, the changes
    and the brief first, then writes `verdict.json`, `fix-brief.md` and `runs/<run>/record.json`.
    A render failure writes none of them. `readRunInputs` does not read `record.json`, so
@@ -115,15 +148,27 @@ constraint 2 of the issue.
 
 ## Acceptance bar
 
-Zero tolerance. Every spec item is graded by `node --test "scripts/__tests__/audit/*.spec.mjs"`,
-which runs `run-record.spec.mjs` (new) and `verdict.spec.mjs`:
+Zero tolerance. Every spec item is graded by `node --test "scripts/__tests__/audit/*.spec.mjs"`.
+That command runs all 38+ spec files in the directory, and every one must stay green, not only the
+two named here:
 - `run-record.spec.mjs` false cases: each false case from PR #115's rounds makes no claim about the
   affected finding and lists the scope under Not compared. The cases: a row excused, crashed,
-  deferred, report-only, dropped by `--only`, or noTarget this run; a leg that wrote last run and
-  not yet this run; `--no-figma` now vs not then.
+  deferred, report-only, dropped by `--only`, dropped by `--skip`, or noTarget this run; a leg that
+  wrote last run and not yet this run; `--no-figma` now vs not then.
 - `run-record.spec.mjs` identity: two findings with the same code in one file with no line, one
   gone → `reported 2 → 1 times`, and no line says which one. The same finding at a shifted line →
-  `unchanged`.
+  `unchanged`. The same finding with a different measured number (`4.2% diff` → `3.1% diff`) →
+  `text changed`, never gone + new. An AI leg's finding reworded with the same code and file →
+  never gone + new.
+- `run-record.spec.mjs` baseline robustness: a run that graded nothing is skipped and counted. A
+  corrupt or mis-shaped newest record → `unusable`, with no fall-through. A comparison that throws →
+  `Not compared: <cause>` while `verdict.json` is still written.
+- `run-record.spec.mjs` golden record: a fixed envelope plus AI files produces a checked-in
+  `__fixtures__/run-record/record.golden.json` byte for byte. Also,
+  `compareRecords(r, JSON.parse(JSON.stringify(r)))` reports zero changes.
+- `run-record.spec.mjs` end to end: `writeVerdictForRun` on run A, then on run B, in one temp
+  component dir. B's `fix-brief.md` contains `Compared with run A` and the expected bullets.
+- `verdict.spec.mjs` summary unchanged: `summary.json`'s `schemaVersion` is still `2.0.0`.
 - `run-record.spec.mjs` required-later: a row absent in the baseline record → a row change with `—`
   and no finding claim.
 - `run-record.spec.mjs` settled decision: a figma-gate NEEDS-DECISION that both runs checked →
@@ -132,7 +177,8 @@ which runs `run-record.spec.mjs` (new) and `verdict.spec.mjs`:
   another depth is skipped; an unreadable one is skipped; a newer run name is never used; an
   incompatible major → "Not compared", with no fall-through.
 - `run-record.spec.mjs` wording: the renderer's own text never contains `fixed` or `resolved`.
-  Asserted on every fixture's section with each quoted label cut out. A spec case gives an AI leg
+  Asserted on every fixture's section with each quoted label, both headlines and every row name cut
+  out. A spec case gives an AI leg
   the message `appears resolved upstream`: that text appears only inside its quoted label, and the
   section adds no status word of its own. Quoted values are data and are not rewritten.
 - `run-record.spec.mjs` hostile text: `|`, `\|`, a newline or ESC in a label cannot add a column,
@@ -150,8 +196,12 @@ Tolerances: none. The output is deterministic.
 ## Global constraints
 
 - Node 24 (`.nvmrc`); run everything under `fnm exec --using 24`. `node:test` specs.
-- English in every authored file. No change to exit codes or `summary.json`. `verdict.json` changes
-  only by the additive `owner` on AI decision entries (schema 2.1.0).
+- English in every authored file. No change to exit codes or `summary.json`: it keeps `2.0.0` via
+  `SUMMARY_SCHEMA_VERSION`. `verdict.json` changes only by the additive `owner` on AI decision
+  entries (schema 2.1.0).
+- `rowResults` / `rowIdOf` stay in `fix-brief.mjs`, and `run-record.mjs` imports them. Moving them
+  into their own module was considered and left for later, to keep this diff away from the lines
+  #139 just changed.
 - Do not touch `resultIcon` / the Result cell lines from #139 beyond calling `resultIcon`.
 - No changelog fragment: this is audit tooling, not a change a package consumer notices
   (`changes/README.md`).
@@ -161,15 +211,17 @@ Tolerances: none. The output is deterministic.
 
 ### Phase 1: record, compare, render (implementer)
 
-**Executor:** implementer · sonnet · high · wave 1
+**Executor**: implementer · sonnet · high · wave 1
 
 **Files:** `scripts/audit/lib/run-record.mjs` (new), `scripts/audit/lib/json-output.mjs`,
 `scripts/audit/lib/fix-brief.mjs`, `scripts/audit/verdict.mjs`,
-`scripts/__tests__/audit/run-record.spec.mjs` (new), plus existing specs under
-`scripts/__tests__/audit/` only where they pin `VERDICT_SCHEMA_VERSION` or the AI decision's
-Owner cell.
+`scripts/__tests__/audit/run-record.spec.mjs` (new),
+`scripts/__tests__/audit/__fixtures__/run-record/record.golden.json` (new), plus existing specs under
+`scripts/__tests__/audit/`, touched only where they pin `VERDICT_SCHEMA_VERSION` or the AI
+decision's Owner cell. `verdict.spec.mjs` also gains the summary-unchanged assertion.
 
-1. `json-output.mjs`: `RUN_RECORD_SCHEMA_VERSION`; `VERDICT_SCHEMA_VERSION` → `2.1.0`.
+1. `json-output.mjs`: `RUN_RECORD_SCHEMA_VERSION`; `VERDICT_SCHEMA_VERSION` → `2.1.0`;
+   `SUMMARY_SCHEMA_VERSION = '2.0.0'`, used by `writeSummary` and `earlyExitSummary`.
 2. `run-record.mjs`: `buildRunRecord`, `findPreviousRecord`, `compareRecords` (Design 1–5).
    Reuse `rowResults` from `fix-brief.mjs`; export `rowIdOf` from there rather than copying it.
 3. `verdict.mjs`: `owner: leg` on the AI decision; `writeVerdictForRun` per Design 7; update the
@@ -179,7 +231,7 @@ Owner cell.
 
 ### Phase 2: docs (implementer)
 
-**Executor:** implementer · sonnet · medium · wave 2
+**Executor**: implementer · sonnet · medium · wave 2
 
 **Files:** `scripts/audit/README.md`, `.claude/skills/audit-component/references/report-template.md`,
 `.claude/skills/audit-component/SKILL.md` (only if step 4's wording needs the new section named).
@@ -221,10 +273,10 @@ file.
 3. **Numeric targets with a denominator?** No instance. The bar is zero-tolerance cases plus exit
    codes, with no percentages.
 4. **Do two rules interact into an unintended pass?** One instance: Design 4 skips a run dir with
-   no readable record, and Design 7 writes `record.json` last. So a run whose record write failed is
-   silently skipped, and the comparison uses an older run. That is visible, not silent: the header
-   names the baseline run id (Design 6), and runs from before this change have no record anyway, so
-   the skip must exist. Also checked, no instance: "compare only scopes graded in both" against
+   no `record.json`, and Design 7 writes `record.json` last. So a run whose record write failed is
+   skipped, and the comparison uses an older run. That is visible, not silent: the header names the
+   baseline run id (Design 6), and runs from before this change have no record anyway, so the skip
+   must exist. A record that exists but cannot be used stops the search instead (round 2). Also checked, no instance: "compare only scopes graded in both" against
    "row changes list every row". An excused-now row shows `fail → excused` in the row table and
    sits under Not compared, with no finding claim.
 
