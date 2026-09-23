@@ -185,4 +185,27 @@ Owner cell.
 Phase 2 waits for Phase 1 because the docs describe the rendered wording. The two phases share no
 file.
 
+## Self-refute log
+
+1. **Does the fix reuse the defect's mechanism?** The defect was inferring what the baseline graded
+   from a verdict recomputed later. This design still derives the graded scopes by rule (Design 2),
+   but from the raw envelope and `ai/` at the moment the run happens, and it freezes them in a
+   versioned record. Leg scope means "a readable file exists"; it is not the leg's claim about its
+   coverage. Scanned: Design 2–4. No instance.
+2. **Can the letter be met while the intent is violated?** Yes, one instance: a row graded in both
+   runs whose target set shrank (row 12 over fewer stories, row 11 over fewer manifest states). Its
+   findings read "no longer reported" although nothing was re-checked. Design 6's closing line
+   covers it ("the audit does not say why"), and "no longer reported" never implies fixed. Accepted
+   as a limit of row-level scope: per-target scope would need every check to report its targets,
+   which is out of scope for #126.
+3. **Numeric targets with a denominator?** No instance. The bar is zero-tolerance cases plus exit
+   codes, with no percentages.
+4. **Do two rules interact into an unintended pass?** One instance: Design 4 skips a run dir with
+   no readable record, and Design 7 writes `record.json` last. So a run whose record write failed is
+   silently skipped, and the comparison uses an older run. That is visible, not silent: the header
+   names the baseline run id (Design 6), and runs from before this change have no record anyway, so
+   the skip must exist. Also checked, no instance: "compare only scopes graded in both" against
+   "row changes list every row". An excused-now row shows `fail → excused` in the row table and
+   sits under Not compared, with no finding claim.
+
 ## Not verified (to fill at close)
