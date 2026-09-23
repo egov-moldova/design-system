@@ -337,7 +337,9 @@ file.
 - **Bar row `npx eslint scripts/audit scripts/__tests__/audit` exits 0: not met, pre-existing.** It
   exits 1 with 18 errors at 42c0df8 (before any change here, measured in a clean worktree) and 18
   after; none is in a file this change touches, and eslint over the changed files exits 0. Fixing
-  them is out of this change's scope (AGENTS.md rule 11).
+  them is out of this change's scope (AGENTS.md rule 11). **Dan accepted the substitute
+  (2026-09-23):** `npx eslint` over the changed `scripts/**/*.mjs` files exits 0. CI's `yarn lint`
+  only lints `src/**/*.{ts,tsx}`, so the 18 errors do not reach CI either.
 - **Design 6 deviation, deliberate:** a throw from the baseline lookup or the comparison still
   writes the run's own `record.json` when it built. Skipping it would pin every later run to the
   same broken baseline. `run-record.spec.mjs` asserts it.
