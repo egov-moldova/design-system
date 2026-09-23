@@ -1,7 +1,7 @@
 # Audit: show what changed since the previous run (issue #126)
 
-**Reviewed:** preflight 3b3f231 · critic 92cf52e · critic fea13bc — round cap (3) reached; round 3
-findings folded; implementation awaits Dan's go
+**Reviewed:** preflight 3b3f231 critic 92cf52e critic fea13bc critic 326ce0b — after the 3-round cap
+Dan asked for round 4; its findings are folded in and the implementation go is Dan's
 **Base:** PR #139 (`70439fa`, result icons in `lib/fix-brief.mjs`) — this branch sits on it; rebase onto
 `upstream/main` once #139 merges. Nothing here edits the lines #139 changed except by adding beside them.
 
@@ -34,7 +34,10 @@ constraint 2 of the issue.
 
 ### Design (option A)
 
-1. **The record.** `lib/run-record.mjs` exports `buildRunRecord({ run, verdict, envelope, aiFiles })`.
+1. **The record.** `lib/run-record.mjs` exports `buildRunRecord({ run, verdict, envelope, legs })`.
+   `verdict.mjs` computes `legs` as `[{ leg, graded, cause }]`, using its own `findingShapeIssue`
+   (`verdict.mjs:214`) and AI schema check. So the rule lives in one place, and `run-record.mjs`
+   never imports `verdict.mjs`, which would be a cycle.
    It is pure and returns:
    ```
    { schemaVersion: RUN_RECORD_SCHEMA_VERSION, run, component, depth, state, headline,
@@ -50,11 +53,12 @@ constraint 2 of the issue.
      `deferred`, and no finding with `noTarget === true` in `findingsByTool[row.name]`. So a row
      that was excused, crashed, missing-prereq, skipped, deferred, report-only, dropped by
      `--only`/`--skip`, or resolved no target is not graded.
-   - `leg:<leg>`: one per `aiFiles` entry whose data is readable at a matching schema major, zero
-     findings included. A leg with even one finding that failed `findingShapeIssue`
-     (`verdict.mjs:422`) is not graded. It goes under Not compared with the cause
-     `<n> findings ignored`, so a leg that wrote malformed findings never reads as "reported
-     nothing".
+   - `leg:<leg>`: graded only when three things hold: its file is readable at a matching schema
+     major, `Array.isArray(data.findings)` holds (zero findings is fine), and no finding failed
+     `findingShapeIssue`. Otherwise it goes under Not compared with its cause: `unreadable or
+     unknown schema`, `findings is not a list`, or `<n> findings ignored`. So a leg that wrote a
+     malformed file never reads as "reported nothing". (`computeVerdict` maps a non-array
+     `findings` to `[]`, `verdict.mjs:420`, and that is exactly the case this closes.)
    - `figma-gate`: `depth !== 'quick' && !noFigma`. This covers the "no manifest" NEEDS-DECISION.
 3. **Finding identity.** `key` is a JSON array string. `fileOf(location)` strips a trailing
    `:<line>` or `:<line>:<col>`. `stable(text)` replaces every hex colour literal
@@ -71,7 +75,12 @@ constraint 2 of the issue.
      Only the message carries `state › target › prop` (`15-style-parity.mjs:122`). So `failEntry`
      adds the finding's `message` to the FAIL entry (additive, same 2.1.0 bump; `renderEntry`
      prints only `BRIEF_FIELDS`, so the brief is unchanged). An entry without a message keys on
-     `stable(actual)`.
+     `stable(actual)`. One code is cut before keying. For `STYLE-MISMATCH` only the message text
+     before the first `: ` is used, which is `state › target › prop`. The rest carries the Figma
+     node, the values and a token suffix matched from the rendered value
+     (`15-style-parity.mjs:123`, `lib/token-match.mjs:96`), and that suffix changes whenever the
+     colour changes. The cut is part of the record format. The expected value still enters the key
+     through `stable(expected.value)`.
    - warning: `['warning', code, stable(message)]`, scope `row:<rowIdOf(check)>`. Verdict warnings
      carry no file (`verdict.mjs:257`), so the same warning in two files is counted, not told
      apart. This is accepted and documented in Phase 2.
@@ -93,7 +102,11 @@ constraint 2 of the issue.
    unchanged. Findings that share a key cannot be told apart, so they are **counted, never paired**:
    the comparison reports "reported 2 → 1 times" and never which one went. This rules out
    positional pairing by construction. The trade is stated: two findings that differ only in a
-   number (a state named `size-32` vs `size-48`) share a key and are counted together.
+   number (a state named `size-32` vs `size-48`) share a key and are counted together. The
+   reverse is also accepted: a message whose free text changes for a reason other than the finding
+   reads as gone + new. Examples are row 11's masking note (`11-pixel-diff-states.mjs:553`), row
+   06's list of failing metrics (`06-test-coverage.mjs:269`), and a keyword value such as
+   `normal` → `bold`. That noise is honest (no status is claimed), and Phase 2 documents it.
    The key recipe and `stable()` are part of the record format. Changing either needs a major bump
    of `RUN_RECORD_SCHEMA_VERSION`, and a golden-record spec fails until it gets one.
 4. **The baseline.** `findPreviousRecord(componentDir, currentRun, depth)` lists `runs/*` names
@@ -119,7 +132,8 @@ constraint 2 of the issue.
      `— → <its result now>` (e.g. `— → skipped` when it did not run), with no claim about its
      findings.
    - `notCompared`: every scope graded in exactly one run, with what each side recorded (a row's
-     result, or `not in that run`; a leg `wrote` / `did not write`; the figma gate `checked` /
+     result, or `not in that run`; a leg `wrote`, `did not write`, or `wrote a file not compared
+     (<cause>)`; the figma gate `checked` /
      `not checked`).
    - Findings are compared only within scopes graded in both runs, as multisets by `(scope, key)`:
      `added` (count 0 → n), `gone` (n → 0), `countChanged` (n → m). Where the counts are equal,
@@ -128,12 +142,15 @@ constraint 2 of the issue.
      (a number).
    - All lists are sorted by `(scope, key)`. The output is deterministic.
 6. **Rendering.** `renderFixBrief(verdict, changes = null)` renders `renderChanges(changes)` after
-   the summary tables, before `REPORT_END`. `null` renders nothing, so existing callers and specs
-   stay valid. Wording:
+   the summary tables, before `REPORT_END`. `null` renders nothing. A `changes` value of any other
+   shape than the declared ones throws. `fix-brief.spec.mjs:218` already passes a stray second
+   argument (`{ run: 'r1' }`); that call drops the argument. Wording:
    - no baseline: `No earlier run at <depth> left a record under audit/<c>/runs/ — nothing to compare.`
    - unusable: `The previous run at <depth> (<run>) has a record this version cannot read (<cause>). Not compared.`
-   - A comparison that throws is caught in `writeVerdictForRun` and rendered as
-     `Not compared: <error message>`. The error never blocks `verdict.json` or the rest of the brief.
+   - Building the record, looking up the baseline and comparing all run inside one `try` in
+     `writeVerdictForRun`. A throw from any of them, `readdirSync`/`readFileSync` on `runs/`
+     included, renders `Not compared: <error message>` and skips writing `record.json`. The error
+     never blocks `verdict.json` or the rest of the brief.
    - otherwise: `Compared with run <run>: <prev headline> → <headline>`, followed by
      `(<n> later runs graded nothing and were skipped)` when n > 0. Then a
      `| # | Check | Previous | Now |` table of `rowChanges` (icons via `resultIcon` for real results
@@ -156,7 +173,10 @@ constraint 2 of the issue.
    and the brief first, then writes `verdict.json`, `fix-brief.md` and `runs/<run>/record.json`.
    A render failure writes none of them. A failure writing `record.json` alone is caught: it
    prints `verdict: record.json not written for <run>: <cause>` to stderr and changes no exit code.
-   The next run then names an older baseline, or none. `readRunInputs` does not read `record.json`, so
+   The next run then names an older baseline, or none. `record.json` is written only when the run
+   is the newest dir under `runs/` (by name). `--run-dir` can re-render an older run when
+   `summary.json` does not list the component (`verdict.mjs:765`), and that re-render must not
+   rewrite a baseline a later run already compared against. `readRunInputs` does not read `record.json`, so
    `verdict.json` stays a pure function of `envelope.json` + `ai/`. `--rerender` goes through the
    same function, so a leg that writes after the run is picked up then.
 
@@ -178,8 +198,11 @@ two named here:
   `unchanged`. An AI leg's finding reworded with the same code and file → never gone + new. A leg
   with a shape-rejected finding → Not compared.
 - `run-record.spec.mjs` baseline robustness: a run that graded nothing is skipped and counted. A
-  corrupt or mis-shaped newest record → `unusable`, with no fall-through. A comparison that throws →
-  `Not compared: <cause>` while `verdict.json` is still written.
+  corrupt, mis-shaped or unreadable (read error) newest record → `unusable`, with no fall-through.
+  A throw from `buildRunRecord`, `findPreviousRecord` or `compareRecords` → `Not compared: <cause>`
+  while `verdict.json` is still written. A leg whose `findings` is not an array → Not compared. A
+  style-parity pair built with `mismatchFinding()` (tokens set) whose rendered colour changed →
+  `text changed`. An older run re-rendered via `--run-dir` leaves its `record.json` untouched.
 - `run-record.spec.mjs` golden record: a fixed envelope plus AI files produces a checked-in
   `__fixtures__/run-record/record.golden.json` byte for byte. Also,
   `compareRecords(r, JSON.parse(JSON.stringify(r)))` reports zero changes.
@@ -191,8 +214,8 @@ two named here:
 - `run-record.spec.mjs` settled decision: a figma-gate NEEDS-DECISION that both runs checked →
   `no longer reported`.
 - `run-record.spec.mjs` baseline selection: the newest older same-depth record wins; a record at
-  another depth is skipped; an unreadable one is skipped; a newer run name is never used; an
-  incompatible major → "Not compared", with no fall-through.
+  another depth is skipped; a run dir with no `record.json` is skipped; a newer run name is never
+  used; an incompatible major → "Not compared", with no fall-through.
 - `run-record.spec.mjs` wording: the renderer's own text never matches `/\b(fixed|resolved)\b/i`.
   Asserted on every fixture's section with each quoted label, both headlines and every row name cut
   out. A spec case gives an AI leg
@@ -238,13 +261,15 @@ Tolerances: none. The output is deterministic.
 `scripts/__tests__/audit/run-record.spec.mjs` (new),
 `scripts/__tests__/audit/__fixtures__/run-record/record.golden.json` (new), plus existing specs under
 `scripts/__tests__/audit/`, touched only where they pin `VERDICT_SCHEMA_VERSION` or the AI
-decision's Owner cell. `verdict.spec.mjs` also gains the summary-unchanged assertion.
+decision's Owner cell. `verdict.spec.mjs` also gains the summary-unchanged assertion, and
+`fix-brief.spec.mjs:218` drops its stray second argument to `renderFixBrief`.
 
 1. `json-output.mjs`: `RUN_RECORD_SCHEMA_VERSION`; `VERDICT_SCHEMA_VERSION` → `2.1.0`;
    `SUMMARY_SCHEMA_VERSION = '2.0.0'`, used by `writeSummary` and `earlyExitSummary`.
 2. `run-record.mjs`: `buildRunRecord`, `findPreviousRecord`, `compareRecords` (Design 1–5).
    Reuse `rowResults` from `fix-brief.mjs`; export `rowIdOf` from there rather than copying it.
-3. `verdict.mjs`: `owner: leg` on the AI decision; `writeVerdictForRun` per Design 7; update the
+3. `verdict.mjs`: `owner: leg` on the AI decision; `message` on FAIL entries; the per-leg
+   `legs` list for `buildRunRecord` (Design 1–2); `writeVerdictForRun` per Design 7; update the
    layout comment at the file head.
 4. `fix-brief.mjs`: `renderChanges`, and `renderFixBrief(verdict, changes = null)` (Design 6).
 5. Specs per the acceptance bar, TDD: write each failing case first.
@@ -261,10 +286,13 @@ decision's Owner cell. `verdict.spec.mjs` also gains the summary-unchanged asser
 2. The report-block description gains `## Changes since the previous run`: what the words mean,
    that only checks graded in both runs are compared, that the first run after an upgrade
    compares nothing, and that deleting `runs/` resets the baseline.
-3. Baseline choice, stated as it is: the previous run is the newest earlier same-depth record that
+3. Identity limits, stated as they are (Design 3): findings that differ only in a number are
+   counted together; free-text that changes for another reason reads as gone + new; a warning
+   carries no file.
+4. Baseline choice, stated as it is: the previous run is the newest earlier same-depth record that
    graded something. A verdict-mode `--only` run can therefore be the baseline, and then most rows
    sit under Not compared. That is honest, and the header names the run.
-4. Retention, stated as it is: nothing prunes `runs/`, which already held `envelope.json` and
+5. Retention, stated as it is: nothing prunes `runs/`, which already held `envelope.json` and
    `ai/` per run before this change. `record.json` adds one small file per run. Cleanup is manual
    (`rm -rf audit/<component>/runs`), and the next run then compares nothing. The baseline lookup
    reads names newest-first and stops at the first same-depth record, so it seldom walks far.
