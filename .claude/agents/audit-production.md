@@ -586,8 +586,8 @@ Plus the `yarn audit:component mud-<name> --depth deep` gate and the `audit-comp
 
 ## Phase 11.5: Interaction and judgment rows
 
-Nothing to run here. BX1–BX7 are scripted verdict rows at `standard`+ (`19-interaction`,
-see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md)
+Nothing to run here. BX1–BX7 are scripted verdict rows at `standard`+ (`09`, `12` and `19`,
+one script per row in [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md)
 §BX); the `deep` gate in Phase 1 already ran them. CX/DX judgment is the `audit-component`
 skill's advisory legs, already dispatched in Phase 1 ([§ AI legs](../skills/audit-component/SKILL.md)).
 Report both in the final report's Check Matrix as the verdict and the legs recorded them;
