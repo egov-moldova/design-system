@@ -269,6 +269,10 @@
      to `.segment__label-text`, which ellipsises it, as Figma's Edge Cases
      (663:12433) asks for. */
   grid-template-columns: minmax(0, max-content);
+  /* The single column is `max-content`, so it is narrower than the label box
+     whenever that box is stretched — which is what stacking does. Without this
+     the track sits at the start and the text reads off-centre under its icon. */
+  justify-content: center;
   align-items: center;
   /* Stretch, not centre: a centred grid item takes its content's width, so a
      label wider than the collapsed column spilled over the icon beside it
