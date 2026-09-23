@@ -4,7 +4,8 @@
  *
  * GitHub never runs the `merge=ours` driver `.gitattributes` declares for generated files
  * (it is registered in local git config only), so every PR that lands on main leaves the
- * others conflicting on component readmes and the top of the CHANGELOG
+ * others conflicting on component readmes and, for branches opened before changelog
+ * fragments, the top of the CHANGELOG
  * (`src/components.d.ts` is git-ignored, so it no longer takes part). This script does the
  * mechanical part of fixing that:
  *
@@ -13,7 +14,10 @@
  *      - a generated file (any path `.gitattributes` marks `merge=ours`) takes main's copy,
  *        or stays deleted when either side deleted it; the build in step 3 rewrites it;
  *      - CHANGELOG.md keeps both sides of a hunk where both sides only ADDED lines, the
- *        branch's entry first. A hunk where either side edited an existing line is real;
+ *        branch's entry first. A hunk where either side edited an existing line is real.
+ *        Transitional: new PRs add a fragment under `changes/` instead of editing
+ *        CHANGELOG.md (changes/README.md). Remove this step once no branch opened before
+ *        fragments is still open;
  *   3. run `yarn build` and commit the generated files it changed, nothing else;
  *   4. run `yarn lint`, `yarn typecheck` and `yarn test`.
  *
