@@ -196,8 +196,11 @@
  * border (no emphasis), full-contrast label/text. Cursor stays `default` —
  * input is selectable & focusable but not editable. Distinct from disabled.
  */
+/* Figma 461:30911 gives the read-only frame no stroke at all — the only state
+   without one. The border is dropped rather than painted transparent so the
+   content sits where the design puts it. */
 :host(.is-readonly) .control {
-  border-color: var(--numeric-input-default-border-read-only);
+  border-style: none;
   cursor: default;
 }
 
