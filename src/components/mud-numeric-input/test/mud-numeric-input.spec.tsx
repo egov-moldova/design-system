@@ -486,6 +486,18 @@ describe('mud-numeric-input', () => {
       expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
     });
 
+    it('exposes aria-invalid for a value outside min / max', async () => {
+      const { root } = await render(<mud-numeric-input label="x" min={1} max={10} value={99}></mud-numeric-input>);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('leaves aria-invalid off an untouched required field', async () => {
+      // Empty is not wrong — announcing it as invalid before the citizen has
+      // typed anything is noise. The form still reports it through validity.
+      const { root } = await render(<mud-numeric-input label="x" required></mud-numeric-input>);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBeNull();
+    });
+
     it('uses aria-label as the accessible name when no visible label is present', async () => {
       const { root } = await render(<mud-numeric-input aria-label="Quantity"></mud-numeric-input>);
       const native = queryNative(root);
@@ -757,6 +769,58 @@ describe('mud-numeric-input', () => {
       native.dispatchEvent(new FocusEvent('blur'));
       await flush();
       expect((root as unknown as { value: number | undefined }).value).toBe(0);
+    });
+
+    it('commits on the native change event as well as on blur', async () => {
+      const { root } = await render(<mud-numeric-input label="Cantitate" max={10}></mud-numeric-input>);
+      const native = queryNative(root) as HTMLInputElement;
+
+      native.value = '42';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      native.dispatchEvent(new Event('change', { bubbles: true }));
+      await flush();
+
+      // `change` clamps and publishes the same way blur does — most engines
+      // fire it when the citizen presses Enter.
+      expect((root as unknown as { value: number | undefined }).value).toBe(10);
+    });
+  });
+
+  describe('reactive props', () => {
+    it('re-validates when min changes under a settled value', async () => {
+      const { root } = await render(<mud-numeric-input label="x" value={5}></mud-numeric-input>);
+      const host = root as unknown as { min?: number };
+      host.min = 10;
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('re-validates when max changes under a settled value', async () => {
+      const { root } = await render(<mud-numeric-input label="x" value={50}></mud-numeric-input>);
+      const host = root as unknown as { max?: number };
+      host.max = 10;
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('groups thousands with the locale separators', async () => {
+      const { root } = await render(
+        <mud-numeric-input label="Suma" locale="ro-RO" value={1234567}></mud-numeric-input>,
+      );
+      const shown = (queryNative(root) as HTMLInputElement).value;
+
+      // ro-RO groups with a dot; what matters here is that the field reads the
+      // separators off the locale instead of printing a bare 1234567.
+      expect(shown).not.toBe('1234567');
+      expect(shown.replace(/\D/g, '')).toBe('1234567');
+    });
+
+    it('takes a later aria-valuetext from the prop', async () => {
+      const { root } = await render(<mud-numeric-input label="x" value={1} ariaValuetext="unu"></mud-numeric-input>);
+      const host = root as unknown as { ariaValuetext?: string };
+      host.ariaValuetext = 'doi';
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-valuetext')).toBe('doi');
     });
   });
 });
