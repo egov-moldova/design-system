@@ -1110,3 +1110,57 @@ describe('run-record: what counts as a run under runs/', () => {
     },
   );
 });
+
+describe('run-record: sentinel round 4', () => {
+  it('prerequisite and log render as code spans, copyable as written', () => {
+    const base = { id: 'I1', kind: 'INCOMPLETE', check: '09 a11y', cause: 'missing-prereq', verify: 'v' };
+    const withPrereq = renderEntry({ ...base, prerequisite: 'yarn dx:prepare && export T=<token>' });
+    assert.match(withPrereq, /^- prerequisite: `yarn dx:prepare && export T=<token>`$/m);
+    const withLog = renderEntry({ ...base, log: 'results[id="02"].error in envelope.json' });
+    assert.match(withLog, /^- log: `results\[id="02"\]\.error in envelope\.json`$/m);
+  });
+
+  it('code-less AI findings on one file are told apart by their text, and never render "undefined"', () => {
+    const leg = 'a11y-verifier';
+    const at = (run, messages) =>
+      record(cleanEnvelope({ depth: 'deep' }), {
+        run,
+        aiFiles: [
+          { leg, data: aiFindings(leg, { findings: messages.map(message => ({ severity: 'error', message })) }) },
+        ],
+      });
+    const cmp = compareRecords(
+      at('r2', ['contrast too low', 'icon button has no accessible name']),
+      at('r1', ['focus ring missing', 'contrast too low']),
+    );
+    assert.deepEqual(
+      cmp.added.map(a => a.label.split(' — ')[1]),
+      ['icon button has no accessible name'],
+    );
+    assert.deepEqual(
+      cmp.gone.map(g => g.label.split(' — ')[1]),
+      ['focus ring missing'],
+    );
+    assert.equal(cmp.textChanged.length, 0);
+    const section = renderChanges({ ...cmp, skippedEmpty: 0, depth: 'deep', component: 'mud-fx' });
+    assert.doesNotMatch(section, /undefined/);
+  });
+
+  it('a hand-made folder that sorts after every run id neither blocks record.json nor becomes the baseline', () => {
+    const auditDir = tmp();
+    const componentDir = join(auditDir, 'mud-fx');
+    writeFileSync(join(runDirAt(componentDir, 'baseline'), 'record.json'), JSON.stringify(record(cleanEnvelope())));
+    const runA = writeRunDir(auditDir, cleanEnvelope(), { run: '2026-09-23T10-00-00-000Z-1' });
+    writeVerdictForRun(runA);
+    assert.ok(existsSync(join(runA, 'record.json')));
+    assert.match(readFileSync(join(componentDir, 'fix-brief.md'), 'utf8'), /nothing to compare/);
+  });
+
+  it('a row graded on one side only says "(not graded)" on the other, never "pass, pass"', () => {
+    const previous = record(cleanEnvelope(), { run: 'r1' });
+    const e = cleanEnvelope();
+    e.results.find(r => r.id === '07').blocking = false;
+    const nc = compareRecords(record(e, { run: 'r2' }), previous).notCompared.find(n => n.scope === 'row:07');
+    assert.deepEqual(nc, { scope: 'row:07', current: 'pass (not graded)', previous: 'pass' });
+  });
+});

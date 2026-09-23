@@ -58,7 +58,7 @@ describe('fix-brief: one shape per state', () => {
     );
     const v = computeVerdict({ envelope: e });
     const block = assertShape(renderFixBrief(v), v.entries[0]);
-    assert.match(block, /- prerequisite: yarn vitest run --project spec --coverage src\/components\/mud-fx/);
+    assert.match(block, /- prerequisite: `yarn vitest run --project spec --coverage src\/components\/mud-fx`/);
     assert.match(block, /- verify: `node scripts\/audit\/run-all\.mjs mud-fx --depth standard --only 06 --json`/);
   });
 
@@ -104,7 +104,7 @@ describe('fix-brief: one shape per state', () => {
       log: 'results[id="02"].error',
       verify: 'v',
     });
-    assert.match(block, /^- log: results\\\[id="02"\\\]\.error$/m);
+    assert.match(block, /^- log: `results\[id="02"\]\.error`$/m);
     assert.doesNotMatch(block, /prerequisite/);
   });
 

@@ -14,7 +14,8 @@
  *
  * The brief opens with a report block (plan
  * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
- * check and an index of every entry — closed by REPORT_END. The terminal prints that block and the skill pastes it
+ * check and an index of every entry — then `## Changes since the previous run`
+ * (plan `2026-09-23-audit-run-delta.md`), closed by REPORT_END. The terminal prints that block and the skill pastes it
  * inline, so no session ever rebuilds the table in its own words.
  */
 import { LEG_NOT_WRITTEN, ROW_STATUS, STATE } from './json-output.mjs';
@@ -25,6 +26,9 @@ export const BRIEF_FIELDS = Object.freeze({
   [STATE.INCOMPLETE]: Object.freeze(['check', 'cause', 'prerequisite', 'verify']),
   [STATE.NEEDS_DECISION]: Object.freeze(['node', 'question', 'options']),
 });
+
+/** Entry fields that hold a command or a lookup path, rendered as a code span rather than prose. */
+const COMMAND_FIELDS = new Set(['verify', 'prerequisite', 'log']);
 
 /** A field another field may stand in for: a crashed row has a log to read, not a prerequisite to run (T10). */
 const FIELD_ALTERNATE = Object.freeze({ prerequisite: 'log' });
@@ -47,13 +51,13 @@ function present(value) {
 }
 
 /**
- * Render any interpolated value as one line (S7): an empty string renders as
- * `(empty)` rather than a blank that reads like a rendering bug, and a
- * newline is replaced so a finding's own text can never forge a new `###`
- * heading or another field's `- field:` line. Applied to every interpolation
- * in this module — entry fields, `code` in the heading, the headline, and the
- * excused/not-applicable/deferred/notes/override/warning sections in
- * `renderFixBrief`. Pure.
+ * Render any interpolated prose value as one line (S7): an empty string renders
+ * as `(empty)` rather than a blank that reads like a rendering bug, a newline
+ * is replaced so a finding's own text can never forge a new `###` heading or
+ * another field's `- field:` line, and every markdown-active character is
+ * escaped (MD_ACTIVE). Every interpolation in this module goes through it,
+ * `cell()` or `codeSpan()` — the last only for commands (COMMAND_FIELDS, the
+ * re-render hint), which must stay copyable. Pure.
  */
 export function line(value) {
   return code(value).replace(MD_ACTIVE, '\\$&');
@@ -131,8 +135,10 @@ export function renderEntry(entry) {
     } else if (field === 'options') {
       lines.push('- options:');
       value.forEach((o, i) => lines.push(`  ${i + 1}. ${line(o)}`));
-    } else if (field === 'verify') {
-      lines.push(`- verify: ${codeSpan(value)}`);
+    } else if (COMMAND_FIELDS.has(field)) {
+      // A command a reader copies and runs: a code span keeps `&&` or `<token>`
+      // exactly as written, where line()'s escapes would corrupt them.
+      lines.push(`- ${field}: ${codeSpan(value)}`);
     } else {
       lines.push(`- ${field}: ${line(value)}`);
     }
@@ -330,7 +336,8 @@ function validateChanges(changes) {
  * The renderer's own words never include "fixed" or "resolved" — a quoted
  * label is a finding's text and may contain either, but it always sits after
  * a fixed status prefix, so the status itself is never claimed by a finding.
- * Every interpolation goes through `line()` / `cell()`. Pure.
+ * Every interpolation goes through `line()` / `cell()`, except the re-render
+ * command, which is a `codeSpan()`. Pure.
  */
 export function renderChanges(changes) {
   validateChanges(changes);

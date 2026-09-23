@@ -359,7 +359,7 @@ Stable paths (git-ignored `audit/`):
 | path | written by |
 |------|------------|
 | `audit/<component>/verdict.json` | `verdict.mjs`, every run |
-| `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index), then one block per non-PASS entry with its `verify:` command |
+| `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index, changes since the previous run), then one block per non-PASS entry with its `verify:` command |
 | `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
 | `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the AI leg, nothing else |
 | `audit/<component>/runs/<run>/record.json` | `verdict.mjs` via `lib/run-record.mjs` — what that run graded and the identity of every finding it reported; read only by the next run's comparison (below), never an input to `verdict.json` itself |
@@ -410,12 +410,17 @@ previous run` section inside the report block (`fix-brief.md`, before
   word, but it always sits after a fixed status prefix ("newly reported:",
   "no longer reported:", …), so the claim is the renderer's, never the
   finding's. Finding text is kept in `record.json` and re-rendered later, so
-  every rendered value has link/image openers (`](` → `]&#40;`) and HTML tag
-  or comment openers (`<` before a letter, `!`, `/`, `?` → `&lt;`) turned
-  into entities: a previewer never fetches a URL a finding carried. Entities,
-  not backslashes, so a backslash already in the text or a table cell's
-  escaping cannot revive the tag. Text inside backticks (a `verify:`
-  command) is left exactly as written.
+  every prose value has each markdown-active character (`` \ ` [ ] < & | ``)
+  backslash-escaped in one pass (`lib/fix-brief.mjs` `line()`). CommonMark
+  renders an escaped punctuation character literally, so no link, image,
+  reference definition, raw HTML, comment, entity, code span or table break
+  can form from a finding, and the preview still shows its exact text.
+  Commands (`verify:`, `prerequisite:`, `log:`, the re-render hint) sit in a
+  code span whose fence outruns any backtick in them, so they stay copyable.
+  Unicode line separators and bidi controls are neutralised too. Not closed,
+  by design: a bare `https://…` in a finding can still render as a GFM
+  autolink — clickable, its text showing its target, fetched by nothing on
+  open.
 - Nothing prunes `runs/`; `record.json` adds one small file per run beside
   the existing `envelope.json` and `ai/`. Deleting `audit/<component>/runs/`
   (already safe, above) also resets this comparison — the next run then

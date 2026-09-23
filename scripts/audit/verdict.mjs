@@ -53,7 +53,13 @@ import {
   schemaMajor,
 } from './lib/json-output.mjs';
 import { REPORT_END, code, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
-import { buildRunRecord, compareRecords, findPreviousRecord, listRunNames } from './lib/run-record.mjs';
+import {
+  buildRunRecord,
+  compareRecords,
+  findPreviousRecord,
+  listRunNames,
+  runsComparableTo,
+} from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -180,7 +186,9 @@ function failEntry({ f, check, component, source, verify, owner }) {
   // Additive, VERDICT_SCHEMA_VERSION 2.1.0: `run-record.mjs`'s finding-identity
   // key needs the finding's own message, never `actual` — for 15-style-parity
   // `actual` is the bare rendered value and every finding sits on the manifest
-  // file, so only `message` carries `state › target › prop` (Design §3).
+  // file, so only `message` carries `state › target › prop` (Design §3;
+  // `15-style-parity.mjs` `mismatchFinding`, and run-record.spec.mjs § finding
+  // identity pins it with findings built by that same function).
   // `renderEntry` prints only `BRIEF_FIELDS`, so the brief is unchanged. Only
   // when `actual` came from elsewhere: otherwise `actual` already IS the
   // message, and the identity key falls back to it.
@@ -591,7 +599,7 @@ function isNewestRun(componentDir, run) {
   // then could overwrite a baseline a later run already compared against, so
   // the answer fails closed. A missing runs/ is [] (listRunNames), not a failure.
   try {
-    const newer = listRunNames(componentDir).filter(n => n > run);
+    const newer = runsComparableTo(listRunNames(componentDir), run).filter(n => n > run);
     if (newer.length === 0) return true;
     // Expected for a --run-dir re-render of an older run; named so an
     // unexpected entry (e.g. an unreadable folder sorting last) is findable.

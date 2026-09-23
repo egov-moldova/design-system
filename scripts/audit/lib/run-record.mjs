@@ -16,7 +16,14 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { rowIdOf, rowResults } from './fix-brief.mjs';
-import { LEG_NOT_WRITTEN, RUN_RECORD_SCHEMA_VERSION, SCHEMA_VERSION, STATE, schemaMajor } from './json-output.mjs';
+import {
+  LEG_NOT_WRITTEN,
+  ROW_STATUS,
+  RUN_RECORD_SCHEMA_VERSION,
+  SCHEMA_VERSION,
+  STATE,
+  schemaMajor,
+} from './json-output.mjs';
 
 // ─── Finding identity (Design §3) ─────────────────────────────────────────
 
@@ -45,9 +52,11 @@ export function fileOf(location) {
  * The text a FAIL entry's identity keys on: its own `message` when present
  * (added to the entry by `verdict.mjs`'s `failEntry`, 2.1.0), else `actual`.
  * For `STYLE-MISMATCH` only the text before the first `: ` is kept — that is
- * `state › target › prop` (`15-style-parity.mjs`); the rest carries the Figma
- * node, the rendered values and a token suffix that changes with the
- * rendered colour. Pure.
+ * `state › target › prop` (`15-style-parity.mjs` `mismatchFinding`); the rest
+ * carries the Figma node, the rendered values and a token suffix that changes
+ * with the rendered colour. Guarded by `run-record.spec.mjs` § finding
+ * identity, which builds its findings with `mismatchFinding()` itself, and by
+ * the golden record. Pure.
  */
 function failKeyText(entry) {
   const text = entry.message !== undefined ? String(entry.message) : String(entry.actual);
@@ -59,7 +68,8 @@ function failKeyText(entry) {
 // label that still carried the line would make the same finding's text differ
 // between two runs for no reason the identity claims to track.
 function failLabel(entry) {
-  return `${entry.check} · ${entry.code} · ${fileOf(entry.location)} — ${entry.message ?? entry.actual}`;
+  const code = entry.code ? ` · ${entry.code}` : '';
+  return `${entry.check}${code} · ${fileOf(entry.location)} — ${entry.message ?? entry.actual}`;
 }
 
 function decisionLabel(entry) {
@@ -89,10 +99,19 @@ function findingsFrom(verdict) {
   }
   for (const a of verdict.advisory ?? []) {
     const scope = `leg:${a.owner}`;
+    // A leg's prose is reworded on every re-dispatch, so its code (and the
+    // decision's node) is the identity. A leg need not give either
+    // (`findingShapeIssue` requires neither): without one there is nothing
+    // stable to key on, so the text is the identity — a reworded code-less
+    // finding reads as gone + new, never as two unrelated findings merged.
     if (a.kind === STATE.FAIL) {
-      out.push({ scope, key: JSON.stringify(['fail', a.code, fileOf(a.location)]), label: failLabel(a) });
+      const key = a.code
+        ? ['fail', a.code, fileOf(a.location)]
+        : ['fail', null, fileOf(a.location), stable(failKeyText(a))];
+      out.push({ scope, key: JSON.stringify(key), label: failLabel(a) });
     } else if (a.kind === STATE.NEEDS_DECISION) {
-      out.push({ scope, key: JSON.stringify(['decision', a.node]), label: decisionLabel(a) });
+      const key = a.node && a.node !== 'n/a' ? ['decision', a.node] : ['decision', null, stable(a.question)];
+      out.push({ scope, key: JSON.stringify(key), label: decisionLabel(a) });
     }
   }
   return out.sort((x, y) =>
@@ -116,7 +135,7 @@ function computeScopes({ verdict, envelope, legs }) {
   const noFigma = Boolean(envelope.audit?.noFigma);
   if (verdict.depth !== 'quick' && !noFigma) scopes.push('figma-gate');
   for (const row of envelope.results ?? []) {
-    if (row.status !== 'ok') continue;
+    if (row.status !== ROW_STATUS.OK) continue;
     if (row.blocking === false) continue;
     if (row.deferred) continue;
     const findings = envelope.findingsByTool?.[row.name] ?? [];
@@ -214,6 +233,20 @@ export function listRunNames(componentDir) {
     .sort();
 }
 
+/** The shape of run-all's `defaultRunId`: an ISO timestamp with `:`/`.` as `-`, then the pid. */
+const RUN_ID = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-\d+$/;
+
+/**
+ * The names that can be ordered against `run` by name. When `run` is a
+ * run-all id, only other run-all ids: name order is time order only between
+ * timestamps, and a hand-made folder (`runs/baseline/`, copied to keep it)
+ * would otherwise sort after every id and pass as the newest run forever. A
+ * run with any other name (a test's `r1`) compares against everything. Pure.
+ */
+export function runsComparableTo(names, run) {
+  return RUN_ID.test(run) ? names.filter(n => RUN_ID.test(n)) : names;
+}
+
 /**
  * The previous run's record for `componentDir` at `depth`, searched
  * newest-to-oldest among `runs/*` names strictly less than `currentRun`
@@ -224,7 +257,7 @@ export function listRunNames(componentDir) {
  */
 export function findPreviousRecord(componentDir, currentRun, depth) {
   // A listing failure other than a missing runs/ throws, for the caller to render as Not compared.
-  const names = listRunNames(componentDir)
+  const names = runsComparableTo(listRunNames(componentDir), currentRun)
     .filter(n => n < currentRun)
     .reverse();
 
@@ -260,6 +293,9 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
 
 // ─── The comparison (Design §5) ────────────────────────────────────────────
 
+/** Row results that read as a grade; `crashed`, `excused`, `skipped` … already say nothing was graded. */
+const LOOKS_GRADED = new Set(['pass', 'warn', 'fail', 'incomplete']);
+
 /** What one side (`record`, whose rows are `rowsMap`) recorded for a scope graded on one side only. */
 function describeScope(scope, present, record, rowsMap) {
   if (scope === 'figma-gate') return present ? 'checked' : 'not checked';
@@ -274,7 +310,11 @@ function describeScope(scope, present, record, rowsMap) {
   }
   if (scope.startsWith('row:')) {
     const row = rowsMap.get(scope.slice('row:'.length));
-    return row ? row.result : 'not in that run';
+    if (!row) return 'not in that run';
+    // A row that ran but was not graded (report-only, or no target resolved)
+    // can still read `pass`; say so, or "pass, pass, not compared" reads as a
+    // contradiction.
+    return present || !LOOKS_GRADED.has(row.result) ? row.result : `${row.result} (not graded)`;
   }
   return present ? 'present' : 'absent';
 }
