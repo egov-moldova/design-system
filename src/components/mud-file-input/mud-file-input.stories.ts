@@ -176,49 +176,41 @@ export const AllStates: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'hover',
-          /*html*/ `<mud-file-input class="is-hover-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input class="is-hover-demo" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'focus',
-          /*html*/ `<mud-file-input class="is-focus-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input class="is-focus-demo" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'active',
-          /*html*/ `<mud-file-input id="fi-allstates-active" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input class="is-active-demo" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<mud-file-input size="lg" disabled supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input disabled supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'invalid + error',
-          /*html*/ `<mud-file-input size="lg" invalid error-text="Trebuie să atașați cel puțin un document" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input invalid error-text="Trebuie să atașați cel puțin un document" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
       ].join(''),
     ),
-  // Drive the `active` cell into its drag-over state post-mount so the matrix
-  // shows it statically (hover + focus use the `.is-*-demo` helper classes).
-  play: async ({ canvasElement }) => {
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    const host = canvasElement.querySelector('#fi-allstates-active') as HTMLElement | null;
-    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
-    dropzone?.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
-  },
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
         code: [
-          '<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
+          '<mud-file-input supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
           '<!-- hover: pointer over dropzone (blue dashed border) -->',
           '<!-- focus: Tab onto dropzone (blue solid border + ring) -->',
           '<!-- active: drag a file over the dropzone (blue fill + "Drop files to upload") -->',
-          '<mud-file-input size="lg" disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
-          '<mud-file-input size="lg" invalid error-text="…"></mud-file-input>',
+          '<mud-file-input disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
+          '<mud-file-input invalid error-text="…"></mud-file-input>',
         ].join('\n'),
       },
     },

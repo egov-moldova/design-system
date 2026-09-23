@@ -284,6 +284,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--file-input-caption-gap);
   /* Figma 262:6717 puts 12px between the drop zone and the captions. The host is
      a flex column whose own gap already contributes `field-gap`, so the margin
@@ -298,6 +299,10 @@
   min-inline-size: 0;
 }
 
+/* At the 588px Figma draws (262:6711) both captions sit on one row, the first
+   filling it. Narrower than that, the second drops to its own line instead of
+   squeezing the first to an ellipsis — the max-size fact is short and the
+   formats list is the one worth reading. */
 .captions__formats {
   flex: 1 1 auto;
   min-inline-size: 0;
@@ -309,6 +314,7 @@
 
 .captions__max-size {
   flex-shrink: 0;
+  margin-inline-start: auto;
   text-align: end;
   white-space: nowrap;
 }
