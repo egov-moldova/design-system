@@ -131,7 +131,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-input-numeric--default",
+    "story": "components-input-numeric--default",
     "capture": {
       "selector": "mud-numeric-input",
       "bleed": "auto"
