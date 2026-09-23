@@ -1,6 +1,7 @@
 # Audit: show what changed since the previous run (issue #126)
 
-**Reviewed:** none
+**Reviewed:** preflight 3b3f231 · critic 92cf52e · critic fea13bc — round cap (3) reached; round 3
+findings folded; implementation awaits Dan's go
 **Base:** PR #139 (`70439fa`, result icons in `lib/fix-brief.mjs`) — this branch sits on it; rebase onto
 `upstream/main` once #139 merges. Nothing here edits the lines #139 changed except by adding beside them.
 
@@ -50,17 +51,27 @@ constraint 2 of the issue.
      that was excused, crashed, missing-prereq, skipped, deferred, report-only, dropped by
      `--only`/`--skip`, or resolved no target is not graded.
    - `leg:<leg>`: one per `aiFiles` entry whose data is readable at a matching schema major, zero
-     findings included.
+     findings included. A leg with even one finding that failed `findingShapeIssue`
+     (`verdict.mjs:422`) is not graded. It goes under Not compared with the cause
+     `<n> findings ignored`, so a leg that wrote malformed findings never reads as "reported
+     nothing".
    - `figma-gate`: `depth !== 'quick' && !noFigma`. This covers the "no manifest" NEEDS-DECISION.
 3. **Finding identity.** `key` is a JSON array string. `fileOf(location)` strips a trailing
-   `:<line>` or `:<line>:<col>`. `stable(text)` replaces every run of digits (with an optional
-   decimal part) by `#`, so a measured value never enters a key.
+   `:<line>` or `:<line>:<col>`. `stable(text)` replaces every hex colour literal
+   (`#[0-9a-f]{3,8}\b`, case-insensitive) by `#hex` and then every run of digits (with an optional
+   decimal part) by `#`, so a measured value never enters a key. The colour step comes first:
+   `15-style-parity` reports colours as `#rrggbb` (`lib/style-values.mjs:34`).
    Why: only `15-style-parity.mjs` sets `actual`; every other FAIL's `actual` is its message
    (`verdict.mjs:180`), and messages embed measurements such as a pixel-diff %, bundle KB, a
    coverage % or a contrast ratio (`11-pixel-diff-states.mjs:553`, `08-bundle-size.mjs:119`,
    `06-test-coverage.mjs:269`, `10-contrast-pairs.mjs:496`).
-   - FAIL entry: `['fail', code, fileOf(location), stable(actual), stable(expected.value)]`, scope
-     `row:<rowIdOf(check)>`.
+   - FAIL entry: `['fail', code, fileOf(location), stable(message), stable(expected.value)]`,
+     scope `row:<rowIdOf(check)>`. The key needs `message`, not `actual`: for `15-style-parity`,
+     `actual` is the bare rendered value (`12px`) and every finding sits on the manifest file.
+     Only the message carries `state › target › prop` (`15-style-parity.mjs:122`). So `failEntry`
+     adds the finding's `message` to the FAIL entry (additive, same 2.1.0 bump; `renderEntry`
+     prints only `BRIEF_FIELDS`, so the brief is unchanged). An entry without a message keys on
+     `stable(actual)`.
    - warning: `['warning', code, stable(message)]`, scope `row:<rowIdOf(check)>`. Verdict warnings
      carry no file (`verdict.mjs:257`), so the same warning in two files is counted, not told
      apart. This is accepted and documented in Phase 2.
@@ -75,8 +86,8 @@ constraint 2 of the issue.
      `verdict.mjs:600` and `:777`, so `summary.json` stays byte-for-byte unchanged. The index
      table's Owner column then shows the leg where it shows `—` today.
    - INCOMPLETE entries are not keyed. Their row's result change carries them.
-   - `label` is the finding's raw text, measurements included: `<check> · <code> · <file> — <actual>`,
-     or `<node> — <question>`.
+   - `label` is the finding's raw text, measurements included: `<check> · <code> · <file> — <message
+     or actual>`, or `<node> — <question>`.
 
    The line is deliberately NOT in the key. A shift caused by an unrelated edit leaves the finding
    unchanged. Findings that share a key cannot be told apart, so they are **counted, never paired**:
@@ -105,7 +116,8 @@ constraint 2 of the issue.
    rowChanges, notCompared, added, gone, countChanged, textChanged, unchanged }`:
    - `rowChanges`: every row id in either record whose result differs, with `'—'` for a row
      absent on one side. A check made required after the baseline ran therefore reads as
-     "— → incomplete", with no claim about its findings.
+     `— → <its result now>` (e.g. `— → skipped` when it did not run), with no claim about its
+     findings.
    - `notCompared`: every scope graded in exactly one run, with what each side recorded (a row's
      result, or `not in that run`; a leg `wrote` / `did not write`; the figma gate `checked` /
      `not checked`).
@@ -142,7 +154,9 @@ constraint 2 of the issue.
      names, which carry manifest text (an excuse reason, `verdict.mjs:100`).
 7. **Writing.** `writeVerdictForRun` computes the verdict, the record, the baseline, the changes
    and the brief first, then writes `verdict.json`, `fix-brief.md` and `runs/<run>/record.json`.
-   A render failure writes none of them. `readRunInputs` does not read `record.json`, so
+   A render failure writes none of them. A failure writing `record.json` alone is caught: it
+   prints `verdict: record.json not written for <run>: <cause>` to stderr and changes no exit code.
+   The next run then names an older baseline, or none. `readRunInputs` does not read `record.json`, so
    `verdict.json` stays a pure function of `envelope.json` + `ai/`. `--rerender` goes through the
    same function, so a leg that writes after the run is picked up then.
 
@@ -158,8 +172,11 @@ two named here:
 - `run-record.spec.mjs` identity: two findings with the same code in one file with no line, one
   gone → `reported 2 → 1 times`, and no line says which one. The same finding at a shifted line →
   `unchanged`. The same finding with a different measured number (`4.2% diff` → `3.1% diff`) →
-  `text changed`, never gone + new. An AI leg's finding reworded with the same code and file →
-  never gone + new.
+  `text changed`, never gone + new. The same style-parity finding with a different hex colour →
+  `text changed`. Two style-parity findings with equal values but different `state › target ›
+  prop` (one gone, one new) → one `no longer reported` plus one `newly reported`, never
+  `unchanged`. An AI leg's finding reworded with the same code and file → never gone + new. A leg
+  with a shape-rejected finding → Not compared.
 - `run-record.spec.mjs` baseline robustness: a run that graded nothing is skipped and counted. A
   corrupt or mis-shaped newest record → `unusable`, with no fall-through. A comparison that throws →
   `Not compared: <cause>` while `verdict.json` is still written.
@@ -176,7 +193,7 @@ two named here:
 - `run-record.spec.mjs` baseline selection: the newest older same-depth record wins; a record at
   another depth is skipped; an unreadable one is skipped; a newer run name is never used; an
   incompatible major → "Not compared", with no fall-through.
-- `run-record.spec.mjs` wording: the renderer's own text never contains `fixed` or `resolved`.
+- `run-record.spec.mjs` wording: the renderer's own text never matches `/\b(fixed|resolved)\b/i`.
   Asserted on every fixture's section with each quoted label, both headlines and every row name cut
   out. A spec case gives an AI leg
   the message `appears resolved upstream`: that text appears only inside its quoted label, and the
@@ -188,7 +205,8 @@ two named here:
 - `run-record.spec.mjs` determinism: re-rendering the same run twice gives byte-identical
   `fix-brief.md` and `record.json`.
 - `npx eslint scripts/audit scripts/__tests__/audit` exits 0.
-- `npx prettier --check scripts/audit scripts/__tests__/audit .claude/skills/audit-component .claude/plans/2026-09-23-audit-run-delta.md` exits 0.
+- `npx prettier --check scripts/audit scripts/__tests__/audit` exits 0. Markdown is not covered:
+  `.prettierignore` lists `*.md`, so the docs are graded by `yarn docs:check` alone.
 - `yarn docs:check` exits 0.
 
 Tolerances: none. The output is deterministic.
@@ -196,6 +214,8 @@ Tolerances: none. The output is deterministic.
 ## Global constraints
 
 - Node 24 (`.nvmrc`); run everything under `fnm exec --using 24`. `node:test` specs.
+- Run `yarn install --immutable` first. The worktree has no `node_modules`, and without it `npx`
+  fetches unpinned tools.
 - English in every authored file. No change to exit codes or `summary.json`: it keeps `2.0.0` via
   `SUMMARY_SCHEMA_VERSION`. `verdict.json` changes only by the additive `owner` on AI decision
   entries (schema 2.1.0).
@@ -241,7 +261,10 @@ decision's Owner cell. `verdict.spec.mjs` also gains the summary-unchanged asser
 2. The report-block description gains `## Changes since the previous run`: what the words mean,
    that only checks graded in both runs are compared, that the first run after an upgrade
    compares nothing, and that deleting `runs/` resets the baseline.
-3. Retention, stated as it is: nothing prunes `runs/`, which already held `envelope.json` and
+3. Baseline choice, stated as it is: the previous run is the newest earlier same-depth record that
+   graded something. A verdict-mode `--only` run can therefore be the baseline, and then most rows
+   sit under Not compared. That is honest, and the header names the run.
+4. Retention, stated as it is: nothing prunes `runs/`, which already held `envelope.json` and
    `ai/` per run before this change. `record.json` adds one small file per run. Cleanup is manual
    (`rm -rf audit/<component>/runs`), and the next run then compares nothing. The baseline lookup
    reads names newest-first and stops at the first same-depth record, so it seldom walks far.
