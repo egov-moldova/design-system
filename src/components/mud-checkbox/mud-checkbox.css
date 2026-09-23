@@ -84,6 +84,9 @@
 
 .root {
   display: inline-flex;
+  /* Top-aligned, because with supporting text under the label the box belongs
+     beside the first line (Figma 13:143). A label on its own is centred on the
+     box instead — see the rule below. */
   align-items: flex-start;
   gap: var(--_gap);
   cursor: pointer;
@@ -101,6 +104,12 @@
 }
 
 /* ---------- Control (box + native input) ---------- */
+
+/* Figma checkbox-label 13:131 centres the box and a lone label on each other;
+   only the supporting-text variant 13:143 aligns them to the top. */
+:host(:not(.has-supporting):not(.has-error)) .root {
+  align-items: center;
+}
 
 .control {
   position: relative;
@@ -142,9 +151,12 @@
 /* Focus ring — drawn outside the box without shifting layout. Matches Figma's
    "Focus Ring/Small" effect: 3px blue-sky spread + 1px white inner halo. */
 :host(.is-focused) .box {
+  /* The blue band ends at the ring's own width, not at width + offset: Figma's
+     Focus Ring/Small is `0 0 0 3px #3379DB, 0 0 0 1px #FFF` — a 1px white halo
+     inside a band ending 3px out, not 4. */
   box-shadow:
     0 0 0 var(--_focus-ring-offset) var(--checkbox-default-background-unchecked),
-    0 0 0 calc(var(--_focus-ring-offset) + var(--_focus-ring-width)) var(--_focus-ring-color);
+    0 0 0 var(--_focus-ring-width) var(--_focus-ring-color);
 }
 
 /* ---------- Glyph (check / dash) ---------- */
