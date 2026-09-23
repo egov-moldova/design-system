@@ -362,10 +362,52 @@ Stable paths (git-ignored `audit/`):
 | `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index), then one block per non-PASS entry with its `verify:` command |
 | `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
 | `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the AI leg, nothing else |
+| `audit/<component>/runs/<run>/record.json` | `verdict.mjs` via `lib/run-record.mjs` — what that run graded and the identity of every finding it reported; read only by the next run's comparison (below), never an input to `verdict.json` itself |
 | `audit/_run/summary.json` | worst state over the run's components, each `runDir` |
 
 There is no re-check mode: each fix-brief entry's `verify:` command is the
 per-fix check, and only a full run at the same depth can write `PASS`.
+
+### Changes since the previous run
+
+Every run writes `record.json`: the scopes it graded — a required row that
+actually ran (not excused, crashed, deferred, `noTarget`, or dropped by
+`--only`/`--skip`), each AI leg whose file parsed at a matching schema, and
+the Figma gate at `standard`+ — plus the identity of every finding it
+reported. `verdict.mjs` looks up the newest earlier `runs/*` record at the
+**same depth** and, when one is usable, renders a `## Changes since the
+previous run` section inside the report block (`fix-brief.md`, before
+`<!-- end of report -->`):
+
+- No earlier record at this depth (a fresh component, or the first run after
+  this feature shipped) → "nothing to compare". The newest earlier record
+  unreadable or at a different schema major → "Not compared", and the search
+  never falls through to an older one.
+- Otherwise: the two headlines, a table of every row whose result changed
+  (`—` on the side that did not run it), a "Not compared" list for scopes
+  graded in only one run, and finding counts — newly reported, no longer
+  reported, reported a different number of times, text changed, unchanged —
+  each with one bullet, but **only for scopes graded in both runs**.
+- Finding identity drops the line number and every measured number (a
+  pixel-diff %, a contrast ratio, a bundle KB, a hex colour) before
+  comparing, so a shifted line or a changed measurement never reads as a
+  different finding. The trade: two findings differing only in a number are
+  counted together, and free text that changes for an unrelated reason reads
+  as gone + new — stated as a known limit, not fixed. A warning carries no
+  file, so the same warning code in two files is counted, not told apart.
+- The baseline is the newest earlier run at the same depth that graded
+  something — a `--only`/`--skip` run can be that baseline, and then most
+  rows land under "Not compared"; the header always names the run it
+  compared against, so this is visible rather than silent.
+- The renderer's own words never say "fixed" or "resolved" — a quoted
+  finding label is a check's or an AI leg's text and may contain either
+  word, but it always sits after a fixed status prefix ("newly reported:",
+  "no longer reported:", …), so the claim is the renderer's, never the
+  finding's.
+- Nothing prunes `runs/`; `record.json` adds one small file per run beside
+  the existing `envelope.json` and `ai/`. Deleting `audit/<component>/runs/`
+  (already safe, above) also resets this comparison — the next run then
+  finds no baseline.
 
 **One audit per worktree.** A run that builds or starts Storybook holds
 `audit/_run/.worktree.lock` (it guards `dist/` and the Storybook record); a fresh
