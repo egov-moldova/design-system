@@ -5,13 +5,20 @@
  *  - DEFAULT_BASE_URL         — http://localhost:6007
  *  - isStorybookReachable     — async TCP probe; resolves true/false
  *  - storyUrl                 — build iframe URL for a Storybook story id
- *  - inferStoryId             — best-effort `<category>-<bare>--<exportName>` builder
+ *  - storyIdFor               — the story id Storybook itself serves (its own toId)
+ *
+ *  - ensureWorktreeStorybook — reuse or start THIS worktree's Storybook (Design §9)
  *
  * Worktree-aware: callers may pass `port` (e.g. 6008 when a parallel git
  * worktree runs Storybook on a custom port). Defaults keep single-checkout
  * workflows simple.
  */
 import net from 'node:net';
+import { randomBytes } from 'node:crypto';
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { storyNameFromExport, toId } from 'storybook/internal/csf/csf-utils';
 
 export const DEFAULT_PORT = 6007;
 export const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}`;
@@ -61,28 +68,312 @@ export function storyUrl({ storyId, baseUrl = DEFAULT_BASE_URL, viewMode = 'stor
 }
 
 /**
- * Best-effort story id constructor matching Storybook's own kebab-case rules.
- * Used as a fallback when the caller doesn't have a story export name.
+ * The story id Storybook itself will serve, from a `title` and an export name.
+ * The one builder — `05-story-exports.mjs` re-exports it as `buildStoryId`,
+ * and every browser row navigates to what it returns.
  *
- *   inferStoryId('Atoms/Button', 'Default')
- *     → 'atoms-button--default'
- *   inferStoryId('Molecules/Tooltip', 'AllPlacements')
- *     → 'molecules-tooltip--all-placements'
+ *   storyIdFor('Atoms/Button', 'Default')       → 'atoms-button--default'
+ *   storyIdFor('Molecules/Tooltip', 'AllPlacements')
+ *                                               → 'molecules-tooltip--all-placements'
+ *   storyIdFor('Atoms/InfoBox', 'Default')      → 'atoms-infobox--default'
  *
- * For canonical mapping, prefer scripts/audit/05-story-exports.mjs which
- * parses the actual *.stories.ts file.
+ * That last one is why this delegates instead of kebab-casing. Storybook
+ * treats the two halves differently: an export name goes through
+ * `storyNameFromExport`, which splits `AllPlacements` into words first, while
+ * a title is only lowercased — so `InfoBox` is `infobox`, not `info-box`. The
+ * audit's own kebab-case split both, and every browser row for a component
+ * whose title is one PascalCase word made of several words navigated to a
+ * story that does not exist. Storybook answered `NoStoryMatchError` in the
+ * page, which nothing read until row 12 began capturing load-time console
+ * output. Baseline: `node -e "…toId(t, storyNameFromExport(e))…"` over the
+ * live index — 15 of 435 ids did not exist, all of mud-info-box and
+ * mud-inline-message; `scripts/__tests__/audit/story-id.spec.mjs` holds it.
  */
-export function inferStoryId(title, exportName) {
+export function storyIdFor(title, exportName) {
   if (!title || !exportName) return null;
-  const titlePart = title.split('/').map(kebabCase).join('-');
-  return `${titlePart}--${kebabCase(exportName)}`;
+  return toId(title, storyNameFromExport(exportName));
 }
 
-function kebabCase(s) {
-  return s
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
+/** @deprecated Use {@link storyIdFor}; kept because three rows import this name. */
+export const inferStoryId = storyIdFor;
+
+/** Git-ignored record of the Storybook this worktree started: `{ port, pid }`. */
+export const STORYBOOK_RECORD = '.audit-storybook.json';
+
+/** Resolve a port nothing listens on, by letting the OS pick one. */
+export function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.once('error', reject);
+    server.listen(0, () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
+}
+
+function isProcessAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return err.code === 'EPERM';
+  }
+}
+
+/**
+ * A pid's process-start time, as `ps` reports it — the pid-reuse discriminant
+ * shared by R9 (seeded-defects, below) and R3's locks (plan
+ * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §3): a bare pid match
+ * is not proof of identity once the original process has exited and the OS
+ * has recycled the number. `null` when the process is gone or `ps` itself is
+ * unavailable — callers treat that as "cannot verify", never as "verified".
+ * Exported so R3's lock code and tests can inject a fake `ps`.
+ */
+export function getProcessStartTime(pid, { run = spawnSync } = {}) {
+  const res = run('ps', ['-o', 'lstart=', '-p', String(pid)], { encoding: 'utf8' });
+  if (res.status !== 0) return null;
+  const line = (res.stdout ?? '').trim();
+  return line || null;
+}
+
+/**
+ * Spawn Storybook detached. A missing binary (`node_modules/.bin/storybook`
+ * not installed — ENOENT) or any other launch failure emits `'error'` on the
+ * child ASYNCHRONOUSLY; with no listener that is an uncaught exception that
+ * crashes the whole run-all process. `child.pid` is `undefined` in exactly
+ * that failure case (Node: pid is only set once the process actually
+ * spawned), so the caller can detect the failure without waiting on the
+ * event — the listener below exists only to stop the crash.
+ *
+ * @returns {number|undefined} the child's pid, or undefined if it never spawned
+ */
+export function startStorybookProcess({ repoRoot, port }) {
+  const bin = join(repoRoot, 'node_modules', '.bin', 'storybook');
+  const child = spawn(bin, ['dev', '-p', String(port), '--no-open', '--ci'], {
+    cwd: repoRoot,
+    detached: true,
+    stdio: 'ignore',
+  });
+  child.on('error', () => {
+    // Swallowed: a launch failure is reported through the undefined pid above,
+    // not through this event. Without this listener the unhandled 'error'
+    // event throws and takes the whole run-all process down with it.
+  });
+  child.unref();
+  return child.pid;
+}
+
+/**
+ * Return the port of a Storybook that belongs to THIS worktree, starting one
+ * if needed (Design §9). Nine worktrees of this repo share port 6007 and
+ * `isStorybookReachable` is a bare TCP connect, so a reachable 6007 may serve
+ * another branch: a server is reused only when this worktree's
+ * `.audit-storybook.json` names a live process that answers on its port.
+ * Otherwise a new one starts on a free port and is recorded; it is left
+ * running (detached) so the next audit reuses it.
+ *
+ * Every side effect is injectable so tests never start a server.
+ *
+ * @returns {Promise<{ ok: true, port: number, reused: boolean } | { ok: false, cause: string }>}
+ */
+export async function ensureWorktreeStorybook({
+  repoRoot,
+  readRecord = () => {
+    const file = join(repoRoot, STORYBOOK_RECORD);
+    return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
+  },
+  writeRecord = record => writeFileSync(join(repoRoot, STORYBOOK_RECORD), `${JSON.stringify(record, null, 2)}\n`),
+  isAlive = isProcessAlive,
+  reachable = port => isStorybookReachable({ port }),
+  freePort = findFreePort,
+  start = startStorybookProcess,
+  startTimeOf = getProcessStartTime,
+  sleep = ms => new Promise(r => setTimeout(r, ms)),
+  timeoutMs = 120_000,
+  pollMs = 500,
+} = {}) {
+  let record = null;
+  try {
+    record = readRecord();
+  } catch {
+    // An unreadable record is treated as no record: start a fresh server.
+  }
+  if (record?.pid && record?.port && isAlive(record.pid) && (await reachable(record.port))) {
+    return { ok: true, port: record.port, reused: true };
+  }
+  const port = await freePort();
+  const pid = start({ repoRoot, port });
+  if (!pid) {
+    // The process never spawned (e.g. node_modules/.bin/storybook is missing) —
+    // never record an undefined pid, and never poll for a server that will
+    // never answer. The caller (run-all's runPrerequisites) turns this into
+    // missing-prereq rows for every check that requires the browser.
+    return { ok: false, cause: `Storybook failed to start on port ${port} (spawn error — is Storybook installed?)` };
+  }
+  // R9: record the start time alongside the pid, the pid-reuse discriminant
+  // seeded-defects (and R3's locks) need — a null (ps unavailable) is written
+  // as-is; a legacy reader treats a missing startTime as "cannot verify".
+  writeRecord({ port, pid, startTime: startTimeOf(pid) });
+  for (let waited = 0; waited < timeoutMs; waited += pollMs) {
+    if (await reachable(port)) return { ok: true, port, reused: false };
+    await sleep(pollMs);
+  }
+  return { ok: false, cause: `Storybook did not answer on port ${port} within ${timeoutMs} ms` };
+}
+
+// ─── R3 locks (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3) ─
+//
+// Two lock scopes, each a `wx`-created file holding `{ pid, startTime, nonce }`:
+//   - the worktree lock (`<repoRoot>/audit/_run/.worktree.lock`) guards `dist/`
+//     and the worktree Storybook record — taken by `runAudit` (run-all.mjs).
+//   - the audit-dir lock (`<auditDir>/_run/.lock`) guards `_run/summary.json`,
+//     `_run/envelope.json`, `_run/vitest-results.json` and each `verdict.json`
+//     — taken by `runFresh` and by `--run-dir` recompute (verdict.mjs).
+// A lock is STALE (safe to take over) when its pid is dead, or alive but its
+// current start time no longer matches the recorded one (pid reuse) — the
+// same discriminant as R9's `shouldSignalRecordedPid`. A live lock refuses
+// with the pid and path so the caller can name what to wait on.
+
+/**
+ * Whether an existing lock file is safe to take over. Pure — exported for
+ * tests. `currentStartTime` is `null` when the pid is not running at all.
+ */
+export function isLockStale(existing, currentStartTime) {
+  if (!existing?.pid) return true;
+  if (currentStartTime === null) return true; // pid dead
+  if (!existing.startTime) return false; // legacy record: cannot verify identity, treat as live
+  return currentStartTime !== existing.startTime; // pid reused
+}
+
+const UNREADABLE_LOCK_GRACE_MS = 10_000;
+
+function readLockRaw(lockPath) {
+  try {
+    return readFileSync(lockPath, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+function lockMtimeMs(lockPath) {
+  try {
+    return statSync(lockPath).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Take a lock file at `lockPath`, replacing it if stale. Returns
+ * `{ ok: true, token }` (the nonce, to hand a spawned child via
+ * `AUDIT_LOCK_TOKEN`) or `{ ok: false, cause }` naming the live pid and path.
+ * Every side effect is injectable for tests.
+ */
+export function acquireLock(
+  lockPath,
+  {
+    isAlive = isProcessAlive,
+    startTimeOf = getProcessStartTime,
+    pid = process.pid,
+    nonce = randomBytes(8).toString('hex'),
+    readLock = readLockRaw,
+  } = {},
+) {
+  mkdirSync(dirname(lockPath), { recursive: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      writeFileSync(lockPath, JSON.stringify({ pid, startTime: startTimeOf(pid), nonce }), { flag: 'wx' });
+    } catch (err) {
+      if (err.code !== 'EEXIST') throw err;
+      const raw = readLock(lockPath);
+      if (raw === null) continue; // released between our create and our read
+      let existing = null;
+      try {
+        existing = JSON.parse(raw);
+      } catch {
+        existing = null;
+      }
+      let stale;
+      if (!existing?.pid) {
+        // `wx` creates the file before its holder writes it, so an unreadable
+        // lock is a holder mid-write until it has been unreadable for a while.
+        stale = Date.now() - lockMtimeMs(lockPath) > UNREADABLE_LOCK_GRACE_MS;
+      } else if (!isAlive(existing.pid)) {
+        stale = true;
+      } else {
+        // A live pid whose start time cannot be read cannot be proven reused.
+        const currentStartTime = startTimeOf(existing.pid);
+        stale = currentStartTime !== null && isLockStale(existing, currentStartTime);
+      }
+      if (stale) {
+        // Another taker may have replaced the stale lock since we read it;
+        // delete only the content we judged.
+        if (readLock(lockPath) === raw) rmSync(lockPath, { force: true });
+        continue;
+      }
+      return {
+        ok: false,
+        cause: existing?.pid
+          ? `audit already running: pid ${existing.pid} holds the lock at ${lockPath}`
+          : `audit already running: a lock at ${lockPath} is being written`,
+      };
+    }
+    // T17: two takers that both judged the same stale lock can each pass the
+    // compare above before either deletes it — the second delete then removes
+    // the first taker's fresh lock and both `wx`-create in turn. Only the one
+    // whose nonce is on disk now holds it.
+    let mine = null;
+    try {
+      mine = JSON.parse(readLock(lockPath) ?? 'null');
+    } catch {
+      mine = null;
+    }
+    if (mine?.nonce === nonce) return { ok: true, token: nonce, lockPath };
+    return {
+      ok: false,
+      cause: mine?.pid
+        ? `audit already running: pid ${mine.pid} holds the lock at ${lockPath} (contended)`
+        : `could not take the lock at ${lockPath} (contended)`,
+    };
+  }
+  return { ok: false, cause: `could not take the lock at ${lockPath} (still contended after taking over a stale one)` };
+}
+
+/** Release a lock this process holds — a no-op if the token does not match (never releases another holder's lock). */
+export function releaseLock(lockPath, token) {
+  let existing = null;
+  try {
+    existing = JSON.parse(readFileSync(lockPath, 'utf8'));
+  } catch {
+    return;
+  }
+  if (existing?.nonce !== token) return;
+  rmSync(lockPath, { force: true });
+}
+
+/**
+ * Whether a token handed to a spawned child (`AUDIT_LOCK_TOKEN`) is a valid
+ * hand-off of an already-held lock: the lock file exists, its nonce matches
+ * the token, its pid is alive, and — when one was recorded — that pid's start
+ * time is the one recorded (T28 — a reused pid is not the holder). A forged, stale, or absent token is
+ * never honoured — the child must take the lock itself. Pure over its inputs —
+ * exported for tests.
+ */
+export function isValidLockToken(
+  existing,
+  token,
+  { isAlive = isProcessAlive, startTimeOf = getProcessStartTime } = {},
+) {
+  return Boolean(
+    existing &&
+    token &&
+    existing.nonce === token &&
+    existing.pid &&
+    isAlive(existing.pid) &&
+    // A holder on a host without `ps` recorded no start time; its nonce is
+    // then the only proof, and refusing it would refuse every hand-off there.
+    (!existing.startTime || startTimeOf(existing.pid) === existing.startTime),
+  );
 }

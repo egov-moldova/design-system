@@ -132,6 +132,7 @@
     "audit:figma-refs": "node scripts/audit/figma-refs.mjs",
     "audit:console-errors": "node scripts/audit/12-console-errors.mjs",
     "audit:all": "node scripts/audit/run-all.mjs",
+    "audit:component": "node scripts/audit/verdict.mjs",
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "audit:test": "node scripts/audit/__tests__/02-antipatterns.test.mjs",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",

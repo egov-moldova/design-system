@@ -30,10 +30,16 @@
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
-import { resolveComponentPaths, listAllComponents, relativeToRepo, REPO_ROOT } from './lib/component-paths.mjs';
+import {
+  resolveComponentPaths,
+  listAllComponents,
+  relativeToRepo,
+  componentOfSpec,
+  REPO_ROOT,
+} from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
@@ -48,6 +54,9 @@ const USAGE = defaultUsage(
     'Extra options:',
     '  --run               Run `yarn vitest run --project spec --coverage` first (slow; 30-60s)',
     '  --threshold <N>     Pass threshold for each metric (default: 80)',
+    '  --vitest-results <path>  JSON-reporter output from the coverage prerequisite',
+    '                            (run-all.mjs passes <audit dir>/_run/vitest-results.json);',
+    '                            omitted → failing specs are not reported',
   ],
 );
 
@@ -59,8 +68,11 @@ async function main() {
     toolName: TOOL,
     usage: USAGE,
     extra: {
-      run: { type: 'boolean', default: false },
-      threshold: { type: 'string', default: String(DEFAULT_THRESHOLD) },
+      'run': { type: 'boolean', default: false },
+      'threshold': { type: 'string', default: String(DEFAULT_THRESHOLD) },
+      // No default: only run-all's coverage prerequisite refreshes the file, so a
+      // standalone 06 reading it would report a spec fixed since as still failing.
+      'vitest-results': { type: 'string' },
     },
   });
   const t0 = Date.now();
@@ -112,7 +124,8 @@ async function main() {
     process.exit(EXIT_INTERNAL);
   }
 
-  const perComponent = targets.map(t => analyzeComponent(t, summary, threshold));
+  const vitestResults = readVitestResults(args.extras['vitest-results']);
+  const perComponent = targets.map(t => analyzeComponent(t, summary, threshold, vitestResults));
   const findings = perComponent.flatMap(c => c.findings);
 
   const result = buildResult({
@@ -140,12 +153,45 @@ async function main() {
 }
 
 /**
+ * Read the coverage prerequisite's JSON-reporter output (S11, plan
+ * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §6), if present.
+ * Missing or unparseable → `null` (never treated as "no components failed" —
+ * `analyzeComponent` skips the check entirely rather than reading a stale or
+ * absent file as a clean run).
+ */
+function readVitestResults(path) {
+  if (!path || !existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The repo-relative spec file paths, from a vitest JSON-reporter report
+ * (which names specs absolutely), whose test suite failed AND belongs to
+ * `componentName` (`componentOfSpec`, shared with run-all's coverage
+ * prerequisite). Pure — exported for tests.
+ */
+export function failedSpecsForComponent(vitestResults, componentName) {
+  return (vitestResults?.testResults ?? [])
+    .filter(t => t.status === 'failed' && componentOfSpec(t.name) === componentName)
+    .map(t => String(t.name ?? ''))
+    .map(name => (isAbsolute(name) ? relativeToRepo(name) : name.replace(/\\/g, '/')));
+}
+
+/**
  * Compute a single component's coverage from the loaded summary. Pure function.
- * Exported for tests.
+ * Exported for tests. `vitestResults` (S11) is the parsed coverage
+ * prerequisite's JSON-reporter output, or `null` — a failed spec mapped to
+ * this component adds `COVERAGE-TESTS-FAILED` (an error the fixer owns)
+ * alongside whatever the coverage-summary-based findings already say; a
+ * clean or absent report changes nothing.
  *
  * Returns { findings, coverage, componentName }.
  */
-export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD) {
+export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD, vitestResults = null) {
   if (!target.found) {
     return {
       findings: [
@@ -159,6 +205,18 @@ export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD)
       componentName: target.name ?? null,
     };
   }
+
+  // S11: a failed spec under this component is an error regardless of what
+  // the (possibly stale, or entirely absent) coverage summary says.
+  const testsFailedFindings = failedSpecsForComponent(vitestResults, target.name).map(specPath =>
+    finding({
+      severity: 'error',
+      code: 'COVERAGE-TESTS-FAILED',
+      file: specPath,
+      message: `${target.name}: ${specPath} failed.`,
+      fix: `Fix the failing spec: yarn vitest run --project spec ${specPath}`,
+    }),
+  );
 
   const tsxAbs = target.paths.tsx;
   // Vitest summaries use absolute paths; on Windows they may have forward or backward slashes
@@ -174,7 +232,9 @@ export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD)
           file: relativeToRepo(tsxAbs),
           message: `${target.name}: not present in coverage report — no tests ran against ${relativeToRepo(tsxAbs)}.`,
           fix: 'Add a test/mud-X.spec.tsx file or run yarn test --coverage to regenerate.',
+          noTarget: true,
         }),
+        ...testsFailedFindings,
       ],
       coverage: null,
       componentName: target.name,
@@ -196,7 +256,7 @@ export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD)
   };
   coverage.passAll = Object.values(pass).every(Boolean);
 
-  const findings = [];
+  const findings = [...testsFailedFindings];
   if (!coverage.passAll) {
     const failing = Object.entries(pass)
       .filter(([, v]) => !v)

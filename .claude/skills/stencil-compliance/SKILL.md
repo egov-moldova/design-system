@@ -9,6 +9,13 @@ Checks one `mud-*` component against the Stencil rules of the pinned version
 ([`references/version-delta.md`](references/version-delta.md)). Scripts and linters decide every rule
 they can; you judge only the `manual` rows of the [rule index](#rule-index).
 
+**As the advisory `stencil-compliance` leg of `/audit-component --depth deep`**:
+this skill never invokes `verdict.mjs` / `yarn audit:component` and never
+stops on either's exit code — it keeps running its own `run-all --only
+02,04,14,16` evidence pass (step 1 below) and, when dispatched at `deep`,
+writes its manual findings to `<runDir>/ai/stencil-compliance/ai-findings.json`
+(§ Deep-depth output, after the run contract). They never move the state.
+
 Project overlays in [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) and
 [`src/components/_agents/component-structure.md`](../../../src/components/_agents/component-structure.md)
 (`mud-` prefix, member order, `@Watch` rule, host classes) win over Stencil's docs, whether stricter or looser.
@@ -38,6 +45,33 @@ Input: one component name (`mud-<name>`).
 [`references/anti-patterns.md`](references/anti-patterns.md); project codes (tokens, colours, raw pixels, icons,
 `innerHTML`, `any`) carry their fix in the finding, with the rules in
 [`_agents/anti-patterns.md`](../../../_agents/anti-patterns.md).
+
+## Deep-depth output (advisory leg only)
+
+When this skill runs as the `stencil-compliance` leg of `--depth deep`, step 5's
+manual findings (never the script findings from step 1 — `verdict.mjs` reads
+those directly off the envelope) are written for the run the dispatcher names
+(`<runDir>`: `components[].runDir` in `audit/_run/summary.json`). They are
+advisory (Decision 12, `2026-09-22-audit-depths-sentinel-fixes.md`): listed,
+never state-changing.
+
+```
+<runDir>/ai/stencil-compliance/ai-findings.json
+```
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "stencil-compliance",
+  "idsJudged": ["DX-stencil-manual"],
+  "findings": [
+    { "severity": "error", "code": "STENCIL-<manual rule id>", "file": "...", "line": 12, "message": "...", "fix": "..." }
+  ]
+}
+```
+
+`idsJudged` is `["DX-stencil-manual"]`. This skill never runs `verdict.mjs`; the
+dispatcher re-renders the brief.
 
 ## Rule index
 

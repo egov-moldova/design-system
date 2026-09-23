@@ -1,0 +1,784 @@
+#!/usr/bin/env node
+/**
+ * 19-interaction.mjs
+ *
+ * A local Playwright instance (not the shared MCP browser) that covers the
+ * BX checks `09-a11y-tree` does not: BX1 (hydration), BX4 (escape /
+ * activation), BX5 (light/dark structural diff), BX7 (form round-trip).
+ * BX2/BX3 (Tab order, focus ring) live in `09-a11y-tree.mjs`'s interactive
+ * census; BX6 (console errors) stays `12-console-errors.mjs` — neither is
+ * duplicated here (`.claude/skills/audit-component/references/layer-2-
+ * browser-checklists.md` §BX).
+ *
+ * Like BX2/BX3, BX4/BX5/BX7 apply reduced motion plus an injected
+ * `transition: none; animation: none` style (document + every shadow root,
+ * re-injected after each state-changing interaction) before sampling —
+ * Phase 0 results, plan `2026-09-21-audit-component-depths.md`.
+ *
+ * Usage:
+ *   yarn sp.dev.watch
+ *   node scripts/audit/19-interaction.mjs mud-modal --json
+ *   node scripts/audit/19-interaction.mjs --all --json
+ */
+import { fileURLToPath } from 'node:url';
+import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
+import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { buildResult, emit, finding } from './lib/json-output.mjs';
+import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
+import { DEFAULT_PORT, isStorybookReachable, storyUrl } from './lib/storybook-helpers.mjs';
+import { launchBrowser, PLAYWRIGHT_INSTALL_HINT } from './lib/browser-context.mjs';
+import { applyNoMotionStyle } from './09-a11y-tree.mjs';
+import { extractContractFromTsx } from './14-component-contract.mjs';
+import { analyzeStoriesFile } from './05-story-exports.mjs';
+
+const TOOL = 'interaction';
+
+/**
+ * `meta.checks` entry for a BX id that does not apply to this component —
+ * recorded with its reason rather than omitted, so a reader can tell "ran,
+ * nothing found" apart from "did not apply here".
+ */
+function notApplicable(reason) {
+  return { status: 'not-applicable', reason };
+}
+
+const USAGE = defaultUsage(
+  '19-interaction',
+  'Local-Playwright BX checks not covered elsewhere: BX1 hydration, BX4 escape/activation, BX5 light/dark structural diff, BX7 form round-trip.',
+  [
+    '',
+    'Extra options:',
+    '  --port <N>          Storybook port (default: 6007)',
+    '  --story-id <id>     Specific story id to audit (default: first Default-like export)',
+  ],
+);
+
+async function main() {
+  const args = parseAuditArgs({
+    toolName: TOOL,
+    usage: USAGE,
+    extra: {
+      'port': { type: 'string', default: String(DEFAULT_PORT) },
+      'story-id': { type: 'string' },
+    },
+  });
+  const t0 = Date.now();
+  const port = Number(args.extras.port);
+  const baseUrl = `http://localhost:${port}`;
+
+  if (!(await isStorybookReachable({ port }))) {
+    process.stderr.write(`${TOOL}: Storybook is not reachable on port ${port}. Start it with \`yarn sp.dev.watch\`.\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+
+  const targets = await resolveTargets(args);
+  if (!targets.length) {
+    if (args.changed) {
+      await emit(
+        buildResult({
+          tool: TOOL,
+          target: 'changed',
+          findings: [],
+          meta: { durationMs: Date.now() - t0, componentsScanned: 0 },
+        }),
+        args,
+      );
+      process.exit(0);
+    }
+    process.stderr.write(`${TOOL}: no components matched.\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+
+  let perComponent;
+  try {
+    perComponent = await runAll(targets, { baseUrl, storyId: args.extras['story-id'] ?? null });
+  } catch (err) {
+    process.stderr.write(`${TOOL}: ${err.message}\n`);
+    process.exit(EXIT_INTERNAL);
+  }
+
+  const findings = perComponent.flatMap(c => c.findings);
+  const result = buildResult({
+    tool: TOOL,
+    target: args.all ? 'all' : args.changed ? 'changed' : targets[0].name,
+    findings,
+    meta: { durationMs: Date.now() - t0, componentsScanned: targets.length, baseUrl },
+  });
+
+  if (!args.all && !args.changed && perComponent.length === 1) {
+    result.meta.checks = perComponent[0].checks;
+  }
+
+  await emit(result, args);
+  process.exit(exitCodeFromSummary(result.summary));
+}
+
+/**
+ * Run every target through one shared browser instance (cheaper than one
+ * launch per component). Exported for tests via dependency injection of a
+ * fake `browser`.
+ */
+export async function runAll(targets, { baseUrl, storyId }) {
+  const { browser, close } = await launchBrowser({ headless: true });
+  try {
+    const out = [];
+    for (const target of targets) {
+      out.push(await analyzeComponent(target, { browser, baseUrl, storyId }));
+    }
+    return out;
+  } finally {
+    await close();
+  }
+}
+
+/**
+ * Visit a component's primary story and run BX1/BX4/BX5/BX7. Returns
+ * `{ findings, checks, componentName }`. Side-effecting (browser + network) —
+ * the judgment over captured data (`judgeBx1Hydration`, `judgeBx4Escape`,
+ * `judgeBx5StructuralDiff`, `judgeBx7FormRoundTrip`) is unit-testable
+ * without a browser.
+ */
+export async function analyzeComponent(target, { browser, baseUrl, storyId }) {
+  if (!target.found) {
+    return {
+      findings: [
+        finding({
+          severity: 'error',
+          code: 'STRUCTURE-NOT-FOUND',
+          message: `Component "${target.name ?? target.input}" not found.`,
+        }),
+      ],
+      checks: null,
+      componentName: target.name ?? null,
+    };
+  }
+
+  const resolvedStoryId = storyId ?? pickDefaultStoryId(target);
+  if (!resolvedStoryId) {
+    return {
+      findings: [
+        finding({
+          severity: 'warning',
+          code: 'INTERACTION-NO-STORY',
+          file: relativeToRepo(target.paths.stories),
+          message: `Could not infer a story id for ${target.name}. Pass --story-id explicitly.`,
+          noTarget: true,
+        }),
+      ],
+      checks: null,
+      componentName: target.name,
+    };
+  }
+
+  const { contract } = target.exists.tsx ? extractContractFromTsx(target.paths.tsx, target.name) : { contract: null };
+
+  const url = storyUrl({ storyId: resolvedStoryId, baseUrl });
+  const findings = [];
+  const checks = {};
+
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  page.setDefaultTimeout(15000);
+  try {
+    await page.goto(url, { waitUntil: 'load', timeout: 15000 });
+    await applyNoMotionStyle(page);
+
+    // BX1 — hydration + first paint. Gates everything else: BX1 failing
+    // means there is no point running BX4/BX5/BX7 against a dead page.
+    const bx1Data = await captureHydration(page, target.name);
+    checks.bx1 = bx1Data;
+    const bx1Finding = judgeBx1Hydration(bx1Data);
+    if (bx1Finding) {
+      findings.push(finding(bx1Finding));
+      return { findings, checks, componentName: target.name };
+    }
+
+    // BX4 — escape / activation (conditional: OVERLAY archetype or an
+    // open/close/toggle @Method). Not applicable to every component — record
+    // that in `checks.bx4` rather than omitting the key, so a reader can
+    // tell "ran, nothing found" apart from "did not apply here". The
+    // not-opened vs opened judgment is `bx4Outcome` (T15/T2), pure and
+    // exported for tests — this call site only wires its result in.
+    if (isBx4Applicable(contract)) {
+      const bx4Data = await runBx4(page, target.name, contract);
+      const outcome = bx4Outcome(bx4Data);
+      checks.bx4 = outcome.checks;
+      if (outcome.finding) findings.push(finding(outcome.finding));
+      await applyNoMotionStyle(page); // re-inject: BX4 may have rendered new shadow content.
+    } else {
+      checks.bx4 = notApplicable('component is not OVERLAY archetype and has no open/close/toggle @Method');
+    }
+
+    // BX5 — light + dark structural diff.
+    const bx5Data = await captureStructuralDiff(page, target.name);
+    checks.bx5 = bx5Data;
+    const bx5Finding = judgeBx5StructuralDiff(bx5Data);
+    if (bx5Finding) findings.push(finding(bx5Finding));
+
+    // BX7 — form submission round-trip (conditional: FORM archetype only).
+    // A further "no resolvable name" not-applicable case is decided live,
+    // inside runBx7, once the story's actual DOM state is known.
+    if (isBx7Applicable(contract)) {
+      // T11: the value prop's declared type decides what BX7 submits (a
+      // number-typed prop needs a numeric string, a date/time-typed prop a
+      // parseable literal) — see bx7ExpectedValue.
+      const valueType = (contract.props ?? []).find(p => p.name === 'value')?.type ?? null;
+      const bx7Data = await runBx7(page, target.name, { isCheckable: isCheckableControl(contract), valueType });
+      checks.bx7 = bx7Data.applicable === false ? notApplicable(bx7Data.reason) : bx7Data;
+      const bx7Finding = judgeBx7FormRoundTrip(bx7Data);
+      if (bx7Finding) findings.push(finding(bx7Finding));
+    } else {
+      checks.bx7 = notApplicable('component archetype is not FORM');
+    }
+  } finally {
+    await context.close();
+  }
+
+  return { findings, checks, componentName: target.name };
+}
+
+// ─── BX1 — hydration ────────────────────────────────────────────────────────
+
+/**
+ * Count of rendered children, excluding the audit's own injected
+ * `[data-audit-no-motion]` style tag (`applyNoMotionStyle`, 09-a11y-tree.mjs)
+ * — before this (S12), that tag inflated `childCount` by one for every host
+ * whose shadow root it was injected into, so a component rendering nothing
+ * else still "hydrated" with a non-zero count. Pure — exported for tests.
+ * `nodes` is the list of `{ noMotionMark }` descriptors `captureHydration`
+ * collects in the browser (light + shadow children); the browser-side
+ * `page.evaluate` only describes each node, it never counts or filters.
+ */
+export function countRenderedChildren(nodes) {
+  return (nodes ?? []).filter(n => !n?.noMotionMark).length;
+}
+
+async function captureHydration(page, componentName) {
+  await page.waitForSelector(componentName, { timeout: 10000 }).catch(() => null);
+  await page.waitForTimeout(250);
+  return page.evaluate(name => {
+    const host = document.querySelector(name);
+    if (!host) return { found: false, hydrated: false, nodes: [] };
+    const describe = el => ({ noMotionMark: el.hasAttribute('data-audit-no-motion') });
+    const nodes = [...host.children, ...(host.shadowRoot?.children ?? [])].map(describe);
+    return { found: true, hydrated: host.classList.contains('hydrated'), nodes };
+  }, componentName);
+}
+
+/** PASS: found, hydrated, ≥1 rendered child node. Pure — exported for tests. */
+export function judgeBx1Hydration(data) {
+  if (!data?.found) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX1-NOT-FOUND',
+      message: 'Component host not found in the DOM — no point running BX4/BX5/BX7.',
+    };
+  }
+  const childCount = countRenderedChildren(data.nodes);
+  if (!data.hydrated || childCount < 1) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX1-NOT-HYDRATED',
+      message: `Host is missing the "hydrated" class or has no rendered children (hydrated=${data.hydrated}, childCount=${childCount}) — audit blocked.`,
+    };
+  }
+  return null;
+}
+
+// ─── BX4 — escape / activation ─────────────────────────────────────────────
+
+/** Applicable when the archetype is OVERLAY, or an open/close/toggle @Method exists. Pure. */
+export function isBx4Applicable(contract) {
+  if (!contract) return false;
+  if (contract.archetype?.value === 'OVERLAY') return true;
+  return (contract.methods ?? []).some(m => /^(open|close|toggle)$/i.test(m.name));
+}
+
+// The evaluate-side walk needs computed style (visibility/display) and
+// `hidden`/`aria-hidden`, which only exist in the browser — it can only
+// describe the tree, never judge it (same constraint as ELEMENT_SIGNATURE_FN
+// above: inlined, no closure over a Node.js helper). `judgeBx4Opened` below is
+// the pure comparison over what this returns.
+const VISIBLE_SIGNATURE_FN = name => {
+  const host = document.querySelector(name);
+  if (!host) return { tags: [], ariaExpanded: null };
+  const isVisible = el => {
+    if (el.hidden || el.getAttribute('aria-hidden') === 'true') return false;
+    const style = getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  };
+  const tags = [];
+  const visit = el => {
+    if (!isVisible(el)) return;
+    tags.push(el.tagName.toLowerCase());
+    for (const child of el.children) visit(child);
+    if (el.shadowRoot) for (const child of el.shadowRoot.children) visit(child);
+  };
+  for (const child of host.children) visit(child);
+  if (host.shadowRoot) for (const child of host.shadowRoot.children) visit(child);
+  const ariaExpandedAttr = host.getAttribute('aria-expanded');
+  return { tags: tags.sort(), ariaExpanded: ariaExpandedAttr === null ? null : ariaExpandedAttr === 'true' };
+};
+
+/**
+ * Whether an overlay actually opened, judged from a rendered change — never
+ * the host's `open` @Prop, which the audit itself set to trigger the attempt
+ * (S12: the old check trusted `host.open` and never looked at the DOM).
+ * `before`/`after` are `{ tags, ariaExpanded }` from `VISIBLE_SIGNATURE_FN`.
+ * True when the visible shadow+light tag list differs, or `aria-expanded`
+ * flips from not-`true` to `true`. Pure — exported for tests.
+ */
+export function judgeBx4Opened(before, after) {
+  if (!before || !after) return false;
+  const beforeSig = (before.tags ?? []).join(',');
+  const afterSig = (after.tags ?? []).join(',');
+  if (beforeSig !== afterSig) return true;
+  return before.ariaExpanded !== true && after.ariaExpanded === true;
+}
+
+/**
+ * True when the contract or the live DOM declares an overlay/popup surface —
+ * a `dialog`/`popover`/`aria-haspopup`/`aria-modal` marker. `dom` is
+ * `{ hasDialog, hasPopover, hasAriaHaspopup, hasAriaModal }`, captured
+ * alongside the visible-tree signature. `contract` is accepted for parity
+ * with the other judge functions and future archetype-based signals; today
+ * only the DOM markers decide. Pure — exported for tests.
+ */
+export function declaresPopup(contract, dom) {
+  return Boolean(dom?.hasDialog || dom?.hasPopover || dom?.hasAriaHaspopup || dom?.hasAriaModal || dom?.hasPopupRole);
+}
+
+/**
+ * The DOM markers that declare a popup surface, i.e. content Escape must
+ * dismiss. `hasPopupRole` (U4) covers tooltips (WCAG 1.4.13) and floating
+ * menus / listboxes, which carry no dialog or popover marker.
+ */
+export const POPUP_MARKERS = Object.freeze({
+  hasDialog: 'dialog, [role="dialog"], [role="alertdialog"]',
+  hasPopover: '[popover]',
+  hasAriaHaspopup: '[aria-haspopup]',
+  hasAriaModal: '[aria-modal="true"]',
+  hasPopupRole: '[role="tooltip"], [role="menu"], [role="listbox"]',
+});
+
+/**
+ * The subset of `POPUP_MARKERS` that marks the SURFACE Escape must dismiss.
+ * `aria-haspopup` is excluded: it sits on the trigger and says a surface
+ * exists somewhere, never that this node is it — matching a trigger as the
+ * panel would read "focus returned to the trigger" as a trap.
+ */
+export const POPUP_SURFACE_SELECTOR = [
+  POPUP_MARKERS.hasDialog,
+  POPUP_MARKERS.hasPopover,
+  POPUP_MARKERS.hasAriaModal,
+  POPUP_MARKERS.hasPopupRole,
+].join(', ');
+
+async function capturePopupMarkers(page, componentName) {
+  return page.evaluate(
+    ({ name, markers }) => {
+      const host = document.querySelector(name);
+      const out = Object.fromEntries(Object.keys(markers).map(k => [k, false]));
+      if (!host) return out;
+      // The host element and its shadow root only — that is the component's
+      // own DOM. Light-DOM children are author content slotted in by the
+      // story, and a marker there says nothing about this component: an
+      // unrelated slotted trigger carrying `aria-haspopup` would otherwise
+      // make any container look like it declares a popup.
+      // Baseline: `grep -rln "shadow: false\|scoped: true" 'src/components/*/[a-z]*.tsx'`
+      // → none; every mud-* renders its own markup into a shadow root.
+      const has = sel => host.matches(sel) || !!host.shadowRoot?.querySelector(sel);
+      for (const [k, sel] of Object.entries(markers)) out[k] = has(sel);
+      return out;
+    },
+    { name: componentName, markers: POPUP_MARKERS },
+  );
+}
+
+/**
+ * How BX4 closes the host before its baseline (T4). Never the open method with
+ * `false`: `openModal()` takes no argument and would OPEN the modal, leaving
+ * the later open call a no-op and the component falsely "not opened". The
+ * `open` prop when declared, else a `close*` method with no argument, else
+ * nothing (the baseline is taken as rendered). Pure.
+ *
+ * @returns {{ via: 'prop' } | { via: 'method', name: string } | { via: 'none' }}
+ */
+export function bx4CloseStep(contract) {
+  if ((contract?.props ?? []).some(p => p.name === 'open')) return { via: 'prop' };
+  const closeMethod = (contract?.methods ?? []).find(m => /close/i.test(m.name))?.name;
+  return closeMethod ? { via: 'method', name: closeMethod } : { via: 'none' };
+}
+
+async function runBx4(page, componentName, contract) {
+  // Prefer a method whose name CONTAINS "open" (Stencil components in this
+  // codebase name it `openModal`/`open`, never exactly `open` as a method —
+  // `open` here is always the @Prop). Falls back to setting the prop
+  // directly, which still reaches an `@Watch('open')` handler the same way
+  // a consumer flipping the attribute would. A method call always passes a
+  // boolean `true` (S12) — this codebase's open methods take one
+  // (`setOpen(open: boolean)`), and calling with no argument silently opens
+  // nothing for those.
+  const openMethod = (contract.methods ?? []).find(m => /open/i.test(m.name))?.name ?? null;
+
+  // T4: some stories render the overlay already open (a Storybook control
+  // default) — capturing `before` against an already-open host means the
+  // later open call is a no-op and `judgeBx4Opened` sees no change, a false
+  // "did not open" (live Storybook run, mud-tooltip, 2026-09-22). Close it
+  // first and wait, so `before` is genuinely closed.
+  const close = bx4CloseStep(contract);
+  await page.evaluate(
+    ({ name, step }) => {
+      const host = document.querySelector(name);
+      if (!host) return;
+      if (step.via === 'prop') host.open = false;
+      else if (step.via === 'method' && typeof host[step.name] === 'function') host[step.name]();
+    },
+    { name: componentName, step: close },
+  );
+  await page.waitForTimeout(350);
+
+  const before = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+
+  await page.evaluate(
+    ({ name, method }) => {
+      const host = document.querySelector(name);
+      if (!host) return;
+      if (method && typeof host[method] === 'function') host[method](true);
+      else host.open = true;
+    },
+    { name: componentName, method: openMethod },
+  );
+  await page.waitForTimeout(350);
+
+  const afterOpen = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+  const opened = judgeBx4Opened(before, afterOpen);
+  const dom = await capturePopupMarkers(page, componentName);
+  const popup = declaresPopup(contract, dom);
+
+  if (!opened) {
+    return { opened: false, declaresPopup: popup };
+  }
+
+  // Capture the open panel/dialog node BEFORE Escape closes it, so the
+  // post-Escape check can tell "focus is stranded inside the closed panel"
+  // (a real trap) apart from "focus correctly returned to a trigger that
+  // lives inside the host" (e.g. the button that opens the overlay, when it
+  // is slotted content) — both land `document.activeElement` inside the
+  // host, but only the first is WCAG 2.1.2's failure mode.
+  await page.evaluate(
+    ({ name, selector }) => {
+      const host = document.querySelector(name);
+      if (!host) {
+        window.__auditBx4Panel = null;
+        return;
+      }
+      const root = host.shadowRoot ?? host;
+      window.__auditBx4Panel = root.querySelector(selector) ?? null;
+    },
+    // The same surfaces `declaresPopup` accepts. Without the popup roles a
+    // trap inside a floating menu, listbox or tooltip left the panel null,
+    // and the post-Escape check then reported no trap whatever focus did.
+    { name: componentName, selector: POPUP_SURFACE_SELECTOR },
+  );
+
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(350);
+
+  const afterEscape = await page.evaluate(VISIBLE_SIGNATURE_FN, componentName);
+  const focusTrappedInClosedOverlay = await page.evaluate(() => {
+    const active = document.activeElement;
+    const panel = window.__auditBx4Panel;
+    delete window.__auditBx4Panel;
+    // Only the panel/dialog content itself is a trap. Focus elsewhere inside
+    // the host (e.g. a trigger button) is the correct, expected restore
+    // target and is never flagged.
+    return !!active && !!panel && (active === panel || panel.contains(active));
+  });
+
+  // Still open, judged the same rendered-change way as the initial open —
+  // never `host.open` (frequently `display: contents` regardless of state;
+  // live Storybook run, mud-modal, 2026-09-21).
+  const stillOpen = judgeBx4Opened(before, afterEscape);
+  return { opened: true, declaresPopup: popup, stillOpen, focusTrappedInClosedOverlay };
+}
+
+/** PASS: overlay closes AND focus is not left stranded inside it. Pure — exported for tests. */
+export function judgeBx4Escape(data) {
+  if (!data || data.opened === false) return null;
+  if (data.stillOpen) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX4-ESCAPE-NO-CLOSE',
+      message: 'Escape did not close the overlay (WCAG 2.1.2 — no keyboard trap).',
+    };
+  }
+  if (data.focusTrappedInClosedOverlay) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX4-FOCUS-TRAPPED',
+      message:
+        'Escape closed the overlay but focus is still inside it — nothing outside the overlay can receive keyboard input.',
+    };
+  }
+  return null;
+}
+
+/**
+ * Decide `checks.bx4` and the optional finding from `runBx4`'s captured
+ * data. Two branches:
+ *
+ * Not opened (S12): an overlay method that ran but produced no rendered
+ * change is a missing input (the open path could not be exercised) when the
+ * component declares a popup surface — `INTERACTION-BX4-NOT-OPENED`,
+ * `noTarget: true`. Anything else that opened nothing is simply not
+ * applicable.
+ *
+ * Opened (T2): Escape-to-close is a popup/dialog convention (WCAG 2.1.2's
+ * keyboard-trap failure mode) — judged only when the component declares a
+ * popup surface (`declaresPopup`). A disclosure that opens without one
+ * (mud-accordion-item: an inline `<div role="region">`, no dialog/popover/
+ * aria-haspopup/aria-modal marker) is not expected to close on Escape;
+ * judging it against that convention produced a false ESCAPE-NO-CLOSE.
+ *
+ * Pure — exported for tests.
+ */
+export function bx4Outcome(bx4Data) {
+  if (bx4Data.opened === false) {
+    if (bx4Data.declaresPopup) {
+      return {
+        checks: { status: 'incomplete', reason: 'the open method/prop produced no rendered change' },
+        finding: {
+          severity: 'warning',
+          code: 'INTERACTION-BX4-NOT-OPENED',
+          message: 'Component declares an overlay/popup surface but the open method/prop produced no rendered change.',
+          noTarget: true,
+        },
+      };
+    }
+    return {
+      checks: notApplicable('open method/prop produced no rendered change and no popup surface is declared'),
+      finding: null,
+    };
+  }
+  if (!bx4Data.declaresPopup) {
+    return {
+      checks: notApplicable('component opened but declares no popup surface — Escape-to-close does not apply'),
+      finding: null,
+    };
+  }
+  return { checks: bx4Data, finding: judgeBx4Escape(bx4Data) };
+}
+
+// ─── BX5 — light/dark structural diff ──────────────────────────────────────
+
+// `page.evaluate` serializes its callback and runs it inside the browser —
+// it cannot close over a Node.js-scope helper, so the signature walker is
+// inlined in every `evaluate()` call below rather than shared as an outer
+// function (a live Storybook run against mud-button, 2026-09-21, caught this
+// exact mistake: `elementSignature is not defined` inside the page).
+const ELEMENT_SIGNATURE_FN = name => {
+  const host = document.querySelector(name);
+  if (!host) return { count: 0, tags: [] };
+  const tags = [];
+  const visit = el => {
+    tags.push(el.tagName.toLowerCase());
+    for (const child of el.children) visit(child);
+    if (el.shadowRoot) for (const child of el.shadowRoot.children) visit(child);
+  };
+  visit(host);
+  return { count: tags.length, tags: tags.sort() };
+};
+
+async function captureStructuralDiff(page, componentName) {
+  const light = await page.evaluate(ELEMENT_SIGNATURE_FN, componentName);
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = 'dark';
+  });
+  await page.waitForTimeout(250);
+  const dark = await page.evaluate(ELEMENT_SIGNATURE_FN, componentName);
+  return { light, dark };
+}
+
+/** PASS: identical element tree (count + tag multiset) across themes. Pure — exported for tests. */
+export function judgeBx5StructuralDiff({ light, dark } = {}) {
+  if (!light || !dark) return null;
+  if (light.count === dark.count && light.tags.join(',') === dark.tags.join(',')) return null;
+  return {
+    severity: 'error',
+    code: 'INTERACTION-BX5-STRUCTURAL-DIFF',
+    message: `Light/dark element tree differs (light: ${light.count} elements, dark: ${dark.count} elements) — dark mode lost or gained an element.`,
+  };
+}
+
+// ─── BX7 — form submission round-trip ──────────────────────────────────────
+
+/** Applicable only for the FORM archetype. Pure. */
+export function isBx7Applicable(contract) {
+  return contract?.archetype?.value === 'FORM';
+}
+
+/**
+ * A checkable control (`mud-checkbox`/`mud-switch`/`mud-radio`) only reaches
+ * `internals.setFormValue` from its `@Watch('checked')` handler — setting
+ * `host.value` alone never submits (`src/components/mud-checkbox/mud-checkbox.tsx:210-213`).
+ * Detected structurally (a `checked` @Prop), not by name, so it generalizes
+ * to any future checkable archetype. Pure — exported for tests.
+ */
+export function isCheckableControl(contract) {
+  return (contract?.props ?? []).some(p => p.name === 'checked');
+}
+
+/**
+ * A submission value suited to the `value` prop's declared TypeScript type
+ * (T11) — a `number`-typed prop coerces/rejects the plain string
+ * `'audit-value'` the same way a real consumer's numeric assignment would
+ * behave, and a `Date`/date-or-time-typed prop needs a parseable literal.
+ * `judgeBx7` compares `formDataValue` (always a string, from FormData)
+ * against this SAME return value, never a re-parsed one — the normalised
+ * form on both sides of the comparison is this string. Pure — exported for
+ * tests.
+ */
+export function bx7ExpectedValue(valueType) {
+  const t = (valueType ?? '').toLowerCase();
+  if (/number/.test(t)) return '42';
+  if (/date/.test(t)) return '2026-01-01';
+  if (/time/.test(t)) return '12:00';
+  return 'audit-value';
+}
+
+async function runBx7(page, componentName, { isCheckable = false, valueType = null } = {}) {
+  const expectedValue = bx7ExpectedValue(valueType);
+  return page.evaluate(
+    ({ name, isCheckable, expectedValue }) => {
+      const host = document.querySelector(name);
+      if (!host) return { found: false, applicable: false, reason: 'component host not found' };
+
+      // BX7 needs a key to read back out of FormData. A story that sets no
+      // `name` (attribute or property) probes an empty string, which every
+      // component "fails" identically — that is not a finding about the
+      // component, so it is reported not-applicable instead.
+      const resolvedName = host.getAttribute('name') || host.name || '';
+      if (!resolvedName) {
+        return {
+          found: true,
+          applicable: false,
+          reason: 'story sets no resolvable "name" (attribute or property) on the host',
+        };
+      }
+
+      const calls = [];
+      // ElementInternals is created inside the component's constructor, so we
+      // cannot grab this host's own instance from outside — patch the
+      // prototype's setFormValue instead and count every call's argc.
+      const proto = window.ElementInternals?.prototype;
+      const original = proto?.setFormValue;
+      if (proto && original) {
+        proto.setFormValue = function (...args) {
+          calls.push(args.length);
+          return original.apply(this, args);
+        };
+      }
+
+      const form = document.createElement('form');
+      document.body.appendChild(form);
+      form.appendChild(host); // moves the existing (already-hydrated) host into the injected form
+      // Checkable controls submit only when `checked` — set it before
+      // reading FormData (see isCheckableControl above).
+      if (isCheckable) host.checked = true;
+      if (host.value !== undefined) host.value = expectedValue;
+      else if (host.setAttribute) host.setAttribute('value', expectedValue);
+
+      const data = new FormData(form);
+      const entry = data.get(resolvedName);
+
+      if (proto && original) proto.setFormValue = original;
+
+      return {
+        found: true,
+        applicable: true,
+        formDataKey: resolvedName,
+        formDataHasKey: data.has(resolvedName),
+        formDataValue: entry,
+        expectedValue,
+        setFormValueCallArgCounts: calls,
+      };
+    },
+    { name: componentName, isCheckable, expectedValue },
+  );
+}
+
+/**
+ * True when the submitted FormData value does not match the value the audit
+ * set (S12: before this, BX7 only checked the FormData KEY existed, never its
+ * value — a component silently submitting the wrong value passed). Pure —
+ * exported for tests.
+ */
+export function judgeBx7(submitted, expected) {
+  return submitted !== expected;
+}
+
+/**
+ * PASS: FormData carries the expected key with the expected value, and every
+ * `setFormValue` call used two arguments (name, state) — never one.
+ * `applicable: false` (no resolvable name) is not a finding. Pure —
+ * exported for tests.
+ */
+export function judgeBx7FormRoundTrip(data) {
+  if (!data?.found) return null;
+  if (data.applicable === false) return null;
+  if (!data.formDataHasKey) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX7-MISSING-FORMDATA-KEY',
+      message: `FormData has no entry for "${data.formDataKey}" after submission.`,
+    };
+  }
+  const oneArgCalls = (data.setFormValueCallArgCounts ?? []).filter(n => n === 1);
+  if (oneArgCalls.length > 0) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX7-SETFORMVALUE-ONE-ARG',
+      message: `internals.setFormValue was called with 1 argument ${oneArgCalls.length} time(s) — must always pass (value, state).`,
+    };
+  }
+  if ('expectedValue' in data && judgeBx7(data.formDataValue, data.expectedValue)) {
+    return {
+      severity: 'error',
+      code: 'INTERACTION-BX7-VALUE-MISMATCH',
+      message: `FormData value for "${data.formDataKey}" is ${JSON.stringify(data.formDataValue)}, expected ${JSON.stringify(data.expectedValue)}.`,
+    };
+  }
+  return null;
+}
+
+function pickDefaultStoryId(target) {
+  if (target.exists?.stories) {
+    const { stories } = analyzeStoriesFile(target.paths.stories, target.name);
+    const def = stories.find(s => /default/i.test(s.name)) ?? stories[0];
+    return def?.storyId ?? null;
+  }
+  return null;
+}
+
+async function resolveTargets(args) {
+  if (args.all) return listAllComponents().map(c => resolveComponentPaths(c.name));
+  if (args.changed) return listChangedComponents().map(n => resolveComponentPaths(n));
+  return [resolveComponentPaths(args.component)];
+}
+
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+if (isDirectRun) {
+  main().catch(err => {
+    if (err.message === PLAYWRIGHT_INSTALL_HINT) {
+      process.stderr.write(`${TOOL}: ${err.message}\n`);
+    } else {
+      process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);
+    }
+    process.exit(EXIT_INTERNAL);
+  });
+}
+
+export { TOOL };
+export { notApplicable };

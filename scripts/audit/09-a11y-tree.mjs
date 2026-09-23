@@ -130,6 +130,7 @@ async function main() {
 
   if (!args.all && !args.changed && perComponent.length === 1) {
     result.meta.snapshot = perComponent[0].snapshot;
+    result.meta.checks = perComponent[0].checks;
   }
 
   await emit(result, args);
@@ -151,6 +152,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
         }),
       ],
       snapshot: null,
+      checks: null,
       componentName: target.name ?? null,
     };
   }
@@ -164,9 +166,11 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
           code: 'A11Y-NO-STORY',
           file: relativeToRepo(target.paths.stories),
           message: `Could not infer a story id for ${target.name}. Pass --story-id explicitly.`,
+          noTarget: true,
         }),
       ],
       snapshot: null,
+      checks: null,
       componentName: target.name,
     };
   }
@@ -177,6 +181,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
   const dark = skipDark ? null : await collectForTheme(url, target.name, 'dark');
 
   const findings = [];
+  const checks = {};
 
   // Quality safeguard: flag obviously missing accessible names, but stop short
   // of interpreting ARIA correctness — that's AI's job.
@@ -192,11 +197,39 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
         );
       }
     }
+
+    // BX2 — every interactive element EXPECTED to take a Tab stop is
+    // reachable by Tab. `computeExpectedTabStops` drops the census entries
+    // that correctly take none: the `origin: 'host'` boundary marker
+    // (a shadow host is not itself focusable unless it opts into
+    // `delegatesFocus`, and even then focus lands on its inner control —
+    // what `walkTabOrder`'s deep-active-element walk reports), `disabled` /
+    // `tabindex="-1"` elements (including roving-tabindex members), an `<a>`
+    // with no `href`, and every radio in a `name` group except the one the
+    // group would actually focus. Live-Storybook run against mud-button,
+    // 2026-09-21: the host-origin case alone fired on 5/5 runs before that
+    // filter, 0/5 after.
+    const expected = computeExpectedTabStops(theme.interactive);
+    const bx2 = expected.length === 0 ? null : judgeTabOrder(expected, theme.tabWalk);
+    if (bx2) findings.push(finding({ ...bx2, message: `${theme.theme}: ${bx2.message}` }));
+    checks[`bx2-${theme.theme}`] = bx2StatusFor(expected, bx2);
+
+    // BX3 — every element the Tab walk actually focused has a visible focus ring.
+    let bx3Failed = false;
+    for (const step of theme.tabWalk) {
+      const bx3 = judgeFocusRingVisible(step);
+      if (bx3) {
+        bx3Failed = true;
+        findings.push(finding({ ...bx3, message: `${theme.theme}: ${bx3.message}` }));
+      }
+    }
+    checks[`bx3-${theme.theme}`] = bx3StatusFor(theme.tabWalk, bx3Failed);
   }
 
   return {
     findings,
     snapshot: { storyId: resolvedStoryId, light, dark },
+    checks,
     componentName: target.name,
   };
 }
@@ -356,6 +389,28 @@ async function collectForTheme(url, componentName, theme) {
               outlineWidth: styles.outlineWidth,
               outlineStyle: styles.outlineStyle,
               outlineColor: styles.outlineColor,
+              // BX2 exclusion data (computeExpectedTabStops) — a control that
+              // correctly takes no Tab stop, or one of a group where only one
+              // member does. `visible` covers a closed overlay's inner
+              // content (e.g. `mud-modal`'s default-closed story): present
+              // in the DOM, correctly untabbable while closed. `checkVisibility()`
+              // (not a `styles.display` read of the element's OWN computed
+              // style) is required here — an element inside a `display:
+              // none` ANCESTOR (a closed native `<dialog>`) reports its own
+              // `display` unaffected; only a rendered-tree-aware check sees
+              // the ancestor collapse it. Live Storybook run, mud-modal
+              // default (closed) story, 2026-09-22: the own-style read
+              // reported `visible: true` for the inner button.
+              visible: el.checkVisibility
+                ? el.checkVisibility()
+                : styles.display !== 'none' && styles.visibility !== 'hidden',
+              disabled: el.disabled === true || el.getAttribute('aria-disabled') === 'true',
+              tabIndexAttr: el.getAttribute('tabindex'),
+              hasHref: el.tagName.toLowerCase() === 'a' ? el.hasAttribute('href') : null,
+              inputType:
+                el.tagName.toLowerCase() === 'input' ? (el.getAttribute('type') || 'text').toLowerCase() : null,
+              groupName: el.getAttribute('name') || null,
+              checkedState: 'checked' in el ? !!el.checked : el.getAttribute('aria-checked') === 'true',
             };
           });
 
@@ -364,9 +419,333 @@ async function collectForTheme(url, componentName, theme) {
         { componentName, tags: INTERACTIVE_TAGS, roles: INTERACTIVE_ROLES },
       );
 
-      return { theme, tree, interactive };
+      // BX2 + BX3 — Tab-walk the component and sample the focus ring at each
+      // stop. Reduced motion + an injected `transition: none; animation:
+      // none` (document + every shadow root) MUST land before this sampling
+      // or the ring is caught mid-transition (Phase 0 results: 4 of 5 runs
+      // differed without it, 5 of 5 identical with it).
+      await applyNoMotionStyle(page);
+      // Start the walk from just before the component, not from the page
+      // top: a focusable element earlier on the page (e.g. the `<input
+      // name="email">` in some stories) otherwise consumes Tab presses
+      // before the walk ever reaches the component, and the old
+      // `census.length + 2` cap ran out before leaving it.
+      await focusJustBeforeComponent(page, componentName);
+      const tabWalk = await walkTabOrder(page, componentName, interactive.length);
+      await removeTabSentinel(page);
+
+      return { theme, tree, interactive, tabWalk };
     },
   });
+}
+
+/**
+ * Inject `transition: none !important; animation: none !important;` into the
+ * document AND every shadow root reachable from it (Phase 0 results —
+ * without this the focus ring is sampled mid-transition), plus
+ * `emulateMedia({ reducedMotion: 'reduce' })`. Idempotent — marks each root
+ * it has already touched, so it is safe to call again after an interaction
+ * that may have rendered new shadow content.
+ */
+export async function applyNoMotionStyle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => {
+    const CSS_TEXT = '*, *::before, *::after { transition: none !important; animation: none !important; }';
+    const MARK = 'data-audit-no-motion';
+    const inject = root => {
+      if (root.querySelector?.(`style[${MARK}]`)) return;
+      const style = document.createElement('style');
+      style.setAttribute(MARK, '');
+      style.textContent = CSS_TEXT;
+      (root.head ?? root).appendChild(style);
+    };
+    const visit = root => {
+      inject(root);
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) visit(el.shadowRoot);
+      }
+    };
+    visit(document);
+  });
+}
+
+/**
+ * Insert an invisible sentinel button immediately before the component host
+ * and focus it, so the next Tab press is the FIRST one the component can
+ * receive. Without this the walk starts at the page top, and a focusable
+ * element earlier in the DOM (e.g. an `<input name="email">` elsewhere in
+ * the story) silently consumes Tab presses meant for the component — Phase 3
+ * live run against `mud-button`'s stories.
+ */
+export async function focusJustBeforeComponent(page, componentName) {
+  await page.evaluate(name => {
+    const host = document.querySelector(name);
+    if (!host?.parentNode) return;
+    const sentinel = document.createElement('button');
+    sentinel.setAttribute('data-audit-tab-sentinel', '');
+    sentinel.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;';
+    host.parentNode.insertBefore(sentinel, host);
+    sentinel.focus();
+  }, componentName);
+}
+
+/** Remove the sentinel `focusJustBeforeComponent` inserted. */
+export async function removeTabSentinel(page) {
+  await page.evaluate(() => {
+    document.querySelector('[data-audit-tab-sentinel]')?.remove();
+  });
+}
+
+/**
+ * Press Tab and, at each stop, record the deep-active element's tag/role and
+ * focus-ring computed style. The walk is bounded by element identity and by
+ * the component boundary, never by a fixed press count that can run out
+ * before leaving the component:
+ *   - stops when Tab does not move focus at all (last press was a no-op);
+ *   - stops when focus lands on an element already visited (a cycle —
+ *     e.g. Tab wrapped back to the sentinel);
+ *   - stops when focus LEAVES the component's subtree (host, light DOM or
+ *     shadow DOM) — this is what makes leading-page focusables harmless once
+ *     the walk starts at the component (`focusJustBeforeComponent`).
+ * `maxPresses` is a generous safety cap only, never the primary bound.
+ * Pure side-effecting (keyboard + DOM reads) — the judgment over this data
+ * (`judgeTabOrder`, `judgeFocusRingVisible`) is unit-testable without a
+ * browser.
+ */
+export async function walkTabOrder(page, componentName, expectedStops) {
+  const maxPresses = Math.max(expectedStops, 0) + 10;
+  const steps = [];
+  await page.evaluate(() => {
+    window.__auditTabVisited = new Set();
+  });
+  for (let i = 0; i < maxPresses; i++) {
+    await page.keyboard.press('Tab');
+    // Some components toggle their focus-ring class from a JS `focus`
+    // listener rather than pure `:focus-visible` CSS, so the ring can land a
+    // frame after the keypress. Live Storybook run, mud-checkbox,
+    // 2026-09-21: without this wait, 2 of 5 runs sampled before the class
+    // landed and reported `boxShadow: 'none'` (false BX3 positive,
+    // non-reproducible run to run).
+    await page.waitForTimeout(100);
+    const step = await page.evaluate(async name => {
+      // A story can render more than one instance of the audited component
+      // (e.g. mud-button's form-submit story: a Submit AND a Reset button).
+      // The census aggregates every instance, so the walk must too — using
+      // only the FIRST match here made focus look like it had "left the
+      // component" the moment it reached the second instance, ending the
+      // walk one stop early (live Storybook run, mud-button
+      // atoms-button--form-submit, 2026-09-22).
+      const hosts = Array.from(document.querySelectorAll(name));
+      const deepActiveElement = root => {
+        let el = root.activeElement;
+        while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+        return el;
+      };
+      const el = deepActiveElement(document);
+      if (!el || el === document.body) return { done: true };
+
+      const insideComponent = hosts.some(host => host === el || host.contains(el) || !!host.shadowRoot?.contains(el));
+      if (!insideComponent) return { done: true }; // focus left every instance — end of the reachable set.
+
+      if (window.__auditTabVisited.has(el)) return { done: true }; // cycle (e.g. wrapped back to the sentinel).
+      window.__auditTabVisited.add(el);
+
+      // BX3's ring lives on "the focused element, or an element that
+      // visibly changes as a RESULT of this focus" — never any element in
+      // the subtree that merely happens to carry a ring already (an
+      // elevation shadow on the host, a hidden popover). Compare each
+      // candidate's ring style focused vs. blurred and keep only the ones
+      // that actually differ.
+      const isVisible = node => {
+        if (!node || node.nodeType !== 1) return false;
+        // `checkVisibility()` accounts for a `display: none` ANCESTOR (a
+        // closed overlay) collapsing this node — a plain own-style
+        // `display`/`visibility` read does not (same fix as the census's
+        // `visible` field above).
+        if (node.checkVisibility) return node.checkVisibility();
+        const s = getComputedStyle(node);
+        return s.display !== 'none' && s.visibility !== 'hidden';
+      };
+      const ringOf = node => {
+        const s = getComputedStyle(node);
+        return { outlineWidth: s.outlineWidth, outlineStyle: s.outlineStyle, boxShadow: s.boxShadow };
+      };
+      const hasVisibleRing = r =>
+        (r.outlineWidth !== '0px' && r.outlineStyle !== 'none') || (r.boxShadow && r.boxShadow !== 'none');
+
+      // Candidates: every VISIBLE element in the focused element's nearest
+      // shadow-host subtree (light + shadow) — the ring is frequently drawn
+      // on a sibling of the focused element, not an ancestor (e.g.
+      // `mud-radio`: `:host(.is-focused) .visual` toggles a class-driven
+      // sibling, not the `<input>` itself or anything above it). The subtree
+      // scope matches the pre-fix search; what changed is the FILTER: only
+      // an element whose ring actually differs focused-vs-blurred, and only
+      // a visible one, counts — a decorative host shadow or a hidden
+      // popover carries a ring that never changes with focus, so it is
+      // never a candidate.
+      const root = el.getRootNode()?.host ?? el;
+      const candidates = [];
+      const collect = node => {
+        if (!isVisible(node)) return;
+        candidates.push(node);
+        for (const child of node.children) collect(child);
+        if (node.shadowRoot) for (const child of node.shadowRoot.children) collect(child);
+      };
+      collect(root);
+      if (!candidates.includes(el) && isVisible(el)) candidates.unshift(el);
+      const focused = candidates.map(n => ({ node: n, ring: ringOf(n) }));
+      el.blur();
+      // Some components toggle the ring's class from a JS `blur` listener
+      // (the same latency BX3's outer 100ms wait exists for on the focus
+      // side — `mud-radio`'s `:host(.is-focused) .visual` is `@State`-driven
+      // and its removal lands a frame after `blur()`, not synchronously with
+      // it), so read the blurred style only after giving that a moment to land.
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const blurred = candidates.map(ringOf);
+      el.focus(); // restore focus so the next Tab press continues from a sane state.
+
+      let ring = null;
+      for (let idx = 0; idx < focused.length; idx++) {
+        const { ring: focusedRing } = focused[idx];
+        const blurredRing = blurred[idx];
+        const changed =
+          focusedRing.outlineWidth !== blurredRing.outlineWidth ||
+          focusedRing.outlineStyle !== blurredRing.outlineStyle ||
+          focusedRing.boxShadow !== blurredRing.boxShadow;
+        if (changed && hasVisibleRing(focusedRing)) {
+          ring = focusedRing;
+          break;
+        }
+      }
+      ring = ring ?? { outlineWidth: '0px', outlineStyle: 'none', boxShadow: 'none' };
+
+      return {
+        done: false,
+        tag: el.tagName.toLowerCase(),
+        role: el.getAttribute('role'),
+        accessibleName: (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 80),
+        ...ring,
+      };
+    }, componentName);
+    if (step.done) break;
+    delete step.done;
+    steps.push(step);
+  }
+  return steps;
+}
+
+/**
+ * BX2 exclusion filter: drops census entries that correctly take no Tab
+ * stop — the `origin: 'host'` boundary marker, a hidden element
+ * (`display: none` / `visibility: hidden` — e.g. a closed overlay's inner
+ * content, present in the DOM but untabbable while closed), `disabled` /
+ * `aria-disabled` elements, `tabindex="-1"` elements (covers
+ * roving-tabindex group members), an `<a>` with no `href`, and every
+ * radio-like element in a `name` group except the one the group would
+ * actually focus (the checked one, or the first when none is checked —
+ * mirrors native `<input type="radio">` grouping, and `mud-radio` renders a
+ * real one per instance). Pure — exported for tests.
+ */
+export function computeExpectedTabStops(census) {
+  const list = Array.isArray(census) ? census : [];
+  // `mud-radio` renders a native `<input type="radio">` inside its shadow
+  // root with no explicit `role` attribute (implicit role only) — match on
+  // the input's `type`, plus an explicit `role="radio"` for any component
+  // that takes the ARIA-widget route instead.
+  const isRadio = el => el.role === 'radio' || (el.tag === 'input' && el.inputType === 'radio');
+
+  const groups = new Map();
+  for (const el of list) {
+    if (!isRadio(el)) continue;
+    const key = el.groupName ?? '__unnamed__';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(el);
+  }
+  const radioExpected = new Set();
+  for (const group of groups.values()) {
+    const chosen = group.find(el => el.checkedState) ?? group[0];
+    if (chosen) radioExpected.add(chosen);
+  }
+
+  return list.filter(el => {
+    if (el.origin === 'host') return false;
+    if (el.visible === false) return false;
+    if (el.disabled) return false;
+    if (el.tabIndexAttr === '-1') return false;
+    if (el.tag === 'a' && el.hasHref === false) return false;
+    if (isRadio(el) && !radioExpected.has(el)) return false;
+    return true;
+  });
+}
+
+/**
+ * BX2 — every interactive census element must be reachable by Tab. Compared
+ * as a (tag, role) multiset rather than strict index order: the census walk
+ * (host → light → shadow) and the DOM's actual Tab order are two different,
+ * both-legitimate traversals of the same subtree, so index equality would
+ * false-positive on any component whose visual tab order isn't host-first.
+ * Pure — exported for tests.
+ */
+export function judgeTabOrder(census, tabWalk) {
+  if (!Array.isArray(census) || census.length === 0) return null; // N/A — nothing to reach.
+  const walked = new Map();
+  for (const step of tabWalk ?? []) {
+    const key = `${step.tag}|${step.role ?? ''}`;
+    walked.set(key, (walked.get(key) ?? 0) + 1);
+  }
+  const missing = [];
+  const seen = new Map();
+  for (const el of census) {
+    const key = `${el.tag}|${el.role ?? ''}`;
+    const already = seen.get(key) ?? 0;
+    seen.set(key, already + 1);
+    if (already >= (walked.get(key) ?? 0)) missing.push(el);
+  }
+  if (missing.length === 0) return null;
+  return {
+    severity: 'error',
+    code: 'A11Y-BX2-TAB-ORDER-GAP',
+    message: `${missing.length} census element(s) never received focus via Tab: ${missing
+      .map(el => `<${el.tag}>${el.role ? ` role=${el.role}` : ''}`)
+      .join(', ')} (WCAG 2.1.1).`,
+  };
+}
+
+/**
+ * BX3 — a Tab stop must have a visible focus indicator: a non-zero outline,
+ * or a box-shadow that isn't `none`. Pure — exported for tests.
+ */
+export function judgeFocusRingVisible(step) {
+  if (!step) return null;
+  const hasOutline = step.outlineWidth && step.outlineWidth !== '0px' && step.outlineStyle !== 'none';
+  const hasBoxShadowRing = step.boxShadow && step.boxShadow !== 'none';
+  if (hasOutline || hasBoxShadowRing) return null;
+  return {
+    severity: 'error',
+    code: 'A11Y-BX3-FOCUS-RING-INVISIBLE',
+    message: `<${step.tag}>${step.role ? ` role=${step.role}` : ''} has no visible focus ring (outlineWidth=${step.outlineWidth}, boxShadow=${step.boxShadow}) (WCAG 2.4.7).`,
+  };
+}
+
+/**
+ * R6: BX2's `checks[bx2-<theme>]` assembly, extracted so it is unit-tested
+ * without a browser. Pure. `bx2` is `judgeTabOrder`'s result (or `null` when
+ * it never ran because `expected` is empty).
+ */
+export function bx2StatusFor(expected, bx2) {
+  return expected.length === 0
+    ? { status: 'not-applicable', reason: 'no interactive element is expected to take a Tab stop' }
+    : { status: bx2 ? 'fail' : 'ok' };
+}
+
+/**
+ * R6: BX3's `checks[bx3-<theme>]` assembly, extracted so it is unit-tested
+ * without a browser. Pure.
+ */
+export function bx3StatusFor(tabWalk, bx3Failed) {
+  return tabWalk.length === 0
+    ? { status: 'not-applicable', reason: 'the Tab walk produced no stops inside the component' }
+    : { status: bx3Failed ? 'fail' : 'ok' };
 }
 
 function pickDefaultStoryId(target) {

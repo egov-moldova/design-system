@@ -37,7 +37,7 @@ import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { DEFAULT_PORT, isStorybookReachable } from './lib/storybook-helpers.mjs';
 import { launchBrowser, PLAYWRIGHT_INSTALL_HINT, PLAYWRIGHT_BROWSER_HINT } from './lib/browser-context.mjs';
-import { loadManifest, manifestPathFor, resolveState } from './lib/figma-manifest.mjs';
+import { expectedStyles, isDesignNone, loadManifest, manifestPathFor, resolveState } from './lib/figma-manifest.mjs';
 import { openState } from './lib/state-page.mjs';
 import { compareStyleValue } from './lib/style-values.mjs';
 import { attributeTokens, formatTokens, referencedTokens } from './lib/token-match.mjs';
@@ -103,6 +103,28 @@ async function readStyles(page, selector, props) {
     },
     { props, pseudo: PSEUDO_PROPS },
   );
+}
+
+/**
+ * The STYLE-MISMATCH finding for one failing check. `expected` / `actual` /
+ * `source` are structured so the fix brief can print them without parsing the
+ * message; with a committed `override`, the expected value and its source are
+ * the override's. Pure — exported for tests.
+ */
+export function mismatchFinding({ state, exp, check, tokens = null, manifestRel }) {
+  const source = exp.override
+    ? `override (${exp.override.reason}; decided by ${exp.override.decidedBy}) over Figma ${exp.node}`
+    : `Figma ${exp.node}`;
+  return {
+    ...finding({
+      severity: 'error',
+      code: 'STYLE-MISMATCH',
+      file: manifestRel,
+      message: `${state} › ${exp.target} › ${check.prop}: ${source} = ${check.expected}, rendered ${check.actual}${formatTokens(tokens)}`,
+    }),
+    expected: { value: check.expected, source },
+    actual: check.actual,
+  };
 }
 
 /** Tokens for one failing, non-pseudo check; null otherwise. Pure — exported for tests. */
@@ -217,6 +239,18 @@ async function main() {
     await emit(result, args);
     process.exit(exitCodeFromSummary(result.summary));
   }
+  if (isDesignNone(manifest)) {
+    // A declared "no design" is a recorded decision, not a finding: nothing to verify.
+    const { reason, decidedBy } = manifest.figma;
+    const result = buildResult({
+      tool: TOOL,
+      target: target.name,
+      findings: [],
+      meta: { durationMs: Date.now() - t0, manifest: manifestRel, design: { design: 'none', reason, decidedBy } },
+    });
+    await emit(result, args);
+    process.exit(exitCodeFromSummary(result.summary));
+  }
   if (!(await isStorybookReachable({ port }))) {
     process.stderr.write(`${TOOL}: Storybook not reachable on port ${port}. Start it with \`yarn sp.dev.watch\`.\n`);
     process.exit(EXIT_INTERNAL);
@@ -259,7 +293,8 @@ async function main() {
             }
             continue;
           }
-          const actual = await readStyles(session.page, exp.target, Object.keys(exp.styles));
+          const styles = expectedStyles(exp);
+          const actual = await readStyles(session.page, exp.target, Object.keys(styles));
           if (!actual) {
             findings.push(
               finding({
@@ -273,7 +308,7 @@ async function main() {
             stateResult.checks.push({ target: exp.target, node: exp.node, missing: true });
             continue;
           }
-          const checks = compareExpectation(exp.styles, actual, { tolerance });
+          const checks = compareExpectation(styles, actual, { tolerance });
           const needsVars = checks.some(c => !c.pass && !PSEUDO_PROPS.includes(c.prop));
           if (needsVars && !varsByTarget.has(exp.target)) {
             varsByTarget.set(exp.target, await readCustomProperties(session.page, exp.target));
@@ -282,18 +317,9 @@ async function main() {
           const scope = { tolerance, own: ownTokensFor(targetComponent(exp.target, target.name)), components };
           for (const check of checks) {
             checked++;
-            const tokens = mismatchTokens(check, exp, actual, vars, scope);
+            const tokens = mismatchTokens(check, { ...exp, styles }, actual, vars, scope);
             stateResult.checks.push({ target: exp.target, node: exp.node, ...check, ...(tokens ?? {}) });
-            if (!check.pass) {
-              findings.push(
-                finding({
-                  severity: 'error',
-                  code: 'STYLE-MISMATCH',
-                  file: manifestRel,
-                  message: `${state.name} › ${exp.target} › ${check.prop}: Figma ${exp.node} = ${check.expected}, rendered ${check.actual}${formatTokens(tokens)}`,
-                }),
-              );
-            }
+            if (!check.pass) findings.push(mismatchFinding({ state: state.name, exp, check, tokens, manifestRel }));
           }
         }
       } catch (err) {

@@ -46,7 +46,10 @@ describe('05-story-exports: helpers', () => {
     it('kebab-cases title segments and story name', () => {
       assert.equal(buildStoryId('Atoms/Button', 'Default'), 'atoms-button--default');
       assert.equal(buildStoryId('Molecules/Tooltip', 'AllSizes'), 'molecules-tooltip--all-sizes');
-      assert.equal(buildStoryId('Templates/CalendarGrid', 'EventLog'), 'templates-calendar-grid--event-log');
+      // Only the export name is split into words; Storybook lowercases a
+      // title segment whole, so `CalendarGrid` is `calendargrid`.
+      // scripts/__tests__/audit/story-id.spec.mjs anchors this to its `toId`.
+      assert.equal(buildStoryId('Templates/CalendarGrid', 'EventLog'), 'templates-calendargrid--event-log');
     });
 
     it('handles multi-word PascalCase story names', () => {

@@ -407,6 +407,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
           severity: 'warning',
           code: 'CONTRAST-NO-STORY',
           message: `No story id resolvable for ${target.name}; pass --story-id.`,
+          noTarget: true,
         }),
       ],
       pairs: null,

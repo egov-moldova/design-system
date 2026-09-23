@@ -1,6 +1,6 @@
 ---
 name: audit-production
-description: Full production-readiness audit (code quality, Stencil compliance, tokens, accessibility, performance, security, tests, stories, documentation, git hygiene). Use before graduating a component to production, before final pre-merge gate, or when comprehensive validation is needed. Delegates structural/decorator checks to the `audit-component` skill and Stencil rules to `stencil-compliance`. Accepts `--e2e` flag for E2E test audit (default: unit-only). Returns categorized PASS/FAIL/WARN report.
+description: Full production-readiness audit (code quality, Stencil compliance, tokens, accessibility, performance, security, tests, stories, documentation, git hygiene). Use before graduating a component to production, before final pre-merge gate, or when comprehensive validation is needed. Gates on `yarn audit:component <name> --depth deep` (`scripts/audit/verdict.mjs`) — the verdict's `state` + `level` replace this agent's own PASS/FAIL/WARN criteria. Delegates structural/decorator checks to the `audit-component` skill and Stencil rules to `stencil-compliance`. Accepts `--e2e` flag (deprecated, folds into `--depth deep`) for E2E test audit.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__image-compare__compare_images, Skill
 model: opus
 ---
@@ -13,7 +13,7 @@ Comprehensive validation that a component meets all production standards before 
 
 - Component name: `mud-<name>` (folder in `src/components/` or `src/hidden/`)
 - Optional flags:
-  - `--e2e` — include Phase 5b E2E test audit (default: unit-only)
+  - `--e2e` — deprecated; E2E is already a `deferred` row at `--depth deep` (`scripts/audit/verdict.mjs` `DEFERRED_CHECKS.deep`, reason: no E2E test project exists yet). Kept for callers that still pass it.
   - `--skip-visual` — skip Phase 5c Visual Regression (when Figma references not available)
 
 ## Delegation Strategy (NEW)
@@ -22,38 +22,51 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 
 | Phase | Delegates to | What it adds |
 |-------|--------------|--------------|
-| 1 — Code Quality | [`audit-component` skill](../skills/audit-component/SKILL.md) (`--deep`) | Stencil compliance via [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) |
+| 1 — Code Quality | `yarn audit:component mud-<name> --depth deep` (Fast Path, above) + [`audit-component` skill](../skills/audit-component/SKILL.md) for the AI legs | Stencil compliance via [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) (an advisory leg) |
 | 2 — Tokens & CSS | `yarn tokens.validate` + [`token-validator` agent](token-validator.md) | Dark mode parity check |
 | 3 — Accessibility | [`/audit-accessibility`](../commands/audit-accessibility.md) | WCAG 2.1 AA deep, light + dark |
-| 4 — Stories | `audit-component --deep` Wave 2.9 | Storybook build pass |
-| 5a — Unit Tests | `audit-component --deep` Wave 2.10.1 | Coverage > 80% target |
-| 5b — E2E Tests | `audit-component --deep --e2e` (when flag set) | (future) — Stencil E2E patterns |
+| 4 — Stories | the gate's `05` row (Wave A, `--depth quick`+) | Storybook build pass |
+| 5a — Unit Tests | the gate's `06` row (Wave B, `--depth standard`+) | Coverage > 80% target |
+| 5b — E2E Tests | deferred at every depth (`e2e` row) | (future) — Stencil E2E patterns |
 | 5c — Visual Regression | `mcp__image-compare__compare_images` | Pixel diff against Figma reference |
 | 6 — Performance | Local checks | Bundle size + runtime perf |
-| 7 — Security | `audit-component` Wave 2 grep gates + `yarn npm audit` | npm advisories + CSP compliance |
+| 7 — Security | the skill's security leg (advisory, `--depth deep`) + `yarn npm audit` | npm advisories + CSP compliance |
 | 8 — Documentation | Local checks | JSDoc + readme.md + Storybook docs |
-| 9 — Git Hygiene | Local checks | Conventional commits + no unrelated diff |
-| 10 — Stencil Compliance summary | Surfaces `audit-component --deep` findings under their own header | — |
+| 9 — Git Hygiene | the gate's `03` row (shared, every depth) | Conventional commits + no unrelated diff |
+| 10 — Stencil Compliance summary | Surfaces the `stencil-compliance` leg's advisory findings under their own header | — |
 
-## Fast Path — single orchestrator call (preferred)
+## Fast Path — the gate (mandatory)
 
-Before dispatching the per-phase work below, run the local audit orchestrator
-ONCE and consume its JSON envelope. It covers most of Phase 1 (structure +
-anti-patterns + JSDoc), Phase 4 (story exports), Phase 5a (test coverage),
-Phase 6.1 (bundle size), and Phase 9 (git hygiene) deterministically and in
-parallel:
+Run the deterministic gate once:
 
 ```bash
-# All non-browser checks for one component (Wave A + B of the orchestrator)
-node scripts/audit/run-all.mjs mud-<name> --no-browser --json
-
-# With browser checks (a11y tree, contrast, console errors) — requires Storybook + Playwright
-yarn sp.dev.watch
-node scripts/audit/run-all.mjs mud-<name> --json
+yarn audit:component mud-<name> --depth deep --json
 ```
 
-The envelope has `summary`, `blockers`, and `findingsByTool` keys. After
-reading it, only the JUDGMENT-heavy phases remain for AI:
+This is `scripts/audit/verdict.mjs`: it drives `run-all.mjs --depth deep`
+(quick + standard's built prerequisites and Wave B/C + adapter smoke builds,
+the live Figma reference check, E2E when present) and computes `state` —
+never this agent. Exit codes (`scripts/audit/lib/exit-codes.mjs`): `0` PASS,
+`1` FAIL, `3` INCOMPLETE, `4` NEEDS-DECISION, `2` usage/internal error.
+
+- Any non-zero exit — STOP. Read `audit/mud-<name>/verdict.json` (`state`,
+  `level`, `rows`, `entries`) and `audit/mud-<name>/fix-brief.md` and report
+  them directly — **this agent's own PASS/FAIL/WARN criteria (§ Phase 11) are
+  replaced by the verdict's `state` + `level`.**
+- Exit `0` — the verdict is final; no AI leg can change it (Decision 12,
+  `2026-09-22-audit-depths-sentinel-fixes.md`: AI legs are advisory at every
+  depth). Phase 1 dispatches them as optional follow-ups; each writes
+  `<runDir>/ai/<leg>/ai-findings.json`, where `<runDir>` is
+  `components[].runDir` in `audit/_run/summary.json`. Then re-render the
+  brief so their findings appear under "Advisory":
+
+  ```bash
+  yarn audit:component --rerender <componentName> --json
+  ```
+
+After the gate, only the JUDGMENT-heavy phases remain for AI, since the
+script already covers structure, anti-patterns, JSDoc, story exports, test
+coverage, bundle size, git hygiene and the scripted accessibility checks:
 
 - **Phase 3.x** — interpreting ARIA correctness from the captured a11y tree
 - **Phase 3.3** — picking the right remediation when contrast fails (token re-map vs design exception)
@@ -61,9 +74,9 @@ reading it, only the JUDGMENT-heavy phases remain for AI:
 - **Phase 8.3** — Storybook docs quality review (script only verifies JSDoc presence)
 - **Phase 10** — synthesizing the Stencil compliance findings under a separate header
 
-The legacy per-phase Bash + Read instructions below remain valid as a fallback
-when the orchestrator is unavailable (CI without a Node version meeting
-`package.json` `engines.node`, etc.).
+The legacy per-phase Bash + Read instructions below name what each phase adds
+beyond the gate; they are not a fallback for the gate itself, which is
+mandatory.
 
 ## Parallel Execution Model (recommended)
 
@@ -104,7 +117,7 @@ If running without subagent support, fall back to the legacy serial 9-phase exec
 
 ## Phase 1: Code Quality & Architecture
 
-**Invoke**: `Skill('audit-component', { args: '<componentName> --deep' })` to run the full 3-wave audit with the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) deep pass. The phase 1 report inherits the audit-component output (Critical/High/Medium/Low buckets).
+**Invoke**: `Skill('audit-component', { args: '<componentName> --depth deep --run-dir <components[].runDir from audit/_run/summary.json>' })` for the optional AI legs, including the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) leg. The `--run-dir` argument is what tells the skill the gate already ran and which run to write into; without it passed for real, "never start a second fresh run" is prose the skill cannot act on. The phase 1 report inherits the gate's verdict (`audit/<componentName>/verdict.json` `rows` / `entries`) plus the skill's advisory findings.
 
 Additionally verify these production-only items below.
 
@@ -363,7 +376,8 @@ yarn sp.build
 
 ## Phase 5: Testing
 
-Default: unit tests only. With `--e2e` flag also audit E2E tests.
+Unit tests (5a) are always audited. E2E (5b) is a deferred row from the gate's
+verdict, not a flag-gated pass this agent runs — see 5b.
 
 ### 5a. Unit Tests (DEFAULT — always audited)
 
@@ -390,23 +404,23 @@ node scripts/check-test-stderr.mjs --project spec src/components/mud-[name]/test
 
 **Pass criteria**: all tests pass, coverage > 80% (target — not enforced by tooling).
 
-### 5b. E2E Tests (GATED on `--e2e` flag)
+### 5b. E2E Tests (deferred row, not a live gate)
 
-If `--e2e` flag is NOT set: emit `INFO: E2E audit skipped (use --e2e to enable)` and continue.
+E2E is not audited here. `vitest.config.mts` has no project for
+`test/mud-[name].e2e.ts` files (see
+[`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)),
+so the gate (`scripts/audit/verdict.mjs` `DEFERRED_CHECKS.deep`) reports it as a
+deferred `e2e` row at `--depth deep` instead of running anything: it never
+blocks the verdict's `state`, and it carries its own reason
+("no E2E test project exists"). `--e2e` is a deprecated alias that folds into
+`--depth deep` — passing it changes nothing beyond selecting that depth; there
+is no separate flag-gated E2E pass to run by hand.
 
-`vitest.config.mts` has no project for `test/mud-[name].e2e.ts` files (see
-[`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)).
-When `--e2e` set, drive the live Storybook story through the Playwright MCP instead:
-
-1. Navigate to the story's `iframe.html?id=...` URL
-2. Hydration: `page.evaluate()` reads the `.hydrated` class on the host element
-3. Prop reflection: props/attributes reflect a re-rendered story arg
-4. `mud*` custom events: captured via `addEventListener` inside `page.evaluate()`, not a spy
-5. Shadow DOM access: `page.locator('mud-x input')` (Playwright pierces shadow roots)
-6. Focus/blur: `page.evaluate()` against `shadowRoot.querySelector(...)`
-7. Form-associated: form submission produces correct FormData via `page.evaluate()`
-
-**Pass criteria**: all checks pass; no flakes.
+Once an E2E test project exists, this section is the place to describe driving
+the live Storybook story through the Playwright MCP (hydration via `.hydrated`,
+prop reflection, `mud*` custom events, shadow-DOM access, focus/blur, and
+form-associated FormData) — until then, surface the `e2e` row from the gate's
+verdict as-is and move on.
 
 ### 5c. Visual Regression
 
@@ -546,14 +560,14 @@ surfaces an unexpected change; otherwise trust the envelope.
 
 ## Phase 10: Stencil Compliance Deep Pass
 
-The `audit-component --deep` invocation in Phase 1 already covers
+The `stencil-compliance` leg dispatched in Phase 1 already covers
 [`stencil-compliance`](../skills/stencil-compliance/SKILL.md)'s
 [Run contract](../skills/stencil-compliance/SKILL.md#run-contract), judged against its
 [Rule index](../skills/stencil-compliance/SKILL.md#rule-index). This phase surfaces the
 findings explicitly in the production report under their own header so reviewers see
 them grouped.
 
-For component-level deep audit (interactive), invoke `/audit-component @mud-<name> --deep`.
+For component-level deep audit (interactive), invoke `/audit-component @mud-<name> --depth deep`.
 
 ## Automated Audit Bundle
 
@@ -568,21 +582,16 @@ yarn audit:contrast
 yarn npm audit
 ```
 
-Plus the `audit-component --deep` skill invocation in Phase 1.
+Plus the `yarn audit:component mud-<name> --depth deep` gate and the `audit-component` skill invocation in Phase 1.
 
-## Phase 11.5: Layer 2 Verification (interactive only — skipped in CI)
+## Phase 11.5: Interaction and judgment rows
 
-For local runs (where `run-all.mjs` envelope has `meta.layer2Required: true`),
-execute Layer 2 of the `audit-component` skill: §BX (mandatory MCP browser
-checklist) + §CX (archetype-specific checks) + §DX (discretionary).
-
-See [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §Layer 2 for the canonical procedure. The archetype is read from
-`envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`
-(emitted by script 14). Surface BX/CX/DX results in the final report's Check
-Matrix; a failing BX row escalates the overall verdict to "Block".
-
-Skip in CI runs (`envelope.meta.ciDetected === true`) — those produce a
-Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
+Nothing to run here. BX1–BX7 are scripted verdict rows at `standard`+ (`09`, `12` and `19`,
+one script per row in [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md)
+§BX); the `deep` gate in Phase 1 already ran them. CX/DX judgment is the `audit-component`
+skill's advisory legs, already dispatched in Phase 1 ([§ AI legs](../skills/audit-component/SKILL.md)).
+Report both in the final report's Check Matrix as the verdict and the legs recorded them;
+neither this phase nor any leg finding changes `state`.
 
 ## Phase 11: Final Report
 
@@ -590,30 +599,21 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 ## Production Readiness Audit: mud-[name]
 **Flags**: <list active flags, e.g. --e2e, --skip-visual>
 
-### Summary
-- Phase 1  (Code Quality):       PASS / FAIL / WARN — <issue count>
-- Phase 2  (Tokens & CSS):       PASS / FAIL / WARN
-- Phase 3  (Accessibility):      PASS / FAIL / WARN
-- Phase 4  (Stories):            PASS / FAIL / WARN
-- Phase 5a (Unit Tests):         PASS / FAIL / WARN — <coverage>%
-- Phase 5b (E2E Tests):          PASS / FAIL / SKIP
-- Phase 5c (Visual Regression):  PASS / FAIL / SKIP — <%diff>
-- Phase 6  (Performance):        PASS / FAIL / WARN — <bundle KB>
-- Phase 7  (Security):           PASS / FAIL / WARN
-- Phase 8  (Documentation):      PASS / FAIL / WARN
-- Phase 9  (Git Hygiene):        PASS / FAIL / WARN
-- Phase 10 (Stencil Compliance): PASS / FAIL / WARN — <issue count>
+### Verdict (from `audit/mud-[name]/verdict.json`)
+- state: INCOMPLETE | FAIL | NEEDS-DECISION | PASS
+- level (PASS only): CLEAN-STATIC | MERGE-READY | PRODUCTION-READY
+- headline: <state>@deep · <level> · <excuses>
 
-### Critical Issues (must fix before merge)
+### Fix brief entries (from `audit/mud-[name]/fix-brief.md`)
 1. ...
 
-### High Issues
-1. ...
+### Judgment phases beyond the gate (this agent's own findings)
+- Phase 3.x  (ARIA / contrast judgment): ...
+- Phase 7    (Security beyond `yarn npm audit`): ...
+- Phase 8.3  (Storybook docs quality): ...
+- Phase 10   (Stencil compliance synthesis, from the `stencil-compliance` leg): ...
 
-### Warnings (review)
-1. ...
-
-### Stencil Compliance Findings (from audit-component --deep)
+### Stencil Compliance Findings (from the `stencil-compliance` leg, advisory)
 - Section 1 @Component: ...
 - Section 2 @Prop: ...
 - ... (only show non-PASS sections)
@@ -626,15 +626,25 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 - Reactivity mutations detected: <count>
 ```
 
-**Pass/Fail criteria**:
+**Verdict criteria (`scripts/audit/verdict.mjs`, Design §1 of the plan)**:
 
-- **PASS**: All automated checks pass + manual review complete + no blockers
-- **FAIL**: lint/type/test failures, visual regression > 2%, accessibility violations, security vulnerabilities, missing documentation, unrelated git changes, ANY critical Stencil compliance issue (lifecycle leak, reactivity bug, missing form callback)
-- **WARN**: bundle > 50 KB, test coverage < 80%, visual regression 0.5–2%, long tasks, non-critical Stencil compliance issues
+- **PASS**: every required check for `--depth deep` ran (or was excused by
+  `--no-figma` / `--no-browser` / `CI`) with no error-severity finding.
+- **FAIL**: at least one blocking script finding.
+- **NEEDS-DECISION**: an open design question — no Figma manifest at `HEAD`.
+- **INCOMPLETE**: any row crashed, hit a missing prerequisite, checked nothing,
+  or a required check for `deep` did not run without an excuse.
+
+AI-leg findings, including a leg's question, are advisory and never move the
+state (Decision 12).
+
+This agent no longer assigns its own PASS/FAIL/WARN per phase; report the
+gate's `state` + `level` and let the judgment phases above add findings the
+script cannot compute, never a second verdict.
 
 ## Return to Main Agent
 
 Present the report. Do NOT auto-fix. Wait for user instruction on which findings to address.
 
-For component-level deep audit, suggest `/audit-component @mud-<name> --deep`.
+For component-level deep audit, suggest `/audit-component @mud-<name> --depth deep`.
 For accessibility-only deep audit, suggest `/audit-accessibility @mud-<name>`.

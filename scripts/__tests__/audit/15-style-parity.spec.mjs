@@ -11,9 +11,11 @@ import {
   absenceResult,
   compareExpectation,
   componentTokenNames,
+  mismatchFinding,
   mismatchTokens,
   targetComponent,
 } from '../../audit/15-style-parity.mjs';
+import { expectedStyles } from '../../audit/lib/figma-manifest.mjs';
 
 describe('15-style-parity: compareExpectation', () => {
   it('returns one check per property with normalised values', () => {
@@ -97,5 +99,32 @@ describe('15-style-parity: token scope', () => {
     const names = componentTokenNames();
     assert.ok(names.includes('date-picker'), 'date-picker.tokens.json should be listed');
     assert.ok(names.every(n => !n.endsWith('.json')));
+  });
+});
+
+describe('15-style-parity: expect[].override (Figma corrections)', () => {
+  const figma = { target: 'mud-x', node: '1:2', styles: { color: '#000000' } };
+  const corrected = { ...figma, override: { value: '#111111', reason: 'Figma typo', decidedBy: 'Dan' } };
+  const rendered = { color: 'rgb(17, 17, 17)' };
+
+  it('a committed override passes when the render matches the corrected value', () => {
+    const [check] = compareExpectation(expectedStyles(corrected), rendered);
+    assert.equal(check.pass, true);
+  });
+
+  it('without the override (e.g. uncommitted, so absent from the HEAD copy) the Figma value is checked', () => {
+    const [check] = compareExpectation(expectedStyles(figma), rendered);
+    assert.equal(check.pass, false);
+    const f = mismatchFinding({ state: 'a', exp: figma, check, manifestRel: 'm.json' });
+    assert.deepEqual(f.expected, { value: '#000000', source: 'Figma 1:2' });
+    assert.equal(f.actual, '#111111');
+    assert.match(f.message, /Figma 1:2 = #000000, rendered #111111/);
+  });
+
+  it('a failing check against an override cites the override and who decided it', () => {
+    const [check] = compareExpectation(expectedStyles(corrected), { color: 'rgb(0, 0, 0)' });
+    const f = mismatchFinding({ state: 'a', exp: corrected, check, manifestRel: 'm.json' });
+    assert.equal(f.expected.value, '#111111');
+    assert.match(f.expected.source, /override \(Figma typo; decided by Dan\) over Figma 1:2/);
   });
 });

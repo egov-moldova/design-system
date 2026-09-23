@@ -3,6 +3,9 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
   componentRoot,
@@ -10,7 +13,102 @@ import {
   extractComponentBlock,
   flattenDtcg,
   resolveMode,
+  loadComponentSources,
+  resolveTokensFile,
+  undeclaredCustomProperties,
 } from '../../audit/13-token-diff.mjs';
+
+describe('13-token-diff: U3 — the tokens file resolves by the component CSS prefix (Decision 13)', () => {
+  it('a component with its own file uses it (mud-button → button.tokens.json)', () => {
+    assert.equal(resolveTokensFile('mud-button').file, 'tokens/core/components/button.tokens.json');
+  });
+
+  it('mud-text-input resolves to input.tokens.json through its var(--input-…) usage', () => {
+    assert.equal(resolveTokensFile('mud-text-input').file, 'tokens/core/components/input.tokens.json');
+  });
+
+  it('mud-accordion-item resolves to accordion.tokens.json through its var(--accordion-item-…) usage', () => {
+    assert.equal(resolveTokensFile('mud-accordion-item').file, 'tokens/core/components/accordion.tokens.json');
+  });
+
+  it('mud-icon uses no component tokens (its --icon-size is defined in its own CSS) → no file', () => {
+    assert.equal(resolveTokensFile('mud-icon').file, null);
+  });
+
+  it('mud-icon → TOKEN-DIFF-NO-CURRENT as a visible notApplicable finding, never noTarget', () => {
+    const { error } = loadComponentSources('mud-icon', 'tokenhaus/export.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
+    assert.equal(error.severity, 'info');
+    assert.equal(error.notApplicable, true);
+    assert.notEqual(error.noTarget, true);
+  });
+
+  it("names mud-icon's --icon-color as published API in the note, so the not-applicable says why", () => {
+    const { error } = loadComponentSources('mud-icon', 'tokenhaus/export.json');
+    assert.match(error.message, /--icon-color/);
+    assert.match(error.message, /fallback/);
+  });
+
+  it('own-prefixed reads split by fallback: with one it is API, without one it is required', () => {
+    const css = ':host { color: var(--icon-color, currentColor); gap: var(--icon-gap); --icon-size: 16px; }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--icon-gap'], api: ['--icon-color'] });
+  });
+
+  it('one fallback-less read among several makes the property required', () => {
+    const css = 'a { gap: var(--x-gap, 0); } b { gap: var(--x-gap); }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--x-gap'], api: [] });
+  });
+
+  it('a commented-out declaration does not declare the property', () => {
+    const css = '/* --x-gap: 4px; */ a { gap: var(--x-gap); }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: ['--x-gap'], api: [] });
+  });
+
+  it('a commented-out read does not make the property required', () => {
+    const css = 'a { gap: var(--x-gap, 0); /* gap: var(--x-gap); */ }';
+    assert.deepEqual(undeclaredCustomProperties(css), { required: [], api: ['--x-gap'] });
+  });
+
+  it('mud-icon has no fallback-less own read — its --icon-color is the API case', () => {
+    const { required, api } = resolveTokensFile('mud-icon');
+    assert.deepEqual(required, []);
+    assert.deepEqual(api, ['--icon-color']);
+  });
+
+  it('Decision 13, third case: a fallback-less --<bare>-* read with no tokens file is noTarget, not a note', () => {
+    // An empty tokens dir reproduces "the component reads its own tokens and
+    // nothing defines them" against real component CSS: mud-button's
+    // `--button-container-*` reads carry no fallback.
+    const empty = mkdtempSync(join(tmpdir(), 'token-diff-'));
+    const { error } = loadComponentSources('mud-button', 'tokens-tokenhaus.json', { tokensDir: empty });
+    assert.equal(error.code, 'TOKEN-DIFF-NO-CURRENT');
+    assert.equal(error.noTarget, true);
+    assert.notEqual(error.notApplicable, true);
+    assert.match(error.message, /--button-container-border-radius-circular-lg/);
+    assert.match(error.fix, /create/);
+  });
+});
+
+describe('13-token-diff: U3 — a Figma export with no block for the component does not silently pass', () => {
+  it('TOKEN-DIFF-NO-FIGMA-BLOCK is a visible notApplicable, never a bare info', () => {
+    const { error } = loadComponentSources('mud-button', 'tokens-tokenhaus.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-FIGMA-BLOCK');
+    assert.equal(error.severity, 'info');
+    assert.equal(error.notApplicable, true);
+    assert.match(error.message, /nothing to diff against/);
+  });
+
+  it('mud-text-input is diffed, not not-applicable', () => {
+    const res = loadComponentSources('mud-text-input', 'no/such/figma-export.json');
+    assert.equal(res.error.code, 'TOKEN-DIFF-NO-FIGMA-EXPORT', 'reached the export step, so a tokens file was found');
+  });
+
+  it('current tokens file exists but the Figma export path does not → TOKEN-DIFF-NO-FIGMA-EXPORT, noTarget: true', () => {
+    const { error } = loadComponentSources('mud-button', 'no/such/figma-export.json');
+    assert.equal(error.code, 'TOKEN-DIFF-NO-FIGMA-EXPORT');
+    assert.equal(error.noTarget, true);
+  });
+});
 
 describe('13-token-diff: componentRoot', () => {
   it("reads the component file's own root, skipping DTCG `$` metadata", () => {

@@ -12,7 +12,7 @@ For complex multi-phase workflows (Figma → code → QA pipelines, full product
 
 | Slash Command | Description | When to Use | Complexity |
 |---|---|---|---|
-| `/audit-component` | 12-category health check for a component (wraps `audit-component` skill). Flags: `--deep` (full Stencil + a11y), `--e2e`, `--fast`. | Before PR, after major changes, or on-demand review | Low |
+| `/audit-component` | Served by the skill ([`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md)); no command file. Deterministic production-readiness audit for a component: `yarn audit:component <name> --depth <d>` (`scripts/audit/verdict.mjs`) computes `state` and, on `PASS`, `level` — never the model. Depths and flags: the skill's § Depths and § Flags and excuses. | Before PR, after major changes, or on-demand review | Low (quick) – High (deep) |
 | `/audit-accessibility` | Deep WCAG 2.2 AA audit — keyboard, ARIA, contrast, screen reader | Accessibility review before shipping | Medium |
 | `/update-tokens` | Create or modify design tokens without touching component code | Token-only changes — color, spacing, typography | Low |
 | `/fix-visual-bug` | Diagnose & fix visual bugs via token → CSS → TSX root cause tracing | Something looks wrong — color, spacing, size off | Medium |
@@ -68,6 +68,7 @@ What do you need to do?
 - **Targeted builds during iteration**: `yarn tokens.build` (~5s) for token-only; Stencil watch (~2–5s) for `.tsx/.css`; Storybook HMR for `.stories.ts`. Use `yarn build` only for final verification.
 - **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md).
 - **No auto-fix**: audit commands report findings; they do not modify code without explicit approval.
+- **Verdict / exit-code contract**: `yarn audit:component <name> --depth <d>` (`scripts/audit/verdict.mjs`) is the only writer of `audit/<name>/verdict.json` and `audit/<name>/fix-brief.md`, rewritten every run. Exit 0 only on `state: PASS`; a distinct non-zero code per other state (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3 `INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Any command or agent that gates on the audit STOPS on a non-zero exit status rather than re-reading findings by hand.
 
 ## See Also
 

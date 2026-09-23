@@ -165,6 +165,17 @@ export function listAllComponents() {
   return out.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/**
+ * The component a spec file belongs to — `mud-*` under `src/components/` or
+ * `src/hidden/` — or null. The one mapper 06 and run-all's coverage
+ * prerequisite share (T18); the trailing slash keeps `mud-button` from
+ * claiming `mud-button-group`'s specs.
+ */
+export function componentOfSpec(specPath) {
+  const normalized = String(specPath ?? '').replace(/\\/g, '/');
+  return normalized.match(/(?:^|\/)src\/(?:components|hidden)\/(mud-[a-z0-9-]+)\//)?.[1] ?? null;
+}
+
 /** Convert an absolute path to a repo-relative one with forward slashes (for stable output). */
 export function relativeToRepo(absPath) {
   return path.relative(REPO_ROOT, absPath).split(path.sep).join('/');

@@ -1,6 +1,6 @@
 ---
 name: a11y-verifier
-description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. When dispatched as the advisory WCAG / media leg of `--depth deep`, writes `ai-findings.json` for the run it is given; it never invokes `verdict.mjs` / `yarn audit:component` and never stops on its exit code. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, Skill
 model: sonnet
 ---
@@ -23,6 +23,52 @@ Optional:
 - `storyId` — default `atoms-<componentName>--default`
 - `interactiveStates` — default inferred from component type
 
+When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port
+from `.audit-storybook.json` (repo root, `{ port, pid }` — `scripts/audit/lib/storybook-helpers.mjs`) and use
+it instead of the 6007 default, both for `storybookBaseUrl` and for `--port` on every script
+below.
+
+## AI-leg contract (when dispatched at `--depth deep`)
+
+This leg is advisory (Decision 12, `2026-09-22-audit-depths-sentinel-fixes.md`): no row waits
+on it and its findings never move the state. This agent NEVER runs `verdict.mjs` or `yarn
+audit:component`, and never stops on either's exit code — only `verdict.mjs` computes
+`state`. Its job is to write its findings for the run the dispatcher names (`<runDir>`:
+`components[].runDir` in `audit/_run/summary.json`):
+
+```
+<runDir>/ai/a11y-verifier/ai-findings.json
+```
+
+in this shape:
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "a11y-verifier",
+  "idsJudged": ["DX-wcag", "DX-media"],
+  "findings": [
+    { "severity": "error", "code": "A11Y-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
+    { "question": "...", "options": ["...", "..."] }
+  ]
+}
+```
+
+Write it with `Bash` using a quoted heredoc delimiter, so no `$`/backtick in a finding's text is
+interpolated by the shell. The body must be one valid JSON document — strings escape their own
+newlines, so no line inside it can equal the delimiter:
+
+```bash
+mkdir -p <runDir>/ai/a11y-verifier
+cat <<'AI_FINDINGS_JSON_END' > <runDir>/ai/a11y-verifier/ai-findings.json
+{ ... the JSON above ... }
+AI_FINDINGS_JSON_END
+```
+
+`idsJudged` lists the ids this dispatch judged (`DX-wcag`, `DX-media`, or both). Every
+valid finding — an error, a `question` + `options`, anything — is listed under "Advisory"
+once the dispatcher re-renders the brief; a malformed one is named in the verdict's notes.
+
 ## Procedure
 
 ### Step 0 — Load canonical reference
@@ -41,12 +87,14 @@ in parallel:
 node scripts/audit/run-all.mjs mud-<name> --only 09,10,12 --json
 ```
 
-Or individually if you only need one:
+`run-all.mjs` reads `.audit-storybook.json` itself and passes `--port` to every browser script it
+spawns. Running a script individually does not: pass `--port <the port from .audit-storybook.json>`
+yourself.
 
 ```bash
-node scripts/audit/09-a11y-tree.mjs mud-<name> --json     # a11y tree + element census
-node scripts/audit/10-contrast-pairs.mjs mud-<name> --json # WCAG contrast pairs (light + dark)
-node scripts/audit/12-console-errors.mjs mud-<name> --json # runtime errors that affect a11y
+node scripts/audit/09-a11y-tree.mjs mud-<name> --port <port> --json     # a11y tree + element census
+node scripts/audit/10-contrast-pairs.mjs mud-<name> --port <port> --json # WCAG contrast pairs (light + dark)
+node scripts/audit/12-console-errors.mjs mud-<name> --port <port> --json # runtime errors that affect a11y
 ```
 
 Also run the token-level pair:
@@ -140,12 +188,17 @@ This is where the agent's value lands. For each script finding, decide:
 
 - Use `mcp__playwright__browser_press_key({ key: "Tab" })` + `browser_evaluate`
   to verify Tab order is logical. Script cannot judge "logical for user workflow".
-- **Canonical procedure**: see [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §BX (mandatory browser checklist) for the full BX2 (tab order) + BX3 (focus-visible) + BX4 (Escape) steps with exact MCP call signatures. This agent's keyboard section is a subset; when `--deep` is set, also execute BX5–BX6 here so the a11y verdict is complete.
-- Confirm `:focus-visible` styles render — script reports the computed
-  `outlineWidth` / `outlineStyle` / `outlineColor`; if any is `none` / `0px` /
-  `transparent`, that's a focus-ring gap.
-- Test interaction keys (Enter, Space, Escape, Arrow) only for composite
-  widgets (tabs, select, radio group, menu).
+- **Scripted, not judged here**: BX1–BX7 are scripted verdict rows — see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md) §BX. The scripts press only Tab and Escape, and Escape (BX4) only on overlays and components with an open / close / toggle method; BX3 passes a ring drawn by an outline or a `box-shadow`, even one whose colour is `transparent`. So this agent still judges: whether the Tab order is logical, whether Shift+Tab walks back, and the two bullets below.
+- Confirm the focus ring is visible while focused (SC 2.4.7) and reaches 3:1
+  against its background (SC 1.4.11). A component may draw it with
+  `box-shadow` instead of `outline` (mud-menu-item, mud-radio,
+  mud-accordion-item do), so `outlineStyle: none` alone is not a gap — read
+  the focused element's `box-shadow` too, and a `transparent` colour on either
+  is.
+- Test Enter and Space activation on every interactive element, Arrow keys
+  inside composite widgets (tabs, select, radio group, menu), and Escape on a
+  composite popup that is not an overlay and has no open / close / toggle
+  method.
 
 **Reduced motion**:
 
@@ -207,7 +260,12 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 
 ## Constraints
 
-- **Read-only**: never edit, write, or delete any source file.
+- **Read-only**: never edit, write, or delete any source file. The one
+  exception is `ai-findings.json` under `audit/<component>/runs/<run>/ai/`
+  (§ AI-leg contract) — that path is evidence output, not source.
+- **Never invokes `verdict.mjs` / `yarn audit:component` and never stops on
+  its exit code.** This leg reports findings; the orchestrator's script is
+  the only thing that decides `state`.
 - **No fixes**: report findings, propose token/CSS/TSX changes; the
   orchestrator decides and applies.
 - **Single browser session**: reuse the same `mcp__playwright__browser_*`
@@ -219,7 +277,7 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 
 | Symptom | Likely cause | Reported as |
 |---|---|---|
-| Script exits with `Storybook not reachable on port 6007` | Storybook not started | `environment-not-ready` |
+| Script exits with `Storybook not reachable` on this worktree's port (`.audit-storybook.json`) | Storybook not started | `environment-not-ready` |
 | `yarn audit:contrast` exits non-zero | New FAIL pairs outside ACCEPTED_EXCEPTIONS | `contrast-regression` + listed pairs |
 | Script exits with `playwright not installed` | dep missing | `playwright-missing` + fall back to MCP path |
 | Snapshot empty (script returns `interactive: []`) | Story failed to render or selectors too narrow | `story-render-failure` |

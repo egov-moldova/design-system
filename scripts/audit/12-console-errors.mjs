@@ -20,6 +20,7 @@
  *   node scripts/audit/12-console-errors.mjs --all --json
  */
 import { fileURLToPath } from 'node:url';
+import { cpus } from 'node:os';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
@@ -32,7 +33,7 @@ import {
   storyUrl,
   inferStoryId,
 } from './lib/storybook-helpers.mjs';
-import { withPage, PLAYWRIGHT_INSTALL_HINT } from './lib/browser-context.mjs';
+import { launchBrowser, mapLimit, PLAYWRIGHT_INSTALL_HINT } from './lib/browser-context.mjs';
 import { analyzeStoriesFile } from './05-story-exports.mjs';
 
 const TOOL = 'console-errors';
@@ -90,7 +91,9 @@ async function main() {
 
   let perComponent;
   try {
-    perComponent = await Promise.all(targets.map(t => analyzeComponent(t, { baseUrl, warnAsFinding, explicitStory })));
+    perComponent = await mapLimit(targets, componentConcurrency(targets.length), t =>
+      analyzeComponent(t, { baseUrl, warnAsFinding, explicitStory }),
+    );
   } catch (err) {
     process.stderr.write(`${TOOL}: ${err.message}\n`);
     process.exit(EXIT_INTERNAL);
@@ -146,6 +149,7 @@ export async function analyzeComponent(target, { baseUrl, warnAsFinding, explici
           code: 'CONSOLE-NO-STORIES',
           file: relativeToRepo(target.paths.stories),
           message: `No stories found for ${target.name}; nothing to audit.`,
+          noTarget: true,
         }),
       ],
       storiesVisited: 0,
@@ -156,9 +160,22 @@ export async function analyzeComponent(target, { baseUrl, warnAsFinding, explici
 
   const perStory = [];
   const findings = [];
-  for (const storyId of storyIds) {
-    const url = storyUrl({ storyId, baseUrl });
-    const collected = await visitAndCollect(url, target.name);
+  // U6: one Chromium for the component, a fresh context per story (the same
+  // isolation a browser per story gave), STORY_CONCURRENCY stories in flight.
+  // Launching a browser per story, one story at a time, made this the slowest
+  // standard row (20.4 s for mud-button's 18 stories). Results are consumed in
+  // story order, so findings are unchanged however the visits interleave.
+  const { browser, close } = await launchBrowser();
+  let visits;
+  try {
+    visits = await mapLimit(storyIds, STORY_CONCURRENCY, storyId =>
+      visitAndCollect(browser, storyUrl({ storyId, baseUrl }), target.name),
+    );
+  } finally {
+    await close();
+  }
+  for (const [i, storyId] of storyIds.entries()) {
+    const collected = visits[i];
     perStory.push({ storyId, ...collected });
 
     for (const err of collected.errors) {
@@ -210,40 +227,69 @@ function pascal(s) {
     .join('');
 }
 
+const STORY_CONCURRENCY = 4;
+
 /**
- * Navigate to a single URL and collect console.error / console.warn / pageerror.
+ * Chromium pages this row keeps open at once, across every component it
+ * scans. A page is CPU-bound while the story hydrates, so the budget is the
+ * core count, floored at one component's worth and capped so a large machine
+ * does not point sixteen pages at one Storybook dev server.
+ */
+export const PAGE_BUDGET = Math.min(16, Math.max(STORY_CONCURRENCY, cpus().length));
+
+/**
+ * How many components to scan at once, each holding one browser and up to
+ * STORY_CONCURRENCY pages. `--all` used to hand every component to
+ * `Promise.all`, so 44 components meant 44 Chromium processes and — after the
+ * per-component story concurrency landed — 176 pages against one dev server.
+ * Pure — exported for tests.
+ */
+export function componentConcurrency(targetCount, budget = PAGE_BUDGET) {
+  return Math.max(1, Math.min(targetCount, Math.floor(budget / STORY_CONCURRENCY)));
+}
+
+/**
+ * Navigate to a single URL and collect console.error / console.warn / pageerror,
+ * in a fresh context of the shared browser.
  * Pure side-effecting (network + browser) — not unit-testable but isolated.
  *
  * Waits for the audited component to hydrate before declaring the page settled
  * so hydration-time warnings/errors are reliably captured.
  */
-async function visitAndCollect(url, componentName) {
-  return withPage({
-    url,
-    waitUntil: 'load',
-    timeoutMs: 15000,
-    action: async page => {
-      const errors = [];
-      const warnings = [];
-      page.on('console', msg => {
-        const text = msg.text();
-        const cls = classifyMessage(msg.type(), text);
-        if (cls === 'error') errors.push(text);
-        else if (cls === 'warning') warnings.push(text);
-      });
-      page.on('pageerror', err => {
-        errors.push(`uncaught: ${err.message}`);
-      });
-      // Wait for Stencil hydration to complete on the audited component before
-      // declaring the page settled. Falls back to a fixed timeout when the
-      // host never appears (e.g., story renders a wrapper that nests it).
-      if (componentName) {
-        await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
-      }
-      await page.waitForTimeout(500);
-      return { errors, warnings };
-    },
+async function visitAndCollect(browser, url, componentName) {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    page.setDefaultTimeout(15000);
+    // Listeners attach before navigation so load-time output is captured too.
+    const collected = collectConsole(page);
+    await page.goto(url, { waitUntil: 'load', timeout: 15000 });
+    // Wait for Stencil hydration to complete on the audited component before
+    // declaring the page settled. Falls back to a fixed timeout when the
+    // host never appears (e.g., story renders a wrapper that nests it).
+    if (componentName) {
+      await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+    }
+    await page.waitForTimeout(500);
+    return collected;
+  } finally {
+    await context.close();
+  }
+}
+
+function collectConsole(page) {
+  const errors = [];
+  const warnings = [];
+  page.on('console', msg => {
+    const text = msg.text();
+    const cls = classifyMessage(msg.type(), text);
+    if (cls === 'error') errors.push(text);
+    else if (cls === 'warning') warnings.push(text);
   });
+  page.on('pageerror', err => {
+    errors.push(`uncaught: ${err.message}`);
+  });
+  return { errors, warnings };
 }
 
 /**

@@ -107,6 +107,26 @@ export async function withPage({ url, action, headless = true, waitUntil = 'netw
 }
 
 /**
+ * Map `items` through async `fn(item, index)` with at most `limit` in flight,
+ * returning results in input order (so a caller's findings stay
+ * deterministic however the calls interleave).
+ */
+export async function mapLimit(items, limit, fn) {
+  // Zero workers would resolve at once with every slot unvisited.
+  if (!(limit >= 1)) throw new RangeError(`mapLimit: limit must be >= 1, got ${limit}`);
+  const out = new Array(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const i = next++;
+      out[i] = await fn(items[i], i);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
+
+/**
  * Helper for scripts that need to test light + dark modes: toggle the global
  * Storybook theme by setting `document.documentElement.dataset.theme`.
  */
