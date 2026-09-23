@@ -11,8 +11,14 @@
  *
  * A missing field is a renderer error, not an empty line: a brief that drops
  * the verify command or the expected value's source is the failure F8 names.
+ *
+ * The brief opens with a report block (plan
+ * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
+ * check, an index of every entry — and `## Changes since the previous run`,
+ * closed by REPORT_END. The terminal prints that block and the skill pastes it
+ * inline, so no session ever rebuilds the table in its own words.
  */
-import { STATE } from './json-output.mjs';
+import { ROW_STATUS, STATE } from './json-output.mjs';
 
 /** The fields each entry kind must carry (Design §2). */
 export const BRIEF_FIELDS = Object.freeze({
@@ -86,13 +92,166 @@ export function renderEntry(entry) {
   return `${lines.join('\n')}\n`;
 }
 
-/** Render the whole brief. Pure — exported for tests. */
-export function renderFixBrief(verdict) {
+/** Closes the report block — the part `printSummary` prints and the skill pastes inline. */
+export const REPORT_END = '<!-- end of report -->';
+
+/** One table cell: `line()` plus an escaped `|`, so no value can add a column or a row. */
+function cell(value) {
+  if (value === undefined || value === null) return '—';
+  return line(value).replace(/\|/g, '\\|');
+}
+
+/** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
+function rowIdOf(check) {
+  return String(check ?? '').split(' ')[0];
+}
+
+/**
+ * Each row's result, derived from the verdict itself — never from the script's
+ * own counts — so the table can never disagree with the entries below it:
+ * `excused` · a non-ok status (`crashed`, `missing-prereq`, `skipped`) ·
+ * `incomplete` · `fail` · `warn` · `deferred` · `pass`, first match wins.
+ * `fails` / `warns` count this row's FAIL entries and warnings. Pure.
+ *
+ * @returns {Map<string, { result: string, fails: number, warns: number }>}
+ */
+export function rowResults(verdict) {
+  const count = (list, pred) => {
+    const byRow = new Map();
+    for (const x of list ?? []) {
+      if (!pred(x)) continue;
+      const id = rowIdOf(x.check);
+      byRow.set(id, (byRow.get(id) ?? 0) + 1);
+    }
+    return byRow;
+  };
+  const fails = count(verdict.entries, e => e.kind === STATE.FAIL);
+  const incomplete = count(verdict.entries, e => e.kind === STATE.INCOMPLETE);
+  const warns = count(verdict.warnings, () => true);
+  const out = new Map();
+  for (const r of verdict.rows ?? []) {
+    const f = fails.get(r.id) ?? 0;
+    const w = warns.get(r.id) ?? 0;
+    let result = 'pass';
+    if (r.excuse) result = 'excused';
+    else if (r.status !== ROW_STATUS.OK) result = r.status;
+    else if (incomplete.get(r.id)) result = 'incomplete';
+    else if (f) result = 'fail';
+    else if (w) result = 'warn';
+    else if (r.deferred) result = 'deferred';
+    out.set(r.id, { result, fails: f, warns: w });
+  }
+  return out;
+}
+
+/**
+ * The `## Summary` section: counts, one table row per `verdict.rows[]` entry,
+ * and an index of every entry and advisory item. Pure.
+ */
+export function renderSummary(verdict) {
+  const entries = verdict.entries ?? [];
+  const advisory = verdict.advisory ?? [];
+  const kinds = [STATE.FAIL, STATE.INCOMPLETE, STATE.NEEDS_DECISION];
+  const results = rowResults(verdict);
+  const tally = new Map();
+  for (const { result } of results.values()) tally.set(result, (tally.get(result) ?? 0) + 1);
+  const out = [
+    '## Summary',
+    '',
+    results.size
+      ? `Checks: ${results.size} — ${[...tally].map(([k, n]) => `${n} ${k}`).join(' · ')}`
+      : 'Checks: none ran — see the INCOMPLETE entries below',
+    `Entries: ${kinds.map(k => `${entries.filter(e => e.kind === k).length} ${k}`).join(' · ')} · ` +
+      `${(verdict.warnings ?? []).length} warnings · ${advisory.length} advisory`,
+  ];
+  if (results.size) {
+    out.push(
+      '',
+      '| # | Check | Required | Result | Fail | Warn | Note |',
+      '| --- | --- | --- | --- | --- | --- | --- |',
+    );
+  }
+  for (const r of verdict.rows ?? []) {
+    const { result, fails, warns } = results.get(r.id);
+    out.push(
+      `| ${cell(r.id)} | ${cell(r.name)} | ${r.required ? 'yes' : 'no'} | ${result} | ${fails} | ${warns} | ` +
+        `${r.excuse || r.deferred || r.note ? cell(r.excuse ?? r.deferred ?? r.note) : ''} |`,
+    );
+  }
+  const indexed = [...entries.map(e => [e, e.kind]), ...advisory.map(e => [e, `advisory ${e.kind}`])];
+  if (indexed.length) {
+    out.push('', '| ID | Kind | Check | Where | Actual | Owner |', '| --- | --- | --- | --- | --- | --- |');
+    for (const [e, kind] of indexed) {
+      out.push(
+        `| ${cell(e.id)} | ${kind} | ${cell(e.check)} | ${cell(e.location ?? e.node)} | ` +
+          `${cell(e.actual ?? e.cause ?? e.question)} | ${cell(e.owner)} |`,
+      );
+    }
+  }
+  return out;
+}
+
+/**
+ * The `## Changes since …` section from `run-delta.mjs`'s `diffVerdicts`
+ * result, or the reason there is none. Every interpolated value goes through
+ * `cell()`. Pure.
+ */
+export function renderChanges(changes) {
+  if (!changes) return [];
+  if (changes.status !== 'compared') {
+    return ['## Changes since the previous run', '', `Not compared: ${cell(changes.reason)}.`];
+  }
+  const b = changes.baseline;
+  const out = [`## Changes since the previous ${cell(b.depth)} run (${cell(b.run)})`, ''];
+  out.push(
+    changes.state.from === changes.state.to
+      ? `State: unchanged — ${cell(changes.state.to)}`
+      : `State: ${cell(changes.state.from)} → ${cell(changes.state.to)}`,
+  );
+  const { rows, resolved, added, changed, warnings } = changes;
+  if (warnings.from !== warnings.to) out.push(`Warnings: ${warnings.from} → ${warnings.to}`);
+  if (!rows.length && !resolved.length && !added.length && !changed.length) {
+    out.push('', 'No check result or entry changed.');
+    return out;
+  }
+  if (rows.length) {
+    out.push('', '| # | Check | Before | Now |', '| --- | --- | --- | --- |');
+    for (const r of rows) out.push(`| ${cell(r.id)} | ${cell(r.name)} | ${cell(r.from)} | ${cell(r.to)} |`);
+  }
+  const describe = e => `${cell(e.check ?? e.kind)} · ${cell(e.location ?? e.node ?? e.cause)}`;
+  const valueOf = e => cell(e.actual ?? e.question ?? e.cause);
+  if (resolved.length) {
+    out.push('', `Resolved (${resolved.length}):`);
+    for (const e of resolved) out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
+  }
+  if (added.length) {
+    out.push('', `New (${added.length}):`);
+    for (const e of added) out.push(`- ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
+  }
+  if (changed.length) {
+    out.push('', `Changed (${changed.length}):`);
+    for (const c of changed) out.push(`- ${cell(c.id)} · ${describe(c.entry)}: ${cell(c.from)} → ${cell(c.to)}`);
+  }
+  return out;
+}
+
+/**
+ * Render the whole brief. `changes` (optional) is `run-delta.mjs`'s comparison
+ * with the previous run — the only part of the brief that depends on a run
+ * other than this one; `verdict.json` never does. Pure — exported for tests.
+ */
+export function renderFixBrief(verdict, { changes = null } = {}) {
   const c = verdict.component;
+  const changeLines = renderChanges(changes);
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,
     '',
     `State: **${line(verdict.headline)}**`,
+    '',
+    ...renderSummary(verdict),
+    '',
+    ...(changeLines.length ? [...changeLines, ''] : []),
+    REPORT_END,
     '',
     `Verdict: \`audit/${c}/verdict.json\`. When every \`verify:\` below passes, re-run the whole audit at the same`,
     `depth — only that run can write a PASS: \`yarn audit:component ${c} --depth ${verdict.depth}\`.`,

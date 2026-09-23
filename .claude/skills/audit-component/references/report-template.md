@@ -11,7 +11,7 @@ the synthesis. The procedure is in [`../SKILL.md`](../SKILL.md).
 | Path (git-ignored) | Content |
 | --- | --- |
 | `audit/<component>/verdict.json` | State, level, excuses, rows, entries, advisory. Rewritten from its inputs on every run; a hand-edited copy does not survive the next run. |
-| `audit/<component>/fix-brief.md` | The same entries as a self-contained brief for a fixing session. |
+| `audit/<component>/fix-brief.md` | The same entries as a self-contained brief for a fixing session, opened by the report block (below). |
 | `audit/_run/summary.json` | Every component's state and headline, the worst state, each `runDir`. |
 | `audit/<component>/runs/<run>/envelope.json` | Run-all's inputs for that run. |
 | `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | One per AI leg; nothing else writes there. |
@@ -19,6 +19,24 @@ the synthesis. The procedure is in [`../SKILL.md`](../SKILL.md).
 The model never writes, edits or paraphrases a verdict. `verdict.json` holds nothing that varies
 between identical runs (no timestamps, durations, stderr text or run name), so two runs over the
 same inputs give byte-identical files.
+
+## The report block
+
+`fix-brief.md` opens with a block the script renders, from `## Summary` to `<!-- end of report -->`;
+`yarn audit:component` prints the same block under each component's headline (text mode only):
+
+- `## Summary` — a counts line; one table row per check (`# | Check | Required | Result | Fail |
+  Warn | Note`), each result derived from the verdict's own entries and warnings; an index of every
+  entry and advisory item (`ID | Kind | Check | Where | Actual | Owner`).
+- `## Changes since the previous <depth> run (<run>)` — state before → now, checks whose result
+  changed, and entries resolved, new or changed (same identity, different measured value). The
+  baseline is the newest earlier run of the same depth that was unfiltered and complete, recomputed
+  from its kept inputs under today's rules (`scripts/audit/lib/run-delta.mjs`). Without one the
+  section says why. This is the only part of the brief that depends on another run; `verdict.json`
+  never does.
+
+`audit/` stays git-ignored: `verdict.json` carries the HEAD commit, so a committed copy would diff on
+every commit and be stale by one. The "Changes since" section is how evolution is read.
 
 ## Reading `verdict.json`
 
@@ -52,8 +70,10 @@ same inputs give byte-identical files.
 ```text
 ## Audit: <component> @ <depth>
 **Verdict**: <headline, verbatim> — exit <code>
-**Fix brief**: audit/<component>/fix-brief.md (<n> INCOMPLETE · <n> FAIL · <n> NEEDS-DECISION · <n> advisory)
+**On disk**: audit/<component>/fix-brief.md (full entries, verify commands) · audit/<component>/verdict.json
 **AI legs** (deep, advisory): <leg — wrote its file | not run>, one per leg
+
+<the brief's report block, verbatim: ## Summary … and ## Changes since …>
 
 ### Correlations
 - <one defect seen by several checks, e.g. "the icon-only button fails 09 (no accessible name)
@@ -68,5 +88,7 @@ same inputs give byte-identical files.
 
 Rules:
 - No second verdict, no severity re-grade, no "ready to merge": state and level are the file's.
+- The report block is pasted, never rebuilt, re-ordered or trimmed; the model's own words go only in
+  the sections after it.
 - A correlation cites entry ids; it never merges or drops an entry.
 - Present the report and stop. Do not auto-fix — the user chooses what to address.

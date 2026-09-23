@@ -48,8 +48,10 @@ synthesis over the results.
    argument, else `components[].runDir` in `audit/_run/summary.json`), then re-render the brief
    with `node scripts/audit/verdict.mjs --rerender <component>`: their findings land under
    "Advisory" and the state does not change.
-4. **Report the synthesis** ([report-template](references/report-template.md)): the headline
-   line verbatim, the brief's path, cross-check correlations, and what was not verified.
+4. **Report** ([report-template](references/report-template.md)): paste the brief's report block
+   — from `## Summary` to `<!-- end of report -->`, the same block the command printed — verbatim,
+   then add the synthesis: correlations, decisions needed, what was not verified. Never rebuild the
+   per-check table yourself.
 
 **If the orchestrator cannot run** (no `node_modules`, wrong Node, a failed prerequisite), the
 state is `INCOMPLETE` and the brief names the cause and the command that fixes it. Report that.

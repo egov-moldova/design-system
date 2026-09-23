@@ -10,7 +10,8 @@
  *
  * Layout (git-ignored):
  *   audit/<component>/verdict.json          stable path, rewritten every run
- *   audit/<component>/fix-brief.md          stable path, rewritten every run
+ *   audit/<component>/fix-brief.md          stable path, rewritten every run; its "Changes since"
+ *                                           section compares with the previous comparable run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
  *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
  *   audit/_run/summary.json                 worst state over the components of the last run
@@ -47,7 +48,8 @@ import {
   STATE,
   VERDICT_SCHEMA_VERSION,
 } from './lib/json-output.mjs';
-import { renderFixBrief } from './lib/fix-brief.mjs';
+import { REPORT_END, renderFixBrief } from './lib/fix-brief.mjs';
+import { diffVerdicts, findBaselineRun } from './lib/run-delta.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -542,6 +544,29 @@ export function readRunInputs(runDir) {
 }
 
 /**
+ * The brief's "Changes since" input: this run's verdict against the previous
+ * comparable run's, recomputed from that run's inputs with today's rules
+ * (lib/run-delta.mjs). A baseline whose verdict cannot be computed is skipped
+ * for the next older one.
+ */
+function changesSincePreviousRun(absRun, verdict) {
+  const computed = new Map();
+  const baselineVerdict = dir => {
+    if (!computed.has(dir)) {
+      try {
+        computed.set(dir, computeVerdict({ ...readRunInputs(dir), component: verdict.component }));
+      } catch {
+        computed.set(dir, null);
+      }
+    }
+    return computed.get(dir);
+  };
+  const baseline = findBaselineRun(absRun, { accept: dir => baselineVerdict(dir) !== null });
+  if (!baseline.dir) return { status: 'none', reason: baseline.reason };
+  return diffVerdicts(baselineVerdict(baseline.dir), verdict, { run: baseline.run });
+}
+
+/**
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
  * levels up, so the stable paths never depend on the run name.
@@ -555,7 +580,7 @@ export function writeVerdictForRun(runDir) {
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict);
+  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict) });
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
@@ -626,14 +651,37 @@ in audit/_run/summary.json, --run-dir names it and is refused when it is not the
 component's current run. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
 2 usage or internal error.`;
 
-/** Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested. */
-export function printSummary(summary, json) {
+/**
+ * The report block of a component's fix brief — `## Summary` up to
+ * REPORT_END — or null when the brief is absent or has none. Exported for tests.
+ */
+export function readReportBlock(auditDir, component) {
+  let brief;
+  try {
+    brief = readFileSync(join(auditDir, component, 'fix-brief.md'), 'utf8');
+  } catch {
+    return null;
+  }
+  const start = brief.indexOf('## Summary');
+  const end = brief.indexOf(REPORT_END);
+  if (start < 0 || end < start) return null;
+  return brief.slice(start, end).trimEnd();
+}
+
+/**
+ * Render `summary.json` to stdout — exported so S5's text-mode note is unit-tested.
+ * In text mode, with `auditDir`, each component's report block follows its
+ * headline, so the terminal shows the same table the brief and the chat carry.
+ */
+export function printSummary(summary, json, auditDir = null) {
   if (json) {
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;
   }
   for (const c of summary.components) {
     process.stdout.write(`${c.component}: ${c.headline} — audit/${c.component}/fix-brief.md\n`);
+    const block = auditDir ? readReportBlock(auditDir, c.component) : null;
+    if (block) process.stdout.write(`\n${block}\n\n`);
   }
   if (summary.note) process.stdout.write(`${summary.note}\n`);
   if (summary.preflight) process.stdout.write(`${summary.preflight.message}\n`);
@@ -764,7 +812,7 @@ function rerender(runDirs, json, auditDir) {
     const own = summary.components.filter(c => rendered.has(c.component));
     const ownSummary = { ...summary, state: worstState(own.map(c => c.state)), components: own };
     delete ownSummary.note;
-    printSummary(ownSummary, json);
+    printSummary(ownSummary, json, auditDir);
     return exitCodeForState(ownSummary.state);
   } finally {
     releaseLock(auditLockPathFor(auditDir), lock.token);
@@ -823,7 +871,7 @@ function runFresh(argv) {
       return exitCodeForState(STATE.INCOMPLETE);
     }
     const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
-    printSummary(summary, json);
+    printSummary(summary, json, auditDir);
     return exitCodeForState(summary.state);
   } finally {
     releaseLock(auditLockPathFor(auditDir), lock.token);

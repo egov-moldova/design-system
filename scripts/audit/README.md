@@ -55,6 +55,7 @@ scripts/audit/
 │   ├── json-output.mjs              — buildResult(), emit(), finding(); STATE / LEVEL / ROW_STATUS enums
 │   ├── env-preflight.mjs            — is the install usable (Node version, required packages)
 │   ├── fix-brief.mjs                — renders audit/<component>/fix-brief.md from a verdict
+│   ├── run-delta.mjs                — the brief's "Changes since the previous run" (baseline pick + diff)
 │   └── exit-codes.mjs               — script exits 0/1/2; STATE_EXIT_CODES for verdict.mjs
 ├── 01-component-structure.mjs       (Wave A — fast, no browser)
 ├── 02-stencil-antipatterns.mjs      (Wave A) ★ highest-impact
@@ -359,7 +360,7 @@ Stable paths (git-ignored `audit/`):
 | path | written by |
 |------|------------|
 | `audit/<component>/verdict.json` | `verdict.mjs`, every run |
-| `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — one block per non-PASS entry with its `verify:` command |
+| `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index, changes since the previous comparable run), then one block per non-PASS entry with its `verify:` command |
 | `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
 | `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the AI leg, nothing else |
 | `audit/_run/summary.json` | worst state over the run's components, each `runDir` |
