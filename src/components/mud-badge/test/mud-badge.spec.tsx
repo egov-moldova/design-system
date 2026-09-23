@@ -123,6 +123,32 @@ describe('mud-badge', () => {
     expect(root?.getAttribute('aria-label')).toBe('5 unread messages');
   });
 
+  it('keeps the accessible name in step with the count', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} />);
+    expect(root?.getAttribute('aria-label')).toBe('3');
+
+    // The host's own `aria-label` write is read back by whatever names the
+    // host. Treating that echo as the consumer's label pinned the name to the
+    // first rendered count — and this is a live region, so every later change
+    // announced the stale value while the pill showed the new one.
+    (root as HTMLMudBadgeElement).count = 7;
+    await waitForChanges();
+    expect(root?.getAttribute('aria-label')).toBe('7');
+
+    (root as HTMLMudBadgeElement).count = 150;
+    await waitForChanges();
+    expect(root?.getAttribute('aria-label')).toBe('99+');
+  });
+
+  it('keeps a consumer aria-label across a count change', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} aria-label="3 unread messages" />);
+
+    (root as HTMLMudBadgeElement).count = 9;
+    await waitForChanges();
+    // Their label is theirs: re-applying the fallback must not overwrite it.
+    expect(root?.getAttribute('aria-label')).toBe('3 unread messages');
+  });
+
   it('exposes the WCAG-required live-status contract', async () => {
     const { root } = await render(<mud-badge count={1} aria-label="1 notification" />);
 

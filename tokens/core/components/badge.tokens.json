@@ -86,8 +86,9 @@
         "$type": "color"
       },
       "warning": {
-        "$value": "{color.background.warning.default}",
-        "$type": "color"
+        "$value": "{color.background.warning.accent}",
+        "$type": "color",
+        "$comment": "Figma numbered-badge Style=Accent (149:4935) is #FEC84B, which is color.background.warning.accent; warning.default (#FDB022) is a different amber."
       },
       "danger": {
         "$value": "{color.background.danger.default}",
