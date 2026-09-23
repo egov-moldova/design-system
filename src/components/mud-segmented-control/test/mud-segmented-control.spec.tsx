@@ -55,6 +55,16 @@ describe('mud-segmented-control', () => {
       expect(root?.getAttribute('fluid')).not.toBeNull();
     });
 
+    it('does not reflect the stacked attribute by default', async () => {
+      const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('stacked')).toBeNull();
+    });
+
+    it('reflects the stacked attribute when the icon sits above the label', async () => {
+      const { root } = await render(<mud-segmented-control stacked aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('stacked')).not.toBeNull();
+    });
+
     it('warns and falls back when size is invalid', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
