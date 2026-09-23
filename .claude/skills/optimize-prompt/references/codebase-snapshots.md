@@ -138,7 +138,6 @@ DTCG paths: `spacing.<n>` → `cor.size.spacing.<n>`. Example: `16px` → `cor.s
 | File | Export | Purpose |
 |---|---|---|
 | `src/utils/invalid-slotted-tag.ts` | `invalidSlottedTag(tag, valid)` | Returns the error string rendered when an invalid tag is slotted |
-| `src/utils/flatten-tokens.ts` | `flattenTokens(...)` | DTCG JSON → flat key-value map |
 | `src/utils/svg-sanitizer.ts` | `sanitizeSvg(...)` | Sanitize inline SVG strings (for `mud-illustration`) |
 
 When a spec needs slot validation, the Implementation Rules section MUST cite `import { invalidSlottedTag } from '../../utils/invalid-slotted-tag'` and the constant import from the component's own `.types.ts`. Never re-specify these.

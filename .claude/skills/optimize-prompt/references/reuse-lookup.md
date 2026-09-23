@@ -61,7 +61,6 @@ Glob `tokenInventory` for a token file matching the component name. If found:
 Glob `utilsInventory` for helpers the request may need. Examples:
 - Request mentions "validate slotted tag" → cite `invalidSlottedTag` from `src/utils/invalid-slotted-tag.ts`
 - Request mentions "sanitize SVG" → cite `svg-sanitizer.ts`
-- Request mentions "flatten DTCG tokens" → cite `flatten-tokens.ts`
 
 ---
 
