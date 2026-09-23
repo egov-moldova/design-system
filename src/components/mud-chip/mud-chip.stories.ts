@@ -312,7 +312,7 @@ const AVATAR_PHOTO = 'https://images.unsplash.com/photo-1500648767791-00dcc994a4
 const renderWithAvatar = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
     <mud-chip type="input" removable>
-      <mud-avatar slot="avatar" type="initials" name="Ion Popescu"></mud-avatar>
+      <mud-avatar slot="avatar" size="xs" type="initials" name="Ion Popescu"></mud-avatar>
       Ion Popescu
     </mud-chip>
     <mud-chip type="input" removable>
@@ -320,13 +320,13 @@ const renderWithAvatar = () => /*html*/ `
       Andrei Ionescu
     </mud-chip>
     <mud-chip type="input" size="sm" removable>
-      <mud-avatar slot="avatar" type="initials" name="Maria Pop"></mud-avatar>
+      <mud-avatar slot="avatar" size="xs" type="initials" name="Maria Pop"></mud-avatar>
       Maria Pop
     </mud-chip>
   </div>
 `;
 const docsSourceWithAvatar = /*html*/ `<mud-chip type="input" removable>
-  <mud-avatar slot="avatar" type="initials" name="Ion Popescu"></mud-avatar>
+  <mud-avatar slot="avatar" size="xs" type="initials" name="Ion Popescu"></mud-avatar>
   Ion Popescu
 </mud-chip>
 

@@ -155,11 +155,31 @@ describe('mud-chip', () => {
       expect(remove?.getAttribute('aria-label')).toContain('Ion Popescu');
     });
 
-    it('falls back to "chip" in aria-label when no label text is available', async () => {
+    it('names the remove button in Romanian, with the chip text appended', async () => {
+      const { root } = await render(
+        <mud-chip type="input" removable>
+          Ion Popescu
+        </mud-chip>,
+      );
+
+      expect(queryRemove(root)?.getAttribute('aria-label')).toBe('Elimină Ion Popescu');
+    });
+
+    it('takes the remove label from the prop', async () => {
+      const { root } = await render(
+        <mud-chip type="input" removable remove-label="Șterge">
+          Ion Popescu
+        </mud-chip>,
+      );
+
+      expect(queryRemove(root)?.getAttribute('aria-label')).toBe('Șterge Ion Popescu');
+    });
+
+    it('names the remove button with the label alone when the chip has no text', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip type="input" removable></mud-chip>);
       const remove = queryRemove(root);
-      expect(remove?.getAttribute('aria-label')).toBe('Remove chip');
+      expect(remove?.getAttribute('aria-label')).toBe('Elimină');
       expect(warn.mock.calls.flat().join(' ')).toMatch(/chips require a label/i);
       warn.mockRestore();
     });

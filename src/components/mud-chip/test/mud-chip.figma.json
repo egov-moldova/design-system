@@ -1,0 +1,504 @@
+{
+  "component": "mud-chip",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "8027:819",
+        "reason": "filter-chip Mode=Off/State=Hover/Icon=Leading — differs from 255:6434 only by the leading icon, whose metrics filter-icon already pins."
+      },
+      {
+        "node": "8027:1333",
+        "reason": "filter-chip Mode=Off/State=Focus/Icon=Leading — differs from 255:6438 only by the leading icon, whose metrics filter-icon already pins."
+      },
+      {
+        "node": "205:2487",
+        "reason": "input-chip Type=Avatar/State=Hover — the Close circle it fills is the same 205:2476 treatment input-remove-hover pins, over the avatar body input-avatar pins."
+      },
+      {
+        "node": "205:2499",
+        "reason": "input-chip Type=Avatar/State=Focus — the Close ring it draws is the same 205:2477 treatment input-remove-focus pins, over the avatar body input-avatar pins."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "atoms-chip--default",
+    "capture": {
+      "selector": "mud-chip",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Figma's `⌨️ Label` property is plain text, so every fixture slots the word \"Label\" rather than passing the `label` prop: `label` is an accessible-name fallback that renders nothing, so a prop-only fixture would measure an empty chip."
+  },
+  "states": [
+    {
+      "name": "filter-default",
+      "node": "255:6430",
+      "html": "<mud-chip type=\"filter\">Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6430",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 255:6430 fills #F1F1F1, is 36px tall, pads 0 16px and gaps 8px. Figma writes borderRadius 999px; the token resolves to 9999px — both exceed half the height, so Chromium clamps them to the same pill. An interpretation, not drift."
+        },
+        {
+          "target": "mud-chip .label",
+          "node": "255:6432",
+          "styles": {
+            "color": "#121212",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 255:6432 is Desktop/Body/Small 500 (#121212)."
+        },
+        {
+          "target": "mud-chip .count",
+          "absent": true,
+          "node": "1533:7833",
+          "note": "The Badge frame is bound to `👁️ Counter Badge`, false by default, so the default chip renders no counter."
+        }
+      ]
+    },
+    {
+      "name": "filter-icon",
+      "node": "8027:814",
+      "html": "<mud-chip type=\"filter\"><mud-icon slot=\"icon-start\" name=\"map-pin\" size=\"20\"></mud-icon>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "8027:814",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Figma 8027:814 pads 0 16px 0 12px and gaps 4px — a leading icon tightens both the leading padding and the gap."
+        },
+        {
+          "target": "mud-chip [slot='icon-start']",
+          "node": "8027:1318",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#121212"
+          },
+          "note": "Figma 8027:1318 is the 20/map-pin instance at 20x20; it inherits the chip's own #121212."
+        }
+      ]
+    },
+    {
+      "name": "filter-hover",
+      "node": "255:6434",
+      "html": "<mud-chip type=\"filter\">Label</mud-chip>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-chip .control"
+      },
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6434",
+          "styles": {
+            "backgroundColor": "#D9D9D9",
+            "boxHeight": "36px"
+          },
+          "note": "Figma 255:6434 fills #D9D9D9 on hover; nothing else moves."
+        }
+      ]
+    },
+    {
+      "name": "filter-focus",
+      "node": "255:6438",
+      "html": "<mud-chip type=\"filter\">Label</mud-chip>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-chip .control"
+      },
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6438",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxShadow": "0px 0px 0px 2px #ffffff, 0px 0px 0px 5px #3379db"
+          },
+          "note": "Figma 255:6438 carries Focus Ring/Medium, listed as `0 0 0 5px #3379DB, 0 0 0 2px #FFFFFF`. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order."
+        }
+      ]
+    },
+    {
+      "name": "filter-disabled",
+      "node": "255:6448",
+      "html": "<mud-chip type=\"filter\" disabled>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6448",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px"
+          },
+          "note": "Figma 255:6448 keeps the default #F1F1F1 fill when disabled — only the label greys out."
+        },
+        {
+          "target": "mud-chip .label",
+          "node": "255:6449",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 255:6449 greys the label to #B2B2B2."
+        }
+      ]
+    },
+    {
+      "name": "filter-disabled-icon",
+      "node": "8027:1338",
+      "html": "<mud-chip type=\"filter\" disabled><mud-icon slot=\"icon-start\" name=\"map-pin\" size=\"20\"></mud-icon>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip [slot='icon-start']",
+          "node": "8027:1341",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 8027:1338 greys the leading icon with the label; 8027:1339 gives the pair as #B2B2B2."
+        }
+      ]
+    },
+    {
+      "name": "filter-selected",
+      "node": "255:6452",
+      "html": "<mud-chip type=\"filter\" selected>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6452",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "boxHeight": "36px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px"
+          },
+          "note": "Figma 255:6452 (Mode=On) fills #1E1E1E and keeps the Mode=Off metrics."
+        },
+        {
+          "target": "mud-chip .label",
+          "node": "255:6454",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "Figma 255:6454 inverts the label to #FFFFFF."
+        },
+        {
+          "target": "mud-chip .check",
+          "absent": true,
+          "node": "255:6452",
+          "note": "Mode=On with Icon=None carries no checkmark — the fill alone reports selection. The tick belongs to 255:6456 (Icon=Leading)."
+        }
+      ]
+    },
+    {
+      "name": "filter-selected-check",
+      "node": "255:6456",
+      "html": "<mud-chip type=\"filter\" selection-mode=\"multi\" selected>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "255:6456",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "paddingLeft": "12px",
+            "paddingRight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Figma 255:6456 pads 0 16px 0 12px and gaps 4px, exactly like the Mode=Off leading-icon variant."
+        },
+        {
+          "target": "mud-chip .check",
+          "node": "255:6457",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#FFFFFF"
+          },
+          "note": "Figma 255:6457 is the 20/checkmark-small instance at 20x20, inheriting the inverted #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "filter-counter",
+      "node": "524:4109",
+      "html": "<mud-chip type=\"filter\" count=\"1\">Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .count",
+          "node": "255:6433",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "color": "#121212",
+            "boxHeight": "16px",
+            "boxWidth": "16px",
+            "paddingLeft": "2px",
+            "paddingRight": "2px",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 255:6433 is numbered-badge Size=Medium/Style=Light: #FFFFFF fill, #121212 text (I255:6433;149:4938), 16px tall, 0 2px padding, Desktop/Caption/Medium 500. The badge set's md rung floors the width at 16px, which a single digit hits."
+        },
+        {
+          "target": "mud-chip .control",
+          "node": "524:4109",
+          "styles": {
+            "columnGap": "8px"
+          },
+          "note": "Figma 524:4109 keeps the Icon=None 8px gap between label and Badge frame."
+        }
+      ]
+    },
+    {
+      "name": "filter-counter-selected",
+      "node": "524:4113",
+      "html": "<mud-chip type=\"filter\" selected count=\"1\">Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .count",
+          "node": "255:6455",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "color": "#121212",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 255:6455 is the same Style=Light badge as the Mode=Off chip — the counter does NOT invert with the chip surface."
+        }
+      ]
+    },
+    {
+      "name": "input-default",
+      "node": "203:2076",
+      "html": "<mud-chip type=\"input\" removable>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "203:2076",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "paddingLeft": "16px",
+            "paddingRight": "4px"
+          },
+          "note": "Figma 203:2076 is one frame padded 0 12px 0 16px with a 4px gap before the 20px cross. The component splits that frame into `.control` + `.remove`, so the 4px gap becomes the control's trailing padding and the 12px becomes the remove button's — the rendered distances are the same."
+        },
+        {
+          "target": "mud-chip .label",
+          "node": "203:2077",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 203:2077 is Desktop/Body/Small 500 (#121212)."
+        },
+        {
+          "target": "mud-chip .remove",
+          "node": "203:2076",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "boxWidth": "32px",
+            "paddingRight": "12px"
+          },
+          "note": "20px cross plus the frame's 12px trailing padding. The button paints the same #F1F1F1 as the control so the split reads as one pill."
+        },
+        {
+          "target": "mud-chip .remove-icon",
+          "node": "203:2078",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Figma 203:2078 is the 20/cross-small instance at 20x20 with no backing shape; the circle behind it only appears on hover (205:2476)."
+        }
+      ]
+    },
+    {
+      "name": "input-remove-hover",
+      "node": "205:2460",
+      "html": "<mud-chip type=\"input\" removable>Label</mud-chip>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-chip .remove"
+      },
+      "expect": [
+        {
+          "target": "mud-chip .remove-icon",
+          "node": "205:2476",
+          "styles": {
+            "backgroundColor": "#D9D9D9",
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 205:2476 is a Close frame filled #D9D9D9 at radius 999px, hugging the 20px cross."
+        },
+        {
+          "target": "mud-chip .control",
+          "node": "205:2460",
+          "styles": {
+            "backgroundColor": "#F1F1F1"
+          },
+          "note": "Figma 205:2460 keeps the chip body at #F1F1F1 — hover darkens only the close target."
+        }
+      ]
+    },
+    {
+      "name": "input-remove-focus",
+      "node": "205:2472",
+      "html": "<mud-chip type=\"input\" removable>Label</mud-chip>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-chip .remove"
+      },
+      "expect": [
+        {
+          "target": "mud-chip .remove-icon",
+          "node": "205:2477",
+          "styles": {
+            "boxShadow": "0px 0px 0px 1px #ffffff, 0px 0px 0px 3px #3379db",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Figma 205:2477 carries Focus Ring/Small (`0 0 0 3px #3379DB, 0 0 0 1px #FFFFFF`) on a transparent Close frame — a 1px white halo inside a blue band ending 3px out, on the 20px circle and not on the whole chip. The filter chip uses the larger Focus Ring/Medium (255:6438)."
+        },
+        {
+          "target": "mud-chip .remove",
+          "node": "205:2472",
+          "styles": {
+            "boxShadow": "none"
+          },
+          "note": "Figma 205:2472 draws no ring around the 32px button — only around the circle inside it."
+        }
+      ]
+    },
+    {
+      "name": "input-disabled",
+      "node": "203:2079",
+      "html": "<mud-chip type=\"input\" removable disabled>Label</mud-chip>",
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "203:2079",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxHeight": "36px",
+            "paddingLeft": "16px"
+          },
+          "note": "Figma 203:2079 keeps the #F1F1F1 fill and the metrics of the default variant."
+        },
+        {
+          "target": "mud-chip .label",
+          "node": "203:2080",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 203:2080 greys the label to #B2B2B2. The cross (203:2081) is an unoverridden asset instance, so node data gives it no fill — its disabled colour is read from the reference PNG, not asserted here."
+        }
+      ]
+    },
+    {
+      "name": "input-avatar",
+      "node": "203:2082",
+      "html": "<mud-chip type=\"input\" removable><span slot=\"avatar\" class=\"fixture-avatar\"></span>Label</mud-chip><style>.fixture-avatar{background:#757575;display:block}</style>",
+      "mask": ["mud-chip .avatar"],
+      "expect": [
+        {
+          "target": "mud-chip .control",
+          "node": "203:2082",
+          "styles": {
+            "boxHeight": "36px",
+            "paddingLeft": "6px",
+            "columnGap": "6px"
+          },
+          "note": "Figma 203:2082 pads 6px 8px 6px 6px and gaps 6px. Its height hugs: 6 + 24 + 6 = 36px, the same rung as the simple chip."
+        },
+        {
+          "target": "mud-chip [slot='avatar']",
+          "node": "203:2083",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 203:2083 is a 24x24 avatar instance — smaller than the 28px the component used before this manifest."
+        },
+        {
+          "target": "mud-chip .remove",
+          "node": "203:2082",
+          "styles": {
+            "paddingRight": "8px"
+          },
+          "note": "Figma 203:2082 pads 8px after the cross, against the simple variant's 12px."
+        },
+        {
+          "target": "mud-chip",
+          "node": "203:2082",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "inset 0px 0px 0px 1.5px #d9d9d9"
+          },
+          "note": "Figma 203:2082 strokes the frame 1.5px #D9D9D9. A Figma stroke sits inside the box without moving children, and Chromium floors `border-width: 1.5px` to 1px at every device scale, so the border is painted as an inset shadow on the host — the one element that wraps both the control and the remove button."
+        }
+      ]
+    },
+    {
+      "name": "input-avatar-disabled",
+      "node": "203:2086",
+      "html": "<mud-chip type=\"input\" removable disabled><span slot=\"avatar\" class=\"fixture-avatar\"></span>Label</mud-chip><style>.fixture-avatar{background:#757575;display:block}</style>",
+      "mask": ["mud-chip .avatar"],
+      "expect": [
+        {
+          "target": "mud-chip .label",
+          "node": "203:2088",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 203:2088 greys the label to #B2B2B2."
+        },
+        {
+          "target": "mud-chip [slot='avatar']",
+          "node": "203:2087",
+          "styles": {
+            "opacity": "0.6"
+          },
+          "note": "Figma 203:2087 fades the avatar to 60% rather than replacing it — the only disabled treatment the photo gets."
+        },
+        {
+          "target": "mud-chip",
+          "node": "203:2086",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "inset 0px 0px 0px 1.5px #d9d9d9"
+          },
+          "note": "Figma 203:2086 keeps the white avatar-chip surface and its stroke when disabled; only the avatar fades and the label greys."
+        }
+      ]
+    }
+  ]
+}
