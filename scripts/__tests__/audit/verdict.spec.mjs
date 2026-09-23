@@ -369,6 +369,20 @@ describe('verdict: R4 — script warnings, non-blocking', () => {
     assert.match(v.warnings[0].verify, /run-all\.mjs mud-fx --depth standard --only 02/);
   });
 
+  it('a required row counts its noTarget findings as INCOMPLETE, never in its errors or warnings', () => {
+    const e = cleanEnvelope();
+    const row = e.results.find(r => r.id === '02');
+    row.summary = { errors: 1, warnings: 1, info: 0 };
+    e.findingsByTool[row.name] = [
+      { severity: 'error', code: 'NO-TARGET', message: 'nothing to check', noTarget: true },
+      { severity: 'warning', code: 'NO-TARGET-2', message: 'nor this', noTarget: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'INCOMPLETE');
+    const out = v.rows.find(r => r.id === '02');
+    assert.deepEqual([out.errors, out.warnings], [0, 0]);
+  });
+
   it('a noTarget finding never also appears in warnings, even at warning severity', () => {
     const e = cleanEnvelope();
     const row = e.results.find(r => r.id === '02');

@@ -363,7 +363,11 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       // The envelope's counts come from the script's own summary, taken
       // before this exclusion — a not-applicable finding that bypassed
       // `finding()` would otherwise leave `errors` contradicting the state.
-      const countOf = sev => notApplicable.filter(f => f.severity === sev).length;
+      // So would a required row's noTarget finding: it becomes an INCOMPLETE
+      // entry below, never a graded error or warning. On a row the depth does
+      // not require it stays counted — it lands in the warnings there.
+      const uncounted = f => doesNotApply(f) || (isRequired && f.noTarget === true);
+      const countOf = sev => allFindings.filter(f => uncounted(f) && f.severity === sev).length;
       out.errors = Math.max(0, out.errors - countOf('error'));
       out.warnings = Math.max(0, out.warnings - countOf('warning'));
       // A required row that checked nothing (Decision §5): INCOMPLETE, not a
