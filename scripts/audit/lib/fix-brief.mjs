@@ -56,7 +56,7 @@ function present(value) {
  * excused/not-applicable/deferred/notes/override/warning sections in
  * `renderFixBrief`. Pure.
  */
-function line(value) {
+export function line(value) {
   if (value === '') return '(empty)';
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
@@ -103,7 +103,9 @@ export const REPORT_END = '<!-- end of report -->';
 /** One table cell: `line()` plus an escaped `|`, so no value can add a column or a row. */
 function cell(value) {
   if (value === undefined || value === null) return '—';
-  return line(value).replace(/\|/g, '\\|');
+  // Backslashes first: `a\|b` would otherwise become `a\\|b`, an escaped
+  // backslash followed by a real column separator.
+  return line(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
 }
 
 /** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
@@ -116,9 +118,10 @@ export function rowIdOf(check) {
  * disagree with the entries below it: `excused` · `deferred` (run-all emits a
  * deferred row as `skipped`, which must not read as a required check that did
  * not run) · a non-ok status (`crashed`, `missing-prereq`, `skipped`) ·
- * `incomplete` · `fail` · `warn` · `report-only (<n> errors)` — a
- * `blocking: false` row whose errors never become FAIL entries, taken from the
- * row's own count so they are not hidden — · `pass`, first match wins.
+ * `incomplete` · `fail` · `warn` · `report-only (<n> errors, <n> warnings)` —
+ * a `blocking: false` row whose findings never become entries or warnings,
+ * taken from the row's own counts so they are not hidden — · `pass`, first
+ * match wins.
  * `fails` / `warns` count this row's FAIL entries and warnings. Pure.
  *
  * @returns {Map<string, { result: string, fails: number, warns: number }>}
@@ -147,7 +150,7 @@ export function rowResults(verdict) {
     else if (incomplete.get(r.id)) result = 'incomplete';
     else if (f) result = 'fail';
     else if (w) result = 'warn';
-    else if (r.errors) result = `report-only (${r.errors} errors)`;
+    else if (r.errors || r.warnings) result = `report-only (${r.errors} errors, ${r.warnings} warnings)`;
     out.set(r.id, { result, fails: f, warns: w });
   }
   return out;
@@ -217,10 +220,12 @@ export function renderChanges(changes) {
       ? `State: unchanged — ${cell(changes.state.to)}`
       : `State: ${cell(changes.state.from)} → ${cell(changes.state.to)}`,
   );
-  const { rows, resolved, unchecked, added, changed, warnings } = changes;
+  const { rows, gone, added, changed, warnings, advisory } = changes;
   if (warnings.from !== warnings.to) out.push(`Warnings: ${warnings.from} → ${warnings.to}`);
-  if (!changes.advisoryCompared) out.push('Advisory: not compared — this run has no AI leg output yet.');
-  if (!rows.length && !resolved.length && !unchecked.length && !added.length && !changed.length) {
+  if (advisory.from !== advisory.to) {
+    out.push(`Advisory items: ${advisory.from} → ${advisory.to} (AI output, counted, not paired item by item)`);
+  }
+  if (!rows.length && !gone.length && !added.length && !changed.length) {
     out.push('', 'No check result or entry changed.');
     return out;
   }
@@ -230,25 +235,23 @@ export function renderChanges(changes) {
   }
   const describe = e => `${cell(e.check ?? e.kind)} · ${cell(e.location ?? e.node ?? e.cause)}`;
   const valueOf = e => cell(e.actual ?? e.question ?? e.cause);
-  if (resolved.length) {
-    out.push('', `Resolved (${resolved.length}):`);
-    for (const e of resolved) out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
-  }
-  if (unchecked.length) {
-    out.push('', `Not re-checked this run — their row was excused or produced no result (${unchecked.length}):`);
-    for (const e of unchecked) out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
+  if (gone.length) {
+    out.push(
+      '',
+      `No longer reported (${gone.length}) — the row's result now says why; this is not a claim it was fixed:`,
+    );
+    for (const { entry: e, rowNow } of gone) {
+      const why = rowNow === null ? '' : ` (row now: ${cell(rowNow)})`;
+      out.push(`- was ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}${why}`);
+    }
   }
   if (added.length) {
-    out.push('', `New (${added.length}):`);
+    out.push('', `Newly reported (${added.length}):`);
     for (const e of added) out.push(`- ${cell(e.id)} · ${describe(e)} — ${valueOf(e)}`);
   }
   if (changed.length) {
-    out.push('', `Changed (${changed.length}):`);
-    for (const c of changed) {
-      const moved = c.fromLocation !== c.entry.location ? ` (was at ${cell(c.fromLocation)})` : '';
-      const value = c.from !== c.to ? `: ${cell(c.from)} → ${cell(c.to)}` : '';
-      out.push(`- ${cell(c.id)} · ${describe(c.entry)}${moved}${value}`);
-    }
+    out.push('', `Changed value (${changed.length}):`);
+    for (const c of changed) out.push(`- ${cell(c.id)} · ${describe(c.entry)}: ${cell(c.from)} → ${cell(c.to)}`);
   }
   return out;
 }

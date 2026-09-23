@@ -43,6 +43,16 @@ import path from 'node:path';
 export const SCHEMA_VERSION = '1.4.0';
 
 /**
+ * The major number of a `<major>.<minor>.<patch>` schema version, or null for
+ * anything else. The one rule for "is this document a version I can read" —
+ * verdict.mjs and run-delta.mjs both decide with it, so they cannot disagree.
+ */
+export function schemaMajor(version) {
+  const m = String(version ?? '').match(/^(\d+)\./);
+  return m ? Number(m[1]) : null;
+}
+
+/**
  * `verdict.json`'s overall state (Design §1). First match wins, decided by
  * `verdict.mjs` (Phase 2) — this module only names the four values.
  */

@@ -47,8 +47,9 @@ import {
   SCHEMA_VERSION,
   STATE,
   VERDICT_SCHEMA_VERSION,
+  schemaMajor,
 } from './lib/json-output.mjs';
-import { REPORT_END, renderFixBrief } from './lib/fix-brief.mjs';
+import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
 import { diffVerdicts, findBaselineRun } from './lib/run-delta.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
@@ -117,10 +118,7 @@ export function worstState(states) {
   return worst;
 }
 
-function major(version) {
-  const m = String(version ?? '').match(/^(\d+)\./);
-  return m ? Number(m[1]) : null;
-}
+const major = schemaMajor;
 
 /** Stderr text varies between identical runs; the verdict keeps only its class. */
 function errorClass(row) {
@@ -525,6 +523,11 @@ export function readRunInputs(runDir) {
       envelope = null;
     }
   }
+  return { envelope, aiFiles: readAiFiles(runDir) };
+}
+
+/** The `ai/<leg>/ai-findings.json` files of one run; an unreadable one is `data: null`. */
+function readAiFiles(runDir) {
   const aiDir = join(runDir, 'ai');
   const aiFiles = [];
   if (existsSync(aiDir)) {
@@ -540,7 +543,7 @@ export function readRunInputs(runDir) {
       aiFiles.push({ leg, data });
     }
   }
-  return { envelope, aiFiles };
+  return aiFiles;
 }
 
 /**
@@ -550,16 +553,20 @@ export function readRunInputs(runDir) {
  * with its error — never folded into "no earlier run", which would hide a
  * broken recompute behind an ordinary-looking first run.
  */
-function changesSincePreviousRun(absRun, verdict, { envelope, aiFiles }) {
+function changesSincePreviousRun(absRun, verdict, envelope) {
   const baseline = findBaselineRun(absRun, envelope);
   if (!baseline.dir) return { status: 'none', reason: baseline.reason };
   let prev;
   try {
-    prev = computeVerdict({ ...readRunInputs(baseline.dir), component: verdict.component });
+    prev = computeVerdict({
+      envelope: baseline.envelope,
+      aiFiles: readAiFiles(baseline.dir),
+      component: verdict.component,
+    });
   } catch (err) {
     return { status: 'none', reason: `baseline run ${baseline.run} could not be recomputed: ${err.message}` };
   }
-  return diffVerdicts(prev, verdict, { run: baseline.run, compareAdvisory: aiFiles.length > 0 });
+  return diffVerdicts(prev, verdict, { run: baseline.run });
 }
 
 /**
@@ -576,7 +583,7 @@ export function writeVerdictForRun(runDir) {
   // Render before writing either file: a render failure (an entry the renderer
   // cannot shape) must never leave a freshly-written verdict.json beside a
   // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict, { envelope, aiFiles }) });
+  const brief = renderFixBrief(verdict, { changes: changesSincePreviousRun(absRun, verdict, envelope) });
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
@@ -679,7 +686,9 @@ export function printSummary(summary, json, auditDir = null) {
     return;
   }
   for (const c of summary.components) {
-    process.stdout.write(`${c.component}: ${c.headline} — audit/${c.component}/fix-brief.md\n`);
+    // The headline carries manifest text (a design-none reason, a skip reason),
+    // so it gets the same control-character neutralising as the block below.
+    process.stdout.write(`${c.component}: ${line(c.headline)} — audit/${c.component}/fix-brief.md\n`);
     if (!auditDir) continue;
     try {
       const block = readReportBlock(auditDir, c.component);

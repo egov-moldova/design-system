@@ -1090,7 +1090,8 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  *
  * `ci` and `noBrowser` drive two meta fields kept as script-output signal;
  * no `.claude/` file reads either since the BX rows became scripted verdict
- * rows (`grep -rn layer2Required .claude` → no hits):
+ * rows (`grep -rn layer2Required .claude/agents .claude/skills .claude/commands`
+ * → no hits):
  *
  *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
  *                          at the time of invocation. Surfaces to CI dashboards

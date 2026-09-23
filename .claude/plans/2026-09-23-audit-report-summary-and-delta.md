@@ -112,6 +112,24 @@ compared only once legs wrote, FAIL identity drops the line, per-row counts show
 missing entirely reads absent, the recompute error is named, the end marker is matched as a whole
 line, and control characters are neutralised. Deferred and report-only rows now read as such.
 
+## Sentinel round 2 (2026-09-23, 7cfda57..336d7d0) — the design changed
+
+REQUEST-CHANGES again, and the pattern is the finding: every round reproduced a new case where
+inferring "resolved" was wrong — same-code findings paired by position once the line left the key,
+a settled design decision filed as "not re-checked" (it has no row), one advisory flag for all
+legs, report-only and deferred rows missing from the not-run set, a baseline row guessed as "added
+later". Each fix was right for its case and wrong for the next.
+
+So the section stopped inferring. An entry missing from this run is "no longer reported", printed
+with its row's result now; the word "resolved" is gone. The line is back in the identity (moving
+reads as gone + new — noise, never a false pairing). Advisory items are counted, not paired. This
+deletes the not-run set, the advisory flag, the baseline-row guess and the line stripping — the
+code every round kept finding wrong. Kept from round 1: the current run must be comparable, the
+recompute error is named, whole-line markers, control characters neutralised. Also fixed: the
+a11y-verifier text (Enter and Space are not scripted; BX3 accepts a transparent outline), the
+printed headline is neutralised too, `\|` in a cell, report-only rows with only warnings, one
+shared `schemaMajor`, and the baseline envelope is parsed once.
+
 ## Not verified
 
 - A real browser-depth run after the change (the fixtures exercise the renderer; one real

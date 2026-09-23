@@ -13,7 +13,7 @@ import { after, describe, it } from 'node:test';
 import { REPORT_END, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import { diffVerdicts, findBaselineRun } from '../../audit/lib/run-delta.mjs';
 import { computeVerdict, printSummary, readReportBlock, writeVerdictForRun } from '../../audit/verdict.mjs';
-import { aiFindings, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
+import { FIGMA_ABSENT, aiFindings, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
 
 const dirs = [];
 function tmp() {
@@ -37,11 +37,6 @@ function briefAfter(baseline, current, { ai1 = [], ai2 = [] } = {}) {
   writeVerdictForRun(writeRunDir(auditDir, current, { run: RUN_2, ai: ai2 }));
   return briefOf(auditDir);
 }
-
-const legFinding = message => ({
-  leg: 'a11y-verifier',
-  data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message }] }),
-});
 
 function advisoryVerdict(message, line) {
   return computeVerdict({
@@ -157,7 +152,7 @@ describe('run-delta: baseline selection', () => {
 });
 
 describe('run-delta: what changed', () => {
-  it('reports resolved, new and changed entries by identity, not by position', () => {
+  it('reports gone, newly reported and changed entries by identity, not by position', () => {
     const prev = computeVerdict({
       envelope: withError(withError(cleanEnvelope(), '02', { actual: '3.1%' }), '04'),
     });
@@ -166,8 +161,8 @@ describe('run-delta: what changed', () => {
     });
     const d = diffVerdicts(prev, cur, { run: RUN_1 });
     assert.deepEqual(
-      d.resolved.map(e => e.check),
-      ['04 check-04'],
+      d.gone.map(g => [g.entry.check, g.rowNow]),
+      [['04 check-04', 'pass']],
     );
     assert.deepEqual(
       d.added.map(e => e.check),
@@ -186,7 +181,19 @@ describe('run-delta: what changed', () => {
     );
   });
 
-  it('an advisory finding re-worded and moved by a re-dispatched leg is neither resolved nor new', () => {
+  it('two same-code findings in one file: removing one reports that one gone, never its neighbour', () => {
+    const two = withError(cleanEnvelope(), '02', { line: 10, actual: 'a' });
+    two.findingsByTool['check-02'].push({ ...two.findingsByTool['check-02'][0], line: 20, actual: 'b' });
+    const one = withError(cleanEnvelope(), '02', { line: 20, actual: 'b' });
+    const d = diffVerdicts(computeVerdict({ envelope: two }), computeVerdict({ envelope: one }), { run: RUN_1 });
+    assert.deepEqual(
+      d.gone.map(g => g.entry.actual),
+      ['a'],
+    );
+    assert.deepEqual([d.added.length, d.changed.length], [0, 0]);
+  });
+
+  it('advisory items are counted, never paired: a re-worded finding is neither gone nor new', () => {
     const d = diffVerdicts(
       advisoryVerdict('focus lost on close', 12),
       advisoryVerdict('focus is lost when closing', 40),
@@ -194,34 +201,27 @@ describe('run-delta: what changed', () => {
         run: RUN_1,
       },
     );
-    assert.deepEqual([d.resolved.length, d.added.length, d.changed.length], [0, 0, 0]);
+    assert.deepEqual([d.gone.length, d.added.length, d.changed.length], [0, 0, 0]);
+    assert.deepEqual(d.advisory, { from: 1, to: 1 });
+    const brief = renderFixBrief(advisoryVerdict('x', 1), {
+      changes: diffVerdicts(computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }) }), advisoryVerdict('x', 1), {
+        run: RUN_1,
+      }),
+    });
+    assert.match(brief, /^Advisory items: 0 → 1 \(AI output, counted, not paired item by item\)$/m);
   });
 
-  it('two different advisory questions on the same node are resolved + new, never paired', () => {
-    const question = q =>
-      computeVerdict({
-        envelope: cleanEnvelope({ depth: 'deep' }),
-        aiFiles: [
-          {
-            leg: 'pixel-perfect-verifier',
-            data: aiFindings('pixel-perfect-verifier', { findings: [{ severity: 'warning', question: q }] }),
-          },
-        ],
-      });
-    const prev = question('Is the dark border intentional?');
-    const cur = question('Should the focus ring be 3px?');
-    assert.equal(cur.advisory[0].kind, 'NEEDS-DECISION');
-    const d = diffVerdicts(prev, cur, { run: RUN_1 });
-    assert.deepEqual([d.resolved.length, d.added.length], [1, 1]);
-  });
-
-  it('every value in the Changes section is escaped', () => {
+  it('every value in the Changes section is escaped, a backslash before a pipe included', () => {
     const prev = computeVerdict({ envelope: withError(cleanEnvelope(), '02', { actual: 'x | y' }) });
     const cur = computeVerdict({ envelope: withError(cleanEnvelope(), '02', { actual: 'p\n## Forged' }) });
     const brief = renderFixBrief(cur, { changes: diffVerdicts(prev, cur, { run: 'r|1' }) });
     assert.match(brief, /^## Changes since the previous standard run \(r\\\|1\)$/m);
     assert.match(brief, /^- F1 · 02 check-02 · .+: x \\\| y → p ⏎ ## Forged$/m);
     assert.doesNotMatch(brief, /^## Forged/m);
+    const regex = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02', { actual: 'a\\|b' }) }));
+    const row = regex.split('\n').find(l => l.startsWith('| F1 |'));
+    assert.ok(row.includes('a\\\\\\|b'), row);
+    assert.equal(row.split(/(?<!\\)(?:\\\\)*\|/).length - 2 >= 6, true);
   });
 });
 
@@ -238,7 +238,7 @@ describe('run-delta: written by writeVerdictForRun', () => {
     writeVerdictForRun(cur);
     assert.ok(readFileSync(briefPath).equals(first), 'fix-brief.md changed on a re-render of the same run');
     assert.match(first.toString(), /^## Changes since the previous standard run \(2026-09-23T08-00-00-000Z-1\)$/m);
-    assert.match(first.toString(), /^Resolved \(1\):$/m);
+    assert.match(first.toString(), /^No longer reported \(1\) — /m);
 
     // The same inputs with no sibling run give the same verdict.json bytes.
     const alone = tmp();
@@ -246,36 +246,25 @@ describe('run-delta: written by writeVerdictForRun', () => {
     assert.ok(readFileSync(join(alone, 'mud-fx', 'verdict.json')).equals(verdictFirst));
   });
 
-  it('an aborted current run is not compared — nothing it did not run reads as resolved', () => {
+  it('an aborted current run is not compared', () => {
     const aborted = cleanEnvelope();
     aborted.preflight = { ok: false, cause: 'Node 26 does not satisfy engines.node', command: 'fnm use 24' };
     aborted.results = [];
     const brief = briefAfter(withError(cleanEnvelope(), '02'), aborted);
     assert.match(brief, /^Not compared: this run did not complete/m);
-    assert.doesNotMatch(brief, /^Resolved/m);
+    assert.doesNotMatch(brief, /^No longer reported/m);
   });
 
-  it('a FAIL whose row was excused this run is "not re-checked", never resolved', () => {
+  it('a FAIL whose row was excused this run is listed with the row result that explains it', () => {
     const brief = briefAfter(withError(cleanEnvelope(), '10'), cleanEnvelope({ browserWaiver: 'flag' }));
-    assert.doesNotMatch(brief, /^Resolved/m);
-    assert.match(brief, /^Not re-checked this run .*\(1\):$/m);
-    assert.match(brief, /^- was F1 · 10 check-10 · /m);
+    assert.doesNotMatch(brief, /Resolved|fixed \(/);
+    assert.match(brief, /^- was F1 · 10 check-10 · .* \(row now: excused\)$/m);
     assert.match(brief, /^\| 10 \| check-10 \| fail \(1 fail, 0 warn\) \| excused \|$/m, 'the row keeps its name');
   });
 
-  it('a fresh run without AI output does not compare advisory items', () => {
-    const current = cleanEnvelope({ depth: 'deep' });
-    const brief = briefAfter(cleanEnvelope({ depth: 'deep' }), current, { ai1: [legFinding('focus lost')] });
-    assert.match(brief, /^Advisory: not compared — this run has no AI leg output yet\.$/m);
-    assert.doesNotMatch(brief, /^Resolved/m);
-  });
-
-  it('a check added to the depth after the baseline ran is absent there, not a resolved INCOMPLETE', () => {
-    const baseline = cleanEnvelope();
-    baseline.results = baseline.results.filter(r => r.id !== '19');
-    const brief = briefAfter(baseline, cleanEnvelope());
-    assert.doesNotMatch(brief, /^Resolved/m);
-    assert.match(brief, /^\| 19 \| check-19 \| absent \| pass \|$/m);
+  it('a settled design decision has no row, so it carries no row suffix', () => {
+    const brief = briefAfter(cleanEnvelope({ figma: FIGMA_ABSENT }), cleanEnvelope());
+    assert.match(brief, /^- was D1 · NEEDS-DECISION · [^(]*$/m);
   });
 
   it('a baseline whose verdict cannot be recomputed is named with its error', () => {
@@ -283,22 +272,6 @@ describe('run-delta: written by writeVerdictForRun', () => {
     broken.results.push(null);
     const brief = briefAfter(broken, cleanEnvelope());
     assert.match(brief, /^Not compared: baseline run 2026-09-23T08-00-00-000Z-1 could not be recomputed: /m);
-  });
-
-  it('a FAIL moved to another line by an edit above it is changed, not resolved + new', () => {
-    const d = diffVerdicts(
-      computeVerdict({ envelope: withError(cleanEnvelope(), '02', { line: 7 }) }),
-      computeVerdict({ envelope: withError(cleanEnvelope(), '02', { line: 9 }) }),
-      { run: RUN_1 },
-    );
-    assert.deepEqual([d.resolved.length, d.added.length, d.changed.length], [0, 0, 1]);
-    const brief = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02', { line: 9 }) }), {
-      changes: d,
-    });
-    assert.match(
-      brief,
-      /^- F1 · 02 check-02 · src\/components\/mud-fx\/x\.tsx:9 \(was at src\/components\/mud-fx\/x\.tsx:7\)$/m,
-    );
   });
 
   it('a row whose fail count grows is listed even though its result stays fail', () => {
@@ -309,19 +282,6 @@ describe('run-delta: written by writeVerdictForRun', () => {
     assert.deepEqual(d.rows, [
       { id: '02', name: 'check-02', from: 'fail (1 fail, 0 warn)', to: 'fail (2 fail, 0 warn)' },
     ]);
-  });
-
-  it('two code-less advisory findings with different text are resolved + new', () => {
-    const leg = message => [
-      {
-        leg: 'audit-component',
-        data: aiFindings('audit-component', { findings: [{ severity: 'error', message }] }),
-      },
-    ];
-    const prev = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: leg('innerHTML unsanitised') });
-    const cur = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles: leg('Escape does not close') });
-    const d = diffVerdicts(prev, cur, { run: RUN_1 });
-    assert.deepEqual([d.resolved.length, d.added.length], [1, 1]);
   });
 
   it('the terminal block is the brief from ## Summary up to the end marker', () => {
@@ -391,8 +351,10 @@ describe('report block: hostile text', () => {
     e.findingsByTool['check-16'] = [{ severity: 'error', code: 'X', message: 'report-only error' }];
     const v = computeVerdict({ envelope: e });
     v.rows.push({ id: 'e2e', name: 'e2e', required: false, status: 'skipped', deferred: 'no E2E project' });
+    v.rows.push({ id: 'r9', name: 'warn-only', required: true, status: 'ok', errors: 0, warnings: 3 });
     const brief = renderFixBrief(v);
-    assert.match(brief, /^\| 16 \| check-16 \| yes \| report-only \(1 errors\) \| 0 \| 0 \|/m);
+    assert.match(brief, /^\| 16 \| check-16 \| yes \| report-only \(1 errors, 0 warnings\) \| 0 \| 0 \|/m);
     assert.match(brief, /^\| e2e \| e2e \| no \| deferred \|/m);
+    assert.match(brief, /^\| r9 \| warn-only \| yes \| report-only \(0 errors, 3 warnings\) \|/m);
   });
 });

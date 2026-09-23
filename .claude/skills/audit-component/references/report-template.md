@@ -29,14 +29,15 @@ same inputs give byte-identical files.
   Warn | Note`), each result derived from the verdict's own entries and warnings; an index of every
   entry and advisory item (`ID | Kind | Check | Where | Actual | Owner`).
 - `## Changes since the previous <depth> run (<run>)` — state before → now, checks whose result or
-  counts changed, and entries resolved, not re-checked, new or changed (same identity, a different
-  measured value or line). "Resolved" is claimed only for a row that ran again; a finding whose row
-  was excused, crashed or never ran this time is "not re-checked". Advisory items are compared only
-  once this run's AI legs have written. The baseline is the newest earlier run of the same depth
-  that was unfiltered and complete, recomputed from its kept inputs under today's rules
-  (`scripts/audit/lib/run-delta.mjs`); the current run must be complete too. Without a comparison
-  the section says why, naming the error when the baseline could not be recomputed. This is the
-  only part of the brief that depends on another run; `verdict.json` never does.
+  counts changed, and entries no longer reported, newly reported, or with a changed measured value.
+  It reports, never concludes: an entry no longer reported carries its row's result now (`row now:
+  excused`, `pass`, …), and whether that means fixed is the reader's call — the section never says
+  "resolved". Advisory items are counted, not paired, since AI output varies between dispatches. The
+  baseline is the newest earlier run of the same depth that was unfiltered and complete, recomputed
+  from its kept inputs under today's rules (`scripts/audit/lib/run-delta.mjs`); the current run
+  must be complete too. Without a comparison the section says why, naming the error when the
+  baseline could not be recomputed. This is the only part of the brief that depends on another run;
+  `verdict.json` never does.
 
 `audit/` stays git-ignored: `verdict.json` carries the HEAD commit, so a committed copy would diff on
 every commit and be stale by one. The "Changes since" section is how evolution is read.
