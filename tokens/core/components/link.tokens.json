@@ -24,7 +24,8 @@
         "$type": "dimension"
       },
       "borderRadius": {
-        "$value": "{borderRadius.4}",
+        "$comment": "Zero, and it shows only on the focus ring: the container has no background and no border, so the radius shapes nothing else. Figma's link frames carry no corner radius (57:465), and its Focus Ring/Small renders with square corners.",
+        "$value": "{borderRadius.0}",
         "$type": "dimension"
       },
       "transitionDuration": {
