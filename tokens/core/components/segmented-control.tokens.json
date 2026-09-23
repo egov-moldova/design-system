@@ -52,6 +52,11 @@
           "$value": "44px",
           "$type": "dimension",
           "$comment": "Figma Breakpoint=Mobile 4785:15360 sets the segment to 44px — a literal, since the spacing scale steps 40 → 48 and has no 44."
+        },
+        "stacked": {
+          "$value": "56px",
+          "$type": "dimension",
+          "$comment": "Not from Figma: 20px icon + spacing/4 + 20px line box, with spacing/6 above and below. A literal, since the spacing scale has no 56 between 48 and 64."
         }
       },
       "minWidth": {
@@ -66,6 +71,11 @@
         "sm": {
           "$value": "{spacing.12}",
           "$type": "dimension"
+        },
+        "stacked": {
+          "$value": "{spacing.8}",
+          "$type": "dimension",
+          "$comment": "Not from Figma: the design has no stacked layout. Halving the inline padding is what buys the room — three segments spend 96px on side padding at spacing/16, and the labels themselves need only 167px."
         }
       },
       "gap": {
@@ -75,6 +85,11 @@
       "borderRadius": {
         "$value": "{borderRadius.full}",
         "$type": "dimension"
+      },
+      "gapStacked": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Not from Figma: vertical distance between the icon and the label when they stack. spacing/4 keeps the pair reading as one unit against the spacing/6 the row uses horizontally."
       }
     },
     "label": {

@@ -92,6 +92,30 @@
   --_segment-height: var(--segmented-control-segment-height-fluid);
 }
 
+/* Stacked — icon over label. Not a Figma variant; see the `stacked` prop for
+   why it exists and what it is waiting on. The row keeps its own rules, so a
+   control without the attribute is untouched. */
+:host([stacked]) {
+  --_segment-padding: var(--segmented-control-segment-padding-inline-stacked);
+}
+
+/* Matches the specificity of the `fluid` rung above — `[fluid]:not([size='sm'])`
+   is two attribute selectors, so a bare `[stacked]` would lose to it and a
+   stacked control inside a fluid one would keep the 44px row height. */
+:host([stacked]:not([size='sm'])) {
+  --_segment-height: var(--segmented-control-segment-height-stacked);
+}
+
+:host([stacked]) .segment {
+  flex-direction: column;
+  gap: var(--segmented-control-segment-gap-stacked);
+}
+
+/* The label is the whole width now, so it no longer competes with the icon. */
+:host([stacked]) .segment__label {
+  inline-size: 100%;
+}
+
 :host([fluid]) .track {
   display: grid;
   inline-size: 100%;

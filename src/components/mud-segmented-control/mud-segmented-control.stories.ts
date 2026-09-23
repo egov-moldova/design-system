@@ -7,6 +7,7 @@ type StoryArgs = {
   size: SegmentedControlSize;
   disabled: boolean;
   fluid: boolean;
+  stacked: boolean;
   value: string;
   ariaLabel: string;
 };
@@ -48,6 +49,7 @@ const renderControlHtml = (
     value="${args.value}"
     ${args.disabled ? 'disabled' : ''}
     ${args.fluid ? 'fluid' : ''}
+    ${args.stacked ? 'stacked' : ''}
     aria-label="${args.ariaLabel ?? 'Filtru'}"
   ></mud-segmented-control>
   ${renderControlScript(elId, segments)}
@@ -500,6 +502,46 @@ export const WithIcons: Story = {
       description: {
         story:
           'Leading icons use the existing `mud-icon` registry. Provide the icon `name` on the segment; the component renders it at 20px and inherits the segment text colour.',
+      },
+    },
+  },
+};
+
+export const Stacked: Story = {
+  name: 'Stacked',
+  render: () => {
+    const segments: SegmentedControlSegment[] = [
+      { value: 'cetatean', label: 'Cetățean', iconName: 'bullet-list' },
+      { value: 'afacere', label: 'Afacere', iconName: 'map-pin' },
+      { value: 'institutii', label: 'Instituții', iconName: 'dot-grid' },
+    ];
+    return wrap(
+      [
+        cell(
+          'stacked — 288px (a 320px phone)',
+          /*html*/ `
+            <div style="inline-size: 288px;">
+              ${renderControlHtml('sc-stacked', segments, { value: 'cetatean', stacked: true, fluid: true, ariaLabel: 'Tip (stacked)' })}
+            </div>
+          `,
+        ),
+        cell(
+          'the same row, for comparison',
+          /*html*/ `
+            <div style="inline-size: 288px;">
+              ${renderControlHtml('sc-stacked-row', segments, { value: 'cetatean', fluid: true, ariaLabel: 'Tip (row)' })}
+            </div>
+          `,
+        ),
+      ].join(''),
+    );
+  },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Not a Figma variant — the design set draws one row at both breakpoints and answers a long label with an ellipsis. That answer runs out on a narrow phone: three segments with icons need 382px where a 320px device offers 288, and the row above truncates to “Ce…”, “Af…”, “Ins…”. Stacking spends the width on the label instead of on the icon beside it, and halves the inline padding, which brings the same three segments to 258px — they fit on every phone. Opt in with the `stacked` attribute; pending design sign-off.',
       },
     },
   },

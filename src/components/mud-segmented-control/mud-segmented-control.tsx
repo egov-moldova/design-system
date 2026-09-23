@@ -63,6 +63,22 @@ export class MudSegmentedControl {
   @Prop({ reflect: true }) fluid: boolean = false;
 
   /**
+   * Stacks each segment's icon above its label instead of beside it, and
+   * halves the inline padding.
+   *
+   * Not a Figma variant — the design set draws one row at both breakpoints and
+   * answers a long label with an ellipsis. That answer runs out on a narrow
+   * phone: three segments with icons need 382px where a 320px device offers
+   * 288, and truncating leaves "Af…", "Ins…". Stacking spends the width on the
+   * label rather than on the icon beside it and brings the same three segments
+   * down to 258px, which fits every phone. Opt in where you need it; pending
+   * design sign-off.
+   *
+   * @default false
+   */
+  @Prop({ reflect: true }) stacked: boolean = false;
+
+  /**
    * Value of the currently selected segment. Mutable so the control updates it
    * on selection. Like a native form control, `value` is intentionally NOT
    * reflected to the attribute (the attribute represents the default value) —
