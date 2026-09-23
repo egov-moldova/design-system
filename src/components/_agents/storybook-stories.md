@@ -27,7 +27,7 @@ const renderSpinner = (args: SpinnerArgs) => /*html*/ `
 `;
 
 const meta: Meta<SpinnerArgs> = {
-  title: 'Atoms/Spinner',
+  title: 'Components/Spinner',
   component: 'mud-spinner',
   argTypes: {
     size: {
@@ -61,8 +61,8 @@ export const Default: Story = {
 
 ### Story File Rules
 
-- **Title**: `Atoms/MudButton`, `Molecules/MudFormField`, `Organisms/MudNavbar` (Atomic hierarchy)
-- **Sort**: `Introduction → Design Tokens → Atoms → Molecules → Organisms → Templates`
+- **Title**: `Components/MudButton`, `Components/MudFormField`, `Components/MudNavbar` — single flat category, no atomic-hierarchy prefix
+- **Sort**: `Introduction → Design Tokens → Components`
 - **Import**: `@storybook/web-components-vite` — NOT `@storybook/react`, and NOT the bare `@storybook/web-components` renderer (framework-based config is required since Storybook 10)
 - **Component**: string tag `'mud-button'` — NOT JS reference
 - **Render**: always use `render` with HTML template strings (backticks)
@@ -238,7 +238,7 @@ Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `sr
 | No `render` function | **Always use `render`** with HTML template strings | Storybook can't auto-render web components from args alone |
 | `tags: ['autodocs']` on a story | Omit it | Autodocs is configured globally in `.storybook/main.mjs` |
 | `argTypes` missing `description` or `table.defaultValue` | Include both | Controls panel needs them; audit-component flags missing entries |
-| `Components/Button` title | `Atoms/MudButton` (Atomic hierarchy) | Project Storybook sort order depends on the atomic prefix |
+| `Atoms/Button` / `Molecules/…` / `Organisms/…` title | `Components/Button` (single flat category) | The atomic-hierarchy prefix was unified into `Components` — see issue #128 |
 | `<Component {...args} />` JSX spread | `variant="${args.variant}"` (explicit attributes) | Web components consume attribute strings, not React props |
 | Inline `padding: 16px` | `padding: var(--spacing-16)` | See "Story Styling" — semantic tokens preferred |
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |
