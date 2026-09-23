@@ -149,6 +149,33 @@ change (2026-09-23) and each found the defects named in § Problem, so each disc
      script-computed audit; drop "wraps the slash command logic" / "3-wave".
 6. Run B1–B9. Commit the named paths.
 
+## Self-refute log
+
+1. **Does the fix reuse the defect's mechanism class?** The defect is a doc copy nobody reads
+   drifting from the one that runs. The fix deletes the copy rather than syncing it, and the
+   guard is a file-existence test (Task 1), not a promise to keep two copies aligned. No
+   instance.
+2. **Can the letter be met with the intent violated?** B4 could pass while a caller still
+   describes the command in words without a path ("follow the command's steps"). Task 5 names
+   each caller line explicitly, and B5 covers the Layer 2 wording. Residual: a paraphrase
+   outside the named files is not grepped; scanned `git grep -n "/audit-component"` (31 files),
+   and every other hit uses the slash name, which stays valid.
+3. **Numeric targets.** B7 (≤ 12,500 bytes) has a denominator: 17,149 bytes today, of which the
+   table is 5,645 (`awk 'NR>=149 && NR<=218' SKILL.md | wc -c`, run 2026-09-23). The instrument
+   is `wc -c`, outside what it grades. It is a size, not a token measurement (Not verified).
+4. **Do two rules interact into an unintended pass?** B6 forbids the phrase "sets `FAIL`",
+   and Task 4 must state that AI findings do not change the state. A rewrite reading "never
+   sets `FAIL`" would satisfy Task 4 and fail B6. Addressed by the wording note on B6. Also
+   `callers.spec.mjs`'s `SKILL_CALLERS` assertion becomes vacuous if no caller invokes
+   `Skill('audit-component', ...)` after the command leaves; its own
+   "at least one caller invokes the skill" test catches that (`audit-production.md:120` still
+   does).
+
+## Dropped
+
+- A generic `shadowed-command` rule in `scripts/docs/check-ai-docs.mjs` (see § Decision).
+- Keeping the command and syncing it with the skill.
+
 ## Not verified
 
 - That no user or tool loads `.claude/commands/audit-component.md` by path outside this repo.
