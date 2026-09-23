@@ -1,5 +1,17 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  State,
+  Watch,
+  h,
+  readTask,
+} from '@stencil/core';
 
 import { SEGMENTED_CONTROL_SIZES } from './mud-segmented-control.types';
 import type {
@@ -9,6 +21,9 @@ import type {
 } from './mud-segmented-control.types';
 
 let segmentedControlInstanceCounter = 0;
+
+/** Leading icon size, in px. Shared by the renderer and the width measurement. */
+const SEGMENT_ICON_SIZE = 20;
 
 /**
  * Segmented control — single-select horizontal switcher.
@@ -63,16 +78,18 @@ export class MudSegmentedControl {
   @Prop({ reflect: true }) fluid: boolean = false;
 
   /**
-   * Stacks each segment's icon above its label instead of beside it, and
-   * halves the inline padding.
+   * Forces each segment's icon above its label, with half the inline padding.
+   *
+   * Leave it off and the control does this for itself: it measures what a row
+   * of icons and labels would need against the space it has, and stacks only
+   * when the row would not fit. So this prop is for pinning the stacked look
+   * even where a row would fit, not for turning the behaviour on.
    *
    * Not a Figma variant — the design set draws one row at both breakpoints and
    * answers a long label with an ellipsis. That answer runs out on a narrow
    * phone: three segments with icons need 382px where a 320px device offers
-   * 288, and truncating leaves "Af…", "Ins…". Stacking spends the width on the
-   * label rather than on the icon beside it and brings the same three segments
-   * down to 258px, which fits every phone. Opt in where you need it; pending
-   * design sign-off.
+   * 288, and truncating leaves "Af…", "Ins…" for the user to choose between.
+   * Stacking spends the width on the words instead. Pending design sign-off.
    *
    * @default false
    */
@@ -100,6 +117,8 @@ export class MudSegmentedControl {
 
   @State() private focusedIndex: number = -1;
   @State() private fieldsetDisabled: boolean = false;
+  /** True when the row does not fit and the icons have moved above the labels. */
+  @State() private autoStacked: boolean = false;
 
   @Element() host!: HTMLMudSegmentedControlElement;
 
@@ -112,6 +131,7 @@ export class MudSegmentedControl {
   private readonly groupId = `mud-segmented-control-${this.instanceId}`;
   private initialValue?: string;
   private segmentRefs: HTMLButtonElement[] = [];
+  private resizeObserver?: ResizeObserver;
 
   @Watch('size')
   validateSize(next: SegmentedControlSize) {
@@ -128,6 +148,13 @@ export class MudSegmentedControl {
   @Watch('value')
   handleValueChange() {
     this.syncFormValue();
+  }
+
+  @Watch('segments')
+  @Watch('fluid')
+  @Watch('stacked')
+  handleLayoutInputChange() {
+    readTask(() => this.updateAutoStack());
   }
 
   @Listen('keydown')
@@ -193,6 +220,21 @@ export class MudSegmentedControl {
     this.syncFormValue();
   }
 
+  componentDidLoad() {
+    this.observeAvailableWidth();
+    this.updateAutoStack();
+    // Label widths settle only once the webfont is in, and the answer depends
+    // on them, so ask again rather than measuring Onest's fallback.
+    if (typeof document !== 'undefined' && document.fonts) {
+      void document.fonts.ready.then(() => this.updateAutoStack());
+    }
+  }
+
+  disconnectedCallback() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+  }
+
   formDisabledCallback(disabled: boolean) {
     this.fieldsetDisabled = disabled;
   }
@@ -223,6 +265,86 @@ export class MudSegmentedControl {
 
   private getEnabledSegments(): SegmentedControlSegment[] {
     return this.segments ?? [];
+  }
+
+  /** Icons or not, a stacked layout only pays off when there is an icon to move. */
+  private hasIcons(): boolean {
+    return this.getEnabledSegments().some(segment => Boolean(segment.iconName));
+  }
+
+  /** Whether the icons currently sit above the labels. */
+  private isStacked(): boolean {
+    return this.stacked || this.autoStacked;
+  }
+
+  /** A length custom property on the host, in px. */
+  private cssLength(name: string): number {
+    if (typeof window === 'undefined') return 0;
+    const value = Number.parseFloat(window.getComputedStyle(this.host).getPropertyValue(name));
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  /**
+   * What a row would need, in px.
+   *
+   * The widest segment sets it, not the sum: the track lays its columns out as
+   * `minmax(floor, 1fr)`, so every segment is as wide as the greediest one.
+   * Summing instead said 296px fitted in 300 while the longest label was being
+   * cut, because its own share was 94 of the 92 it got.
+   *
+   * Every term comes from something the current layout cannot change — the
+   * label's own text width, and the row's padding, gap and icon size read from
+   * the tokens. Measuring the rendered row instead would flip the answer the
+   * moment stacking halved the padding, and the control would oscillate.
+   */
+  private rowWidthNeeded(): number | undefined {
+    const labels = Array.from(this.host.shadowRoot?.querySelectorAll('.segment__label-text') ?? []);
+    if (labels.length === 0) return undefined;
+
+    const rung = this.size === 'sm' ? 'sm' : 'md';
+    const paddingInline = this.cssLength(`--segmented-control-segment-padding-inline-${rung}`);
+    const segmentGap = this.cssLength('--segmented-control-segment-gap');
+    const trackPadding = this.cssLength(`--segmented-control-container-padding-${this.fluid ? 'fluid' : 'default'}`);
+    const trackGap = this.cssLength('--segmented-control-container-gap');
+    const segments = this.getEnabledSegments();
+
+    const widest = labels.reduce((max, label, index) => {
+      const icon = segments[index]?.iconName ? SEGMENT_ICON_SIZE + segmentGap : 0;
+      return Math.max(max, paddingInline * 2 + icon + label.scrollWidth);
+    }, 0);
+
+    return widest * labels.length + trackGap * Math.max(labels.length - 1, 0) + trackPadding * 2;
+  }
+
+  /** The content box the control has to live in. */
+  private availableWidth(): number | undefined {
+    const parent = this.host.parentElement;
+    if (!parent || typeof window === 'undefined') return undefined;
+    const style = window.getComputedStyle(parent);
+    const width =
+      parent.clientWidth - (Number.parseFloat(style.paddingLeft) || 0) - (Number.parseFloat(style.paddingRight) || 0);
+    return width > 0 ? width : undefined;
+  }
+
+  private updateAutoStack = () => {
+    if (typeof window === 'undefined') return;
+    if (this.stacked || !this.hasIcons()) {
+      this.autoStacked = false;
+      return;
+    }
+    const needed = this.rowWidthNeeded();
+    const available = this.availableWidth();
+    if (needed === undefined || available === undefined) return;
+    this.autoStacked = needed > available;
+  };
+
+  private observeAvailableWidth() {
+    if (typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(() => readTask(() => this.updateAutoStack()));
+    this.resizeObserver.observe(this.host);
+    // The host hugs its content, so it stops shrinking once the labels
+    // truncate; the space it has to fit into is the parent's.
+    if (this.host.parentElement) this.resizeObserver.observe(this.host.parentElement);
   }
 
   private getSelectedIndex(): number {
@@ -291,6 +413,7 @@ export class MudSegmentedControl {
       <Host
         class={{
           'is-disabled': inert,
+          'is-stacked': this.isStacked(),
         }}
         role="radiogroup"
         aria-labelledby={this.ariaLabelledby}
@@ -325,7 +448,7 @@ export class MudSegmentedControl {
                 onBlur={this.handleSegmentBlur}
               >
                 {segment.iconName ? (
-                  <mud-icon class="segment__icon" name={segment.iconName} size={20}></mud-icon>
+                  <mud-icon class="segment__icon" name={segment.iconName} size={SEGMENT_ICON_SIZE}></mud-icon>
                 ) : null}
                 <span class="segment__label" data-label={segment.label}>
                   <span class="segment__label-text">{segment.label}</span>

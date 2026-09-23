@@ -541,7 +541,7 @@ export const Stacked: Story = {
     docs: {
       description: {
         story:
-          'Not a Figma variant — the design set draws one row at both breakpoints and answers a long label with an ellipsis. That answer runs out on a narrow phone: three segments with icons need 382px where a 320px device offers 288, and the row above truncates to “Ce…”, “Af…”, “Ins…”. Stacking spends the width on the label instead of on the icon beside it, and halves the inline padding, which brings the same three segments to 258px — they fit on every phone. Opt in with the `stacked` attribute; pending design sign-off.',
+          'The control stacks by itself when a row will not fit: it measures what the row would need — the widest segment, since the track keeps its columns equal — against the space it has, and moves the icons above the labels only then. Resize the canvas and watch the first cell flip at around 300px.\n\nNot a Figma variant. The design set draws one row at both breakpoints and answers a long label with an ellipsis, which runs out on a narrow phone: three segments with icons need 382px where a 320px device offers 288, and truncating leaves “Ce…”, “Af…”, “Ins…” to choose between. Stacking brings the same three to 258px and keeps every word. The `stacked` attribute pins the layout where a row would still fit. Pending design sign-off.',
       },
     },
   },
