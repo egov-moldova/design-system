@@ -56,24 +56,29 @@ function present(value) {
  * `renderFixBrief`. Pure.
  */
 export function line(value) {
-  // Markdown links, images and raw HTML are made inert too: an AI leg's finding
-  // text is kept in record.json and re-rendered in later briefs, and a
-  // previewer fetches `![x](https://…)` or `<img src=…>` the moment the file is
-  // opened, while `<!--` hides everything after it. Entities, never backslash
-  // escapes: a backslash already in the text, or cell() doubling backslashes,
-  // would turn `\<` back into a live tag, while `&lt;` stays text whatever
-  // precedes it. Only `](` and a `<` that opens a tag or comment are rewritten,
-  // so `rgb(0, 0, 0)` or `a < b` read unchanged. Inside backticks use code().
-  return code(value)
-    .replace(/\]\(/g, ']&#40;')
-    .replace(/<(?=[A-Za-z!/?])/g, '&lt;');
+  return code(value).replace(MD_ACTIVE, '\\$&');
 }
 
 /**
- * `line()` for text inside a code span (a `verify:` command, the re-render
- * command): one line, control characters neutralised, and no markdown
- * rewriting — a code span renders literally, so an entity there would corrupt
- * the command a reader copies. Pure.
+ * The characters every active markdown construct needs, each backslash-escaped
+ * by `line()`. CommonMark renders any backslash-escaped ASCII punctuation as
+ * that literal character, so escaping these closes whole classes, not cases:
+ * no `[` → no link, image or reference definition; no `<` → no HTML, comment
+ * or autolink; no `&` → no entity; no backtick → no code span; no `|` → no
+ * table cell break. The backslash is in the set and the replacement is one
+ * pass, so a backslash already in the text can never cancel an escape. The
+ * preview shows the finding's text exactly. Why it matters: an AI leg's
+ * finding text is kept in record.json and re-rendered in later briefs, and a
+ * previewer fetches an image or hides the rest of the file on `<!--` the
+ * moment it opens. `run-record.spec.mjs` checks both properties over
+ * generated input.
+ */
+const MD_ACTIVE = /[\\`[\]<&|]/g;
+
+/**
+ * One line of plain text, for the terminal and for inside a code span: newlines
+ * mapped, control characters neutralised, no markdown escaping (a terminal and
+ * a code span both show text literally). Pure.
  */
 export function code(value) {
   if (value === '') return '(empty)';
@@ -83,6 +88,22 @@ export function code(value) {
   return String(value)
     .replace(/\r\n|\r|\n/g, ' ⏎ ')
     .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
+}
+
+/**
+ * A whole code span around `code(value)`, so a command stays copyable as
+ * written. The fence is one backtick longer than the longest backtick run in
+ * the value, so no run inside can close it (CommonMark: a span ends at a run
+ * of exactly the fence's length). A space pads both sides when the value
+ * starts or ends with a backtick, or starts and ends with a space, because
+ * CommonMark strips one space from each side in exactly that case. Pure.
+ */
+export function codeSpan(value) {
+  const text = code(value);
+  const longest = Math.max(0, ...(text.match(/`+/g) ?? []).map(run => run.length));
+  const fence = '`'.repeat(longest + 1);
+  const pad = /^`|`$/.test(text) || /^ .*[^ ].* $/.test(text) ? ' ' : '';
+  return `${fence}${pad}${text}${pad}${fence}`;
 }
 
 /**
@@ -108,7 +129,7 @@ export function renderEntry(entry) {
       lines.push('- options:');
       value.forEach((o, i) => lines.push(`  ${i + 1}. ${line(o)}`));
     } else if (field === 'verify') {
-      lines.push(`- verify: \`${code(value)}\``);
+      lines.push(`- verify: ${codeSpan(value)}`);
     } else {
       lines.push(`- ${field}: ${line(value)}`);
     }
@@ -130,12 +151,15 @@ export function rerenderCommand(component) {
 /** Closes the report block — the part `printSummary` prints and the skill pastes inline. */
 export const REPORT_END = '<!-- end of report -->';
 
-/** One table cell: `line()` plus an escaped `|`, so no value can add a column or a row. */
+/**
+ * One table cell. `line()` already escapes `|` and `\` in one pass, so every
+ * pipe from a value sits behind an odd run of backslashes and never splits the
+ * row. Escaping again here would double those backslashes and revive both the
+ * pipe and any escaped `<`.
+ */
 function cell(value) {
   if (value === undefined || value === null) return '—';
-  // Backslashes first: `a\|b` would otherwise become `a\\|b`, an escaped
-  // backslash followed by a real column separator.
-  return line(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+  return line(value);
 }
 
 /**
@@ -355,7 +379,7 @@ export function renderChanges(changes) {
         // malformed file needs the leg re-dispatched, which a re-render cannot do.
         const rerender =
           n.scope.startsWith('leg:') && n.current === LEG_NOT_WRITTEN
-            ? ` (\`${rerenderCommand(code(changes.component))}\`)`
+            ? ` (${codeSpan(rerenderCommand(changes.component))})`
             : '';
         return `- ${line(n.scope)} — previous: ${line(n.previous)}, now: ${line(n.current)}${rerender}`;
       }),
@@ -443,7 +467,7 @@ export function renderFixBrief(verdict, changes = null) {
   if (warnings.length) {
     out.push(`## Warnings (non-blocking) (${warnings.length})`, '');
     for (const w of warnings) {
-      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: \`${code(w.verify)}\`)`);
+      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: ${codeSpan(w.verify)})`);
     }
     out.push('');
   }

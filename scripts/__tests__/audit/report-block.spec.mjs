@@ -97,7 +97,7 @@ describe('report block: hostile text', () => {
     const v = computeVerdict({ envelope: withError(cleanEnvelope(), '02', { actual: 'x\u001b[2K\u001b[1Ay' }) });
     const brief = renderFixBrief(v);
     assert.doesNotMatch(brief, /\u001b/);
-    assert.match(brief, /x�\[2K�\[1Ay/);
+    assert.match(brief, /x�\\\[2K�\\\[1Ay/);
   });
 
   it('a finding carrying the end marker cannot cut the block short', () => {

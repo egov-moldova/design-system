@@ -182,33 +182,35 @@ function recordShapeIssue(record) {
 
 /**
  * The run directories under `<componentDir>/runs/`, sorted by name. A run is a
- * directory holding `envelope.json`, which run-all writes before anything else
- * in it. Anything else there (a Finder `.DS_Store`, a notes folder) is not a
- * run, and must neither become a baseline nor count as a newer run. No
- * `runs/` yet → `[]`. Any other listing failure throws for the caller.
+ * real directory (never a symlink: run-all never makes one, and following it
+ * could reach another component's runs) that holds `envelope.json`, which
+ * run-all writes before anything else in it. A file, a symlink or a folder
+ * with no envelope (a Finder `.DS_Store`, a notes folder) is not a run. A
+ * directory whose envelope cannot even be checked (EACCES, EIO) IS kept: it
+ * looks like a run, and dropping it silently could let an older run pass as
+ * newest. Kept, it surfaces by name — findPreviousRecord reports it unusable,
+ * isNewestRun names it. One such entry never fails the whole listing. No
+ * `runs/` yet → `[]`; a failure to list `runs/` itself throws.
  */
 export function listRunNames(componentDir) {
   const runsDir = join(componentDir, 'runs');
-  let names;
+  let entries;
   try {
-    names = readdirSync(runsDir);
+    entries = readdirSync(runsDir, { withFileTypes: true });
   } catch (err) {
     if (err.code === 'ENOENT') return [];
     throw err;
   }
-  // statSync, not existsSync: existsSync reads EACCES/EIO as "absent", which
-  // would silently drop an unreadable newer run and let an older one pass as
-  // newest. Only "not there" (ENOENT, or ENOTDIR for a file entry) means "not a
-  // run"; anything else throws. statSync follows a symlinked run directory.
-  return names
-    .filter(name => {
+  return entries
+    .filter(e => e.isDirectory())
+    .filter(e => {
       try {
-        return statSync(join(runsDir, name, 'envelope.json')).isFile();
+        return statSync(join(runsDir, e.name, 'envelope.json')).isFile();
       } catch (err) {
-        if (err.code === 'ENOENT' || err.code === 'ENOTDIR') return false;
-        throw err;
+        return err.code !== 'ENOENT' && err.code !== 'ENOTDIR';
       }
     })
+    .map(e => e.name)
     .sort();
 }
 

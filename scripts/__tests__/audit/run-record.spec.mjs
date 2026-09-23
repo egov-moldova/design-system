@@ -6,14 +6,23 @@
  * produces, never a hand-rolled verdict shape of the test's own invention.
  */
 import assert from 'node:assert/strict';
-import { chmodSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
-import { buildRunRecord, compareRecords, findPreviousRecord } from '../../audit/lib/run-record.mjs';
-import { renderChanges, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
+import { buildRunRecord, compareRecords, findPreviousRecord, listRunNames } from '../../audit/lib/run-record.mjs';
+import { code, codeSpan, line, renderChanges, renderEntry, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import { computeLegRecords, computeVerdict, writeVerdictForRun } from '../../audit/verdict.mjs';
 import { RUN_RECORD_SCHEMA_VERSION } from '../../audit/lib/json-output.mjs';
 import { mismatchFinding } from '../../audit/15-style-parity.mjs';
@@ -757,8 +766,8 @@ describe('run-record: hostile text cannot add a column, a row or a heading', () 
       component: 'mud-fx',
     });
     assert.match(section, /newly reported: .*CX9/);
-    assert.doesNotMatch(section, /!\[b\]\(/);
-    assert.doesNotMatch(section, /\[c\]\(/);
+    assert.deepEqual(unescapedActive(section), []);
+    assert.match(section, /!\\\[b\\\]\(https/);
     assert.match(section, /rgb\(0, 0, 0\)/);
   });
 
@@ -905,10 +914,9 @@ describe('run-record: what the section names', () => {
       depth: 'deep',
       component: 'mud-fx',
     });
-    // No literal tag opener survives at all — whatever precedes it.
-    assert.doesNotMatch(section, /<img|<!--/);
-    assert.match(section, /&lt;img/);
-    assert.match(section, /a < b/);
+    assert.deepEqual(unescapedActive(section), []);
+    assert.match(section, /\\<img/);
+    assert.match(section, /a \\< b/);
   });
 
   it('neither a backslash in the text nor a table cell turns an escaped tag back into live HTML', () => {
@@ -927,13 +935,169 @@ describe('run-record: what the section names', () => {
       depth: 'standard',
       component: 'mud-fx',
     });
-    assert.doesNotMatch(section, /<img|<!--/);
+    assert.deepEqual(unescapedActive(section), []);
     const brief = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02', { message: hostile }) }));
-    assert.doesNotMatch(brief, /<img|<!--(?! end of report -->)/);
+    // Everything but the renderer's own end marker and its verify code spans.
+    const prose = brief
+      .split('\n')
+      .filter(l => l !== '<!-- end of report -->' && !l.startsWith('- verify: '))
+      .join('\n');
+    assert.deepEqual(unescapedActive(prose), []);
   });
 
-  it('a command inside backticks is left exactly as written', () => {
-    const brief = renderFixBrief(computeVerdict({ envelope: withError(cleanEnvelope(), '02') }));
-    assert.match(brief, /- verify: `node scripts\/audit\/run-all\.mjs mud-fx --depth standard --only 02 --json`/);
+  it('a command inside backticks is left exactly as written, and a backtick in it cannot close the span', () => {
+    const entry = {
+      id: 'F1',
+      kind: 'FAIL',
+      severity: 'error',
+      check: '02 x',
+      location: 'a.tsx',
+      expected: { value: 'v', source: 's' },
+      actual: 'a',
+      owner: 'o',
+      verify: 're-dispatch the x`<!-- leg <c> [d](e)',
+    };
+    assert.match(renderEntry(entry), /^- verify: ``re-dispatch the x`<!-- leg <c> \[d\]\(e\)``$/m);
   });
+});
+
+// ─── The escaping, as properties over generated input ───────────────────────
+
+/** Characters `line()` must leave escaped: every one starts or joins an active markdown construct. */
+const ACTIVE = new Set(['\\', '`', '[', ']', '<', '&', '|']);
+
+/**
+ * The `[`, `]`, `<`, `&` in `text` that are not behind an odd run of
+ * backslashes — i.e. that a CommonMark renderer would treat as markup. Backtick
+ * and pipe are left out here because the renderer itself emits them (code
+ * fences, table columns); `line()`'s property test below covers them.
+ */
+function unescapedActive(text) {
+  const out = [];
+  for (let i = 0; i < text.length; i++) {
+    if (!'[]<&'.includes(text[i])) continue;
+    let run = 0;
+    for (let j = i - 1; j >= 0 && text[j] === '\\'; j--) run++;
+    if (run % 2 === 0) out.push(`${text[i]}@${i}`);
+  }
+  return out;
+}
+
+/** CommonMark: a backslash before any ASCII punctuation character renders that character literally. */
+function unescapeMarkdown(text) {
+  return text.replace(/\\([!-/:-@[-`{-~])/g, '$1');
+}
+
+/** A seeded generator, so every run tests the same strings. */
+function rng(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 2 ** 32;
+  };
+}
+
+const ALPHABET = [
+  ...'ab <>&[]()!`\\|*_#-:/.;"\'=~{}',
+  '\n',
+  '\u001b',
+  '<!--',
+  '![x](u)',
+  '[r]: u',
+  '&lt;',
+  '\\<',
+  '``',
+];
+function hostileStrings(n, seed = 126) {
+  const next = rng(seed);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    let s = '';
+    const len = Math.floor(next() * 24);
+    for (let k = 0; k < len; k++) s += ALPHABET[Math.floor(next() * ALPHABET.length)];
+    out.push(s);
+  }
+  return out;
+}
+
+describe('fix-brief escaping: properties over 3000 generated hostile strings', () => {
+  const inputs = [
+    ...hostileStrings(3000),
+    '![b](https://attacker.example/x.png)',
+    '![x][r]',
+    '[r]: https://attacker.example/p.png',
+    '<img src="https://attacker.example/p.png">',
+    '<!-- hide',
+    '\\<img src=x>',
+    '&lt;img src=x&gt;',
+    'x`<!--',
+    '<https://attacker.example>',
+    'a | b \\| c',
+  ];
+
+  it('line() round-trips: removing the escapes gives back exactly the one-line text', () => {
+    for (const s of inputs) assert.equal(unescapeMarkdown(line(s)), code(s), JSON.stringify(s));
+  });
+
+  it('line() leaves no active character unescaped: each sits behind an odd run of backslashes', () => {
+    for (const s of inputs) {
+      const out = line(s);
+      let i = 0;
+      while (i < out.length) {
+        if (out[i] === '\\') {
+          // An escape pair: the backslash plus the character it escapes.
+          assert.ok(i + 1 < out.length && ACTIVE.has(out[i + 1]), `lone backslash in ${JSON.stringify(out)}`);
+          i += 2;
+          continue;
+        }
+        assert.ok(!ACTIVE.has(out[i]), `unescaped ${out[i]} in ${JSON.stringify(out)} from ${JSON.stringify(s)}`);
+        i++;
+      }
+    }
+  });
+
+  it('codeSpan() never lets a backtick in the value close the span, and keeps the value as written', () => {
+    for (const s of inputs) {
+      const span = codeSpan(s);
+      const fence = span.match(/^`+/)[0];
+      assert.ok(span.endsWith(fence), span);
+      let inner = span.slice(fence.length, span.length - fence.length);
+      // No run of exactly the fence's length inside (that is what would close it).
+      for (const run of inner.match(/`+/g) ?? []) assert.notEqual(run.length, fence.length, span);
+      // CommonMark strips one space each side when both are present and it is not all spaces.
+      if (/^ .* $/.test(inner) && inner.trim() !== '') inner = inner.slice(1, -1);
+      assert.equal(inner, code(s), JSON.stringify(s));
+    }
+  });
+});
+
+describe('run-record: what counts as a run under runs/', () => {
+  it('a symlink is never a run, even one pointing at a real run dir', () => {
+    const auditDir = tmp();
+    const componentDir = join(auditDir, 'mud-fx');
+    const real = runDirAt(join(auditDir, 'mud-other'), '2026-09-22T10-00-00-000Z-0');
+    mkdirSync(join(componentDir, 'runs'), { recursive: true });
+    symlinkSync(real, join(componentDir, 'runs', 'zzz-link'));
+    runDirAt(componentDir, '2026-09-23T10-00-00-000Z-1');
+    assert.deepEqual(listRunNames(componentDir), ['2026-09-23T10-00-00-000Z-1']);
+  });
+
+  it(
+    'a run dir whose envelope cannot be checked is kept and named, and one such entry never fails the listing',
+    { skip: process.getuid?.() === 0 ? 'root ignores directory permissions' : false },
+    () => {
+      const auditDir = tmp();
+      const componentDir = join(auditDir, 'mud-fx');
+      const locked = runDirAt(componentDir, '2026-09-22T10-00-00-000Z-0');
+      runDirAt(componentDir, '2026-09-23T10-00-00-000Z-1');
+      chmodSync(locked, 0o000);
+      try {
+        assert.deepEqual(listRunNames(componentDir), ['2026-09-22T10-00-00-000Z-0', '2026-09-23T10-00-00-000Z-1']);
+        const found = findPreviousRecord(componentDir, '2026-09-23T10-00-00-000Z-1', 'standard');
+        assert.equal(found.unusable.run, '2026-09-22T10-00-00-000Z-0');
+      } finally {
+        chmodSync(locked, 0o755);
+      }
+    },
+  );
 });

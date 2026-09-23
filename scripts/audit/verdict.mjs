@@ -52,7 +52,7 @@ import {
   VERDICT_SCHEMA_VERSION,
   schemaMajor,
 } from './lib/json-output.mjs';
-import { REPORT_END, line, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
+import { REPORT_END, code, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
 import { buildRunRecord, compareRecords, findPreviousRecord, listRunNames } from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
@@ -591,7 +591,12 @@ function isNewestRun(componentDir, run) {
   // then could overwrite a baseline a later run already compared against, so
   // the answer fails closed. A missing runs/ is [] (listRunNames), not a failure.
   try {
-    return listRunNames(componentDir).every(n => n <= run);
+    const newer = listRunNames(componentDir).filter(n => n > run);
+    if (newer.length === 0) return true;
+    // Expected for a --run-dir re-render of an older run; named so an
+    // unexpected entry (e.g. an unreadable folder sorting last) is findable.
+    process.stderr.write(`${TOOL}: record.json not written for ${run}: newer run ${newer.at(-1)} exists\n`);
+    return false;
   } catch (err) {
     process.stderr.write(
       `${TOOL}: record.json not written for ${run}: runs/ cannot be listed: ${err.code ?? err.message}\n`,
@@ -770,7 +775,7 @@ export function printSummary(summary, json, auditDir = null) {
   for (const c of summary.components) {
     // The headline carries manifest text (a design-none reason, a skip reason),
     // so it gets the same control-character neutralising as the block below.
-    process.stdout.write(`${c.component}: ${line(c.headline)} — audit/${c.component}/fix-brief.md\n`);
+    process.stdout.write(`${c.component}: ${code(c.headline)} — audit/${c.component}/fix-brief.md\n`);
     if (!auditDir) continue;
     try {
       const block = readReportBlock(auditDir, c.component);

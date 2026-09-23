@@ -104,7 +104,7 @@ describe('fix-brief: one shape per state', () => {
       log: 'results[id="02"].error',
       verify: 'v',
     });
-    assert.match(block, /^- log: results\[id="02"\]\.error$/m);
+    assert.match(block, /^- log: results\\\[id="02"\\\]\.error$/m);
     assert.doesNotMatch(block, /prerequisite/);
   });
 
