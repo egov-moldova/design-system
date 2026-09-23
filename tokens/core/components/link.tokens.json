@@ -114,6 +114,7 @@
       }
     },
     "focus": {
+      "$comment": "Figma's Focus Ring/Small (57:465) lists 0 0 0 3px #3379DB over 0 0 0 1px #FFF, and renders a 1px white halo with the blue band ending 3px out. ringWidth is therefore the total outer spread, not an amount added to ringOffset — the exported node bleeds 3px on every side.",
       "ringColor": {
         "$value": "{color.background.brand.focus-ring}",
         "$type": "color"

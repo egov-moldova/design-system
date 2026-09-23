@@ -204,20 +204,26 @@
   color: var(--_label-visited);
 }
 
-/* ---------- Focus ring (dual halo, 3px brand + 1px white spread per Figma) ---------- */
+/* ---------- Focus ring ----------
+ * Figma's Focus Ring/Small lists two stacked spreads, 3px #3379DB over 1px #FFF
+ * (57:465), and renders them as a 1px white halo with the blue band ending 3px
+ * out — not 1px + 3px. In CSS the order reverses and the ring width is the
+ * total outer spread, which the exported node confirms: it bleeds 3px on every
+ * side of the 35x28 label box.
+ */
 
 .control:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 var(--link-focus-ring-offset) var(--link-focus-ring-offset-color),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
+    0 0 0 var(--link-focus-ring-width) var(--link-focus-ring-color);
 }
 
 /* On dark/white variant, invert the inner halo so the focus ring still reads */
 :host([variant='white']) .control:focus-visible {
   box-shadow:
     0 0 0 var(--link-focus-ring-offset) var(--color-background-base-inverse-default),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
+    0 0 0 var(--link-focus-ring-width) var(--link-focus-ring-color);
 }
 
 /* ---------- External-link indicator ---------- */
