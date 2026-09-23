@@ -20,9 +20,11 @@ function statusOf(run) {
   return run.status;
 }
 
+// No `--config`: resolved from ROOT exactly as `.husky/commit-msg` resolves it, so a
+// second config file that shadows commitlint.config.mjs changes what this suite tests.
 function commitlint(message) {
   return statusOf(
-    spawnSync(process.execPath, [COMMITLINT, '--config', path.join(ROOT, 'commitlint.config.mjs')], {
+    spawnSync(process.execPath, [COMMITLINT], {
       cwd: ROOT,
       input: message,
       encoding: 'utf8',
