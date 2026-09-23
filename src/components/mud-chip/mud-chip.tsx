@@ -93,6 +93,14 @@ export class MudChip {
    */
   @Prop({ reflect: true }) removable: boolean = false;
 
+  /**
+   * Accessible label for the remove button. The chip's own text is appended to
+   * it, so a chip reading "Ion Popescu" gets "Elimină Ion Popescu". Romanian by
+   * default, like every other user-facing string in the system.
+   * @default 'Elimină'
+   */
+  @Prop({ attribute: 'remove-label' }) removeLabel: string = 'Elimină';
+
   @State() private hasIconStart: boolean = false;
   @State() private hasAvatar: boolean = false;
   @State() private hasLabelSlot: boolean = false;
@@ -280,7 +288,7 @@ export class MudChip {
           <button
             class="remove"
             type="button"
-            aria-label={`Remove ${labelText || 'chip'}`}
+            aria-label={labelText ? `${this.removeLabel} ${labelText}` : this.removeLabel}
             disabled={this.disabled}
             tabindex={this.disabled ? -1 : 0}
             onClick={this.handleRemoveClick}
