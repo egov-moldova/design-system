@@ -23,9 +23,11 @@ import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } fro
  *               Falls back to the `label` prop when empty.
  * @slot icon-start - Optional leading visual: `mud-icon` or any 20×20 element.
  *               Inherits text color via `currentColor`.
- * @slot avatar - Optional leading avatar (`mud-avatar` or `<img>`), rendered
- *               flush to the leading edge and sized to ~chip height. Best for
- *               `type="input"` person/entity chips.
+ * @slot avatar - Optional leading avatar (`mud-avatar size="xs"` or `<img>`).
+ *               Figma 203:2082 gives this chip its own surface — white, outlined
+ *               — with a 24px avatar inset 6px, so pass the `xs` rung: the slot
+ *               pins the box to 24px, but an avatar built for a larger rung
+ *               keeps that rung's typography inside it.
  */
 @Component({
   tag: 'mud-chip',
@@ -63,8 +65,9 @@ export class MudChip {
 
   /**
    * Optional numeric badge rendered after the label (e.g. a result count).
-   * The badge colour inverts with the chip surface so it stays legible in both
-   * the default and selected states. Omit (or pass a non-number) to hide it.
+   * It is the design system's light counter badge — white pill, dark digits —
+   * on both the default and the selected chip, which is what keeps it legible
+   * on either surface. Omit (or pass a non-number) to hide it.
    */
   @Prop() count?: number;
 
@@ -284,16 +287,13 @@ export class MudChip {
             onKeyDown={this.handleRemoveKeyDown}
           >
             {/*
-              Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG): the
-              chip's × glyph renders at 8–10px (half the `--_remove-icon-size`
-              token). `mud-icon` ships `cross-small` only at 16/20/24, so
-              substituting it would enlarge the glyph by 60–100% and break
-              the design contract. Same rationale as mud-checkbox's check/dash.
+              Figma 203:2078 is the 20/cross-small asset at 20x20, and the circle
+              that appears behind it on hover (205:2476) hugs that same 20px box.
+              The glyph inside `cross-small` covers 40% of its frame, so the icon
+              set draws the same ~8px × the chip has always shown.
             */}
             <span class="remove-icon" aria-hidden="true">
-              <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <path d="M1 1 L9 9 M9 1 L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-              </svg>
+              <mud-icon name="cross-small" size={this.size === 'sm' ? 16 : 20}></mud-icon>
             </span>
           </button>
         ) : null}
