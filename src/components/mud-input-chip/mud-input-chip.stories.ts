@@ -44,7 +44,7 @@ const docsSourceDefault = (args: InputChipArgs) => {
 };
 
 const meta: Meta<InputChipArgs> = {
-  title: 'Atoms/Input/Chip',
+  title: 'Components/Input/Chip',
   component: 'mud-input-chip',
   argTypes: {
     variant: {

@@ -58,7 +58,7 @@ const docsSourceDefault = (args: SwitchArgs) =>
     .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<SwitchArgs> = {
-  title: 'Atoms/Switch',
+  title: 'Components/Switch',
   component: 'mud-switch',
   argTypes: {
     checked: {

@@ -65,7 +65,7 @@ const docsSourceDefault = (args: InputArgs) => {
 };
 
 const meta: Meta<InputArgs> = {
-  title: 'Atoms/Input/Text',
+  title: 'Components/Input/Text',
   component: 'mud-text-input',
   argTypes: {
     variant: {

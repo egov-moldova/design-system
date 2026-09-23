@@ -73,7 +73,7 @@ const renderTag = (args: TagArgs) => {
 };
 
 const meta: Meta<TagArgs> = {
-  title: 'Atoms/Tag',
+  title: 'Components/Tag',
   component: 'mud-tag',
   parameters: {
     layout: 'centered',

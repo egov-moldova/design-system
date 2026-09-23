@@ -67,7 +67,7 @@ const docsSourceDefault = (args: TextareaArgs) => {
 };
 
 const meta: Meta<TextareaArgs> = {
-  title: 'Atoms/Input/Textarea',
+  title: 'Components/Input/Textarea',
   component: 'mud-textarea',
   argTypes: {
     variant: {

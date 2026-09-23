@@ -57,7 +57,7 @@ const renderControlHtml = (
 };
 
 const meta: Meta<StoryArgs> = {
-  title: 'Atoms/Segmented Control',
+  title: 'Components/Segmented Control',
   component: 'mud-segmented-control',
   argTypes: {
     size: {

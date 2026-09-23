@@ -25,7 +25,7 @@ const gridCellStyle =
   'display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8); padding: var(--spacing-12); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-4); min-width: 80px;';
 
 const meta: Meta<IconArgs> = {
-  title: 'Atoms/Icon',
+  title: 'Components/Icon',
   component: 'mud-icon',
   argTypes: {
     name: {

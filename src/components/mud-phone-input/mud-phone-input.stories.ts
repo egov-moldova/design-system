@@ -64,7 +64,7 @@ const docsSourceDefault = (args: PhoneInputArgs) => {
 };
 
 const meta: Meta<PhoneInputArgs> = {
-  title: 'Atoms/Input/Phone',
+  title: 'Components/Input/Phone',
   component: 'mud-phone-input',
   argTypes: {
     variant: {

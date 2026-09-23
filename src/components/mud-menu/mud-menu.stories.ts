@@ -83,7 +83,7 @@ const docsSourceDefault = (args: MenuArgs) => {
 // ---------------------------------------------------------------------------
 
 const meta: Meta<MenuArgs> = {
-  title: 'Molecules/Menu',
+  title: 'Components/Menu',
   component: 'mud-menu',
   subcomponents: { 'mud-menu-item': 'mud-menu-item' },
   argTypes: {

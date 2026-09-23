@@ -65,7 +65,7 @@ const buttonStyle =
   'font-family: var(--font-family-primary); font-size: 14px; font-weight: 500; padding: var(--spacing-8) var(--spacing-12); border-radius: var(--border-radius-6); border: 1px solid var(--color-border-base-default); background: var(--color-background-base-default); color: var(--color-text-base-default); cursor: pointer;';
 
 const meta: Meta<TooltipArgs> = {
-  title: 'Atoms/Tooltip',
+  title: 'Components/Tooltip',
   component: 'mud-tooltip',
   parameters: {
     layout: 'centered',

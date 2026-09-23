@@ -421,7 +421,7 @@ const docsSourceEdgeCases = /*html*/ `<!-- Long label inside body copy: wraps as
 // Meta
 // ---------------------------------------------------------------------------
 const meta: Meta<LinkArgs> = {
-  title: 'Atoms/Link',
+  title: 'Components/Link',
   component: 'mud-link',
   argTypes: {
     variant: {

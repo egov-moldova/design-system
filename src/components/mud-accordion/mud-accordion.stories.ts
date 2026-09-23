@@ -500,7 +500,7 @@ const docsSourceEdgeCases = /*html*/ `<!-- Single item -->
 </mud-accordion>`;
 
 const meta: Meta<AccordionArgs> = {
-  title: 'Molecules/Accordion',
+  title: 'Components/Accordion',
   component: 'mud-accordion',
   argTypes: {
     mode: {

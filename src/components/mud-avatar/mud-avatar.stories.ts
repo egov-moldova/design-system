@@ -342,7 +342,7 @@ const docsSourceRomanianNames = /*html*/ `<mud-avatar type="photo" src="…" nam
 // ---------------------------------------------------------------------------
 
 const meta: Meta<AvatarArgs> = {
-  title: 'Atoms/Avatar',
+  title: 'Components/Avatar',
   component: 'mud-avatar',
   argTypes: {
     type: {

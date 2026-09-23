@@ -30,7 +30,7 @@ const captionStyle =
   'font-family: var(--font-family-primary); font-size: 12px; font-weight: 500; color: var(--color-text-base-secondary); margin: 0;';
 
 const meta: Meta<ToastArgs> = {
-  title: 'Atoms/Toast',
+  title: 'Components/Toast',
   component: 'mud-toast',
   parameters: {
     layout: 'padded',

@@ -59,7 +59,7 @@ const defaultTabs: TabDescriptor[] = [
 ];
 
 const meta: Meta<StoryArgs> = {
-  title: 'Molecules/Tabs',
+  title: 'Components/Tabs',
   component: 'mud-tabs',
   subcomponents: { 'mud-tab': 'mud-tab' },
   argTypes: {

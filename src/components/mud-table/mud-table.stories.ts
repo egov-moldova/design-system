@@ -117,7 +117,7 @@ const renderTable = (
 // ---------------------------------------------------------------------------
 
 const meta: Meta<StoryArgs> = {
-  title: 'Molecules/Table',
+  title: 'Components/Table',
   component: 'mud-table',
   argTypes: {
     headerStyle: {

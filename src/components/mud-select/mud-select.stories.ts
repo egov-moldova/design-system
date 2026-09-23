@@ -81,7 +81,7 @@ const docsSourceDefault = (args: SelectArgs) => {
 };
 
 const meta: Meta<SelectArgs> = {
-  title: 'Atoms/Input/Select',
+  title: 'Components/Input/Select',
   component: 'mud-select',
   argTypes: {
     variant: {

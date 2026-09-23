@@ -75,7 +75,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
 };
 
 const meta: Meta<DateInputArgs> = {
-  title: 'Atoms/Input/Date',
+  title: 'Components/Input/Date',
   component: 'mud-date-input',
   argTypes: {
     variant: {

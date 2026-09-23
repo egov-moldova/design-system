@@ -73,7 +73,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
 };
 
 const meta: Meta<NumericInputArgs> = {
-  title: 'Atoms/Input/Numeric',
+  title: 'Components/Input/Numeric',
   component: 'mud-numeric-input',
   argTypes: {
     variant: {

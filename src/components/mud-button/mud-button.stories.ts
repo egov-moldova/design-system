@@ -572,7 +572,7 @@ const renderReducedMotion = () => /*html*/ `
 `;
 
 const meta: Meta<ButtonArgs> = {
-  title: 'Atoms/Button',
+  title: 'Components/Button',
   component: 'mud-button',
   argTypes: {
     variant: {

@@ -85,7 +85,7 @@ const docsSource = (args: CheckboxArgs) =>
     .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<CheckboxArgs> = {
-  title: 'Atoms/Checkbox',
+  title: 'Components/Checkbox',
   component: 'mud-checkbox',
   argTypes: {
     size: {
