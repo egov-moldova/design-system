@@ -1,6 +1,6 @@
 # Finish the Storybook `Components` rename
 
-**Reviewed:** none
+**Reviewed:** preflight d5fa1cc · critic 634c9e1 · critic 4972ef0 — the 3-round cap ended the loop; round 3's two above-bar findings are folded into this revision and have had no round of their own, pending the owner's go
 
 **Executor**: Sonnet 5 · medium
 
@@ -65,9 +65,11 @@ Every item issue #144 lists, with the task that closes it or the disposition thi
 | 5. Test fixtures and doc comments | Task 5 (fixtures), Task 4 (doc comments in `scripts/audit/**`) |
 | "Decide, don't sweep": what stays | Global constraints, second bullet |
 | "Decide, don't sweep": fate of `--atomic` | Task 3 — removed, decided 2026-09-24 |
-| Proposed guard: a static test over manifest ids | Task 1 |
-| Proposed guard, "optionally" — the harness names a missing story instead of `capture failed` | **Deferred, not in this PR.** It changes the harness's error path (behaviour, not a rename); #144's own text marks it optional. Follow-up issue, opened when this PR is ready |
-| Acceptance: the two `git grep` bars, scaffold output, guard exists and fails on a mutated id | Acceptance bar, rows 1-4 |
+| Proposed guard: a static test over manifest ids | Task 1. "Nearest real one": the guard's suggestion covers the old-prefix swap, the only rename shape known; a general nearest-match heuristic would be a guess about future renames, so it is not built |
+| Proposed guard, "optionally" — the harness names a missing story instead of `capture failed` | **Deferred, not in this PR.** It changes the harness's error path (behaviour, not a rename); #144's own text marks it optional. Follow-up issue, opened when this PR is ready; it should also make the three no-stories-file fallbacks return null rather than guess an id that cannot exist |
+| Acceptance: the two `git grep` bars, guard exists and fails on a mutated id | Acceptance bar, rows 1, 2 and 4 |
+| Acceptance: scaffolding a new story produces `title: 'Components/<Name>'` | Task 3's spec assertion `/title: 'Components\/Button'/`, run under bar row 5 (`yarn test:scripts`) |
+| Two more docs that give the title form wrongly (`Components/MudButton`), found by review | Task 6, not listed in the issue; same class as item 4 |
 | Acceptance: `yarn audit:component <fixed manifest>` captures states | Task 7 step 2 and the last acceptance row; reported under *Not verified* if the environment cannot run it |
 | Item 3, "open PRs that add manifests must also use `components-…` ids" | No task: nothing to change. Checked 2026-09-24 — #141, #142, #145 use ids that exist, #138 is merged; residual risk under *Not verified* |
 
@@ -75,10 +77,11 @@ Every item issue #144 lists, with the task that closes it or the disposition thi
 
 - Branch `fix/issue-144-components-rename-followup`, cut from `upstream/main`. PR base is
   `egov-moldova/design-system:main`; `origin` is the fork.
-- Open PRs #135, #137, #140, #141, #142 and #145 were listed on 2026-09-24. None edits a file named
-  in this plan (checked against their file lists); #135 and #137 edit only the archetype vocabulary
-  in `.claude/skills/optimize-prompt/**`, `_agents/verification-git.md` and
-  `_agents/anti-patterns.md`, which this plan leaves alone. Re-check before opening the PR.
+- Open PRs #135, #137, #140, #141, #142 and #145 were listed on 2026-09-24. None edits a line
+  this plan changes (checked against their file lists and hunks). #135 and #137 edit the archetype
+  vocabulary in `.claude/skills/optimize-prompt/**` and `_agents/anti-patterns.md`, which this
+  plan leaves alone, and #137 touches `_agents/verification-git.md` at `:117` and `:130`, clear of
+  the one line this plan edits there (`:70`). Re-check before opening the PR.
 - Atomic-design vocabulary is not stale and stays: the `atoms → molecules → organisms` build order,
   the `optimize-prompt` archetypes, `_agents/figma-extraction.md`, `_agents/pixel-perfect-qa.md`, the
   `--fast` routing table. Also untouched: `web-components/demo/manifest.ts` (a demo grouping),
@@ -337,7 +340,9 @@ describe('figma manifests: story ids resolve to real stories', () => {
   they test the derivation function; the ones asserting an `atoms-…` fallback id fail and are
   fixed in Task 5. Only `09` has a test that sees its fallback, so this run cannot prove `10` and
   `12`: run `git grep -nE '[[:punct:]](Atoms|Molecules|Organisms)/' -- scripts/audit` → prints
-  nothing. That grep, not a test, is what decides those two.
+  nothing, and `git grep -nE '(atoms|molecules|organisms)-[^[:space:]]*--' -- scripts/audit` →
+  prints nothing (the lowercase id-shaped doc comments). Those greps, not a test, decide those
+  two fallbacks and the comments.
 - [ ] **Step 3: Commit** `fix(audit): infer Components/<Name> when a component has no stories file`.
 
 ### Task 5: Test fixtures
@@ -352,7 +357,11 @@ describe('figma manifests: story ids resolve to real stories', () => {
   and so on. `story-id.spec.mjs:41-43` keeps its `InfoBox`/`InlineMessage` regression, re-titled.
   `10-contrast-pairs.spec.mjs:291` is a comment quoting `molecules-tabs--default`: re-word it to
   `components-tabs--default`.
-- [ ] **Step 2: Run** `yarn test:scripts` → PASS.
+- [ ] **Step 2: Run** `yarn test:scripts` → PASS, and both `git grep -nE '[[:punct:]](Atoms|Molecules|Organisms)/' -- scripts`
+  and `git grep -nE '(atoms|molecules|organisms)-[^[:space:]]*--' -- scripts` → print nothing. The
+  suite alone passes whether or not a fixture still says `Atoms/` — those tests exercise the
+  id-derivation function, and an old title derives an old id consistently — so the greps are what
+  decide this task.
 - [ ] **Step 3: Commit** `test(audit): use the Components category in story-id fixtures`.
 
 ### Task 6: Documentation that hands out story ids
@@ -363,6 +372,10 @@ describe('figma manifests: story ids resolve to real stories', () => {
   `.claude/commands/update-tokens.md:161`, `.claude/skills/pixel-perfect/SKILL.md:68`,
   `_agents/environment-commands.md:196`, `_agents/mcp-tools.md:231-232`,
   `_agents/pre-implementation.md:24`
+- Modify, found by review and the same class (a title convention documented wrongly):
+  `src/components/_agents/storybook-stories.md:64` and `_agents/verification-git.md:70` give
+  `Components/MudButton` as the title form, while the real titles carry no `Mud` prefix
+  (`Components/Button`, as `storybook-stories.md:241` already says). One line each.
 
 - [ ] **Step 1: Rewrite each id** to `components-<name>--default` **without the `mud-` prefix** (the
   old `atoms-mud-<name>` form was already wrong: the id comes from the title, which has no `mud-`).
@@ -373,19 +386,24 @@ describe('figma manifests: story ids resolve to real stories', () => {
   → prints nothing. This widened form is the one that sees placeholders such as
   `atoms-<componentName>--default` and `atoms-mud-[name]--default`; the issue's own
   `[a-z0-9-]+` form cannot match them (7 of these 11 lines), and `yarn docs:check` has no story-id
-  rule, so without this grep nothing would notice a half-done task. Then `yarn docs:check` → PASS
-  (validates agent/command/skill docs).
+  rule, so without this grep nothing would notice a half-done task. Also
+  `git grep -n "Components/Mud" -- . ':!.claude/plans'` → prints nothing. Then `yarn docs:check`
+  → PASS (validates agent/command/skill docs).
 - [ ] **Step 3: Commit** `docs: name the Components story ids in agent and command instructions`.
 
 ### Task 7: Close the acceptance bar
 
 - [ ] **Step 1: Run every bar command below**, each alone, exit status unmasked.
 - [ ] **Step 2: Runtime proof.** With Storybook built for this worktree, run
-  `yarn audit:component mud-badge --depth standard --json`. It passes only if check 11 lists every
-  state in `mud-badge`'s manifest, no finding carries the code `PIXEL-CAPTURE-FAILED`
-  (`scripts/audit/11-pixel-diff-states.mjs:281`) and no state has status `UNKNOWN`. A run in
-  which check 11 captured nothing (browser waived, `--no-figma`) does not pass. If the environment
-  cannot build Storybook, say so in the report — the static guard is then the only proof.
+  `yarn audit:component mud-badge --depth standard --json`. It judges capture, which is what a
+  stale story id breaks: it passes only if check 11 lists every state in `mud-badge`'s manifest
+  with a `screenshotPath`, and no finding carries the code `PIXEL-CAPTURE-FAILED`
+  (`scripts/audit/11-pixel-diff-states.mjs:281`). Status `UNKNOWN` with a `PIXEL-NO-REFERENCE`
+  finding (`:294-305`) is expected and does not fail the row: the Figma reference images live in
+  the git-ignored `.audit-figma/<component>/` and nothing at `standard` depth fetches them
+  (`scripts/audit/figma-refs.mjs` does, with `FIGMA_TOKEN`). A run in which check 11 captured
+  nothing (browser waived, `--no-figma`) does not pass. If the environment cannot build Storybook,
+  say so in the report — the static guard is then the only proof.
 
 ## Acceptance bar
 
@@ -401,9 +419,11 @@ describe('figma manifests: story ids resolve to real stories', () => {
 - `yarn test:scripts`, `yarn docs:check`, `yarn lint` pass.
 - `git diff --stat upstream/main...HEAD` names no file outside the Files lists above and this plan.
 - Runtime proof (Task 7 step 2): `yarn audit:component mud-badge --depth standard --json` lists
-  every `mud-badge` manifest state under check 11, with no `PIXEL-CAPTURE-FAILED` finding and no
-  `UNKNOWN` status. Where Storybook cannot be built in the environment, this row is reported as
-  not verified with the reason, and the guard is then the only evidence.
+  every `mud-badge` manifest state under check 11 with a `screenshotPath` and no
+  `PIXEL-CAPTURE-FAILED` finding; a missing Figma reference (`PIXEL-NO-REFERENCE`, status
+  `UNKNOWN`) is expected and does not fail it. Where Storybook cannot be built in the
+  environment, this row is reported as not verified with the reason, and the guard is then the
+  only evidence.
 
 ## Not verified
 
