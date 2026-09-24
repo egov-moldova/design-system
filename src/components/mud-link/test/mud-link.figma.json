@@ -335,6 +335,86 @@
           "note": "Figma 564:19476 paints the White label #FFFFFF and 564:19477 the underline in the same white. Out of the pixel diff on purpose: the Figma export is transparent around the glyphs and both images are flattened onto the page background, so white-on-white would compare two blank canvases and report a pass that means nothing. The colour is checked here instead."
         }
       ]
+    },
+    {
+      "name": "underline-none-lg",
+      "node": "661:7017",
+      "html": "<mud-link href=\"#\" size=\"lg\" underline=\"none\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "textDecorationLine": "none",
+            "color": "#0058D2",
+            "fontSize": "18px"
+          },
+          "note": "The Underline options section (661:6990) shows the set twice, labelled \"underline\" and \"underline-none\". 661:7017 is the second: the same Primary/Large component with the boolean property off, so the underline frame is not drawn and the label keeps #0058D2."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-lg",
+      "node": "661:7043",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"lg\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 2px halo around the 28px label box of 661:7043 — 28 + 2x2 = 32. The rendered gap above and below the label measures 2px, so the halo matches. Touch (40px, halo 6px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-md",
+      "node": "661:7047",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"md\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 4px halo around the 24px label box of 661:7047 — 24 + 2x4 = 32. The rendered gap above and below the label measures 4px, so the halo matches. Touch (40px, halo 8px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-sm",
+      "node": "661:7051",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"sm\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 6px halo around the 20px label box of 661:7051 — 20 + 2x6 = 32. The rendered gap above and below the label measures 6px, so the halo matches. Touch (40px, halo 10px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-xs",
+      "node": "661:7055",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"xs\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 8px halo around the 16px label box of 661:7055 — 16 + 2x8 = 32. The rendered gap above and below the label measures 8px, so the halo matches. Touch (40px, halo 12px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
     }
   ]
 }
