@@ -94,8 +94,9 @@
     },
     "strict": {
       "label": {
+        "$comment": "hover matches Figma 564:19601 — Strict keeps #121212 on hover, exactly as Primary keeps #0058D2 (54:411); the affordance is the underline thickening to 1.5px, never a colour change. It used to lighten to text.base.secondary (#383838), which no node draws.",
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
-        "hover": { "$value": "{color.text.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.text.base.default}", "$type": "color" },
         "active": { "$value": "{color.text.base.default}", "$type": "color" },
         "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
       }
