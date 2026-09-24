@@ -8,7 +8,7 @@
  *
  * Story ID convention:
  *   `${kebab(titleSegment1)}-${kebab(titleSegment2)}--${kebab(storyExportName)}`
- *   where title comes from the default export's `title` field (`Atoms/Button`).
+ *   where title comes from the default export's `title` field (`Components/Button`).
  *
  * Replaces AI work in:
  *   - `.claude/agents/pixel-perfect-verifier.md` Step 2
@@ -156,7 +156,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
         code: 'STORY-NO-TITLE',
         file: fileRel,
         message: `Could not extract default export's "title" field — story IDs may be wrong.`,
-        fix: `Add { title: 'Atoms/${componentName?.replace(/^mud-/, '')}', component: '${componentName}', ... } to the default export.`,
+        fix: `Add { title: 'Components/${componentName?.replace(/^mud-/, '')}', component: '${componentName}', ... } to the default export.`,
       }),
     );
   }

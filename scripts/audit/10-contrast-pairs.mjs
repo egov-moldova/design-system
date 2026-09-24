@@ -39,7 +39,7 @@
  * Usage:
  *   yarn sp.dev.watch
  *   node scripts/audit/10-contrast-pairs.mjs mud-button --json
- *   node scripts/audit/10-contrast-pairs.mjs mud-text-input --story-id atoms-input--default --json
+ *   node scripts/audit/10-contrast-pairs.mjs mud-text-input --story-id components-input--default --json
  */
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
@@ -805,7 +805,7 @@ function pickDefaultStoryId(target) {
     const def = stories.find(s => /default/i.test(s.name)) ?? stories[0];
     return def?.storyId ?? null;
   }
-  return inferStoryId(`Atoms/${pascal(target.bare)}`, 'Default');
+  return inferStoryId(`Components/${pascal(target.bare)}`, 'Default');
 }
 
 function pascal(s) {
