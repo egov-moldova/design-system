@@ -303,6 +303,15 @@
     border-color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function);
 }
 
+/* The chevron side takes the smaller padding and the label side the larger one, so
+   Next mirrors Previous: Figma 186:781 pads Previous 0 16px 0 12px (chevron first),
+   186:776 pads Next 0 12px 0 16px (chevron last). The two tokens read as
+   chevron-side / label-side for Previous; Next swaps them. */
+.nav-next {
+  padding-inline-start: var(--_nav-pad-end);
+  padding-inline-end: var(--_nav-pad-start);
+}
+
 .nav-button:hover {
   background-color: var(--pagination-nav-background-hover);
 }
