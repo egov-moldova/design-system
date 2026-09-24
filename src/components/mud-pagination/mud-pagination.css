@@ -211,13 +211,20 @@
   /* Cap a large collapsed range (e.g. page 1 of 40 collapses ~34 pages) to a
      fixed height and scroll the surplus inside, instead of letting the menu run
      off the viewport. ~7.5 rows stay visible so the cut-off row hints at more. */
-  max-block-size: var(--pagination-overflow-menu-max-height);
+  max-block-size: var(--_overflow-menu-max-block-size, var(--pagination-overflow-menu-max-height));
   overflow-y: auto;
   overscroll-behavior: contain;
   background-color: var(--pagination-overflow-menu-background);
   border: var(--pagination-overflow-menu-border-width) solid var(--pagination-overflow-menu-border-color);
   border-radius: var(--pagination-overflow-menu-border-radius);
   box-shadow: var(--pagination-overflow-menu-shadow);
+}
+
+/* Flipped above the trigger when the viewport has no room below
+   (measureOverflow). The cap above then tracks the room above instead. */
+.overflow-item.is-drop-up .overflow-menu {
+  top: auto;
+  bottom: calc(100% + var(--pagination-overflow-menu-offset));
 }
 
 .overflow-menu li {
