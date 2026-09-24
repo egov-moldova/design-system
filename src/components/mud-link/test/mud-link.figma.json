@@ -14,15 +14,15 @@
       },
       {
         "node": "54:401",
-        "reason": "Primary/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Primary/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19442",
-        "reason": "White/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "White/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19564",
-        "reason": "Strict/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Strict/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "255:6491",
@@ -58,15 +58,15 @@
       },
       {
         "node": "54:404",
-        "reason": "Primary/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Primary/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19454",
-        "reason": "White/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "White/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19576",
-        "reason": "Strict/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Strict/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "255:6494",
@@ -102,15 +102,15 @@
       },
       {
         "node": "54:407",
-        "reason": "Primary/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Primary/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19466",
-        "reason": "White/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "White/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "564:19588",
-        "reason": "Strict/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
+        "reason": "Strict/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
       },
       {
         "node": "255:6497",
@@ -135,14 +135,6 @@
       {
         "node": "564:19594",
         "reason": "Strict/16: Medium/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
-      },
-      {
-        "node": "564:19478",
-        "reason": "White/18: Large/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
-      },
-      {
-        "node": "564:19600",
-        "reason": "Strict/18: Large/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state, and hover-lg (54:410) pins it. Nothing about it depends on Style or Size."
       },
       {
         "node": "255:6500",
@@ -413,6 +405,48 @@
             "boxHeight": "32px"
           },
           "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 8px halo around the 16px label box of 661:7055 — 16 + 2x8 = 32. The rendered gap above and below the label measures 8px, so the halo matches. Touch (40px, halo 12px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "strict-hover-lg",
+      "node": "564:19600",
+      "pixel": false,
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"strict\">Link</mud-link>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#121212",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1.5px"
+          },
+          "note": "Figma 564:19601 keeps the Strict label at #121212 on hover — the same ink as at rest (564:19598) — and 564:19602 thickens the underline to 1.5px. The colour is not part of the hover affordance in any Style: Primary keeps #0058D2 the same way."
+        }
+      ]
+    },
+    {
+      "name": "white-hover-lg",
+      "node": "564:19478",
+      "pixel": false,
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"white\">Link</mud-link>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#FFFFFF",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1.5px"
+          },
+          "note": "Figma 564:19479 keeps the White label at #FFFFFF on hover, 564:19480 thickens the underline to 1.5px. Out of the pixel diff for the same reason as white-lg: the export is transparent around white glyphs and both images flatten onto the page background."
         }
       ]
     }
