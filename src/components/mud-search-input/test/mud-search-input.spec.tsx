@@ -113,9 +113,14 @@ describe('mud-search-input', () => {
       expect(assistive?.textContent).toContain('hint');
     });
 
-    it('does not render an assistive row when neither helper-text nor helper slot is present', async () => {
+    it('keeps the assistive row out of sight when neither helper-text nor helper slot is present', async () => {
       const { root } = await render(<mud-search-input label="x"></mud-search-input>);
-      expect(queryAssistive(root)).toBeNull();
+
+      // The row stays in the tree the way the label row does, so the slot that
+      // detects slotted helper content is there before that content arrives;
+      // `has-helper` is what makes it visible.
+      expect(queryAssistive(root)?.textContent?.trim()).toBe('');
+      expect(root?.classList.contains('has-helper')).toBe(false);
     });
   });
 
@@ -543,6 +548,58 @@ describe('mud-search-input', () => {
       const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
       expect(lastCall?.[0]).toEqual({ valueMissing: true });
       spy.mockRestore();
+    });
+
+    it('restores the value the surrounding form started with on reset', async () => {
+      const { root } = await render(<mud-search-input label="x" value="buletin"></mud-search-input>);
+      const host = root as unknown as { value: string; formResetCallback(): void };
+
+      host.value = 'pașaport';
+      await flush();
+      host.formResetCallback();
+      await flush();
+
+      expect(host.value).toBe('buletin');
+    });
+
+    it('notices content arriving in the label and helper slots', async () => {
+      const { root } = await render(
+        <mud-search-input>
+          <span slot="label">Caută</span>
+          <span slot="helper">Introduceți cel puțin trei litere</span>
+        </mud-search-input>,
+      );
+
+      for (const name of ['label', 'helper']) {
+        const slot = root?.shadowRoot?.querySelector(`slot[name="${name}"]`) as HTMLSlotElement | null;
+        // mock-doc slots do not assign nodes, so the handler is driven directly
+        // with a slot that reports the light-DOM content the fixture provides.
+        const assigned = Array.from(root?.querySelectorAll(`[slot="${name}"]`) ?? []);
+        if (slot) slot.assignedNodes = () => assigned as Node[];
+        slot?.dispatchEvent(new Event('slotchange'));
+      }
+      await flush();
+
+      expect(queryLabel(root)).toBeTruthy();
+      expect(queryAssistive(root)).toBeTruthy();
+    });
+
+    it('takes the value back from a restored form state', async () => {
+      const { root } = await render(<mud-search-input label="x"></mud-search-input>);
+      const host = root as unknown as {
+        value: string;
+        formStateRestoreCallback(state: string | File | FormData | null): void;
+      };
+
+      host.formStateRestoreCallback('certificat');
+      await flush();
+      expect(host.value).toBe('certificat');
+
+      // A non-string state is what the browser hands back for a File or a
+      // FormData entry; the field has no way to read one, so it keeps what it has.
+      host.formStateRestoreCallback(null);
+      await flush();
+      expect(host.value).toBe('certificat');
     });
   });
 });

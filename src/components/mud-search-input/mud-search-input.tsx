@@ -193,35 +193,6 @@ export class MudSearchInput {
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
 
-  connectedCallback() {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-  }
-
-  disconnectedCallback() {
-    this.stopAriaLabel?.();
-  }
-
-  componentWillLoad() {
-    this.initialValue = this.value;
-    this.internals.setFormValue(this.value, this.value);
-    this.syncValidity();
-  }
-
-  /**
-   * Reflects required + value into `ElementInternals` so the host participates
-   * in native form validation. Anchored on the native input so a11y focus
-   * lands on the visible control.
-   */
-  private syncValidity() {
-    if (!this.internals) return;
-    const value = (this.value ?? '').trim();
-    if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
-      return;
-    }
-    this.internals.setValidity({});
-  }
-
   @Watch('shape')
   validateShape(next: SearchInputShape) {
     if (!SEARCH_INPUT_SHAPES.includes(next)) {
@@ -258,6 +229,25 @@ export class MudSearchInput {
     this.syncValidity();
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
+  componentWillLoad() {
+    this.initialValue = this.value;
+    this.internals.setFormValue(this.value, this.value);
+    this.syncValidity();
+  }
+
+  /**
+   * Reflects required + value into `ElementInternals` so the host participates
+   * in native form validation. Anchored on the native input so a11y focus
+   * lands on the visible control.
+   */
   formDisabledCallback(disabled: boolean) {
     this.fieldsetDisabled = disabled;
   }
@@ -274,6 +264,16 @@ export class MudSearchInput {
       this.internals.setFormValue(state, state);
       this.syncValidity();
     }
+  }
+
+  private syncValidity() {
+    if (!this.internals) return;
+    const value = (this.value ?? '').trim();
+    if (this.required && value.length === 0) {
+      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
+      return;
+    }
+    this.internals.setValidity({});
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -403,6 +403,7 @@ export class MudSearchInput {
       'has-submit-button': this.withButton,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
+      'has-helper': this.hasHelperMessage(),
       'has-value': this.value !== '',
       'has-icon-end-slot': this.hasIconEndSlot,
     };
@@ -496,14 +497,19 @@ export class MudSearchInput {
           ) : null}
         </div>
 
-        {this.hasHelperMessage() ? (
-          <div class="assistive assistive-helper" id={this.helperId} part="helper">
-            <span class="assistive-text">
-              {this.hasHelperSlot ? null : helperText}
-              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
-            </span>
-          </div>
-        ) : null}
+        {/*
+          The row is always rendered and hidden by CSS when it carries nothing,
+          the way the label row is. Gating it on `hasHelperMessage()` would put
+          the slot that detects slotted content inside the block that content is
+          supposed to open — a helper passed only through the slot could never
+          show itself.
+        */}
+        <div class="assistive assistive-helper" id={this.helperId} part="helper">
+          <span class="assistive-text">
+            {this.hasHelperSlot ? null : helperText}
+            <slot name="helper" onSlotchange={this.onHelperSlotChange} />
+          </span>
+        </div>
       </Host>
     );
   }
