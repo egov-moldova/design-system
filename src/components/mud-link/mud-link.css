@@ -106,8 +106,12 @@
  */
 
 :host([standalone]) .control {
+  /* The minimum is the whole mechanism: Figma's Target Sizes section (661:7040)
+     marks a 32px target on every rung, so the box grows to 32px and the flex
+     centring places the label inside it. Padding on top of the minimum would
+     add to the tallest rung instead of bringing the shortest one up — with 4px
+     of it, Large came out 36px against the 32px the section specifies. */
   min-block-size: var(--link-container-min-height-pointer);
-  padding-block: var(--spacing-4);
 }
 
 /* Touch device: bigger target */
