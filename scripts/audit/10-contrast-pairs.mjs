@@ -39,7 +39,7 @@
  * Usage:
  *   yarn sp.dev.watch
  *   node scripts/audit/10-contrast-pairs.mjs mud-button --json
- *   node scripts/audit/10-contrast-pairs.mjs mud-text-input --story-id components-input--default --json
+ *   node scripts/audit/10-contrast-pairs.mjs mud-text-input --story-id components-input-text--default --json
  */
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';

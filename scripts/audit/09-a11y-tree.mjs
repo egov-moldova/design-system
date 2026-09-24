@@ -533,8 +533,8 @@ export async function walkTabOrder(page, componentName, expectedStops) {
       // The census aggregates every instance, so the walk must too — using
       // only the FIRST match here made focus look like it had "left the
       // component" the moment it reached the second instance, ending the
-      // walk one stop early (live Storybook run, mud-button
-      // components-button--form-submit, 2026-09-22).
+      // walk one stop early (live Storybook run, mud-button's
+      // form-submit story, 2026-09-22).
       const hosts = Array.from(document.querySelectorAll(name));
       const deepActiveElement = root => {
         let el = root.activeElement;

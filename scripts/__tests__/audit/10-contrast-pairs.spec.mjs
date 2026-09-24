@@ -288,7 +288,7 @@ describe('10-contrast-pairs: buildPair', () => {
   });
 
   it('scores a transparent element against the backdrop, not against transparency', () => {
-    // Issue #49: measured on components-tabs--default, the selected tab is
+    // Issue #49: measured on the Tabs default story, the selected tab is
     // rgb(0, 88, 210) on the white story canvas — 6.31:1, which passes AA.
     // Scoring it against its own rgba(0, 0, 0, 0) reported 3.33:1 and failed.
     const pair = buildPair({

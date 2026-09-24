@@ -28,6 +28,8 @@ const CASES = [
   ['Components/TextInput', 'Default'],
   ['Components/Tooltip', 'AllPlacements'],
   ['Components/Modal', 'CoverageGuard'],
+  ['Components/Date Picker', 'Default'],
+  ['Components/Input/Date', 'Default'],
 ];
 
 describe('story ids: the audit navigates to what Storybook serves', () => {
@@ -41,6 +43,11 @@ describe('story ids: the audit navigates to what Storybook serves', () => {
     // The exact regression: `components-info-box--default` is the id that did not exist.
     assert.equal(storyIdFor('Components/InfoBox', 'Default'), 'components-infobox--default');
     assert.equal(storyIdFor('Components/InlineMessage', 'Default'), 'components-inlinemessage--default');
+  });
+
+  it('a spaced or nested title is slugged into one id, the shapes 17 real titles use', () => {
+    assert.equal(storyIdFor('Components/Date Picker', 'Default'), 'components-date-picker--default');
+    assert.equal(storyIdFor('Components/Input/Date', 'Default'), 'components-input-date--default');
   });
 
   it('a multi-word export name IS split into words — the two halves differ', () => {
