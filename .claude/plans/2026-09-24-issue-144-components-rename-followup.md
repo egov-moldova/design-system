@@ -69,6 +69,7 @@ Every item issue #144 lists, with the task that closes it or the disposition thi
 | Proposed guard, "optionally" — the harness names a missing story instead of `capture failed` | **Deferred, not in this PR.** It changes the harness's error path (behaviour, not a rename); #144's own text marks it optional. Follow-up issue, opened when this PR is ready |
 | Acceptance: the two `git grep` bars, scaffold output, guard exists and fails on a mutated id | Acceptance bar, rows 1-4 |
 | Acceptance: `yarn audit:component <fixed manifest>` captures states | Task 7 step 2 and the last acceptance row; reported under *Not verified* if the environment cannot run it |
+| Item 3, "open PRs that add manifests must also use `components-…` ids" | No task: nothing to change. Checked 2026-09-24 — #141, #142, #145 use ids that exist, #138 is merged; residual risk under *Not verified* |
 
 ## Global constraints
 
@@ -124,15 +125,28 @@ reuse-candidates:
 - Consumes: `analyzeStoriesFile(path, componentName)` from `scripts/audit/05-story-exports.mjs`
   (returns `{ stories: [{ storyId }] }`, `storyId` null when the title is missing) and the manifest
   shape from `scripts/audit/lib/figma-manifest.mjs` (`defaults.story`, `states[].story`).
-- Produces: `deadStoryIds(manifests, knownIds)` → `[{ manifest, where, id, suggestion }]`, exported
-  from the spec file only for its own tests.
+- Produces: nothing exported. `knownStoryIds`, `storyRefs` and `deadStoryIds` stay local to the
+  spec: a spec module calls `describe` at load, so importing it from anywhere else would run the
+  suite.
 
-- [ ] **Step 1: Write the spec.** A repo invariant in the style of
-  `scripts/__tests__/package-scripts-paths.spec.mjs`: a header comment naming the failure it
-  prevents (a title rename leaves every manifest id pointing at a page that no longer exists, and
-  the harness reports `capture failed`), then `describe`/`it` from `node:test`.
+- [ ] **Step 1: Write the spec** below verbatim — a repo invariant in the style of
+  `scripts/__tests__/package-scripts-paths.spec.mjs`. It was run against `upstream/main` at
+  53f3579 on 2026-09-24 and is Prettier- and ESLint-clean as written (the pre-commit hook runs both).
 
 ```js
+/**
+ * Repo invariant: every story id a Figma state manifest names resolves to a story that exists.
+ *
+ * A story id is derived from the story's `title`, so renaming a title leaves every manifest id
+ * pointing at a page that no longer exists. The audit harness then waits for a component that never
+ * renders and reports PIXEL-CAPTURE-FAILED for every state instead of "story not found" — see
+ * GitHub issue #144, where the `Components` rename left 17 manifests stale.
+ *
+ * The known-id set is computed from the stories files with the audit's own `analyzeStoriesFile`,
+ * so this test and the harness cannot disagree about what an id is. Known limit: that helper counts
+ * every exported const of a stories file as a story, so a non-story helper export would count as a
+ * known id (no stories file uses `includeStories`/`excludeStories` today).
+ */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -147,12 +161,13 @@ const STORIES_RE = /\.stories\.(js|jsx|ts|tsx)$/;
 const OLD_PREFIX_RE = /^(atoms|molecules|organisms)-/;
 
 const walk = dir =>
-  fs.readdirSync(dir, { recursive: true, withFileTypes: true })
+  fs
+    .readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter(e => e.isFile())
     .map(e => path.join(e.parentPath, e.name));
 
 /** Every story id Storybook will serve, computed from the stories files' titles. */
-export function knownStoryIds() {
+function knownStoryIds() {
   const ids = new Set();
   const untitled = [];
   for (const file of walk(COMPONENTS).filter(f => STORIES_RE.test(f))) {
@@ -164,7 +179,7 @@ export function knownStoryIds() {
 }
 
 /** `[where, id]` for every story id a manifest names. */
-export function storyRefs(manifest) {
+function storyRefs(manifest) {
   const refs = [];
   if (manifest.defaults?.story) refs.push(['defaults.story', manifest.defaults.story]);
   (manifest.states ?? []).forEach((s, i) => {
@@ -173,7 +188,7 @@ export function storyRefs(manifest) {
   return refs;
 }
 
-export function deadStoryIds(manifests, knownIds) {
+function deadStoryIds(manifests, knownIds) {
   const dead = [];
   for (const { file, manifest } of manifests) {
     for (const [where, id] of storyRefs(manifest)) {
@@ -202,7 +217,9 @@ describe('figma manifests: story ids resolve to real stories', () => {
     assert.deepEqual(
       dead,
       [],
-      dead.map(d => `${d.manifest} ${d.where}: "${d.id}"${d.suggestion ? ` — did you mean "${d.suggestion}"?` : ''}`).join('\n'),
+      dead
+        .map(d => `${d.manifest} ${d.where}: "${d.id}"${d.suggestion ? ` — did you mean "${d.suggestion}"?` : ''}`)
+        .join('\n'),
     );
   });
 
@@ -215,10 +232,13 @@ describe('figma manifests: story ids resolve to real stories', () => {
       [{ file: 'm.figma.json', manifest: { defaults: { story: old }, states: [{ story: 'components-badge--nope' }] } }],
       known,
     );
-    assert.deepEqual(dead.map(d => [d.where, d.id, d.suggestion]), [
-      ['defaults.story', old, 'components-badge--default'],
-      ['states[0].story', 'components-badge--nope', null],
-    ]);
+    assert.deepEqual(
+      dead.map(d => [d.where, d.id, d.suggestion]),
+      [
+        ['defaults.story', old, 'components-badge--default'],
+        ['states[0].story', 'components-badge--nope', null],
+      ],
+    );
   });
 });
 ```
@@ -241,16 +261,20 @@ describe('figma manifests: story ids resolve to real stories', () => {
   table,time-input,time-picker,toast}/test/*.figma.json`
 
 **Interfaces:**
-- Consumes: `deadStoryIds` output (each entry already carries its verified `suggestion`).
+- Consumes: `analyzeStoriesFile` from `scripts/audit/05-story-exports.mjs`, the same helper the
+  guard uses.
 - Produces: manifests whose every story id is in the known set.
 
-- [ ] **Step 1: Apply the rewrite from the guard's own suggestions**, not from a typed list. A
-  throwaway script (not committed) imports `knownStoryIds`, `deadStoryIds`, reads each manifest
-  file as text, and for each dead entry replaces the exact quoted `"<id>"` with
-  `"<suggestion>"`. It asserts per file that the text changed and that the count of replacements
-  equals the count of dead entries for that file; an entry with `suggestion === null` aborts the
-  run (that manifest needs a human, not a guess). JSON is edited as text so key order and
-  formatting stay byte-identical.
+- [ ] **Step 1: Apply the rewrite from computed ids**, not from a typed list. A throwaway script
+  (not committed, kept outside the repo tree, and independent of the spec module) builds the set
+  of known ids with `analyzeStoriesFile` over every `*.stories.ts`, then for each manifest reads
+  the file as text and, for every `defaults.story` / `states[].story` id that is not in the set,
+  replaces the exact quoted `"<id>"` with the same id whose leading `atoms|molecules|organisms`
+  is swapped for `components`. It asserts per file that the text changed, that the swapped id IS
+  in the known set (otherwise the run aborts and that manifest needs a human, not a guess), and
+  that the number of replacements equals the number of dead ids in that file. JSON is edited as
+  text so key order and formatting stay byte-identical. Judge the script by those assertions, not
+  by an exit code.
 - [ ] **Step 2: Run the guard.** `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs`
   → all three PASS.
 - [ ] **Step 3: Confirm nothing but ids moved.**
@@ -288,7 +312,8 @@ describe('figma manifests: story ids resolve to real stories', () => {
   `--atomic` being accepted.
 - [ ] **Step 2: Edit the scaffold and the four agent files**; re-run → PASS.
 - [ ] **Step 3: Grep.** `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy' ':!scripts/__tests__/scaffold/scaffolders.spec.mjs'`
-  prints nothing.
+  prints nothing, and so does `git grep -nE "atomic:" -- scripts` — the exclusion above hides the
+  spec, so this second grep is what proves the leftover `atomic: '…'` keys are gone from it.
 - [ ] **Step 4: Commit** `fix(scaffold): generate Components/<Name> stories and drop --atomic`.
 
 ### Task 4: Audit fallbacks, hints and helper docs
@@ -310,7 +335,9 @@ describe('figma manifests: story ids resolve to real stories', () => {
   file.
 - [ ] **Step 2: Run** `node --test "scripts/__tests__/audit/*.spec.mjs"` — fixtures still pass where
   they test the derivation function; the ones asserting an `atoms-…` fallback id fail and are
-  fixed in Task 5.
+  fixed in Task 5. Only `09` has a test that sees its fallback, so this run cannot prove `10` and
+  `12`: run `git grep -nE '[[:punct:]](Atoms|Molecules|Organisms)/' -- scripts/audit` → prints
+  nothing. That grep, not a test, is what decides those two.
 - [ ] **Step 3: Commit** `fix(audit): infer Components/<Name> when a component has no stories file`.
 
 ### Task 5: Test fixtures
@@ -342,39 +369,49 @@ describe('figma manifests: story ids resolve to real stories', () => {
   Where a placeholder stands for a component, write the derivation once
   (`components-<title-slug>--default`, slug from the stories file's `title`) instead of guessing the
   slug from the tag name; `mud-date-input` is `components-input-date`.
-- [ ] **Step 2: Run** `yarn docs:check` → PASS (validates agent/command/skill docs).
+- [ ] **Step 2: Run** `git grep -nE '(atoms|molecules|organisms)-[^[:space:]]*--' -- .claude/agents .claude/commands .claude/skills _agents`
+  → prints nothing. This widened form is the one that sees placeholders such as
+  `atoms-<componentName>--default` and `atoms-mud-[name]--default`; the issue's own
+  `[a-z0-9-]+` form cannot match them (7 of these 11 lines), and `yarn docs:check` has no story-id
+  rule, so without this grep nothing would notice a half-done task. Then `yarn docs:check` → PASS
+  (validates agent/command/skill docs).
 - [ ] **Step 3: Commit** `docs: name the Components story ids in agent and command instructions`.
 
 ### Task 7: Close the acceptance bar
 
 - [ ] **Step 1: Run every bar command below**, each alone, exit status unmasked.
-- [ ] **Step 2: Runtime proof.** With Storybook built for this worktree, run the smallest
-  `yarn audit:component mud-badge --depth <d>` that reaches the state-capture rows (11 and 15) and
-  confirm they capture states rather than reporting `capture failed`. If the environment cannot
-  build Storybook, say so in the report — the static guard is then the only proof.
+- [ ] **Step 2: Runtime proof.** With Storybook built for this worktree, run
+  `yarn audit:component mud-badge --depth standard --json`. It passes only if check 11 lists every
+  state in `mud-badge`'s manifest, no finding carries the code `PIXEL-CAPTURE-FAILED`
+  (`scripts/audit/11-pixel-diff-states.mjs:281`) and no state has status `UNKNOWN`. A run in
+  which check 11 captured nothing (browser waived, `--no-figma`) does not pass. If the environment
+  cannot build Storybook, say so in the report — the static guard is then the only proof.
 
 ## Acceptance bar
 
-- `git grep -nE '(atoms|molecules|organisms)-[a-z0-9-]+--' -- . ':!CHANGELOG.md' ':!changes' ':!.claude/plans' ':!src/legacy'`
-  prints nothing.
-- `git grep -nE "'(Atoms|Molecules|Organisms)/" -- scripts` prints nothing.
+- `git grep -nE '(atoms|molecules|organisms)-[^[:space:]]*--' -- . ':!CHANGELOG.md' ':!changes' ':!.claude/plans' ':!src/legacy'`
+  prints nothing. The issue's `[a-z0-9-]+` form is narrower than the ids it means to find: it
+  skips placeholder ids (`atoms-<componentName>--default`), which is most of the documentation.
+- `git grep -nE '[[:punct:]](Atoms|Molecules|Organisms)/' -- scripts` prints nothing. The issue's
+  form required a single quote and could not see the backtick templates in the audit fallbacks.
 - `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy' ':!scripts/__tests__/scaffold/scaffolders.spec.mjs'`
-  prints nothing.
+  prints nothing, and so does `git grep -nE "atomic:" -- scripts`.
 - `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs` passes, and fails when one
   manifest id is changed to a non-existent story (mutation check, reverted after).
 - `yarn test:scripts`, `yarn docs:check`, `yarn lint` pass.
 - `git diff --stat upstream/main...HEAD` names no file outside the Files lists above and this plan.
-- Runtime proof (Task 7 step 2): `yarn audit:component mud-badge --depth <d>` exits without a
-  `capture failed` row for `mud-badge`'s states. Where Storybook cannot be built in the
-  environment, this row is reported as not verified with the reason, and the guard is then the
-  only evidence.
+- Runtime proof (Task 7 step 2): `yarn audit:component mud-badge --depth standard --json` lists
+  every `mud-badge` manifest state under check 11, with no `PIXEL-CAPTURE-FAILED` finding and no
+  `UNKNOWN` status. Where Storybook cannot be built in the environment, this row is reported as
+  not verified with the reason, and the guard is then the only evidence.
 
 ## Not verified
 
 - Whether any CI job or hook already validates manifest ids against a built Storybook index: not
-  found by grep (no workflow names `figma.json`); if one exists the guard duplicates it.
+  found by grep (no workflow names `figma.json`); if one exists the guard duplicates it. The guard
+  itself runs in CI: `.github/workflows/ci.yml` runs `yarn test:scripts`.
 - The runtime capture proof depends on a local Storybook build; if it cannot run, the guard is the
   only evidence that the audit reaches the stories.
-- #145, #142 and #141 were merged-with-`components-…` ids by inspection of their diffs, not by
-  running their audits; after they merge, the guard covers them.
+- #145, #142 and #141 (open) carry `components-…` ids by inspection of their diffs, not by
+  running their audits; once they merge, the guard covers them.
 - `--atomic` external callers outside this repository (someone's shell history) are unknowable.
