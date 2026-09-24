@@ -106,10 +106,23 @@ export function isValidRowStatus(status) {
  * and `warnings`. 2.0.0 (Decision 12 of that plan) removes `awaitingLegs` and
  * `aiLegs` — breaking, but no released reader uses either: AI legs are advisory
  * at every depth now. Also 2.0.0: a row may carry `note` (Decision 13, a
- * not-applicable check's reason). The run directory is not here: it is
- * per-run, so it lives in `_run/summary.json`.
+ * not-applicable check's reason). 2.1.0 (plan `2026-09-23-audit-run-delta.md`
+ * Design §3) is additive: a FAIL entry may carry `message` alongside `actual`,
+ * and an advisory NEEDS-DECISION entry may carry `owner: <leg>` — both read by
+ * `run-record.mjs`'s finding-identity keys, never required by
+ * `fix-brief.mjs`'s renderer. The run directory is not here: it is per-run, so
+ * it lives in `_run/summary.json`.
  */
-export const VERDICT_SCHEMA_VERSION = '2.0.0';
+export const VERDICT_SCHEMA_VERSION = '2.1.0';
+
+/**
+ * `schemaVersion` written into `audit/_run/summary.json` — split from
+ * `VERDICT_SCHEMA_VERSION` at 2.0.0 (plan `2026-09-23-audit-run-delta.md`
+ * Design §3) so a verdict-shape bump (2.1.0) never forces every reader of the
+ * summary's own, much smaller shape to re-check theirs. `summary.json` stays
+ * byte-for-byte unchanged by this plan.
+ */
+export const SUMMARY_SCHEMA_VERSION = '2.0.0';
 
 /**
  * `schemaVersion` an AI leg writes into its own `ai-findings.json` (Phase
@@ -117,6 +130,23 @@ export const VERDICT_SCHEMA_VERSION = '2.0.0';
  * verdict's notes; an unknown minor is accepted — `verdict.mjs` owns that check.
  */
 export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
+
+/**
+ * `schemaVersion` written into `audit/<component>/runs/<run>/record.json`
+ * (plan `2026-09-23-audit-run-delta.md` Design §1) — one run's graded scopes
+ * and finding identities, frozen at the moment the run happens so the next
+ * run's comparison never has to recompute what this one graded. A major bump
+ * here is the only thing that can invalidate a baseline record
+ * (`run-record.mjs`'s `findPreviousRecord`).
+ */
+export const RUN_RECORD_SCHEMA_VERSION = '1.0.0';
+
+/**
+ * What a Not-compared line says for an AI leg that did not write this run.
+ * `run-record.mjs` writes it and `fix-brief.mjs` keys the re-render hint on
+ * it; both read it from here, so rewording it cannot silently drop the hint.
+ */
+export const LEG_NOT_WRITTEN = 'did not write';
 
 /**
  * Build a normalized result object from raw findings.

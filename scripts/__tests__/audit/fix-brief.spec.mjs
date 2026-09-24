@@ -58,7 +58,7 @@ describe('fix-brief: one shape per state', () => {
     );
     const v = computeVerdict({ envelope: e });
     const block = assertShape(renderFixBrief(v), v.entries[0]);
-    assert.match(block, /- prerequisite: yarn vitest run --project spec --coverage src\/components\/mud-fx/);
+    assert.match(block, /- prerequisite: `yarn vitest run --project spec --coverage src\/components\/mud-fx`/);
     assert.match(block, /- verify: `node scripts\/audit\/run-all\.mjs mud-fx --depth standard --only 06 --json`/);
   });
 
@@ -104,7 +104,7 @@ describe('fix-brief: one shape per state', () => {
       log: 'results[id="02"].error',
       verify: 'v',
     });
-    assert.match(block, /^- log: results\[id="02"\]\.error$/m);
+    assert.match(block, /^- log: `results\[id="02"\]\.error`$/m);
     assert.doesNotMatch(block, /prerequisite/);
   });
 
@@ -215,7 +215,7 @@ describe('fix-brief: Decision 13 — a not-applicable row is listed with its rea
     const v = computeVerdict({ envelope: cleanEnvelope() });
     const row = v.rows.find(r => r.id === '13') ?? v.rows[0];
     row.note = 'mud-fx uses no component tokens — token diff not applicable';
-    const brief = renderFixBrief(v, { run: 'r1' });
+    const brief = renderFixBrief(v);
     assert.match(brief, /## Not applicable/);
     assert.ok(brief.includes(`- ${row.id} `) && brief.includes('token diff not applicable'));
   });

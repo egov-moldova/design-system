@@ -60,7 +60,7 @@ describe('json-output: schema versions', () => {
   });
 
   it('defines separate schemaVersions for verdict.json and ai-findings.json', () => {
-    assert.equal(VERDICT_SCHEMA_VERSION, '2.0.0');
+    assert.equal(VERDICT_SCHEMA_VERSION, '2.1.0');
     assert.equal(AI_FINDINGS_SCHEMA_VERSION, '1.0.0');
   });
 

@@ -13,6 +13,9 @@
  *   audit/<component>/fix-brief.md          stable path, rewritten every run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
  *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
+ *   audit/<component>/runs/<run>/record.json  written by this module (plan
+ *     2026-09-23-audit-run-delta.md Design §1); read only by a later run's
+ *     comparison (lib/run-record.mjs), never an input to verdict.json itself
  *   audit/_run/summary.json                 worst state over the components of the last run
  *
  * State, first match wins: INCOMPLETE → FAIL → NEEDS-DECISION → PASS.
@@ -45,10 +48,18 @@ import {
   ROW_STATUS,
   SCHEMA_VERSION,
   STATE,
+  SUMMARY_SCHEMA_VERSION,
   VERDICT_SCHEMA_VERSION,
   schemaMajor,
 } from './lib/json-output.mjs';
-import { REPORT_END, line, renderFixBrief } from './lib/fix-brief.mjs';
+import { REPORT_END, code, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
+import {
+  buildRunRecord,
+  compareRecords,
+  findPreviousRecord,
+  listRunNames,
+  runsComparableTo,
+} from './lib/run-record.mjs';
 import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
@@ -130,15 +141,6 @@ function verifyCommand(component, depth, id) {
   return `node scripts/audit/run-all.mjs ${component} --depth ${depth} --only ${id} --json`;
 }
 
-/**
- * Re-renders a run with the advisory findings a leg wrote after it. Names the
- * component, never the run path, so the string is both executable as written
- * and identical across runs — `--rerender` looks the run up in summary.json.
- */
-function rerenderCommand(component) {
-  return `yarn audit:component --rerender ${component}`;
-}
-
 function freshRunCommand(component, depth) {
   return `yarn audit:component ${component} --depth ${depth}`;
 }
@@ -170,7 +172,7 @@ function failEntry({ f, check, component, source, verify, owner }) {
     f.expected && typeof f.expected === 'object'
       ? { value: String(f.expected.value), source: mapManifestPath(f.expected.source, component) }
       : { value: f.fix ? `no ${f.code} finding — ${f.fix}` : `no ${f.code} finding`, source };
-  return {
+  const entry = {
     kind: STATE.FAIL,
     severity: f.severity,
     check,
@@ -181,6 +183,19 @@ function failEntry({ f, check, component, source, verify, owner }) {
     verify,
     owner,
   };
+  // Additive, VERDICT_SCHEMA_VERSION 2.1.0: `run-record.mjs`'s finding-identity
+  // key needs the finding's own message, never `actual` — for 15-style-parity
+  // `actual` is the bare rendered value and every finding sits on the manifest
+  // file, so only `message` carries `state › target › prop` (Design §3;
+  // `15-style-parity.mjs` `mismatchFinding`, and run-record.spec.mjs § finding
+  // identity pins it with findings built by that same function).
+  // `renderEntry` prints only `BRIEF_FIELDS`, so the brief is unchanged. Only
+  // when `actual` came from elsewhere: otherwise `actual` already IS the
+  // message, and the identity key falls back to it.
+  if (f.message !== undefined && f.actual !== undefined) {
+    entry.message = mapManifestPath(String(f.message), component);
+  }
+  return entry;
 }
 
 function aiFailOrDecision(f, leg, component) {
@@ -190,6 +205,8 @@ function aiFailOrDecision(f, leg, component) {
       node: f.node ?? 'n/a',
       question: f.question,
       options: Array.isArray(f.options) && f.options.length ? f.options.map(String) : ['(the leg listed no options)'],
+      // Additive, 2.1.0: lets run-record.mjs scope this decision to `leg:<leg>`.
+      owner: leg,
     };
   }
   return failEntry({
@@ -218,6 +235,37 @@ function findingShapeIssue(f, index) {
   if (typeof f.severity !== 'string' || !f.severity) missing.push('severity');
   if (f.message === undefined && f.actual === undefined) missing.push('message or actual');
   return missing.length ? `finding[${index}] (${f.code ?? 'no code'}) missing ${missing.join(', ')}` : null;
+}
+
+/**
+ * Per-leg grading for `run-record.mjs`'s `leg:<leg>` scope (Design §2), using
+ * this module's own `findingShapeIssue` and AI schema check — the one place
+ * that rule lives, so `run-record.mjs` never imports this module (a cycle).
+ * A leg is graded only when its file is readable at a matching schema major,
+ * its `findings` is an array (zero findings is fine), and no finding fails
+ * `findingShapeIssue` — stricter than `computeVerdict`'s advisory rendering,
+ * which still lists the well-shaped findings of a leg that also wrote a bad
+ * one. Pure. Sorted by leg for determinism.
+ *
+ * @param {Array<{leg: string, data: object|null}>} aiFiles
+ * @returns {Array<{leg: string, graded: boolean, cause: string|null}>}
+ */
+export function computeLegRecords(aiFiles = []) {
+  return [...aiFiles]
+    .map(({ leg, data }) => {
+      if (!data || schemaMajor(data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
+        return { leg, graded: false, cause: 'unreadable or unknown schema' };
+      }
+      if (!Array.isArray(data.findings)) {
+        return { leg, graded: false, cause: 'findings is not a list' };
+      }
+      const badCount = data.findings.filter((f, i) => findingShapeIssue(f, i)).length;
+      if (badCount > 0) {
+        return { leg, graded: false, cause: `${badCount} ${badCount === 1 ? 'finding' : 'findings'} ignored` };
+      }
+      return { leg, graded: true, cause: null };
+    })
+    .sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0));
 }
 
 /**
@@ -540,23 +588,100 @@ export function readRunInputs(runDir) {
 }
 
 /**
+ * Whether `run` is the newest run directory under `<componentDir>/runs`
+ * (Design §7) — record.json is written only then, so re-rendering an older
+ * run (`--run-dir`) never overwrites the baseline a later run already
+ * compared against. Missing `runs/` (a fresh component dir) reads as "yes":
+ * this run is the only one there.
+ */
+function isNewestRun(componentDir, run) {
+  // A listing that fails is not proof the run is newest: writing its record
+  // then could overwrite a baseline a later run already compared against, so
+  // the answer fails closed. A missing runs/ is [] (listRunNames), not a failure.
+  try {
+    const newer = runsComparableTo(listRunNames(componentDir), run).filter(n => n > run);
+    if (newer.length === 0) return true;
+    // Expected for a --run-dir re-render of an older run; named so an
+    // unexpected entry (e.g. an unreadable folder sorting last) is findable.
+    process.stderr.write(`${TOOL}: record.json not written for ${run}: newer run ${newer.at(-1)} exists\n`);
+    return false;
+  } catch (err) {
+    process.stderr.write(
+      `${TOOL}: record.json not written for ${run}: runs/ cannot be listed: ${err.code ?? err.message}\n`,
+    );
+    return false;
+  }
+}
+
+/**
  * Compute and write `verdict.json` + `fix-brief.md` for one run directory
  * (`<auditDir>/<component>/runs/<run>`). The component directory is two
- * levels up, so the stable paths never depend on the run name.
+ * levels up, so the stable paths never depend on the run name. Also builds
+ * that run's `record.json` (written only when the run is the newest under
+ * `runs/`) and always renders the brief's `## Changes since the previous run`
+ * section, whose text names the case when there is nothing to compare (plan
+ * `2026-09-23-audit-run-delta.md` Design §7).
  */
 export function writeVerdictForRun(runDir) {
   const absRun = resolve(runDir);
   const componentDir = resolve(absRun, '..', '..');
   const component = basename(componentDir);
+  const run = basename(absRun);
   const { envelope, aiFiles } = readRunInputs(absRun);
   const verdict = computeVerdict({ envelope, aiFiles, component });
-  // Render before writing either file: a render failure (an entry the renderer
-  // cannot shape) must never leave a freshly-written verdict.json beside a
-  // stale fix-brief.md — throwing here leaves both files exactly as they were.
-  const brief = renderFixBrief(verdict);
+
+  // Building the record, finding the baseline, comparing AND rendering the
+  // Changes section all run inside one try: a throw from any of them — a
+  // readdir/read failure under runs/, or a baseline record.json whose values
+  // the renderer cannot shape — must never block verdict.json or the rest of
+  // the brief, and renders as `Not compared: <cause>` instead (Design §7).
+  let record = null;
+  let changes = null;
+  try {
+    const legs = computeLegRecords(aiFiles);
+    record = buildRunRecord({ run, verdict, envelope, legs });
+    const found = findPreviousRecord(componentDir, run, verdict.depth);
+    changes = found.unusable
+      ? { unusable: found.unusable, depth: verdict.depth, component: verdict.component }
+      : {
+          // The header names the directory the baseline was found in, not the
+          // `run` the file claims: a copied or hand-edited record could lie.
+          ...compareRecords(record, found.record && { ...found.record, run: found.run }),
+          skippedEmpty: found.skippedEmpty,
+          depth: verdict.depth,
+          component: verdict.component,
+        };
+    renderChanges(changes);
+  } catch (err) {
+    // A record that built before the lookup or comparison threw is still
+    // written: it is valid on its own, and skipping it would leave the same
+    // broken baseline in place for every later run.
+    changes = { error: err.message ?? String(err) };
+    // The brief carries only the message; stderr carries where it happened,
+    // since exit codes deliberately do not change and nothing else reports it.
+    process.stderr.write(
+      `${TOOL}: changes since the previous run not compared for ${component} ${run}: ${err.stack ?? err}\n`,
+    );
+  }
+
+  // Render before writing either stable file: a render failure (an entry the
+  // renderer cannot shape) must never leave a freshly-written verdict.json
+  // beside a stale fix-brief.md — throwing here leaves both exactly as they
+  // were, and skips writing record.json too.
+  const brief = renderFixBrief(verdict, changes);
   mkdirSync(componentDir, { recursive: true });
   writeFileSync(join(componentDir, 'verdict.json'), `${JSON.stringify(verdict, null, 2)}\n`);
   writeFileSync(join(componentDir, 'fix-brief.md'), brief);
+
+  if (record && isNewestRun(componentDir, run)) {
+    try {
+      writeFileSync(join(absRun, 'record.json'), `${JSON.stringify(record, null, 2)}\n`);
+    } catch (err) {
+      // A failure writing record.json alone changes no exit code (Design §7):
+      // the next run then names an older baseline, or none.
+      process.stderr.write(`${TOOL}: record.json not written for ${run}: ${err.message ?? err}\n`);
+    }
+  }
   return verdict;
 }
 
@@ -597,7 +722,7 @@ export function writeSummary(auditDir, { depth, runs, preflight = null, repoLeve
   if (repoLevel?.incomplete) states.push(STATE.INCOMPLETE);
   else if (repoLevel && !repoLevel.ok) states.push(STATE.FAIL);
   const summary = {
-    schemaVersion: VERDICT_SCHEMA_VERSION,
+    schemaVersion: SUMMARY_SCHEMA_VERSION,
     depth,
     state: worstState(states),
     components,
@@ -658,7 +783,7 @@ export function printSummary(summary, json, auditDir = null) {
   for (const c of summary.components) {
     // The headline carries manifest text (a design-none reason, a skip reason),
     // so it gets the same control-character neutralising as the block below.
-    process.stdout.write(`${c.component}: ${line(c.headline)} — audit/${c.component}/fix-brief.md\n`);
+    process.stdout.write(`${c.component}: ${code(c.headline)} — audit/${c.component}/fix-brief.md\n`);
     if (!auditDir) continue;
     try {
       const block = readReportBlock(auditDir, c.component);
@@ -774,7 +899,7 @@ export function staleRunDirReason(runDirAbs, auditDir) {
  * apart from a crash.
  */
 function earlyExitSummary(depth, cause) {
-  return { schemaVersion: VERDICT_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
+  return { schemaVersion: SUMMARY_SCHEMA_VERSION, depth, state: STATE.INCOMPLETE, components: [], cause };
 }
 
 /**
