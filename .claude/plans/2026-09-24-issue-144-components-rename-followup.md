@@ -1,6 +1,6 @@
 # Finish the Storybook `Components` rename
 
-**Reviewed:** preflight d5fa1cc · critic 634c9e1 · critic 4972ef0 — the 3-round cap ended the loop; round 3's two above-bar findings are folded into this revision and have had no round of their own, and the owner gave the go to implement on 2026-09-24
+**Reviewed:** preflight d5fa1cc, critic 634c9e1, critic 4972ef0 — the 3-round cap ended the loop; round 3's two above-bar findings are folded into this revision and have had no round of their own, and the owner gave the go to implement on 2026-09-24
 
 **Executor**: Sonnet 5 · medium
 
