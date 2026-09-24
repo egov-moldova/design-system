@@ -9,7 +9,11 @@
     "container": {
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.16}", "$type": "dimension" },
-      "boxShadow": { "$value": "{dropShadow.500}", "$type": "string" },
+      "boxShadow": {
+        "$value": "{dropShadow.400}",
+        "$type": "string",
+        "$comment": "Figma modal 111:2565 and every sibling in 230:5243 carry Drop Shadow/400. This pointed at dropShadow.500 before, a value no Figma style defines."
+      },
       "minWidth": { "$value": "280px", "$type": "dimension" },
       "maxWidthSm": { "$value": "480px", "$type": "dimension" },
       "maxWidthMd": { "$value": "588px", "$type": "dimension" },
