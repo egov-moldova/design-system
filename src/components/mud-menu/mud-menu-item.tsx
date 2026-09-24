@@ -149,7 +149,7 @@ export class MudMenuItem {
             <slot>{this.label ?? ''}</slot>
           </span>
           {showTrailingCheck ? (
-            <mud-icon class="check" name="checkmark-small" size={20} aria-hidden="true"></mud-icon>
+            <mud-icon class="check" name="checkmark-small" size={24} aria-hidden="true"></mud-icon>
           ) : null}
         </div>
       </Host>
