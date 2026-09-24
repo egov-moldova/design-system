@@ -19,7 +19,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-segmented-control--default",
+    "story": "components-segmented-control--default",
     "capture": {
       "selector": "mud-segmented-control",
       "bleed": 0,

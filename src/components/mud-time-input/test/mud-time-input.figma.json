@@ -6,7 +6,7 @@
     "scale": 2
   },
   "defaults": {
-    "story": "atoms-input-time--default",
+    "story": "components-input-time--default",
     "viewport": {
       "width": 1280,
       "height": 900

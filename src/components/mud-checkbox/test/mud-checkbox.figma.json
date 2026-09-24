@@ -11,7 +11,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-checkbox--default",
+    "story": "components-checkbox--default",
     "capture": {
       "selector": "mud-checkbox .box",
       "bleed": "auto"

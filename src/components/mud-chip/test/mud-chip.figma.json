@@ -23,7 +23,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-chip--default",
+    "story": "components-chip--default",
     "capture": {
       "selector": "mud-chip",
       "bleed": "auto"

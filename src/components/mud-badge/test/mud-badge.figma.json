@@ -31,7 +31,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-badge--default",
+    "story": "components-badge--default",
     "capture": {
       "selector": "mud-badge",
       "bleed": "auto"

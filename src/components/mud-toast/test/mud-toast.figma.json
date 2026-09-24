@@ -6,7 +6,7 @@
     "scale": 2
   },
   "defaults": {
-    "story": "atoms-toast--default",
+    "story": "components-toast--default",
     "viewport": {
       "width": 1280,
       "height": 900
