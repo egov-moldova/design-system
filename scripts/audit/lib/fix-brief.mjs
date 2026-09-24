@@ -157,6 +157,20 @@ export function rowResults(verdict) {
 }
 
 /**
+ * The icon a result carries in the table's Result column, so a reader finds the
+ * rows that want attention without reading every word: green for a row with
+ * nothing to do, a warning sign for one worth a look, a cross for one that
+ * blocks or never produced a judgement, and a dash for one deliberately not run.
+ * The word stays — the icon only makes it scannable. Pure.
+ */
+export function resultIcon(result) {
+  if (result === 'pass') return '✅';
+  if (result === 'excused' || result === 'deferred') return '➖';
+  if (result === 'warn' || result.startsWith('not graded')) return '⚠️';
+  return '❌';
+}
+
+/**
  * The `## Summary` section: counts, one table row per `verdict.rows[]` entry,
  * and an index of every entry and advisory item. Pure.
  */
@@ -186,7 +200,7 @@ export function renderSummary(verdict) {
   for (const r of verdict.rows ?? []) {
     const { result, fails, warns } = results.get(r.id);
     out.push(
-      `| ${cell(r.id)} | ${cell(r.name)} | ${r.required ? 'yes' : 'no'} | ${result} | ${fails} | ${warns} | ` +
+      `| ${cell(r.id)} | ${cell(r.name)} | ${r.required ? 'yes' : 'no'} | ${resultIcon(result)} ${result} | ${fails} | ${warns} | ` +
         `${r.excuse || r.deferred || r.note ? cell(r.excuse ?? r.deferred ?? r.note) : ''} |`,
     );
   }
