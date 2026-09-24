@@ -29,8 +29,16 @@
       "unselected": {
         "background": {
           "default": { "$value": "transparent", "$type": "color" },
-          "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-          "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
+          "hover": {
+            "$value": "{color.background.base.default-hover}",
+            "$type": "color",
+            "$comment": "Figma .pagination-item Hover 144:4365 fills #F5F5F5 — the base default-hover step, not tertiary (#F1F1F1)."
+          },
+          "active": {
+            "$value": "{color.background.base.default-active}",
+            "$type": "color",
+            "$comment": "Figma .pagination-item Active 415:24685 fills #D9D9D9 — the base default-active step, not tertiary-active (#B2B2B2)."
+          }
         },
         "label": {
           "default": { "$value": "{color.text.base.default}", "$type": "color" },
@@ -70,11 +78,19 @@
       "trigger": {
         "background": {
           "default": { "$value": "transparent", "$type": "color" },
-          "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-          "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
-          "open": { "$value": "{color.background.base.tertiary}", "$type": "color" }
+          "hover": { "$value": "{color.background.base.default-hover}", "$type": "color" },
+          "active": { "$value": "{color.background.base.default-active}", "$type": "color" },
+          "open": {
+            "$value": "{color.background.base.default-active}",
+            "$type": "color",
+            "$comment": "Figma's Overflow section (415:24452) draws the overflow element as an ordinary .pagination-item in its Active state (#D9D9D9) while its menu is open, and 144:4356 gives it the same hover / active fills as any page number."
+          }
         },
-        "label": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+        "label": {
+          "$value": "{color.text.base.default}",
+          "$type": "color",
+          "$comment": "Figma 415:24452 sets the overflow ellipsis in #121212 like every page number; it was #757575."
+        },
         "border": {
           "default": { "$value": "transparent", "$type": "color" },
           "focus": { "$value": "{color.border.brand.default}", "$type": "color" }
@@ -139,7 +155,11 @@
       },
       "background": {
         "default": { "$value": "transparent", "$type": "color" },
-        "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "hover": {
+          "$value": "{color.background.base.tertiary-hover}",
+          "$type": "color",
+          "$comment": "Prev / Next are button-text-rectangular Strict instances (105:997, 105:1057); that set's Hover fills #D9D9D9 (107:1703, 107:1718). Matches mud-button text/strict, which uses the same step."
+        },
         "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
       },
       "label": {
