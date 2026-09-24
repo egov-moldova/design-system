@@ -37,7 +37,11 @@
       "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
     },
     "background": {
-      "default": { "$value": "{color.background.base.default}", "$type": "color" },
+      "default": {
+        "$value": "transparent",
+        "$type": "color",
+        "$comment": "Figma 13:35 and 13:36 stroke the radio and leave it unfilled, so the surface behind shows through. It was filled white, which showed as a white disc on any non-white surface — a hovered menu row (#F5F5F5) among them. Only the disabled state is filled (13:38)."
+      },
       "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
     },
     "focusRing": {
