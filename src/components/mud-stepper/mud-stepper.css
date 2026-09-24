@@ -80,11 +80,30 @@
   flex: 0 0 auto;
 }
 
+:host([orientation='vertical']) .step--current {
+  /* Column, not row, for this step only: its connector becomes a normal-flow
+     sibling stacked BELOW the body (see `.step--current .connector` below),
+     so it starts right where the body's own — possibly taller,
+     `supportingText`-grown — content ends, rather than at a fixed offset that
+     assumes a single-line body and can land inside the current-step highlight
+     (which covers the whole body, however tall). Every other status keeps the
+     plain fixed-offset connector: uniform pitch, unaffected by this. */
+  flex-direction: column;
+}
+
 /* ---------- Step body (indicator + label) ---------- */
 
 .step-content,
 .step-trigger {
   display: inline-flex;
+  /* Indicator flush at the row's own top, always — regardless of label height
+     (a 2-line `supportingText` label included). `.label-block` below nudges
+     down 2px instead to align centres for the common single-line case, so the
+     indicator's position (and everything measured from it — the connector's
+     fixed top/bottom offsets, the current-step pill's centred band) stays
+     independent of label length. Horizontal re-declares its own
+     `align-items: center` below for its column layout (indicator on top,
+     label under) — a different axis, unaffected by this. */
   align-items: flex-start;
   gap: var(--stepper-step-indicator-gap);
   padding: 0;
@@ -152,6 +171,15 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+
+:host([orientation='vertical']) .label-block {
+  /* Nudges the label down 2px so its first line's centre (10px into the 20px
+     line-height) lands on the indicator's centre (12px into the 24px circle)
+     — confirmed against Figma 39:25050. A margin on the label, not the
+     indicator, so the indicator's own top-edge position stays untouched
+     (see the `align-items: flex-start` comment above). */
+  margin-top: 2px;
 }
 
 .label {
@@ -237,7 +265,9 @@
 
 :host([orientation='vertical']) .step:not(.step--last) {
   /* Each non-last step must be tall enough to host the vertical connector
-   * that drops from its indicator. 84px matches the Figma vertical spacing. */
+   * that drops from its indicator. 54.5px matches the Figma vertical pitch
+   * (39:25050) for a single-line body; a taller `supportingText` body just
+   * grows the step past it, same as before. */
   min-height: var(--stepper-container-vertical-step-min-height);
 }
 
@@ -251,6 +281,30 @@
    * rail floats evenly between circles instead of butting into the lower one. */
   top: calc(var(--stepper-indicator-size) + var(--stepper-container-label-gap));
   bottom: var(--stepper-container-label-gap);
+}
+
+:host([orientation='vertical']) .step--current .connector {
+  /* This step alone switches to normal flow (its `.step--current` is a column,
+   * see above), stacked right after the body instead of pinned at a fixed
+   * offset — the body can be taller than a single line (`supportingText`) and
+   * is fully covered by the current-step highlight, which the fixed offset
+   * above doesn't know about and would sit under. Every other step's connector
+   * keeps the plain fixed-offset rule: uniform pitch, unaffected by this. */
+  position: static;
+  align-self: unset;
+  left: auto;
+  top: auto;
+  bottom: auto;
+  margin-left: calc(var(--stepper-indicator-size) / 2 - var(--_ct) / 2);
+  margin-block: var(--stepper-container-label-gap);
+  flex: 1 0 auto;
+  /* Same length as the fixed-offset connector in the single-line case
+   * (indicator + 2 × labelGap subtracted from the step's own floor) —
+   * flex-grow fills any extra space if the step is taller than that floor. */
+  min-height: calc(
+    var(--stepper-container-vertical-step-min-height) - var(--stepper-indicator-size) -
+      var(--stepper-container-label-gap) * 2
+  );
 }
 
 /* ---------- Compact (mobile dot rail) ----------
@@ -348,6 +402,11 @@
   content: '';
   position: absolute;
   z-index: -1;
+  /* Covers the whole row (indicator + label, including a taller supportingText
+     line) — not just an indicator-sized band — so the highlight reads as one
+     row, matching a plain background highlight. The connector below relies on
+     its own explicit z-index (see `.connector`) to stay visible on top of this
+     rather than the pill stopping short of it. */
   inset: calc(var(--stepper-current-highlight-padding) * -1);
   background: var(--stepper-current-highlight-background);
   /* An outside stroke traces the inner shape at a constant offset, so its own
