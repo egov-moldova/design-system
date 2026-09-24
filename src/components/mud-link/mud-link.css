@@ -16,7 +16,7 @@
   /* Underline axis */
   --_underline-default: underline;
   --_underline-hover: underline;
-  --_underline-offset: var(--link-label-underline-offset);
+  --_underline-offset: var(--link-label-underline-offset-md);
   --_underline-thickness: var(--link-label-underline-thickness);
   --_underline-thickness-hover: var(--link-label-underline-thickness-hover);
 
@@ -32,6 +32,7 @@
   --_line-height: var(--link-label-line-height-xs);
   --_icon-size: var(--link-icon-size-xs);
   --_gap: var(--link-container-gap-xs);
+  --_underline-offset: var(--link-label-underline-offset-xs);
 }
 
 :host([size='sm']) {
@@ -39,6 +40,7 @@
   --_line-height: var(--link-label-line-height-sm);
   --_icon-size: var(--link-icon-size-sm);
   --_gap: var(--link-container-gap-sm);
+  --_underline-offset: var(--link-label-underline-offset-sm);
 }
 
 :host([size='md']) {
@@ -46,6 +48,7 @@
   --_line-height: var(--link-label-line-height-md);
   --_icon-size: var(--link-icon-size-md);
   --_gap: var(--link-container-gap-md);
+  --_underline-offset: var(--link-label-underline-offset-md);
 }
 
 :host([size='lg']) {
@@ -53,6 +56,7 @@
   --_line-height: var(--link-label-line-height-lg);
   --_icon-size: var(--link-icon-size-lg);
   --_gap: var(--link-container-gap-lg);
+  --_underline-offset: var(--link-label-underline-offset-lg);
 }
 
 /* ---------- Variant axis ---------- */
@@ -102,8 +106,12 @@
  */
 
 :host([standalone]) .control {
+  /* The minimum is the whole mechanism: Figma's Target Sizes section (661:7040)
+     marks a 32px target on every rung, so the box grows to 32px and the flex
+     centring places the label inside it. Padding on top of the minimum would
+     add to the tallest rung instead of bringing the shortest one up — with 4px
+     of it, Large came out 36px against the 32px the section specifies. */
   min-block-size: var(--link-container-min-height-pointer);
-  padding-block: var(--spacing-4);
 }
 
 /* Touch device: bigger target */
@@ -200,20 +208,26 @@
   color: var(--_label-visited);
 }
 
-/* ---------- Focus ring (dual halo, 3px brand + 1px white spread per Figma) ---------- */
+/* ---------- Focus ring ----------
+ * Figma's Focus Ring/Small lists two stacked spreads, 3px #3379DB over 1px #FFF
+ * (57:465), and renders them as a 1px white halo with the blue band ending 3px
+ * out — not 1px + 3px. In CSS the order reverses and the ring width is the
+ * total outer spread, which the exported node confirms: it bleeds 3px on every
+ * side of the 35x28 label box.
+ */
 
 .control:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 var(--link-focus-ring-offset) var(--link-focus-ring-offset-color),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
+    0 0 0 var(--link-focus-ring-width) var(--link-focus-ring-color);
 }
 
 /* On dark/white variant, invert the inner halo so the focus ring still reads */
 :host([variant='white']) .control:focus-visible {
   box-shadow:
     0 0 0 var(--link-focus-ring-offset) var(--color-background-base-inverse-default),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
+    0 0 0 var(--link-focus-ring-width) var(--link-focus-ring-color);
 }
 
 /* ---------- External-link indicator ---------- */
