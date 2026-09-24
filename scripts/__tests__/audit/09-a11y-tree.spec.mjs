@@ -105,7 +105,7 @@ describe('09-a11y-tree: pickDefaultStoryId', () => {
     // mud-button is the historical edge case — its only story is named "Button", not "Default"
     const target = resolveComponentPaths('mud-button');
     const id = pickDefaultStoryId(target);
-    // Should not be null; either matches button--button (current mud-button) or atoms-button--default fallback
+    // Should not be null; either matches button--button (current mud-button) or components-button--default fallback
     assert.ok(id, 'expected a fallback story id to be returned');
   });
 
@@ -116,7 +116,7 @@ describe('09-a11y-tree: pickDefaultStoryId', () => {
       bare: 'button',
     };
     const id = pickDefaultStoryId(target);
-    assert.equal(id, 'atoms-button--default');
+    assert.equal(id, 'components-button--default');
   });
 });
 

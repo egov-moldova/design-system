@@ -70,7 +70,7 @@ const coverageManifest = {
     fileKey: 'doJ7tDY0PlQ0PqMgbpFVIC',
     skip: [{ node: '158:406', reason: 'selected is covered by the date-picker state' }],
   },
-  defaults: { story: 'molecules-date-picker--default' },
+  defaults: { story: 'components-date-picker--default' },
   shared: { base: [{ target: 'x', styles: { color: '#000' }, node: '99999:1' }] },
   states: [{ name: 'default', node: '158:402', expect: [{ use: 'base' }] }],
 };
