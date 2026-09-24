@@ -86,7 +86,7 @@ export async function launchBrowser({ headless = true, devtools = false } = {}) 
  * passed through to the caller.
  *
  *   const errors = await withPage({
- *     url: storyUrl({ storyId: 'atoms-button--default' }),
+ *     url: storyUrl({ storyId: 'components-button--default' }),
  *     action: page => collectConsoleErrors(page),
  *   });
  */

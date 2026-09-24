@@ -9,9 +9,11 @@ import { captureClip, maskRects, stateUrl } from '../../audit/lib/state-page.mjs
 
 describe('state-page: stateUrl', () => {
   it('builds the story iframe url', () => {
-    const url = new URL(stateUrl({ story: 'molecules-date-picker--default', theme: 'light' }, 'http://localhost:6007'));
+    const url = new URL(
+      stateUrl({ story: 'components-date-picker--default', theme: 'light' }, 'http://localhost:6007'),
+    );
     assert.equal(url.pathname, '/iframe.html');
-    assert.equal(url.searchParams.get('id'), 'molecules-date-picker--default');
+    assert.equal(url.searchParams.get('id'), 'components-date-picker--default');
     assert.equal(url.searchParams.get('viewMode'), 'story');
     assert.equal(url.searchParams.get('globals'), null);
   });

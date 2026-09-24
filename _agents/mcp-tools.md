@@ -228,8 +228,8 @@ Headless browser CLI for AI agents (Vercel Labs, native Rust). Outputs a compact
 ab_open → agent-browser open <url>
 
 # Examples
-agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-button--default
-agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-input--default
+agent-browser open http://localhost:6007/iframe.html?id=components-button--default
+agent-browser open http://localhost:6007/iframe.html?id=components-input-text--default
 ```
 
 **Use agent-browser when** the check can be answered by the accessibility tree alone:

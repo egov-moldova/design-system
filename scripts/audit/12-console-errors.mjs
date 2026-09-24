@@ -212,7 +212,7 @@ export async function analyzeComponent(target, { baseUrl, warnAsFinding, explici
 function listStoryIdsForComponent(target, explicitStory) {
   if (explicitStory) return [explicitStory];
   if (!target.exists?.stories) {
-    const defaultId = inferStoryId(`Atoms/${pascal(target.bare)}`, 'Default');
+    const defaultId = inferStoryId(`Components/${pascal(target.bare)}`, 'Default');
     return defaultId ? [defaultId] : [];
   }
   const { stories } = analyzeStoriesFile(target.paths.stories, target.name);

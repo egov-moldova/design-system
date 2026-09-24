@@ -5,7 +5,7 @@
     "scale": 2
   },
   "defaults": {
-    "story": "atoms-input-file--default",
+    "story": "components-input-file--default",
     "capture": {
       "selector": "mud-file-input",
       "bleed": "auto"

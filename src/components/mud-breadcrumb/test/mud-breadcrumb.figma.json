@@ -15,7 +15,7 @@
     ]
   },
   "defaults": {
-    "story": "molecules-breadcrumb--default",
+    "story": "components-breadcrumb--default",
     "viewport": {
       "width": 1280,
       "height": 600

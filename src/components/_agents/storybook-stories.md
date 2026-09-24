@@ -61,7 +61,7 @@ export const Default: Story = {
 
 ### Story File Rules
 
-- **Title**: `Components/MudButton`, `Components/MudFormField`, `Components/MudNavbar` — single flat category, no atomic-hierarchy prefix
+- **Title**: `Components/Button`, `Components/Input/Date`, `Components/Table` — single flat category, no atomic-hierarchy prefix
 - **Sort**: `Introduction → Design Tokens → Components`
 - **Import**: `@storybook/web-components-vite` — NOT `@storybook/react`, and NOT the bare `@storybook/web-components` renderer (framework-based config is required since Storybook 10)
 - **Component**: string tag `'mud-button'` — NOT JS reference

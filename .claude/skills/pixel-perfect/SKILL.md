@@ -65,7 +65,7 @@ No official Figma MCP → you cannot extract the design: **stop** and tell the u
   "component": "mud-x",
   "figma": { "fileKey": "<file key from the URL>", "scale": 2 },
   "defaults": {
-    "story": "atoms-x--default",
+    "story": "components-x--default",
     "clock": "2025-01-07T10:00:00Z",
     "capture": { "selector": "mud-x", "bleed": "auto" }
   },

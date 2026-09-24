@@ -52,8 +52,8 @@ export function isStorybookReachable({ host = 'localhost', port = DEFAULT_PORT, 
 /**
  * Build a Storybook iframe URL for a given story id.
  *
- *   storyUrl({ storyId: 'atoms-button--default' })
- *     → 'http://localhost:6007/iframe.html?id=atoms-button--default&viewMode=story'
+ *   storyUrl({ storyId: 'components-button--default' })
+ *     → 'http://localhost:6007/iframe.html?id=components-button--default&viewMode=story'
  */
 export function storyUrl({ storyId, baseUrl = DEFAULT_BASE_URL, viewMode = 'story', args = null } = {}) {
   if (!storyId) throw new Error('storyUrl: storyId is required');
@@ -72,10 +72,10 @@ export function storyUrl({ storyId, baseUrl = DEFAULT_BASE_URL, viewMode = 'stor
  * The one builder — `05-story-exports.mjs` re-exports it as `buildStoryId`,
  * and every browser row navigates to what it returns.
  *
- *   storyIdFor('Atoms/Button', 'Default')       → 'atoms-button--default'
- *   storyIdFor('Molecules/Tooltip', 'AllPlacements')
- *                                               → 'molecules-tooltip--all-placements'
- *   storyIdFor('Atoms/InfoBox', 'Default')      → 'atoms-infobox--default'
+ *   storyIdFor('Components/Button', 'Default')  → 'components-button--default'
+ *   storyIdFor('Components/Tooltip', 'AllPlacements')
+ *                                               → 'components-tooltip--all-placements'
+ *   storyIdFor('Components/InfoBox', 'Default') → 'components-infobox--default'
  *
  * That last one is why this delegates instead of kebab-casing. Storybook
  * treats the two halves differently: an export name goes through

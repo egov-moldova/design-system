@@ -22,12 +22,14 @@ import { storyIdFor, inferStoryId } from '../../audit/lib/storybook-helpers.mjs'
 import { buildStoryId } from '../../audit/05-story-exports.mjs';
 
 const CASES = [
-  ['Atoms/Button', 'Default'],
-  ['Atoms/InfoBox', 'Default'],
-  ['Atoms/InlineMessage', 'EdgeCases'],
-  ['Atoms/TextInput', 'Default'],
-  ['Molecules/Tooltip', 'AllPlacements'],
-  ['Organisms/Modal', 'CoverageGuard'],
+  ['Components/Button', 'Default'],
+  ['Components/InfoBox', 'Default'],
+  ['Components/InlineMessage', 'EdgeCases'],
+  ['Components/TextInput', 'Default'],
+  ['Components/Tooltip', 'AllPlacements'],
+  ['Components/Modal', 'CoverageGuard'],
+  ['Components/Date Picker', 'Default'],
+  ['Components/Input/Date', 'Default'],
 ];
 
 describe('story ids: the audit navigates to what Storybook serves', () => {
@@ -38,18 +40,23 @@ describe('story ids: the audit navigates to what Storybook serves', () => {
   }
 
   it('a multi-word PascalCase title is one lowercase word, not kebab-cased', () => {
-    // The exact regression: `atoms-info-box--default` is the id that did not exist.
-    assert.equal(storyIdFor('Atoms/InfoBox', 'Default'), 'atoms-infobox--default');
-    assert.equal(storyIdFor('Atoms/InlineMessage', 'Default'), 'atoms-inlinemessage--default');
+    // The exact regression: `components-info-box--default` is the id that did not exist.
+    assert.equal(storyIdFor('Components/InfoBox', 'Default'), 'components-infobox--default');
+    assert.equal(storyIdFor('Components/InlineMessage', 'Default'), 'components-inlinemessage--default');
+  });
+
+  it('a spaced or nested title is slugged into one id, the shapes 17 real titles use', () => {
+    assert.equal(storyIdFor('Components/Date Picker', 'Default'), 'components-date-picker--default');
+    assert.equal(storyIdFor('Components/Input/Date', 'Default'), 'components-input-date--default');
   });
 
   it('a multi-word export name IS split into words — the two halves differ', () => {
-    assert.equal(storyIdFor('Atoms/Button', 'AllVariants'), 'atoms-button--all-variants');
+    assert.equal(storyIdFor('Components/Button', 'AllVariants'), 'components-button--all-variants');
   });
 
   it('is null when either half is missing, so a caller never builds "undefined--default"', () => {
     assert.equal(storyIdFor(null, 'Default'), null);
-    assert.equal(storyIdFor('Atoms/Button', ''), null);
+    assert.equal(storyIdFor('Components/Button', ''), null);
   });
 });
 

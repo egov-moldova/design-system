@@ -20,7 +20,7 @@ Required:
 Optional:
 
 - `storybookBaseUrl` — default `http://localhost:6007`
-- `storyId` — default `atoms-<componentName>--default`
+- `storyId` — default `components-<title-slug>--default` (slug from the stories file's `title`)
 - `interactiveStates` — default inferred from component type
 
 When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port

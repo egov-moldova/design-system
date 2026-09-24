@@ -646,7 +646,7 @@ function manifestText({ color = '#000000', override = null } = {}) {
   return `${JSON.stringify(
     {
       figma: { fileKey: 'abc123' },
-      defaults: { story: 'atoms-fx--default' },
+      defaults: { story: 'components-fx--default' },
       states: [{ name: 'default', node: '1:2', expect: [entry] }],
     },
     null,

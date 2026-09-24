@@ -17,7 +17,7 @@
  *     "component": "mud-date-picker",
  *     "figma": { "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC", "scale": 2 },
  *     "defaults": {
- *       "story": "molecules-date-picker--default",
+ *       "story": "components-date-picker--default",
  *       "clock": "2025-01-07T10:00:00Z",
  *       "viewport": { "width": 1280, "height": 900 },
  *       "capture": { "selector": "mud-date-picker", "bleed": "auto" }
@@ -333,7 +333,7 @@ function validateExpectation(e, where, state, errors) {
 
 function validateCommon(obj, where, errors) {
   if (obj.story !== undefined && (typeof obj.story !== 'string' || !STORY_ID_RE.test(obj.story))) {
-    errors.push(`${where}.story must be a Storybook story id like "atoms-button--default"`);
+    errors.push(`${where}.story must be a Storybook story id like "components-button--default"`);
   }
   if (obj.clock !== undefined && Number.isNaN(Date.parse(obj.clock))) {
     errors.push(`${where}.clock must be an ISO date-time`);

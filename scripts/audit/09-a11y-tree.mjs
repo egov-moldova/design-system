@@ -20,7 +20,7 @@
  * Usage:
  *   yarn sp.dev.watch
  *   node scripts/audit/09-a11y-tree.mjs mud-button --json
- *   node scripts/audit/09-a11y-tree.mjs mud-button --story-id atoms-button--default --json
+ *   node scripts/audit/09-a11y-tree.mjs mud-button --story-id components-button--default --json
  */
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
@@ -533,8 +533,8 @@ export async function walkTabOrder(page, componentName, expectedStops) {
       // The census aggregates every instance, so the walk must too — using
       // only the FIRST match here made focus look like it had "left the
       // component" the moment it reached the second instance, ending the
-      // walk one stop early (live Storybook run, mud-button
-      // atoms-button--form-submit, 2026-09-22).
+      // walk one stop early (live Storybook run, mud-button's
+      // form-submit story, 2026-09-22).
       const hosts = Array.from(document.querySelectorAll(name));
       const deepActiveElement = root => {
         let el = root.activeElement;
@@ -754,7 +754,7 @@ function pickDefaultStoryId(target) {
     const def = stories.find(s => /default/i.test(s.name)) ?? stories[0];
     return def?.storyId ?? null;
   }
-  return inferStoryId(`Atoms/${pascal(target.bare)}`, 'Default');
+  return inferStoryId(`Components/${pascal(target.bare)}`, 'Default');
 }
 
 function pascal(s) {

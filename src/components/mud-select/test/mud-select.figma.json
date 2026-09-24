@@ -63,7 +63,7 @@
     ]
   },
   "defaults": {
-    "story": "atoms-input-select--default",
+    "story": "components-input-select--default",
     "capture": {
       "selector": "mud-select .control",
       "bleed": "auto",

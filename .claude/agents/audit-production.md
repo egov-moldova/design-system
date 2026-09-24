@@ -94,7 +94,7 @@ Dispatch pattern:
 ```
 [After Phase 2 completes, send one message with parallel tool calls:]
 
-Agent(subagent_type="a11y-verifier", prompt="componentName=mud-<name>, storyId=atoms-mud-<name>--default")
+Agent(subagent_type="a11y-verifier", prompt="componentName=mud-<name>, storyId=components-<title-slug>--default")
 Bash("node scripts/check-test-stderr.mjs --project spec src/components/mud-<name>/test/")
 Bash("yarn build")
 Bash("yarn npm audit")

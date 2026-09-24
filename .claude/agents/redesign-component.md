@@ -192,7 +192,7 @@ Update `src/components/<componentName>/<componentName>.tsx`:
 ### 5.4 Validate render
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_wait_for({ time: 2 })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
@@ -208,7 +208,7 @@ Dispatch all 5 subagents in a SINGLE message with parallel `Agent` tool calls (s
 ```
 Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=<componentName>, figmaUrl=<figma url with node-id>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=<componentName>")
-Agent(subagent_type="story-writer",           prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, atomicLevel=<atomicLevel>, writeMode=<writeMode>, figmaMetadata=<extracted-metadata>")
+Agent(subagent_type="story-writer",           prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, writeMode=<writeMode>, figmaMetadata=<extracted-metadata>")
 Agent(subagent_type="test-writer",            prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, writeMode=<writeMode>")
 Agent(subagent_type="integration-checker",    prompt="componentName=<componentName>, changeKind=redesign, apiChanges=<list-from-Step-3>")
 ```
@@ -254,7 +254,7 @@ yarn sp.build
 Check console one final time:
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
 

@@ -188,7 +188,7 @@ Navigate to each modified component's story and verify no runtime errors or warn
 
 For each modified component:
 
-1. Open `http://localhost:6007/?path=/story/atoms-mud-<name>--default`.
+1. Open `http://localhost:6007/?path=/story/components-<title-slug>--default` (slug from the stories file's `title`).
 2. Open the "Accessibility" panel.
 3. Verify zero **Violations** in light mode.
 4. Switch global `Mode → Dark` (top toolbar).

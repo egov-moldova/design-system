@@ -23,7 +23,7 @@ import {
 function manifest(states, extra = {}) {
   return {
     figma: { fileKey: 'abc123', scale: 2 },
-    defaults: { story: 'molecules-date-picker--default' },
+    defaults: { story: 'components-date-picker--default' },
     states,
     ...extra,
   };
@@ -56,7 +56,7 @@ describe('figma-manifest: validateManifest', () => {
         {
           name: 'a',
           node: 'I158:570;226:4608',
-          story: 'Molecules/Date Picker',
+          story: 'Components/Date Picker',
           clock: 'yesterday',
           capture: { bleed: -1 },
         },
@@ -227,7 +227,7 @@ describe('figma-manifest: mask', () => {
         { name: 'b', node: '1:3' },
       ],
       {
-        defaults: { story: 'molecules-date-picker--default', mask: ['mud-x .avatar'] },
+        defaults: { story: 'components-date-picker--default', mask: ['mud-x .avatar'] },
       },
     );
     assert.deepEqual(validateManifest(m), []);
@@ -248,7 +248,7 @@ describe('figma-manifest: mask', () => {
 
   it('lets a state opt out of the defaults mask with an empty list', () => {
     const m = manifest([{ name: 'a', node: '1:2', mask: [] }], {
-      defaults: { story: 'molecules-date-picker--default', mask: ['mud-x .day-cell'] },
+      defaults: { story: 'components-date-picker--default', mask: ['mud-x .day-cell'] },
     });
     assert.deepEqual(validateManifest(m), []);
     assert.deepEqual(resolveState(m, m.states[0], 'mud-x').mask, []);

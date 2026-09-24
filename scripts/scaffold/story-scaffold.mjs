@@ -47,8 +47,6 @@ Options:
                    overwrite an existing file unless --force is also set.
   --force          Overwrite an existing stories file (use with --write)
   --dry-run        Print the generated source to stdout (alias for default)
-  --atomic <atom|molecule|organism|template>
-                   Override the Storybook category (default: inferred "Atoms").
   --help, -h       Show this help`;
 
 function parseCli() {
@@ -61,7 +59,6 @@ function parseCli() {
         'write': { type: 'boolean', default: false },
         'force': { type: 'boolean', default: false },
         'dry-run': { type: 'boolean', default: false },
-        'atomic': { type: 'string' },
         'help': { type: 'boolean', short: 'h', default: false },
       },
       allowPositionals: true,
@@ -84,7 +81,6 @@ function parseCli() {
     out: parsed.values.out ?? null,
     write: parsed.values.write,
     force: parsed.values.force,
-    atomic: parsed.values.atomic ?? null,
   };
 }
 
@@ -111,8 +107,7 @@ async function main() {
     process.exit(2);
   }
 
-  const atomic = args.atomic ?? inferAtomicCategory(name);
-  const source = generateStoriesFile({ contract, atomic, target });
+  const source = generateStoriesFile({ contract, target });
 
   if (args.write) {
     if (existsSync(target.paths.stories) && !args.force) {
@@ -142,15 +137,13 @@ async function main() {
  *
  * @param {object} ctx
  * @param {object} ctx.contract  — output of extractContractFromTsx
- * @param {string} ctx.atomic    — 'atoms' | 'molecules' | 'organisms' | 'templates'
  * @param {object} [ctx.target]  — output of resolveComponentPaths (for relative imports)
  * @returns {string} TypeScript source for the stories file
  */
-export function generateStoriesFile({ contract, atomic, target }) {
+export function generateStoriesFile({ contract, target }) {
   const tag = contract.tag ?? contract.componentName;
   const bare = (contract.componentName ?? tag).replace(/^mud-/, '');
   const pascal = pascalCase(bare);
-  const titleCategory = capitalize(atomic);
   const enumsAvailable = target?.exists?.enums ?? false;
 
   const lines = [];
@@ -180,7 +173,7 @@ export function generateStoriesFile({ contract, atomic, target }) {
 
   // Meta block
   lines.push(`const meta: Meta<Args> = {`);
-  lines.push(`  title: '${titleCategory}/${pascal}',`);
+  lines.push(`  title: 'Components/${pascal}',`);
   lines.push(`  component: '${tag}',`);
   lines.push(`  argTypes: {`);
   for (const prop of contract.props) {
@@ -253,13 +246,6 @@ export function generateStoriesFile({ contract, atomic, target }) {
 }
 
 // ─── Generators (pure) ────────────────────────────────────────────────────
-
-function inferAtomicCategory(componentName) {
-  // Heuristic: components live in src/components — atomic level is encoded in
-  // the team's Storybook layout, not in the file path. Default to "atoms".
-  // Callers should override via --atomic for known molecules/organisms.
-  return 'atoms';
-}
 
 function controlFor(prop) {
   if (!prop.type) return 'text';
@@ -355,10 +341,6 @@ function pascalCase(s) {
     .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join('');
-}
-
-function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
