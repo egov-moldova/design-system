@@ -21,7 +21,7 @@ Scan existing components (see `_agents/reuse-architecture.md`), then produce:
 
 For each **✅ Reuse** or **🟡 Extend**, verify in Storybook:
 
-- [ ] Opened in Storybook: `browser_navigate({ url: "...?id=atoms-mud-[name]--default" })`
+- [ ] Opened in Storybook: `browser_navigate({ url: "...?id=components-[title-slug]--default" })`
 - [ ] Screenshot taken
 - [ ] **Figma vs Storybook**: ✅ MATCH / ❌ MISMATCH → describe diff
 - [ ] Read `.tsx` → list available props

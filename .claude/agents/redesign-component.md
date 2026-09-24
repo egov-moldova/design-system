@@ -192,7 +192,7 @@ Update `src/components/<componentName>/<componentName>.tsx`:
 ### 5.4 Validate render
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_wait_for({ time: 2 })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
@@ -254,7 +254,7 @@ yarn sp.build
 Check console one final time:
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
 

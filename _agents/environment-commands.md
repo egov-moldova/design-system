@@ -193,5 +193,5 @@ yarn svg:remove-fill           # drop hardcoded paint, keeping currentColor and 
 
 # Storybook URLs (port 6007)
 # Story iframe: http://localhost:6007/iframe.html?id={path}--{story}&viewMode=story
-# Example:      http://localhost:6007/iframe.html?id=atoms-mud-button--default&viewMode=story
+# Example:      http://localhost:6007/iframe.html?id=components-button--default&viewMode=story
 ```
