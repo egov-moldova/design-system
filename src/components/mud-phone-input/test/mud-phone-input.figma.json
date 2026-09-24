@@ -1,0 +1,588 @@
+{
+  "component": "mud-phone-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "7854:6668",
+        "reason": "Default/Default/Medium/International — the Medium column is pinned by default-medium-local and the International chip by default-large-international; this variant is their combination."
+      },
+      {
+        "node": "3318:18177",
+        "reason": "Default/Hover/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6679",
+        "reason": "Default/Hover/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "6173:6023",
+        "reason": "Default/Hover/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6690",
+        "reason": "Default/Hover/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6701",
+        "reason": "Default/Focus/Large/International — pinned by default-large-international."
+      },
+      {
+        "node": "6173:6034",
+        "reason": "Default/Focus/Medium/Local — pinned by default-medium-local."
+      },
+      {
+        "node": "7854:6715",
+        "reason": "Default/Focus/Medium/International — the Medium column is pinned by default-medium-local and the International chip by default-large-international; this variant is their combination."
+      },
+      {
+        "node": "3318:18200",
+        "reason": "Default/Loading/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6729",
+        "reason": "Default/Loading/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "6173:6048",
+        "reason": "Default/Loading/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6743",
+        "reason": "Default/Loading/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "3318:18213",
+        "reason": "Default/Filled/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6757",
+        "reason": "Default/Filled/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "6173:6062",
+        "reason": "Default/Filled/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6769",
+        "reason": "Default/Filled/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "3318:18224",
+        "reason": "Default/ReadOnly/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6781",
+        "reason": "Default/ReadOnly/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "6173:6074",
+        "reason": "Default/ReadOnly/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6794",
+        "reason": "Default/ReadOnly/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "3318:18236",
+        "reason": "Default/Disabled/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6807",
+        "reason": "Default/Disabled/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "6173:6087",
+        "reason": "Default/Disabled/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "7854:6817",
+        "reason": "Default/Disabled/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
+      },
+      {
+        "node": "3318:18245",
+        "reason": "Warning/Disabled/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6827",
+        "reason": "Warning/Disabled/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6097",
+        "reason": "Warning/Disabled/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6837",
+        "reason": "Warning/Disabled/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18254",
+        "reason": "Destructive/Disabled/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6847",
+        "reason": "Destructive/Disabled/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6107",
+        "reason": "Destructive/Disabled/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6857",
+        "reason": "Destructive/Disabled/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18263",
+        "reason": "Success/Disabled/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6867",
+        "reason": "Success/Disabled/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6117",
+        "reason": "Success/Disabled/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6877",
+        "reason": "Success/Disabled/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18272",
+        "reason": "Destructive/Default/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6887",
+        "reason": "Destructive/Default/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6127",
+        "reason": "Destructive/Default/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6898",
+        "reason": "Destructive/Default/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18282",
+        "reason": "Success/Default/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6909",
+        "reason": "Success/Default/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6138",
+        "reason": "Success/Default/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6920",
+        "reason": "Success/Default/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18292",
+        "reason": "Destructive/Hover/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6931",
+        "reason": "Destructive/Hover/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6149",
+        "reason": "Destructive/Hover/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6942",
+        "reason": "Destructive/Hover/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18302",
+        "reason": "Success/Hover/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6953",
+        "reason": "Success/Hover/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6160",
+        "reason": "Success/Hover/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6964",
+        "reason": "Success/Hover/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18312",
+        "reason": "Destructive/Filled/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6975",
+        "reason": "Destructive/Filled/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6171",
+        "reason": "Destructive/Filled/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6987",
+        "reason": "Destructive/Filled/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18323",
+        "reason": "Success/Filled/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:6999",
+        "reason": "Success/Filled/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6183",
+        "reason": "Success/Filled/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7011",
+        "reason": "Success/Filled/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18334",
+        "reason": "Warning/Default/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7023",
+        "reason": "Warning/Default/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6195",
+        "reason": "Warning/Default/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7034",
+        "reason": "Warning/Default/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18344",
+        "reason": "Warning/Hover/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7045",
+        "reason": "Warning/Hover/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6206",
+        "reason": "Warning/Hover/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7056",
+        "reason": "Warning/Hover/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18354",
+        "reason": "Warning/Filled/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7067",
+        "reason": "Warning/Filled/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6217",
+        "reason": "Warning/Filled/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7079",
+        "reason": "Warning/Filled/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18365",
+        "reason": "Destructive/Focus/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7091",
+        "reason": "Destructive/Focus/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6229",
+        "reason": "Destructive/Focus/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7105",
+        "reason": "Destructive/Focus/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18378",
+        "reason": "Success/Focus/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7119",
+        "reason": "Success/Focus/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6243",
+        "reason": "Success/Focus/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7133",
+        "reason": "Success/Focus/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18391",
+        "reason": "Destructive/Loading/Large/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7147",
+        "reason": "Destructive/Loading/Large/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6257",
+        "reason": "Destructive/Loading/Medium/Local — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7161",
+        "reason": "Destructive/Loading/Medium/International — Destructive differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18404",
+        "reason": "Success/Loading/Large/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7175",
+        "reason": "Success/Loading/Large/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6271",
+        "reason": "Success/Loading/Medium/Local — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7189",
+        "reason": "Success/Loading/Medium/International — Success differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18417",
+        "reason": "Warning/Focus/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7203",
+        "reason": "Warning/Focus/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6285",
+        "reason": "Warning/Focus/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7217",
+        "reason": "Warning/Focus/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "3318:18430",
+        "reason": "Warning/Loading/Large/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7231",
+        "reason": "Warning/Loading/Large/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "6173:6299",
+        "reason": "Warning/Loading/Medium/Local — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      },
+      {
+        "node": "7854:7245",
+        "reason": "Warning/Loading/Medium/International — Warning differs from Default only in the frame's stroke colour, which the tokens already map; nothing in the anatomy this manifest pins changes with the style axis."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-input-phone--default",
+    "capture": {
+      "selector": "mud-phone-input",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Every fixture pins the component to the 282px the Figma set draws at (3318:18167) and passes the English placeholder the frames show. The set's country is Moldova, which is also the component's default.",
+    "mask": ["mud-phone-input .flag"],
+    "maskNote": "Figma draws the flag as the 🇲🇩 emoji (3318:18569); the component ships an SVG glyph set, because a regional-indicator pair has no glyph on Windows at all. The two will never match pixel for pixel, so the flag is masked and its box is pinned by style parity instead."
+  },
+  "states": [
+    {
+      "name": "default-large-local",
+      "node": "3318:18167",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"local\"></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18171",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxHeight": "48px",
+            "paddingLeft": "6px",
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "outlineWidth": "1px",
+            "outlineColor": "#D9D9D9",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 3318:18171 pads 0 16px 0 6px — the leading edge is tight because the country chip sits in it — and gaps 12px between the chip and the number."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "3318:18567",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "36px",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "borderTopLeftRadius": "4px",
+            "columnGap": "4px"
+          },
+          "note": "Figma 3318:18567 is a fixed 36px chip, #F5F5F5 at radius 4px, padded 0 12px 0 8px, with its contents 4px apart (3318:18568). The 12px trailing padding is what the Local variant puts where International has its chevron."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "3318:18570",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#121212"
+          },
+          "note": "Figma 3318:18570 sets the dial code in Desktop/Body/Default #121212."
+        },
+        {
+          "target": "mud-phone-input .label",
+          "node": "3318:18169",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838",
+            "columnGap": "4px"
+          },
+          "note": "Figma 3318:18169 is Desktop/Body/Small — regular, not medium — in #383838; 3318:18168 gaps the label and its asterisk by 4px."
+        },
+        {
+          "target": "mud-phone-input .native",
+          "node": "3318:18175",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "Figma 3318:18175 is Desktop/Body/Default. Its #757575 is the placeholder colour, which lives on ::placeholder and no computed style can reach."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "absent": true,
+          "node": "3318:18567",
+          "note": "The Local chip has no chevron — the country is fixed, so there is nothing to open. 7854:7374 adds one only in the International variant."
+        }
+      ]
+    },
+    {
+      "name": "default-large-international",
+      "node": "7854:6657",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\"></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "7854:6662",
+          "styles": {
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "boxHeight": "36px",
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "4px"
+          },
+          "note": "Figma 7854:6662 pads the International chip 0 8px — symmetric, because the chevron occupies the space the Local variant pads out."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "node": "7854:7374",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 7854:7374 is 16/chevron-bottom-filled at 16x16, the third child of the chip's inner row."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6661",
+          "styles": {
+            "paddingLeft": "6px",
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "boxHeight": "48px"
+          },
+          "note": "Figma 7854:6661 keeps the Local frame's padding and gap; only the chip differs between the two types."
+        }
+      ],
+      "capture": {
+        "selector": "mud-phone-input",
+        "bleed": 0
+      },
+      "captureNote": "This is the only type that renders the country listbox, and the popover carries a drop shadow even while hidden, which `bleed: \"auto\"` would union into the frame. The variant has no shadow of its own, so the capture takes none."
+    },
+    {
+      "name": "default-medium-local",
+      "node": "6173:6012",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"md\" type=\"local\"></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .control",
+          "node": "6173:6016",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "4px",
+            "paddingRight": "12px",
+            "columnGap": "12px"
+          },
+          "note": "Figma 6173:6016 drops to 40px and pads 0 12px 0 4px; the 12px gap does not change with the size."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "6173:6017",
+          "styles": {
+            "boxHeight": "32px",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "borderTopLeftRadius": "4px"
+          },
+          "note": "Figma 6173:6017 is a 32px chip on the Medium field, with the same padding and radius as Large."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "6173:6020",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 6173:6020 steps the dial code down to Desktop/Body/Small."
+        },
+        {
+          "target": "mud-phone-input .native",
+          "node": "6173:6021",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 6173:6021 steps the number down with it."
+        }
+      ]
+    },
+    {
+      "name": "focus-large-local",
+      "node": "3318:18187",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"local\"></mud-phone-input></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-phone-input .native"
+      },
+      "expect": [
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18191",
+          "styles": {
+            "outlineColor": "#0058D2",
+            "boxShadow": "0px 0px 0px 4px #ccdef6"
+          },
+          "note": "Figma 3318:18191 strokes 2px #0058D2 and carries Focus Ring/Large/Default, `0 0 0 4px #CCDEF6`. The second border pixel is an inset shadow on the emphasis overlay, so the outer ring is the only shadow on the control itself."
+        }
+      ]
+    }
+  ]
+}

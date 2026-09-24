@@ -1,7 +1,9 @@
 :host {
   --_height: var(--phone-input-container-height-md);
+  --_padding-inline-start: var(--phone-input-container-padding-inline-start-md);
   --_padding-inline: var(--phone-input-container-padding-inline-md);
   --_gap: var(--phone-input-container-gap-md);
+  --_trigger-height: var(--phone-input-country-trigger-height-md);
   --_radius: var(--phone-input-container-border-radius);
   --_border-width-default: var(--phone-input-container-border-width-default);
   --_border-width-emphasized: var(--phone-input-container-border-width-emphasized);
@@ -45,8 +47,10 @@
 
 :host([size='lg']) {
   --_height: var(--phone-input-container-height-lg);
+  --_padding-inline-start: var(--phone-input-container-padding-inline-start-lg);
   --_padding-inline: var(--phone-input-container-padding-inline-lg);
   --_gap: var(--phone-input-container-gap-lg);
+  --_trigger-height: var(--phone-input-country-trigger-height-lg);
   --_control-font-size: var(--phone-input-control-font-size-lg);
   --_control-line-height: var(--phone-input-control-line-height-lg);
   --_icon-size: var(--phone-input-icon-size-lg);
@@ -153,12 +157,20 @@
   align-items: center;
   gap: var(--_gap);
   block-size: var(--_height);
-  padding-inline: var(--_padding-inline);
+  /* Figma 3318:18171 pads the frame asymmetrically: the country chip sits in
+     the leading edge, so only the trailing edge carries the field padding. */
+  padding-inline-start: var(--_padding-inline-start);
+  padding-inline-end: var(--_padding-inline);
   background-color: var(--_bg);
-  border: var(--_border-width-default) solid var(--_border-color);
+  /* A Figma stroke sits inside the frame and moves nothing (3318:18171), while
+     a CSS border would push the country chip and the number a pixel further in.
+     An outline pulled inside the box keeps the design's geometry. */
+  border: 0;
+  outline: var(--_border-width-default) solid var(--_border-color);
+  outline-offset: calc(-1 * var(--_border-width-default));
   border-radius: var(--_radius);
   transition:
-    border-color var(--_transition-duration) var(--_transition-easing),
+    outline-color var(--_transition-duration) var(--_transition-easing),
     box-shadow var(--_transition-duration) var(--_transition-easing),
     background-color var(--_transition-duration) var(--_transition-easing);
 }
@@ -168,29 +180,29 @@
    element, not on `.control` itself: an autofilled `.native` paints an opaque
    `-webkit-box-shadow` fill over the control's own background and would clip
    the ring's top and bottom edges. The overlay paints after the native input,
-   so the ring stays whole. It spans the padding box (`inset: 0`), whose radius
-   is the control's minus the border it sits inside. */
+   so the ring stays whole. The frame's own stroke is an outline pulled inside
+   the box, so this spans the same box and carries the emphasised width whole
+   rather than the difference. */
 .control::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: calc(var(--_radius) - var(--_border-width-default));
+  border-radius: var(--_radius);
   pointer-events: none;
   transition: box-shadow var(--_transition-duration) var(--_transition-easing);
 }
 
 :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):not(.is-open):hover) .control {
-  border-color: var(--_border-color-hover);
+  outline-color: var(--_border-color-hover);
 }
 
 :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):not(.is-open):hover) .control::after {
-  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
-    var(--_border-color-hover);
+  box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-hover);
 }
 
 :host(.is-focused:not(.is-disabled):not(.is-readonly)) .control,
 :host(.is-open:not(.is-disabled):not(.is-readonly)) .control {
-  border-color: var(--_border-color-focus);
+  outline-color: var(--_border-color-focus);
   /* The outer focus ring is drawn outside the control, where the native input
      cannot reach it — it stays on `.control`. */
   box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
@@ -198,12 +210,11 @@
 
 :host(.is-focused:not(.is-disabled):not(.is-readonly)) .control::after,
 :host(.is-open:not(.is-disabled):not(.is-readonly)) .control::after {
-  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
-    var(--_border-color-focus);
+  box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-focus);
 }
 
 :host(.is-readonly) .control {
-  border-color: var(--phone-input-default-border-read-only);
+  outline-color: var(--phone-input-default-border-read-only);
   cursor: default;
 }
 
@@ -223,11 +234,17 @@
 }
 
 :host(.is-disabled) .control {
-  border-color: var(--phone-input-default-border-disabled);
+  outline-color: var(--phone-input-default-border-disabled);
   cursor: not-allowed;
 }
 
 /* ---------- Country trigger ---------- */
+
+/* Figma 3318:18567 gives the Local chip 12px on the trailing edge, where the
+   International chip (7854:6662) puts its chevron instead. */
+:host([type='local']) .country-trigger {
+  padding-inline-end: var(--phone-input-country-trigger-padding-inline-end-local);
+}
 
 .country-trigger {
   display: inline-flex;
@@ -235,8 +252,9 @@
   gap: var(--phone-input-country-trigger-gap);
   margin: 0;
   border: 0;
-  padding-inline: var(--phone-input-country-trigger-padding-inline);
-  padding-block: var(--phone-input-country-trigger-padding-block);
+  block-size: var(--_trigger-height);
+  padding-inline-start: var(--phone-input-country-trigger-padding-inline);
+  padding-inline-end: var(--phone-input-country-trigger-padding-inline);
   background-color: var(--phone-input-country-trigger-background-default);
   border-radius: var(--phone-input-country-trigger-border-radius);
   font-family: var(--phone-input-country-trigger-font-family);

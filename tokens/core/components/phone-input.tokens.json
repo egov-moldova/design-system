@@ -8,13 +8,22 @@
         "md": { "$value": "{spacing.40}", "$type": "dimension" },
         "lg": { "$value": "{spacing.48}", "$type": "dimension" }
       },
+      "$comment": "The frame is padded asymmetrically (3318:18171, 6173:6016): the leading edge is tight because the country chip sits in it, the trailing edge carries the ordinary field padding.",
+      "paddingInlineStart": {
+        "md": { "$value": "{spacing.4}", "$type": "dimension", "$comment": "Figma 6173:6016 pads 0 12px 0 4px." },
+        "lg": { "$value": "{spacing.6}", "$type": "dimension", "$comment": "Figma 3318:18171 pads 0 16px 0 6px." }
+      },
       "paddingInline": {
         "md": { "$value": "{spacing.12}", "$type": "dimension" },
         "lg": { "$value": "{spacing.16}", "$type": "dimension" }
       },
       "gap": {
-        "md": { "$value": "{spacing.8}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.8}", "$type": "dimension" }
+        "md": {
+          "$value": "{spacing.12}",
+          "$type": "dimension",
+          "$comment": "Figma 6173:6016 and 3318:18171 both gap the chip and the number by 12px — it does not scale with the size."
+        },
+        "lg": { "$value": "{spacing.12}", "$type": "dimension" }
       },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "borderWidth": {
@@ -42,7 +51,11 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontWeight": {
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight",
+        "$comment": "Figma 3318:18169 sets the label in Desktop/Body/Small, which is regular."
+      },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
@@ -142,10 +155,39 @@
       "focusRing": { "$value": "{focusRing.color.halo.positive}", "$type": "color" }
     },
     "countryTrigger": {
-      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
-      "paddingInline": { "$value": "{spacing.8}", "$type": "dimension" },
-      "paddingBlock": { "$value": "{spacing.4}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+      "$comment": "The chip is a fixed-height pill inside the frame (3318:18567 on Large, 6173:6017 on Medium), not a padding-grown box.",
+      "height": {
+        "md": {
+          "$value": "{spacing.32}",
+          "$type": "dimension",
+          "$comment": "Figma 6173:6017 is 32px inside the 40px frame."
+        },
+        "lg": {
+          "$value": "36px",
+          "$type": "dimension",
+          "$comment": "Figma 3318:18567 is 36px inside the 48px frame. The spacing scale steps 32 → 40, so this rung is a literal."
+        }
+      },
+      "gap": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Figma 3318:18568 puts 4px between the flag, the dial code and the chevron."
+      },
+      "paddingInline": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma 3318:18567 / 7854:6662 pad the leading edge 8px in both types."
+      },
+      "paddingInlineEndLocal": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma 3318:18567 pads the Local chip 12px on the trailing edge — the space the International chip gives its chevron (7854:7374)."
+      },
+      "borderRadius": {
+        "$value": "{borderRadius.4}",
+        "$type": "dimension",
+        "$comment": "Figma 3318:18567 rounds the chip 4px."
+      },
       "background": {
         "default": { "$value": "{color.background.base.secondary}", "$type": "color" },
         "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
@@ -179,13 +221,18 @@
       }
     },
     "flag": {
+      "$comment": "Figma draws the flag as the 🇲🇩 emoji (3318:18569 — Onest Medium 24px on Large, 22px on Medium); the component ships an SVG set instead, whose own documented trigger size is 20x14 (see mud-phone-input.flags.ts). At 20x14 the chip comes out within a pixel of the frame Figma draws, where the 24x16 these rungs used to carry made it 5px wider.",
       "width": {
         "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
       },
       "height": {
-        "md": { "$value": "{spacing.16}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.16}", "$type": "dimension" }
+        "md": {
+          "$value": "14px",
+          "$type": "dimension",
+          "$comment": "The glyph set's 10:7 ratio; the spacing scale has no 14."
+        },
+        "lg": { "$value": "14px", "$type": "dimension" }
       },
       "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
       "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
