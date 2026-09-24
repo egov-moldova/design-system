@@ -192,6 +192,14 @@ export class MudFileInput {
   componentWillLoad() {
     this.syncFormValue(this.files);
     this.syncValidity(this.files);
+    // Static-capture affordance, the render-side counterpart of the
+    // `.is-hover-demo` / `.is-focus-demo` classes the CSS honours: a drag-over
+    // cannot be produced by a story or by the Figma verification harness, and
+    // this state swaps DOM (the icon and the call to action give way to the
+    // drop line), so a class alone could not paint it. Read once at load —
+    // adding it later has no effect, which is what keeps it out of the
+    // component's real behaviour.
+    if (this.host.classList.contains('is-active-demo')) this.isActive = true;
   }
 
   componentWillRender() {
@@ -652,12 +660,16 @@ export class MudFileInput {
         {isButton
           ? [
               hasCaptions ? (
+                /*
+                  Figma 616:6921 writes the button composition's caption as ONE
+                  Body/Small line — "Supported formats: jpg, png, pdf. Maximum
+                  size: 100 MB" — where the drop zone (262:6711) splits the same
+                  two facts across the ends of a row. One element carries both
+                  part names so consumers keep either hook in either variant.
+                */
                 <div class="captions captions--inline" part="captions">
-                  <span class="captions__formats" part="captions-formats">
-                    {supportedFormats}
-                  </span>
-                  <span class="captions__max-size" part="captions-max-size">
-                    {maxSizeCaption}
+                  <span class="captions__formats" part="captions-formats captions-max-size">
+                    {[supportedFormats, maxSizeCaption].filter(Boolean).join('. ')}
                   </span>
                 </div>
               ) : null,
@@ -666,7 +678,7 @@ export class MudFileInput {
                 part="upload-button"
                 variant="primary"
                 appearance="filled"
-                size={this.size === 'lg' ? 'md' : 'sm'}
+                size={this.size === 'lg' ? 'lg' : 'md'}
                 disabled={effectivelyDisabled}
                 aria-label={ariaLabelAttr}
                 aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
@@ -703,7 +715,7 @@ export class MudFileInput {
                 {!isActiveNow ? (
                   <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
                     <slot name="icon">
-                      <mud-icon name="cloud-upload" size={24} color="icon-base-default" />
+                      <mud-icon name="cloud-upload" size={24} />
                     </slot>
                   </span>
                 ) : null}
@@ -736,7 +748,7 @@ export class MudFileInput {
                   )}
                 </span>
               </div>,
-              !isActiveNow && hasCaptions ? (
+              hasCaptions ? (
                 <div class="captions" part="captions">
                   <span class="captions__formats" part="captions-formats">
                     {supportedFormats}

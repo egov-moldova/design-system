@@ -47,7 +47,7 @@ describe('report block: the summary is the verdict, row for row', () => {
       const hits = block.split('\n').filter(l => l.startsWith(`| ${x.id} |`));
       assert.equal(hits.length, 1, `entry ${x.id} appears ${hits.length} times`);
     }
-    assert.match(block, /^\| 02 \| check-02 \| yes \| fail \| 1 \| 0 \|/m);
+    assert.match(block, /^\| 02 \| check-02 \| yes \| ❌ fail \| 1 \| 0 \|/m);
     assert.match(block, /^Entries: 2 FAIL · 0 INCOMPLETE · 0 NEEDS-DECISION · 0 warnings · 1 advisory$/m);
   });
 
@@ -64,7 +64,7 @@ describe('report block: the summary is the verdict, row for row', () => {
     const v = computeVerdict({ envelope: cleanEnvelope({ noFigma: true }) });
     const brief = renderFixBrief(v);
     const excused = v.rows.find(r => r.excuse);
-    assert.match(brief, new RegExp(`^\\| ${excused.id} \\| — \\| yes \\| excused \\| 0 \\| 0 \\| figma`, 'm'));
+    assert.match(brief, new RegExp(`^\\| ${excused.id} \\| — \\| yes \\| ➖ excused \\| 0 \\| 0 \\| figma`, 'm'));
   });
 
   it('a deferred row reads deferred, and findings no entry carries are shown, never a pass', () => {
@@ -77,9 +77,9 @@ describe('report block: the summary is the verdict, row for row', () => {
     v.rows.push({ id: 'e2e', name: 'e2e', required: false, status: 'skipped', deferred: 'no E2E project' });
     v.rows.push({ id: 'r9', name: 'warn-only', required: true, status: 'ok', errors: 0, warnings: 3 });
     const brief = renderFixBrief(v);
-    assert.match(brief, /^\| 16 \| check-16 \| yes \| not graded \(1 errors, 0 warnings\) \| 0 \| 0 \|/m);
-    assert.match(brief, /^\| e2e \| e2e \| no \| deferred \|/m);
-    assert.match(brief, /^\| r9 \| warn-only \| yes \| not graded \(0 errors, 3 warnings\) \|/m);
+    assert.match(brief, /^\| 16 \| check-16 \| yes \| ⚠️ not graded \(1 errors, 0 warnings\) \| 0 \| 0 \|/m);
+    assert.match(brief, /^\| e2e \| e2e \| no \| ➖ deferred \|/m);
+    assert.match(brief, /^\| r9 \| warn-only \| yes \| ⚠️ not graded \(0 errors, 3 warnings\) \|/m);
   });
 
   it('a run that checked nothing says so instead of printing an empty table', () => {
@@ -97,7 +97,7 @@ describe('report block: hostile text', () => {
     const v = computeVerdict({ envelope: withError(cleanEnvelope(), '02', { actual: 'x\u001b[2K\u001b[1Ay' }) });
     const brief = renderFixBrief(v);
     assert.doesNotMatch(brief, /\u001b/);
-    assert.match(brief, /x�\[2K�\[1Ay/);
+    assert.match(brief, /x�\\\[2K�\\\[1Ay/);
   });
 
   it('a finding carrying the end marker cannot cut the block short', () => {

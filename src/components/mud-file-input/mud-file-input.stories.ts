@@ -172,53 +172,43 @@ const cell = (caption: string, body: string) => /*html*/ `
 export const AllStates: Story = {
   name: 'All States',
   render: () =>
-    wrap(
-      [
-        cell(
-          'default',
-          /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+    grid(
+      ...(
+        [
+          ['default', {}],
+          ['hover', { class: 'is-hover-demo' }],
+          ['focus', { class: 'is-focus-demo' }],
+          ['active', { class: 'is-active-demo' }],
+          ['disabled', { disabled: '' }],
+          ['invalid + error', { 'invalid': '', 'error-text': 'Trebuie să atașați cel puțin un document' }],
+        ] as [string, Record<string, string>][]
+      ).map(([caption, attrs]) =>
+        filesCell(
+          caption,
+          {
+            'multiple': '',
+            'supported-formats-text': 'Formate acceptate: jpg, png, pdf',
+            'max-size-text': 'Mărime maximă: 100 MB',
+            ...attrs,
+          },
+          [
+            { name: 'declaratie-impozit-2025.pdf', size: 1_840_000 },
+            { name: 'contract-utilitati.pdf', size: 1_840_000 },
+          ],
         ),
-        cell(
-          'hover',
-          /*html*/ `<mud-file-input class="is-hover-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-        cell(
-          'focus',
-          /*html*/ `<mud-file-input class="is-focus-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-        cell(
-          'active',
-          /*html*/ `<mud-file-input id="fi-allstates-active" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-        cell(
-          'disabled',
-          /*html*/ `<mud-file-input size="lg" disabled supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-        cell(
-          'invalid + error',
-          /*html*/ `<mud-file-input size="lg" invalid error-text="Trebuie să atașați cel puțin un document" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-      ].join(''),
+      ),
     ),
-  // Drive the `active` cell into its drag-over state post-mount so the matrix
-  // shows it statically (hover + focus use the `.is-*-demo` helper classes).
-  play: async ({ canvasElement }) => {
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    const host = canvasElement.querySelector('#fi-allstates-active') as HTMLElement | null;
-    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
-    dropzone?.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
-  },
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
         code: [
-          '<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
+          '<mud-file-input supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
           '<!-- hover: pointer over dropzone (blue dashed border) -->',
           '<!-- focus: Tab onto dropzone (blue solid border + ring) -->',
           '<!-- active: drag a file over the dropzone (blue fill + "Drop files to upload") -->',
-          '<mud-file-input size="lg" disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
-          '<mud-file-input size="lg" invalid error-text="…"></mud-file-input>',
+          '<mud-file-input disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
+          '<mud-file-input invalid error-text="…"></mud-file-input>',
         ].join('\n'),
       },
     },
@@ -256,28 +246,18 @@ export const Active: Story = {
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <mud-file-input
-        size="lg"
+        class="is-active-demo"
         supported-formats-text="Formate acceptate: jpg, png, pdf"
         max-size-text="Mărime maximă: 100 MB"
       ></mud-file-input>
     </div>
   `,
-  play: async ({ canvasElement }) => {
-    // canvasElement is a real DOM node — Storybook lets us drive a real
-    // dragenter against the dropzone, which sets the @State and triggers a
-    // re-render. We wait one microtask for hydration, then dispatch.
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-    const host = canvasElement.querySelector('mud-file-input') as HTMLElement | null;
-    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
-    if (!dropzone) return;
-    dropzone.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
-  },
   parameters: {
     controls: { disable: true },
     docs: {
       description: {
         story:
-          'Drag-over presentation. When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, the icon-circle and CTA collapse to a single line of `dropzone-active-text`, and the caption row hides.',
+          'Drag-over presentation, painted statically by the `is-active-demo` class (a real dragenter cannot be scripted from a story). When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, and the icon-circle and CTA collapse to a single line of `dropzone-active-text`. The captions stay, as in Figma 262:6719.',
       },
       source: {
         code: '<mud-file-input size="lg"></mud-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
@@ -352,6 +332,69 @@ export const WithCustomCopy: Story = {
 // Pre-populated demo using DataTransfer to seed File objects on the host.
 // Storybook's rendered HTML cannot carry runtime File arrays via attributes,
 // so we hydrate after mount.
+const MIME_BY_EXTENSION: Record<string, string> = {
+  pdf: 'application/pdf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+};
+
+/** A 1x1 transparent PNG, so image rows get a real thumbnail instead of a broken one. */
+const PIXEL_PNG = Uint8Array.from(
+  atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='),
+  c => c.charCodeAt(0),
+);
+
+/**
+ * A stand-in `File` for the stories: the component reads a file's name, size
+ * and type, never its bytes, and allocating megabytes per cell to show
+ * "1.8 MB" would be wasteful. Image rows still carry a real pixel so the
+ * thumbnail resolves.
+ */
+const makeFile = (name: string, size: number): File => {
+  const type = MIME_BY_EXTENSION[name.split('.').pop()?.toLowerCase() ?? ''] ?? 'application/octet-stream';
+  const file = new File(type.startsWith('image/') ? [PIXEL_PNG] : [], name, { type });
+  Object.defineProperty(file, 'size', { value: size });
+  return file;
+};
+
+/**
+ * A cell whose file input carries a real list. `files` is a `File[]` property,
+ * so it cannot come from markup — the cell is built as DOM and the property is
+ * assigned before the element is inserted.
+ */
+const filesCell = (
+  caption: string,
+  attrs: Record<string, string>,
+  files: { name: string; size: number }[],
+): HTMLElement => {
+  const column = document.createElement('div');
+  column.style.cssText = 'display: flex; flex-direction: column; gap: var(--spacing-8);';
+
+  const label = document.createElement('span');
+  label.setAttribute('style', cellLabelStyle);
+  label.textContent = caption;
+
+  const input = document.createElement('mud-file-input') as HTMLElement & { files: File[] };
+  for (const [name, value] of Object.entries(attrs)) input.setAttribute(name, value);
+  input.files = files.map(file => makeFile(file.name, file.size));
+
+  column.append(label, input);
+  return column;
+};
+
+/** `wrap`, for stories that mix markup cells with DOM ones. */
+const grid = (...cells: (string | Node)[]): HTMLElement => {
+  const container = document.createElement('div');
+  container.style.cssText =
+    'display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24);';
+  for (const cellContent of cells) {
+    if (typeof cellContent === 'string') container.insertAdjacentHTML('beforeend', cellContent);
+    else container.appendChild(cellContent);
+  }
+  return container;
+};
+
 const preloadedHtml = (
   caption: string,
   extraAttrs: string,
@@ -379,16 +422,14 @@ const preloadedHtml = (
 export const SingleFile: Story = {
   name: 'Single File',
   render: () =>
-    wrap(
-      [
-        cell(
-          'idle (single mode)',
-          /*html*/ `<mud-file-input size="lg" label="Buletin de identitate" max-size="5242880" accept=".pdf"></mud-file-input>`,
-        ),
-        preloadedHtml('after upload', 'max-size="5242880" accept=".pdf"', [
-          { name: 'buletin-identitate.pdf', size: 245320, state: 'success' },
-        ]),
-      ].join(''),
+    grid(
+      cell(
+        'idle (single mode)',
+        /*html*/ `<mud-file-input label="Buletin de identitate" max-size="5242880" accept=".pdf"></mud-file-input>`,
+      ),
+      filesCell('after upload', { 'label': 'Buletin de identitate', 'max-size': '5242880', 'accept': '.pdf' }, [
+        { name: 'buletin-identitate.pdf', size: 245320 },
+      ]),
     ),
   parameters: {
     controls: { disable: true },
@@ -403,18 +444,26 @@ export const SingleFile: Story = {
 export const MultipleFiles: Story = {
   name: 'Multiple Files',
   render: () =>
-    wrap(
-      [
-        cell(
-          'idle (multiple)',
-          /*html*/ `<mud-file-input size="lg" label="Documente" multiple max-files="5" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
-        ),
-        preloadedHtml('after upload (3 files)', 'max-files="5"', [
-          { name: 'declaratie-impozit-2025.pdf', size: 245320, state: 'success' },
-          { name: 'contract-utilitati.pdf', size: 1840320, state: 'success' },
-          { name: 'buletin-identitate.jpg', size: 124000, state: 'success' },
-        ]),
-      ].join(''),
+    grid(
+      cell(
+        'idle (multiple)',
+        /*html*/ `<mud-file-input label="Documente" multiple max-files="5" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+      ),
+      filesCell(
+        'after upload (3 files)',
+        {
+          'label': 'Documente',
+          'multiple': '',
+          'max-files': '5',
+          'supported-formats-text': 'Formate acceptate: jpg, png, pdf',
+          'max-size-text': 'Mărime maximă: 100 MB',
+        },
+        [
+          { name: 'declaratie-impozit-2025.pdf', size: 245320 },
+          { name: 'contract-utilitati.pdf', size: 1840320 },
+          { name: 'buletin-identitate.jpg', size: 124000 },
+        ],
+      ),
     ),
   parameters: {
     controls: { disable: true },
@@ -435,14 +484,18 @@ export const WithMaxSize: Story = {
           '5 MB limit (auto-derived caption)',
           /*html*/ `<mud-file-input size="lg" label="Documente" max-size="5242880"></mud-file-input>`,
         ),
-        preloadedHtml('rejected oversize', 'max-size="5242880"', [
-          {
-            name: 'declaratie-foarte-mare.pdf',
-            size: 14_000_000,
-            state: 'error',
-            error: 'Fișierul depășește limita de 5 MB',
-          },
-        ]),
+        preloadedHtml(
+          'rejected oversize',
+          `max-size="5242880" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"`,
+          [
+            {
+              name: 'declaratie-foarte-mare.pdf',
+              size: 14_000_000,
+              state: 'error',
+              error: 'Fișierul depășește limita de 5 MB',
+            },
+          ],
+        ),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },
@@ -510,24 +563,21 @@ export const WithError: Story = {
 export const EdgeCases: Story = {
   name: 'Edge Cases',
   render: () =>
-    wrap(
-      [
-        cell(
-          'long label truncation',
-          /*html*/ `<mud-file-input size="lg" label="Moldova's digital evolution requires that you upload the complete identification documentation in a single submission"></mud-file-input>`,
-        ),
-        cell(
-          'long helper truncation (two lines)',
-          /*html*/ `<mud-file-input size="lg" label="Documente" helper-text="Acceptăm fișiere PDF, JPG sau PNG, până la 5 MB per fișier, încărcate într-o singură sesiune; documentele scanate trebuie să fie lizibile și să includă semnătura"></mud-file-input>`,
-        ),
-        preloadedHtml('long filenames in list', '', [
-          {
-            name: 'moldova-digital-transformation-strategy-2025-2030-final-version-approved-by-government.pdf',
-            size: 2_400_000,
-            state: 'success',
-          },
-        ]),
-      ].join(''),
+    grid(
+      cell(
+        'long label truncation',
+        /*html*/ `<mud-file-input label="Moldova's digital evolution requires that you upload the complete identification documentation in a single submission"></mud-file-input>`,
+      ),
+      cell(
+        'long helper truncation (two lines)',
+        /*html*/ `<mud-file-input label="Documente" helper-text="Acceptăm fișiere PDF, JPG sau PNG, până la 5 MB per fișier, încărcate într-o singură sesiune; documentele scanate trebuie să fie lizibile și să includă semnătura"></mud-file-input>`,
+      ),
+      filesCell('long filenames in list', { label: 'Documente', multiple: '' }, [
+        {
+          name: 'moldova-digital-transformation-strategy-2025-2030-final-version-approved-by-government.pdf',
+          size: 2_400_000,
+        },
+      ]),
     ),
   parameters: { controls: { disable: true } },
 };
@@ -539,21 +589,26 @@ export const EdgeCases: Story = {
 export const UploadButton: Story = {
   name: 'Upload Button (variant)',
   render: () =>
-    wrap(
-      [
-        cell(
-          'single',
-          /*html*/ `<mud-file-input variant="button" size="lg" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>`,
-        ),
-        preloadedHtml(
-          'multiple + uploaded',
-          'variant="button" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"',
-          [
-            { name: 'declaratie-impozit-2025.pdf', size: 1_840_000, state: 'success' },
-            { name: 'contract-utilitati.pdf', size: 1_840_000, state: 'success' },
-          ],
-        ),
-      ].join(''),
+    grid(
+      cell(
+        'single',
+        /*html*/ `<mud-file-input variant="button" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>`,
+      ),
+      filesCell(
+        'multiple + uploaded',
+        {
+          'variant': 'button',
+          'label': 'Încarcă fișiere',
+          'multiple': '',
+          'choose-files-text': 'Alege fișier',
+          'accept': '.pdf,image/png,image/jpeg',
+          'max-size': '104857600',
+        },
+        [
+          { name: 'declaratie-impozit-2025.pdf', size: 1_840_000 },
+          { name: 'contract-utilitati.pdf', size: 1_840_000 },
+        ],
+      ),
     ),
   parameters: {
     controls: { disable: true },

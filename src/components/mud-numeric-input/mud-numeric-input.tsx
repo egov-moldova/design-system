@@ -235,6 +235,13 @@ export class MudNumericInput {
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaValuetext?: string;
 
+  /**
+   * Whether the current value falls outside `min` / `max`. Kept as state so the
+   * control can carry `aria-invalid` for a value that is actually wrong, the
+   * way `internals.validity` already reports it to the form.
+   */
+  @State() private outOfRange: boolean = false;
+
   @Element() host!: HTMLMudNumericInputElement;
 
   @AttachInternals() internals!: ElementInternals;
@@ -269,32 +276,6 @@ export class MudNumericInput {
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
 
-  connectedCallback() {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-  }
-
-  disconnectedCallback() {
-    this.stopAriaLabel?.();
-  }
-
-  componentWillLoad() {
-    this.captureAriaValuetext();
-    this.initialValue = this.value;
-    this.displayValue = this.formatForDisplay(this.value);
-    this.syncFormValue(this.value);
-    this.syncValidity();
-  }
-
-  private captureAriaValuetext() {
-    const valueTextAttr = this.host.getAttribute('aria-valuetext');
-    if (valueTextAttr && valueTextAttr.length > 0) {
-      this.resolvedAriaValuetext = valueTextAttr;
-      this.host.removeAttribute('aria-valuetext');
-    } else if (this.ariaValuetext && this.ariaValuetext.length > 0) {
-      this.resolvedAriaValuetext = this.ariaValuetext;
-    }
-  }
-
   @Watch('ariaValuetext')
   syncAriaValuetextProp(next?: string) {
     if (next && next.length > 0) this.resolvedAriaValuetext = next;
@@ -313,34 +294,6 @@ export class MudNumericInput {
   @Watch('max')
   onMaxChange() {
     this.syncValidity();
-  }
-
-  private syncValidity() {
-    if (!this.internals) return;
-    const flags: ValidityStateFlags = {};
-    let message: string | undefined;
-    const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
-
-    if (this.required && isEmpty) {
-      flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
-    } else if (!isEmpty) {
-      const v = this.value as number;
-      if (this.min !== undefined && v < this.min) {
-        flags.rangeUnderflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea minimă este ${this.min}.`;
-      } else if (this.max !== undefined && v > this.max) {
-        flags.rangeOverflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea maximă este ${this.max}.`;
-      }
-    }
-
-    const anchor = this.nativeEl ?? undefined;
-    if (Object.keys(flags).length > 0) {
-      this.internals.setValidity(flags, message, anchor);
-    } else {
-      this.internals.setValidity({}, undefined, anchor);
-    }
   }
 
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
@@ -380,6 +333,22 @@ export class MudNumericInput {
     }
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
+  componentWillLoad() {
+    this.captureAriaValuetext();
+    this.initialValue = this.value;
+    this.displayValue = this.formatForDisplay(this.value);
+    this.syncFormValue(this.value);
+    this.syncValidity();
+  }
+
   formDisabledCallback(disabled: boolean) {
     this.fieldsetDisabled = disabled;
   }
@@ -398,6 +367,50 @@ export class MudNumericInput {
       this.displayValue = state;
       this.syncFormValue(this.value);
       this.syncValidity();
+    }
+  }
+
+  private captureAriaValuetext() {
+    const valueTextAttr = this.host.getAttribute('aria-valuetext');
+    if (valueTextAttr && valueTextAttr.length > 0) {
+      this.resolvedAriaValuetext = valueTextAttr;
+      this.host.removeAttribute('aria-valuetext');
+    } else if (this.ariaValuetext && this.ariaValuetext.length > 0) {
+      this.resolvedAriaValuetext = this.ariaValuetext;
+    }
+  }
+
+  private syncValidity() {
+    if (!this.internals) return;
+    const flags: ValidityStateFlags = {};
+    let message: string | undefined;
+    const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
+
+    if (this.required && isEmpty) {
+      flags.valueMissing = true;
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+    } else if (!isEmpty) {
+      const v = this.value as number;
+      if (this.min !== undefined && v < this.min) {
+        flags.rangeUnderflow = true;
+        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea minimă este ${this.min}.`;
+      } else if (this.max !== undefined && v > this.max) {
+        flags.rangeOverflow = true;
+        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea maximă este ${this.max}.`;
+      }
+    }
+
+    // `valueMissing` deliberately does NOT raise `aria-invalid`: an untouched
+    // required field is empty, not wrong, and announcing it as invalid before
+    // the citizen has typed anything is noise. A value outside min/max is a
+    // concrete error and does raise it.
+    this.outOfRange = Boolean(flags.rangeUnderflow || flags.rangeOverflow);
+
+    const anchor = this.nativeEl ?? undefined;
+    if (Object.keys(flags).length > 0) {
+      this.internals.setValidity(flags, message, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
     }
   }
 
@@ -784,7 +797,7 @@ export class MudNumericInput {
             aria-label={ariaLabelAttr}
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-describedby={this.describedBy()}
-            aria-invalid={this.invalid ? 'true' : null}
+            aria-invalid={this.invalid || this.outOfRange ? 'true' : null}
             aria-valuenow={ariaValueNow}
             aria-valuemin={this.min !== undefined ? String(this.min) : undefined}
             aria-valuemax={this.max !== undefined ? String(this.max) : undefined}
@@ -818,7 +831,8 @@ export class MudNumericInput {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
-              <mud-icon name="cross-small" size={this.size === 'lg' ? 20 : 16} />
+              {/* Figma 210:2287 keeps the glyph at 16px on both field sizes. */}
+              <mud-icon name="cross-small" size={16} />
             </button>
           ) : null}
 

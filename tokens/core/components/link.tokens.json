@@ -24,7 +24,8 @@
         "$type": "dimension"
       },
       "borderRadius": {
-        "$value": "{borderRadius.4}",
+        "$comment": "Zero, and it shows only on the focus ring: the container has no background and no border, so the radius shapes nothing else. Figma's link frames carry no corner radius (57:465), and its Focus Ring/Small renders with square corners.",
+        "$value": "{borderRadius.0}",
         "$type": "dimension"
       },
       "transitionDuration": {
@@ -67,8 +68,11 @@
         "$comment": "Hover thickens the underline to 1.5px per Figma 661:7090 (no 1.5px borderWidth primitive exists)."
       },
       "underlineOffset": {
-        "$value": "{spacing.2}",
-        "$type": "dimension"
+        "$comment": "Figma draws the underline as its own rectangle 2px above the bottom of the line box (53:627 / 53:624 / 53:633). CSS measures text-underline-offset from the baseline instead, and Onest sits a different distance above the box bottom on each rung, so the offset is per size. sm is 3px and md 4px, neither on the spacing scale. md follows the node it cites (53:630, y=21) rather than the 2px rule its three siblings keep, which would put it at y=22 — raised with the designers.",
+        "xs": { "$value": "{spacing.2}", "$type": "dimension" },
+        "sm": { "$value": "3px", "$type": "dimension" },
+        "md": { "$value": "{spacing.4}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.6}", "$type": "dimension" }
       }
     },
     "icon": {
@@ -90,8 +94,9 @@
     },
     "strict": {
       "label": {
+        "$comment": "hover matches Figma 564:19601 — Strict keeps #121212 on hover, exactly as Primary keeps #0058D2 (54:411); the affordance is the underline thickening to 1.5px, never a colour change. It used to lighten to text.base.secondary (#383838), which no node draws.",
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
-        "hover": { "$value": "{color.text.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.text.base.default}", "$type": "color" },
         "active": { "$value": "{color.text.base.default}", "$type": "color" },
         "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
       }
@@ -111,6 +116,7 @@
       }
     },
     "focus": {
+      "$comment": "Figma's Focus Ring/Small (57:465) lists 0 0 0 3px #3379DB over 0 0 0 1px #FFF, and renders a 1px white halo with the blue band ending 3px out. ringWidth is therefore the total outer spread, not an amount added to ringOffset — the exported node bleeds 3px on every side.",
       "ringColor": {
         "$value": "{color.background.brand.focus-ring}",
         "$type": "color"

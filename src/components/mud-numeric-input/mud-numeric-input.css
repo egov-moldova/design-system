@@ -196,8 +196,11 @@
  * border (no emphasis), full-contrast label/text. Cursor stays `default` —
  * input is selectable & focusable but not editable. Distinct from disabled.
  */
+/* Figma 461:30911 gives the read-only frame no stroke at all — the only state
+   without one. The border is dropped rather than painted transparent so the
+   content sits where the design puts it. */
 :host(.is-readonly) .control {
-  border-color: var(--numeric-input-default-border-read-only);
+  border-style: none;
   cursor: default;
 }
 
@@ -393,18 +396,21 @@
 
 /* ---------- Clear button ---------- */
 
+/* Figma 210:2287 draws the clear affordance as a constant 20px pill — it does
+   not scale with the field — carrying a subtle oval at rest rather than only
+   on hover. The same affordance as the search input's. */
 .clear-button {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--_icon-size);
-  block-size: var(--_icon-size);
-  padding: 0;
+  inline-size: var(--numeric-input-clear-button-size);
+  block-size: var(--numeric-input-clear-button-size);
+  padding: var(--numeric-input-clear-button-padding);
   border: 0;
-  border-radius: var(--border-radius-full, 999px);
-  background-color: transparent;
-  color: var(--numeric-input-icon-color-default);
+  border-radius: var(--numeric-input-clear-button-border-radius);
+  background-color: var(--numeric-input-clear-button-background-default);
+  color: var(--numeric-input-clear-button-color-default);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -414,8 +420,8 @@
 }
 
 .clear-button:hover {
-  background-color: var(--color-background-base-secondary, #f5f5f5);
-  color: var(--numeric-input-default-text-default);
+  background-color: var(--numeric-input-clear-button-background-hover);
+  color: var(--numeric-input-clear-button-color-hover);
 }
 
 .clear-button:focus,

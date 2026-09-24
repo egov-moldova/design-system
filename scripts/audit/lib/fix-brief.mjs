@@ -14,10 +14,11 @@
  *
  * The brief opens with a report block (plan
  * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
- * check and an index of every entry — closed by REPORT_END. The terminal prints that block and the skill pastes it
+ * check and an index of every entry — then `## Changes since the previous run`
+ * (plan `2026-09-23-audit-run-delta.md`), closed by REPORT_END. The terminal prints that block and the skill pastes it
  * inline, so no session ever rebuilds the table in its own words.
  */
-import { ROW_STATUS, STATE } from './json-output.mjs';
+import { LEG_NOT_WRITTEN, ROW_STATUS, STATE } from './json-output.mjs';
 
 /** The fields each entry kind must carry (Design §2). */
 export const BRIEF_FIELDS = Object.freeze({
@@ -25,6 +26,9 @@ export const BRIEF_FIELDS = Object.freeze({
   [STATE.INCOMPLETE]: Object.freeze(['check', 'cause', 'prerequisite', 'verify']),
   [STATE.NEEDS_DECISION]: Object.freeze(['node', 'question', 'options']),
 });
+
+/** Entry fields that hold a command or a lookup path, rendered as a code span rather than prose. */
+const COMMAND_FIELDS = new Set(['verify', 'prerequisite', 'log']);
 
 /** A field another field may stand in for: a crashed row has a log to read, not a prerequisite to run (T10). */
 const FIELD_ALTERNATE = Object.freeze({ prerequisite: 'log' });
@@ -47,22 +51,66 @@ function present(value) {
 }
 
 /**
- * Render any interpolated value as one line (S7): an empty string renders as
- * `(empty)` rather than a blank that reads like a rendering bug, and a
- * newline is replaced so a finding's own text can never forge a new `###`
- * heading or another field's `- field:` line. Applied to every interpolation
- * in this module — entry fields, `code` in the heading, the headline, and the
- * excused/not-applicable/deferred/notes/override/warning sections in
- * `renderFixBrief`. Pure.
+ * Render any interpolated prose value as one line (S7): an empty string renders
+ * as `(empty)` rather than a blank that reads like a rendering bug, a newline
+ * is replaced so a finding's own text can never forge a new `###` heading or
+ * another field's `- field:` line, and every markdown-active character is
+ * escaped (MD_ACTIVE). Every interpolation in this module goes through it,
+ * `cell()` or `codeSpan()` — the last only for commands (COMMAND_FIELDS, the
+ * re-render hint), which must stay copyable. Pure.
  */
 export function line(value) {
+  return code(value).replace(MD_ACTIVE, '\\$&');
+}
+
+/**
+ * The characters every active markdown construct needs, each backslash-escaped
+ * by `line()`. CommonMark renders any backslash-escaped ASCII punctuation as
+ * that literal character, so escaping these closes whole classes, not cases:
+ * no `[` → no link, image or reference definition; no `<` → no HTML, comment
+ * or autolink; no `&` → no entity; no backtick → no code span; no `|` → no
+ * table cell break. The backslash is in the set and the replacement is one
+ * pass, so a backslash already in the text can never cancel an escape. The
+ * preview shows the finding's text exactly. Why it matters: an AI leg's
+ * finding text is kept in record.json and re-rendered in later briefs, and a
+ * previewer fetches an image or hides the rest of the file on `<!--` the
+ * moment it opens. `run-record.spec.mjs` checks both properties over
+ * generated input.
+ */
+const MD_ACTIVE = /[\\`[\]<&|]/g;
+
+/**
+ * One line of plain text, for the terminal and for inside a code span: newlines
+ * mapped, control characters neutralised, no markdown escaping (a terminal and
+ * a code span both show text literally). Pure.
+ */
+export function code(value) {
   if (value === '') return '(empty)';
   // Control characters are neutralised too: this text reaches a terminal
   // (printSummary), where an ESC sequence from a story's console message or an
   // AI leg's finding could move the cursor and overwrite the real headline.
+  // Unicode line/paragraph separators count as newlines, and bidi controls are
+  // neutralised like C0/C1: a right-to-left override lets a finding display
+  // text other than its bytes (Trojan Source) in a terminal or a previewer.
   return String(value)
-    .replace(/\r\n|\r|\n/g, ' ⏎ ')
-    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '�');
+    .replace(/\r\n|\r|\n|\u2028|\u2029/g, ' ⏎ ')
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '\ufffd');
+}
+
+/**
+ * A whole code span around `code(value)`, so a command stays copyable as
+ * written. The fence is one backtick longer than the longest backtick run in
+ * the value, so no run inside can close it (CommonMark: a span ends at a run
+ * of exactly the fence's length). A space pads both sides when the value
+ * starts or ends with a backtick, or starts and ends with a space, because
+ * CommonMark strips one space from each side in exactly that case. Pure.
+ */
+export function codeSpan(value) {
+  const text = code(value);
+  const longest = Math.max(0, ...(text.match(/`+/g) ?? []).map(run => run.length));
+  const fence = '`'.repeat(longest + 1);
+  const pad = /^`|`$/.test(text) || /^ .*[^ ].* $/.test(text) ? ' ' : '';
+  return `${fence}${pad}${text}${pad}${fence}`;
 }
 
 /**
@@ -87,8 +135,10 @@ export function renderEntry(entry) {
     } else if (field === 'options') {
       lines.push('- options:');
       value.forEach((o, i) => lines.push(`  ${i + 1}. ${line(o)}`));
-    } else if (field === 'verify') {
-      lines.push(`- verify: \`${line(value)}\``);
+    } else if (COMMAND_FIELDS.has(field)) {
+      // A command a reader copies and runs: a code span keeps `&&` or `<token>`
+      // exactly as written, where line()'s escapes would corrupt them.
+      lines.push(`- ${field}: ${codeSpan(value)}`);
     } else {
       lines.push(`- ${field}: ${line(value)}`);
     }
@@ -96,19 +146,38 @@ export function renderEntry(entry) {
   return `${lines.join('\n')}\n`;
 }
 
+/**
+ * Re-renders a run with the advisory findings a leg wrote after it. Names the
+ * component, never the run path, so the string is both executable as written
+ * and identical across runs — `--rerender` looks the run up in summary.json.
+ * One home for the command: entry `verify:` lines (verdict.mjs) and the
+ * Changes section both use it.
+ */
+export function rerenderCommand(component) {
+  return `yarn audit:component --rerender ${component}`;
+}
+
 /** Closes the report block — the part `printSummary` prints and the skill pastes inline. */
 export const REPORT_END = '<!-- end of report -->';
 
-/** One table cell: `line()` plus an escaped `|`, so no value can add a column or a row. */
+/**
+ * One table cell. `line()` already escapes `|` and `\` in one pass, so every
+ * pipe from a value sits behind an odd run of backslashes and never splits the
+ * row. Escaping again here would double those backslashes and revive both the
+ * pipe and any escaped `<`.
+ */
 function cell(value) {
   if (value === undefined || value === null) return '—';
-  // Backslashes first: `a\|b` would otherwise become `a\\|b`, an escaped
-  // backslash followed by a real column separator.
-  return line(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+  return line(value);
 }
 
-/** The row id an entry or warning belongs to: `check` is `<id> <name>` or a bare `<id>`. */
-function rowIdOf(check) {
+/**
+ * The row id an entry or warning belongs to: `check` is `<id> <name>` or a
+ * bare `<id>`. Exported for `run-record.mjs` (plan `2026-09-23-audit-run-delta.md`
+ * Global constraints: `rowResults` / `rowIdOf` stay here, `run-record.mjs`
+ * imports them rather than copying either).
+ */
+export function rowIdOf(check) {
   return String(check ?? '').split(' ')[0];
 }
 
@@ -157,6 +226,20 @@ export function rowResults(verdict) {
 }
 
 /**
+ * The icon a result carries in the table's Result column, so a reader finds the
+ * rows that want attention without reading every word: green for a row with
+ * nothing to do, a warning sign for one worth a look, a cross for one that
+ * blocks or never produced a judgement, and a dash for one deliberately not run.
+ * The word stays — the icon only makes it scannable. Pure.
+ */
+export function resultIcon(result) {
+  if (result === 'pass') return '✅';
+  if (result === 'excused' || result === 'deferred') return '➖';
+  if (result === 'warn' || result.startsWith('not graded')) return '⚠️';
+  return '❌';
+}
+
+/**
  * The `## Summary` section: counts, one table row per `verdict.rows[]` entry,
  * and an index of every entry and advisory item. Pure.
  */
@@ -186,7 +269,7 @@ export function renderSummary(verdict) {
   for (const r of verdict.rows ?? []) {
     const { result, fails, warns } = results.get(r.id);
     out.push(
-      `| ${cell(r.id)} | ${cell(r.name)} | ${r.required ? 'yes' : 'no'} | ${result} | ${fails} | ${warns} | ` +
+      `| ${cell(r.id)} | ${cell(r.name)} | ${r.required ? 'yes' : 'no'} | ${resultIcon(result)} ${result} | ${fails} | ${warns} | ` +
         `${r.excuse || r.deferred || r.note ? cell(r.excuse ?? r.deferred ?? r.note) : ''} |`,
     );
   }
@@ -203,8 +286,141 @@ export function renderSummary(verdict) {
   return out;
 }
 
-/** Render the whole brief. Pure — exported for tests. */
-export function renderFixBrief(verdict) {
+/**
+ * `changes` (any value other than `null`) must be one of the four shapes
+ * `renderChanges` declares — anything else is a programming error, thrown
+ * here rather than rendered as if it were one of them.
+ */
+function validateChanges(changes) {
+  if (!changes || typeof changes !== 'object') {
+    throw new Error('fix-brief: changes must be null or an object');
+  }
+  if ('error' in changes) {
+    if (typeof changes.error !== 'string') throw new Error('fix-brief: changes.error must be a string');
+    return;
+  }
+  if (changes.baseline === null) return;
+  if (changes.unusable) {
+    if (typeof changes.unusable.run !== 'string' || typeof changes.unusable.cause !== 'string') {
+      throw new Error('fix-brief: changes.unusable needs run and cause');
+    }
+    return;
+  }
+  const arrays = ['rowChanges', 'notCompared', 'added', 'gone', 'countChanged', 'textChanged'];
+  const missing = arrays.filter(k => !Array.isArray(changes[k]));
+  if (
+    !changes.baseline ||
+    typeof changes.baseline.run !== 'string' ||
+    typeof changes.baseline.headline !== 'string' ||
+    typeof changes.unchanged !== 'number' ||
+    missing.length
+  ) {
+    throw new Error(
+      `fix-brief: changes has an unrecognised shape${missing.length ? ` (missing ${missing.join(', ')})` : ''}`,
+    );
+  }
+}
+
+/**
+ * Render the `## Changes since the previous run` section from a `changes`
+ * value (plan `2026-09-23-audit-run-delta.md` Design §6):
+ *   - `null` → no section at all (caller — `renderFixBrief` — never invokes this then).
+ *   - `{ error }` → the record/baseline/comparison step threw; `verdict.json`
+ *     was still written (Design §7).
+ *   - `{ baseline: null, depth, component }` → no earlier run left a record.
+ *   - `{ unusable: { run, cause }, depth }` → the newest earlier record cannot
+ *     be read; the search never falls through to an older one.
+ *   - otherwise → the full comparison (`compareRecords`'s return, plus `depth`
+ *     and `component` the caller attaches) is rendered as a table, a
+ *     Not-compared list and the findings counts/bullets.
+ * The renderer's own words never include "fixed" or "resolved" — a quoted
+ * label is a finding's text and may contain either, but it always sits after
+ * a fixed status prefix, so the status itself is never claimed by a finding.
+ * Every interpolation goes through `line()` / `cell()`, except the re-render
+ * command, which is a `codeSpan()`. Pure.
+ */
+export function renderChanges(changes) {
+  validateChanges(changes);
+  const out = ['## Changes since the previous run', ''];
+  if ('error' in changes) {
+    out.push(`Not compared: ${line(changes.error)}`);
+    return out.join('\n');
+  }
+  if (changes.baseline === null) {
+    out.push(
+      changes.skippedEmpty > 0
+        ? `No earlier run at ${line(changes.depth)} left a record that graded anything under audit/${line(changes.component)}/runs/ (${changes.skippedEmpty} graded nothing and ${changes.skippedEmpty === 1 ? 'was' : 'were'} skipped) — nothing to compare.`
+        : `No earlier run at ${line(changes.depth)} left a record under audit/${line(changes.component)}/runs/ — nothing to compare.`,
+    );
+    return out.join('\n');
+  }
+  if (changes.unusable) {
+    out.push(
+      `The previous run at ${line(changes.depth)} (${line(changes.unusable.run)}) has a record this version cannot read (${line(changes.unusable.cause)}). Not compared.`,
+    );
+    return out.join('\n');
+  }
+  out.push(
+    `Compared with run ${line(changes.baseline.run)}: ${line(changes.baseline.headline)} → ${line(changes.headline)}`,
+  );
+  if (changes.skippedEmpty > 0) {
+    const n = changes.skippedEmpty;
+    out.push(`(${n} later ${n === 1 ? 'run' : 'runs'} graded nothing and ${n === 1 ? 'was' : 'were'} skipped)`);
+  }
+  if (changes.rowChanges.length) {
+    out.push(
+      '',
+      '| # | Check | Previous | Now |',
+      '| --- | --- | --- | --- |',
+      ...changes.rowChanges.map(r => {
+        const prevCell = r.previous === '—' ? '—' : `${resultIcon(r.previous)} ${cell(r.previous)}`;
+        const curCell = r.current === '—' ? '—' : `${resultIcon(r.current)} ${cell(r.current)}`;
+        return `| ${cell(r.id)} | ${cell(r.name)} | ${prevCell} | ${curCell} |`;
+      }),
+    );
+  }
+  if (changes.notCompared.length) {
+    out.push(
+      '',
+      'Not compared:',
+      '',
+      ...changes.notCompared.map(n => {
+        // Re-rendering helps only when this run's leg has not written yet; a
+        // malformed file needs the leg re-dispatched, which a re-render cannot do.
+        const rerender =
+          n.scope.startsWith('leg:') && n.current === LEG_NOT_WRITTEN
+            ? ` (${codeSpan(rerenderCommand(changes.component))})`
+            : '';
+        return `- ${line(n.scope)} — previous: ${line(n.previous)}, now: ${line(n.current)}${rerender}`;
+      }),
+    );
+  }
+  out.push(
+    '',
+    `Findings in checks both runs graded: ${changes.added.length} newly reported · ${changes.gone.length} no longer reported · ` +
+      `${changes.countChanged.length} reported a different number of times · ${changes.textChanged.length} with changed text · ` +
+      `${changes.unchanged} unchanged`,
+  );
+  for (const a of changes.added) out.push(`- newly reported: ${line(a.label)}${a.count > 1 ? ` ×${a.count}` : ''}`);
+  for (const g of changes.gone) out.push(`- no longer reported: ${line(g.label)}${g.count > 1 ? ` ×${g.count}` : ''}`);
+  for (const c of changes.countChanged) {
+    out.push(`- reported ${c.previousCount} → ${c.currentCount} times: ${line(c.label)}`);
+  }
+  for (const t of changes.textChanged) out.push(`- text changed: ${line(t.previous)} → ${line(t.current)}`);
+  out.push(
+    '',
+    '"No longer reported" means no finding with this identity was reported this time by a check both runs graded; the audit does not say why.',
+  );
+  return out.join('\n');
+}
+
+/**
+ * Render the whole brief. `changes` is the `## Changes since the previous
+ * run` section's data (`null` renders nothing; any other shape than
+ * `renderChanges` declares throws) — plan `2026-09-23-audit-run-delta.md`
+ * Design §6. Pure — exported for tests.
+ */
+export function renderFixBrief(verdict, changes = null) {
   const c = verdict.component;
   const out = [
     `# Fix brief — ${c} @ ${verdict.depth}`,
@@ -213,6 +429,7 @@ export function renderFixBrief(verdict) {
     '',
     ...renderSummary(verdict),
     '',
+    ...(changes === null ? [] : [renderChanges(changes), '']),
     REPORT_END,
     '',
     `Verdict: \`audit/${c}/verdict.json\`. When every \`verify:\` below passes, re-run the whole audit at the same`,
@@ -260,7 +477,7 @@ export function renderFixBrief(verdict) {
   if (warnings.length) {
     out.push(`## Warnings (non-blocking) (${warnings.length})`, '');
     for (const w of warnings) {
-      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: \`${line(w.verify)}\`)`);
+      out.push(`- ${line(w.check)} — ${line(w.message)} (verify: ${codeSpan(w.verify)})`);
     }
     out.push('');
   }

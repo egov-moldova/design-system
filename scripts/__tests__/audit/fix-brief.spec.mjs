@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { BRIEF_FIELDS, renderEntry, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
+import { BRIEF_FIELDS, renderEntry, renderFixBrief, resultIcon } from '../../audit/lib/fix-brief.mjs';
 import { computeVerdict } from '../../audit/verdict.mjs';
 import { FIGMA_ABSENT, aiFindings, cleanEnvelope, withError } from './__fixtures__/verdict/envelope.mjs';
 
@@ -58,7 +58,7 @@ describe('fix-brief: one shape per state', () => {
     );
     const v = computeVerdict({ envelope: e });
     const block = assertShape(renderFixBrief(v), v.entries[0]);
-    assert.match(block, /- prerequisite: yarn vitest run --project spec --coverage src\/components\/mud-fx/);
+    assert.match(block, /- prerequisite: `yarn vitest run --project spec --coverage src\/components\/mud-fx`/);
     assert.match(block, /- verify: `node scripts\/audit\/run-all\.mjs mud-fx --depth standard --only 06 --json`/);
   });
 
@@ -104,7 +104,7 @@ describe('fix-brief: one shape per state', () => {
       log: 'results[id="02"].error',
       verify: 'v',
     });
-    assert.match(block, /^- log: results\[id="02"\]\.error$/m);
+    assert.match(block, /^- log: `results\[id="02"\]\.error`$/m);
     assert.doesNotMatch(block, /prerequisite/);
   });
 
@@ -215,8 +215,32 @@ describe('fix-brief: Decision 13 — a not-applicable row is listed with its rea
     const v = computeVerdict({ envelope: cleanEnvelope() });
     const row = v.rows.find(r => r.id === '13') ?? v.rows[0];
     row.note = 'mud-fx uses no component tokens — token diff not applicable';
-    const brief = renderFixBrief(v, { run: 'r1' });
+    const brief = renderFixBrief(v);
     assert.match(brief, /## Not applicable/);
     assert.ok(brief.includes(`- ${row.id} `) && brief.includes('token diff not applicable'));
+  });
+});
+
+describe('fix-brief: the Result column carries an icon so the rows wanting attention stand out', () => {
+  it('reads green for a row with nothing to do and a dash for one deliberately not run', () => {
+    assert.equal(resultIcon('pass'), '✅');
+    assert.equal(resultIcon('excused'), '➖');
+    assert.equal(resultIcon('deferred'), '➖');
+  });
+
+  it('reads a warning sign for a row worth a look, including one that was never graded', () => {
+    assert.equal(resultIcon('warn'), '⚠️');
+    assert.equal(resultIcon('not graded (0 errors, 3 warnings)'), '⚠️');
+  });
+
+  it('reads a cross for a row that blocks or never produced a judgement', () => {
+    for (const result of ['fail', 'incomplete', 'crashed', 'missing-prereq', 'skipped']) {
+      assert.equal(resultIcon(result), '❌', result);
+    }
+  });
+
+  it('keeps the word beside the icon, so the table still reads without them', () => {
+    const brief = renderFixBrief(computeVerdict({ envelope: cleanEnvelope() }));
+    assert.match(brief, /^\| lint \| check-lint \| yes \| ✅ pass \|/m);
   });
 });

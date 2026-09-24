@@ -1,0 +1,265 @@
+{
+  "component": "mud-file-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "atoms-input-file--default",
+    "capture": {
+      "selector": "mud-file-input",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Every fixture pins the component to the 588px width the Figma set draws at (262:6717) and passes the English copy the frames show. The component's own defaults are Romanian, so without those props the captions and the call to action would be measured against a different string."
+  },
+  "states": [
+    {
+      "name": "default",
+      "node": "262:6717",
+      "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "expect": [
+        {
+          "target": "mud-file-input .dropzone",
+          "node": "262:6705",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingTop": "32px",
+            "paddingBottom": "32px",
+            "paddingLeft": "24px",
+            "paddingRight": "24px",
+            "rowGap": "20px",
+            "boxHeight": "156px",
+            "outlineStyle": "dashed",
+            "outlineColor": "#B2B2B2",
+            "outlineWidth": "1px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 262:6705 fills #FFFFFF, pads 32px 24px, gaps 20px and strokes 1.5px #B2B2B2 dashed 6,4 at radius 8px. Two things the browser will not reproduce: Chromium floors a 1.5px stroke to 1px at every device scale, which is the 1px asserted here, and the length of a CSS dash is the engine's to choose, so Figma's 6,4 rhythm cannot be asked for. Both show up in the pixel diff as a dotted edge."
+        },
+        {
+          "target": "mud-file-input .dropzone-icon",
+          "node": "262:6706",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "48px",
+            "backgroundColor": "#F1F1F1",
+            "paddingTop": "12px",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 262:6706 is a #F1F1F1 pill padded 12px around a 24px glyph — 48x48. Figma writes radius 999px; the token resolves to 9999px, and both clamp to the same circle."
+        },
+        {
+          "target": "mud-file-input .dropzone-icon mud-icon",
+          "node": "262:6707",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 262:6707 is the 24/cloud-upload instance at 24x24."
+        },
+        {
+          "target": "mud-file-input .dropzone-cta",
+          "node": "262:6708",
+          "styles": {
+            "columnGap": "6px",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "Figma 262:6708 gaps 6px, and both of its children are Desktop/Body/Default — 16px over 24px, weight 400."
+        },
+        {
+          "target": "mud-file-input .dropzone-cta__body",
+          "node": "262:6709",
+          "styles": { "color": "#121212" },
+          "note": "Figma 262:6709 is #121212."
+        },
+        {
+          "target": "mud-file-input .dropzone-cta__link",
+          "node": "262:6710",
+          "styles": {
+            "color": "#0058D2",
+            "textDecorationLine": "underline",
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "Figma 262:6710 is the link component Style=Primary with 👁️ Underline true: #0058D2 text over a 1px rule of the same colour."
+        },
+        {
+          "target": "mud-file-input .captions",
+          "node": "262:6711",
+          "styles": { "columnGap": "24px" },
+          "note": "Figma 262:6711 gaps 24px between the two captions. Its justification is flex-end with the first text filling the row; the component reaches the same layout with space-between over a growing first child, so justifyContent is not asserted."
+        },
+        {
+          "target": "mud-file-input .captions__formats",
+          "node": "262:6712",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#757575",
+            "textAlign": "start"
+          },
+          "note": "Figma 262:6712 is Desktop/Body/Small #757575, left-aligned, filling the row."
+        },
+        {
+          "target": "mud-file-input .captions__max-size",
+          "node": "262:6713",
+          "styles": {
+            "fontSize": "14px",
+            "color": "#757575",
+            "textAlign": "end"
+          },
+          "note": "Figma 262:6713 is the same style right-aligned and hugging."
+        }
+      ]
+    },
+    {
+      "name": "hover",
+      "node": "616:7045",
+      "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "interaction": { "type": "hover", "target": "mud-file-input .dropzone" },
+      "expect": [
+        {
+          "target": "mud-file-input .dropzone",
+          "node": "616:7046",
+          "styles": {
+            "outlineColor": "#0058D2",
+            "outlineStyle": "dashed",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 616:7046 recolours the stroke to #0058D2 and keeps it dashed and the fill white — hover changes nothing else."
+        }
+      ]
+    },
+    {
+      "name": "focus",
+      "node": "616:7145",
+      "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "interaction": { "type": "focus", "target": "mud-file-input .dropzone-cta__link" },
+      "expect": [
+        {
+          "target": "mud-file-input .dropzone",
+          "node": "616:7146",
+          "styles": {
+            "outlineColor": "#B2B2B2",
+            "outlineStyle": "dashed",
+            "boxShadow": "0px 0px 0px 2px #ffffff, 0px 0px 0px 5px #3379db"
+          },
+          "note": "Figma 616:7146 keeps the resting #B2B2B2 dashed stroke and adds Focus Ring/Medium, listed as `0 0 0 5px #3379DB, 0 0 0 2px #FFFFFF`. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order. The ring is on the drop zone, not on the inner link, because the link is what the keyboard reaches."
+        },
+        {
+          "target": "mud-file-input .dropzone-cta__link",
+          "node": "616:7146",
+          "styles": { "outlineStyle": "none" },
+          "note": "Figma 616:7146 draws one indicator, around the frame. A ring on the link as well would put a second box inside the first."
+        }
+      ]
+    },
+    {
+      "name": "active",
+      "node": "262:6719",
+      "pixel": false,
+      "pixelNote": "Figma fixes this frame at 154px while its own hover frame (616:7046) and the height the resting frame hugs to are both 156px. The component keeps 156 so the zone does not jump when a drag starts, which puts every pixel below the frame 2px out. A design question, not drift — style parity still checks the fill, the stroke and the copy.",
+      "html": "<div style=\"width: 588px\"><mud-file-input class=\"is-active-demo\" cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" dropzone-active-text=\"Drop files to upload\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "expect": [
+        {
+          "target": "mud-file-input .dropzone",
+          "node": "262:6720",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "outlineStyle": "solid",
+            "outlineColor": "#0058D2",
+            "paddingTop": "32px",
+            "paddingLeft": "24px"
+          },
+          "note": "Figma 262:6720 is the only variant whose stroke is solid: #0058D2 over an #E8F0FB fill, same padding as the resting frame."
+        },
+        {
+          "target": "mud-file-input .dropzone-text",
+          "node": "262:6732",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "Figma 262:6732 replaces the icon and the call to action with one Desktop/Body/Default line in #121212."
+        },
+        {
+          "target": "mud-file-input .dropzone-icon",
+          "absent": true,
+          "node": "262:6719",
+          "note": "Figma 262:6719 drops the icon pill for the duration of the drag."
+        },
+        {
+          "target": "mud-file-input .captions",
+          "node": "262:6726",
+          "styles": { "columnGap": "24px" },
+          "note": "Figma 262:6726 keeps both captions under the active frame — the drag hides the icon and the call to action, not the captions."
+        }
+      ]
+    },
+    {
+      "name": "disabled",
+      "node": "616:7070",
+      "html": "<div style=\"width: 588px\"><mud-file-input disabled cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "expect": [
+        {
+          "target": "mud-file-input .dropzone",
+          "node": "616:7071",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "outlineColor": "#D9D9D9",
+            "outlineStyle": "dashed"
+          },
+          "note": "Figma 616:7071 keeps the white fill and greys the stroke to #D9D9D9 — it does not tint the surface."
+        },
+        {
+          "target": "mud-file-input .dropzone-icon",
+          "node": "616:7072",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "boxWidth": "48px",
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 616:7072 keeps the #F1F1F1 pill and greys the glyph inside it to #B2B2B2 — read off the exported frame, since the icon instance carries no fill in the node data."
+        },
+        {
+          "target": "mud-file-input .captions",
+          "node": "616:7078",
+          "styles": { "color": "#B2B2B2" },
+          "note": "Figma 616:7078 and 616:7079 grey both captions to #B2B2B2. That is 2.12:1 on white; WCAG 1.4.3 exempts text belonging to an inactive user interface component, so the design is followed rather than overridden."
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "node": "616:6922",
+      "pixel": false,
+      "html": "<div style=\"width: 307px\"><mud-file-input variant=\"button\" label=\"Upload files\" choose-files-text=\"Choose file\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
+      "expect": [
+        {
+          "target": "mud-file-input mud-button",
+          "node": "616:6922",
+          "styles": {
+            "boxHeight": "40px"
+          },
+          "note": "Figma 616:6922 is button-filled-rectangular Style=Primary Size=Medium — 40px tall. The fill, padding and radius belong to mud-button's own manifest; only the rung the file input picks is asserted here."
+        },
+        {
+          "target": "mud-file-input .captions",
+          "node": "616:6921",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "color": "#757575"
+          },
+          "note": "Figma 616:6921 is one Desktop/Body/Small line in #757575 that reads `Supported formats: jpg, png, pdf. Maximum size: 100 MB` — the two captions joined, not a two-column row."
+        }
+      ],
+      "pixelNote": "The Figma node is the button alone, while the capture is the whole component (label, caption and button), so the canvases can never line up. The metrics are pinned by style parity instead."
+    }
+  ]
+}
