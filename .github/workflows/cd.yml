@@ -1,0 +1,96 @@
+name: CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag, or SHA to deploy'
+        required: true
+        default: 'main'
+      release_version:
+        description: 'Version to publish (e.g. 1.3.0)'
+        required: true
+      dev_build:
+        description: 'Publish as a dev build (adds -dev.<run number> to version, dist-tag dev)'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_publish:
+    name: Build and publish
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=12288
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      # package.json carries 0.0.0-development; the published version exists
+      # only in this run and is never committed back.
+      - name: Set version
+        id: version
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          DEV_BUILD: ${{ inputs.dev_build }}
+        run: |
+          if ! [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "release_version must be x.y.z, got '$RELEASE_VERSION'" >&2
+            exit 1
+          fi
+          if [ "$DEV_BUILD" = 'true' ]; then
+            VERSION="$RELEASE_VERSION-dev.$GITHUB_RUN_NUMBER"
+            TAG=dev
+          else
+            VERSION="$RELEASE_VERSION"
+            TAG=latest
+          fi
+          npm pkg set version="$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION under dist-tag $TAG"
+
+      # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
+      # from tokens/generated/*.css, which only tokens.build writes.
+      - name: Build token CSS
+        run: yarn tokens.build
+
+      - name: Build
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Validate package
+        run: yarn validate.package
+
+      - name: Pack
+        id: pack
+        run: |
+          mkdir -p "$RUNNER_TEMP/package"
+          FILE=$(npm pack --pack-destination "$RUNNER_TEMP/package" --json | jq -r '.[0].filename')
+          echo "file=$RUNNER_TEMP/package/$FILE" >> "$GITHUB_OUTPUT"
+
+      # Keeps the exact tarball that was published, for inspection or rollback.
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-${{ steps.version.outputs.version }}
+          path: ${{ steps.pack.outputs.file }}
+          if-no-files-found: error
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TARBALL: ${{ steps.pack.outputs.file }}
+          DIST_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "$NODE_AUTH_TOKEN"
+          npm publish "$TARBALL" --tag "$DIST_TAG" --access public

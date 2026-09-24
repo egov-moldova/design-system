@@ -131,18 +131,29 @@ jobs:
   build:
     name: Build
     needs: [test, dependencies-security-audit, tokens-validate]
-    timeout-minutes: 10
+    timeout-minutes: 20
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=12288
+      STORYBOOK_DISABLE_TELEMETRY: 1
     steps:
       - uses: actions/checkout@v5
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+      # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
+      # from tokens/generated/*.css, which only tokens.build writes. Storybook's
+      # preview-head.html links to the same files.
+      - name: Build token CSS
+        run: yarn tokens.build
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Build Stencil components and tokens
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Build Storybook
+        run: yarn sp.docker
+
+      - name: Validate package
+        run: yarn validate.package
