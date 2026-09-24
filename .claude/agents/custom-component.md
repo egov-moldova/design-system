@@ -143,7 +143,7 @@ Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool cal
 
 ```
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
-Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>")
+Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
 Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
 Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=new")
 ```
