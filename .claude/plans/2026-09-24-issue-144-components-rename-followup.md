@@ -52,6 +52,24 @@ A — confirmed by the issue owner on 2026-09-24: `--atomic` (and the `atomicLev
 changes: the manifests are read only by `scripts/audit/*` and the `pixel-perfect` skill, and the
 published package ships `dist/`, `loader/` and `CHANGELOG.md` only.
 
+## Requirement coverage
+
+Every item issue #144 lists, with the task that closes it or the disposition this plan gives it.
+
+| Issue item | Disposition |
+| --- | --- |
+| 1. Generators that reintroduce the old category (`story-scaffold.mjs`, `scaffolders.spec.mjs`) | Task 3 |
+| 2. Audit fallbacks and hints (`09`, `10`, `12`, `05`, `lib/figma-manifest.mjs`) | Task 4 |
+| 3. State manifests (issue said 16; re-measured 17 of 21) | Tasks 1-2 |
+| 4. Documentation and agent instructions that hand out old ids | Tasks 3 (`story-writer` and its three callers) and 6 (the other nine files) |
+| 5. Test fixtures and doc comments | Task 5 (fixtures), Task 4 (doc comments in `scripts/audit/**`) |
+| "Decide, don't sweep": what stays | Global constraints, second bullet |
+| "Decide, don't sweep": fate of `--atomic` | Task 3 — removed, decided 2026-09-24 |
+| Proposed guard: a static test over manifest ids | Task 1 |
+| Proposed guard, "optionally" — the harness names a missing story instead of `capture failed` | **Deferred, not in this PR.** It changes the harness's error path (behaviour, not a rename); #144's own text marks it optional. Follow-up issue, opened when this PR is ready |
+| Acceptance: the two `git grep` bars, scaffold output, guard exists and fails on a mutated id | Acceptance bar, rows 1-4 |
+| Acceptance: `yarn audit:component <fixed manifest>` captures states | Task 7 step 2 and the last acceptance row; reported under *Not verified* if the environment cannot run it |
+
 ## Global constraints
 
 - Branch `fix/issue-144-components-rename-followup`, cut from `upstream/main`. PR base is
@@ -332,6 +350,10 @@ describe('figma manifests: story ids resolve to real stories', () => {
   manifest id is changed to a non-existent story (mutation check, reverted after).
 - `yarn test:scripts`, `yarn docs:check`, `yarn lint` pass.
 - `git diff --stat upstream/main...HEAD` names no file outside the Files lists above and this plan.
+- Runtime proof (Task 7 step 2): `yarn audit:component mud-badge --depth <d>` exits without a
+  `capture failed` row for `mud-badge`'s states. Where Storybook cannot be built in the
+  environment, this row is reported as not verified with the reason, and the guard is then the
+  only evidence.
 
 ## Not verified
 
