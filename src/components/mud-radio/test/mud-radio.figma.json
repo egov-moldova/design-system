@@ -1,0 +1,390 @@
+{
+  "component": "mud-radio",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "51:427",
+        "reason": "radio-button Selected/Focus/Medium — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-focus — the same ring over the selected radio."
+      },
+      {
+        "node": "403:21902",
+        "reason": "radio-button Unselected/Focus/Small — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-focus."
+      },
+      {
+        "node": "403:21905",
+        "reason": "radio-button Selected/Focus/Small — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-focus."
+      },
+      {
+        "node": "403:21907",
+        "reason": "radio-button Unselected/Disabled/Small — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-disabled."
+      },
+      {
+        "node": "403:21908",
+        "reason": "radio-button Selected/Disabled/Small — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-selected-disabled."
+      },
+      {
+        "node": "585:35219",
+        "reason": "radio-button Selected/Error/Small — the Small rung is the Medium radio at 20px with a 10px dot, pinned by rb-unselected-sm and rb-selected-sm; the state's colours are pinned at Medium by rb-error."
+      },
+      {
+        "node": "13:45",
+        "reason": "radio-label Selected/Default/Medium — the radio itself is pinned by rb-selected-md; the label row does not change with selection."
+      },
+      {
+        "node": "2824:5678",
+        "reason": "radio-label Selected/Default/Small — as 13:45 at the Small rung, whose type rl-sm pins."
+      },
+      {
+        "node": "51:560",
+        "reason": "radio-label Unselected/Focus/Medium — focus paints only the radio, pinned by rb-focus."
+      },
+      {
+        "node": "2824:5675",
+        "reason": "radio-label Unselected/Focus/Small — as 51:560."
+      },
+      {
+        "node": "51:563",
+        "reason": "radio-label Selected/Focus/Medium — as 51:560."
+      },
+      {
+        "node": "2824:5681",
+        "reason": "radio-label Selected/Focus/Small — as 51:560."
+      },
+      {
+        "node": "13:48",
+        "reason": "radio-label Unselected/Disabled/Medium — the disabled label colour is pinned by rl-disabled, the radio by rb-disabled."
+      },
+      {
+        "node": "2824:5684",
+        "reason": "radio-label Unselected/Disabled/Small — as 13:48."
+      },
+      {
+        "node": "13:51",
+        "reason": "radio-label Selected/Disabled/Medium — as 13:48, with the dot pinned by rb-selected-disabled."
+      },
+      {
+        "node": "2824:5687",
+        "reason": "radio-label Selected/Disabled/Small — as 13:51."
+      },
+      {
+        "node": "13:59",
+        "reason": "radio-label Selected/Default/Medium/Supporting — selection does not touch the label row; supporting text pinned by rl-supporting-md."
+      },
+      {
+        "node": "2824:5707",
+        "reason": "radio-label Selected/Default/Small/Supporting — as 13:59, Small type pinned by rl-supporting-sm."
+      },
+      {
+        "node": "51:578",
+        "reason": "radio-label Unselected/Focus/Medium/Supporting — focus paints only the radio, pinned by rb-focus."
+      },
+      {
+        "node": "2824:5702",
+        "reason": "radio-label Unselected/Focus/Small/Supporting — as 51:578."
+      },
+      {
+        "node": "51:583",
+        "reason": "radio-label Selected/Focus/Medium/Supporting — as 51:578."
+      },
+      {
+        "node": "2824:5712",
+        "reason": "radio-label Selected/Focus/Small/Supporting — as 51:578."
+      },
+      {
+        "node": "2824:5717",
+        "reason": "radio-label Unselected/Disabled/Small/Supporting — as rl-disabled (13:64) at the Small rung."
+      },
+      {
+        "node": "13:69",
+        "reason": "radio-label Selected/Disabled/Medium/Supporting — as rl-disabled, with the dot pinned by rb-selected-disabled."
+      },
+      {
+        "node": "2824:5722",
+        "reason": "radio-label Selected/Disabled/Small/Supporting — as 13:69."
+      },
+      {
+        "node": "585:35229",
+        "reason": "radio-label Unselected/Error/Medium — NOT covered: the error message this variant can show is not implemented in mud-radio (see rl-error and the report). The red radio stroke is pinned by rb-error."
+      },
+      {
+        "node": "2824:5670",
+        "reason": "radio-label Unselected/Error/Small — as 585:35229."
+      },
+      {
+        "node": "2824:5695",
+        "reason": "radio-label Unselected/Error/Small/Supporting — as 585:35229."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-radio--default",
+    "capture": {
+      "selector": "mud-radio .visual",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "rb-unselected-md",
+      "node": "13:35",
+      "html": "<mud-radio size=\"md\"><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "borderTopWidth": "2px",
+            "borderTopColor": "#B2B2B2",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Figma 13:35 is a 24px circle stroked 2px #B2B2B2 with no fill at all — the surface behind shows through."
+        }
+      ]
+    },
+    {
+      "name": "rb-selected-md",
+      "node": "13:36",
+      "html": "<mud-radio size=\"md\" checked><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "borderTopColor": "#0058D2"
+          },
+          "note": "Figma 13:36 strokes the selected circle 2px #0058D2."
+        },
+        {
+          "target": "mud-radio .dot",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "backgroundColor": "#0058D2"
+          },
+          "note": "Figma 13:37 is the 12px #0058D2 dot, centred 6px in."
+        }
+      ]
+    },
+    {
+      "name": "rb-unselected-sm",
+      "node": "403:21901",
+      "html": "<mud-radio size=\"sm\"><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "borderTopWidth": "2px"
+          },
+          "note": "Figma 403:21901 is the Small radio, 20px with the same 2px stroke."
+        }
+      ]
+    },
+    {
+      "name": "rb-selected-sm",
+      "node": "403:21903",
+      "html": "<mud-radio size=\"sm\" checked><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .dot",
+          "styles": {
+            "boxWidth": "10px",
+            "boxHeight": "10px"
+          },
+          "note": "Figma 403:21904 is the Small dot, 10px, centred 5px in."
+        }
+      ]
+    },
+    {
+      "name": "rb-disabled",
+      "node": "13:38",
+      "html": "<mud-radio size=\"md\" disabled><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "borderTopColor": "#D9D9D9"
+          },
+          "note": "Figma 13:38 fills the disabled radio #F1F1F1 and strokes it #D9D9D9."
+        }
+      ]
+    },
+    {
+      "name": "rb-selected-disabled",
+      "node": "13:39",
+      "html": "<mud-radio size=\"md\" checked disabled><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .dot",
+          "styles": {
+            "backgroundColor": "#D9D9D9"
+          },
+          "note": "Figma 13:40 greys the disabled dot to #D9D9D9."
+        }
+      ]
+    },
+    {
+      "name": "rb-error",
+      "node": "585:35217",
+      "html": "<mud-radio size=\"md\" invalid><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "borderTopColor": "#D92D20",
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 585:35217 strokes the radio 2px #D92D20 and draws no dot — it has no Circle child, unlike Selected/Default 13:36. Despite its name (Mode=Selected) it is used only for the UNselected error state: radio-label 585:35229 / 585:35232 instantiate it with nothing selected, and no variant anywhere shows a selected radio in error. So the fixture is an unselected invalid radio, which is what the node draws. The component draws a red dot when a radio is both checked and invalid; that state has no design, and is raised with the designers."
+        }
+      ]
+    },
+    {
+      "name": "rb-focus",
+      "node": "51:426",
+      "pixel": false,
+      "html": "<mud-radio size=\"md\"><span slot=\"label\">Label</span></mud-radio>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-radio .native"
+      },
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px"
+          },
+          "note": "Figma 51:426 carries Focus Ring/Small — a 1px white halo with the blue band ending 3px out. It drew Focus Ring/Medium before, 2px then out to 5px."
+        }
+      ]
+    },
+    {
+      "name": "rl-md",
+      "node": "13:42",
+      "capture": {
+        "selector": "mud-radio .layout",
+        "bleed": "auto"
+      },
+      "html": "<mud-radio size=\"md\"><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .layout",
+          "styles": {
+            "columnGap": "12px"
+          },
+          "note": "Figma 13:42 sets the label 12px from the radio."
+        },
+        {
+          "target": "mud-radio .label-text",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#121212"
+          },
+          "note": "Figma 13:44 is Desktop/Body/Default 500 in #121212."
+        }
+      ]
+    },
+    {
+      "name": "rl-sm",
+      "node": "2824:5667",
+      "pixel": false,
+      "html": "<mud-radio size=\"sm\"><span slot=\"label\">Label</span></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .label-text",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 2824:5669 drops the Small label to Desktop/Body/Small 500."
+        }
+      ]
+    },
+    {
+      "name": "rl-supporting-md",
+      "node": "13:54",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"md\"><span slot=\"label\">Label</span><span slot=\"supporting-text\">Supporting text</span></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .text",
+          "styles": {
+            "rowGap": "2px"
+          },
+          "note": "Figma 13:56 stacks label and supporting text 2px apart."
+        },
+        {
+          "target": "mud-radio .supporting-text",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#757575"
+          },
+          "note": "Figma 13:58 is Desktop/Body/Small in #757575."
+        }
+      ]
+    },
+    {
+      "name": "rl-supporting-sm",
+      "node": "2824:5690",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"sm\"><span slot=\"label\">Label</span><span slot=\"supporting-text\">Supporting text</span></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .supporting-text",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px"
+          },
+          "note": "Figma 2824:5694 drops Small supporting text to Desktop/Caption/Medium, 12/16."
+        }
+      ]
+    },
+    {
+      "name": "rl-disabled",
+      "node": "13:64",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"md\" disabled><span slot=\"label\">Label</span><span slot=\"supporting-text\">Supporting text</span></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .label-text",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 13:67 greys the disabled label to #B2B2B2."
+        },
+        {
+          "target": "mud-radio .supporting-text",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 13:68 greys the supporting text to the same #B2B2B2."
+        }
+      ]
+    },
+    {
+      "name": "rl-error",
+      "node": "585:35232",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"md\" invalid><span slot=\"label\">Label</span><span slot=\"supporting-text\">Supporting text</span></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "borderTopColor": "#D92D20"
+          },
+          "note": "Figma 585:35233 strokes the radio #D92D20. The error message 585:35249 below the text — a 16px circle-error icon and 12/16 #D92D20 text, 6px under the supporting text — has no counterpart in mud-radio and is left unpinned; see the report."
+        }
+      ]
+    }
+  ]
+}
