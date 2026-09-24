@@ -27,11 +27,11 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
  *   non-actionable per the WAI-ARIA stepper pattern.
  *
- * State legend (Figma node 634:10573):
- *   - `pending`    — neutral grey ring + faded number, non-navigable
- *   - `current`    — brand ring + brand number, neutral label
- *   - `completed`  — brand filled circle + white checkmark, brand underlined link label
- *   - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
+ * State legend (Figma node 39:25050, unified across orientations):
+ *   - `pending`    — neutral grey ring + faded number, non-navigable, neutral label
+ *   - `current`    — brand ring + brand number + brand label
+ *   - `completed`  — brand filled circle + white checkmark, neutral label
+ *   - `available`  — brand outline ring + brand number, neutral label, navigable forward
  *   - `error`      — danger ring + danger cross, neutral label
  *
  * The component renders an ordered list with `role="list"` for AT compatibility
@@ -170,11 +170,11 @@ export class MudStepper {
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
   private resolveIconName(step: StepperStep, status: StepperStepStatus): IconName | null {
     if (step.iconName) return step.iconName;
-    // `-large` checkmark (not `-small`): the small variant is heavily padded, so
-    // at 16px it under-fills the 24px indicator. Error uses the bare `exclamation`
-    // glyph (red "!" inside the danger ring) per the Figma "blocked" state — NOT a
-    // cross, which reads as "cancel" rather than "alert".
-    if (status === 'completed') return 'checkmark-large';
+    // `checkmark-small` at 20px — matches the Figma instance verbatim ("20/checkmark-small",
+    // node 40:26949 / component 1:375) inside the 24px indicator. Error uses the bare
+    // `exclamation` glyph (red "!" inside the danger ring) per the Figma "blocked" state —
+    // NOT a cross, which reads as "cancel" rather than "alert".
+    if (status === 'completed') return 'checkmark-small';
     if (status === 'error') return 'exclamation';
     return null;
   }
@@ -198,7 +198,7 @@ export class MudStepper {
   private renderIndicator(step: StepperStep, status: StepperStepStatus, index: number) {
     const iconName = this.resolveIconName(step, status);
     const display = iconName ? (
-      <mud-icon name={iconName} size={16} />
+      <mud-icon name={iconName} size={iconName === 'exclamation' ? 16 : 20} />
     ) : (
       <span class="indicator-number">{index + 1}</span>
     );

@@ -167,7 +167,7 @@ describe('mud-stepper', () => {
       const firstStep = querySteps(root)[0];
       const icon = firstStep.querySelector('mud-icon');
       // mud-icon's `name` prop is non-reflecting — read via property, not attribute.
-      expect((icon as unknown as { name: string }).name).toBe('checkmark-large');
+      expect((icon as unknown as { name: string }).name).toBe('checkmark-small');
     });
 
     it('renders an exclamation icon for error steps', async () => {

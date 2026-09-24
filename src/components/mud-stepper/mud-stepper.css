@@ -96,11 +96,6 @@
   text-align: left;
 }
 
-:host([orientation='vertical']) .step-content,
-:host([orientation='vertical']) .step-trigger {
-  align-items: flex-start;
-}
-
 .step-trigger {
   cursor: pointer;
   border-radius: var(--stepper-interactive-border-radius);
@@ -331,10 +326,65 @@
   font-weight: var(--stepper-current-label-font-weight);
 }
 
+/* Vertical-only current-step highlight: a rounded pill behind the indicator +
+   label (Figma 39:25050, node 40:26952 "Current" state — Inspect panel on the
+   row frame reads Width: Fill 256px, Border: 8px / Alignment: Outside, Padding:
+   0). "Outside" means the 8px bleeds beyond the row's own box on all four
+   sides — equally left/right as top/bottom — rather than inset padding, so it
+   doesn't shift the indicator/label inward and doesn't touch the parent's
+   256px column edges. Painted as a `::before` overlay (not real padding) so it
+   bleeds without adding height to the flex item — real padding here inflated
+   the step's box and threw off the indicator-to-indicator pitch (Figma keeps
+   every `.step-desktop` block at a uniform 46.5px regardless of state). */
+:host([orientation='vertical']) .step--current .step-content,
+:host([orientation='vertical']) .step--current .step-trigger {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+}
+
+:host([orientation='vertical']) .step--current .step-content::before,
+:host([orientation='vertical']) .step--current .step-trigger::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(var(--stepper-current-highlight-padding) * -1);
+  background: var(--stepper-current-highlight-background);
+  /* An outside stroke traces the inner shape at a constant offset, so its own
+     corner radius is the inner radius plus the offset (4px + 8px = 12px) —
+     using the inner 4px directly here looks flatter than Figma at this box
+     size. */
+  border-radius: calc(var(--stepper-current-highlight-border-radius) + var(--stepper-current-highlight-padding));
+}
+
+/* Compact dot rail has no label to highlight — a full-width pill with nothing
+   in it just reads as a stray bar, so the vertical current-step treatment is
+   suppressed here (numbers/labels are already hidden by `.is-compact`). */
+:host(.is-compact) .step--current .step-content,
+:host(.is-compact) .step--current .step-trigger {
+  width: auto;
+}
+
+:host(.is-compact) .step--current .step-content::before,
+:host(.is-compact) .step--current .step-trigger::before {
+  content: none;
+}
+
+:host(.is-compact) .step--current .indicator {
+  /* Restore the hollow ring — no pill behind it to blend into here. */
+  background: var(--stepper-current-indicator-background);
+}
+
+:host([orientation='vertical']) .step--current .indicator {
+  /* Circle fill matches the pill so the ring reads as an outline, not a cutout. */
+  background: var(--stepper-current-highlight-background);
+}
+
 /* ---------- State: COMPLETED ---------- */
 
 .step--completed .indicator {
   border-color: var(--stepper-completed-indicator-border);
+  border-width: var(--stepper-completed-indicator-border-width);
   background: var(--stepper-completed-indicator-background);
   color: var(--stepper-completed-indicator-text);
 }
@@ -365,24 +415,16 @@
   color: var(--stepper-available-indicator-text);
 }
 
-.step--available .label {
-  color: var(--stepper-available-label);
-}
-
-/* ---------- Completed / available labels render as brand underlined links ----------
- * Per Figma 639:11170 / 639:11225 and the full progress-tracker example (634:11061):
- * completed + available steps always get a brand colour + underline — the Figma
- * `.step-desktop` component has no separate "static" variant, so this applies
- * whether or not the stepper is `interactive`. `current` stays neutral. */
-
-.step--completed .label {
-  color: var(--stepper-completed-label-actionable);
-}
-
+/* ---------- Completed / available labels are plain neutral text ----------
+ * Matches the vertical flow reference (39:25050, e.g. the "Date solicitant"
+ * text node): no brand colour, no underline, on every status but `current` —
+ * unified across both orientations, 2026-09-24, so horizontal reads the same
+ * way as vertical rather than following the older brand-underlined-link
+ * treatment (was per 639:11170 / 639:11225 / 634:11061). */
 .step--completed .label,
 .step--available .label {
-  text-decoration: underline;
-  text-underline-position: from-font;
+  color: var(--stepper-label-color);
+  text-decoration: none;
 }
 
 /* ---------- Disabled (in interactive mode) ---------- */

@@ -19,7 +19,11 @@
       },
       "labelGap": { "$value": "{spacing.8}", "$type": "dimension" },
       "maxWidth": { "$value": "996px", "$type": "dimension" },
-      "verticalStepMinHeight": { "$value": "84px", "$type": "dimension" },
+      "verticalStepMinHeight": {
+        "$value": "54.5px",
+        "$type": "dimension",
+        "$comment": "Indicator centre-to-centre pitch per Figma 39:25118 (\"Step indicator\", single-line labels) — measured from the `.step-desktop` instance y-offsets (46.5px block + 8px gap). Was 84px."
+      },
       "verticalStepMinHeightCompact": {
         "$value": "{spacing.56}",
         "$type": "dimension",
@@ -41,9 +45,9 @@
         "$comment": "Traveled/coloured rail (completed → brand, error → danger): 1.5px, slightly heavier than the untraveled grey."
       },
       "thicknessPending": {
-        "$value": "{borderWidth.1}",
+        "$value": "{borderWidth.1-5}",
         "$type": "dimension",
-        "$comment": "Untraveled grey rail (pending / current): 1px — thinner than the filled 1.5px bar per Figma."
+        "$comment": "Untraveled grey rail: 1.5px, same as the traveled bar — per Figma 39:25050 connector assets (both strokes are stroke-width 1.5). Was 1px."
       },
       "minLength": { "$value": "{spacing.16}", "$type": "dimension" }
     },
@@ -61,7 +65,11 @@
         },
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
       },
-      "connector": { "$value": "{color.border.base.secondary}", "$type": "color" },
+      "connector": {
+        "$value": "{color.border.base.default}",
+        "$type": "color",
+        "$comment": "#D9D9D9 per Figma 39:25050 connector asset (was border.base.secondary #B2B2B2)."
+      },
       "label": { "$value": "{color.text.base.secondary}", "$type": "color" }
     },
     "current": {
@@ -72,25 +80,32 @@
       },
       "connector": { "$value": "{color.border.brand.default}", "$type": "color" },
       "label": {
-        "$value": "{color.text.base.secondary}",
+        "$value": "{color.text.brand.default}",
         "$type": "color",
-        "$comment": "#383838 per Figma 639:11161 (was base.default #121212)."
+        "$comment": "Brand blue, unified across orientations 2026-09-24 to match the vertical flow reference (39:25050, text node 1:423) — was base.secondary #383838 per 639:11161."
       },
-      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
+      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "highlightBackground": {
+        "$value": "{color.background.brand.secondary}",
+        "$type": "color",
+        "$comment": "Vertical-only current-step pill background (#E8F0FB) — Figma 39:25050, node 40:26952 (\"Current\" state of `.step-desktop`). No horizontal evidence for this; scope to vertical."
+      },
+      "highlightBorderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+      "highlightPadding": { "$value": "{spacing.8}", "$type": "dimension" }
     },
     "completed": {
       "indicator": {
         "border": { "$value": "{color.border.brand.default}", "$type": "color" },
+        "borderWidth": {
+          "$value": "{borderWidth.2}",
+          "$type": "dimension",
+          "$comment": "2px per Figma 39:25050 node 40:26948 (completed circle), vs. 1.5px shared by every other state. Cosmetically invisible (border colour equals fill colour) but kept exact."
+        },
         "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
         "background": { "$value": "{color.background.brand.default}", "$type": "color" }
       },
       "connector": { "$value": "{color.border.brand.default}", "$type": "color" },
-      "label": { "$value": "{color.text.base.secondary}", "$type": "color" },
-      "labelActionable": {
-        "$value": "{color.text.brand.default}",
-        "$type": "color",
-        "$comment": "Completed step → brand underlined link, always (not gated by `interactive`) per Figma 639:11170 and the full progress-tracker example (634:11061)."
-      }
+      "label": { "$value": "{color.text.base.secondary}", "$type": "color" }
     },
     "error": {
       "indicator": {
@@ -110,11 +125,6 @@
         "border": { "$value": "{color.border.brand.default}", "$type": "color" },
         "text": { "$value": "{color.text.brand.default}", "$type": "color" },
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
-      },
-      "label": {
-        "$value": "{color.text.brand.default}",
-        "$type": "color",
-        "$comment": "Navigable future step → brand label (underlined when interactive). Figma 639:11225. Connector inherits the pending grey default."
       }
     },
     "interactive": {
