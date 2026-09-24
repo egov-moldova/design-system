@@ -58,6 +58,11 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Publishing $VERSION under dist-tag $TAG"
 
+      # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
+      # from tokens/generated/*.css, which only tokens.build writes.
+      - name: Build token CSS
+        run: yarn tokens.build
+
       - name: Build
         run: yarn build
         env:

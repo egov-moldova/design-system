@@ -141,13 +141,16 @@ jobs:
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
+      # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
+      # from tokens/generated/*.css, which only tokens.build writes. Storybook's
+      # preview-head.html links to the same files.
+      - name: Build token CSS
+        run: yarn tokens.build
+
       - name: Build Stencil components and tokens
         run: yarn build
         env:
           NODE_ENV: production
-
-      - name: Build token CSS for Storybook preview
-        run: yarn tokens.build
 
       - name: Build Storybook
         run: yarn sp.docker
