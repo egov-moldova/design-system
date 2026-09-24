@@ -110,6 +110,16 @@ Sequential; one writer, one tree. Task 1 is written first and must fail on the c
 **Files:**
 - Create: `scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs`
 
+reuse-candidates:
+- `scripts/audit/lib/figma-manifest.mjs` `validateManifest` — not the home: it only checks that a
+  story id is present and shaped like one (`:186`, `:336`); resolving it needs every stories file,
+  which a per-component manifest validation does not load. Extending it would make every audit run
+  parse the whole story tree.
+- `scripts/audit/05-story-exports.mjs` `analyzeStoriesFile` — reused as-is for the id computation
+  (`:146`, `:167`); nothing is copied.
+- `scripts/__tests__/audit/figma-manifest.spec.mjs` — synthetic manifests only, never reads the
+  repo tree; a repo-invariant spec is a different shape, so a new file.
+
 **Interfaces:**
 - Consumes: `analyzeStoriesFile(path, componentName)` from `scripts/audit/05-story-exports.mjs`
   (returns `{ stories: [{ storyId }] }`, `storyId` null when the title is missing) and the manifest
@@ -198,12 +208,15 @@ describe('figma manifests: story ids resolve to real stories', () => {
 
   it('reports a dead id in defaults and in a state override, and names the swap', () => {
     const known = new Set(['components-badge--default', 'components-badge--sizes']);
+    // The pre-rename spelling is derived, never typed: a literal old id in this file would trip
+    // the repo-wide grep that this change's own acceptance bar runs.
+    const old = 'components-badge--default'.replace(/^components-/, 'atoms-');
     const dead = deadStoryIds(
-      [{ file: 'm.figma.json', manifest: { defaults: { story: 'atoms-badge--default' }, states: [{ story: 'components-badge--nope' }] } }],
+      [{ file: 'm.figma.json', manifest: { defaults: { story: old }, states: [{ story: 'components-badge--nope' }] } }],
       known,
     );
     assert.deepEqual(dead.map(d => [d.where, d.id, d.suggestion]), [
-      ['defaults.story', 'atoms-badge--default', 'components-badge--default'],
+      ['defaults.story', old, 'components-badge--default'],
       ['states[0].story', 'components-badge--nope', null],
     ]);
   });
@@ -259,7 +272,8 @@ describe('figma manifests: story ids resolve to real stories', () => {
   `atomic: 'atoms'`; the title assertion becomes `/title: 'Components\/Button'/`; the
   `respects --atomic override` test is replaced by one asserting `--atomic` is refused:
   spawn `node scripts/scaffold/story-scaffold.mjs mud-button --atomic molecule`, expect exit 2 and
-  stderr containing `Unknown option`.
+  stderr containing `Unknown option`. This test is the one place `--atomic` stays in the tree, so
+  the two greps that hunt for it (Step 3 below and the acceptance bar) exclude that file by name.
 - Modify: `.claude/agents/story-writer.md` — delete the `atomicLevel` input (`:18`) and rewrite the
   browser-verification URL (`:225`) to state the id as `components-<title-slug>--default` where the
   slug is the file's own `title` lowercased with `/` and spaces as `-` (`Components/Input/Date` →
@@ -273,7 +287,7 @@ describe('figma manifests: story ids resolve to real stories', () => {
   run `node --test scripts/__tests__/scaffold/scaffolders.spec.mjs` → FAILS on the title and on
   `--atomic` being accepted.
 - [ ] **Step 2: Edit the scaffold and the four agent files**; re-run → PASS.
-- [ ] **Step 3: Grep.** `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy'`
+- [ ] **Step 3: Grep.** `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy' ':!scripts/__tests__/scaffold/scaffolders.spec.mjs'`
   prints nothing.
 - [ ] **Step 4: Commit** `fix(scaffold): generate Components/<Name> stories and drop --atomic`.
 
@@ -344,7 +358,7 @@ describe('figma manifests: story ids resolve to real stories', () => {
 - `git grep -nE '(atoms|molecules|organisms)-[a-z0-9-]+--' -- . ':!CHANGELOG.md' ':!changes' ':!.claude/plans' ':!src/legacy'`
   prints nothing.
 - `git grep -nE "'(Atoms|Molecules|Organisms)/" -- scripts` prints nothing.
-- `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy'`
+- `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy' ':!scripts/__tests__/scaffold/scaffolders.spec.mjs'`
   prints nothing.
 - `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs` passes, and fails when one
   manifest id is changed to a non-existent story (mutation check, reverted after).
