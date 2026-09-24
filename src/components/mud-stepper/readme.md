@@ -21,11 +21,11 @@ Two flavours:
   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
   non-actionable per the WAI-ARIA stepper pattern.
 
-State legend (Figma node 634:10573):
-  - `pending`    — neutral grey ring + faded number, non-navigable
-  - `current`    — brand ring + brand number, neutral label
-  - `completed`  — brand filled circle + white checkmark, brand underlined link label
-  - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
+State legend (Figma node 39:25050, unified across orientations):
+  - `pending`    — neutral grey ring + faded number, non-navigable, neutral label
+  - `current`    — brand ring + brand number + brand label
+  - `completed`  — brand filled circle + white checkmark, neutral label
+  - `available`  — brand outline ring + brand number, neutral label, navigable forward
   - `error`      — danger ring + danger cross, neutral label
 
 The component renders an ordered list with `role="list"` for AT compatibility

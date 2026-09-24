@@ -103,6 +103,33 @@ const nextId = () => `mud-stepper-story-${++storyInstance}`;
 const setStepsScript = (id: string, steps: StepperStep[]) =>
   /*html*/ `<script>(function(){const el=document.getElementById('${id}');if(el)el.steps=${JSON.stringify(steps)};})();</script>`;
 
+// Wires `mudStepClick` → a new `steps` array (or `currentStep`), so `interactive`
+// actually navigates wherever a story turns it on (not just the dedicated
+// Interactive story below). Clicked step becomes current, everything before it
+// completes, everything after falls back to pending — matches the Figma flow
+// reference (39:25050), where every step past current is plain pending, not the
+// brand-outlined `available` state.
+// When `currentStep` is a valid non-negative integer, the component derives every
+// item's status from it and ignores `steps[i].status` entirely (see
+// `effectiveStatus` in mud-stepper.tsx) — mutating `steps` alone would silently
+// do nothing. Bump `currentStep` itself in that case instead.
+const stepNavigationScript = (id: string) => /*html*/ `<script>(function(){
+    const el=document.getElementById('${id}');
+    if(!el)return;
+    el.addEventListener('mudStepClick',function(ev){
+      const index=ev.detail.index;
+      if (Number.isInteger(el.currentStep) && el.currentStep >= 0) {
+        el.currentStep = index;
+        return;
+      }
+      el.steps = el.steps.map(function(s, i){
+        if (i < index) return Object.assign({}, s, { status: 'completed' });
+        if (i === index) return Object.assign({}, s, { status: 'current' });
+        return Object.assign({}, s, { status: 'pending' });
+      });
+    });
+  })();</script>`;
+
 const renderStepper = (args: StepperArgs, steps: StepperStep[] = args.steps) => {
   const id = nextId();
   return /*html*/ `
@@ -115,6 +142,7 @@ const renderStepper = (args: StepperArgs, steps: StepperStep[] = args.steps) => 
       ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
     ></mud-stepper>
     ${setStepsScript(id, steps)}
+    ${args.interactive ? stepNavigationScript(id) : ''}
   `;
 };
 
@@ -232,7 +260,7 @@ export const Interactive: Story = {
     const logId = `${id}-log`;
     return /*html*/ `
       <div style="padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 996px;">
-        <p style="${sectionLabelStyle}">interactive = true — completed, current, and available steps render as &lt;button&gt; and emit <code>mudStepClick</code>. Completed/available labels become brand underlined links. Pending steps remain non-actionable per the WAI-ARIA stepper pattern. Clicking a step navigates to it — the consumer is responsible for turning the click into a new <code>steps</code>/<code>currentStep</code> value; this demo does that below.</p>
+        <p style="${sectionLabelStyle}">interactive = true — completed, current, and available steps render as &lt;button&gt; and emit <code>mudStepClick</code>. Pending steps remain non-actionable per the WAI-ARIA stepper pattern. Clicking a step navigates to it — the consumer is responsible for turning the click into a new <code>steps</code>/<code>currentStep</code> value; this demo does that below.</p>
         <mud-stepper
           id="${id}"
           orientation="${args.orientation}"
@@ -240,24 +268,14 @@ export const Interactive: Story = {
           ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
         ></mud-stepper>
         ${setStepsScript(id, interactiveSteps)}
+        ${stepNavigationScript(id)}
         <p id="${logId}" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--font-size-12); margin-top: var(--spacing-16); color: var(--color-text-base-tertiary);">Click any non-pending step…</p>
         <script>(function(){
           const el=document.getElementById('${id}');
           const log=document.getElementById('${logId}');
           if(!el||!log)return;
           el.addEventListener('mudStepClick',function(ev){
-            const index=ev.detail.index;
-            const step=ev.detail.step;
-            log.textContent='mudStepClick → index='+index+', label="'+step.label+'"';
-            // Consumer-driven navigation: the clicked step becomes 'current', earlier
-            // steps become 'completed', the step right after stays 'available' (jumpable),
-            // the rest fall back to 'pending' — mirrors a real app reacting to the click.
-            el.steps = el.steps.map(function(s, i){
-              if (i < index) return Object.assign({}, s, { status: 'completed' });
-              if (i === index) return Object.assign({}, s, { status: 'current' });
-              if (i === index + 1) return Object.assign({}, s, { status: 'available' });
-              return Object.assign({}, s, { status: 'pending' });
-            });
+            log.textContent='mudStepClick → index='+ev.detail.index+', label="'+ev.detail.step.label+'"';
           });
         })();</script>
       </div>
