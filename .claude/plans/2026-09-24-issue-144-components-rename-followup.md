@@ -1,0 +1,344 @@
+# Finish the Storybook `Components` rename
+
+**Reviewed:** none
+
+**Executor**: Sonnet 5 · medium
+
+Dispatch verdict: inline — no task passes the brief-test: seven small tasks on one shared tree, and
+Task 2 consumes what Task 1 exports, so a leg per task would pay its startup floor to hand back a
+few lines each. The whole plan runs in one implementation session.
+
+## Goal
+
+Every place that names a Storybook story id or title agrees with the single `Components/<Name>`
+category introduced by `0b4d020`, and a static test makes the next title change fail loudly instead
+of silently breaking the audit harness.
+
+## Spec/issue link
+
+<https://github.com/egov-moldova/design-system/issues/144> — "fix: finish the Storybook Components
+rename — stale story ids in manifests, audit fallbacks, scaffold and agent docs".
+
+## Problem
+
+`0b4d020` renamed every story title to `Components/<Name>`. A story id is derived from the title
+(`Components/Input/Date` → `components-input-date`), so anything holding a pre-rename id points at a
+story that no longer exists. The audit harness then waits for a component that never renders and
+reports `capture failed` for every state, not "story not found".
+
+Re-measured on `upstream/main` at 53f3579 (the issue was written at 38d3021; three other manifests
+and `mud-file-input` landed since):
+
+- 17 of 21 `src/components/*/test/*.figma.json` manifests carry a pre-rename `defaults.story`. All 17
+  resolve mechanically: swapping the leading `atoms|molecules|organisms` for `components` yields an
+  id that exists among the ids computed from the `*.stories.ts` files (dry run, 2026-09-24). The
+  other four (`mud-numeric-input`, `mud-phone-input`, `mud-search-input`, `mud-stepper`) are already
+  correct.
+- `story-scaffold.mjs` still writes `title: 'Atoms/<Name>'` into every new stories file.
+- Three audit rows infer `Atoms/<Name>` when a component has no stories file.
+
+## Options
+
+| Option | Cost |
+| --- | --- |
+| A. Fix the stale ids and add a static guard in this PR; remove `--atomic` | One PR; `--atomic` becomes an "unknown option" error for anyone passing it (its only caller in the repo is its own test) |
+| B. Fix the ids now, guard and `--atomic` in follow-ups | Smallest diff; the window between PRs stays unprotected and #144 is not provably closed |
+| C. A, but keep `--atomic` as a deprecated no-op | Dead code that mimics a choice that no longer exists |
+
+## Decision
+
+A — confirmed by the issue owner on 2026-09-24: `--atomic` (and the `atomicLevel` input of the
+`story-writer` agent) is removed, and the guard test ships in this PR. Nothing consumer-visible
+changes: the manifests are read only by `scripts/audit/*` and the `pixel-perfect` skill, and the
+published package ships `dist/`, `loader/` and `CHANGELOG.md` only.
+
+## Global constraints
+
+- Branch `fix/issue-144-components-rename-followup`, cut from `upstream/main`. PR base is
+  `egov-moldova/design-system:main`; `origin` is the fork.
+- Open PRs #135, #137, #140, #141, #142 and #145 were listed on 2026-09-24. None edits a file named
+  in this plan (checked against their file lists); #135 and #137 edit only the archetype vocabulary
+  in `.claude/skills/optimize-prompt/**`, `_agents/verification-git.md` and
+  `_agents/anti-patterns.md`, which this plan leaves alone. Re-check before opening the PR.
+- Atomic-design vocabulary is not stale and stays: the `atoms → molecules → organisms` build order,
+  the `optimize-prompt` archetypes, `_agents/figma-extraction.md`, `_agents/pixel-perfect-qa.md`, the
+  `--fast` routing table. Also untouched: `web-components/demo/manifest.ts` (a demo grouping),
+  `src/legacy/**` (deleted by #135), `docs/screenshots/**`, and `.claude/plans/**` history.
+- No `changes/` fragment: nothing a consumer of `@egov-moldova/mud` would notice.
+- Commit messages in English, conventional style, no attribution trailers. Stage named paths only.
+- Story ids are never typed by hand into a manifest: each is derived from the story's real title
+  (Task 2) and proved by the guard (Task 1).
+
+## Review Focus
+
+- A manifest whose state overrides `defaults.story` (`states[].story`): the guard must check both
+  places, not only `defaults`.
+- A title with a space or a nested path (`Components/Date Picker`, `Components/Input/Date`): the id
+  slug is Storybook's `toId`, not a kebab-case of the component name — `storyIdFor` is the one
+  builder and the guard must not re-derive it.
+- A manifest that names a real title but a story export that does not exist
+  (`components-badge--nope`): the guard must fail on the export half too.
+- A stories file whose title cannot be extracted: the guard must not read that as "no ids" and
+  silently pass every manifest; it fails naming the file.
+- `story-scaffold` invoked with `--atomic molecule`: exits 2 with the parser's message (strict
+  `parseArgs`), never writes a `Molecules/…` file.
+
+## Tasks
+
+Sequential; one writer, one tree. Task 1 is written first and must fail on the current tree.
+
+### Task 1: Guard — every manifest story id resolves to a real story
+
+**Files:**
+- Create: `scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs`
+
+**Interfaces:**
+- Consumes: `analyzeStoriesFile(path, componentName)` from `scripts/audit/05-story-exports.mjs`
+  (returns `{ stories: [{ storyId }] }`, `storyId` null when the title is missing) and the manifest
+  shape from `scripts/audit/lib/figma-manifest.mjs` (`defaults.story`, `states[].story`).
+- Produces: `deadStoryIds(manifests, knownIds)` → `[{ manifest, where, id, suggestion }]`, exported
+  from the spec file only for its own tests.
+
+- [ ] **Step 1: Write the spec.** A repo invariant in the style of
+  `scripts/__tests__/package-scripts-paths.spec.mjs`: a header comment naming the failure it
+  prevents (a title rename leaves every manifest id pointing at a page that no longer exists, and
+  the harness reports `capture failed`), then `describe`/`it` from `node:test`.
+
+```js
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, it } from 'node:test';
+import { analyzeStoriesFile } from '../../audit/05-story-exports.mjs';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+const COMPONENTS = path.join(ROOT, 'src/components');
+// Storybook's own glob (`.storybook/main.mjs`): every *.stories.* under src/components.
+const STORIES_RE = /\.stories\.(js|jsx|ts|tsx)$/;
+const OLD_PREFIX_RE = /^(atoms|molecules|organisms)-/;
+
+const walk = dir =>
+  fs.readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter(e => e.isFile())
+    .map(e => path.join(e.parentPath, e.name));
+
+/** Every story id Storybook will serve, computed from the stories files' titles. */
+export function knownStoryIds() {
+  const ids = new Set();
+  const untitled = [];
+  for (const file of walk(COMPONENTS).filter(f => STORIES_RE.test(f))) {
+    const { stories } = analyzeStoriesFile(file, path.basename(path.dirname(file)));
+    if (stories.some(s => s.storyId === null)) untitled.push(path.relative(ROOT, file));
+    for (const s of stories) if (s.storyId) ids.add(s.storyId);
+  }
+  return { ids, untitled };
+}
+
+/** `[where, id]` for every story id a manifest names. */
+export function storyRefs(manifest) {
+  const refs = [];
+  if (manifest.defaults?.story) refs.push(['defaults.story', manifest.defaults.story]);
+  (manifest.states ?? []).forEach((s, i) => {
+    if (s.story) refs.push([`states[${i}].story`, s.story]);
+  });
+  return refs;
+}
+
+export function deadStoryIds(manifests, knownIds) {
+  const dead = [];
+  for (const { file, manifest } of manifests) {
+    for (const [where, id] of storyRefs(manifest)) {
+      if (knownIds.has(id)) continue;
+      const swapped = id.replace(OLD_PREFIX_RE, 'components-');
+      dead.push({ manifest: file, where, id, suggestion: knownIds.has(swapped) ? swapped : null });
+    }
+  }
+  return dead;
+}
+
+const repoManifests = () =>
+  walk(COMPONENTS)
+    .filter(f => f.endsWith('.figma.json'))
+    .map(f => ({ file: path.relative(ROOT, f), manifest: JSON.parse(fs.readFileSync(f, 'utf8')) }));
+
+describe('figma manifests: story ids resolve to real stories', () => {
+  it('every stories file has an extractable title', () => {
+    const { untitled } = knownStoryIds();
+    assert.deepEqual(untitled, [], `stories files with no extractable title: ${untitled.join(', ')}`);
+  });
+
+  it('every defaults.story and states[].story exists in the stories files', () => {
+    const { ids } = knownStoryIds();
+    const dead = deadStoryIds(repoManifests(), ids);
+    assert.deepEqual(
+      dead,
+      [],
+      dead.map(d => `${d.manifest} ${d.where}: "${d.id}"${d.suggestion ? ` — did you mean "${d.suggestion}"?` : ''}`).join('\n'),
+    );
+  });
+
+  it('reports a dead id in defaults and in a state override, and names the swap', () => {
+    const known = new Set(['components-badge--default', 'components-badge--sizes']);
+    const dead = deadStoryIds(
+      [{ file: 'm.figma.json', manifest: { defaults: { story: 'atoms-badge--default' }, states: [{ story: 'components-badge--nope' }] } }],
+      known,
+    );
+    assert.deepEqual(dead.map(d => [d.where, d.id, d.suggestion]), [
+      ['defaults.story', 'atoms-badge--default', 'components-badge--default'],
+      ['states[0].story', 'components-badge--nope', null],
+    ]);
+  });
+});
+```
+
+- [ ] **Step 2: Run it and confirm it fails for the right reason.**
+  Run: `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs`
+  Expected: the second test FAILS listing exactly 17 lines, each with a `did you mean
+  "components-…"` suggestion; the first and third tests PASS. If the count is not 17, re-run
+  `git grep -nE '"story": "(atoms|molecules|organisms)-' -- 'src/**/*.figma.json' | wc -l` and
+  reconcile before continuing.
+
+- [ ] **Step 3: Commit the failing guard alone** so the history shows it red, then green in Task 2:
+  `test(audit): fail when a manifest names a story that does not exist`.
+
+### Task 2: Rewrite the 17 manifest ids
+
+**Files:**
+- Modify: the 17 files reported by Task 1 — `src/components/mud-{accordion,accordion-item,avatar,
+  badge,banner,breadcrumb,checkbox,chip,date-input,date-picker,file-input,segmented-control,select,
+  table,time-input,time-picker,toast}/test/*.figma.json`
+
+**Interfaces:**
+- Consumes: `deadStoryIds` output (each entry already carries its verified `suggestion`).
+- Produces: manifests whose every story id is in the known set.
+
+- [ ] **Step 1: Apply the rewrite from the guard's own suggestions**, not from a typed list. A
+  throwaway script (not committed) imports `knownStoryIds`, `deadStoryIds`, reads each manifest
+  file as text, and for each dead entry replaces the exact quoted `"<id>"` with
+  `"<suggestion>"`. It asserts per file that the text changed and that the count of replacements
+  equals the count of dead entries for that file; an entry with `suggestion === null` aborts the
+  run (that manifest needs a human, not a guess). JSON is edited as text so key order and
+  formatting stay byte-identical.
+- [ ] **Step 2: Run the guard.** `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs`
+  → all three PASS.
+- [ ] **Step 3: Confirm nothing but ids moved.**
+  `git diff --stat` lists exactly 17 manifests, and `git diff -U0 | grep -E '^[+-][^+-]' | grep -vE '"story":'`
+  prints nothing.
+- [ ] **Step 4: Commit** `fix(audit): point the state manifests at the Components story ids`.
+
+### Task 3: Scaffold writes `Components/<Name>`; remove `--atomic` and `atomicLevel`
+
+**Files:**
+- Modify: `scripts/scaffold/story-scaffold.mjs` — remove the `--atomic` USAGE lines (`:50-51`), the
+  `'atomic'` entry in `parseArgs` options (`:64`), `atomic: parsed.values.atomic ?? null` (`:87`),
+  `const atomic = args.atomic ?? inferAtomicCategory(name)` (`:114`), the `atomic` key of
+  `generateStoriesFile({ contract, atomic, target })` and its JSDoc line (`:145,149`),
+  `const titleCategory = capitalize(atomic)` (`:153`), and `inferAtomicCategory` (`:257-262`). The
+  title line becomes `` `  title: 'Components/${pascal}',` ``. Drop `capitalize` only if nothing
+  else uses it.
+- Modify: `scripts/__tests__/scaffold/scaffolders.spec.mjs` — every `generateStoriesFile` call drops
+  `atomic: 'atoms'`; the title assertion becomes `/title: 'Components\/Button'/`; the
+  `respects --atomic override` test is replaced by one asserting `--atomic` is refused:
+  spawn `node scripts/scaffold/story-scaffold.mjs mud-button --atomic molecule`, expect exit 2 and
+  stderr containing `Unknown option`.
+- Modify: `.claude/agents/story-writer.md` — delete the `atomicLevel` input (`:18`) and rewrite the
+  browser-verification URL (`:225`) to state the id as `components-<title-slug>--default` where the
+  slug is the file's own `title` lowercased with `/` and spaces as `-` (`Components/Input/Date` →
+  `components-input-date`), pointing at `storyIdFor` in `scripts/audit/lib/storybook-helpers.mjs`
+  rather than a hand-typed id.
+- Modify: `.claude/agents/{custom-component,new-component,redesign-component}.md` — remove
+  `atomicLevel=<level>, ` from the `story-writer` dispatch prompts (`custom-component.md:146`,
+  `new-component.md:161`, `redesign-component.md:211`).
+
+- [ ] **Step 1: Edit the spec first** (title assertion, drop `atomic`, replace the override test);
+  run `node --test scripts/__tests__/scaffold/scaffolders.spec.mjs` → FAILS on the title and on
+  `--atomic` being accepted.
+- [ ] **Step 2: Edit the scaffold and the four agent files**; re-run → PASS.
+- [ ] **Step 3: Grep.** `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy'`
+  prints nothing.
+- [ ] **Step 4: Commit** `fix(scaffold): generate Components/<Name> stories and drop --atomic`.
+
+### Task 4: Audit fallbacks, hints and helper docs
+
+**Files:**
+- Modify: `scripts/audit/09-a11y-tree.mjs:757`, `scripts/audit/10-contrast-pairs.mjs:808`,
+  `scripts/audit/12-console-errors.mjs:215` — `` `Atoms/${pascal(...)}` `` → `` `Components/${pascal(...)}` ``.
+- Modify: `scripts/audit/05-story-exports.mjs:159` — the `STORY-NO-TITLE` hint's title becomes
+  `Components/…`; `:11` doc comment example likewise.
+- Modify: `scripts/audit/lib/figma-manifest.mjs:20,336` — example id and error message quote
+  `components-button--default`.
+- Modify: doc-comment examples only, no behaviour: `scripts/audit/lib/storybook-helpers.mjs:55-56,75-78`,
+  `scripts/audit/lib/browser-context.mjs:89`, `scripts/audit/09-a11y-tree.mjs:23,537`,
+  `scripts/audit/10-contrast-pairs.mjs:42`. Keep the `InfoBox → infobox` example: it documents why
+  `storyIdFor` delegates, so it becomes `storyIdFor('Components/InfoBox', 'Default')` →
+  `'components-infobox--default'`.
+
+- [ ] **Step 1: Edit** the three fallbacks and the hint, then the doc comments, in one message per
+  file.
+- [ ] **Step 2: Run** `node --test "scripts/__tests__/audit/*.spec.mjs"` — fixtures still pass where
+  they test the derivation function; the ones asserting an `atoms-…` fallback id fail and are
+  fixed in Task 5.
+- [ ] **Step 3: Commit** `fix(audit): infer Components/<Name> when a component has no stories file`.
+
+### Task 5: Test fixtures
+
+**Files:**
+- Modify: `scripts/__tests__/audit/{05-story-exports,story-id,figma-manifest,figma-refs,run-all,
+  state-page,09-a11y-tree,10-contrast-pairs}.spec.mjs`
+
+- [ ] **Step 1: Replace** each old title/id with the `Components` form, keeping what the case
+  proves: `Atoms/Button` → `Components/Button`, `Molecules/Tooltip` → `Components/Tooltip`,
+  `Atoms/InfoBox` → `Components/InfoBox`; ids `atoms-button--default` → `components-button--default`
+  and so on. `story-id.spec.mjs:41-43` keeps its `InfoBox`/`InlineMessage` regression, re-titled.
+  `10-contrast-pairs.spec.mjs:291` is a comment quoting `molecules-tabs--default`: re-word it to
+  `components-tabs--default`.
+- [ ] **Step 2: Run** `yarn test:scripts` → PASS.
+- [ ] **Step 3: Commit** `test(audit): use the Components category in story-id fixtures`.
+
+### Task 6: Documentation that hands out story ids
+
+**Files:**
+- Modify: `.claude/agents/a11y-verifier.md:23`, `.claude/agents/audit-production.md:97`,
+  `.claude/agents/redesign-component.md:195,257`, `.claude/commands/pre-pr-check.md:191`,
+  `.claude/commands/update-tokens.md:161`, `.claude/skills/pixel-perfect/SKILL.md:68`,
+  `_agents/environment-commands.md:196`, `_agents/mcp-tools.md:231-232`,
+  `_agents/pre-implementation.md:24`
+
+- [ ] **Step 1: Rewrite each id** to `components-<name>--default` **without the `mud-` prefix** (the
+  old `atoms-mud-<name>` form was already wrong: the id comes from the title, which has no `mud-`).
+  Where a placeholder stands for a component, write the derivation once
+  (`components-<title-slug>--default`, slug from the stories file's `title`) instead of guessing the
+  slug from the tag name; `mud-date-input` is `components-input-date`.
+- [ ] **Step 2: Run** `yarn docs:check` → PASS (validates agent/command/skill docs).
+- [ ] **Step 3: Commit** `docs: name the Components story ids in agent and command instructions`.
+
+### Task 7: Close the acceptance bar
+
+- [ ] **Step 1: Run every bar command below**, each alone, exit status unmasked.
+- [ ] **Step 2: Runtime proof.** With Storybook built for this worktree, run the smallest
+  `yarn audit:component mud-badge --depth <d>` that reaches the state-capture rows (11 and 15) and
+  confirm they capture states rather than reporting `capture failed`. If the environment cannot
+  build Storybook, say so in the report — the static guard is then the only proof.
+
+## Acceptance bar
+
+- `git grep -nE '(atoms|molecules|organisms)-[a-z0-9-]+--' -- . ':!CHANGELOG.md' ':!changes' ':!.claude/plans' ':!src/legacy'`
+  prints nothing.
+- `git grep -nE "'(Atoms|Molecules|Organisms)/" -- scripts` prints nothing.
+- `git grep -nE "atomicLevel|--atomic|inferAtomicCategory" -- . ':!.claude/plans' ':!CHANGELOG.md' ':!src/legacy'`
+  prints nothing.
+- `node --test scripts/__tests__/audit/figma-manifest-story-ids.spec.mjs` passes, and fails when one
+  manifest id is changed to a non-existent story (mutation check, reverted after).
+- `yarn test:scripts`, `yarn docs:check`, `yarn lint` pass.
+- `git diff --stat upstream/main...HEAD` names no file outside the Files lists above and this plan.
+
+## Not verified
+
+- Whether any CI job or hook already validates manifest ids against a built Storybook index: not
+  found by grep (no workflow names `figma.json`); if one exists the guard duplicates it.
+- The runtime capture proof depends on a local Storybook build; if it cannot run, the guard is the
+  only evidence that the audit reaches the stories.
+- #145, #142 and #141 were merged-with-`components-…` ids by inspection of their diffs, not by
+  running their audits; after they merge, the guard covers them.
+- `--atomic` external callers outside this repository (someone's shell history) are unknowable.
