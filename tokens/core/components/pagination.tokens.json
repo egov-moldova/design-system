@@ -22,6 +22,13 @@
         "default": { "$value": "0", "$type": "dimension" },
         "focus": { "$value": "{borderWidth.1-5}", "$type": "dimension" }
       },
+      "focusRing": {
+        "$comment": "Figma .pagination-item Focus (383:20683, 383:20691) carries Focus Ring/Small: 0 0 0 3px #3379DB over 0 0 0 1px #FFF, rendered as a 1px white halo with the blue band ending 3px out. outerWidth is that total outer spread. It replaces an inner 1.5px #0058D2 border no node draws.",
+        "innerWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+        "outerWidth": { "$value": "{borderWidth.3}", "$type": "dimension" },
+        "innerColor": { "$value": "{color.background.base.default}", "$type": "color" },
+        "outerColor": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
+      },
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },

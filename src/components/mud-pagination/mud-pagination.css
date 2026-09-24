@@ -103,10 +103,13 @@
   color: var(--pagination-item-unselected-label-active);
 }
 
+/* Figma 383:20683 / 383:20691 — Focus Ring/Small, drawn outside the 40px box as
+   Figma stacks it: a 1px white halo with the blue band ending 3px out. */
 .page-button:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-item-unselected-border-focus);
+  box-shadow:
+    0 0 0 var(--pagination-item-focus-ring-inner-width) var(--pagination-item-focus-ring-inner-color),
+    0 0 0 var(--pagination-item-focus-ring-outer-width) var(--pagination-item-focus-ring-outer-color);
   background-color: var(--pagination-item-unselected-background-default);
 }
 
@@ -173,10 +176,13 @@
   background-color: var(--pagination-overflow-trigger-background-active);
 }
 
+/* The overflow element is a .pagination-item in Figma (415:24452), so it takes
+   the same Focus Ring/Small as a page number. */
 .overflow-trigger:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-overflow-trigger-border-focus);
+  box-shadow:
+    0 0 0 var(--pagination-item-focus-ring-inner-width) var(--pagination-item-focus-ring-inner-color),
+    0 0 0 var(--pagination-item-focus-ring-outer-width) var(--pagination-item-focus-ring-outer-color);
 }
 
 .overflow-item.is-open .overflow-trigger {
@@ -305,10 +311,14 @@
   background-color: var(--pagination-nav-background-active);
 }
 
+/* Prev / Next are button-text-rectangular Strict (105:997, 105:1057), whose Focus
+   variants carry Focus Ring/Medium — the global ring mud-button draws too:
+   a 2px white halo with the blue band ending 5px out. */
 .nav-button:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-nav-border-focus);
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
 }
 
 .nav-button[disabled],
