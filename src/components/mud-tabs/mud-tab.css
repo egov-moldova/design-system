@@ -148,8 +148,8 @@
   line-height: var(--_badge-line-height);
   font-weight: var(--tabs-badge-font-weight);
   flex-shrink: 0;
-  /* The badge counter never inherits the (changing) tab font weight. */
-  font-variant-numeric: tabular-nums;
+  /* Proportional figures, as Figma's numbered-badge sets its count (149:4955):
+     "18" is 30px wide there; tabular figures made it 35px. */
 }
 
 :host([disabled]) .tab__badge {
