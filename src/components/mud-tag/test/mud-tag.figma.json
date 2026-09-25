@@ -490,6 +490,80 @@
           "note": "Size=Small (5092:17311): 20px, padded 0 6px, Desktop/Caption/Medium 500. Figma draws it in Strong Success, whose fill the component darkens on purpose (see strong-success), so only the size is pinned."
         }
       ]
+    },
+    {
+      "name": "info-strong",
+      "node": "624:8977",
+      "html": "<mud-tag variant=\"info\" type=\"strong\">Info</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "borderTopLeftRadius": "4px",
+            "paddingLeft": "6px",
+            "paddingRight": "6px",
+            "backgroundColor": "#E8F0FB",
+            "color": "#383838"
+          },
+          "note": "info-tag Icon=None, Type=Strong (624:8935): 24px, padded 0 6px, a #E8F0FB fill under a Desktop/Body/Small label in #383838. The Info Tag has no semantic axis."
+        }
+      ]
+    },
+    {
+      "name": "info-strong-icon",
+      "node": "624:8976",
+      "html": "<mud-tag variant=\"info\" type=\"strong\"><mud-icon slot=\"icon-start\" name=\"time\" size=\"16\"></mud-icon>Info</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "borderTopLeftRadius": "4px",
+            "paddingLeft": "4px",
+            "paddingRight": "6px",
+            "columnGap": "4px",
+            "backgroundColor": "#E8F0FB",
+            "color": "#383838"
+          },
+          "note": "info-tag Icon=Leading, Type=Strong (624:8939): padded 0 6px 0 4px, a 16px time icon 4px before the label."
+        },
+        {
+          "target": "mud-tag mud-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "info-subtle-icon",
+      "node": "624:8995",
+      "html": "<mud-tag variant=\"info\" type=\"subtle\"><mud-icon slot=\"icon-start\" name=\"time\" size=\"16\"></mud-icon>Info</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "borderTopLeftRadius": "4px",
+            "paddingLeft": "4px",
+            "paddingRight": "6px",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "color": "#757575"
+          },
+          "note": "info-tag Icon=Leading, Type=Subtle (624:8942): no fill, the label in #757575."
+        }
+      ]
     }
   ]
 }
