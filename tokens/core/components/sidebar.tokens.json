@@ -60,6 +60,11 @@
         "$comment": "Figma sidebar-list-item height 48px."
       },
       "paddingInlineStart": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInlineStartNested": {
+        "$value": "{spacing.56}",
+        "$type": "dimension",
+        "$comment": "Figma 2nd-level row (1523:4046, 1523:1900) pads 56px on the leading edge: the parent's 24px padding, 20px icon and 12px gap, so the child's icon sits under the parent's label."
+      },
       "paddingInlineEnd": { "$value": "{spacing.16}", "$type": "dimension" },
       "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
       "gap": { "$value": "{spacing.12}", "$type": "dimension" },

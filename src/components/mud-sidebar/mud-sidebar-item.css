@@ -26,6 +26,11 @@
   transition: background-color 150ms ease-out;
 }
 
+/* A second-level row indents so its icon sits under the parent's label (1523:4046). */
+:host([slot='children']) .item {
+  padding-inline-start: var(--sidebar-item-padding-inline-start-nested);
+}
+
 .icon {
   flex: none;
   color: var(--sidebar-item-icon-default);
