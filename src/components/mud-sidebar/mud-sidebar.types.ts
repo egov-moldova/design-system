@@ -15,3 +15,10 @@ export interface SidebarItemToggleDetail {
   /** Whether the item is now expanded. */
   expanded: boolean;
 }
+
+/**
+ * Which badge a row's `badge` count renders as: Figma's grey `numbered-badge`
+ * (149:4955) or its red `notification-badge` (797:43130).
+ */
+export const SIDEBAR_ITEM_BADGE_VARIANTS = ['neutral', 'notification'] as const;
+export type SidebarItemBadgeVariant = (typeof SIDEBAR_ITEM_BADGE_VARIANTS)[number];

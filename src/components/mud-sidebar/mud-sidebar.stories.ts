@@ -168,6 +168,7 @@ const renderWithTagsAndBadges = () => /*html*/ `
           icon="document"
           label="Pending"
           badge="1"
+          badge-variant="notification"
         ></mud-sidebar-item>
         <mud-sidebar-item
           value="completed"
@@ -213,7 +214,7 @@ const renderWithTagsAndBadges = () => /*html*/ `
 const docsSourceWithTagsAndBadges = /*html*/ `<mud-sidebar aria-label="Navigation with tags and badges">
   <mud-sidebar-group heading="Cereri">
     <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
-    <mud-sidebar-item value="pending" icon="document" label="Pending" badge="1"></mud-sidebar-item>
+    <mud-sidebar-item value="pending" icon="document" label="Pending" badge="1" badge-variant="notification"></mud-sidebar-item>
     <mud-sidebar-item value="completed" icon="download" label="Completed" badge="12"></mud-sidebar-item>
     <mud-sidebar-item value="search" icon="search" label="Search" tag="New"></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics" tag="Beta"></mud-sidebar-item>
@@ -582,9 +583,11 @@ export const WithSecondaryLabels: Story = {
 };
 
 /**
- * Items carrying `tag` (outlined neutral `mud-tag`) and `badge` (numbered
- * `mud-badge`). Tags suit string labels ("New", "Beta"); badges suit numeric
- * counters. Both can coexist with an icon and secondary text.
+ * Items carrying `tag` (outlined neutral `mud-tag`) and `badge` (a numbered
+ * count). Tags suit string labels ("New", "Beta"); badges suit numeric
+ * counters. A badge is grey by default; `badge-variant="notification"` draws
+ * it red, for a count that needs attention. Both can coexist with an icon and
+ * secondary text.
  */
 export const WithTagsAndBadges: Story = {
   render: renderWithTagsAndBadges,

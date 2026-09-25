@@ -69,6 +69,11 @@
   font-weight: var(--sidebar-item-badge-font-weight);
 }
 
+/* Red notification badge (Figma notification-badge 797:43130), drawn by mud-badge. */
+.badge-notification {
+  flex: none;
+}
+
 .chevron {
   flex: none;
   color: var(--sidebar-item-icon-default);
@@ -141,6 +146,7 @@
 :host([collapsed]) .secondary,
 :host([collapsed]) .tag,
 :host([collapsed]) .badge,
+:host([collapsed]) .badge-notification,
 :host([collapsed]) .chevron {
   display: none;
 }
