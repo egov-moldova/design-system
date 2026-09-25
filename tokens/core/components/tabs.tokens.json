@@ -78,10 +78,6 @@
       "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
     },
     "overflow": {
-      "fadeWidth": {
-        "md": { "$value": "{spacing.48}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.32}", "$type": "dimension" }
-      },
       "chevron": {
         "size": {
           "md": { "$value": "{spacing.24}", "$type": "dimension" },
@@ -91,13 +87,22 @@
         "colorHover": { "$value": "{color.icon.base.default}", "$type": "color" },
         "colorDisabled": { "$value": "{color.icon.disabled.default}", "$type": "color" },
         "background": { "$value": "{color.background.base.default}", "$type": "color" },
-        "paddingBlock": {
+        "$comment": "Figma .arrow (357:16243, drawn over the row's end in 354:16084) is an overlay, not a column: padded 12px 4px 8px 16px around a 24px chevron-right-small, 44px tall so the row's bottom 4px — its rule — stay visible, and filled with white fading out over its first third (linear-gradient 270deg, white 0-67%, transparent 100%). The Mobile tabs draw no arrow; sm mirrors md with its 20px chevron (8px above and below) so the rule stays visible there too.",
+        "paddingBlockStart": {
           "md": { "$value": "{spacing.12}", "$type": "dimension" },
           "sm": { "$value": "{spacing.8}", "$type": "dimension" }
         },
-        "paddingInline": {
+        "paddingBlockEnd": {
+          "md": { "$value": "{spacing.8}", "$type": "dimension" },
+          "sm": { "$value": "{spacing.8}", "$type": "dimension" }
+        },
+        "paddingInlineEdge": {
           "md": { "$value": "{spacing.4}", "$type": "dimension" },
           "sm": { "$value": "{spacing.4}", "$type": "dimension" }
+        },
+        "paddingInlineInner": {
+          "md": { "$value": "{spacing.16}", "$type": "dimension" },
+          "sm": { "$value": "{spacing.16}", "$type": "dimension" }
         }
       }
     },

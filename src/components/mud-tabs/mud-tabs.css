@@ -3,29 +3,28 @@
  *
  * Layout:
  *   .scroller is the overflow-x: auto container that the chevron buttons
- *   scroll. The bottom border lives on `.scroller` so the indicator on the
- *   selected tab sits *on top* of the rule rather than next to it.
- *   The chevron buttons are absolutely positioned over the scroller edges
- *   with a fading gradient so they read as "more content this way".
+ *   scroll. The bottom rule lives on `.track`, the row of tabs inside it, so
+ *   the indicator on the selected tab sits *on top* of the rule rather than
+ *   next to it. The chevron buttons are absolutely positioned over the
+ *   scroller's ends with a fading gradient, so they read as "more content
+ *   this way" (Figma .arrow, 357:16243).
  *
- * The host uses `display: flex` with the scroller flexing to fill,
- * which lets the chevrons live as inline siblings on either side without
- * disturbing the layout.
+ * The host is a one-column grid: the tablist row, then the panels.
  */
 
 :host {
   --_tab-height: var(--tabs-tab-height-md);
-  --_fade-width: var(--tabs-overflow-fade-width-md);
   --_chevron-size: var(--tabs-overflow-chevron-size-md);
-  --_chevron-padding-block: var(--tabs-overflow-chevron-padding-block-md);
-  --_chevron-padding-inline: var(--tabs-overflow-chevron-padding-inline-md);
+  --_chevron-padding-block-start: var(--tabs-overflow-chevron-padding-block-start-md);
+  --_chevron-padding-block-end: var(--tabs-overflow-chevron-padding-block-end-md);
+  --_chevron-padding-edge: var(--tabs-overflow-chevron-padding-inline-edge-md);
+  --_chevron-padding-inner: var(--tabs-overflow-chevron-padding-inline-inner-md);
 
   position: relative;
   display: grid;
-  /* First row = tablist (chevrons + scroller); second row = panels.
-     `grid-template-columns: auto 1fr auto` puts the start chevron,
-     the scroller (which flexes), and the end chevron on the same row. */
-  grid-template-columns: auto 1fr auto;
+  /* First row = the tablist (the scroller, with the chevrons overlaid on its
+     ends); second row = panels. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto;
   inline-size: 100%;
   font-family: var(--tabs-label-font-family);
@@ -33,19 +32,22 @@
 
 :host([size='sm']) {
   --_tab-height: var(--tabs-tab-height-sm);
-  --_fade-width: var(--tabs-overflow-fade-width-sm);
   --_chevron-size: var(--tabs-overflow-chevron-size-sm);
-  --_chevron-padding-block: var(--tabs-overflow-chevron-padding-block-sm);
-  --_chevron-padding-inline: var(--tabs-overflow-chevron-padding-inline-sm);
+  --_chevron-padding-block-start: var(--tabs-overflow-chevron-padding-block-start-sm);
+  --_chevron-padding-block-end: var(--tabs-overflow-chevron-padding-block-end-sm);
+  --_chevron-padding-edge: var(--tabs-overflow-chevron-padding-inline-edge-sm);
+  --_chevron-padding-inner: var(--tabs-overflow-chevron-padding-inline-inner-sm);
 }
 
 /* ---------- Scroller (overflow container) ---------- */
 
 .scroller {
   position: relative;
-  /* Sits in the middle column of row 1. */
-  grid-column: 2 / 3;
+  /* Spans the whole row: the chevrons are overlays on its two ends. */
+  grid-column: 1 / -1;
   grid-row: 1 / 2;
+  /* Keep a focused tab clear of an overlaying chevron when it scrolls into view. */
+  scroll-padding-inline: calc(var(--_chevron-padding-edge) + var(--_chevron-size) + var(--_chevron-padding-inner));
   /* Room for a focused tab's ring (Focus Ring/Medium, 5px out): the scroller
      clips at its padding box, so it is padded by the ring's reach on every
      side and pulled back by the same margin — the tabs keep their place and
@@ -91,23 +93,23 @@
 
 /* ---------- Chevron overflow buttons ---------- */
 
+/* Overlays on the row's two ends, as Figma's .arrow (357:16243) is: the tabs
+   scroll under them, and a white fade over the inner third lets the tab
+   beneath show through. 44px tall (md), so the row's bottom rule stays
+   visible under them. */
 .chevron {
-  grid-row: 1 / 2;
-  block-size: var(--_tab-height);
+  position: absolute;
+  inset-block-start: 0;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding-block: var(--_chevron-padding-block);
-  padding-inline: var(--_chevron-padding-inline);
-  background-color: var(--tabs-overflow-chevron-background);
+  padding-block: var(--_chevron-padding-block-start) var(--_chevron-padding-block-end);
   color: var(--tabs-overflow-chevron-color);
   border: 0;
-  box-shadow: inset 0 calc(-1 * var(--tabs-container-border-width)) 0 var(--tabs-container-border-color);
   margin: 0;
   cursor: pointer;
   outline: none;
-  z-index: 2;
-  /* Soft fade lets the underlying tabs peek through the chevron edge. */
   transition:
     color var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function),
     opacity var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function);
@@ -132,21 +134,36 @@
   block-size: var(--_chevron-size);
 }
 
+/* Figma's fade: white from the outer edge through 67%, transparent at the inner edge. */
 .chevron--start {
-  grid-column: 1 / 2;
+  inset-inline-start: 0;
+  padding-inline: var(--_chevron-padding-edge) var(--_chevron-padding-inner);
+  background: linear-gradient(
+    to right,
+    var(--tabs-overflow-chevron-background) 0%,
+    var(--tabs-overflow-chevron-background) 67%,
+    transparent 100%
+  );
 }
 
 .chevron--end {
-  grid-column: 3 / 4;
+  inset-inline-end: 0;
+  padding-inline: var(--_chevron-padding-inner) var(--_chevron-padding-edge);
+  background: linear-gradient(
+    to left,
+    var(--tabs-overflow-chevron-background) 0%,
+    var(--tabs-overflow-chevron-background) 67%,
+    transparent 100%
+  );
 }
 
 /* ---------- Panels container ---------- */
 
 .panels {
-  /* Panels render *below* the tablist, spanning all three columns of the
-     grid. The slotted panels themselves carry their own padding via the
+  /* Panels render *below* the tablist, spanning the grid's width. The
+     slotted panels themselves carry their own padding via the
      `::slotted([slot^='panel-'])` rule below. */
-  grid-column: 1 / 4;
+  grid-column: 1 / -1;
   grid-row: 2 / 3;
   display: block;
   min-inline-size: 0;
