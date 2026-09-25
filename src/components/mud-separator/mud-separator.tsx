@@ -20,8 +20,6 @@ import type { SeparatorOrientation, SeparatorSize, SeparatorVariant } from './mu
   shadow: true,
 })
 export class MudSeparator {
-  @Element() host!: HTMLMudSeparatorElement;
-
   /**
    * Layout orientation of the separator.
    * @default 'horizontal'
@@ -53,6 +51,8 @@ export class MudSeparator {
    * instead.
    */
   @Prop() label?: string;
+
+  @Element() host!: HTMLMudSeparatorElement;
 
   private hasLabelSlot(): boolean {
     const slotted = Array.from(this.host.childNodes).some(node => {
