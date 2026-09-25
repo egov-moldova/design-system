@@ -30,7 +30,12 @@
 
   background-color: var(--_bg);
   color: var(--_label-color);
-  border: var(--_border-width) solid var(--_border-color);
+  /* Figma strokes the Outlined tag inside its box (tag-outlined 624:4767; a
+     52x24 export, the same width as a filled tag). An inset shadow keeps the
+     stroke out of the layout, where a border would widen the tag by 2px and
+     push the label 1px in. */
+  border: 0;
+  box-shadow: inset 0 0 0 var(--_border-width) var(--_border-color);
   border-radius: var(--tag-container-border-radius);
 
   font-family: var(--tag-label-font-family);
