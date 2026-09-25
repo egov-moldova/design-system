@@ -119,9 +119,9 @@
       },
       "check": {
         "size": {
-          "$value": "{spacing.20}",
+          "$value": "{spacing.24}",
           "$type": "dimension",
-          "$comment": "Trailing 24/checkmark-small glyph for a selected selection-item; verify 20 vs 24 in pixel QA."
+          "$comment": "Trailing checkmark of a selected selection-item. 24, settled against the node rather than guessed: 172:3051 places the 24/checkmark-small instance at 24x24 inside 172:2944. The glyph is small within its box, which is why 20 looked plausible."
         },
         "color": { "$value": "{color.icon.brand.default}", "$type": "color" }
       }
