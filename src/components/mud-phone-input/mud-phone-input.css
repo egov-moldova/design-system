@@ -489,9 +489,14 @@ button.country-trigger:disabled {
   background-color: var(--phone-input-listbox-background);
 }
 
+/* Figma's focused search field (933:29631, drawn under the open list in
+   10758:2542) has a 2px stroke. The 1px border plus a 1px inset shadow make
+   it, so the content does not move. */
 .listbox-search:focus-within {
   border-color: var(--phone-input-default-border-focus);
-  box-shadow: 0 0 0 var(--spacing-4) var(--phone-input-default-focus-ring);
+  box-shadow:
+    inset 0 0 0 var(--border-width-1) var(--phone-input-default-border-focus),
+    0 0 0 var(--spacing-4) var(--phone-input-default-focus-ring);
 }
 
 .listbox-search-icon {
