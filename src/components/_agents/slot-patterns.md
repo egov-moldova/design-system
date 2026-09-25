@@ -2,12 +2,12 @@
 
 ## Scope
 
-Slot validation, shared constants, and the rule against boolean slot-control props. **Read when designing slot APIs or validating slots.**
+Slot validation, valid-tag constants, and the rule against boolean slot-control props. **Read when designing slot APIs or validating slots.**
 
 ## Contents
 
 - Slot Validation Guards (pattern + example)
-- Shared Constants for Valid Slot Elements
+- Valid Slot Element Constants (in the component's `.types.ts`)
 - No Boolean Props for Slot Visibility (CSS :empty rule)
 - No String Content Props as Slot Fallback (slot-first content rule)
 - Dual Selector Pattern (slot with default content)
@@ -34,23 +34,26 @@ render() {
 }
 ```
 
-### Use Shared Constants
+### Declare Valid Tags in the Component's `.types.ts`
+
+Export the list as a named `readonly string[]` constant from the component's own
+`.types.ts` and import it in the `.tsx`, as `mud-tooltip` does with `VALID_TRIGGER_TAGS`:
 
 ```typescript
-import { VALID_HELPER_TEXT_TAGS, VALID_ICON_SLOT_TAGS } from '../shared.constants';
-```
+// mud-tooltip.types.ts
+export const VALID_TRIGGER_TAGS: readonly string[] = ['button', 'a', 'span', 'div', 'mud-button', 'mud-icon' /* … */];
 
-**Available** (from `src/legacy/shared.constants.ts`):
-- `VALID_HELPER_TEXT_TAGS` — `['span', 'small', 'div', 'p']`
-- `VALID_ICON_SLOT_TAGS` — `['mud-icon']`
+// mud-tooltip.tsx
+import { VALID_TRIGGER_TAGS } from './mud-tooltip.types';
+```
 
 ### Validation Rules by Slot Type
 
-| Slot Type | Valid Elements | Constant |
-|---|---|---|
-| Icon slots | `mud-icon` only | `VALID_ICON_SLOT_TAGS` |
-| Helper text | `span`, `small`, `div`, `p` | `VALID_HELPER_TEXT_TAGS` |
-| Button content | `button`, `a` | Component-level `BUTTON_TAGS` |
+| Slot Type | Valid Elements |
+|---|---|
+| Icon slots | `mud-icon` only |
+| Helper text | `span`, `small`, `div`, `p` |
+| Button content | `button`, `a` |
 
 ### When to Validate
 
@@ -142,7 +145,7 @@ Does layout change based on slot content?
 - [ ] Define valid element types per slot
 - [ ] Add validation at start of `render()`
 - [ ] Import `invalidSlottedTag` utility
-- [ ] Use shared constants (not inline arrays)
+- [ ] Declare valid tags as a named constant in the component's `.types.ts` (not an inline array)
 - [ ] Test with invalid elements
 
 ---

@@ -690,18 +690,14 @@ function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
 // The component prefix was renamed; a `cor`-prefixed name in agent docs is stale, in every
 // spelling a doc uses: camel/Pascal identifiers, kebab tags and custom properties
 // (`cor-button`, `--cor-color`), and the prefix named as a word (`cor` prefix).
-// `src/legacy` still ships `cor-*` components, so a match inside a `src/legacy/…` path is exempt.
 // `Corlab` / `corlab-` (lowercase after the prefix) is the vendor name and does not match.
 // Placeholder spellings (`Cor<Name>`, `cor<Component>`, `HTMLCor${Name}Element`) count too.
 const STALE_PREFIX = /\b(?:on)?[Cc]or[A-Z<]|\b[Cc]or\$\{|HTMLCor[A-Z<$]|\bcor-[a-z]|`[Cc]or`|\b[Cc]or\s+prefix/g;
-const LEGACY_PATH = /src\/legacy\/[^\s`)]*/g;
 
 function checkStalePrefix(relPath, lines) {
   const hits = [];
   lines.forEach((line, i) => {
-    const legacy = [...line.matchAll(LEGACY_PATH)].map(m => [m.index, m.index + m[0].length]);
     for (const m of line.matchAll(STALE_PREFIX)) {
-      if (legacy.some(([start, end]) => m.index >= start && m.index < end)) continue;
       hits.push(
         makeHit(relPath, i + 1, 'stale-prefix', `retired component prefix in \`${m[0]}…\`; use the mud prefix`),
       );

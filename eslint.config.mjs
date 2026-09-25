@@ -18,7 +18,6 @@ export default tseslint.config(
       'www/**',
       'loader/**',
       'storybook-static/**',
-      'src/legacy/**',
       '**/*.md',
       '**/*.css',
       'src/components.d.ts',
@@ -45,7 +44,8 @@ export default tseslint.config(
     },
     rules: {
       // Stencil-plugin rules — the plugin is registered manually, not through its
-      // `flat.recommended`. Enabled: the rules measured at 0 violations (element-type
+      // `flat.recommended`, whose getter requires the optional peer `eslint-plugin-react`,
+      // which is not installed. Enabled: the rules measured at 0 violations (element-type
       // after typing five `@Element()` fields) plus `no-unused-watch`; the rest are off.
       '@stencil/strict-mutable': 'off',
       '@stencil/decorators-context': 'off',

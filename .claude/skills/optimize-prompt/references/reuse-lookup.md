@@ -13,7 +13,7 @@ Always for `--mode=new`. Conditional for other modes:
 | Mode | Run reuse lookup? | Reason |
 |---|---|---|
 | `new` | ✓ always | Primary use case — never create a duplicate |
-| `redesign` | ✓ always | The component already exists in `src/legacy/` — find it and use it as baseline |
+| `redesign` | ✓ always | The component already exists in `src/components/` — find it and use it as baseline |
 | `modify` | partial — only for the modification surface | Reuse candidates inside the modification (e.g., adding a slot that already has a constant) |
 | `fix` | rarely | Only if the fix involves introducing a new helper that may exist already |
 | `tokens` | ✓ always | Token files are reusable across components — never create a duplicate token name |
@@ -25,7 +25,7 @@ Always for `--mode=new`. Conditional for other modes:
 ### Step A — Inventory snapshot (from `codebase-snapshots.md` § Step 0.5)
 
 Required upstream lookups:
-1. `componentInventory` (production + legacy)
+1. `componentInventory`
 2. `tokenInventory` (component token files)
 3. `slotConstants`
 4. `utilsInventory`
@@ -38,10 +38,9 @@ Compute fuzzy match between the requested component name (extracted from the pro
 
 **Strategy:**
 1. **Exact match** — `mud-X` in prompt exists in `componentInventory.production` → emit "Component already exists" error
-2. **Exact match in legacy** — `mud-X` exists in `componentInventory.legacy` → emit "Legacy component to redesign" (auto-set `--mode=redesign`)
-3. **Singular/plural variant** — `mud-X` vs `mud-Xs` → emit candidate
-4. **Suffix variants** — `mud-X-group`, `mud-X-item`, `mud-X-header` — surface as related components
-5. **Semantic match** — words in `mud-X` overlap with existing component (e.g., `mud-loader` vs existing `mud-spinner`) → emit "Possible synonym"
+2. **Singular/plural variant** — `mud-X` vs `mud-Xs` → emit candidate
+3. **Suffix variants** — `mud-X-group`, `mud-X-item`, `mud-X-header` — surface as related components
+4. **Semantic match** — words in `mud-X` overlap with existing component (e.g., `mud-loader` vs existing `mud-spinner`) → emit "Possible synonym"
 
 ### Step C — Functional match
 
@@ -61,9 +60,7 @@ Glob `tokenInventory` for a token file matching the component name. If found:
 
 Glob `utilsInventory` for helpers the request may need. Examples:
 - Request mentions "validate slotted tag" → cite `invalidSlottedTag` from `src/utils/invalid-slotted-tag.ts`
-- Request mentions "parse token reference" → cite `token-parser.ts`
 - Request mentions "sanitize SVG" → cite `svg-sanitizer.ts`
-- Request mentions "flatten DTCG tokens" → cite `flatten-tokens.ts`
 
 ---
 
@@ -84,20 +81,7 @@ Emitted at the top of the optimized prompt (after preamble blocks like Auto-corr
 
 This is one of the **few** cases where the lookup blocks emission. Continuing would create a duplicate file.
 
-### Example 2 — legacy match (`--mode=new` but legacy exists)
-
-```
-## Reuse candidates
-
-ℹ Legacy component `mud-spinner` exists in `src/legacy/mud-spinner/`. Auto-switching to `--mode=redesign`.
-- Source files: src/legacy/mud-spinner/mud-spinner.tsx, .css, .types.ts
-- Token file: tokens/core/components/spinner.tokens.json (existing — will be migrated to new naming)
-- Reason for redesign: MUD Design System redesign program
-```
-
-The mode switch is **automatic** — user intent inferred. If user wants a truly new component (not a redesign of legacy), they pass `--mode=new --force-new` (escape hatch).
-
-### Example 3 — functional overlap (80%+)
+### Example 2 — functional overlap (80%+)
 
 ```
 ## Reuse candidates
@@ -114,14 +98,13 @@ The mode switch is **automatic** — user intent inferred. If user wants a truly
 
 The decision is **deferred to the user via the consumer agent**. The optimized prompt continues with the user's stated intent and includes this block as visible context.
 
-### Example 4 — utilities to reuse
+### Example 3 — utilities to reuse
 
 ```
 ## Reuse candidates
 
 ℹ Utilities to import (cite in Implementation Rules):
 - `invalidSlottedTag` from `src/utils/invalid-slotted-tag.ts` (slot validation error string)
-- `VALID_ICON_SLOT_TAGS` from `src/legacy/shared.constants.ts` (icon slot validation array)
 ```
 
 This block is informational and never blocks emission.

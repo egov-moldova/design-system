@@ -8,7 +8,7 @@ Every optimize-prompt output is graded against this checklist. Each rule cites i
 | 2 | Form-associated checklist complete (4 callbacks + `@AttachInternals` + `setFormValue(v, state)` both args) | Architecture + API | [`src/components/_agents/form-associated.md`](../../../../src/components/_agents/form-associated.md) |
 | 3 | State × Element matrix mandatory for interactive archetypes | Behavior + Token Mapping | [`_agents/state-extraction.md`](../../../../_agents/state-extraction.md) |
 | 4 | Token references as `{token.path}` (never hex/px) | Implementation Rules + Token Mapping | [`tokens/AGENTS.md`](../../../../tokens/AGENTS.md), [`_agents/pre-implementation.md`](../../../../_agents/pre-implementation.md) |
-| 5 | Slot validation constants cited from `shared.constants.ts` | API → Slots | [`src/components/_agents/slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md) |
+| 5 | Slot validation constants declared in the component's own `.types.ts` | API → Slots | [`src/components/_agents/slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md) |
 | 6 | No boolean slot-visibility props (`showIcon: boolean` forbidden) | API → Props validation | [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) #12 |
 | 7 | Dual-selector CSS for slot defaults (`::slotted(*)` + direct child) | Implementation Rules | [`_agents/shadow-dom-patterns.md`](../../../../_agents/shadow-dom-patterns.md) |
 | 8 | `getHostClasses()` declarative; no imperative `classList` | Implementation Rules | [`_agents/anti-patterns.md`](../../../../_agents/anti-patterns.md) #26 |

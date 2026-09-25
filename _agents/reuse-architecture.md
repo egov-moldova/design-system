@@ -16,7 +16,7 @@ How to check for existing components before building, and how to choose the righ
    - `mud-button`: slot-based (`<slot />`), `::slotted(*)` CSS, `:host([variant])` + `:host([size])`, variant/state token mapping
    - `mud-input`: `@Listen` for focus/blur/input, `@State()` for `isFocused`/`hasValue`, floating label, skeleton state, icon slots
 4. **Reuse enums/types**: Check if `ButtonVariant`, `InputSize`, `IconColor`, etc. already define needed values
-5. **Reuse utilities**: `src/utils/` — `invalidSlottedTag()`, `flattenTokens()`
+5. **Reuse utilities**: `src/utils/` — `invalidSlottedTag()`
 
 **Copy patterns, not code.** Match the existing component architecture exactly.
 
