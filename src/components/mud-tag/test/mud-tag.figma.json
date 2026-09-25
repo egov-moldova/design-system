@@ -1,0 +1,495 @@
+{
+  "component": "mud-tag",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-tag--default",
+    "capture": {
+      "selector": "mud-tag",
+      "bleed": 0
+    }
+  },
+  "states": [
+    {
+      "name": "subtle-muted",
+      "node": "548:2963",
+      "html": "<mud-tag type=\"subtle\" semantic=\"muted\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#757575",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "tag-filled Type=Subtle, Style=Muted (22:83): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #757575 on #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "subtle-neutral",
+      "node": "548:2966",
+      "html": "<mud-tag type=\"subtle\" semantic=\"neutral\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#121212",
+            "backgroundColor": "#F1F1F1"
+          },
+          "note": "tag-filled Type=Subtle, Style=Neutral (22:81): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #121212 on #F1F1F1."
+        }
+      ]
+    },
+    {
+      "name": "subtle-accent",
+      "node": "548:2969",
+      "html": "<mud-tag type=\"subtle\" semantic=\"accent\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#B54708",
+            "backgroundColor": "#FEEFC6"
+          },
+          "note": "tag-filled Type=Subtle, Style=Accent (22:91): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #B54708 on #FEEFC6."
+        }
+      ]
+    },
+    {
+      "name": "subtle-success",
+      "node": "548:2972",
+      "html": "<mud-tag type=\"subtle\" semantic=\"success\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#027948",
+            "backgroundColor": "#E6F5EE"
+          },
+          "note": "tag-filled Type=Subtle, Style=Success (22:96): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #027948 on #E6F5EE."
+        }
+      ]
+    },
+    {
+      "name": "subtle-brand",
+      "node": "548:2975",
+      "html": "<mud-tag type=\"subtle\" semantic=\"brand\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#0058D2",
+            "backgroundColor": "#E8F0FB"
+          },
+          "note": "tag-filled Type=Subtle, Style=Brand (22:101): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #0058D2 on #E8F0FB."
+        }
+      ]
+    },
+    {
+      "name": "subtle-danger",
+      "node": "548:2978",
+      "html": "<mud-tag type=\"subtle\" semantic=\"danger\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#B32318",
+            "backgroundColor": "#FEE4E2"
+          },
+          "note": "tag-filled Type=Subtle, Style=Danger (22:106): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #B32318 on #FEE4E2."
+        }
+      ]
+    },
+    {
+      "name": "strong-muted",
+      "node": "548:2982",
+      "html": "<mud-tag type=\"strong\" semantic=\"muted\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#FFFFFF",
+            "backgroundColor": "#444444"
+          },
+          "note": "tag-filled Type=Strong, Style=Muted (22:113): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #FFFFFF on #444444."
+        }
+      ]
+    },
+    {
+      "name": "strong-neutral",
+      "node": "548:2985",
+      "html": "<mud-tag type=\"strong\" semantic=\"neutral\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#FFFFFF",
+            "backgroundColor": "#1E1E1E"
+          },
+          "note": "tag-filled Type=Strong, Style=Neutral (22:111): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #FFFFFF on #1E1E1E."
+        }
+      ]
+    },
+    {
+      "name": "strong-accent",
+      "node": "548:2988",
+      "html": "<mud-tag type=\"strong\" semantic=\"accent\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#121212",
+            "backgroundColor": "#FEC84B"
+          },
+          "note": "tag-filled Type=Strong, Style=Accent (22:121): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #121212 on #FEC84B."
+        }
+      ]
+    },
+    {
+      "name": "strong-success",
+      "node": "548:2991",
+      "html": "<mud-tag type=\"strong\" semantic=\"success\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#FFFFFF"
+          },
+          "note": "tag-filled Type=Strong, Style=Success (22:126): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #FFFFFF. Its fill is #039855 in Figma; the component uses #027948 on purpose, because white on #039855 is 3.73:1 (WCAG AA needs 4.5:1 at 14px). The fill is not pinned and the state is not pixel-compared."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "strong-brand",
+      "node": "548:2994",
+      "html": "<mud-tag type=\"strong\" semantic=\"brand\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#FFFFFF",
+            "backgroundColor": "#0058D2"
+          },
+          "note": "tag-filled Type=Strong, Style=Brand (22:131): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #FFFFFF on #0058D2."
+        }
+      ]
+    },
+    {
+      "name": "strong-danger",
+      "node": "548:2997",
+      "html": "<mud-tag type=\"strong\" semantic=\"danger\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#FFFFFF",
+            "backgroundColor": "#D92D20"
+          },
+          "note": "tag-filled Type=Strong, Style=Danger (22:136): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #FFFFFF on #D92D20."
+        }
+      ]
+    },
+    {
+      "name": "outlined-muted",
+      "node": "624:8815",
+      "html": "<mud-tag type=\"outlined\" semantic=\"muted\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#757575",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #D9D9D9"
+          },
+          "note": "tag-outlined Style=Muted (624:4770): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #757575, a 1px #D9D9D9 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "outlined-neutral",
+      "node": "624:8818",
+      "html": "<mud-tag type=\"outlined\" semantic=\"neutral\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#121212",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #D9D9D9"
+          },
+          "note": "tag-outlined Style=Neutral (624:4768): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #121212, a 1px #D9D9D9 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "outlined-accent",
+      "node": "624:8821",
+      "html": "<mud-tag type=\"outlined\" semantic=\"accent\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#B54708",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #DC6803"
+          },
+          "note": "tag-outlined Style=Accent (624:4778): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #B54708, a 1px #DC6803 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "outlined-success",
+      "node": "624:8824",
+      "html": "<mud-tag type=\"outlined\" semantic=\"success\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#027948",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #027948"
+          },
+          "note": "tag-outlined Style=Success (624:4783): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #027948, a 1px #027948 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "outlined-brand",
+      "node": "624:8827",
+      "html": "<mud-tag type=\"outlined\" semantic=\"brand\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#0058D2",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #0058D2"
+          },
+          "note": "tag-outlined Style=Brand (624:4788): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #0058D2, a 1px #0058D2 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "outlined-danger",
+      "node": "624:8830",
+      "html": "<mud-tag type=\"outlined\" semantic=\"danger\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "24px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "color": "#B32318",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "boxShadow": "inset 0 0 0 1px #D92D20"
+          },
+          "note": "tag-outlined Style=Danger (624:4793): 24px, padded 0 8px, 4px radius, Desktop/Body/Small 500 in #B32318, a 1px #D92D20 stroke inside the box and no fill. The stroke is an inset shadow, so it adds no width: the export is 52x24."
+        }
+      ]
+    },
+    {
+      "name": "icon-subtle-neutral",
+      "node": "548:3005",
+      "html": "<mud-tag type=\"subtle\" semantic=\"neutral\"><mud-icon slot=\"icon-start\" name=\"checkmark-small\" size=\"16\"></mud-icon>Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "paddingLeft": "6px",
+            "paddingRight": "8px",
+            "columnGap": "4px"
+          },
+          "note": "Icon=Leading (22:85): padded 0 8px 0 6px, a 16px checkmark-small 4px before the label."
+        },
+        {
+          "target": "mud-tag mud-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "icon-strong-brand",
+      "node": "548:3033",
+      "html": "<mud-tag type=\"strong\" semantic=\"brand\"><mud-icon slot=\"icon-start\" name=\"checkmark-small\" size=\"16\"></mud-icon>Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "paddingLeft": "6px",
+            "paddingRight": "8px",
+            "columnGap": "4px",
+            "backgroundColor": "#0058D2"
+          },
+          "note": "Strong Brand with a leading icon (22:133)."
+        }
+      ]
+    },
+    {
+      "name": "icon-outlined-danger",
+      "node": "624:8903",
+      "html": "<mud-tag type=\"outlined\" semantic=\"danger\"><mud-icon slot=\"icon-start\" name=\"circle-error\" size=\"16\"></mud-icon>Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "paddingLeft": "6px",
+            "paddingRight": "8px",
+            "columnGap": "4px",
+            "boxShadow": "inset 0 0 0 1px #D92D20"
+          },
+          "note": "Outlined Danger with the 16px circle-error icon (624:4795)."
+        }
+      ]
+    },
+    {
+      "name": "size-small",
+      "node": "5103:24191",
+      "pixel": false,
+      "html": "<mud-tag type=\"strong\" semantic=\"success\" size=\"sm\">Label</mud-tag>",
+      "expect": [
+        {
+          "target": "mud-tag",
+          "styles": {
+            "boxHeight": "20px",
+            "paddingLeft": "6px",
+            "paddingRight": "6px",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "500"
+          },
+          "note": "Size=Small (5092:17311): 20px, padded 0 6px, Desktop/Caption/Medium 500. Figma draws it in Strong Success, whose fill the component darkens on purpose (see strong-success), so only the size is pinned."
+        }
+      ]
+    }
+  ]
+}
