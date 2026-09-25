@@ -8,9 +8,11 @@
   flex-direction: column;
   inline-size: var(--sidebar-container-inline-size);
   background-color: var(--sidebar-container-background);
-  border: var(--sidebar-container-border-width) solid var(--sidebar-container-border-color);
+  /* Figma strokes the sidebar outside its box (1236:5664), so the stroke is an
+     outer spread and the rows keep the full width. Nothing clips the content:
+     a focused row's ring (Focus Ring/Medium, 855:8241) reaches 5px past it. */
+  box-shadow: 0 0 0 var(--sidebar-container-border-width) var(--sidebar-container-border-color);
   border-radius: var(--sidebar-container-border-radius);
-  overflow: hidden;
 }
 
 :host([collapsed]) .sidebar {
