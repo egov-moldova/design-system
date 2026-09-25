@@ -16,7 +16,8 @@
         "disabled": { "$value": "{color.background.base.default}", "$type": "color" }
       },
       "shadow": {
-        "$value": "0 0 0.5px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.16)",
+        "$comment": "Drop Shadow/100 as Figma lists it on the thumb (68:502): the 1px/3px layer first, the 0.5px contour second.",
+        "$value": "0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0.5px 0 rgba(0, 0, 0, 0.3)",
         "$type": "shadow"
       }
     },
