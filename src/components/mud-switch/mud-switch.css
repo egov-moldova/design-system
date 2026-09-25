@@ -115,13 +115,15 @@
 
 /*
  * Native input is sized to the touch target (not the visual) so pointer
- * activation works anywhere inside the touch zone. Hidden visually but
- * kept in the a11y tree.
+ * activation works anywhere inside the touch zone. Figma's target is the track
+ * grown by the same amount on every side (Target Sizes, 578:34125 / 578:34161):
+ * 52x32 on pointer devices, 60x40 on touch. Hidden visually but kept in the
+ * a11y tree.
  */
 .native {
   position: absolute;
   inset: 50% auto auto 50%;
-  inline-size: var(--_touch-size);
+  inline-size: calc(var(--_track-width) + var(--_touch-size) - var(--_track-height));
   block-size: var(--_touch-size);
   transform: translate(-50%, -50%);
   margin: 0;
