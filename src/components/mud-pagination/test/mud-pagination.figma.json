@@ -1,0 +1,331 @@
+{
+  "component": "mud-pagination",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "144:4363",
+        "reason": ".pagination-item Mobile/Selected — the Mobile rung is the Desktop item at 32x32, which item-mobile pins; its fill, text and ring are the Desktop state's, pinned at 40px."
+      },
+      {
+        "node": "144:4367",
+        "reason": ".pagination-item Mobile/Hover — the Mobile rung is the Desktop item at 32x32, which item-mobile pins; its fill, text and ring are the Desktop state's, pinned at 40px."
+      },
+      {
+        "node": "415:24687",
+        "reason": ".pagination-item Mobile/Active — the Mobile rung is the Desktop item at 32x32, which item-mobile pins; its fill, text and ring are the Desktop state's, pinned at 40px."
+      },
+      {
+        "node": "383:20685",
+        "reason": ".pagination-item Mobile/Focus/Unselected — the Mobile rung is the Desktop item at 32x32, which item-mobile pins; its fill, text and ring are the Desktop state's, pinned at 40px."
+      },
+      {
+        "node": "383:20693",
+        "reason": ".pagination-item Mobile/Focus/Selected — the Mobile rung is the Desktop item at 32x32, which item-mobile pins; its fill, text and ring are the Desktop state's, pinned at 40px."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-pagination--default",
+    "capture": {
+      "selector": "mud-pagination",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "desktop",
+      "node": "144:4374",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "expect": [
+        {
+          "target": "mud-pagination .root",
+          "styles": {
+            "columnGap": "24px"
+          },
+          "note": "Figma 144:4374 spaces Previous, the page group and Next 24px apart."
+        },
+        {
+          "target": "mud-pagination .pages",
+          "styles": {
+            "columnGap": "16px"
+          },
+          "note": "Figma 186:795 spaces the page numbers 16px apart."
+        },
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#121212",
+            "backgroundColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "Figma 144:4357 is a 40x40 unfilled item at radius 4, label Desktop/Body/Small 500 in #121212."
+        },
+        {
+          "target": "mud-pagination .nav-next",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "16px",
+            "paddingRight": "12px",
+            "columnGap": "6px",
+            "borderTopLeftRadius": "6px"
+          },
+          "note": "Figma 186:776 is the Next button: 40px high, padded 0 12px 0 16px with a 6px gap to its 20px chevron, radius 6."
+        },
+        {
+          "target": "mud-pagination .nav-prev",
+          "styles": {
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "Figma 186:781 mirrors it for Previous: padded 0 16px 0 12px, chevron first."
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "node": "144:4382",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" size=\"sm\"></mud-pagination>",
+      "expect": [
+        {
+          "target": "mud-pagination .root",
+          "styles": {
+            "columnGap": "4px"
+          },
+          "note": "Figma 144:4382 closes the mobile row up to 4px."
+        },
+        {
+          "target": "mud-pagination .pages",
+          "styles": {
+            "columnGap": "8px"
+          },
+          "note": "Figma 186:812 spaces mobile page numbers 8px apart."
+        },
+        {
+          "target": "mud-pagination .nav-next",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          },
+          "note": "Figma 186:804 is an icon-only 32x32 button — no label on mobile — around a 16px chevron."
+        }
+      ]
+    },
+    {
+      "name": "item-unselected",
+      "node": "144:4357",
+      "capture": {
+        "selector": "mud-pagination .page-button:not(.is-selected)",
+        "bleed": "auto"
+      },
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "expect": [
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "#121212"
+          },
+          "note": "Figma 144:4357, Desktop/Default/Unselected."
+        }
+      ]
+    },
+    {
+      "name": "item-selected",
+      "node": "144:4361",
+      "capture": {
+        "selector": "mud-pagination .page-button.is-selected",
+        "bleed": "auto"
+      },
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"1\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "expect": [
+        {
+          "target": "mud-pagination .page-button.is-selected",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "4px",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF"
+          },
+          "note": "Figma 144:4361 fills the selected item #0058D2 with its label in #FFFFFF."
+        }
+      ]
+    },
+    {
+      "name": "item-hover",
+      "node": "144:4365",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-pagination .page-button:not(.is-selected)"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "color": "#121212"
+          },
+          "note": "Figma 144:4365 fills a hovered item #F5F5F5 — the base default-hover step. It was tertiary, #F1F1F1."
+        }
+      ]
+    },
+    {
+      "name": "item-active",
+      "node": "415:24685",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "press",
+        "target": "mud-pagination .page-button:not(.is-selected)"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "backgroundColor": "#D9D9D9"
+          },
+          "note": "Figma 415:24685 fills a pressed item #D9D9D9 — the base default-active step. It was tertiary-active, #B2B2B2."
+        }
+      ]
+    },
+    {
+      "name": "item-focus",
+      "node": "383:20683",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-pagination .page-button:not(.is-selected)"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px",
+            "borderTopWidth": "0px"
+          },
+          "note": "Figma 383:20683 carries Focus Ring/Small, listed as 0 0 0 3px #3379DB over 0 0 0 1px #FFF and rendered as a 1px white halo with the blue band ending 3px out. It replaces an inner 1.5px #0058D2 border that no node draws — hence borderTopWidth 0."
+        }
+      ]
+    },
+    {
+      "name": "item-selected-focus",
+      "node": "383:20691",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"1\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-pagination .page-button.is-selected"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .page-button.is-selected",
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px",
+            "backgroundColor": "#0058D2"
+          },
+          "note": "Figma 383:20691 keeps the #0058D2 fill and adds the same Focus Ring/Small."
+        }
+      ]
+    },
+    {
+      "name": "item-mobile",
+      "node": "144:4359",
+      "capture": {
+        "selector": "mud-pagination .page-button:not(.is-selected)",
+        "bleed": "auto"
+      },
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" size=\"sm\"></mud-pagination>",
+      "expect": [
+        {
+          "target": "mud-pagination .page-button:not(.is-selected)",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "borderTopLeftRadius": "4px"
+          },
+          "note": "Figma 144:4359 shrinks the item to 32x32 on mobile, radius and type unchanged."
+        }
+      ]
+    },
+    {
+      "name": "nav-hover",
+      "node": "144:4374",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-pagination .nav-next"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .nav-next",
+          "styles": {
+            "backgroundColor": "#D9D9D9"
+          },
+          "note": "Next (186:776 in 144:4374) is a button-text-rectangular Strict instance; that set’s Hover variant 107:1718 fills #D9D9D9, the value mud-button text/strict uses. It was #F1F1F1. The state cites the pagination variant so coverage stays scoped to the pagination sets."
+        }
+      ]
+    },
+    {
+      "name": "nav-focus",
+      "node": "144:4374",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"7\" current-page=\"2\" prev-label=\"Previous\" next-label=\"Next\" ></mud-pagination>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-pagination .nav-next"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .nav-next",
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 2px, rgb(51, 121, 219) 0px 0px 0px 5px"
+          },
+          "note": "The button set’s Focus variant 108:1063 carries Focus Ring/Medium — 0 0 0 5px #3379DB over 0 0 0 2px #FFF, a 2px white halo with the blue band ending 5px out. It is the global focus ring mud-button draws; the nav buttons had an inner 1.5px border instead."
+        }
+      ]
+    },
+    {
+      "name": "overflow-open",
+      "node": "415:24452",
+      "pixel": false,
+      "html": "<mud-pagination total-pages=\"20\" current-page=\"9\" prev-label=\"Previous\" next-label=\"Next\"></mud-pagination>",
+      "interaction": {
+        "type": "click",
+        "target": "mud-pagination .overflow-trigger"
+      },
+      "expect": [
+        {
+          "target": "mud-pagination .overflow-item.is-open .overflow-trigger",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#D9D9D9",
+            "color": "#121212"
+          },
+          "note": "Figma’s Overflow section 415:24452 draws the ellipsis as a plain .pagination-item — 40x40, label #121212 — and in the Active fill #D9D9D9 while its menu is open. The fixture reproduces the Figma row exactly: 1 … 8 9 10 … 20."
+        }
+      ]
+    }
+  ]
+}

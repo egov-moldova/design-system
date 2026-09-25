@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h, readTask } from '@stencil/core';
 
 import { isOverflow } from './mud-pagination.types';
 import type {
@@ -140,6 +140,8 @@ export class MudPagination {
   @State() private resolvedAriaLabel: string = 'Navigare pagini';
   @State() private openOverflow: OverflowKey | null = null;
   @State() private focusedOverflowIndex: number = -1;
+  /** True when the open overflow menu is flipped above its trigger (not enough room below). */
+  @State() private overflowDropUp: boolean = false;
 
   @Element() host!: HTMLMudPaginationElement;
 
@@ -150,6 +152,13 @@ export class MudPagination {
    * or data fetches.
    */
   @Event() mudChange!: EventEmitter<PaginationChangeDetail>;
+
+  /**
+   * Runtime cap (px) on the open overflow menu, so it never runs past the
+   * viewport. Not `@State`: it reaches the stylesheet through a host custom
+   * property, so a re-render would buy nothing.
+   */
+  private overflowMaxBlockSize?: number;
 
   @Watch('label')
   protected syncLabel(next?: string): void {
@@ -235,6 +244,14 @@ export class MudPagination {
     this.currentPage = this.clampPage(this.currentPage);
   }
 
+  componentDidRender() {
+    if (this.openOverflow !== null) this.positionOverflow();
+  }
+
+  disconnectedCallback() {
+    this.stopTrackingViewport();
+  }
+
   componentDidUpdate() {
     // Reflect the AI-managed focus index onto the actual DOM after each render.
     if (this.openOverflow === null || this.focusedOverflowIndex < 0) return;
@@ -300,6 +317,68 @@ export class MudPagination {
     if (this.openOverflow === null && this.focusedOverflowIndex === -1) return;
     this.openOverflow = null;
     this.focusedOverflowIndex = -1;
+    this.overflowDropUp = false;
+    this.overflowMaxBlockSize = undefined;
+    this.host.style.removeProperty('--_overflow-menu-max-block-size');
+    this.stopTrackingViewport();
+  }
+
+  private stopTrackingViewport(): void {
+    if (typeof window === 'undefined') return;
+    window.removeEventListener('resize', this.positionOverflow);
+    window.removeEventListener('scroll', this.positionOverflow, true);
+  }
+
+  /**
+   * The overflow menu opens below its trigger unless the viewport has no room
+   * for it there and more room above — then it flips up. Either way its height
+   * is capped to the room it has, so it never runs past the edge. Scheduled
+   * with readTask because componentDidRender calls it: writing state straight
+   * from the render cycle makes Stencil log a change-during-render and render
+   * twice. Same approach as mud-select's listbox.
+   */
+  private positionOverflow = (): void => {
+    if (this.openOverflow === null || typeof window === 'undefined') return;
+    readTask(() => this.measureOverflow());
+  };
+
+  private measureOverflow(): void {
+    if (this.openOverflow === null || typeof window === 'undefined') return;
+    const root = this.host.shadowRoot;
+    const trigger = root?.querySelector<HTMLElement>('.overflow-item.is-open .overflow-trigger');
+    const menu = root?.querySelector<HTMLElement>('.overflow-item.is-open .overflow-menu');
+    if (!trigger || !menu) return;
+
+    const styles = getComputedStyle(this.host);
+    const offset = parseFloat(styles.getPropertyValue('--pagination-overflow-menu-offset')) || 0;
+    const hardCap = parseFloat(styles.getPropertyValue('--pagination-overflow-menu-max-height')) || menu.scrollHeight;
+    const EDGE_MARGIN = 8; // breathing room from the viewport edge
+
+    const rect = trigger.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - offset - EDGE_MARGIN;
+    const spaceAbove = rect.top - offset - EDGE_MARGIN;
+    // scrollHeight is the full list whatever the current cap; the difference
+    // between offset and client height adds the menu's own border back.
+    // Environments without layout (mock-doc, SSR) report these as undefined;
+    // || 0 keeps a missing metric from turning every figure below into NaN.
+    const natural = (menu.scrollHeight || 0) + ((menu.offsetHeight || 0) - (menu.clientHeight || 0));
+    const wanted = Math.min(natural, hardCap);
+
+    const dropUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+    const available = dropUp ? spaceAbove : spaceBelow;
+    // Never squeeze a short menu below its own height, nor a long one below
+    // ~3 rows: a scrollable sliver is worse than touching the edge.
+    const floor = Math.min(wanted, 120);
+    const maxBlockSize = Math.round(Math.max(floor, Math.min(wanted, available)));
+
+    // Guarded writes: on scroll / resize the numbers usually repeat.
+    if (!Number.isFinite(maxBlockSize)) return;
+    if (this.overflowDropUp !== dropUp) this.overflowDropUp = dropUp;
+    if (this.overflowMaxBlockSize !== maxBlockSize) {
+      this.overflowMaxBlockSize = maxBlockSize;
+      // A host custom property, not an inline JSX style (CSP; ANTIPATTERN-001).
+      this.host.style.setProperty('--_overflow-menu-max-block-size', `${String(maxBlockSize)}px`);
+    }
   }
 
   private toggleOverflow(key: OverflowKey): void {
@@ -308,6 +387,10 @@ export class MudPagination {
     } else {
       this.openOverflow = key;
       this.focusedOverflowIndex = -1;
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.positionOverflow);
+        window.addEventListener('scroll', this.positionOverflow, true);
+      }
     }
   }
 
@@ -406,7 +489,10 @@ export class MudPagination {
     const to = slot.pages[slot.pages.length - 1] ?? this.currentPage;
     const triggerLabel = this.formatLabel(this.overflowAriaLabel, { from, to });
     return (
-      <li class={{ 'item': true, 'overflow-item': true, 'is-open': isOpen }} key={`overflow-${slot.key}`}>
+      <li
+        class={{ 'item': true, 'overflow-item': true, 'is-open': isOpen, 'is-drop-up': isOpen && this.overflowDropUp }}
+        key={`overflow-${slot.key}`}
+      >
         <button
           type="button"
           class="overflow-trigger"

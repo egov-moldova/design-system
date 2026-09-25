@@ -418,6 +418,70 @@ describe('mud-pagination', () => {
   });
 
   // -------------------------------------------------------------------------
+  // Overflow menu placement — opens where the viewport has room
+  // -------------------------------------------------------------------------
+  describe('overflow menu placement', () => {
+    type Placeable = HTMLElement & { measureOverflow: () => void };
+
+    /**
+     * Opens the overflow on the last of 23 pages, then pins the geometry the
+     * placement reads: the trigger's box, the viewport height and the menu's
+     * natural height. The design tokens do not resolve in mock-doc, so the cap
+     * falls back to the menu's own height and the edge offset to zero.
+     */
+    const openAt = async (trigger: { top: number; bottom: number }, viewport: number, natural = 500) => {
+      const { root, waitForChanges } = await render(<mud-pagination total-pages={23} current-page={23} />);
+      queryEllipses(root)[0]?.click();
+      await waitForChanges();
+      const item = root?.shadowRoot?.querySelector('.overflow-item.is-open') as HTMLElement;
+      const button = item.querySelector('.overflow-trigger') as HTMLElement;
+      const menu = queryOverflowMenu(root) as HTMLElement;
+      vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({
+        ...trigger,
+        left: 0,
+        right: 40,
+        width: 40,
+        height: 40,
+        x: 0,
+        y: trigger.top,
+        toJSON: () => ({}),
+      } as DOMRect);
+      Object.defineProperty(menu, 'scrollHeight', { value: natural, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: viewport, configurable: true });
+      (root as unknown as Placeable).measureOverflow();
+      await waitForChanges();
+      return { root: root as HTMLElement, waitForChanges };
+    };
+    const openItem = (root: HTMLElement) => root.shadowRoot?.querySelector('.overflow-item.is-open');
+
+    it('opens below the trigger when the viewport has room there', async () => {
+      const { root } = await openAt({ top: 10, bottom: 50 }, 800);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(false);
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('500px');
+    });
+
+    it('flips above the trigger when there is no room below and more above', async () => {
+      const { root } = await openAt({ top: 740, bottom: 780 }, 800);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(true);
+    });
+
+    it('caps the menu to the room on the side it opens toward', async () => {
+      // 400px viewport: 202px below the trigger (400 - 190 - 8), 142px above.
+      const { root } = await openAt({ top: 150, bottom: 190 }, 400);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(false);
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('202px');
+    });
+
+    it('forgets the placement when the menu closes', async () => {
+      const { root, waitForChanges } = await openAt({ top: 740, bottom: 780 }, 800);
+      queryEllipses(root)[0]?.click();
+      await waitForChanges();
+      expect(root.shadowRoot?.querySelector('.is-drop-up')).toBeNull();
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('');
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Constructor / harness sanity
   // -------------------------------------------------------------------------
   it('constructs without registering a host when registerHost=false', () => {
