@@ -1,0 +1,272 @@
+{
+  "component": "mud-sidebar",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": []
+  },
+  "defaults": {
+    "story": "components-sidebar--default",
+    "capture": {
+      "selector": "mud-sidebar-item",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "sidebar-first-level",
+      "node": "1236:5664",
+      "html": "<mud-sidebar><mud-sidebar-group heading=\"Heading\"><mud-sidebar-item icon=\"group\" label=\"Primary Label\" active></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group><mud-sidebar-group heading=\"Heading\"><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group></mud-sidebar>",
+      "capture": {
+        "selector": "mud-sidebar",
+        "bleed": 1
+      },
+      "expect": [
+        {
+          "target": "mud-sidebar .sidebar",
+          "styles": {
+            "boxWidth": "368px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopLeftRadius": "16px",
+            "boxShadow": "0 0 0 1px #D9D9D9"
+          },
+          "note": "Figma draws the sidebar 368px wide with a 1px #D9D9D9 stroke outside the box (strokeAlign OUTSIDE on 1236:5664; the export is 370px wide). An outer spread keeps the rows at the full 368px."
+        },
+        {
+          "target": "mud-sidebar mud-sidebar-group:first-of-type .heading",
+          "styles": {
+            "paddingTop": "32px",
+            "paddingLeft": "24px",
+            "paddingBottom": "12px",
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "The first section (1236:6201) pads 32px above the heading and gaps 12px to the list; the heading row pads 24px inline, Desktop/Body/Small 500 in #757575."
+        },
+        {
+          "target": "mud-sidebar mud-sidebar-item:first-of-type .item",
+          "styles": {
+            "boxWidth": "368px",
+            "backgroundColor": "#E8F0FB"
+          },
+          "note": "The rows fill the sidebar edge to edge; the first is Active (797:39726)."
+        }
+      ],
+      "captureNote": "Bleed is the 1px outside stroke. auto would also count the hidden first-group divider: a display:none element reports a zero rect at the page origin, and its separator shadow stretched the capture to the page corner."
+    },
+    {
+      "name": "sidebar-second-level",
+      "node": "1523:3799",
+      "html": "<mud-sidebar><mud-sidebar-group heading=\"Heading\"><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\" expandable expanded><mud-sidebar-item slot=\"children\" icon=\"group\" label=\"Primary Label\" active></mud-sidebar-item><mud-sidebar-item slot=\"children\" icon=\"group\" label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group><mud-sidebar-group heading=\"Heading\"><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group></mud-sidebar>",
+      "capture": {
+        "selector": "mud-sidebar",
+        "bleed": 1
+      },
+      "expect": [
+        {
+          "target": "mud-sidebar mud-sidebar-item[slot=\"children\"][active] .item",
+          "styles": {
+            "paddingLeft": "56px",
+            "backgroundColor": "#E8F0FB"
+          },
+          "note": "A second-level row (1523:1900) pads 56px on the leading edge — 24px plus the parent's 20px icon and 12px gap — so its icon sits under the parent's label."
+        }
+      ],
+      "captureNote": "Bleed is the 1px outside stroke. auto would also count the hidden first-group divider: a display:none element reports a zero rect at the page origin, and its separator shadow stretched the capture to the page corner."
+    },
+    {
+      "name": "item-default",
+      "node": "1236:5673",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\"  style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .item",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "24px",
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "sidebar-list-item (797:39705) is a row padded 12px 16px 12px 24px with a 12px gap, 48px tall: a 20px leading icon and a 16/24 Onest Regular label in #383838."
+        },
+        {
+          "target": "mud-sidebar-item .label",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        },
+        {
+          "target": "mud-sidebar-item .icon",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "item-hover",
+      "node": "1236:5676",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\"  style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-sidebar-item .item"
+      },
+      "expect": [
+        {
+          "target": "mud-sidebar-item .item",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          },
+          "note": "State=Hover (797:39706) fills the row #F5F5F5."
+        }
+      ]
+    },
+    {
+      "name": "item-focus",
+      "node": "1236:5680",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\"  style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-sidebar-item .item"
+      },
+      "expect": [
+        {
+          "target": "mud-sidebar-item .item",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "State=Focus (855:8241) carries Focus Ring/Medium outside the row: a 2px white halo inside a blue band ending 5px out (the export is 354x58, 5px on every side). The two spreads are stacked, so the outer one is the total."
+        }
+      ]
+    },
+    {
+      "name": "item-active",
+      "node": "1236:5683",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" active style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .item",
+          "styles": {
+            "backgroundColor": "#E8F0FB"
+          },
+          "note": "State=Active (797:39726): #E8F0FB fill and a 3px #0058D2 stroke inside the leading edge; the stroke is checked by the pixel diff."
+        },
+        {
+          "target": "mud-sidebar-item .label",
+          "styles": {
+            "color": "#0058D2",
+            "fontWeight": "500"
+          }
+        }
+      ]
+    },
+    {
+      "name": "item-icon-none",
+      "node": "1236:5689",
+      "html": "<mud-sidebar-item label=\"Primary Label\" style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .icon",
+          "absent": true,
+          "note": "📍 Leading Icon off: the label starts at the 24px padding."
+        }
+      ]
+    },
+    {
+      "name": "item-secondary-label",
+      "node": "1236:5695",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" secondary=\"Secondary Label\" style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .secondary",
+          "styles": {
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          },
+          "note": "👁️ Secondary Label: Desktop/Body/Small in #757575 after the label."
+        }
+      ]
+    },
+    {
+      "name": "item-dropdown",
+      "node": "1533:8039",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" expandable style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .chevron",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "👁️ Dropdown: a 24px chevron-bottom at the trailing edge."
+        }
+      ]
+    },
+    {
+      "name": "item-tag",
+      "node": "1236:5699",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" tag=\"Label\" style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .tag",
+          "styles": {
+            "boxHeight": "24px"
+          },
+          "note": "👁️ Tag: tag-outlined Neutral Medium (624:4768), 24px tall with a 1px #D9D9D9 stroke, 4px radius and 8px inline padding."
+        }
+      ]
+    },
+    {
+      "name": "item-numbered-badge",
+      "node": "1236:5702",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" badge=\"1\" style=\"display: block; width: 344px\"></mud-sidebar-item>",
+      "expect": [
+        {
+          "target": "mud-sidebar-item .badge",
+          "styles": {
+            "boxHeight": "24px",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "backgroundColor": "#F1F1F1",
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "👁️ Badge: numbered-badge Extra Large Neutral (149:4955), #F1F1F1, fully rounded, 8px inline padding, 24px tall in the export."
+        }
+      ]
+    },
+    {
+      "name": "item-second-level",
+      "node": "1523:4046",
+      "html": "<mud-sidebar-item icon=\"group\" label=\"Primary Label\" expandable expanded style=\"display: block; width: 344px\"><mud-sidebar-item slot=\"children\" icon=\"group\" label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-item>",
+      "capture": {
+        "selector": "mud-sidebar-item[slot=\"children\"]",
+        "bleed": "auto"
+      },
+      "expect": [
+        {
+          "target": "mud-sidebar-item[slot=\"children\"] .item",
+          "styles": {
+            "paddingLeft": "56px",
+            "boxHeight": "48px"
+          },
+          "note": "List Item Types, 2nd-level (1523:4046): the child row pads 12px 16px 12px 56px."
+        }
+      ]
+    }
+  ]
+}

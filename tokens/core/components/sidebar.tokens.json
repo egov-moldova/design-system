@@ -3,7 +3,11 @@
     "container": {
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
       "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
-      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderWidth": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension",
+        "$comment": "Figma strokes the sidebar outside its 368px box (strokeAlign OUTSIDE on 1236:5656 and 1236:5664; the exports are 370px wide), so the rows keep the full 368px."
+      },
       "borderRadius": {
         "$value": "{borderRadius.16}",
         "$type": "dimension",
@@ -56,6 +60,11 @@
         "$comment": "Figma sidebar-list-item height 48px."
       },
       "paddingInlineStart": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInlineStartNested": {
+        "$value": "{spacing.56}",
+        "$type": "dimension",
+        "$comment": "Figma 2nd-level row (1523:4046, 1523:1900) pads 56px on the leading edge: the parent's 24px padding, 20px icon and 12px gap, so the child's icon sits under the parent's label."
+      },
       "paddingInlineEnd": { "$value": "{spacing.16}", "$type": "dimension" },
       "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
       "gap": { "$value": "{spacing.12}", "$type": "dimension" },
@@ -163,12 +172,9 @@
       }
     },
     "focusRing": {
-      "color": {
-        "$value": "{color.background.brand.focus-ring}",
-        "$type": "color",
-        "$comment": "Inset keyboard focus ring, matching the project focus treatment; reconcile in pixel QA against the hidden Figma Focus state."
-      },
-      "width": { "$value": "{borderWidth.2}", "$type": "dimension" }
+      "$comment": "Figma sidebar-list-item State=Focus (855:8241) carries Focus Ring/Medium outside the row: a 2px white halo inside a blue band ending 5px out. The global focusRing widths are that Medium pair; the outer band is added to the inner one in CSS. It replaces an inset 2px ring no node draws.",
+      "widthInner": { "$value": "{focusRing.width.inner}", "$type": "dimension" },
+      "widthOuter": { "$value": "{focusRing.width.outer}", "$type": "dimension" }
     }
   }
 }
