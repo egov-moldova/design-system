@@ -14,6 +14,11 @@
         "$type": "color"
       }
     },
+    "paddingBlock": {
+      "$value": "{spacing.2}",
+      "$type": "dimension",
+      "$comment": "Every variant of Figma separator 775:36509 is a column with 2px of padding above and below a zero-height Line, whose stroke is centred on it. The box is 4px tall at every thickness, and the line sits on its centre."
+    },
     "size": {
       "extraThin": {
         "$value": "{borderWidth.0-5}",

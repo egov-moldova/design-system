@@ -6,10 +6,18 @@
   display: block;
   box-sizing: border-box;
   inline-size: 100%;
-  /* Horizontal: take only the height of the rule itself (+inset on cross axis). */
   block-size: auto;
-  padding-block: var(--_inset);
+  /*
+   * Figma pads the rule 2px above and below (775:36509), so the box is 4px
+   * tall at every thickness. Inset adds to it on the cross axis.
+   */
+  padding-block: calc(var(--separator-padding-block) + var(--_inset));
   color: var(--separator-label-color);
+}
+
+/* A labelled separator is as tall as its label; the lines centre on it. */
+:host(.has-label) {
+  padding-block: var(--_inset);
 }
 
 /* -- Variant (color) ----------------------------------------------------- */
@@ -69,9 +77,23 @@
   border: 0;
 }
 
+/*
+ * The horizontal rule is a zero-height line with the stroke centred on it, as
+ * Figma draws it (775:36509): a box-shadow spread of half the thickness on each
+ * side. A box's own height snaps to whole CSS pixels in Chrome, even at 2x — a
+ * 0.5px background paints as 1px and a 1.5px one as 2px — while a shadow paints
+ * at device resolution, so Extra Thin and Medium keep their weight. The host
+ * clips the spread at the rule's two ends.
+ */
+:host(:not([orientation='vertical'])) {
+  overflow-x: clip;
+}
+
 :host(:not([orientation='vertical'])) .line {
   inline-size: 100%;
-  block-size: var(--_size);
+  block-size: 0;
+  background-color: transparent;
+  box-shadow: 0 0 0 calc(var(--_size) / 2) var(--_color);
 }
 
 :host([orientation='vertical']) .line {
@@ -121,7 +143,6 @@
 }
 
 :host(:not([orientation='vertical'])) .layout .line {
-  block-size: var(--_size);
   inline-size: auto;
 }
 
