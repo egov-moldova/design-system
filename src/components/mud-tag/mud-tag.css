@@ -30,7 +30,12 @@
 
   background-color: var(--_bg);
   color: var(--_label-color);
-  border: var(--_border-width) solid var(--_border-color);
+  /* Figma strokes the Outlined tag inside its box (tag-outlined 624:4767; a
+     52x24 export, the same width as a filled tag). An inset shadow keeps the
+     stroke out of the layout, where a border would widen the tag by 2px and
+     push the label 1px in. */
+  border: 0;
+  box-shadow: inset 0 0 0 var(--_border-width) var(--_border-color);
   border-radius: var(--tag-container-border-radius);
 
   font-family: var(--tag-label-font-family);
@@ -62,6 +67,7 @@
 :host([variant='info']) {
   --_font-weight: var(--tag-label-font-weight-info);
   --_padding-inline: var(--tag-container-padding-inline-sm);
+  --_padding-inline-icon: var(--tag-info-padding-inline-icon);
 }
 
 /* ---------- Type × semantic: subtle ---------- */
@@ -156,6 +162,21 @@
 :host([type='outlined'][semantic='danger']) {
   --_label-color: var(--tag-outlined-label-danger);
   --_border-color: var(--tag-outlined-border-danger);
+}
+
+/* ---------- Info tag colours ----------
+   Figma's info-tag (624:8934) is its own set with no semantic axis: Strong is
+   a #E8F0FB fill under a #383838 label, Subtle has no fill and a #757575
+   label. Declared after the type × semantic rules, which they replace for the
+   info variant; `semantic` does not change an info tag. */
+:host([variant='info'][type='strong']) {
+  --_bg: var(--tag-info-strong-background);
+  --_label-color: var(--tag-info-strong-label);
+}
+
+:host([variant='info'][type='subtle']) {
+  --_bg: var(--tag-info-subtle-background);
+  --_label-color: var(--tag-info-subtle-label);
 }
 
 /* ---------- Disabled (replaces every type × semantic color) ---------- */

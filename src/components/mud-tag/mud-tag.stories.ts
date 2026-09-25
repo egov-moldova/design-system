@@ -90,7 +90,9 @@ Two visual scales coexist behind the same element:
   treatments (\`subtle\`, \`strong\`, \`outlined\`) across six semantic
   colors (\`muted\`, \`neutral\`, \`accent\`, \`success\`, \`brand\`, \`danger\`).
 - \`variant="info"\` — the lighter **Info Tag**, intended for metadata
-  embedded in body text. Regular-weight label, tighter padding.
+  embedded in body text. Regular-weight label, tighter padding, and two
+  looks of its own: \`strong\` (tinted fill) and \`subtle\` (no fill).
+  \`semantic\` does not change it.
 
 For horizontally stacked groups, wrap multiple tags in a flex container
 with an 8 px gap. Tags are decorative by default; supply \`aria-label\`
@@ -403,37 +405,28 @@ export const InfoVariant: Story = {
         regular-weight label and tighter padding read as part of the paragraph.
       </p>
       <p style="font-family: var(--font-family-primary); font-size: 14px; color: var(--color-text-base-default); margin: 0; max-width: 640px; line-height: 1.6;">
-        Apartamentul a fost adăugat pe platformă în ultimele 24 de ore
-        <mud-tag variant="info" type="subtle" semantic="brand">Nou</mud-tag>
+        Apartamentul a fost adăugat pe platformă
+        <mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>
         și include două zone de parcare
-        <mud-tag variant="info" type="subtle" semantic="success">Inclus</mud-tag>.
+        <mud-tag variant="info" type="subtle">Imobiliare</mud-tag>.
       </p>
       <div>
-        <p style="${captionStyle}">Info — Subtle</p>
+        <p style="${captionStyle}">Info — Strong and Subtle (Figma info-tag 624:8934)</p>
         <div style="${rowStyle}">
-          ${TAG_SEMANTICS.map(
-            s => /*html*/ `<mud-tag variant="info" type="subtle" semantic="${s}">${ROMANIAN_LABELS[s]}</mud-tag>`,
-          ).join('')}
-        </div>
-      </div>
-      <div>
-        <p style="${captionStyle}">Info — Strong</p>
-        <div style="${rowStyle}">
-          ${TAG_SEMANTICS.map(
-            s => /*html*/ `<mud-tag variant="info" type="strong" semantic="${s}">${ROMANIAN_LABELS[s]}</mud-tag>`,
-          ).join('')}
+          <mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>
+          <mud-tag variant="info" type="subtle">Acum 2 ore</mud-tag>
         </div>
       </div>
       <div>
         <p style="${captionStyle}">Info — With leading icon</p>
         <div style="${rowStyle}">
-          <mud-tag variant="info" type="subtle" semantic="success">
-            <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-            Inclus
+          <mud-tag variant="info" type="strong">
+            <mud-icon slot="icon-start" name="time" size="16"></mud-icon>
+            Acum 2 ore
           </mud-tag>
-          <mud-tag variant="info" type="subtle" semantic="brand">
-            <mud-icon slot="icon-start" name="circle-info" size="16"></mud-icon>
-            Recomandat
+          <mud-tag variant="info" type="subtle">
+            <mud-icon slot="icon-start" name="time" size="16"></mud-icon>
+            Acum 2 ore
           </mud-tag>
         </div>
       </div>
@@ -443,7 +436,7 @@ export const InfoVariant: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-tag variant="info" semantic="brand">Nou</mud-tag>',
+        code: '<mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>',
       },
     },
   },

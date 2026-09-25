@@ -69,7 +69,8 @@ export class MudTag {
   @Prop({ reflect: true }) type: TagType = 'subtle';
 
   /**
-   * Semantic color role.
+   * Semantic color role. The info variant ignores it for `strong` and
+   * `subtle`: Figma's Info Tag has its own two looks and no semantic axis.
    * @default 'neutral'
    */
   @Prop({ reflect: true }) semantic: TagSemantic = 'neutral';

@@ -103,6 +103,18 @@
         "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
       }
     },
+    "info": {
+      "$comment": "Figma info-tag (624:8934) is its own set with no semantic axis: Type=Strong fills #E8F0FB under a #383838 label (624:8935), Type=Subtle has no fill and a #757575 label (624:8942). A leading icon pads the leading edge 4px (624:8939).",
+      "strong": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "label": { "$value": "{color.text.base.secondary}", "$type": "color" }
+      },
+      "subtle": {
+        "background": { "$value": "transparent", "$type": "color" },
+        "label": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+      },
+      "paddingInlineIcon": { "$value": "{spacing.4}", "$type": "dimension" }
+    },
     "disabled": {
       "background": {
         "$value": "{color.background.disabled.default}",
