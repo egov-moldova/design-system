@@ -1,0 +1,114 @@
+{
+  "component": "mud-tabs",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-tabs--default",
+    "capture": {
+      "selector": "mud-tabs",
+      "bleed": 0
+    }
+  },
+  "states": [
+    {
+      "name": "desktop-3",
+      "node": "145:4532",
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" style=\"width: 220px\"><mud-tab value=\"a\" label=\"Label\"></mud-tab><mud-tab value=\"b\" label=\"Label\"></mud-tab><mud-tab value=\"c\" label=\"Label\"></mud-tab></mud-tabs>",
+      "expect": [
+        {
+          "target": "mud-tabs .track",
+          "styles": {
+            "boxHeight": "48px"
+          },
+          "note": "tabs Count=3 Desktop (145:4532): a row of 48px tabs with a 1px #D9D9D9 stroke inside its bottom edge. The export is 220x48, so the stroke adds no height. (The scroller around the row is padded by the focus ring's reach and pulled back by the same margin.)"
+        },
+        {
+          "target": "mud-tabs mud-tab[selected]",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "color": "#0058D2",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500"
+          },
+          "note": "Mode=On (145:4497): 48px, padded 0 16px, Desktop/Body/Default 500 in #0058D2."
+        },
+        {
+          "target": "mud-tabs mud-tab:not([selected])",
+          "styles": {
+            "color": "#383838",
+            "fontWeight": "400"
+          },
+          "note": "Mode=Off (145:4492): Desktop/Body/Default in #383838."
+        },
+        {
+          "target": "mud-tabs mud-tab[selected] .tab__indicator",
+          "styles": {
+            "boxHeight": "2px",
+            "backgroundColor": "#0058D2",
+            "borderTopLeftRadius": "0px"
+          },
+          "note": "Mode=On draws a 2px #0058D2 stroke inside the bottom edge, square-ended."
+        }
+      ]
+    },
+    {
+      "name": "mobile-3",
+      "node": "350:14224",
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" size=\"sm\" style=\"width: 180px\"><mud-tab value=\"a\" label=\"Label\" size=\"sm\"></mud-tab><mud-tab value=\"b\" label=\"Label\" size=\"sm\"></mud-tab><mud-tab value=\"c\" label=\"Label\" size=\"sm\"></mud-tab></mud-tabs>",
+      "expect": [
+        {
+          "target": "mud-tabs mud-tab[selected]",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          "note": "tabs Count=3 Mobile (350:14224) uses .tab-item-s: 40px, padded 0 12px."
+        }
+      ]
+    },
+    {
+      "name": "tab-selected-focus",
+      "node": "160:586",
+      "pixel": false,
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" style=\"width: 220px\"><mud-tab value=\"a\" label=\"Label\"></mud-tab><mud-tab value=\"b\" label=\"Label\"></mud-tab><mud-tab value=\"c\" label=\"Label\"></mud-tab></mud-tabs>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-tabs mud-tab[selected]"
+      },
+      "expect": [
+        {
+          "target": "mud-tabs mud-tab[selected]",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Mode=On, State=Focus (160:586) carries Focus Ring/Medium outside the tab: a 2px white halo inside a blue band ending 5px out (the export is 84x58 around 74x48)."
+        }
+      ]
+    },
+    {
+      "name": "tab-unselected-focus",
+      "node": "160:592",
+      "pixel": false,
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" style=\"width: 220px\"><mud-tab value=\"a\" label=\"Label\"></mud-tab><mud-tab value=\"b\" label=\"Label\"></mud-tab><mud-tab value=\"c\" label=\"Label\"></mud-tab></mud-tabs>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-tabs mud-tab:nth-of-type(2)"
+      },
+      "expect": [
+        {
+          "target": "mud-tabs mud-tab:nth-of-type(2)",
+          "styles": {
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Mode=Off, State=Focus (160:592): the same ring."
+        }
+      ]
+    }
+  ]
+}
