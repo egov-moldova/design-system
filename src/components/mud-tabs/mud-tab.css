@@ -188,12 +188,13 @@
 /* ---------- Focus ring (keyboard only) ---------- */
 
 :host(:focus-visible) {
-  /* Inset focus ring so it never clips the container border or indicator. */
+  /* Focus Ring/Medium outside the tab, as Figma draws it (160:586, 160:592):
+     a 2px white halo inside a blue band ending 5px out, on the tab's square
+     box. The tablist's scroller leaves room for it (see mud-tabs.css). */
   box-shadow:
-    inset 0 0 0 var(--tabs-focus-ring-inner-width) var(--tabs-focus-ring-inner-color),
-    inset 0 0 0 calc(var(--tabs-focus-ring-inner-width) + var(--tabs-focus-ring-outer-width))
+    0 0 0 var(--tabs-focus-ring-inner-width) var(--tabs-focus-ring-inner-color),
+    0 0 0 calc(var(--tabs-focus-ring-inner-width) + var(--tabs-focus-ring-outer-width))
       var(--tabs-focus-ring-outer-color);
-  border-radius: 4px;
   z-index: 1;
 }
 

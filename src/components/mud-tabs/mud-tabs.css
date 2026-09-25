@@ -46,11 +46,14 @@
   /* Sits in the middle column of row 1. */
   grid-column: 2 / 3;
   grid-row: 1 / 2;
-  /* Bottom rule under the tabs, inside the tab height: Figma strokes the tabs
-     row inside its bottom edge (145:4532, a 220x48 export), so the rule adds
-     no height. An inset shadow paints under the tabs, and the selected tab's
-     indicator covers it. */
-  box-shadow: inset 0 calc(-1 * var(--tabs-container-border-width)) 0 var(--tabs-container-border-color);
+  /* Room for a focused tab's ring (Focus Ring/Medium, 5px out): the scroller
+     clips at its padding box, so it is padded by the ring's reach on every
+     side and pulled back by the same margin — the tabs keep their place and
+     the tablist its height. */
+  --_ring-reach: calc(var(--tabs-focus-ring-inner-width) + var(--tabs-focus-ring-outer-width));
+
+  padding: var(--_ring-reach);
+  margin: calc(-1 * var(--_ring-reach));
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
@@ -70,8 +73,15 @@
   display: inline-flex;
   align-items: stretch;
   gap: var(--tabs-container-gap);
-  /* Track always at least as wide as the scroller so the bottom rule reaches
-     the right edge when there are only a few tabs. */
+  /* Bottom rule under the tabs, inside the tab height: Figma strokes the tabs
+     row inside its bottom edge (145:4532, a 220x48 export), so the rule adds
+     no height. An inset shadow paints under the tabs, and the selected tab's
+     indicator covers it. */
+  box-shadow: inset 0 calc(-1 * var(--tabs-container-border-width)) 0 var(--tabs-container-border-color);
+  /* As wide as the tabs, so the bottom rule runs under every tab however far
+     the row scrolls — and at least as wide as the scroller, so it reaches the
+     right edge when there are only a few tabs. */
+  inline-size: max-content;
   min-inline-size: 100%;
 }
 

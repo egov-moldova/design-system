@@ -106,6 +106,7 @@
       "color": { "$value": "{color.text.base.default}", "$type": "color" }
     },
     "focusRing": {
+      "$comment": "Figma tab Focus (160:586, 160:592) carries Focus Ring/Medium outside the tab: a 2px white halo inside a blue band ending 5px out (the exports are 84x58 around 74x48). The global focusRing widths are that Medium pair; the outer band is added to the inner one in CSS.",
       "innerWidth": { "$value": "{focusRing.width.inner}", "$type": "dimension" },
       "outerWidth": { "$value": "{focusRing.width.outer}", "$type": "dimension" },
       "innerColor": { "$value": "{focusRing.color.inner}", "$type": "color" },
