@@ -174,15 +174,15 @@
 }
 
 /*
- * Focus ring per Figma "Focus Ring/Small": 1px white inner halo + 3px brand
- * outer ring. Implemented as two stacked box-shadows so the radio's own
- * dimensions stay untouched.
+ * Focus ring per Figma "Focus Ring/Small" (51:426): a 1px white halo with the
+ * blue band ending 3px out. Figma stacks the two spreads, so the outer width
+ * is the total — adding the inner one to it would draw the band out to 4px.
+ * Two box-shadows, so the radio's own dimensions stay untouched.
  */
 :host(.is-focused) .visual {
   box-shadow:
     0 0 0 var(--radio-focus-ring-inner-width) var(--radio-focus-ring-inner-color),
-    0 0 0 calc(var(--radio-focus-ring-inner-width) + var(--radio-focus-ring-outer-width))
-      var(--radio-focus-ring-outer-color);
+    0 0 0 var(--radio-focus-ring-outer-width) var(--radio-focus-ring-outer-color);
 }
 
 :host(.is-disabled) {
