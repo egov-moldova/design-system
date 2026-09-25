@@ -120,7 +120,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'Figma `time-input` (13810:9195). Type the digits — the `:` is written for you, and `:` after a single hour digit pads it (`9` + `:` → `09:`). The clock button opens `mud-time-picker`; picking an hour then a minute fills the field and closes it.',
+          'Figma `time-input` (13810:9195). Type the digits — the `:` is written for you, and `:` after a single hour digit pads it (`9` + `:` → `09:`). A click on the field opens `mud-time-picker` and leaves the caret in the input, so you can still type; the clock button opens it too and moves focus into it. Picking an hour then a minute fills the field and closes it.',
       },
       source: {
         type: 'dynamic',
