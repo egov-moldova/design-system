@@ -57,6 +57,49 @@
       ]
     },
     {
+      "name": "desktop-icon-badge",
+      "node": "348:12541",
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" style=\"width: 284px\"><mud-tab value=\"a\" label=\"Label\" icon-name=\"page-text\" badge-count=\"18\"></mud-tab><mud-tab value=\"b\" label=\"Label\"></mud-tab><mud-tab value=\"c\" label=\"Label\"></mud-tab></mud-tabs>",
+      "expect": [
+        {
+          "target": "mud-tabs mud-tab[selected] .tab__icon",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "color": "#0058D2"
+          },
+          "note": "Variations, icon + badge: selected (348:12541): Tab 1 turns on its 20/page-text icon, 6px before the label, in the selected brand colour."
+        },
+        {
+          "target": "mud-tabs mud-tab[selected] .tab__inner",
+          "styles": {
+            "columnGap": "6px"
+          }
+        },
+        {
+          "target": "mud-tabs mud-tab[selected]",
+          "styles": {
+            "columnGap": "8px"
+          },
+          "note": "8px between the icon-and-label cluster and the badge (145:4497)."
+        },
+        {
+          "target": "mud-tabs mud-tab[selected] .tab__badge",
+          "styles": {
+            "boxHeight": "24px",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "backgroundColor": "#F1F1F1",
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "numbered-badge Extra Large Neutral (149:4955): #F1F1F1, 8px inline padding, Desktop/Body/Small 500 in #121212."
+        }
+      ]
+    },
+    {
       "name": "mobile-3",
       "node": "350:14224",
       "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" size=\"sm\" style=\"width: 180px\"><mud-tab value=\"a\" label=\"Label\" size=\"sm\"></mud-tab><mud-tab value=\"b\" label=\"Label\" size=\"sm\"></mud-tab><mud-tab value=\"c\" label=\"Label\" size=\"sm\"></mud-tab></mud-tabs>",
