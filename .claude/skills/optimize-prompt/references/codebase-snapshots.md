@@ -21,13 +21,10 @@ The eight lookups below run in parallel during Step 0.5. Results are passed into
 - Reuse candidate scan — fuzzy match the requested name against existing names (see [`reuse-lookup.md`](reuse-lookup.md))
 - Cross-component dependency resolution — pattern #8 in [`contradiction-detector.md`](contradiction-detector.md)
 
-**Caveat:** In current state (post-legacy-migration), `src/components/` is empty. All components are in `src/legacy/mud-*/`. Lookup MUST also Glob `src/legacy/mud-*/mud-*.tsx` and mark hits as "legacy candidate" vs "production candidate".
-
 **Output payload:**
 ```
 componentInventory: {
-  production: ['mud-button', 'mud-input', ...],   // from src/components/
-  legacy:     ['mud-spinner', 'mud-badge', ...],  // from src/legacy/
+  production: ['mud-button', 'mud-text-input', ...],   // from src/components/
 }
 ```
 
@@ -59,29 +56,14 @@ When [`token-mapping-table.md`](token-mapping-table.md) emits its tables, cite t
 
 ### 3. Slot validation constants
 
-**Tool:** `Read` on `src/legacy/shared.constants.ts` (read entire file — it is small, ~140 lines)
+**Tool:** `Grep` for `export const VALID_[A-Z_]*TAGS` in `src/components/**/*.types.ts`
 
 **Purpose:**
-- Cite the exact constant name (e.g., `VALID_ICON_SLOT_TAGS`) when the spec declares restricted slots — never invent a new constant when an existing one fits
-- For new slot types: emit `## New Constants` block declaring the addition; downstream agent adds it to `shared.constants.ts` during implementation
+- Each component declares its valid slot tags in its own `.types.ts` (e.g., `VALID_TRIGGER_TAGS` in `mud-tooltip.types.ts`); there is no shared constants file
+- Cite the exact constant name when the spec modifies a component that already declares one
+- For new slot types: emit `## New Constants` block declaring the addition; downstream agent adds it to the component's `.types.ts` during implementation
 
-**Known constants (verified 2026-05-18):**
-
-| Constant | Tags | Used by |
-|---|---|---|
-| `VALID_HELPER_TEXT_TAGS` | `span`, `small`, `div`, `p` | form components helper-text slot |
-| `VALID_ICON_SLOT_TAGS` | `mud-icon` | all icon slots across all components |
-| `VALID_AVATAR_IMAGE_TAGS` | `img`, `svg` | avatar image slot |
-| `VALID_AVATAR_ICON_TAGS` | `mud-icon`, `svg` | avatar icon slot |
-| `VALID_AVATAR_SLOT_TAGS` | `mud-avatar` | select-item avatar slot |
-| `VALID_TABLE_SECTION_TAGS` | `mud-thead`, `mud-tbody`, `mud-tfoot` | table default slot |
-| `VALID_TABLE_HEADER_TAGS` | `mud-column` | thead default slot |
-| `VALID_TABLE_ROW_TAGS` | `mud-row` | tbody default slot |
-| `VALID_TABLE_CELL_TAGS` | `mud-cell` | row default slot |
-| `VALID_NOTIFICATION_ACTION_TAGS` | `mud-button` | notification action slot |
-| `VALID_NOTIFICATION_CLOSE_TAGS` | `mud-icon` | notification close-icon override |
-
-**Caveat:** If `src/legacy/shared.constants.ts` moves to a new location (a possible future refactor), update the Read target. The constant table above is the stable contract — re-verify the file location on each upgrade.
+**Known constants (verified 2026-09-23):** `VALID_TRIGGER_TAGS` in `mud-tooltip.types.ts`. The Grep is the source of truth — re-run it rather than trusting this line.
 
 ---
 
@@ -156,12 +138,10 @@ DTCG paths: `spacing.<n>` → `cor.size.spacing.<n>`. Example: `16px` → `cor.s
 | File | Export | Purpose |
 |---|---|---|
 | `src/utils/invalid-slotted-tag.ts` | `invalidSlottedTag(tag, valid)` | Returns the error string rendered when an invalid tag is slotted |
-| `src/utils/css-helpers.ts` | (multiple) | CSS-in-JS helpers |
 | `src/utils/flatten-tokens.ts` | `flattenTokens(...)` | DTCG JSON → flat key-value map |
 | `src/utils/svg-sanitizer.ts` | `sanitizeSvg(...)` | Sanitize inline SVG strings (for `mud-illustration`) |
-| `src/utils/token-parser.ts` | (multiple) | Parse `{path.to.token}` references in JSON |
 
-When a spec needs slot validation, the Implementation Rules section MUST cite `import { invalidSlottedTag } from '../../utils/invalid-slotted-tag'` and the constant import from `shared.constants`. Never re-specify these.
+When a spec needs slot validation, the Implementation Rules section MUST cite `import { invalidSlottedTag } from '../../utils/invalid-slotted-tag'` and the constant import from the component's own `.types.ts`. Never re-specify these.
 
 ---
 
@@ -170,9 +150,8 @@ When a spec needs slot validation, the Implementation Rules section MUST cite `i
 ```
 Run in parallel (all 8 lookups):
   Glob src/components/mud-*/mud-*.tsx       → componentInventory.production
-  Glob src/legacy/mud-*/mud-*.tsx           → componentInventory.legacy
   Glob tokens/core/components/*.tokens.json → tokenInventory
-  Read src/legacy/shared.constants.ts       → slotConstants
+  Grep VALID_*_TAGS in src/components/**/*.types.ts → slotConstants
   Read tokens/core/color.tokens.json        → colorTokens
   Read tokens/core/sizes.tokens.json        → sizeTokens
   Read tokens/core/font.tokens.json         → fontTokens
@@ -192,9 +171,9 @@ Run against the composed draft from Step 3:
 
 | # | Check | Inputs | On failure |
 |---|---|---|---|
-| V1 | Every `mud-X` referenced exists in `componentInventory.production ∪ componentInventory.legacy` OR appears in `## Build Order` | draft, componentInventory | Emit `## Validation Issues`: "Component `mud-X` referenced but does not exist and is not in Build Order" |
+| V1 | Every `mud-X` referenced exists in `componentInventory.production` OR appears in `## Build Order` | draft, componentInventory | Emit `## Validation Issues`: "Component `mud-X` referenced but does not exist and is not in Build Order" |
 | V2 | Every `cor.<comp>.<...>` token path matches the regex in [`token-mapping-table.md`](token-mapping-table.md) § 1 | draft | Emit warning with the offending path |
-| V3 | Every slot validation constant cited exists in `slotConstants` keys | draft, slotConstants | If constant unknown: emit "Constant `X` not found in shared.constants.ts. Did you mean: `Y`?" |
+| V3 | Every slot validation constant cited exists in `slotConstants` keys | draft, slotConstants | If constant unknown: emit "Constant `X` not found in any component's `.types.ts`. Did you mean: `Y`?" |
 | V4 | No raw color word (regex: `\b(light|dark|subtle|brand|primary|secondary|tertiary|emphasis)\s+(gray|grey|blue|red|green|yellow|color)\b`) outside cited tokens | draft | Emit "Unmapped color descriptor: `<phrase>`. Map to a semantic token from `tokens/core/color.tokens.json`." |
 | V5 | No `\d+px` literal outside Token Mapping or Sizing Tokens sections | draft | Emit "Hardcoded px value: `<n>px`. Map to a spacing-scale rung." |
 | V6 | CSS Pattern (A/B/C) declared in Architecture Constraints matches the routed archetype per [`archetype-router.md`](archetype-router.md) | draft, archetype | Emit "Pattern mismatch: archetype `X` routes to Pattern `Y`, but spec declares Pattern `Z`." |
@@ -215,8 +194,8 @@ When validation finds issues:
 ```
 ## Validation Issues
 
-- [V1] Component `mud-foo` referenced in Behavior but not in src/components/, src/legacy/, or Build Order. Add to Build Order or fix the reference.
-- [V3] Constant `VALID_FOO_TAGS` cited but not found in src/legacy/shared.constants.ts. Closest matches: VALID_ICON_SLOT_TAGS. Did you mean to declare a new constant? Add a "## New Constants" block.
+- [V1] Component `mud-foo` referenced in Behavior but not in src/components/ or Build Order. Add to Build Order or fix the reference.
+- [V3] Constant `VALID_FOO_TAGS` cited but not found in any component's `.types.ts`. Closest matches: VALID_TRIGGER_TAGS. Did you mean to declare a new constant? Add a "## New Constants" block.
 - [V5] Line 47: `72px` is hardcoded. Map to `cor.size.spacing.72` (exact match exists).
 
 (Continue emission below; consumer agent decides whether to fix or accept.)
@@ -304,7 +283,7 @@ When a new token category appears (e.g., `tokens/core/<category>.tokens.json` is
 2. Add a corresponding validator (V-something) in Step 1.5
 3. Update the parallel snapshot block in § Step 0.5
 
-When `src/legacy/shared.constants.ts` moves to a new location:
-1. Update the Read target in § 3
-2. Update the known constants table if exports change
-3. Re-verify the file location in this doc by running `Glob`
+When slot constants move out of component `.types.ts` files (e.g., into a shared module):
+1. Update the Grep target in § 3
+2. Update the known constants line
+3. Re-run the Grep to verify
