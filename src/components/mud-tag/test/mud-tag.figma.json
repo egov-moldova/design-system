@@ -494,7 +494,7 @@
     {
       "name": "info-strong",
       "node": "624:8977",
-      "html": "<mud-tag variant=\"info\" type=\"strong\">Info</mud-tag>",
+      "html": "<mud-tag variant=\"info\" type=\"strong\" style=\"inline-size: 38px\">Info</mud-tag>",
       "expect": [
         {
           "target": "mud-tag",
@@ -511,7 +511,8 @@
           },
           "note": "info-tag Icon=None, Type=Strong (624:8935): 24px, padded 0 6px, a #E8F0FB fill under a Desktop/Body/Small label in #383838. The Info Tag has no semantic axis."
         }
-      ]
+      ],
+      "fixtureNote": "Pinned to Figma's 38px: Figma rounds the \"Info\" text box up to 26px, so its tag is 1px wider than the component's hug width (37px). On a 38px canvas that one column shifts the centred label half a pixel and every glyph anti-aliases differently (2.88%). At Figma's width the diff compares the fill and the label, not the rounding; the padding and type are pinned by style parity."
     },
     {
       "name": "info-strong-icon",
