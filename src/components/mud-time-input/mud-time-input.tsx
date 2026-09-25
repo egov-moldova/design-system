@@ -213,6 +213,8 @@ export class MudTimeInput {
   private ariaLabelObserver?: MutationObserver;
   /** Set when the picker opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
+  /** Whether the next open should move focus into the picker. */
+  private focusPickerOnOpen: boolean = true;
 
   @Watch('variant')
   validateVariant(next: TimeInputVariant) {
@@ -253,11 +255,16 @@ export class MudTimeInput {
     this.updateValidation(this.value);
   }
 
-  /** Opening the picker moves focus into it (dialog pattern). */
+  /**
+   * Opening the picker from the clock button moves focus into it (dialog
+   * pattern); opening it from the field leaves focus in the input.
+   */
   @Watch('pickerOpen')
   handlePickerOpenChange(open: boolean) {
+    if (!open) return;
     // The picker is not rendered yet; componentDidRender moves focus once it is.
-    if (open) this.focusPickerOnRender = true;
+    this.focusPickerOnRender = this.focusPickerOnOpen;
+    this.focusPickerOnOpen = true;
   }
 
   /** Close the picker when a click lands outside the field (light or shadow DOM). */
@@ -374,6 +381,27 @@ export class MudTimeInput {
     ev.stopPropagation();
     if (this.isInert() || this.readonly) return;
     this.pickerOpen = !this.pickerOpen;
+  };
+
+  /**
+   * A click anywhere on the field opens the picker, not only the clock button,
+   * as the date input opens its calendar. Focus stays where the click put it —
+   * the caret in the input — so the user can keep typing; only the clock
+   * button moves focus into the picker.
+   */
+  private readonly handleFieldClick = (ev: MouseEvent) => {
+    if (this.isInert() || this.readonly) return;
+    // The clear button and the picker itself sit inside `.control`; a click on
+    // either is not a click on the field.
+    const path = ev.composedPath();
+    const own = this.host.shadowRoot;
+    for (const selector of ['.clear-button', '.picker-popover']) {
+      const el = own?.querySelector(selector);
+      if (el && path.includes(el)) return;
+    }
+    if (this.pickerOpen) return;
+    this.focusPickerOnOpen = false;
+    this.pickerOpen = true;
   };
 
   private readonly handlePickerChange = (ev: CustomEvent<TimePickerChangeDetail>) => {
@@ -638,7 +666,7 @@ export class MudTimeInput {
           ) : null}
         </label>
 
-        <div class="control" part="control">
+        <div class="control" part="control" onClick={this.handleFieldClick}>
           <div class="field">
             <input
               id={this.inputId}
