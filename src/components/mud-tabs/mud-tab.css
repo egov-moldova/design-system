@@ -166,7 +166,7 @@
   inset-block-end: 0;
   block-size: var(--tabs-tab-indicator-height);
   background-color: var(--tabs-tab-indicator-color);
-  border-radius: var(--tabs-tab-indicator-height);
+  /* Square-ended: Figma draws it as a 2px stroke inside the tab's bottom edge (145:4497). */
   opacity: 0;
   transform: scaleX(0.4);
   transform-origin: center;
