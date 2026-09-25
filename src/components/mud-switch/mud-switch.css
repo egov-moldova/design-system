@@ -161,15 +161,15 @@
 }
 
 /*
- * Focus ring per Figma "Focus Ring/Small": 1px white inner halo + 3px
- * brand-blue outer ring. Implemented as two stacked box-shadows so the
- * track's own dimensions stay untouched.
+ * Focus ring per Figma "Focus Ring/Small" (68:517): a 1px white halo with the
+ * blue band ending 3px out. Figma stacks the two spreads, so the outer width
+ * is the total — adding the inner one to it would draw the band out to 4px.
+ * Two box-shadows, so the track's own dimensions stay untouched.
  */
 :host(.is-focused) .track {
   box-shadow:
     0 0 0 var(--switch-focus-ring-inner-width) var(--switch-focus-ring-inner-color),
-    0 0 0 calc(var(--switch-focus-ring-inner-width) + var(--switch-focus-ring-outer-width))
-      var(--switch-focus-ring-outer-color);
+    0 0 0 var(--switch-focus-ring-outer-width) var(--switch-focus-ring-outer-color);
 }
 
 :host(.is-disabled) {

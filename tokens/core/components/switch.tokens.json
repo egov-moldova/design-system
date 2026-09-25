@@ -44,8 +44,9 @@
       "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
     },
     "focusRing": {
+      "$comment": "Figma switch Focus (68:517, 68:519) carries Focus Ring/Small: 0 0 0 3px #3379DB over 0 0 0 1px #FFF, rendered as a 1px white halo with the blue band ending 3px out (the export is 54x34 around the 48x28 track). outerWidth is that total outer spread; adding the inner width to it drew the band out to 4px.",
       "innerWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
-      "outerWidth": { "$value": "{focusRing.width.outer}", "$type": "dimension" },
+      "outerWidth": { "$value": "{borderWidth.3}", "$type": "dimension" },
       "innerColor": { "$value": "{focusRing.color.inner}", "$type": "color" },
       "outerColor": { "$value": "{focusRing.color.outer}", "$type": "color" }
     },
