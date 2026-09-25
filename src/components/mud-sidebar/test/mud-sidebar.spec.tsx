@@ -14,8 +14,8 @@ import '../mud-sidebar-item';
 // HTMLElement), their JSX-set attributes remain as plain HTML attributes and
 // getAttribute() returns the expected values. This matches the pattern used in
 // mud-search-input.spec.tsx where mud-icon is also not imported.
-// Note: mud-sidebar-item renders badge as <span class="badge"> (not mud-badge),
-// so mud-badge import is not required here at all.
+// Note: mud-sidebar-item renders the neutral badge as <span class="badge">; the
+// notification badge is a mud-badge, left un-upgraded here for the same reason.
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -404,6 +404,29 @@ describe('mud-sidebar-item', () => {
     it('omits badge span when badge prop is not set', async () => {
       const { root } = await render(<mud-sidebar-item label="Item" />);
       expect(root?.shadowRoot?.querySelector('span.badge')).toBeNull();
+    });
+
+    it('defaults badgeVariant to neutral, the grey numbered badge', async () => {
+      const { root } = await render(<mud-sidebar-item label="Item" badge={3} />);
+      expect((root as HTMLMudSidebarItemElement).badgeVariant).toBe('neutral');
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('mud-badge')).toBeNull();
+    });
+
+    it('renders the red notification badge (Figma notification-badge 797:43130) as mud-badge', async () => {
+      const { root } = await render(<mud-sidebar-item label="Inbox" badge={3} badgeVariant="notification" />);
+      const badge = root?.shadowRoot?.querySelector('mud-badge');
+      expect(badge).toBeTruthy();
+      expect(badge?.getAttribute('type')).toBe('numbered');
+      expect(badge?.getAttribute('variant')).toBe('danger');
+      expect(badge?.getAttribute('size')).toBe('xl');
+      expect(badge?.getAttribute('count')).toBe('3');
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeNull();
+    });
+
+    it('renders no notification badge without a count', async () => {
+      const { root } = await render(<mud-sidebar-item label="Inbox" badgeVariant="notification" />);
+      expect(root?.shadowRoot?.querySelector('mud-badge')).toBeNull();
     });
   });
 
