@@ -167,12 +167,9 @@
       }
     },
     "focusRing": {
-      "color": {
-        "$value": "{color.background.brand.focus-ring}",
-        "$type": "color",
-        "$comment": "Inset keyboard focus ring, matching the project focus treatment; reconcile in pixel QA against the hidden Figma Focus state."
-      },
-      "width": { "$value": "{borderWidth.2}", "$type": "dimension" }
+      "$comment": "Figma sidebar-list-item State=Focus (855:8241) carries Focus Ring/Medium outside the row: a 2px white halo inside a blue band ending 5px out. The global focusRing widths are that Medium pair; the outer band is added to the inner one in CSS. It replaces an inset 2px ring no node draws.",
+      "widthInner": { "$value": "{focusRing.width.inner}", "$type": "dimension" },
+      "widthOuter": { "$value": "{focusRing.width.outer}", "$type": "dimension" }
     }
   }
 }

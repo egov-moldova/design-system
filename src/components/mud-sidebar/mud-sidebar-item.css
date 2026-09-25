@@ -115,10 +115,16 @@
   color: var(--sidebar-item-icon-disabled);
 }
 
-/* Keyboard focus ring — inset. */
+/* Keyboard focus ring — Focus Ring/Medium outside the row (855:8241): a 2px
+   white halo inside a blue band ending 5px out. The row is lifted above its
+   neighbours so the next row's fill does not cover the band. */
 .item:focus-visible {
+  z-index: 1;
   outline: none;
-  box-shadow: inset 0 0 0 var(--sidebar-focus-ring-width) var(--sidebar-focus-ring-color);
+  box-shadow:
+    0 0 0 var(--sidebar-focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--sidebar-focus-ring-width-inner) + var(--sidebar-focus-ring-width-outer))
+      var(--focus-ring-color-outer);
 }
 
 /* Nested children list. */
