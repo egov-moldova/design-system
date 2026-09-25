@@ -14,8 +14,9 @@
       "$comment": "Figma 'Drop Shadow/300' effect style — verified via Dev Mode metadata on the selection-menu instance (454:5903). Also drives mud-menu, mud-date-picker and mud-phone-input, which all reference this same tier."
     },
     "400": {
-      "$value": "0px 12px 16px 6px rgba(40, 46, 55, 0.06), 0px 4px 6px 0px rgba(40, 46, 55, 0.06)",
-      "$type": "string"
+      "$value": "0px 2px 8px 0px rgba(0, 0, 0, 0.08), 0px 10px 24px 0px rgba(0, 0, 0, 0.08), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.12)",
+      "$type": "string",
+      "$comment": "Figma 'Drop Shadow/400' effect style, copied from the modal component set 230:5243, which applies it to every variant. The previous value (0 12px 16px 6px rgba(40,46,55,.06), ...) matched no Figma style and had no consumer. Note the third layer is a 0.5px spread hairline, where Drop Shadow/300 uses a 0.5px blur."
     },
     "500": {
       "$value": "0px 16px 20px 6px rgba(40, 46, 55, 0.06), 0px 4px 8px 0px rgba(40, 46, 55, 0.06)",
