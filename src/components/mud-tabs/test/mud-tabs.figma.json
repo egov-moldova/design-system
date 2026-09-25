@@ -109,6 +109,40 @@
           "note": "Mode=Off, State=Focus (160:592): the same ring."
         }
       ]
+    },
+    {
+      "name": "overflow-end",
+      "node": "352:15130",
+      "html": "<mud-tabs aria-label=\"Tabs\" value=\"a\" style=\"width: 366px\"><mud-tab value=\"a\" label=\"Label\"></mud-tab><mud-tab value=\"b\" label=\"Label\"></mud-tab><mud-tab value=\"c\" label=\"Label\"></mud-tab><mud-tab value=\"d\" label=\"Label\"></mud-tab><mud-tab value=\"e\" label=\"Label\"></mud-tab><mud-tab value=\"f\" label=\"Label\"></mud-tab></mud-tabs>",
+      "expect": [
+        {
+          "target": "mud-tabs .chevron--end",
+          "styles": {
+            "boxWidth": "44px",
+            "boxHeight": "44px",
+            "paddingTop": "12px",
+            "paddingBottom": "8px",
+            "paddingLeft": "16px",
+            "paddingRight": "4px"
+          },
+          "note": "Tabs w/ Overflow, overflowing right (352:15130): five tabs with the .arrow overlay (354:16084) on the row's end, padded 12px 4px 8px 16px around a 24px chevron-right-small, 44px tall so the rule under the row stays visible. Its fill is white fading out over its inner third (checked by the pixel diff)."
+        },
+        {
+          "target": "mud-tabs .chevron--end mud-icon",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          }
+        },
+        {
+          "target": "mud-tabs .chevron--start",
+          "styles": {
+            "display": "none"
+          },
+          "note": "At the start of the row there is nothing to scroll back to, and Figma draws no start arrow."
+        }
+      ],
+      "fixtureNote": "Figma draws the arrow over a row that exactly fits its five tabs; a sixth tab makes the 366px row overflow, so the component shows the arrow while the first five tabs sit where Figma draws them."
     }
   ]
 }
