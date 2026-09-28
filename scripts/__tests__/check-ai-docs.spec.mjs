@@ -572,11 +572,11 @@ describe('stencil-version rule', () => {
 });
 
 describe('stale-prefix rule: kebab and prose spellings', () => {
-  it('flags kebab tags, custom properties and the prefix named as a word, but not legacy paths or the vendor', () => {
+  it('flags kebab tags, custom properties and the prefix named as a word, but not the vendor', () => {
     const root = makeFixture({
       'package.json': pkgJson(),
       '_agents/x.md':
-        'Render `<cor-button>`.\n\nSet `--cor-color-primary`.\n\nName events with the `cor` prefix.\n\nLegacy tags live under src/legacy/cor-accordion.\n\nVisit corlab-docs.example.\n',
+        'Render `<cor-button>`.\n\nSet `--cor-color-primary`.\n\nName events with the `cor` prefix.\n\nVisit corlab-docs.example.\n',
     });
     assert.deepEqual(
       checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
@@ -689,11 +689,11 @@ describe('docs checker rules: remaining spellings', () => {
     );
   });
 
-  it('stale-prefix: flags capitalised word forms, and exempts only the legacy path token', () => {
+  it('stale-prefix: flags capitalised word forms, camelCase identifiers and tags inside a path', () => {
     const root = makeFixture({
       'package.json': pkgJson(),
       '_agents/x.md':
-        'Use the `Cor` prefix.\n\nThe Cor prefix is retired.\n\nLegacy tags live under src/legacy/cor-accordion while new code uses corButton.\n\nLegacy tags live under src/legacy/cor-accordion.\n',
+        'Use the `Cor` prefix.\n\nThe Cor prefix is retired.\n\nNew code uses corButton.\n\nOld tags lived under src/archive/cor-accordion.\n',
     });
     assert.deepEqual(
       checkAiDocs({ root }).map(h => [h.line, h.ruleId]),
@@ -701,6 +701,7 @@ describe('docs checker rules: remaining spellings', () => {
         [1, 'stale-prefix'],
         [3, 'stale-prefix'],
         [5, 'stale-prefix'],
+        [7, 'stale-prefix'],
       ],
     );
   });

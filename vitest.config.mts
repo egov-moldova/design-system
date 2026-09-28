@@ -17,7 +17,7 @@ import { stencilPostcssPlugins } from './stencil-postcss.config.mjs';
 //   1. `spec`      — node-side rendering via Stencil's mock-doc DOM (replaces
 //                    the retired Jest + `newSpecPage` stack). Setup file loads
 //                    the compiled lazy bundle and applies the ElementInternals
-//                    mock. Legacy components in src/legacy/ are excluded.
+//                    mock.
 //
 //   2. `storybook` — browser-mode tests powered by `@storybook/addon-vitest`.
 //                    Each story is executed as a Vitest test inside a real
@@ -132,7 +132,6 @@ export default defineVitestConfig({
       reporter: ['text', 'json', 'json-summary', 'html'],
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
-        'src/legacy/**',
         'src/utils/**',
         'src/**/*.spec.{ts,tsx}',
         'src/**/*.test.{ts,tsx}',
@@ -162,7 +161,7 @@ export default defineVitestConfig({
         test: {
           name: 'spec',
           include: ['src/**/*.spec.{ts,tsx}'],
-          exclude: ['src/legacy/**', 'node_modules/**', 'dist/**'],
+          exclude: ['node_modules/**', 'dist/**'],
           environment: 'stencil',
           setupFiles: ['./vitest-setup.ts'],
           testTimeout: 60_000,

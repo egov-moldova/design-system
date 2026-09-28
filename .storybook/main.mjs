@@ -33,16 +33,12 @@ export default {
   stories: ['./stories/**/*.mdx', '../src/components/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
   // Map tokens/generated/ → /tokens/generated/ in production build output.
   // In dev mode, the custom middleware in viteFinal serves these files instead.
-  // Map illustration SVGs to /assets/assets/ — in production Vite bundles the Stencil ESM into
-  // /assets/[hash].js, so getAssetPath('./assets/illustrations/name.svg') resolves to
-  // /assets/assets/illustrations/*. In dev, Vite serves dist/mud/ from the filesystem
-  // directly (fs.allow: ['..']), so staticDirs is not needed there and the correct URL is
-  // /dist/mud/assets/illustrations/* regardless of this mapping.
+  // Map component asset dirs to /assets/assets/ — in production Vite bundles the Stencil ESM into
+  // /assets/[hash].js, so getAssetPath('./assets/<file>') resolves to /assets/assets/*. In dev,
+  // Vite serves dist/mud/ from the filesystem directly (fs.allow: ['..']), so staticDirs is not
+  // needed there and the correct URL is /dist/mud/assets/* regardless of this mapping.
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
-    // Disabled during legacy migration — mud-illustration is in src/legacy/ and not shipped.
-    // Re-enable (and update path) when a new illustration component is introduced.
-    // { from: '../src/components/mud-illustration/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
     // The shipped library's @font-face (src/assets/css/base/fonts.css) requests
     // /assets/fonts/onest-variable.woff2. Without this it 404s in dev, where

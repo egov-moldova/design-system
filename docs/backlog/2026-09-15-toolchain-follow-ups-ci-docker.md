@@ -3,7 +3,7 @@
 **Status**: Backlog — documented, not applied. Each item needs a decision from whoever owns the CI/CD and Azure DevOps release path.
 **Captured**: 2026-09-15, measured on `b50b870`
 **Source**: GitHub issue #36 (follow-ups after the 2026-09 toolchain refresh, #37)
-**Affects**: `.github/workflows/ci.yml`, `Dockerfile`, the external Azure DevOps pipelines, `src/legacy/**`, `.storybook/main.mjs` (dev telemetry)
+**Affects**: `.github/workflows/ci.yml`, `Dockerfile`, the external Azure DevOps pipelines, `.storybook/main.mjs` (dev telemetry)
 
 The parts of #36 that stay inside the repo's own code and tests were fixed in the
 PR that closes it. The items below touch CI/CD or the deployed image, so they
@@ -77,28 +77,11 @@ the external pipeline still builds this `Dockerfile` is not verifiable from here
   merging. Neither can be verified from a feature branch without access to that
   pipeline.
 
-## 3. `src/legacy/**/*.e2e.ts` have no runner
+## 3. The archived component tree's `*.e2e.ts` files had no runner — resolved
 
-15 files import `newE2EPage` from `@stencil/core/testing`. No script runs them:
-`yarn test` is the Vitest spec lane, and `tsconfig.json` excludes `src/legacy/**`.
-They are not coverage, but they look like it.
-
-Options:
-
-- Delete them when each legacy component is migrated or removed. This fits the
-  existing migration flow.
-- Delete all 15 now, if the legacy tree is only reference material.
-
-This was left open because `src/legacy/**` is still mid-redesign
-(`src/components/_agents/testing.md`).
-
-**Recommendation:** delete each legacy component's `*.e2e.ts` in the same commit
-that migrates or removes that component, and do not port them to a runner.
-The `mud-*` replacements already carry `*.spec.tsx` and Storybook Vitest
-coverage.
-
-**Decision for the owner:** is `src/legacy/**` still used as behavioural
-reference during the redesign? If not, delete all 15 in one commit.
+Resolved by #123: the archived `cor-*` component tree and its tokens were deleted,
+along with the 15 `newE2EPage` files that had no runner. The sources stay in
+history at `328b233`.
 
 ## 4. Two test lanes run nowhere in CI
 

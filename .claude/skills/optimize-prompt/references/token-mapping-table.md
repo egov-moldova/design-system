@@ -156,7 +156,7 @@ Replace `<name>` with the component name (without `mud-` prefix). E.g., `tokens/
 
 ## 7. Migration block (for `--mode=redesign`)
 
-When redesigning a legacy component, emit a **Token Diff** showing current → new:
+When redesigning an existing component, emit a **Token Diff** showing current → new:
 
 ```
 ### Token Diff — mud-badge

@@ -24,5 +24,5 @@
     "tsBuildInfoFile": ".stencil/.tsbuildinfo"
   },
   "include": ["src", "types", "*.ts"],
-  "exclude": ["node_modules", "dist", "loader", "www", "src/legacy/**"]
+  "exclude": ["node_modules", "dist", "loader", "www"]
 }

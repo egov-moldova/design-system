@@ -209,7 +209,7 @@ export class Mud<Name> {
 
 **Forbidden:** `icon-left`, `icon-right`, `prefix`, `suffix`, `start`, `end` (legacy/non-canonical names). When redesigning legacy components that use these, emit a Migration block mapping old → new.
 
-**Slot validation:** Cite a constant from [`src/legacy/shared.constants.ts`](../../../../src/legacy/shared.constants.ts) (e.g., `VALID_ICON_SLOT_TAGS`). If no fit exists, declare a new constant in `## New Constants` block — never inline a literal array of tags.
+**Slot validation:** Declare the valid tags as a named constant in the component's own `.types.ts` (e.g., `VALID_TRIGGER_TAGS` in `mud-tooltip.types.ts`) and list it in a `## New Constants` block — never inline a literal array of tags.
 
 **Empty detection:** `slotchange` event + CSS class on host. **Never** a boolean prop `showIcon` — that's anti-pattern #12.
 

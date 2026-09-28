@@ -119,12 +119,12 @@ For brand-new components without an existing implementation.
 
 ## Mode: `redesign`
 
-For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/` with new Figma design.
+For an existing `src/components/mud-X/` component re-aligned to a new Figma design.
 
 ```
 ## 1. Goal
 - Component: mud-<name>
-- Source: src/legacy/mud-<name>/ → target: src/components/mud-<name>/
+- Baseline: src/components/mud-<name>/ (current implementation, redesigned in place)
 - Figma source (NEW design): <file URL> — primary node <node-id>
 - Reason: MUD Design System redesign program
 
@@ -142,7 +142,7 @@ For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/`
 - Deprecated tokens removed; consumers must update CSS overrides
 
 ## 5. Behavior delta
-- <only behaviors that change from legacy; if none, write "none">
+- <only behaviors that change from the baseline; if none, write "none">
 
 ## 6. Token Mapping
 (full per-variant tables for NEW design — see references/token-mapping-table.md)

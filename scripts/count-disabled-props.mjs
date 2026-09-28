@@ -15,9 +15,6 @@
  * existed; `--list` against a listing of the component directories re-derives
  * the five.
  *
- * `src/legacy/` is excluded on purpose: those `cor-*` components are archived and
- * unshipped, and the claim this script serves is about the `mud-*` set.
- *
  * The right-hand anchor on DISABLED_PROP is load-bearing, not tidiness:
  * `mud-date-picker` declares `@Prop() disabledDates?: string[]` and no `disabled`
  * prop at all, so an unanchored match counts it and puts it on the wrong side of

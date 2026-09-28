@@ -52,8 +52,7 @@ export const DEV_BUILD_MARKERS = [/\bisDev:\s*true\b/, /Running in development m
  * them believing `dist/types/private/` was a directory this build legitimately
  * emits; it is not — it is the head of `/private/var/folders/...`, verified by
  * walking it. Colliding with a real source directory would need `src/private/`
- * or `src/var/` to exist; today `src/` holds assets, components, legacy and
- * utils. This asserts a shape, where FORBIDDEN_SEGMENTS enumerates today's
+ * or `src/var/` to exist; today `src/` holds assets, components and utils. This asserts a shape, where FORBIDDEN_SEGMENTS enumerates today's
  * known offenders.
  */
 export const ABSOLUTE_PATH_ROOTS = ['home', 'Users', 'private', 'var', 'root', 'tmp'];

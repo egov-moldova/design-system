@@ -32,7 +32,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.1 atom-visual
 
-> **Examples in legacy:** `mud-spinner`, `mud-badge`, `mud-icon`, `mud-skeleton`, `mud-separator`, `mud-divider`, `mud-illustration`, `mud-loading-*`.
+> **Examples:** `mud-spinner`, `mud-badge`, `mud-icon`, `mud-skeleton`, `mud-separator`, `mud-divider`, `mud-illustration`, `mud-loading-*`.
 
 **CSS Pattern:** B (internal DOM/SVG). **NO slots** by default.
 
@@ -64,7 +64,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.2 atom-interactive
 
-> **Examples in legacy:** `mud-button`, `mud-link`, `mud-chip`.
+> **Examples:** `mud-button`, `mud-link`, `mud-chip`.
 
 **CSS Pattern:** A (slot-based — user passes the interactive root element). Style with `::slotted(*)` + `:host([variant])` + `:host([size])`.
 
@@ -89,7 +89,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 **Required slots:** default (interactive root), `leading-icon`, `trailing-icon` (canonical convention — NEVER `icon-left`/`icon-right`).
 
-**Slot validation:** cite or extend constants from [`src/legacy/shared.constants.ts`](../../../../src/legacy/shared.constants.ts). Examples: `VALID_ICON_SLOT_TAGS`.
+**Slot validation:** declare the valid tags as a named constant in the component's own `.types.ts`, as `mud-tooltip` does with `VALID_TRIGGER_TAGS` — see [`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md).
 
 **A11y baseline:**
 - Native `<button>`/`<a>` slotted; never custom click on `<div>`
@@ -104,7 +104,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.3 form-associated
 
-> **Examples in legacy:** `mud-input`, `mud-textarea`, `mud-select`, `mud-checkbox`, `mud-toggle`, `mud-radio-button`, `mud-datepicker`.
+> **Examples:** `mud-input`, `mud-textarea`, `mud-select`, `mud-checkbox`, `mud-toggle`, `mud-radio-button`, `mud-datepicker`.
 
 **CSS Pattern:** C (internal DOM, form-associated). MUST declare `formAssociated: true` and `@AttachInternals()`.
 
@@ -156,7 +156,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.4 molecule
 
-> **Examples in legacy:** `mud-avatar`, `mud-breadcrumbs`, `mud-pagination-item`, `mud-label`, `mud-modal-header`.
+> **Examples:** `mud-avatar`, `mud-breadcrumbs`, `mud-pagination-item`, `mud-label`, `mud-modal-header`.
 
 **CSS Pattern:** B (internal DOM, owns markup). Composes other `mud-*` atoms via internal `<mud-icon>` / `<mud-spinner>` calls, NOT user slots.
 
@@ -178,7 +178,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.5 molecule-interactive
 
-> **Examples in legacy:** `mud-tab-button`, `mud-accordion-header`, `mud-dropdown-item`.
+> **Examples:** `mud-tab-button`, `mud-accordion-header`, `mud-dropdown-item`.
 
 **CSS Pattern:** B with `@State()` for interaction state.
 
@@ -200,7 +200,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.6 organism
 
-> **Examples in legacy:** `mud-modal`, `mud-table`, `mud-datepicker`, `mud-dropdown`, `mud-accordion`, `mud-tabs`, `mud-pagination`, `mud-calendar`, `mud-tooltip`.
+> **Examples:** `mud-modal`, `mud-table`, `mud-datepicker`, `mud-dropdown`, `mud-accordion`, `mud-tabs`, `mud-pagination`, `mud-calendar`, `mud-tooltip`.
 
 **CSS Pattern:** B with extensive `@State()` + `@Listen()` + `@Method()` for orchestrated child components.
 
@@ -227,7 +227,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.7 layout
 
-> **Examples in legacy:** `mud-row`, `mud-column`, `mud-grid`.
+> **Examples:** `mud-row`, `mud-column`, `mud-grid`.
 
 **CSS Pattern:** B (internal DOM, structural only).
 
@@ -239,7 +239,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 **No state, no events, no a11y states.** Forwarding ARIA roles only if consumer specifies.
 
-**Many `layout` components in `src/legacy/` may NOT need redesign** — flag for `--mode=skip` and ask user.
+**Many `layout` components may NOT need redesign** — flag for `--mode=skip` and ask user.
 
 ---
 
