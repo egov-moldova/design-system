@@ -26,7 +26,9 @@ const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg
 - No new runtime dependency.
 - Changelog: update \`changes/issue-163-component-locales.md\` (Added) and
   \`changes/issue-163-locale-behaviour.md\` (Changed); add one \`type: Fixed\` fragment for
-  parsing and stale validation messages. Never edit \`CHANGELOG.md\`.
+  numeric parsing and its blur round trip, stale validation messages after a locale change,
+  locale-formatted numbers in messages, and \`mud-text-input\`'s browser-language native
+  messages. Never edit \`CHANGELOG.md\`.
 - All authored text in English.`;
 
 const P1 =
@@ -41,17 +43,19 @@ _Wave A._
 every \`src/components/*/*.tsx\` and \`*.spec.ts(x)\` naming \`ro-RO\` / \`ru-RU\` or calling \`intlTag\`,
 \`.storybook/preview.js\` (toolbar values and labels only), \`scripts/eslint/copy-probe.mjs\`
 (locale values only), \`scripts/check-locale-specs.mjs\`, \`_agents/localization.md\`, \`AGENTS.md\`
-(rule 13 tags only).
+(rule 13 tags only), \`src/components/*/*.stories.ts\` (locale argType options, defaults and
+descriptions only — no other story text; Phase 4 owns the rest later).
 
 - [ ] \`MUD_LOCALES = ['ro-MD', 'ru-MD', 'en-US']\`, \`DEFAULT_LOCALE = 'ro-MD'\`; \`matchLocale\` unchanged in logic (language fallback already maps \`ro-RO\` → \`ro-MD\`).
-- [ ] Add \`formatLocale(host, locale): string\` per Decision; spec: explicit \`ro-RO\` → \`ro-RO\`; page \`lang="ru"\` → \`ru\`; nothing → \`ro-MD\`; \`en_US\` → \`en-US\`.
+- [ ] Add \`formatLocale(host, locale): string\` per Decision; spec: explicit \`ro-RO\` → \`ro-RO\`; page \`lang="ru"\` → \`ru-MD\`; page \`lang="ro"\` → \`ro-MD\`; \`en-GB\` → \`en-GB\`; nothing → \`ro-MD\`; \`en_US\` → \`en-US\`.
+- [ ] \`formatMessage\` formats number vars with \`Intl.NumberFormat(formatLocale(...))\`; spec: \`{min}\` = 0.5 renders \`0,5\` under \`ro-MD\`, \`0.5\` under \`en-US\`.
 - [ ] Rename every dictionary key; dictionary text unchanged (\`git diff --word-diff\` on \`*.messages.ts\` shows only keys).
-- [ ] \`mud-date-picker\`, \`mud-phone-input\`, \`mud-numeric-input\` (group display stays \`locale\`-only) and the shadow-\`lang\` recipe use \`formatLocale\`; spec: under page \`lang="ro-MD"\` the date-picker's short weekday header is \`Vin\`.
+- [ ] \`mud-date-picker\`, \`mud-phone-input\`, \`mud-numeric-input\` (group display stays \`locale\`-only) and the shadow-\`lang\` recipe use \`formatLocale\` (shadow \`lang\` per Decision; spec: \`locale="de-DE"\` → shadow \`lang="ro-MD"\`); spec: under page \`lang="ro-MD"\` the date-picker's short weekday header is \`Vin\`.
 - [ ] \`@default\` JSDoc and docs name \`ro-MD\`; toolbar items \`ro-MD\` / \`en-US\` / \`ru-MD\` with titles \`Română\` / \`English\` / \`Русский\`, default \`ro-MD\`; probe drives \`ru-MD\`.
 - [ ] Specs asserting legacy input keep \`ro-RO\` / \`ru-RU\` literally, to prove they are still accepted.
 - [ ] Fix the ~5 s per case in \`locale.test-helpers.spec.ts\`: find the awaited timeout and remove its cause (never raise a timeout to hide it); then set \`{ timeout: 1000 }\` on the spec's \`describe\` so a regression fails \`yarn test\`.
 
-Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && ! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx'\`.`;
+Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && ! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx' --exclude='components.d.ts'\`.`;
 
 const P2 =
   CONSTRAINTS +
@@ -60,17 +64,21 @@ const P2 =
 
 _Wave B._
 
-**Files**: the 11 \`setValidity\` components' \`.tsx\` and specs, \`mud-numeric-input\` \`.tsx\` and spec,
-the components holding visible-caption overrides (inventory), \`src/utils/locale.test-helpers.ts\`,
+**Files**: the 11 \`setValidity\` components' \`.tsx\`, \`.messages.ts\` and specs, \`mud-numeric-input\`
+\`.tsx\` and spec, \`mud-text-input\` \`.tsx\` / \`.messages.ts\` / spec (native messages), the components
+holding visible-caption overrides (inventory), \`src/utils/locale.ts\`, \`src/utils/locale.spec.ts\`,
+\`src/utils/locale.test-helpers.ts\`, \`vitest-setup.ts\` (the \`ElementInternals\` shim),
 \`scripts/check-locale-specs.mjs\`.
 
-- [ ] Inventory: for every override prop in the 27 components, run the component at \`upstream/main\` (\`git show upstream/main:<path>\`) and record whether \`""\` rendered nothing (visible caption) or an empty name (accessible name). Write the table into this plan's phase report, not a repo file.
-- [ ] Visible captions: \`""\` renders nothing; accessible names: \`""\` falls back. \`localeMessages\` gains a per-key opt-in (e.g. an \`emptyHides\` key list) rather than a second helper; spec both.
-- [ ] Locale change re-runs each component's own validity sync (its existing method, e.g. \`updateValidation\` / \`revalidate\`), from both the \`locale\` \`@Watch\` and the \`observeDocumentLang\` callback. \`describeLocales\` gains a \`validity\` option; the 11 specs pass it; \`check-locale-specs.mjs\` requires it where \`setValidity\` appears.
-- [ ] \`parseRaw\` per Decision; the table spec from the Acceptance bar.
-- [ ] Mutation check, recorded in the phase report: invert the English-name match in phone-input search and the U+00A0 branch in \`parseRaw\` one at a time; each must fail its spec; revert.
+- [ ] Inventory: for every override prop in the 27 components, classify it per Decision (accessible name / validation message / visible caption); for a caption candidate, read the component at \`d982190c\` (\`git show d982190c:<path>\`) and record whether the prop existed and \`""\` rendered nothing. Write the table into the phase report, not a repo file.
+- [ ] Captions: \`""\` renders nothing; names and validation messages: \`""\` falls back. \`localeMessages\` gains a typed per-key opt-in (caption keys only) rather than a second helper; spec all three classes.
+- [ ] \`vitest-setup.ts\`: the \`ElementInternals\` shim records the last \`(flags, message)\` passed to \`setValidity\`, readable by specs; existing specs stay green.
+- [ ] Locale change re-runs each component's own validity sync (its existing method, e.g. \`updateValidation\` / \`revalidate\`), from both the \`locale\` \`@Watch\` and the \`observeDocumentLang\` callback. \`describeLocales\` gains a \`validity\` option exercising both paths (the observer path through a stubbed \`MutationObserver\`, as \`locale.spec.ts\` already does); the 11 specs pass it; \`check-locale-specs.mjs\` requires it where \`setValidity\` appears.
+- [ ] \`mud-text-input\` native messages into its dictionary per Decision, with \`describeLocales\` coverage.
+- [ ] \`parseRaw\`, the focused display and \`formStateRestoreCallback\` per Decision; the parse and round-trip tables from the Acceptance bar.
+- [ ] Mutation check, recorded in the phase report: invert the English-name match in phone-input search, then the "last separator is the decimal" branch in \`parseRaw\`, one at a time; each must fail its spec; revert.
 
-Verify: \`fnm exec --using=24 -- yarn test.dev && fnm exec --using=24 -- node scripts/check-locale-specs.mjs && fnm exec --using=24 -- yarn lint\`.`;
+Verify: \`fnm exec --using=24 -- npx vitest run --project spec src/utils src/components/mud-numeric-input src/components/mud-text-input src/components/mud-time-input src/components/mud-date-input src/components/mud-phone-input src/components/mud-textarea src/components/mud-select src/components/mud-checkbox src/components/mud-search-input src/components/mud-input-chip src/components/mud-file-input && fnm exec --using=24 -- node scripts/check-locale-specs.mjs && fnm exec --using=24 -- npx eslint src/utils src/components vitest-setup.ts --ignore-pattern '**/*.stories.ts'\`, then \`yarn test.dev\` for any other component folder the inventory touched.`;
 
 const P3 =
   CONSTRAINTS +
@@ -89,7 +97,7 @@ _Wave B._
 - [ ] \`dev:all\` (wireit service): \`tokens.watch\` + \`dx:stencil\` + \`dx:storybook\` + the demo dev server without the \`build\` dependency, waiting on \`dist/mud/mud.esm.js\`. In watch mode tokens are not copied into \`dist/\` (\`stencil.config.ts:22\`), so the demo's dev config resolves \`@egov-moldova/mud/tokens/*.css\` to \`tokens/generated/\`. \`demo.web\` and \`demo.web.build\` keep \`build\`.
 - [ ] \`scripts/check-dev-all.mjs\`, committed, exactly as the Acceptance bar row describes; it kills every process it started on exit (success or failure) and restores \`mud-badge.tsx\` byte-for-byte. It uses the repo's installed Playwright and a local script, never the shared Playwright MCP browser. Not wired into CI or \`test:scripts\` (it starts servers).
 
-Verify: \`fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- node scripts/check-dev-all.mjs\`.`;
+Verify: \`fnm exec --using=24 -- npx eslint .storybook/preview.js web-components/demo scripts/check-dev-all.mjs && fnm exec --using=24 -- npx prettier --check .storybook/preview.js web-components/demo package.json scripts/check-dev-all.mjs\`. The controller runs \`yarn demo.web.build\`, \`yarn sp.build\` and \`node scripts/check-dev-all.mjs\` after Wave B, once every leg has landed.`;
 
 const P4 =
   CONSTRAINTS +
@@ -101,7 +109,8 @@ _Wave B._
 **Files**: \`src/components/*/*.stories.ts\`, \`.storybook/stories/*.mdx\`,
 \`src/components/mud-accordion/mud-accordion.mdx\`, \`web-components/demo/index.html\`,
 \`web-components/demo/pages/**/*.html\`, \`src/components/_agents/storybook-stories.md\`,
-\`scripts/eslint/copy-probe.mjs\`.
+\`scripts/eslint/copy-probe.mjs\`, \`scripts/check-content-language.mjs\`,
+\`scripts/eslint/content-language.allow.json\`.
 
 - [ ] List the protected story ids: \`grep -ho '"story": *"[^"]*"' src/components/*/test/*.figma.json | sort -u\` (32 today). Their story text does not change.
 - [ ] Translate every other story's Romanian demo content to English; keep Moldovan data values. A text that collides with an \`en-US\` dictionary value is reworded (the probe flags it).
@@ -109,8 +118,9 @@ _Wave B._
 - [ ] Demo pages: \`<html lang="ro-MD">\`; content to English; the date-picker's 7 \`locale="ro-RO"\` pins removed except the dedicated \`ru-MD\` / \`en-US\` / \`ar-EG\` specimens (kept as locale specimens; \`ar-EG\` warns by design).
 - [ ] \`storybook-stories.md\`: demo content is English; Figma-reference stories keep Figma's text; \`Locales\` stories are the one place a story pins \`locale\`.
 - [ ] \`copy-probe.mjs --content-language\`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, \`Locales\` stories recognised structurally (explicit-\`locale\` instances resolving to all three locales), never by name.
+- [ ] \`scripts/check-content-language.mjs\` over the static sources, sharing the letter set, dictionary-value check and \`content-language.allow.json\` with the probe (one module, imported by both); a \`node --test\` spec in \`test:scripts\` with one passing and one failing fixture.
 
-Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs --content-language\` and the two \`grep\` rows of the Acceptance bar.`;
+Verify: \`fnm exec --using=24 -- node scripts/check-content-language.mjs && fnm exec --using=24 -- npx eslint src/components/*/*.stories.ts scripts/eslint scripts/check-content-language.mjs && ! grep -l '<html lang="en">' web-components/demo/index.html web-components/demo/pages/*/*.html\`. The controller runs \`yarn sp.build\`, \`node scripts/eslint/copy-probe.mjs\` and \`node scripts/eslint/copy-probe.mjs --content-language\` after Wave B.`;
 
 const P5 =
   CONSTRAINTS +
@@ -152,7 +162,7 @@ await parallel([
       effort: 'high',
       phase: 'Wave B',
       label: 'Phase 2: Validity, parsing, empty overrides',
-    }), // disjoint: Phase 2 owns component `.tsx` and specs; Phase 3 owns `.storybook/preview.js`, `package.json`, `web-components/demo/{main.ts,demo.css,vite.config.ts}`; Phase 4 owns `*.stories.ts`, `.storybook/stories/*.mdx`, `web-components/demo/pages/**`, `web-components/demo/index.html`, `src/components/_agents/storybook-stories.md`, `scripts/eslint/copy-probe.mjs`
+    }), // disjoint: Phase 2 owns component `.tsx`, `.messages.ts` and specs, `src/utils/locale*.ts`, `vitest-setup.ts`, `scripts/check-locale-specs.mjs`; Phase 3 owns `.storybook/preview.js`, `package.json`, `web-components/package.json`, `web-components/demo/{main.ts,demo.css,vite.config.ts}`, `scripts/check-dev-all.mjs`; Phase 4 owns `*.stories.ts`, `*.mdx`, `web-components/demo/pages/**`, `web-components/demo/index.html`, `src/components/_agents/storybook-stories.md`, `scripts/eslint/copy-probe.mjs`, `scripts/check-content-language.mjs`, `scripts/eslint/content-language.allow.json`. Each leg's Verify is scoped to its own paths; whole-repo `lint` / `sp.build` / `demo.web.build` run once by the controller after the wave
   () =>
     agent(P3, {
       agentType: 'implementer',
