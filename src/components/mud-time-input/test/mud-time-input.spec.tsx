@@ -454,6 +454,67 @@ describe('mud-time-input', () => {
       expect(picker.max).toBe('18:00');
     });
   });
+
+  describe('opening the picker', () => {
+    const clickControl = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLElement>('.control')?.click();
+      await flush();
+    };
+
+    it('opens on a click anywhere on the field, as the date input does', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      await clickControl(root);
+      expect(root?.shadowRoot?.querySelector('mud-time-picker')).toBeTruthy();
+      expect(queryTrigger(root)?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    // The watcher decides synchronously whether the next render moves focus
+    // into the picker; componentDidRender clears the flag once it has, so it
+    // is read straight after the click.
+    const focusesPicker = (root: Element | null | undefined) =>
+      (root as unknown as { focusPickerOnRender: boolean }).focusPickerOnRender;
+
+    it('leaves focus in the input when the field opens it, so typing continues', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      root?.shadowRoot?.querySelector<HTMLElement>('.control')?.click();
+      expect(focusesPicker(root)).toBe(false);
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-time-picker')).toBeTruthy();
+    });
+
+    it('stays open on a second click on the field', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      await clickControl(root);
+      await clickControl(root);
+      expect(root?.shadowRoot?.querySelector('mud-time-picker')).toBeTruthy();
+    });
+
+    it('moves focus into the picker when the trailing button opens it', async () => {
+      const { root } = await render(<mud-time-input label="x"></mud-time-input>);
+      queryTrigger(root)?.click();
+      expect(focusesPicker(root)).toBe(true);
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-time-picker')).toBeTruthy();
+    });
+
+    it('does not open from the clear button', async () => {
+      const { root } = await render(<mud-time-input label="x" clearable value="09:30"></mud-time-input>);
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.clear-button')?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('mud-time-picker')).toBeNull();
+    });
+
+    it('stays closed while read-only or disabled', async () => {
+      const ro = await render(<mud-time-input label="x" readonly value="09:30"></mud-time-input>);
+      await clickControl(ro.root);
+      expect(ro.root?.shadowRoot?.querySelector('mud-time-picker')).toBeNull();
+
+      const disabled = await render(<mud-time-input label="x" disabled></mud-time-input>);
+      await clickControl(disabled.root);
+      expect(disabled.root?.shadowRoot?.querySelector('mud-time-picker')).toBeNull();
+    });
+  });
+
   describe('required + announcements', () => {
     type Internals = { internals: { setValidity: (...args: unknown[]) => void } };
     const stubValidity = (root: Element | null | undefined) => {
