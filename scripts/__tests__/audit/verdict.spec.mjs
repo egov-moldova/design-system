@@ -914,6 +914,13 @@ describe('verdict: latent defects found during the #115 review (issue #129)', ()
     assert.equal(v.rows.find(r => r.id === '11').warnings, 2);
   });
 
+  it('an owed noTarget with an empty message still names a cause', () => {
+    const e = cleanEnvelope();
+    e.findingsByTool['check-09'] = [{ severity: 'warning', code: 'NT', message: '', noTarget: true }];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.entries[0].cause, 'no target resolved (NT): no target to check');
+  });
+
   it('#4: the same row with a committed manifest still owes its target — INCOMPLETE', () => {
     const e = cleanEnvelope();
     e.findingsByTool['check-11'] = [

@@ -62,7 +62,7 @@ import {
   listRunNames,
   runsComparableTo,
 } from './lib/run-record.mjs';
-import { parseCli as parseRunAllCli } from './lib/cli-args.mjs';
+import { DEFAULT_DEPTH, DEPTHS, parseCli as parseRunAllCli } from './lib/cli-args.mjs';
 import { acquireLock, releaseLock } from './lib/storybook-helpers.mjs';
 
 const TOOL = 'verdict';
@@ -132,19 +132,19 @@ export function owesTarget(id, depth, ctx) {
   return requiredFor(depth).includes(id) && !excuseFor(id, ctx);
 }
 
-/** Whether `depth` names a row of REQUIRED_CHECKS — own keys only, so `toString` or `__proto__` does not. Pure. */
+/** Whether the CLI accepts `depth` — a list lookup, so `toString` or `__proto__` is not a depth. Pure. */
 function isKnownDepth(depth) {
-  return Object.hasOwn(REQUIRED_CHECKS, depth);
-}
-
-/** The ids `depth` requires; an unknown depth is graded as standard (and reported INCOMPLETE). Pure. */
-function requiredFor(depth) {
-  return isKnownDepth(depth) ? REQUIRED_CHECKS[depth] : REQUIRED_CHECKS.standard;
+  return DEPTHS.includes(depth);
 }
 
 /** A depth the CLI accepts, for the commands a verdict hands out. Pure. */
 function cliDepth(depth) {
-  return isKnownDepth(depth) ? depth : 'standard';
+  return isKnownDepth(depth) ? depth : DEFAULT_DEPTH;
+}
+
+/** The ids `depth` requires; an unknown depth is graded as the default (and reported INCOMPLETE). Pure. */
+function requiredFor(depth) {
+  return REQUIRED_CHECKS[cliDepth(depth)];
 }
 
 // ─── Pure computation ────────────────────────────────────────────────────
@@ -476,7 +476,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
           addIncomplete({
             kind: STATE.INCOMPLETE,
             check: `${id} ${row.name}`,
-            cause: `no target resolved (${f.code ?? 'no code'}): ${f.message ?? 'no target to check'}`,
+            cause: `no target resolved (${f.code ?? 'no code'}): ${f.message || 'no target to check'}`,
             prerequisite: f.fix || 'resolve the missing input named in the finding',
             verify: verifyCommand(component, depth, id),
           });

@@ -1197,7 +1197,7 @@ export function aggregate({
     const { owedNoTargets } = classOf.get(r);
     if (owedNoTargets.length) {
       summary.incomplete += 1;
-      for (const f of owedNoTargets) blockers.push(`${r.name}/no-target:${f.code ?? 'no code'}`);
+      for (const f of owedNoTargets) blockers.push(`${r.name}/no-target:${f.code ?? 'NO-CODE'}`);
     }
     const row = {
       id: r.id,

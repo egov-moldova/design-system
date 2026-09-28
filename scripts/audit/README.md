@@ -137,7 +137,7 @@ Every script and `run-all.mjs`:
 | code | meaning |
 |------|---------|
 | 0    | clean — no errors (warnings + info OK) |
-| 1    | one or more error-severity findings; for `run-all.mjs`, one or more graded errors or a `noTarget` finding on a row that owes a target |
+| 1    | one or more error-severity findings; for `run-all.mjs`, one or more graded errors, a crashed or missing-prerequisite row, or a `noTarget` finding on a row that owes a target |
 | 2    | internal error (bad CLI args, file missing, JSON parse failure, etc.) |
 
 Warnings DO NOT change the exit code — callers that want stricter behavior can
@@ -292,8 +292,10 @@ findings), `crashed`, `missing-prereq` or `skipped` — so a crashed script is
 never read as zero errors. With `--verdict` the per-component envelope also
 carries `audit` (depth, excuses, filters, Figma resolution). `blockers` lists
 graded errors (`tool/CODE`), crashed or unprepared rows (`name/status`) and owed
-`noTarget` findings (`name/no-target:CODE`); `summary` stays the raw sum of each
-script's own counts, so it can show errors that are not blockers. Gate on
+`noTarget` findings (`name/no-target:CODE`). `summary.errors` / `warnings` /
+`info` stay the raw sum of each script's own counts, so they can show errors that
+are not blockers; `summary.incomplete` is counted here — one per crashed or
+unprepared row and per row with an owed `noTarget`. Gate on
 `verdict.mjs`, not on `ok` or `blockers`.
 
 ## Waves

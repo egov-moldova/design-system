@@ -1589,10 +1589,10 @@ describe('run-all: a noTarget finding agrees with the verdict (issue #129)', () 
     assert.equal(r.summary.state, 'INCOMPLETE');
   });
 
-  it('a code-less owed noTarget is listed as no-target:no code, never undefined', () => {
+  it('a code-less owed noTarget is listed as no-target:NO-CODE, never undefined', () => {
     const { code: _code, ...codeless } = noTarget();
     const combined = aggregate({ targetArg: 'mud-fx', results: [row([codeless])], durationMs: 1, owes: () => true });
-    assert.deepEqual(combined.blockers, ['a11y-tree/no-target:no code']);
+    assert.deepEqual(combined.blockers, ['a11y-tree/no-target:NO-CODE']);
   });
 
   it('#2: an error-severity notApplicable finding is neither a blocker nor a failure', () => {
