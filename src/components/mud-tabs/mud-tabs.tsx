@@ -446,7 +446,7 @@ export class MudTabs {
           hidden={!showStartChevron}
           onClick={this.scrollByDirection('start')}
         >
-          <mud-icon name="chevron-left" size={20}></mud-icon>
+          <mud-icon name="chevron-left-small" size={this.size === 'sm' ? 20 : 24}></mud-icon>
         </button>
         <div class="scroller" part="scroller" ref={this.setScrollerRef}>
           {/*
@@ -479,7 +479,7 @@ export class MudTabs {
           hidden={!showEndChevron}
           onClick={this.scrollByDirection('end')}
         >
-          <mud-icon name="chevron-right" size={20}></mud-icon>
+          <mud-icon name="chevron-right-small" size={this.size === 'sm' ? 20 : 24}></mud-icon>
         </button>
         <div class="panels" part="panels">
           {/* Render one passthrough slot per discovered light-DOM panel.
