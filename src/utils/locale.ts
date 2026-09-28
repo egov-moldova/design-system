@@ -10,6 +10,12 @@ export const DEFAULT_LOCALE: MudLocale = 'ro-RO';
 export type LocaleMessages<M> = Record<MudLocale, M>;
 
 /**
+ * The `locale` prop's type: autocompletes the three built-in locales, but accepts any BCP-47
+ * tag, matching `resolveLocale`'s runtime subtag resolution (`en-GB` → `en-US`).
+ */
+export type LocaleProp = MudLocale | (string & {});
+
+/**
  * The supported locale a BCP-47 tag resolves to: the exact tag first, then its language
  * subtag (`en-GB` → `en-US`, `ro` → `ro-RO`). Case-insensitive; `undefined` when none matches.
  */
@@ -40,6 +46,12 @@ export const inheritedLang = (el: Element): string | undefined => {
 
 const warned = new Set<string>();
 
+/** Resolution with no warning side effect: the `locale` prop, else the ancestor `lang`, else `ro-RO`. */
+const resolveLocaleQuiet = (host: Element, locale: string | null | undefined): MudLocale => {
+  if (locale && locale.trim()) return matchLocale(locale) ?? DEFAULT_LOCALE;
+  return matchLocale(inheritedLang(host)) ?? DEFAULT_LOCALE;
+};
+
 /**
  * The locale a component renders its copy in: its own `locale` prop, else the closest
  * ancestor `lang`, else `ro-RO`. An explicit `locale` with no translation warns once per
@@ -47,9 +59,7 @@ const warned = new Set<string>();
  * the library.
  */
 export const resolveLocale = (component: string, host: Element, locale: string | null | undefined): MudLocale => {
-  if (locale && locale.trim()) {
-    const match = matchLocale(locale);
-    if (match) return match;
+  if (locale && locale.trim() && !matchLocale(locale)) {
     const key = `${component}|${locale}`;
     if (!warned.has(key)) {
       warned.add(key);
@@ -59,17 +69,40 @@ export const resolveLocale = (component: string, host: Element, locale: string |
         )}. Falling back to "${DEFAULT_LOCALE}".`,
       );
     }
-    return DEFAULT_LOCALE;
   }
-  return matchLocale(inheritedLang(host)) ?? DEFAULT_LOCALE;
+  return resolveLocaleQuiet(host, locale);
 };
+
+/**
+ * The `MudLocale` whose dictionary a component shows — identical resolution to
+ * `resolveLocale`, reused by the recipe to set the shadow root's `lang` attribute
+ * once `locale` is explicit. Calling it after `messages()` already resolved the same
+ * `(component, host, locale)` triple never re-warns: `resolveLocale`'s warning is
+ * deduplicated per `component|locale` key, not per call.
+ */
+export const resolvedLocale = resolveLocale;
+
+/** Resets the once-per-`component|locale` warning dedup. Test-only: call between specs asserting a warning. */
+export const resetLocaleWarnings = (): void => {
+  warned.clear();
+};
+
+/** Every built-in string is a plain string, or a plural form set keyed by `Intl.PluralRules` category. */
+export interface Plural {
+  one?: string;
+  few?: string;
+  many?: string;
+  other: string;
+}
 
 /**
  * A component's built-in strings in its resolved locale (see `resolveLocale`), with each
  * override applied on top. An override wins only when it is a non-empty string: an empty
- * `aria-label` names nothing, so it is never what a consumer meant.
+ * `aria-label` names nothing, so it is never what a consumer meant. A plural message's
+ * override stays a plain string, applied for every count — the same rule, since `messages[key]`
+ * only ever holds a string once an override wins.
  */
-export const localeMessages = <M extends { [K in keyof M]: string }>(
+export const localeMessages = <M extends { [K in keyof M]: string | Plural }>(
   component: string,
   host: Element,
   locale: string | null | undefined,
@@ -82,6 +115,61 @@ export const localeMessages = <M extends { [K in keyof M]: string }>(
     if (typeof value === 'string' && value.trim().length > 0) messages[key] = value as M[keyof M];
   }
   return messages;
+};
+
+/**
+ * Canonical BCP-47 tag for `Intl` number/date/region formatting — never for picking a
+ * dictionary (see `resolveLocale`). `_` separators are normalised to `-` first (`en_US` →
+ * `en-US`), then `Intl.getCanonicalLocales` canonicalises the syntax; a tag that fails to
+ * parse (`xx-!!`) falls back to the `MudLocale` it matches, else `ro-RO` — never throws.
+ */
+export const intlTag = (raw: string | null | undefined): string => {
+  const normalized = raw?.trim().replace(/_/g, '-');
+  if (normalized) {
+    try {
+      const [canonical] = Intl.getCanonicalLocales(normalized);
+      if (canonical) return canonical;
+    } catch {
+      // Falls through to the MudLocale match below.
+    }
+  }
+  return matchLocale(raw) ?? DEFAULT_LOCALE;
+};
+
+const pluralRulesCache = new Map<string, Intl.PluralRules>();
+
+const pluralRulesFor = (locale: MudLocale): Intl.PluralRules => {
+  let rules = pluralRulesCache.get(locale);
+  if (!rules) {
+    rules = new Intl.PluralRules(intlTag(locale));
+    pluralRulesCache.set(locale, rules);
+  }
+  return rules;
+};
+
+const isPlural = (value: string | Plural): value is Plural => typeof value === 'object' && value !== null;
+
+const fillPlaceholders = (text: string, vars: Record<string, string | number>): string =>
+  text.replace(/\{(\w+)\}/g, (match, name: string) => (name in vars ? String(vars[name]) : match));
+
+/**
+ * A built-in string or `Plural`, in its final rendered form: `{name}` placeholders filled
+ * from `vars`, and — for a `Plural` — the form `Intl.PluralRules` selects for `vars.count`
+ * under the RESOLVED `MudLocale` (the dictionary actually shown), never the raw `locale` tag.
+ * A `Plural` with no usable `vars.count` (missing, non-finite) renders its `other` form.
+ */
+export const formatMessage = (
+  value: string | Plural,
+  host: Element,
+  locale: string | null | undefined,
+  vars: Record<string, string | number> = {},
+): string => {
+  if (!isPlural(value)) return fillPlaceholders(value, vars);
+  const resolved = resolveLocaleQuiet(host, locale);
+  const count = Number(vars.count);
+  const category = Number.isFinite(count) ? pluralRulesFor(resolved).select(count) : 'other';
+  const text = value[category as keyof Plural] ?? value.other;
+  return fillPlaceholders(text, vars);
 };
 
 const langListeners = new Set<() => void>();
@@ -99,7 +187,16 @@ export const observeDocumentLang = (onChange: () => void): (() => void) => {
   if (typeof MutationObserver === 'undefined' || typeof document === 'undefined') return () => undefined;
   langListeners.add(onChange);
   if (!langObserver) {
-    langObserver = new MutationObserver(() => langListeners.forEach(listener => listener()));
+    langObserver = new MutationObserver(() => {
+      // A listener that throws must not stop the rest — each is independent.
+      for (const listener of langListeners) {
+        try {
+          listener();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
     langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   }
   return () => {

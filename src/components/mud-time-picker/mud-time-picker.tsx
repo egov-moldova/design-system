@@ -1,6 +1,22 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Prop, State, Watch, h, readTask, writeTask } from '@stencil/core';
+import {
+  Component,
+  Element,
+  Event,
+  Host,
+  Prop,
+  State,
+  Watch,
+  forceUpdate,
+  h,
+  readTask,
+  writeTask,
+} from '@stencil/core';
 
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TIME_PICKER_MESSAGES } from './mud-time-picker.messages';
+import type { TimePickerMessages } from './mud-time-picker.messages';
 import type { TimePickerChangeDetail, TimePickerColumn } from './mud-time-picker.types';
 
 /** `HH:MM`, 24-hour. */
@@ -56,14 +72,29 @@ export class MudTimePicker {
   /** Latest selectable time, `HH:MM` inclusive. */
   @Prop() max?: string;
 
-  /** Accessible name of the picker. */
-  @Prop() label: string = 'Selectează ora';
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
 
-  /** Accessible name of the hour column. */
-  @Prop() hoursLabel: string = 'Ore';
+  /**
+   * Accessible name of the picker. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Selectează ora' (ro-RO)
+   */
+  @Prop() label?: string;
 
-  /** Accessible name of the minute column. */
-  @Prop() minutesLabel: string = 'Minute';
+  /**
+   * Accessible name of the hour column. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Ore' (ro-RO)
+   */
+  @Prop() hoursLabel?: string;
+
+  /**
+   * Accessible name of the minute column. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Minute' (ro-RO)
+   */
+  @Prop() minutesLabel?: string;
 
   @State() private hours: number | null = null;
   @State() private minutes: number | null = null;
@@ -79,6 +110,7 @@ export class MudTimePicker {
 
   /** Column whose tab-stop option takes focus after the next render. */
   private focusColumnOnRender: TimePickerColumn | null = null;
+  private stopLang?: () => void;
 
   @Watch('value')
   syncFromValue(): void {
@@ -87,8 +119,25 @@ export class MudTimePicker {
     this.minutes = time?.minutes ?? null;
   }
 
+  connectedCallback() {
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
   componentWillLoad() {
     this.syncFromValue();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TimePickerMessages {
+    return localeMessages('mud-time-picker', this.host, this.locale, TIME_PICKER_MESSAGES, {
+      label: this.label,
+      hoursLabel: this.hoursLabel,
+      minutesLabel: this.minutesLabel,
+    });
   }
 
   componentDidLoad() {
@@ -253,7 +302,7 @@ export class MudTimePicker {
     return option.offsetTop - list.offsetTop - parseFloat(getComputedStyle(list).paddingTop || '0');
   }
 
-  private renderColumn(column: TimePickerColumn) {
+  private renderColumn(column: TimePickerColumn, columnLabel: string) {
     const selected = column === 'hours' ? this.hours : this.minutes;
     const tabStop = this.tabStop(column);
     const isActive = this.activeColumn === column;
@@ -262,7 +311,7 @@ export class MudTimePicker {
         class={{ 'column': true, 'is-active': isActive }}
         part={`column ${column}`}
         role="listbox"
-        aria-label={column === 'hours' ? this.hoursLabel : this.minutesLabel}
+        aria-label={columnLabel}
         data-column={column}
         onKeyDown={this.handleKeyDown}
       >
@@ -301,10 +350,14 @@ export class MudTimePicker {
   }
 
   render() {
+    const m = this.messages();
+    const hoursColumn = this.renderColumn('hours', m.hoursLabel);
+    const minutesColumn = this.renderColumn('minutes', m.minutesLabel);
+    const hostLang = this.locale ? resolvedLocale('mud-time-picker', this.host, this.locale) : undefined;
     return (
-      <Host role="group" aria-label={this.label}>
+      <Host role="group" aria-label={m.label} lang={hostLang}>
         <div class="columns" part="columns">
-          {this.renderColumn('hours')}
+          {hoursColumn}
           <div class="separator" part="separator" aria-hidden="true">
             {Array.from({ length: VISIBLE_ROWS }, (_, row) => (
               <span key={row} class="separator-cell">
@@ -312,7 +365,7 @@ export class MudTimePicker {
               </span>
             ))}
           </div>
-          {this.renderColumn('minutes')}
+          {minutesColumn}
         </div>
       </Host>
     );

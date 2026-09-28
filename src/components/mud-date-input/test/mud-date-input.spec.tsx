@@ -1,9 +1,11 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-date-input';
 // The range and type tests read props off the nested picker, so it hydrates too.
 import '../../mud-date-picker/mud-date-picker';
-
+import { DATE_INPUT_MESSAGES } from '../mud-date-input.messages';
+import type { DateInputMessages } from '../mud-date-input.messages';
 import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from '../mud-date-input.types';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
@@ -84,25 +86,24 @@ describe('mud-date-input', () => {
       warn.mockRestore();
     });
 
-    it('warns and falls back to "ro-RO" when locale is not set', async () => {
+    it('renders ro-RO copy silently — no warning — when locale is unset', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      // `locale` is required at the type level (React/TSX consumers get a compile
-      // error); this test exercises the runtime fallback plain HTML still needs,
-      // so it deliberately omits it.
-      // @ts-expect-error — intentionally omitting the required `locale` prop.
       const { root } = await render(<mud-date-input label="x"></mud-date-input>);
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('"locale" is required'));
-      expect(root?.getAttribute('locale')).toBe('ro-RO');
+      expect(warn).not.toHaveBeenCalled();
+      expect(root?.getAttribute('locale')).toBeNull();
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label')).toBe('Deschide calendarul');
       warn.mockRestore();
     });
 
-    it('warns and falls back when locale is unsupported', async () => {
+    it('warns and renders ro-RO copy when locale is unsupported, without rewriting the prop', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-date-input locale="ro-RO" label="x"></mud-date-input>);
       (root as unknown as { locale: string }).locale = 'fr-FR';
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('locale="fr-FR"'));
-      expect(root?.getAttribute('locale')).toBe('ro-RO');
+      // `localeMessages` warns and falls back to `ro-RO` copy — it never rewrites the prop.
+      expect(root?.getAttribute('locale')).toBe('fr-FR');
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label')).toBe('Deschide calendarul');
       warn.mockRestore();
     });
   });
@@ -1270,4 +1271,43 @@ describe('mud-date-input', () => {
       expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
     });
   });
+});
+
+describeLocales<DateInputMessages>('mud-date-input', DATE_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x', value: '15/04/2025', clearable: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    if (props.pickerLabel !== undefined) attrs['picker-label'] = String(props.pickerLabel);
+    if (props.openPickerLabel !== undefined) attrs['open-picker-label'] = String(props.openPickerLabel);
+    const { root } = await render(
+      <mud-date-input {...attrs}></mud-date-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    // Opens the calendar so `pickerLabel` (the popover's aria-label) becomes reachable.
+    (root?.shadowRoot?.querySelector('.trailing-icon') as HTMLButtonElement | null)?.click();
+    await flush();
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.clear-button')?.getAttribute('aria-label') ?? null;
+    if (key === 'openPickerLabel')
+      return host.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label') ?? null;
+    if (key === 'pickerLabel')
+      return host.shadowRoot?.querySelector('.picker-popover')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { clearLabel: 'clearLabel', pickerLabel: 'pickerLabel', openPickerLabel: 'openPickerLabel' },
+  unreachable: {
+    dayErrorText: 'requires a complete, out-of-range day segment — covered by this component’s own validation tests',
+    monthErrorText:
+      'requires a complete, out-of-range month segment — covered by this component’s own validation tests',
+    yearErrorText: 'requires a complete, out-of-range year segment — covered by this component’s own validation tests',
+    dateErrorText: 'requires a complete but non-existent date — covered by this component’s own validation tests',
+    rangeErrorText: 'requires min/max plus an out-of-range date — covered by this component’s own validation tests',
+    orderErrorText:
+      'requires type="date-range" with an end date before the start — covered by this component’s own validation tests',
+    requiredErrorText: "requires the native 'invalid' form event — covered by this component’s own validation tests",
+  },
 });

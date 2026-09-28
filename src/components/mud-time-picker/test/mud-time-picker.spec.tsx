@@ -1,6 +1,9 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-time-picker';
+import { TIME_PICKER_MESSAGES } from '../mud-time-picker.messages';
+import type { TimePickerMessages } from '../mud-time-picker.messages';
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
@@ -263,4 +266,26 @@ describe('mud-time-picker', () => {
       expect(queryOption(root, 'minutes', 20)?.getAttribute('tabindex')).toBe('0');
     });
   });
+});
+
+describeLocales<TimePickerMessages>('mud-time-picker', TIME_PICKER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.label !== undefined) attrs.label = String(props.label);
+    if (props.hoursLabel !== undefined) attrs['hours-label'] = String(props.hoursLabel);
+    if (props.minutesLabel !== undefined) attrs['minutes-label'] = String(props.minutesLabel);
+    const { root } = await render(
+      <mud-time-picker {...attrs}></mud-time-picker>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'label') return host.getAttribute('aria-label');
+    if (key === 'hoursLabel') return queryColumn(host, 'hours')?.getAttribute('aria-label') ?? null;
+    if (key === 'minutesLabel') return queryColumn(host, 'minutes')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { label: 'label', hoursLabel: 'hoursLabel', minutesLabel: 'minutesLabel' },
 });

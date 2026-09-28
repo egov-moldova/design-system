@@ -355,6 +355,7 @@
         "src/**/*.ts",
         "src/**/*.tsx",
         "eslint.config.mjs",
+        "scripts/eslint/**",
         ".prettierrc.json",
         ".prettierignore"
       ],

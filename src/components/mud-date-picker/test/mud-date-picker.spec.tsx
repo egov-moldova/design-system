@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, h, it, render, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-date-picker';
-
+import { DATE_PICKER_MESSAGES } from '../mud-date-picker.messages';
+import type { DatePickerMessages } from '../mud-date-picker.messages';
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_MODES } from '../mud-date-picker.types';
 
 const queryCells = (root: Element | null | undefined): HTMLButtonElement[] =>
@@ -717,4 +719,22 @@ describe('mud-date-picker', () => {
       expect(root?.classList.contains('mode-range')).toBe(true);
     });
   });
+});
+
+describeLocales<DatePickerMessages>('mud-date-picker', DATE_PICKER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'today-shortcut': 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.todayLabel !== undefined) attrs['today-label'] = String(props.todayLabel);
+    const { root } = await render(
+      <mud-date-picker {...attrs}></mud-date-picker>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'todayLabel') return host.shadowRoot?.querySelector('button.today-button')?.textContent ?? null;
+    return null;
+  },
+  overrides: { todayLabel: 'todayLabel' },
 });

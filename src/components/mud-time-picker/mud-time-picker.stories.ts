@@ -4,6 +4,7 @@ type TimePickerArgs = {
   value: string;
   min: string;
   max: string;
+  locale: string;
   label: string;
   hoursLabel: string;
   minutesLabel: string;
@@ -16,9 +17,10 @@ const renderTimePicker = (args: TimePickerArgs) => /*html*/ `
     ${args.value ? `value="${args.value}"` : ''}
     ${args.min ? `min="${args.min}"` : ''}
     ${args.max ? `max="${args.max}"` : ''}
-    label="${args.label}"
-    hours-label="${args.hoursLabel}"
-    minutes-label="${args.minutesLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.label ? `label="${args.label}"` : ''}
+    ${args.hoursLabel ? `hours-label="${args.hoursLabel}"` : ''}
+    ${args.minutesLabel ? `minutes-label="${args.minutesLabel}"` : ''}
   ></mud-time-picker>
 `;
 
@@ -40,9 +42,17 @@ const meta: Meta<TimePickerArgs> = {
     value: { control: 'text', description: 'Selected time, `HH:MM` (24-hour).' },
     min: { control: 'text', description: 'Earliest selectable time, `HH:MM` inclusive.' },
     max: { control: 'text', description: 'Latest selectable time, `HH:MM` inclusive.' },
-    label: { control: 'text', description: 'Accessible name of the picker.' },
-    hoursLabel: { control: 'text', description: 'Accessible name of the hour column.' },
-    minutesLabel: { control: 'text', description: 'Accessible name of the minute column.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
+    label: { control: 'text', description: "Accessible name of the picker. Overrides the locale's copy." },
+    hoursLabel: { control: 'text', description: "Accessible name of the hour column. Overrides the locale's copy." },
+    minutesLabel: {
+      control: 'text',
+      description: "Accessible name of the minute column. Overrides the locale's copy.",
+    },
   },
 };
 
@@ -56,9 +66,10 @@ export const Default: Story = {
     value: '11:15',
     min: '',
     max: '',
-    label: 'Selectează ora',
-    hoursLabel: 'Ore',
-    minutesLabel: 'Minute',
+    locale: '',
+    label: '',
+    hoursLabel: '',
+    minutesLabel: '',
   },
   parameters: {
     docs: {

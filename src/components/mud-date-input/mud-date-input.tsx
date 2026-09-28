@@ -1,5 +1,17 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  State,
+  Watch,
+  forceUpdate,
+  h,
+} from '@stencil/core';
 
 import {
   applyMask,
@@ -10,20 +22,25 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import type { DatePickerChangeDetail } from '../mud-date-picker/mud-date-picker.types';
+import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import type {
+  DatePickerChangeDetail,
+  DatePickerHeaderStyle,
+  DatePickerMode,
+} from '../mud-date-picker/mud-date-picker.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { DATE_INPUT_MESSAGES } from './mud-date-input.messages';
+import type { DateInputMessages } from './mud-date-input.messages';
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
-  DATE_INPUT_LOCALES,
   DATE_INPUT_TYPES,
   DATE_INPUT_SIZES,
   DATE_INPUT_VARIANTS,
 } from './mud-date-input.types';
 import type {
   DateInputBreakpoint,
-  DateInputLocale,
-  DateInputMessages,
   DateInputChangeDetail,
   DateInputFormat,
   DateInputSegment,
@@ -42,52 +59,6 @@ const MOBILE_VIEWPORT_QUERY = '(max-width: 640px)';
 /** Years accepted when neither `min` nor `max` narrows them. */
 const DEFAULT_MIN_YEAR = 1900;
 const DEFAULT_MAX_YEAR = 2100;
-
-/** Locale used when `locale` is missing or has no entry below. */
-const DEFAULT_LOCALE: DateInputLocale = 'ro-RO';
-
-/**
- * Built-in translations. `dayErrorText` carries a `{max}` placeholder, filled
- * with the number of days the chosen month actually has.
- */
-const DATE_INPUT_MESSAGES: Record<DateInputLocale, DateInputMessages> = {
-  'ro-RO': {
-    clearLabel: 'Șterge',
-    pickerLabel: 'Selectează data',
-    openPickerLabel: 'Deschide calendarul',
-    dayErrorText: 'Ziua trebuie să fie între 01 și {max}',
-    monthErrorText: 'Luna trebuie să fie între 01 și 12',
-    yearErrorText: 'Introduceți un an valid',
-    dateErrorText: 'Introduceți o dată validă',
-    rangeErrorText: 'Data este în afara intervalului permis',
-    orderErrorText: 'Data de sfârșit trebuie să fie după data de început',
-    requiredErrorText: 'Introduceți data',
-  },
-  'en-US': {
-    clearLabel: 'Clear',
-    pickerLabel: 'Select date',
-    openPickerLabel: 'Open the calendar',
-    dayErrorText: 'Day must be between 01 and {max}',
-    monthErrorText: 'Month must be between 01 and 12',
-    yearErrorText: 'Enter a valid year',
-    dateErrorText: 'Enter a valid date',
-    rangeErrorText: 'Date is outside the allowed range',
-    orderErrorText: 'The end date must be after the start date',
-    requiredErrorText: 'Enter a date',
-  },
-  'ru-RU': {
-    clearLabel: 'Очистить',
-    pickerLabel: 'Выбрать дату',
-    openPickerLabel: 'Открыть календарь',
-    dayErrorText: 'День должен быть от 01 до {max}',
-    monthErrorText: 'Месяц должен быть от 01 до 12',
-    yearErrorText: 'Введите корректный год',
-    dateErrorText: 'Введите корректную дату',
-    rangeErrorText: 'Дата вне допустимого диапазона',
-    orderErrorText: 'Дата окончания должна быть позже даты начала',
-    requiredErrorText: 'Введите дату',
-  },
-};
 
 /** Highest valid value of a two-digit segment. */
 const SEGMENT_MAX: Record<'DD' | 'MM', number> = { DD: 31, MM: 12 };
@@ -260,11 +231,83 @@ export class MudDateInput {
   @Prop({ reflect: true }) clearable: boolean = false;
 
   /**
-   * Locale of the built-in labels and error messages, and of the calendar's
-   * month and weekday names, which `mud-date-picker` takes from `Intl`. The
-   * typed value itself follows `format`, not the locale.
+   * Language of the built-in labels and error messages, and of the calendar's month and
+   * weekday names, which `mud-date-picker` takes from `Intl`. The typed value itself follows
+   * `format`, not the locale. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
    */
-  @Prop({ reflect: true }) locale!: DateInputLocale;
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Accessible label for the clear (×) button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Șterge' (ro-RO)
+   */
+  @Prop() clearLabel?: string;
+
+  /**
+   * Accessible name of the calendar dialog. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Selectează data' (ro-RO)
+   */
+  @Prop() pickerLabel?: string;
+
+  /**
+   * Accessible name of the trailing button that opens the calendar. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Deschide calendarul' (ro-RO)
+   */
+  @Prop() openPickerLabel?: string;
+
+  /**
+   * Message for a day outside 01–31, or (once the month is known) past the number of days in
+   * that month. Carries a `{max}` placeholder. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Ziua trebuie să fie între 01 și {max}' (ro-RO)
+   */
+  @Prop() dayErrorText?: string;
+
+  /**
+   * Message for a month outside 01–12. Overrides the `locale`'s copy when set to a non-empty
+   * string.
+   * @default 'Luna trebuie să fie între 01 și 12' (ro-RO)
+   */
+  @Prop() monthErrorText?: string;
+
+  /**
+   * Message for a year outside the allowed years. Overrides the `locale`'s copy when set to
+   * a non-empty string.
+   * @default 'Introduceți un an valid' (ro-RO)
+   */
+  @Prop() yearErrorText?: string;
+
+  /**
+   * Message for a complete date that does not otherwise exist. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Introduceți o dată validă' (ro-RO)
+   */
+  @Prop() dateErrorText?: string;
+
+  /**
+   * Message for a complete date outside `min` / `max`. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Data este în afara intervalului permis' (ro-RO)
+   */
+  @Prop() rangeErrorText?: string;
+
+  /**
+   * `type="date-range"` only: message for an end date before the start date. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Data de sfârșit trebuie să fie după data de început' (ro-RO)
+   */
+  @Prop() orderErrorText?: string;
+
+  /**
+   * Message shown when a required field is submitted empty. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Introduceți data' (ro-RO)
+   */
+  @Prop() requiredErrorText?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -317,6 +360,7 @@ export class MudDateInput {
   private dayRangeMax: number = SEGMENT_MAX.DD;
   private mql?: MediaQueryList;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
   /** Set when the calendar opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
   /** Whether the next open should move focus into the calendar. */
@@ -385,28 +429,6 @@ export class MudDateInput {
         )}. Falling back to "auto".`,
       );
       this.breakpoint = 'auto';
-    }
-  }
-
-  /** `locale` drives every built-in string, so an unsupported one falls back. */
-  @Watch('locale')
-  validateLocale(next: string | undefined) {
-    if (!next) {
-      console.warn(
-        `[mud-date-input] "locale" is required so every built-in label and error message can be translated. Supported: ${DATE_INPUT_LOCALES.join(
-          ', ',
-        )}. Falling back to "${DEFAULT_LOCALE}".`,
-      );
-      this.locale = DEFAULT_LOCALE;
-      return;
-    }
-    if (!DATE_INPUT_LOCALES.includes(next as DateInputLocale)) {
-      console.warn(
-        `[mud-date-input] locale="${next}" has no built-in translations. Supported: ${DATE_INPUT_LOCALES.join(
-          ', ',
-        )}. Falling back to "${DEFAULT_LOCALE}".`,
-      );
-      this.locale = DEFAULT_LOCALE;
     }
   }
 
@@ -506,6 +528,7 @@ export class MudDateInput {
       this.mql.addEventListener('change', this.handleViewportChange);
     }
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -513,10 +536,10 @@ export class MudDateInput {
     this.mql = undefined;
     this.unlockPageScroll();
     this.stopAriaLabel?.();
+    this.stopLang?.();
   }
 
   componentWillLoad() {
-    this.validateLocale(this.locale);
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.updateValidation(this.value);
@@ -556,11 +579,20 @@ export class MudDateInput {
     return this.isMobileViewport ? 'mobile' : 'desktop';
   }
 
-  /** All built-in strings, translated for the current (validated) `locale`. */
+  /** Built-in strings in the resolved locale, with the override props on top. */
   private messages(): DateInputMessages {
-    return (
-      DATE_INPUT_MESSAGES[(this.locale as DateInputLocale) ?? DEFAULT_LOCALE] ?? DATE_INPUT_MESSAGES[DEFAULT_LOCALE]
-    );
+    return localeMessages('mud-date-input', this.host, this.locale, DATE_INPUT_MESSAGES, {
+      clearLabel: this.clearLabel,
+      pickerLabel: this.pickerLabel,
+      openPickerLabel: this.openPickerLabel,
+      dayErrorText: this.dayErrorText,
+      monthErrorText: this.monthErrorText,
+      yearErrorText: this.yearErrorText,
+      dateErrorText: this.dateErrorText,
+      rangeErrorText: this.rangeErrorText,
+      orderErrorText: this.orderErrorText,
+      requiredErrorText: this.requiredErrorText,
+    });
   }
 
   /** Whether focus is on the field, its buttons or anything in its popover. */
@@ -838,7 +870,7 @@ export class MudDateInput {
     const messages = this.messages();
     switch (error) {
       case 'day':
-        return messages.dayErrorText.replace(/\{max\}/g, String(this.dayRangeMax));
+        return formatMessage(messages.dayErrorText, this.host, this.locale, { max: this.dayRangeMax });
       case 'month':
         return messages.monthErrorText;
       case 'year':
@@ -1038,6 +1070,9 @@ export class MudDateInput {
     // The calendar shows the typed dates when they are real; a range shows only
     // once its start is valid.
     const pickerDates = this.dateParts(this.value).map(part => this.toIsoDate(part));
+    const pickerMode: DatePickerMode = this.isRange() ? 'range' : 'single';
+    const pickerHeaderStyle: DatePickerHeaderStyle = isMobilePopover || this.type === 'advanced' ? 'dropdown' : 'title';
+    const hostLang = this.locale ? resolvedLocale('mud-date-input', this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -1054,7 +1089,7 @@ export class MudDateInput {
     const ghost = ghostParts(this.mask(), this.value);
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={hostLang}>
         <label class="label" htmlFor={`date-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -1165,9 +1200,9 @@ export class MudDateInput {
                   id={`date-input-picker-${this.instanceId}`}
                 >
                   <mud-date-picker
-                    mode={this.isRange() ? 'range' : 'single'}
+                    mode={pickerMode}
                     breakpoint={pickerBreakpoint}
-                    headerStyle={isMobilePopover || this.type === 'advanced' ? 'dropdown' : 'title'}
+                    headerStyle={pickerHeaderStyle}
                     locale={this.locale}
                     value={this.isRange() ? undefined : (pickerDates[0] ?? undefined)}
                     rangeStart={this.isRange() ? (pickerDates[0] ?? undefined) : undefined}

@@ -18,6 +18,7 @@ type TimeInputArgs = {
   readonly: boolean;
   invalid: boolean;
   clearable: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -38,6 +39,7 @@ const renderTimeInput = (args: TimeInputArgs) => /*html*/ `
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
     ${args.clearable ? 'clearable' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-time-input>
 `;
 
@@ -57,6 +59,7 @@ const docsSourceDefault = (args: TimeInputArgs) => {
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
     args.clearable ? 'clearable' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -91,6 +94,11 @@ const meta: Meta<TimeInputArgs> = {
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
     clearable: { control: 'boolean' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -115,6 +123,7 @@ export const Default: Story = {
     readonly: false,
     invalid: false,
     clearable: false,
+    locale: '',
   },
   parameters: {
     docs: {
