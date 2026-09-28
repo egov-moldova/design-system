@@ -250,6 +250,16 @@ export const Disabled: Story = {
         story:
           'A disabled group disables every radio. An option disabled on its own is skipped by the arrow keys, and stays disabled when the group is enabled again.',
       },
+      source: {
+        code: [
+          group({ label: 'Cum doriți să primiți notificările?', value: 'sms', disabled: true, options: NOTIFICATIONS }),
+          group({
+            label: 'Cum doriți să primiți notificările?',
+            value: 'email',
+            options: [NOTIFICATIONS[0], { ...NOTIFICATIONS[1], disabled: true }, NOTIFICATIONS[2]],
+          }),
+        ].join('\n\n'),
+      },
     },
   },
 };
@@ -261,7 +271,16 @@ export const AllSizes: Story = {
       ${RADIO_SIZES.map(size => cell(`size="${size}"`, group({ label: 'Cum doriți să primiți notificările?', value: 'sms', size, options: NOTIFICATIONS }))).join('')}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: RADIO_SIZES.map(size =>
+          group({ label: 'Cum doriți să primiți notificările?', value: 'sms', size, options: NOTIFICATIONS }),
+        ).join('\n\n'),
+      },
+    },
+  },
 };
 
 // Regression test, not documentation — hidden from the sidebar and autodocs.
