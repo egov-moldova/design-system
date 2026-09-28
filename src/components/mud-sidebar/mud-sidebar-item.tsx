@@ -1,7 +1,7 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
+import type { SidebarItemBadgeVariant, SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
 
 /**
  * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
@@ -35,8 +35,15 @@ export class MudSidebarItem {
   /** Optional trailing tag text (rendered as an outlined `mud-tag`). */
   @Prop() tag?: string;
 
-  /** Optional trailing numbered badge count (rendered as a `mud-badge`). */
+  /** Optional trailing numbered badge count. */
   @Prop() badge?: number;
+
+  /**
+   * How the `badge` count is drawn: `neutral` is Figma's grey numbered badge,
+   * `notification` its red notification badge (a danger `mud-badge`).
+   * @default 'neutral'
+   */
+  @Prop() badgeVariant: SidebarItemBadgeVariant = 'neutral';
 
   /** Render as a link to this destination. */
   @Prop() href?: string;
@@ -81,6 +88,17 @@ export class MudSidebarItem {
     this.mudSelect.emit({ value: this.value ?? '' });
   };
 
+  private renderBadge() {
+    if (this.badge == null) return null;
+    if (this.badgeVariant === 'notification') {
+      // Figma notification-badge, Size=Extra Large (797:43130).
+      return (
+        <mud-badge class="badge-notification" type="numbered" variant="danger" size="xl" count={this.badge}></mud-badge>
+      );
+    }
+    return <span class="badge">{this.badge}</span>;
+  }
+
   private renderContent() {
     return [
       this.icon ? (
@@ -106,7 +124,7 @@ export class MudSidebarItem {
           disabled={this.disabled}
         ></mud-tag>
       ) : null,
-      this.badge != null ? <span class="badge">{this.badge}</span> : null,
+      this.renderBadge(),
       this.expandable ? <mud-icon class="chevron" name="chevron-bottom" size={24} aria-hidden="true"></mud-icon> : null,
     ];
   }

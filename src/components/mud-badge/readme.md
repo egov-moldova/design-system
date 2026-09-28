@@ -34,6 +34,19 @@ Pattern B (atom-visual): internal DOM only, no slots, no events.
 | `variant`  | `variant`  | Semantic color variant.                                                                                                                                                                                                                                                                                                                                                                 | `"brand" \| "danger" \| "default" \| "positive" \| "warning"` | `'danger'`   |
 
 
+## Dependencies
+
+### Used by
+
+ - [mud-sidebar-item](../mud-sidebar)
+
+### Graph
+```mermaid
+graph TD;
+  mud-sidebar-item --> mud-badge
+  style mud-badge fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
