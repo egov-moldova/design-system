@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { FILE_ITEM_STATES } from './mud-file-item.types';
 import type { FileItemState } from './mud-file-item.types';
 
@@ -11,6 +12,7 @@ type FileItemArgs = {
   disabled: boolean;
   noRemove: boolean;
   removeLabel: string;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -22,6 +24,7 @@ const renderFileItem = (args: FileItemArgs) => /*html*/ `
     size="${args.size}"
     error-text="${args.errorText}"
     remove-label="${args.removeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     ${args.disabled ? 'disabled' : ''}
     ${args.noRemove ? 'no-remove' : ''}
   ></mud-file-item>
@@ -34,6 +37,7 @@ const docsSourceDefault = (args: FileItemArgs) => {
     args.size ? `size="${args.size}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
     args.removeLabel !== 'Elimină fișierul' ? `remove-label="${args.removeLabel}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.disabled ? 'disabled' : '',
     args.noRemove ? 'no-remove' : '',
   ]
@@ -55,6 +59,11 @@ const meta: Meta<FileItemArgs> = {
     filename: { control: 'text' },
     size: { control: 'number', description: 'File size in bytes; rendered as KB/MB.' },
     errorText: { control: 'text', description: 'Replaces size meta when state="error".' },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     disabled: { control: 'boolean' },
     noRemove: { control: 'boolean' },
     removeLabel: { control: 'text', description: 'Accessible label for the remove button.' },
@@ -75,6 +84,7 @@ export const Default: Story = {
     disabled: false,
     noRemove: false,
     removeLabel: 'Elimină fișierul',
+    locale: '',
   },
   parameters: {
     docs: {

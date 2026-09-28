@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
 import type { FileInputSize, FileInputVariant } from './mud-file-input.types';
 
@@ -14,6 +15,7 @@ type FileInputArgs = {
   dropzoneActiveText: string;
   supportedFormatsText: string;
   maxSizeText: string;
+  locale: string;
   multiple: boolean;
   required: boolean;
   disabled: boolean;
@@ -37,6 +39,7 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
     dropzone-active-text="${args.dropzoneActiveText}"
     supported-formats-text="${args.supportedFormatsText}"
     max-size-text="${args.maxSizeText}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     accept="${args.accept}"
     max-size="${args.maxSize || ''}"
     max-files="${args.maxFiles || ''}"
@@ -63,6 +66,7 @@ const docsSourceDefault = (args: FileInputArgs) => {
       : '',
     args.supportedFormatsText ? `supported-formats-text="${args.supportedFormatsText}"` : '',
     args.maxSizeText ? `max-size-text="${args.maxSizeText}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.accept ? `accept="${args.accept}"` : '',
     args.maxSize ? `max-size="${args.maxSize}"` : '',
     args.maxFiles ? `max-files="${args.maxFiles}"` : '',
@@ -106,6 +110,11 @@ const meta: Meta<FileInputArgs> = {
       control: 'text',
       description: 'Top-right caption below the dropzone. Auto-derived from `max-size` (bytes) if unset.',
     },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     accept: { control: 'text', description: 'MIME / extension allow-list (`.pdf,image/*`).' },
     maxSize: { control: 'number', description: 'Max per-file size in bytes.' },
     maxFiles: { control: 'number', description: 'Max accepted file count (multiple only).' },
@@ -133,6 +142,7 @@ export const Default: Story = {
     dropzoneActiveText: 'Eliberează pentru a încărca',
     supportedFormatsText: 'Formate acceptate: jpg, png, pdf',
     maxSizeText: 'Mărime maximă: 100 MB',
+    locale: '',
     accept: '',
     maxSize: 0,
     maxFiles: 0,

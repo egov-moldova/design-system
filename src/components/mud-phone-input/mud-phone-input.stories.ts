@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';
 import type { PhoneInputSize, PhoneInputType, PhoneInputVariant } from './mud-phone-input.types';
 
@@ -13,6 +14,7 @@ type PhoneInputArgs = {
   defaultCountry: string;
   helperText: string;
   errorText: string;
+  locale: string;
   required: boolean;
   disabled: boolean;
   readonly: boolean;
@@ -33,6 +35,7 @@ const renderPhoneInput = (args: PhoneInputArgs) => /*html*/ `
     ${args.value ? `value="${args.value}"` : ''}
     helper-text="${args.helperText}"
     error-text="${args.errorText}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     ${args.required ? 'required' : ''}
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
@@ -52,6 +55,7 @@ const docsSourceDefault = (args: PhoneInputArgs) => {
     args.value ? `value="${args.value}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
@@ -97,6 +101,12 @@ const meta: Meta<PhoneInputArgs> = {
     value: { control: 'text', description: 'Canonical E.164 value (e.g. +37362123456).' },
     helperText: { control: 'text' },
     errorText: { control: 'text' },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description:
+        'Language of every built-in message plus the listbox country names. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -121,6 +131,7 @@ export const Default: Story = {
     value: '',
     helperText: '',
     errorText: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,
@@ -150,6 +161,7 @@ export const International: Story = {
     value: '',
     helperText: '',
     errorText: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,

@@ -2,6 +2,9 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-file-item';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { FILE_ITEM_MESSAGES } from '../mud-file-item.messages';
+import type { FileItemMessages } from '../mud-file-item.messages';
 import { FILE_ITEM_STATES } from '../mud-file-item.types';
 
 const queryFilename = (root: Element | null | undefined): HTMLElement | null =>
@@ -223,4 +226,33 @@ describe('mud-file-item', () => {
       expect(tip?.textContent).toBe(longName);
     });
   });
+});
+
+describeLocales<FileItemMessages>('mud-file-item', FILE_ITEM_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { filename: 'x.pdf' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.removeLabel !== undefined) attrs['remove-label'] = String(props.removeLabel);
+    const { root } = await render(
+      <mud-file-item {...attrs}></mud-file-item>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'removeLabel')
+      return host.shadowRoot?.querySelector('button.remove')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { removeLabel: 'removeLabel' },
+  unreachable: {
+    sizeUnitBytes:
+      'the unit renders merged with the formatted number ("512 B"), never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitKB:
+      'the unit renders merged with the formatted number ("2.0 KB"), never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitMB:
+      'the unit renders merged with the formatted number, never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitGB:
+      'the unit renders merged with the formatted number, never isolated — covered by the component’s own size-formatting tests',
+  },
 });

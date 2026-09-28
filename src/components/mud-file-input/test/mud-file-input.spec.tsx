@@ -1,7 +1,11 @@
 import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-file-input';
+import '../../mud-file-item/mud-file-item';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { FILE_INPUT_MESSAGES } from '../mud-file-input.messages';
+import type { FileInputMessages } from '../mud-file-input.messages';
 import { FILE_INPUT_SIZES } from '../mud-file-input.types';
 
 const queryDropzone = (root: Element | null | undefined): HTMLElement | null =>
@@ -615,4 +619,50 @@ describe('mud-file-input', () => {
       expect((root as unknown as { files: File[] }).files).toEqual([]);
     });
   });
+});
+
+describeLocales<FileInputMessages>('mud-file-input', FILE_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.ctaText !== undefined) attrs['cta-text'] = String(props.ctaText);
+    if (props.chooseFilesText !== undefined) attrs['choose-files-text'] = String(props.chooseFilesText);
+    const { root } = await render(
+      <mud-file-input {...attrs}></mud-file-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'ctaText') return host.shadowRoot?.querySelector('.dropzone-cta__body')?.textContent ?? null;
+    if (key === 'chooseFilesText') return host.shadowRoot?.querySelector('.dropzone-cta__link')?.textContent ?? null;
+    return null;
+  },
+  overrides: { ctaText: 'ctaText', chooseFilesText: 'chooseFilesText' },
+  unreachable: {
+    dropzoneActiveText: 'only shows during a live drag-over — covered by the component’s own Active-state tests',
+    supportedFormatsText:
+      'a derived caption template, rendered filled or not at all — covered by the component’s own derivation tests',
+    maxSizeText:
+      'a derived caption template, rendered filled or not at all — covered by the component’s own derivation tests',
+    sizeUnitBytes: 'the unit renders merged into the derived maxSizeText caption, never isolated',
+    sizeUnitKB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
+    sizeUnitMB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
+    sizeUnitGB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
+    sizeUnitTB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
+    requiredText:
+      'only surfaces via ElementInternals validity on a native form submit — covered by the shared validity contract',
+    addedOneAnnouncement:
+      'only renders in the live region after a file is accepted — covered by the component’s own announcement tests',
+    removedAnnouncement:
+      'only renders in the live region after a file is removed — covered by the component’s own announcement tests',
+    sizeRejectionText: 'only surfaces via mudError on a rejected drop — covered by the component’s own rejection tests',
+    sizeRejectionGenericText:
+      'only surfaces via mudError on a rejected drop — covered by the component’s own rejection tests',
+    typeRejectionText: 'only surfaces via mudError on a rejected drop — covered by the component’s own rejection tests',
+    typeRejectionGenericText:
+      'only surfaces via mudError on a rejected drop — covered by the component’s own rejection tests',
+    countRejectionText:
+      'only surfaces via mudError on a rejected drop — covered by the component’s own rejection tests',
+  },
 });

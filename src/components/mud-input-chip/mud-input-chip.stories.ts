@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from './mud-input-chip.types';
 import type { InputChipSize, InputChipVariant } from './mud-input-chip.types';
 
@@ -11,6 +12,7 @@ type InputChipArgs = {
   helperText: string;
   errorText: string;
   chips: string;
+  locale: string;
   required: boolean;
   disabled: boolean;
   readonly: boolean;
@@ -33,6 +35,7 @@ const docsSourceDefault = (args: InputChipArgs) => {
     args.separators !== ',' ? `separators="${args.separators}"` : '',
     args.maxChips ? `max-chips="${args.maxChips}"` : '',
     args.validatePattern ? `validate-pattern="${args.validatePattern}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
@@ -70,6 +73,11 @@ const meta: Meta<InputChipArgs> = {
     separators: { control: 'text', description: 'Characters that confirm a chip (plus Enter).' },
     maxChips: { control: 'number', description: 'Max chips allowed.' },
     validatePattern: { control: 'text', description: 'Regex pattern each chip must match.' },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description: 'Language of every built-in message. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -117,6 +125,7 @@ export const Default: Story = {
       separators="${args.separators}"
       ${args.maxChips ? `max-chips="${args.maxChips}"` : ''}
       ${args.validatePattern ? `validate-pattern="${args.validatePattern}"` : ''}
+      ${args.locale ? `locale="${args.locale}"` : ''}
       ${args.required ? 'required' : ''}
       ${args.disabled ? 'disabled' : ''}
       ${args.readonly ? 'readonly' : ''}
@@ -134,6 +143,7 @@ export const Default: Story = {
     separators: ',',
     maxChips: 0,
     validatePattern: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,

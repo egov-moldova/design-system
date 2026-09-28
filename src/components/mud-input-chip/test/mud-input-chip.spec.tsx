@@ -2,6 +2,9 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-input-chip';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { INPUT_CHIP_MESSAGES } from '../mud-input-chip.messages';
+import type { InputChipMessages } from '../mud-input-chip.messages';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from '../mud-input-chip.types';
 
 const queryControl = (root: Element | null | undefined): HTMLElement | null =>
@@ -455,4 +458,34 @@ describe('mud-input-chip', () => {
       spy.mockRestore();
     });
   });
+});
+
+describeLocales<InputChipMessages>('mud-input-chip', INPUT_CHIP_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-input-chip {...attrs}></mud-input-chip>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: () => null,
+  unreachable: {
+    requiredText:
+      'only surfaces via ElementInternals validity on a native form submit — covered by the shared validity contract',
+    patternRejectionText:
+      'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    duplicateRejectionText:
+      'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    maxRejectionText: 'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    addedAnnouncement:
+      'only renders in the live region after a chip is added — covered by the component’s own announcement tests',
+    removedAnnouncement:
+      'only renders in the live region after a chip is removed — covered by the component’s own announcement tests',
+    pastedAnnouncement:
+      'only renders in the live region after a multi-chip paste — covered by the component’s own announcement tests',
+    removeChipLabel:
+      'renders with `{chip}` already filled with the chip value, never the raw template — covered by the component’s own localized aria-label test',
+  },
 });
