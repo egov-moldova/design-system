@@ -179,15 +179,12 @@ function firstNextLabel(root) {
 }
 
 async function switchStorybookLang(page) {
-  const trigger = page.getByRole('button', { name: /Lang/ }).first();
-  if (await trigger.isVisible({ timeout: 5000 }).catch(() => false)) {
-    await trigger.click();
-    await page.getByText('Русский', { exact: true }).first().click();
-    return 'toolbar';
-  }
-  // Same message the toolbar sends (api.updateGlobals -> UPDATE_GLOBALS on the manager channel).
-  await page.evaluate(() => window.__STORYBOOK_ADDONS_CHANNEL__.emit('updateGlobals', { globals: { lang: 'ru-MD' } }));
-  return 'channel';
+  // The toolbar button's accessible name is the `lang` global's description plus its current title.
+  const trigger = page.getByRole('button', { name: /Built-in component copy only/ }).first();
+  await trigger.waitFor({ timeout: 15_000 });
+  await trigger.click();
+  await page.getByText('Русский', { exact: true }).first().click();
+  return 'toolbar';
 }
 
 async function main() {

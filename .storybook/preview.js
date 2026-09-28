@@ -29,11 +29,24 @@ setCustomElements(customElements);
 // page renders <Description of={AccordionStories} /> and needs the real text.
 const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 
+// A Docs page wraps every inline story in `<div id="story--…-inner" lang="en">`
+// (`parameters.htmlLang`, default "en": @storybook/addon-docs dist/blocks.js), and the
+// locale model reads the CLOSEST ancestor `lang`, so without retagging those wrappers no
+// component on a Docs page follows the toolbar. `<html>` is set last: its mutation is what
+// the components observe, and they must find the wrappers already retagged. The
+// `.sbdocs-content` wrapper keeps `lang="en"`: the docs prose is English.
+// Baseline: `grep -n 'story.parameters?.htmlLang' node_modules/@storybook/addon-docs/dist/blocks.js`
+function applyLang(value) {
+  const lang = value || 'ro-MD';
+  document.querySelectorAll('[id^="story--"][id$="-inner"][lang]').forEach(el => el.setAttribute('lang', lang));
+  document.documentElement.setAttribute('lang', lang);
+}
+
 // Keep data-theme and <html lang> in sync with the mode and lang globals at the preview
 // level. The decorators handle the story canvas, but docs pages don't re-run decorators
 // on globals change — this channel listener covers that gap.
 addons.getChannel().on(GLOBALS_UPDATED, ({ globals }) => {
-  document.documentElement.setAttribute('lang', globals.lang || 'ro-MD');
+  applyLang(globals.lang);
   if (globals.mode === 'dark') {
     document.documentElement.dataset.theme = 'dark';
   } else {
@@ -125,7 +138,7 @@ const themeDecorator = (story, context) => {
 // follows this toolbar. `scripts/eslint/copy-probe.mjs` drives it via the `globals=lang:ru-MD`
 // query param rather than the toolbar UI.
 const langDecorator = (story, context) => {
-  document.documentElement.setAttribute('lang', context.globals.lang || 'ro-MD');
+  applyLang(context.globals.lang);
   return story();
 };
 
