@@ -61,16 +61,16 @@ Zero-tolerance list; every command runs as written, exit status unmasked.
 
 - Round 1's bar still holds: `yarn lint && yarn test && yarn build && yarn test:scripts && yarn changelog.check && node scripts/check-props-kept.mjs && node scripts/check-locale-specs.mjs && yarn sp.build && node scripts/eslint/copy-probe.mjs` exits 0, with the probe driving the toolbar at `ru-MD`.
 - `src/utils/locale.spec.ts` asserts `MUD_LOCALES` equals `['ro-MD', 'ru-MD', 'en-US']`, `DEFAULT_LOCALE === 'ro-MD'`, `matchLocale('ro-RO') === 'ro-MD'`, `matchLocale('ru') === 'ru-MD'`, and the formatting rule (`formatLocale`) cases in Phase 1.
-- `grep -rnE "'(ro-RO|ru-RU)'" src --include='*.ts' --include='*.tsx'` prints only lines in specs that assert `ro-RO` / `ru-RU` input is still accepted. Zero dictionary keys, defaults or docs `@default`s name them.
+- `grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx'` prints nothing: no dictionary key, default, JSDoc `@default` or code path names them outside specs (specs keep them only to assert legacy input is still accepted).
 - `describeLocales` gains a validity case, run by every component that calls `setValidity`: after a locale change, `el.validationMessage` equals the new locale's message. `node scripts/check-locale-specs.mjs` enforces that those 11 specs pass the option.
 - `mud-numeric-input` spec carries an input/locale/expected table covering: regular space, U+00A0 and U+202F as group separators under `ru-MD`; `1.234,5` and `1234,5` and `1234.5` and `1.234` under `ro-MD` (→ 1234.5, 1234.5, 1234.5, 1234); `1,234.5` under `en-US`; `−5` (U+2212) → -5; garbage → `null`.
 - Every override prop is classified (Phase 2 inventory) as accessible name or visible caption; each visible caption has a spec case where `""` renders no caption, each accessible name one where `""` falls back.
-- `node scripts/eslint/copy-probe.mjs --content-language` exits 0: no Romanian letter (`ăâîșțĂÂÎȘȚ`) in consumer (light-DOM or attribute) content of any story, except stories whose id appears in a `src/components/*/test/*.figma.json` manifest and the `Locales` stories.
-- `grep -lE '[ăâîșțĂÂÎȘȚ]' web-components/demo/pages/*/*.html web-components/demo/*.ts .storybook/stories/*.mdx` prints nothing, except the demo locale-specimen blocks listed in Phase 4.
+- `node scripts/eslint/copy-probe.mjs --content-language` exits 0: no Romanian letter (`ăâîșțĂÂÎȘȚ`) in consumer (light-DOM or attribute) content of any story, except stories whose id appears in a `src/components/*/test/*.figma.json` manifest and `Locales` stories — a story is exempt as `Locales` only when its rendered DOM holds instances with an explicit `locale` resolving to each of `ro-MD`, `en-US` and `ru-MD` (structural, never by name).
+- `grep -lE '[ăâîșțĂÂÎȘȚ]' web-components/demo/index.html web-components/demo/pages/*/*.html web-components/demo/*.ts .storybook/stories/*.mdx src/components/*/*.mdx` prints nothing (locale specimens set `locale` / `lang` and carry no Romanian source text).
 - `grep -c '<html lang="en">' web-components/demo/index.html web-components/demo/pages/*/*.html` is 0 for every file.
-- `yarn dev:all` serves Storybook on 6007 and the demo on 5174 at once; both answer HTTP 200 before and after a touched `src/components/mud-badge/mud-badge.tsx` rebuild (Phase 3 script).
+- `node scripts/check-dev-all.mjs` exits 0 (committed, run on demand, not in CI — it starts servers): it starts `yarn dev:all`, asserts Storybook on 6007 and the demo on 5174 both answer HTTP 200, touches `src/components/mud-badge/mud-badge.tsx` (restoring its bytes afterwards) and asserts both still answer 200 after the rebuild; then, with Playwright, opens a demo page and the Storybook `mud-pagination` Docs page, switches the locale control to `Русский`, and asserts a mounted `mud-pagination`'s built-in label changes to its `ru-MD` dictionary value without a reload.
 - `node scripts/eslint/copy-probe.mjs --overflow` exits 0: under `ru-MD`, no component-owned text element in any story has `scrollWidth > clientWidth` where its computed `overflow` is not `visible`, except rows in `scripts/eslint/overflow.allow.json`, each carrying a reason.
-- Each `locale.test-helpers.spec.ts` case takes < 1 s (vitest reporter durations).
+- `src/utils/locale.test-helpers.spec.ts` runs its cases under a `1000` ms vitest timeout (`describe(..., { timeout: 1000 })`), so `yarn test` fails if any case waits out a timeout again.
 
 ## Spec / issue
 
@@ -175,9 +175,9 @@ every `src/components/*/*.tsx` and `*.spec.ts(x)` naming `ro-RO` / `ru-RU` or ca
 - [ ] `mud-date-picker`, `mud-phone-input`, `mud-numeric-input` (group display stays `locale`-only) and the shadow-`lang` recipe use `formatLocale`; spec: under page `lang="ro-MD"` the date-picker's short weekday header is `Vin`.
 - [ ] `@default` JSDoc and docs name `ro-MD`; toolbar items `ro-MD` / `en-US` / `ru-MD` with titles `Română` / `English` / `Русский`, default `ro-MD`; probe drives `ru-MD`.
 - [ ] Specs asserting legacy input keep `ro-RO` / `ru-RU` literally, to prove they are still accepted.
-- [ ] Fix the ~5 s per case in `locale.test-helpers.spec.ts`: find the awaited timeout and remove its cause (never raise or lower a timeout to hide it).
+- [ ] Fix the ~5 s per case in `locale.test-helpers.spec.ts`: find the awaited timeout and remove its cause (never raise a timeout to hide it); then set `{ timeout: 1000 }` on the spec's `describe` so a regression fails `yarn test`.
 
-Verify: `fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && grep -rnE "'(ro-RO|ru-RU)'" src --include='*.ts' --include='*.tsx'` (remaining lines are legacy-input assertions only).
+Verify: `fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && ! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx'`.
 
 ## Phase 2: Validity, parsing, empty overrides
 
@@ -200,15 +200,16 @@ Verify: `fnm exec --using=24 -- yarn test.dev && fnm exec --using=24 -- node scr
 **Executor**: Sonnet 5.5 · medium · Wave B (disjoint: see Phase 2) · implementer
 
 **Files**: `.storybook/preview.js`, `package.json`, `web-components/demo/main.ts`,
-`web-components/demo/demo.css`, `web-components/demo/vite.config.ts`, `web-components/package.json`.
+`web-components/demo/demo.css`, `web-components/demo/vite.config.ts`, `web-components/package.json`,
+`scripts/check-dev-all.mjs`.
 
 - [ ] Storybook: a `GLOBALS_UPDATED` listener sets `<html lang>` from `globals.lang` (as the theme's does); toolbar description: "Built-in component copy only; story content stays in English".
 - [ ] Demo header: a native `<select>` beside the theme toggle — `Română` (default, `ro-MD`), `English` (`en-US`), `Русский` (`ru-MD`); sets `<html lang>`; persisted in `localStorage` (`age-demo-lang`); `?lang=` overrides it; the header and intro carry `lang="en"`. Native, not `mud-select`: a demo page loads only the component under test.
 - [ ] TOC filter: `[hidden] { display: none !important; }`; the filter also matches the category title; `/` focuses the filter when focus is not in a text field.
 - [ ] `dev:all` (wireit service): `tokens.watch` + `dx:stencil` + `dx:storybook` + the demo dev server without the `build` dependency, waiting on `dist/mud/mud.esm.js`. In watch mode tokens are not copied into `dist/` (`stencil.config.ts:22`), so the demo's dev config resolves `@egov-moldova/mud/tokens/*.css` to `tokens/generated/`. `demo.web` and `demo.web.build` keep `build`.
-- [ ] One-shot check script in the scratch area (not committed): start `yarn dev:all`, wait for 6007 and 5174 → 200, touch `mud-badge.tsx`, wait for the rebuild, both → 200; then open a demo page with Playwright, pick `Русский`, and assert a mounted `mud-pagination`'s built-in label changes without reload. Record the output in the phase report.
+- [ ] `scripts/check-dev-all.mjs`, committed, exactly as the Acceptance bar row describes; it kills every process it started on exit (success or failure) and restores `mud-badge.tsx` byte-for-byte. It uses the repo's installed Playwright and a local script, never the shared Playwright MCP browser. Not wired into CI or `test:scripts` (it starts servers).
 
-Verify: `fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- yarn lint`, plus the one-shot script output.
+Verify: `fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- node scripts/check-dev-all.mjs`.
 
 ## Phase 4: English demo content and `Locales` stories
 
@@ -221,10 +222,10 @@ Verify: `fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- ya
 
 - [ ] List the protected story ids: `grep -ho '"story": *"[^"]*"' src/components/*/test/*.figma.json | sort -u` (32 today). Their story text does not change.
 - [ ] Translate every other story's Romanian demo content to English; keep Moldovan data values. A text that collides with an `en-US` dictionary value is reworded (the probe flags it).
-- [ ] A `Locales` story on each component with visible built-in copy (pagination, file-input, stepper, table, select, phone-input, date-picker, time-picker, breadcrumb, search-input): three instances with explicit `locale="ro-MD"` / `"en-US"` / `"ru-MD"`.
+- [ ] A `Locales` story on each component with visible built-in copy. Starting list: pagination, file-input, stepper, table, select, phone-input, date-picker, time-picker, breadcrumb, search-input; confirm it by rendering each component with a dictionary whose value appears as a visible text node (not only in an `aria-*` attribute), add any missed, drop any with none, and state the final list in the phase report. Three instances with explicit `locale="ro-MD"` / `"en-US"` / `"ru-MD"`.
 - [ ] Demo pages: `<html lang="ro-MD">`; content to English; the date-picker's 7 `locale="ro-RO"` pins removed except the dedicated `ru-MD` / `en-US` / `ar-EG` specimens (kept as locale specimens; `ar-EG` warns by design).
 - [ ] `storybook-stories.md`: demo content is English; Figma-reference stories keep Figma's text; `Locales` stories are the one place a story pins `locale`.
-- [ ] `copy-probe.mjs --content-language`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, `Locales` stories by name.
+- [ ] `copy-probe.mjs --content-language`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, `Locales` stories recognised structurally (explicit-`locale` instances resolving to all three locales), never by name.
 
 Verify: `fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs --content-language` and the two `grep` rows of the Acceptance bar.
 
@@ -265,6 +266,9 @@ one tier up with fresh context. The controller runs the full suite once per wave
 - Whether the protected Figma-reference stories' current text actually equals Figma's; this
   plan only keeps it unchanged.
 - Browsers other than Chromium for the live `<html lang>` switch.
+- The npm release itself: the rename and the formatting rule reach every consumer in one
+  release. Publishing under a pre-release dist-tag (`next`) so one consumer app upgrades
+  first is recommended to the release owner; release is outside this PR.
 - Overflow outside the probe's definition (clipping by ancestors, visual crowding without
   overflow); only flagged components get a visual look.
 - `@internationalized/number`-level coverage (numbering systems, currency) — out of scope by

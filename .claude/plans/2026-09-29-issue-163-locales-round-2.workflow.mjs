@@ -49,9 +49,9 @@ every \`src/components/*/*.tsx\` and \`*.spec.ts(x)\` naming \`ro-RO\` / \`ru-RU
 - [ ] \`mud-date-picker\`, \`mud-phone-input\`, \`mud-numeric-input\` (group display stays \`locale\`-only) and the shadow-\`lang\` recipe use \`formatLocale\`; spec: under page \`lang="ro-MD"\` the date-picker's short weekday header is \`Vin\`.
 - [ ] \`@default\` JSDoc and docs name \`ro-MD\`; toolbar items \`ro-MD\` / \`en-US\` / \`ru-MD\` with titles \`Română\` / \`English\` / \`Русский\`, default \`ro-MD\`; probe drives \`ru-MD\`.
 - [ ] Specs asserting legacy input keep \`ro-RO\` / \`ru-RU\` literally, to prove they are still accepted.
-- [ ] Fix the ~5 s per case in \`locale.test-helpers.spec.ts\`: find the awaited timeout and remove its cause (never raise or lower a timeout to hide it).
+- [ ] Fix the ~5 s per case in \`locale.test-helpers.spec.ts\`: find the awaited timeout and remove its cause (never raise a timeout to hide it); then set \`{ timeout: 1000 }\` on the spec's \`describe\` so a regression fails \`yarn test\`.
 
-Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && grep -rnE "'(ro-RO|ru-RU)'" src --include='*.ts' --include='*.tsx'\` (remaining lines are legacy-input assertions only).`;
+Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && ! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx'\`.`;
 
 const P2 =
   CONSTRAINTS +
@@ -80,15 +80,16 @@ const P3 =
 _Wave B._
 
 **Files**: \`.storybook/preview.js\`, \`package.json\`, \`web-components/demo/main.ts\`,
-\`web-components/demo/demo.css\`, \`web-components/demo/vite.config.ts\`, \`web-components/package.json\`.
+\`web-components/demo/demo.css\`, \`web-components/demo/vite.config.ts\`, \`web-components/package.json\`,
+\`scripts/check-dev-all.mjs\`.
 
 - [ ] Storybook: a \`GLOBALS_UPDATED\` listener sets \`<html lang>\` from \`globals.lang\` (as the theme's does); toolbar description: "Built-in component copy only; story content stays in English".
 - [ ] Demo header: a native \`<select>\` beside the theme toggle — \`Română\` (default, \`ro-MD\`), \`English\` (\`en-US\`), \`Русский\` (\`ru-MD\`); sets \`<html lang>\`; persisted in \`localStorage\` (\`age-demo-lang\`); \`?lang=\` overrides it; the header and intro carry \`lang="en"\`. Native, not \`mud-select\`: a demo page loads only the component under test.
 - [ ] TOC filter: \`[hidden] { display: none !important; }\`; the filter also matches the category title; \`/\` focuses the filter when focus is not in a text field.
 - [ ] \`dev:all\` (wireit service): \`tokens.watch\` + \`dx:stencil\` + \`dx:storybook\` + the demo dev server without the \`build\` dependency, waiting on \`dist/mud/mud.esm.js\`. In watch mode tokens are not copied into \`dist/\` (\`stencil.config.ts:22\`), so the demo's dev config resolves \`@egov-moldova/mud/tokens/*.css\` to \`tokens/generated/\`. \`demo.web\` and \`demo.web.build\` keep \`build\`.
-- [ ] One-shot check script in the scratch area (not committed): start \`yarn dev:all\`, wait for 6007 and 5174 → 200, touch \`mud-badge.tsx\`, wait for the rebuild, both → 200; then open a demo page with Playwright, pick \`Русский\`, and assert a mounted \`mud-pagination\`'s built-in label changes without reload. Record the output in the phase report.
+- [ ] \`scripts/check-dev-all.mjs\`, committed, exactly as the Acceptance bar row describes; it kills every process it started on exit (success or failure) and restores \`mud-badge.tsx\` byte-for-byte. It uses the repo's installed Playwright and a local script, never the shared Playwright MCP browser. Not wired into CI or \`test:scripts\` (it starts servers).
 
-Verify: \`fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- yarn lint\`, plus the one-shot script output.`;
+Verify: \`fnm exec --using=24 -- yarn demo.web.build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- node scripts/check-dev-all.mjs\`.`;
 
 const P4 =
   CONSTRAINTS +
@@ -104,10 +105,10 @@ _Wave B._
 
 - [ ] List the protected story ids: \`grep -ho '"story": *"[^"]*"' src/components/*/test/*.figma.json | sort -u\` (32 today). Their story text does not change.
 - [ ] Translate every other story's Romanian demo content to English; keep Moldovan data values. A text that collides with an \`en-US\` dictionary value is reworded (the probe flags it).
-- [ ] A \`Locales\` story on each component with visible built-in copy (pagination, file-input, stepper, table, select, phone-input, date-picker, time-picker, breadcrumb, search-input): three instances with explicit \`locale="ro-MD"\` / \`"en-US"\` / \`"ru-MD"\`.
+- [ ] A \`Locales\` story on each component with visible built-in copy. Starting list: pagination, file-input, stepper, table, select, phone-input, date-picker, time-picker, breadcrumb, search-input; confirm it by rendering each component with a dictionary whose value appears as a visible text node (not only in an \`aria-*\` attribute), add any missed, drop any with none, and state the final list in the phase report. Three instances with explicit \`locale="ro-MD"\` / \`"en-US"\` / \`"ru-MD"\`.
 - [ ] Demo pages: \`<html lang="ro-MD">\`; content to English; the date-picker's 7 \`locale="ro-RO"\` pins removed except the dedicated \`ru-MD\` / \`en-US\` / \`ar-EG\` specimens (kept as locale specimens; \`ar-EG\` warns by design).
 - [ ] \`storybook-stories.md\`: demo content is English; Figma-reference stories keep Figma's text; \`Locales\` stories are the one place a story pins \`locale\`.
-- [ ] \`copy-probe.mjs --content-language\`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, \`Locales\` stories by name.
+- [ ] \`copy-probe.mjs --content-language\`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, \`Locales\` stories recognised structurally (explicit-\`locale\` instances resolving to all three locales), never by name.
 
 Verify: \`fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs && fnm exec --using=24 -- node scripts/eslint/copy-probe.mjs --content-language\` and the two \`grep\` rows of the Acceptance bar.`;
 
