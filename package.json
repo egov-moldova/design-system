@@ -62,9 +62,11 @@
     "build.react": "stencil build --docs --react && node scripts/copy-component-assets.mjs && yarn workspace @egov-moldova/mud-react build",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
+    "demo.web.dev": "wireit",
     "build.watch": "stencil build --dev --watch",
     "dx:prepare": "wireit",
     "dev": "wireit",
+    "dev:all": "wireit",
     "dx:stencil": "wireit",
     "dx:storybook": "wireit",
     "dx:stencil:once": "wireit",
@@ -270,6 +272,13 @@
       ],
       "service": true
     },
+    "demo.web.dev": {
+      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && yarn workspace @egov-moldova/mud-web-components demo",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "service": true
+    },
     "demo.web.build": {
       "command": "yarn workspace @egov-moldova/mud-web-components demo.build",
       "dependencies": [
@@ -298,6 +307,12 @@
         "tokens.watch",
         "dx:stencil",
         "dx:storybook"
+      ]
+    },
+    "dev:all": {
+      "dependencies": [
+        "dev",
+        "demo.web.dev"
       ]
     },
     "test.storybook.watch": {

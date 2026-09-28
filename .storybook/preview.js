@@ -29,10 +29,11 @@ setCustomElements(customElements);
 // page renders <Description of={AccordionStories} /> and needs the real text.
 const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 
-// Keep data-theme in sync with the mode global at the preview level.
-// The themeDecorator handles story canvas, but docs pages don't re-run
-// decorators on globals change — this channel listener covers that gap.
+// Keep data-theme and <html lang> in sync with the mode and lang globals at the preview
+// level. The decorators handle the story canvas, but docs pages don't re-run decorators
+// on globals change — this channel listener covers that gap.
 addons.getChannel().on(GLOBALS_UPDATED, ({ globals }) => {
+  document.documentElement.setAttribute('lang', globals.lang || 'ro-MD');
   if (globals.mode === 'dark') {
     document.documentElement.dataset.theme = 'dark';
   } else {
@@ -166,7 +167,7 @@ export const globalTypes = {
   // the library's own default locale (src/utils/locale.ts DEFAULT_LOCALE).
   lang: {
     name: 'Lang',
-    description: "Built-in copy language (mud-* components' ancestor `lang` fallback)",
+    description: 'Built-in component copy only; story content stays in English',
     defaultValue: 'ro-MD',
     toolbar: {
       icon: 'globe',
