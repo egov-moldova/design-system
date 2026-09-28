@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,7 +30,7 @@
               <span class="label">neutral</span>
             </div>
             <div class="cell">
-              <mud-button variant="destructive">Șterge</mud-button>
+              <mud-button variant="destructive">Delete</mud-button>
               <span class="label">destructive</span>
             </div>
           </div>
@@ -48,7 +48,7 @@
               <span class="label">outlined · strict</span>
             </div>
             <div class="cell">
-              <mud-button appearance="outlined" variant="destructive">Șterge</mud-button>
+              <mud-button appearance="outlined" variant="destructive">Delete</mud-button>
               <span class="label">outlined · destructive</span>
             </div>
             <div class="cell">
@@ -60,7 +60,7 @@
               <span class="label">text · strict</span>
             </div>
             <div class="cell">
-              <mud-button appearance="text" variant="destructive">Șterge</mud-button>
+              <mud-button appearance="text" variant="destructive">Delete</mud-button>
               <span class="label">text · destructive</span>
             </div>
           </div>
@@ -104,13 +104,13 @@
             <div class="cell">
               <mud-button variant="primary">
                 <mud-icon slot="icon-start" name="download"></mud-icon>
-                Descarcă
+                Download
               </mud-button>
               <span class="label">icon-start</span>
             </div>
             <div class="cell">
               <mud-button variant="secondary">
-                Înainte
+                Forward
                 <mud-icon slot="icon-end" name="arrow-right"></mud-icon>
               </mud-button>
               <span class="label">icon-end</span>
@@ -118,7 +118,7 @@
             <div class="cell">
               <mud-button variant="primary">
                 <mud-icon slot="icon-start" name="bookmark"></mud-icon>
-                Salvează
+                Save
                 <mud-icon slot="icon-end" name="chevron-right"></mud-icon>
               </mud-button>
               <span class="label">both icons</span>
@@ -130,25 +130,25 @@
           <h3>Icon-only · circular (icon slot + label prop for AT)</h3>
           <div class="row">
             <div class="cell">
-              <mud-button icon-only="" shape="circular" label="Caută" variant="primary" size="sm">
+              <mud-button icon-only="" shape="circular" label="Find" variant="primary" size="sm">
                 <mud-icon slot="icon" name="search"></mud-icon>
               </mud-button>
               <span class="label">circular · sm</span>
             </div>
             <div class="cell">
-              <mud-button icon-only="" shape="circular" label="Editează" variant="primary" size="md">
+              <mud-button icon-only="" shape="circular" label="Edit" variant="primary" size="md">
                 <mud-icon slot="icon" name="edit"></mud-icon>
               </mud-button>
               <span class="label">circular · md</span>
             </div>
             <div class="cell">
-              <mud-button icon-only="" shape="circular" label="Setări" variant="secondary" size="lg">
+              <mud-button icon-only="" shape="circular" label="Settings" variant="secondary" size="lg">
                 <mud-icon slot="icon" name="settings"></mud-icon>
               </mud-button>
               <span class="label">circular · lg</span>
             </div>
             <div class="cell">
-              <mud-button icon-only="" label="Șterge" variant="destructive">
+              <mud-button icon-only="" label="Delete" variant="destructive">
                 <mud-icon slot="icon" name="delete"></mud-icon>
               </mud-button>
               <span class="label">rectangular · destructive</span>
@@ -160,7 +160,7 @@
           <h3>States (loading / disabled)</h3>
           <div class="row">
             <div class="cell">
-              <mud-button variant="primary" loading="">Se încarcă</mud-button>
+              <mud-button variant="primary" loading="">Please wait</mud-button>
               <span class="label">loading</span>
             </div>
             <div class="cell">
@@ -172,11 +172,11 @@
               <span class="label">disabled · outlined</span>
             </div>
             <div class="cell">
-              <mud-button variant="destructive" loading="">Șterge</mud-button>
+              <mud-button variant="destructive" loading="">Delete</mud-button>
               <span class="label">loading · destructive</span>
             </div>
             <div class="cell">
-              <mud-button icon-only="" shape="circular" label="Se încarcă" loading="" variant="primary">
+              <mud-button icon-only="" shape="circular" label="Please wait" loading="" variant="primary">
                 <mud-icon slot="icon" name="download"></mud-icon>
               </mud-button>
               <span class="label">loading · icon-only</span>
@@ -189,7 +189,7 @@
           <div class="row">
             <div class="cell">
               <mud-button href="https://gov.md" target="_blank" rel="noopener" variant="primary">
-                Deschide gov.md
+                Open gov.md
               </mud-button>
               <span class="label">href · target=_blank</span>
             </div>
@@ -203,10 +203,10 @@
         <div class="subsection">
           <h3>Form participation (formAssociated submit / reset)</h3>
           <form id="demo-button-form" style="display: flex; flex-direction: column; gap: 8px; max-width: 320px">
-            <input name="nume" placeholder="Nume" value="Ion" style="padding: 8px; font: inherit" />
+            <input name="name" placeholder="Name" value="Ion" style="padding: 8px; font: inherit" />
             <mud-button-group>
-              <mud-button type="submit" name="action" value="save" variant="primary">Trimite</mud-button>
-              <mud-button type="reset" appearance="outlined" variant="strict">Resetează</mud-button>
+              <mud-button type="submit" name="action" value="save" variant="primary">Submit</mud-button>
+              <mud-button type="reset" appearance="outlined" variant="strict">Reset</mud-button>
             </mud-button-group>
             <output id="demo-button-form-out" class="label" style="min-height: 1em"></output>
           </form>
@@ -217,12 +217,12 @@
           <div class="row">
             <div class="cell" style="width: 200px">
               <mud-button variant="primary">
-                Confirmă transferul către contul de trezorerie al instituției publice
+                Confirm the transfer to the treasury account of the public institution
               </mud-button>
               <span class="label">long multi-word in 200px</span>
             </div>
             <div class="cell" style="width: 200px">
-              <mud-button variant="secondary">Antreprenoriatuldigitalizatînregistratorul</mud-button>
+              <mud-button variant="secondary">Entrepreneurshipdigitalizedregistrar</mud-button>
               <span class="label">long unbroken word in 200px</span>
             </div>
             <div class="cell">

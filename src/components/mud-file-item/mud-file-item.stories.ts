@@ -124,11 +124,11 @@ export const States: Story = {
         ),
         cell(
           'success',
-          /*html*/ `<mud-file-item state="success" filename="buletin-identitate.jpg" size="124000"></mud-file-item>`,
+          /*html*/ `<mud-file-item state="success" filename="identity-card.jpg" size="124000"></mud-file-item>`,
         ),
         cell(
           'error',
-          /*html*/ `<mud-file-item state="error" filename="document-prea-mare.pdf" size="14000000" error-text="Fișierul depășește limita de 5 MB"></mud-file-item>`,
+          /*html*/ `<mud-file-item state="error" filename="document-too-large.pdf" size="14000000" error-text="The file exceeds the 5 MB limit"></mud-file-item>`,
         ),
         cell(
           'disabled',
@@ -136,7 +136,7 @@ export const States: Story = {
         ),
         cell(
           'no remove',
-          /*html*/ `<mud-file-item no-remove state="success" filename="confirmare-trimitere.pdf" size="245320"></mud-file-item>`,
+          /*html*/ `<mud-file-item no-remove state="success" filename="submission-confirmation.pdf" size="245320"></mud-file-item>`,
         ),
       ].join(''),
     ),
@@ -147,10 +147,10 @@ export const States: Story = {
         code: [
           '<mud-file-item filename="declaratie-impozit-2025.pdf" size="245320"></mud-file-item>',
           '<mud-file-item state="uploading" filename="contract-utilitati.pdf" size="1840320"></mud-file-item>',
-          '<mud-file-item state="success" filename="buletin-identitate.jpg" size="124000"></mud-file-item>',
-          '<mud-file-item state="error" filename="document-prea-mare.pdf" size="14000000" error-text="Fișierul depășește limita de 5 MB"></mud-file-item>',
+          '<mud-file-item state="success" filename="identity-card.jpg" size="124000"></mud-file-item>',
+          '<mud-file-item state="error" filename="document-too-large.pdf" size="14000000" error-text="The file exceeds the 5 MB limit"></mud-file-item>',
           '<mud-file-item disabled filename="document-arhivat.pdf" size="245320"></mud-file-item>',
-          '<mud-file-item no-remove state="success" filename="confirmare-trimitere.pdf" size="245320"></mud-file-item>',
+          '<mud-file-item no-remove state="success" filename="submission-confirmation.pdf" size="245320"></mud-file-item>',
         ].join('\n'),
       },
     },
@@ -169,7 +169,7 @@ export const EdgeCases: Story = {
         cell('no size', /*html*/ `<mud-file-item filename="document.pdf"></mud-file-item>`),
         cell(
           'long error text (2 lines)',
-          /*html*/ `<mud-file-item state="error" filename="declaratie.pdf" size="14000000" error-text="Fișierul depășește limita de 5 MB și formatul nu este acceptat de portal — încărcați un PDF mai mic"></mud-file-item>`,
+          /*html*/ `<mud-file-item state="error" filename="declaration.pdf" size="14000000" error-text="The file exceeds the 5 MB limit and its format is not accepted by the portal — upload a smaller PDF"></mud-file-item>`,
         ),
         cell(
           'GB-sized file',
@@ -184,7 +184,7 @@ export const EdgeCases: Story = {
         code: [
           '<mud-file-item filename="moldova-digital-transformation-strategy-2025-2030-final-version-approved-by-government.pdf" size="2400000"></mud-file-item>',
           '<mud-file-item filename="document.pdf"></mud-file-item>',
-          '<mud-file-item state="error" filename="declaratie.pdf" size="14000000" error-text="… error message …"></mud-file-item>',
+          '<mud-file-item state="error" filename="declaration.pdf" size="14000000" error-text="… error message …"></mud-file-item>',
           '<mud-file-item filename="arhiva-completa.zip" size="2147483648"></mud-file-item>',
         ].join('\n'),
       },

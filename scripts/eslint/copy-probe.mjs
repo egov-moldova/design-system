@@ -20,10 +20,21 @@
  * An instance whose closest owning host carries an explicit `locale` attribute is skipped
  * (its own `locale` beating the page `lang` is the designed behaviour) and counted separately.
  *
+ * `--content-language` runs the OTHER direction (issue #163, round 2): the consumer content of
+ * every story — light-DOM text, light-DOM attribute values and complex props such as `items` /
+ * `rows` — must be English. It fails on a Romanian or Cyrillic letter, or on a string equal to
+ * a component dictionary value (content must not look like component copy), except values in
+ * `content-language.allow.json`, stories whose id appears in a `test/*.figma.json` manifest
+ * (the pixel-perfect diff compares them to Figma), and `Locales` stories — recognised
+ * structurally: a story whose rendered DOM holds instances with an explicit `locale`
+ * resolving to each of `ro-MD`, `en-US` and `ru-MD`, never by name. The letter set,
+ * dictionary check and allowlist live in `content-language.mjs`, shared with
+ * `scripts/check-content-language.mjs` (the static sources).
+ *
  * Requires `yarn sp.build` to have produced `storybook-static/` first — this script only
  * serves what is already built, it never invokes Storybook itself.
  *
- * Usage: node scripts/eslint/copy-probe.mjs
+ * Usage: node scripts/eslint/copy-probe.mjs [--content-language]
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -31,6 +42,7 @@ import { extname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { launchBrowser, mapLimit } from '../audit/lib/browser-context.mjs';
+import { dictionaryHit, loadAllowlist, loadDictionaryValues, makeChecker } from './content-language.mjs';
 
 const ROOT = process.cwd();
 const STATIC_DIR = join(ROOT, 'storybook-static');
@@ -168,8 +180,206 @@ async function fetchStories(baseUrl, dirs) {
   const entries = Object.values(data.entries ?? data.stories ?? {});
   return entries.filter(
     entry =>
-      entry.type === 'story' && [...dirs].some(dir => (entry.importPath ?? '').includes(`src/components/${dir}/`)),
+      entry.type === 'story' &&
+      (dirs
+        ? [...dirs].some(dir => (entry.importPath ?? '').includes(`src/components/${dir}/`))
+        : (entry.importPath ?? '').includes('src/components/')),
   );
+}
+
+// ── `--content-language`: consumer content must be English ──
+
+// Story ids named by any `test/*.figma.json` manifest under src/components — the Figma-reference stories.
+function protectedStoryIds() {
+  const ids = new Set();
+  for (const dir of readdirSync(COMPONENTS_DIR)) {
+    const testDir = join(COMPONENTS_DIR, dir, 'test');
+    if (!existsSync(testDir)) continue;
+    for (const file of readdirSync(testDir)) {
+      if (!file.endsWith('.figma.json')) continue;
+      for (const m of readFileSync(join(testDir, file), 'utf8').matchAll(/"story"\s*:\s*"([^"]+)"/g)) ids.add(m[1]);
+    }
+  }
+  return ids;
+}
+
+/**
+ * Walks the light DOM of `document.body` — never a shadow root — and returns the consumer's
+ * content: text nodes, attribute values, and the strings inside complex (array / plain-object)
+ * props of custom elements (`items`, `rows`, … are never reflected to attributes). Also returns
+ * the `locale` of every element that carries one, for the structural `Locales` test.
+ * Serialised by `page.evaluate`: no closure over module scope.
+ */
+function collectConsumerContent() {
+  const SKIP_ATTRS = new Set([
+    'class',
+    'style',
+    'id',
+    'slot',
+    'for',
+    'href',
+    'src',
+    'srcset',
+    'd',
+    'viewbox',
+    'fill',
+    'stroke',
+    'width',
+    'height',
+    'x',
+    'y',
+    'cx',
+    'cy',
+    'r',
+    'points',
+    'transform',
+    'role',
+    'tabindex',
+    'target',
+    'rel',
+    'xmlns',
+  ]);
+  const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT']);
+  const content = [];
+  const locales = [];
+  const add = (text, kind, componentSet = false) => {
+    const t = (text ?? '').trim();
+    if (t) content.push({ text: t, kind, componentSet });
+  };
+  const visitData = (val, depth, seen) => {
+    if (val == null || depth > 4) return;
+    if (typeof val === 'string') return add(val, 'prop');
+    if (typeof val !== 'object' || val instanceof Node || typeof val.then === 'function' || seen.has(val)) return;
+    seen.add(val);
+    if (Array.isArray(val)) return val.forEach(v => visitData(v, depth + 1, seen));
+    const proto = Object.getPrototypeOf(val);
+    if (proto !== Object.prototype && proto !== null) return;
+    Object.values(val).forEach(v => visitData(v, depth + 1, seen));
+  };
+  const walk = node => {
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType === Node.TEXT_NODE) add(child.nodeValue, 'text');
+      else if (child.nodeType === Node.ELEMENT_NODE) {
+        if (SKIP_TAGS.has(child.tagName)) continue;
+        for (const attr of child.attributes) {
+          const name = attr.name.toLowerCase();
+          if (SKIP_ATTRS.has(name) || name.startsWith('data-') || name.startsWith('on')) continue;
+          // A host attribute the component itself wrote (`aria-label` naming the host with its
+          // built-in copy) is component-owned, not consumer content: see recordComponentAttributes.
+          add(attr.value, `attr:${name}`, child.__componentSet?.get(name) === attr.value);
+        }
+        if (child.hasAttribute('locale')) locales.push(child.getAttribute('locale'));
+        else if (child.tagName.includes('-') && typeof child.locale === 'string' && child.locale) {
+          locales.push(child.locale);
+        }
+        if (child.tagName.includes('-')) {
+          const seen = new WeakSet();
+          for (const key in child) {
+            if (key.startsWith('on') || key === 'style' || key === 'dataset') continue;
+            let val;
+            try {
+              val = child[key];
+            } catch {
+              continue;
+            }
+            if (val && typeof val === 'object') visitData(val, 0, seen);
+          }
+        }
+        walk(child);
+      }
+    }
+  };
+  walk(document.body);
+  return { content, locales };
+}
+
+/** `ro…` → `ro-MD`, `ru…` → `ru-MD`, `en…` → `en-US`: the locale a `locale` value resolves to. */
+function resolveLocale(value) {
+  const lang = String(value).toLowerCase().split(/[-_]/)[0];
+  return { ro: 'ro-MD', ru: 'ru-MD', en: 'en-US' }[lang] ?? null;
+}
+
+/**
+ * Installed before any page script runs: records every attribute a custom element receives
+ * through `setAttribute` (Stencil's reflect / host-naming path), so the collector can tell a
+ * value the COMPONENT wrote from one the story's HTML parser set — only the latter is content.
+ */
+function recordComponentAttributes() {
+  const original = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function (name, value) {
+    if (this.tagName.includes('-')) (this.__componentSet ??= new Map()).set(String(name).toLowerCase(), String(value));
+    return original.call(this, name, value);
+  };
+}
+
+async function scanStoryContent(browser, baseUrl, storyId) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  try {
+    await page.addInitScript(recordComponentAttributes);
+    const url = `${baseUrl}/iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story`;
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
+    await page.waitForTimeout(300); // Stencil hydration settling
+    return await page.evaluate(collectConsumerContent);
+  } finally {
+    await context.close();
+  }
+}
+
+async function mainContentLanguage() {
+  if (!existsSync(STATIC_DIR)) {
+    console.error(`[copy-probe] ${STATIC_DIR} does not exist. Run \`yarn sp.build\` first.`);
+    process.exit(1);
+  }
+  const dictionary = await loadDictionaryValues(ROOT);
+  const check = makeChecker({ allow: loadAllowlist(ROOT), dictionary });
+  const protectedIds = protectedStoryIds();
+  const server = await serveStatic(STATIC_DIR, 0);
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const { browser, close } = await launchBrowser({ headless: true });
+  const hits = [];
+  let scanned = 0;
+  let exemptProtected = 0;
+  const localesStories = [];
+  try {
+    const stories = await fetchStories(baseUrl, null);
+    console.log(`[copy-probe --content-language] ${stories.length} stories, ${protectedIds.size} protected ids.`);
+    await mapLimit(stories, CONCURRENCY, async story => {
+      const { content, locales } = await scanStoryContent(browser, baseUrl, story.id);
+      const resolved = new Set(locales.map(resolveLocale));
+      if (['ro-MD', 'en-US', 'ru-MD'].every(l => resolved.has(l))) {
+        localesStories.push(story.id);
+        return;
+      }
+      if (protectedIds.has(story.id)) {
+        exemptProtected++;
+        return;
+      }
+      scanned++;
+      const seen = new Set();
+      for (const item of content) {
+        // component-written and equal to a dictionary value: the component's own copy, not content
+        if (item.componentSet && dictionaryHit(dictionary, item.text)) continue;
+        const reason = check(item.text);
+        const key = `${item.kind}|${item.text}`;
+        if (reason && !seen.has(key)) {
+          seen.add(key);
+          hits.push({ story: story.id, kind: item.kind, text: item.text, reason });
+        }
+      }
+    });
+  } finally {
+    await close();
+    server.close();
+  }
+  for (const hit of hits.sort((a, b) => a.story.localeCompare(b.story))) {
+    console.log(`${hit.story} · ${hit.kind} · ${hit.reason} · ${hit.text.slice(0, 120)}`);
+  }
+  console.log(
+    `[copy-probe --content-language] scanned: ${scanned}, protected (exempt): ${exemptProtected}, ` +
+      `Locales (exempt): ${localesStories.length} [${localesStories.sort().join(', ')}], hits: ${hits.length}`,
+  );
+  process.exit(hits.length > 0 ? 1 : 0);
 }
 
 // ── The in-page walk ──
@@ -350,6 +560,7 @@ async function scanStory(browser, baseUrl, storyId) {
 // ── Main ──
 
 async function main() {
+  if (process.argv.includes('--content-language')) return mainContentLanguage();
   if (!existsSync(STATIC_DIR)) {
     console.error(`[copy-probe] ${STATIC_DIR} does not exist. Run \`yarn sp.build\` first.`);
     process.exit(1);

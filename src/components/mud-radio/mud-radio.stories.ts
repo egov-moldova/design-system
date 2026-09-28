@@ -141,7 +141,7 @@ export const Default: Story = {
 
 export const Selected: Story = {
   render: renderRadio,
-  args: { ...Default.args, checked: true, label: 'Acord' } as RadioArgs,
+  args: { ...Default.args, checked: true, label: 'Consent' } as RadioArgs,
   parameters: Default.parameters,
 };
 
@@ -165,14 +165,14 @@ export const AllStates: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 560px;">
         ${[
-          cell('default', cb({ label: 'Acord' })),
-          cell('selected', cb({ label: 'Acord', flags: 'checked' })),
-          cell('disabled', cb({ label: 'Acord', flags: 'disabled' })),
-          cell('selected + disabled', cb({ label: 'Acord', flags: 'checked disabled' })),
-          cell('error', cb({ label: 'Acord', flags: 'invalid' })),
-          cell('selected + error', cb({ label: 'Acord', flags: 'checked invalid' })),
-          cell('focus (use Tab)', cb({ label: 'Acord' })),
-          cell('readonly', cb({ label: 'Acord', flags: 'checked readonly' })),
+          cell('default', cb({ label: 'Consent' })),
+          cell('selected', cb({ label: 'Consent', flags: 'checked' })),
+          cell('disabled', cb({ label: 'Consent', flags: 'disabled' })),
+          cell('selected + disabled', cb({ label: 'Consent', flags: 'checked disabled' })),
+          cell('error', cb({ label: 'Consent', flags: 'invalid' })),
+          cell('selected + error', cb({ label: 'Consent', flags: 'checked invalid' })),
+          cell('focus (use Tab)', cb({ label: 'Consent' })),
+          cell('readonly', cb({ label: 'Consent', flags: 'checked readonly' })),
         ].join('')}
       </div>
     `,
@@ -181,13 +181,13 @@ export const AllStates: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Acord' }),
-          cb({ label: 'Acord', flags: 'checked' }),
-          cb({ label: 'Acord', flags: 'disabled' }),
-          cb({ label: 'Acord', flags: 'checked disabled' }),
-          cb({ label: 'Acord', flags: 'invalid' }),
-          cb({ label: 'Acord', flags: 'checked invalid' }),
-          cb({ label: 'Acord', flags: 'checked readonly' }),
+          cb({ label: 'Consent' }),
+          cb({ label: 'Consent', flags: 'checked' }),
+          cb({ label: 'Consent', flags: 'disabled' }),
+          cb({ label: 'Consent', flags: 'checked disabled' }),
+          cb({ label: 'Consent', flags: 'invalid' }),
+          cb({ label: 'Consent', flags: 'checked invalid' }),
+          cb({ label: 'Consent', flags: 'checked readonly' }),
         ),
       },
     },
@@ -203,8 +203,8 @@ export const AllSizes: Story = {
           size,
           /*html*/ `
             <div style="display: flex; flex-direction: column; gap: var(--spacing-12);">
-              ${cb({ size, label: 'Acord' })}
-              ${cb({ size, label: 'Acord', flags: 'checked' })}
+              ${cb({ size, label: 'Consent' })}
+              ${cb({ size, label: 'Consent', flags: 'checked' })}
             </div>
           `,
         ),
@@ -216,8 +216,8 @@ export const AllSizes: Story = {
       source: {
         code: docsCode(
           ...RADIO_SIZES.flatMap(s => [
-            cb({ size: s, label: 'Acord' }),
-            cb({ size: s, label: 'Acord', flags: 'checked' }),
+            cb({ size: s, label: 'Consent' }),
+            cb({ size: s, label: 'Consent', flags: 'checked' }),
           ]),
         ),
       },
@@ -230,8 +230,8 @@ export const WithLabel: Story = {
   render: () =>
     wrap(
       [
-        cell('default', cb({ label: 'Doresc să primesc actualizări' })),
-        cell('selected', cb({ label: 'Doresc să primesc actualizări', flags: 'checked' })),
+        cell('default', cb({ label: 'I want to receive updates' })),
+        cell('selected', cb({ label: 'I want to receive updates', flags: 'checked' })),
       ].join(''),
     ),
   parameters: {
@@ -239,8 +239,8 @@ export const WithLabel: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Doresc să primesc actualizări' }),
-          cb({ label: 'Doresc să primesc actualizări', flags: 'checked' }),
+          cb({ label: 'I want to receive updates' }),
+          cb({ label: 'I want to receive updates', flags: 'checked' }),
         ),
       },
     },
@@ -252,15 +252,12 @@ export const WithSupportingText: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 760px;">
         ${[
-          cell(
-            'default (md)',
-            cb({ label: 'Acord', supporting: 'Sunt de acord cu termenii și condițiile serviciului.' }),
-          ),
+          cell('default (md)', cb({ label: 'Consent', supporting: 'I agree to the service terms and conditions.' })),
           cell(
             'selected (md)',
             cb({
-              label: 'Acord',
-              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+              label: 'Consent',
+              supporting: 'I agree to the service terms and conditions.',
               flags: 'checked',
             }),
           ),
@@ -268,16 +265,16 @@ export const WithSupportingText: Story = {
             'default (sm)',
             cb({
               size: 'sm',
-              label: 'Acord',
-              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+              label: 'Consent',
+              supporting: 'I agree to the service terms and conditions.',
             }),
           ),
           cell(
             'selected (sm)',
             cb({
               size: 'sm',
-              label: 'Acord',
-              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+              label: 'Consent',
+              supporting: 'I agree to the service terms and conditions.',
               flags: 'checked',
             }),
           ),
@@ -289,10 +286,10 @@ export const WithSupportingText: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Acord', supporting: 'Sunt de acord cu termenii și condițiile serviciului.' }),
+          cb({ label: 'Consent', supporting: 'I agree to the service terms and conditions.' }),
           cb({
-            label: 'Acord',
-            supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+            label: 'Consent',
+            supporting: 'I agree to the service terms and conditions.',
             flags: 'checked',
           }),
         ),
@@ -306,13 +303,13 @@ export const Error: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 760px;">
         ${[
-          cell('error (unselected)', cb({ label: 'Refuz', flags: 'invalid' })),
-          cell('error (selected)', cb({ label: 'Refuz', flags: 'invalid checked' })),
+          cell('error (unselected)', cb({ label: 'Decline', flags: 'invalid' })),
+          cell('error (selected)', cb({ label: 'Decline', flags: 'invalid checked' })),
           cell(
             'error + supporting',
-            cb({ label: 'Refuz', supporting: 'Această opțiune blochează cererea.', flags: 'invalid' }),
+            cb({ label: 'Decline', supporting: 'This option blocks the request.', flags: 'invalid' }),
           ),
-          cell('error (sm)', cb({ size: 'sm', label: 'Refuz', flags: 'invalid checked' })),
+          cell('error (sm)', cb({ size: 'sm', label: 'Decline', flags: 'invalid checked' })),
         ].join('')}
       </div>
     `,
@@ -321,9 +318,9 @@ export const Error: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Refuz', flags: 'invalid' }),
-          cb({ label: 'Refuz', flags: 'invalid checked' }),
-          cb({ label: 'Refuz', supporting: 'Această opțiune blochează cererea.', flags: 'invalid' }),
+          cb({ label: 'Decline', flags: 'invalid' }),
+          cb({ label: 'Decline', flags: 'invalid checked' }),
+          cb({ label: 'Decline', supporting: 'This option blocks the request.', flags: 'invalid' }),
         ),
       },
     },
@@ -335,13 +332,13 @@ export const Disabled: Story = {
   render: () =>
     wrap(
       [
-        cell('disabled (unselected)', cb({ label: 'Acord', flags: 'disabled' })),
-        cell('disabled (selected)', cb({ label: 'Acord', flags: 'disabled checked' })),
+        cell('disabled (unselected)', cb({ label: 'Consent', flags: 'disabled' })),
+        cell('disabled (selected)', cb({ label: 'Consent', flags: 'disabled checked' })),
         cell(
           'disabled + supporting',
-          cb({ label: 'Acord', supporting: 'Această opțiune nu poate fi modificată.', flags: 'disabled' }),
+          cb({ label: 'Consent', supporting: 'This option cannot be changed.', flags: 'disabled' }),
         ),
-        cell('disabled (sm)', cb({ size: 'sm', label: 'Acord', flags: 'disabled checked' })),
+        cell('disabled (sm)', cb({ size: 'sm', label: 'Consent', flags: 'disabled checked' })),
       ].join(''),
     ),
   parameters: {
@@ -349,9 +346,9 @@ export const Disabled: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Acord', flags: 'disabled' }),
-          cb({ label: 'Acord', flags: 'disabled checked' }),
-          cb({ label: 'Acord', supporting: 'Această opțiune nu poate fi modificată.', flags: 'disabled' }),
+          cb({ label: 'Consent', flags: 'disabled' }),
+          cb({ label: 'Consent', flags: 'disabled checked' }),
+          cb({ label: 'Consent', supporting: 'This option cannot be changed.', flags: 'disabled' }),
         ),
       },
     },
@@ -362,10 +359,10 @@ export const Group: Story = {
   name: 'Group (preview)',
   render: () => /*html*/ `
       <fieldset style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); max-width: 360px;">
-        <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); padding: 0 var(--spacing-4);">Selectează o opțiune</legend>
-        ${cb({ name: 'consimtamant', value: 'acord', label: 'Acord', flags: 'checked' })}
-        ${cb({ name: 'consimtamant', value: 'refuz', label: 'Refuz' })}
-        ${cb({ name: 'consimtamant', value: 'indecis', label: 'Doresc să decid mai târziu' })}
+        <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); padding: 0 var(--spacing-4);">Select an option</legend>
+        ${cb({ name: 'consimtamant', value: 'acord', label: 'Consent', flags: 'checked' })}
+        ${cb({ name: 'consimtamant', value: 'refuz', label: 'Decline' })}
+        ${cb({ name: 'consimtamant', value: 'indecis', label: 'I want to decide later' })}
       </fieldset>
     `,
   parameters: {
@@ -377,9 +374,9 @@ export const Group: Story = {
       },
       source: {
         code: docsCode(
-          cb({ name: 'consimtamant', value: 'acord', label: 'Acord', flags: 'checked' }),
-          cb({ name: 'consimtamant', value: 'refuz', label: 'Refuz' }),
-          cb({ name: 'consimtamant', value: 'indecis', label: 'Doresc să decid mai târziu' }),
+          cb({ name: 'consimtamant', value: 'acord', label: 'Consent', flags: 'checked' }),
+          cb({ name: 'consimtamant', value: 'refuz', label: 'Decline' }),
+          cb({ name: 'consimtamant', value: 'indecis', label: 'I want to decide later' }),
         ),
       },
     },
@@ -395,27 +392,27 @@ export const EdgeCases: Story = {
             'long label wraps',
             cb({
               label:
-                'Sunt de acord ca datele mele cu caracter personal să fie prelucrate de Agenția de Guvernare Electronică pentru a primi serviciile selectate.',
+                'I agree that my personal data may be processed by the Electronic Governance Agency so that I can receive the selected services.',
             }),
           ),
           cell(
             'long supporting text wraps',
             cb({
-              label: 'Acord',
+              label: 'Consent',
               supporting:
-                'Datele dumneavoastră vor fi prelucrate în conformitate cu Legea nr. 133 privind protecția datelor cu caracter personal și vor fi păstrate pentru maximum 36 de luni.',
+                'Your data will be processed in accordance with Law No. 133 on personal data protection and will be kept for a maximum of 36 months.',
             }),
           ),
           cell(
             'long label + long supporting',
             cb({
-              label: 'Sunt de acord cu termenii completi ai serviciului electronic',
+              label: 'I agree to the full terms of the electronic service',
               supporting:
-                'Aceasta include termenii de utilizare, politica de confidențialitate și acordul privind cookie-urile pentru toate subdomeniile .gov.md.',
+                'This includes the terms of use, the privacy policy and the cookie agreement for all .gov.md subdomains.',
               flags: 'checked',
             }),
           ),
-          cell('no label (aria-label only)', cb({ ariaLabel: 'Opțiunea A' })),
+          cell('no label (aria-label only)', cb({ ariaLabel: 'Option A' })),
         ].join('')}
       </div>
     `,
@@ -425,8 +422,8 @@ export const EdgeCases: Story = {
       source: {
         code: docsCode(
           cb({ label: '…long Romanian label…' }),
-          cb({ label: 'Acord', supporting: '…long supporting text…' }),
-          cb({ ariaLabel: 'Opțiunea A' }),
+          cb({ label: 'Consent', supporting: '…long supporting text…' }),
+          cb({ ariaLabel: 'Option A' }),
         ),
       },
     },

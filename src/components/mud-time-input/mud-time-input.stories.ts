@@ -270,3 +270,25 @@ export const Validation: Story = {
     },
   },
 };
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in validation message for an impossible hour
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesTimeInput = (locale: string) =>
+  `<mud-time-input locale="${locale}" size="lg" label="Time" value="25"></mud-time-input>`;
+
+export const Locales: Story = {
+  render: () => wrap(LOCALES.map(locale => cell(`locale="${locale}"`, localesTimeInput(locale))).join('')),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesTimeInput).join('\n') },
+    },
+  },
+};

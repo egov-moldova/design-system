@@ -187,14 +187,14 @@ Romanian voice: defaults use **Confirmă** / **Anulează** / **Continuă** /
     open: false,
     size: 'md',
     variant: 'default',
-    titleText: 'Confirmă acțiunea',
+    titleText: 'Confirm the action',
     imageSrc: '',
     imageAlt: '',
     closable: true,
     closeOnBackdrop: true,
     closeOnEscape: true,
     destructive: false,
-    body: 'Această acțiune va salva modificările făcute în formular. Continuați?',
+    body: 'This action will save the changes made in the form. Continue?',
     locale: '',
     closeLabel: '',
   },
@@ -221,29 +221,29 @@ export const Default: Story = {
 const renderAllSizes = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button shape="circular" size="sm" data-modal-open="storybook-modal-size-sm">Deschide Small</mud-button>
-      <mud-button shape="circular" data-modal-open="storybook-modal-size-md">Deschide Medium</mud-button>
-      <mud-button shape="circular" data-modal-open="storybook-modal-size-lg">Deschide Large</mud-button>
+      <mud-button shape="circular" size="sm" data-modal-open="storybook-modal-size-sm">Open Small</mud-button>
+      <mud-button shape="circular" data-modal-open="storybook-modal-size-md">Open Medium</mud-button>
+      <mud-button shape="circular" data-modal-open="storybook-modal-size-lg">Open Large</mud-button>
     </div>
-    <mud-modal id="storybook-modal-size-sm" size="sm" title-text="Confirmă plata">
-      Suma de 250,00 MDL va fi debitată de pe cardul terminând în ****4521.
+    <mud-modal id="storybook-modal-size-sm" size="sm" title-text="Confirm payment">
+      The amount of 250.00 MDL will be charged to the card ending in ****4521.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" size="sm" data-modal-close>Anulează</mud-button>
-        <mud-button variant="primary" shape="circular" size="sm" data-modal-close>Confirmă</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" size="sm" data-modal-close>Cancel</mud-button>
+        <mud-button variant="primary" shape="circular" size="sm" data-modal-close>Confirm</mud-button>
       </div>
     </mud-modal>
-    <mud-modal id="storybook-modal-size-md" size="md" title-text="Confirmă plata">
-      Suma de 250,00 MDL va fi debitată de pe cardul terminând în ****4521. Veți primi confirmarea pe email în câteva minute.
+    <mud-modal id="storybook-modal-size-md" size="md" title-text="Confirm payment">
+      The amount of 250.00 MDL will be charged to the card ending in ****4521. You will receive a confirmation by email within a few minutes.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</mud-button>
-        <mud-button variant="primary" shape="circular" data-modal-close>Confirmă</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Cancel</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Confirm</mud-button>
       </div>
     </mud-modal>
-    <mud-modal id="storybook-modal-size-lg" size="lg" title-text="Confirmă plata cumulată">
-      Veți confirma plata pentru 4 facturi cumulate, totalizând 1.250,00 MDL. Tranzacția este finală și nu poate fi anulată după confirmare.
+    <mud-modal id="storybook-modal-size-lg" size="lg" title-text="Confirm the combined payment">
+      You are about to confirm payment for 4 combined invoices totalling 1,250.00 MDL. The transaction is final and cannot be cancelled after confirmation.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</mud-button>
-        <mud-button variant="primary" shape="circular" data-modal-close>Confirmă</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Cancel</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Confirm</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -260,22 +260,22 @@ export const AllSizes: Story = {
 const renderWithImage = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-with-image">Deschide modal cu imagine</mud-button>
+      <mud-button data-modal-open="storybook-modal-with-image">Open modal with image</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-with-image"
       size="md"
       variant="with-image"
-      title-text="Felicitări"
+      title-text="Congratulations"
     >
       <img
         slot="image"
         src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&auto=format&fit=crop&q=80"
         alt=""
       />
-      Contul dumneavoastră a fost confirmat. Puteți accesa serviciile electronice ale statului.
+      Your account has been confirmed. You can now access the state electronic services.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="primary" shape="circular" data-modal-close>Continuă</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Continue</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -292,18 +292,18 @@ export const WithImage: Story = {
 const renderWithIcon = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-with-icon">Deschide modal cu iconiță</mud-button>
+      <mud-button data-modal-open="storybook-modal-with-icon">Open modal with icon</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-with-icon"
       size="md"
       variant="with-icon"
-      title-text="Sesiunea a expirat"
+      title-text="Session expired"
     >
       <mud-icon slot="icon" name="circle-info" variant="filled" size="32"></mud-icon>
-      Reconectați-vă pentru a continua. Modificările nesalvate au fost pierdute.
+      Sign in again to continue. Unsaved changes were lost.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="primary" shape="circular" data-modal-close>Reconectare</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Sign in again</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -320,17 +320,17 @@ export const WithIcon: Story = {
 const renderConfirmation = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-confirmation">Salvează modificările</mud-button>
+      <mud-button data-modal-open="storybook-modal-confirmation">Save changes</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-confirmation"
       size="md"
-      title-text="Salvează modificările"
+      title-text="Save changes"
     >
-      Modificările vor fi salvate și aplicate imediat. Doriți să continuați?
+      The changes will be saved and applied immediately. Do you want to continue?
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</mud-button>
-        <mud-button variant="primary" shape="circular" data-modal-close>Salvează</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Cancel</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Save</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -347,19 +347,19 @@ export const Confirmation: Story = {
 const renderDestructive = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button variant="destructive" data-modal-open="storybook-modal-destructive">Șterge contul</mud-button>
+      <mud-button variant="destructive" data-modal-open="storybook-modal-destructive">Delete account</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-destructive"
       size="md"
       destructive
-      title-text="Șterge contul definitiv"
+      title-text="Delete account permanently"
       close-on-backdrop="false"
     >
-      Această acțiune este irevocabilă. Toate datele asociate contului vor fi șterse permanent și nu pot fi recuperate.
+      This action cannot be undone. All data associated with the account will be permanently deleted and cannot be recovered.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</mud-button>
-        <mud-button variant="destructive" shape="circular" data-modal-close>Șterge definitiv</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Cancel</mud-button>
+        <mud-button variant="destructive" shape="circular" data-modal-close>Delete permanently</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -376,19 +376,19 @@ export const Destructive: Story = {
 const renderDisableEscape = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-required">Confirmare obligatorie</mud-button>
+      <mud-button data-modal-open="storybook-modal-required">Mandatory confirmation</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-required"
       size="md"
-      title-text="Acceptați termenii și condițiile"
+      title-text="Accept the terms and conditions"
       close-on-backdrop="false"
       close-on-escape="false"
       closable="false"
     >
-      Pentru a continua, trebuie să acceptați termenii și condițiile actualizate. Această confirmare este obligatorie.
+      To continue, you must accept the updated terms and conditions. This confirmation is mandatory.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Refuz</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Decline</mud-button>
         <mud-button variant="primary" shape="circular" data-modal-close>Accept</mud-button>
       </div>
     </mud-modal>
@@ -406,23 +406,23 @@ export const DisableEscape: Story = {
 const renderCustomContent = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-custom">Editează profilul</mud-button>
+      <mud-button data-modal-open="storybook-modal-custom">Edit profile</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-custom"
       size="md"
-      title-text="Editează profilul"
+      title-text="Edit profile"
     >
-      <p style="margin: 0 0 var(--spacing-16) 0;">Actualizați informațiile personale înainte de a continua.</p>
+      <p style="margin: 0 0 var(--spacing-16) 0;">Update your personal information before continuing.</p>
       <ul style="margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: var(--spacing-8);">
-        <li>Nume complet</li>
-        <li>Adresă email validată</li>
-        <li>Număr de telefon</li>
-        <li>Adresă poștală</li>
+        <li>Full name</li>
+        <li>Validated email address</li>
+        <li>Phone number</li>
+        <li>Postal address</li>
       </ul>
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</mud-button>
-        <mud-button variant="primary" shape="circular" data-modal-close>Salvează</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Cancel</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Save</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}
@@ -439,17 +439,17 @@ export const CustomContent: Story = {
 const renderMobile = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button size="sm" data-modal-open="storybook-modal-mobile">Confirmă plata</mud-button>
+      <mud-button size="sm" data-modal-open="storybook-modal-mobile">Confirm payment</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-mobile"
       size="sm"
-      title-text="Confirmă plata"
+      title-text="Confirm payment"
       actions-layout="stacked"
     >
-      Suma de 125,00 MDL va fi debitată acum. Confirmați tranzacția?
-      <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Confirmă</mud-button>
-      <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Anulează</mud-button>
+      The amount of 125.00 MDL will be charged now. Confirm the transaction?
+      <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Confirm</mud-button>
+      <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Cancel</mud-button>
     </mud-modal>
   </div>
 `;
@@ -480,20 +480,20 @@ export const Mobile: Story = {
 const renderMobileWithImage = () => /*html*/ `
   <div style="${stageStyle}">
     <div style="${triggerRowStyle}">
-      <mud-button size="sm" data-modal-open="storybook-modal-mobile-image">Deschide</mud-button>
+      <mud-button size="sm" data-modal-open="storybook-modal-mobile-image">Open</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-mobile-image"
       size="sm"
       variant="with-image"
-      title-text="Felicitări"
+      title-text="Congratulations"
       actions-layout="stacked"
       image-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&auto=format&fit=crop&q=80"
       image-alt=""
     >
-      Contul dumneavoastră a fost confirmat. Puteți accesa serviciile electronice ale statului.
-      <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Continuă</mud-button>
-      <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Mai târziu</mud-button>
+      Your account has been confirmed. You can now access the state electronic services.
+      <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Continue</mud-button>
+      <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Later</mud-button>
     </mud-modal>
   </div>
 `;
@@ -520,31 +520,31 @@ export const MobileWithImage: Story = {
 const renderEdgeCases = () => /*html*/ `
   <div style="${stageStyle} min-block-size: 720px;">
     <div style="${triggerRowStyle}">
-      <mud-button data-modal-open="storybook-modal-long">Conținut lung — scroll intern</mud-button>
+      <mud-button data-modal-open="storybook-modal-long">Long content — internal scroll</mud-button>
     </div>
     <mud-modal
       id="storybook-modal-long"
       size="md"
-      title-text="Termeni și condiții actualizate"
+      title-text="Updated terms and conditions"
     >
-      <p style="margin: 0 0 var(--spacing-12) 0;">Am actualizat termenii și condițiile platformei. Modificările intră în vigoare începând cu 1 iunie 2026 și includ următoarele:</p>
+      <p style="margin: 0 0 var(--spacing-12) 0;">We have updated the platform terms and conditions. The changes take effect on 1 June 2026 and include the following:</p>
       <ol style="margin: 0 0 var(--spacing-12) 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: var(--spacing-8);">
-        <li>Actualizări privind procesarea plăților electronice și a returnărilor.</li>
-        <li>Drepturile utilizatorilor în privința portării datelor personale între servicii.</li>
-        <li>Politica de confidențialitate revizuită — colectare minimă, păstrare limitată.</li>
-        <li>Modul în care colectăm și utilizăm datele personale pentru autentificare federată.</li>
-        <li>Procedura de ștergere a contului și termenele asociate.</li>
-        <li>Noile cerințe de validare a identității pentru tranzacțiile peste 5.000 MDL.</li>
-        <li>Reguli privind sesiunile concurente și deconectarea automată.</li>
-        <li>Actualizări privind acceptarea cookie-urilor și a tehnologiilor similare.</li>
-        <li>Mecanismul de notificare a modificărilor viitoare ale termenilor.</li>
-        <li>Drepturile utilizatorilor în Republica Moldova privind protecția datelor.</li>
+        <li>Updates on the processing of electronic payments and refunds.</li>
+        <li>User rights regarding the portability of personal data between services.</li>
+        <li>Revised privacy policy — minimal collection, limited retention.</li>
+        <li>How we collect and use personal data for federated sign-in.</li>
+        <li>The account deletion procedure and its deadlines.</li>
+        <li>New identity validation requirements for transactions over 5,000 MDL.</li>
+        <li>Rules on concurrent sessions and automatic sign-out.</li>
+        <li>Updates on accepting cookies and similar technologies.</li>
+        <li>The mechanism for notifying future changes to the terms.</li>
+        <li>User rights in the Republic of Moldova regarding data protection.</li>
       </ol>
-      <p style="margin: 0 0 var(--spacing-12) 0;">Diacriticele românești (ă â î ș ț) sunt suportate complet în titluri și corpul textului. Înălțimea modalului este limitată la viewport pentru a permite scroll intern fără a împinge butoanele de acțiune sub fold.</p>
-      <p style="margin: 0;">Confirmați citirea pentru a continua.</p>
+      <p style="margin: 0 0 var(--spacing-12) 0;">Accented characters (é ü ñ) are fully supported in titles and body text. The modal height is capped to the viewport so the body scrolls internally without pushing the action buttons below the fold.</p>
+      <p style="margin: 0;">Confirm you have read this to continue.</p>
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Refuz</mud-button>
-        <mud-button variant="primary" shape="circular" data-modal-close>Accept termenii</mud-button>
+        <mud-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Decline</mud-button>
+        <mud-button variant="primary" shape="circular" data-modal-close>Accept the terms</mud-button>
       </div>
     </mud-modal>
     ${wireTriggersScript}

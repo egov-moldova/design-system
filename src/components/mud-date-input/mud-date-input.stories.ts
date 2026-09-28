@@ -540,19 +540,41 @@ export const MobileBottomSheet: Story = {
   globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); min-block-size: 480px;">
-      <mud-date-input label="Data nașterii"></mud-date-input>
+      <mud-date-input label="Birth date"></mud-date-input>
     </div>
   `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Data nașterii"></mud-date-input>',
+        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Birth date"></mud-date-input>',
       },
       description: {
         story:
           'Defaults to `breakpoint="auto"` and renders in a mobile device frame, so opening the calendar shows the full-width bottom sheet with a scrim and the month/year dropdown header. Switch the **Viewport** toolbar to a desktop size to watch it resize back to the anchored dropdown. Tapping the scrim, pressing Escape, or selecting a date dismisses it.',
       },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in validation message for an impossible day
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesDateInput = (locale: string) =>
+  `<mud-date-input locale="${locale}" size="lg" label="Date" value="45/01/2025"></mud-date-input>`;
+
+export const Locales: Story = {
+  render: () => wrap(LOCALES.map(locale => cell(`locale="${locale}"`, localesDateInput(locale))).join('')),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesDateInput).join('\n') },
     },
   },
 };

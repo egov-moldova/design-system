@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,11 +15,7 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea
-                  variant="default"
-                  label="Descriere"
-                  value="Descrierea solicitării dumneavoastră."
-                ></mud-textarea>
+                <mud-textarea variant="default" label="Description" value="Description of your request."></mud-textarea>
               </div>
               <span class="label">default</span>
             </div>
@@ -27,9 +23,9 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-textarea
                   variant="success"
-                  label="Comentariu"
-                  value="Mesaj acceptat."
-                  helper-text="Salvat automat"
+                  label="Comment"
+                  value="Message accepted."
+                  helper-text="Saved automatically"
                 ></mud-textarea>
               </div>
               <span class="label">success</span>
@@ -38,16 +34,16 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-textarea
                   variant="warning"
-                  label="Observații"
-                  value="Verificați conținutul."
-                  helper-text="Câmp neverificat"
+                  label="Remarks"
+                  value="Check the content."
+                  helper-text="Unchecked field"
                 ></mud-textarea>
               </div>
               <span class="label">warning</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea variant="destructive" label="Motiv" value="Text problematic"></mud-textarea>
+                <mud-textarea variant="destructive" label="Reason" value="Text problematic"></mud-textarea>
               </div>
               <span class="label">destructive</span>
             </div>
@@ -59,13 +55,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea size="md" rows="3" label="md, rows=3" value="Trei rânduri vizibile."></mud-textarea>
+                <mud-textarea size="md" rows="3" label="md, rows=3" value="Three visible rows."></mud-textarea>
               </div>
               <span class="label">md / rows=3</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea size="lg" rows="6" label="lg, rows=6" value="Șase rânduri vizibile."></mud-textarea>
+                <mud-textarea size="lg" rows="6" label="lg, rows=6" value="Six visible rows."></mud-textarea>
               </div>
               <span class="label">lg / rows=6</span>
             </div>
@@ -77,17 +73,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea
-                  resize="vertical"
-                  label="Redimensionabil"
-                  value="Trageți colțul din dreapta-jos."
-                ></mud-textarea>
+                <mud-textarea resize="vertical" label="Resizable" value="Drag the bottom-right corner."></mud-textarea>
               </div>
               <span class="label">resize=vertical (grip visible)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea resize="none" label="Înălțime fixă" value="Fără mâner de redimensionare."></mud-textarea>
+                <mud-textarea resize="none" label="Fixed height" value="No resize handle."></mud-textarea>
               </div>
               <span class="label">resize=none</span>
             </div>
@@ -100,9 +92,9 @@
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
                 <mud-textarea
-                  label="Mesaj (max 120)"
+                  label="Message (max 120)"
                   maxlength="120"
-                  value="Un mesaj scurt care se încadrează."
+                  value="A short message that fits."
                   helper-text="Counter auto-shown with maxlength"
                 ></mud-textarea>
               </div>
@@ -124,7 +116,7 @@
                 <mud-textarea
                   label="Over limit (max 20)"
                   maxlength="20"
-                  value="Acest text depășește clar limita de douăzeci."
+                  value="This text clearly exceeds the limit of twenty."
                 ></mud-textarea>
               </div>
               <span class="label">counter OVER limit</span>
@@ -140,7 +132,7 @@
                 <mud-textarea
                   label="Invalid"
                   invalid=""
-                  error-text="Descrierea este prea scurtă."
+                  error-text="The description is too short."
                   value="ab"
                 ></mud-textarea>
               </div>
@@ -148,19 +140,19 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea label="Dezactivat" disabled="" value="Conținut blocat"></mud-textarea>
+                <mud-textarea label="Disabled" disabled="" value="Locked content"></mud-textarea>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea label="Doar citire" readonly="" value="Conținut read-only"></mud-textarea>
+                <mud-textarea label="Read only" readonly="" value="Read-only content"></mud-textarea>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-textarea label="Obligatoriu" required="" placeholder="Necesită completare"></mud-textarea>
+                <mud-textarea label="Required" required="" placeholder="Needs completion"></mud-textarea>
               </div>
               <span class="label">required</span>
             </div>
@@ -193,9 +185,9 @@
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
                 <mud-textarea
-                  label="Diacritice + emoji"
+                  label="Accents + emoji"
                   rows="3"
-                  value="Mulțumim că folosiți serviciile guvernamentale. ăâîșțĂÂÎȘȚ 🇲🇩"
+                  value="Thank you for using government services. éüñ 🇲🇩"
                 ></mud-textarea>
               </div>
               <span class="label">diacritics + emoji</span>

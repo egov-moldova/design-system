@@ -16,7 +16,7 @@ const sectionLabelStyle =
 const headingStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-default); font-weight: 500; margin: var(--spacing-16) 0 var(--spacing-8); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;';
 
-// Romanian e-Gov flow — Acasă > Servicii > MPay > Detalii plată
+// Romanian e-Gov flow — Home > Services > MPay > Payment details
 const defaultItems: BreadcrumbItem[] = [
   { label: 'Acasă', href: '/' },
   { label: 'Servicii', href: '/servicii' },
@@ -24,52 +24,59 @@ const defaultItems: BreadcrumbItem[] = [
   { label: 'Detalii plată', active: true },
 ];
 
+// English copy of `defaultItems` for every story that is not a Figma reference.
+const demoItems: BreadcrumbItem[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/servicii' },
+  { label: 'MPay', href: '/servicii/mpay' },
+  { label: 'Payment details', active: true },
+];
 const overflowItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/' },
-  { label: 'Servicii', href: '/servicii' },
-  { label: 'Plăți', href: '/servicii/plati' },
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/servicii' },
+  { label: 'Payments', href: '/servicii/plati' },
   { label: 'MPay', href: '/servicii/plati/mpay' },
-  { label: 'Tranzacții', href: '/servicii/plati/mpay/tranzactii' },
+  { label: 'Transactions', href: '/servicii/plati/mpay/tranzactii' },
   { label: '2026', href: '/servicii/plati/mpay/tranzactii/2026' },
-  { label: 'Mai', href: '/servicii/plati/mpay/tranzactii/2026/mai' },
-  { label: 'Detalii plată', active: true },
+  { label: 'May', href: '/servicii/plati/mpay/tranzactii/2026/mai' },
+  { label: 'Payment details', active: true },
 ];
 
 const loadingItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/' },
-  { label: 'Servicii', href: '/servicii' },
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/servicii' },
   { label: 'MPay', loading: true },
-  { label: 'Detalii plată', active: true },
+  { label: 'Payment details', active: true },
 ];
 
 const longLabelItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/' },
+  { label: 'Home', href: '/' },
   {
-    label: 'Eticheta foarte lungă care depășește treizeci de caractere',
+    label: 'A very long label that goes past thirty characters',
     href: '/seo-long',
   },
-  { label: 'Detalii plată', active: true },
+  { label: 'Payment details', active: true },
 ];
 
 const leadingIconItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/', iconStart: 'home-line' },
-  { label: 'Servicii', href: '/servicii' },
+  { label: 'Home', href: '/', iconStart: 'home-line' },
+  { label: 'Services', href: '/servicii' },
   { label: 'MPay', href: '/servicii/mpay' },
-  { label: 'Detalii plată', active: true },
+  { label: 'Payment details', active: true },
 ];
 
 const visitedItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/', visited: true },
-  { label: 'Servicii', href: '/servicii', visited: true },
+  { label: 'Home', href: '/', visited: true },
+  { label: 'Services', href: '/servicii', visited: true },
   { label: 'MPay', href: '/servicii/mpay' },
-  { label: 'Detalii plată', active: true },
+  { label: 'Payment details', active: true },
 ];
 
 const disabledItems: BreadcrumbItem[] = [
-  { label: 'Acasă', href: '/', disabled: true },
-  { label: 'Servicii', href: '/servicii' },
+  { label: 'Home', href: '/', disabled: true },
+  { label: 'Services', href: '/servicii' },
   { label: 'MPay', href: '/servicii/mpay' },
-  { label: 'Detalii plată', active: true },
+  { label: 'Payment details', active: true },
 ];
 
 let storyInstance = 0;
@@ -108,7 +115,7 @@ const docsSourceDefault = (args: BreadcrumbArgs) => `<mud-breadcrumb id="my-brea
 
 const renderAllStates = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: true,
@@ -119,23 +126,23 @@ const renderAllStates = () => {
       <p style="${sectionLabelStyle}">Per-item states sampled from Figma node 81:713 — enabled / hover / focus / active / disabled / visited.</p>
       <div>
         <p style="${headingStyle}">enabled (default)</p>
-        ${renderBreadcrumb(baseArgs, defaultItems)}
+        ${renderBreadcrumb(baseArgs, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">hover &amp; focus — interact with the trail below</p>
-        ${renderBreadcrumb(baseArgs, defaultItems)}
+        ${renderBreadcrumb(baseArgs, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">visited</p>
         ${renderBreadcrumb(baseArgs, visitedItems)}
       </div>
       <div>
-        <p style="${headingStyle}">disabled (Acasă unreachable)</p>
+        <p style="${headingStyle}">disabled (Home unreachable)</p>
         ${renderBreadcrumb(baseArgs, disabledItems)}
       </div>
       <div>
         <p style="${headingStyle}">active — last crumb, aria-current="page", medium weight</p>
-        ${renderBreadcrumb(baseArgs, defaultItems)}
+        ${renderBreadcrumb(baseArgs, demoItems)}
       </div>
     </div>
   `;
@@ -177,7 +184,7 @@ const renderLoading = () => {
 
 const renderMobile = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: true,
@@ -188,11 +195,11 @@ const renderMobile = () => {
       <p style="${sectionLabelStyle}">Mobile collapses to a single back link to the parent page. Resize the viewport below 640px to preview, or use a container that mimics phone width.</p>
       <div style="max-width: 320px; border: 1px dashed var(--color-border-base-default); border-radius: 8px; padding: var(--spacing-12);">
         <p style="${headingStyle}">simulated mobile (container = 320px)</p>
-        ${renderBreadcrumb(baseArgs, defaultItems)}
+        ${renderBreadcrumb(baseArgs, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">at full width — desktop trail is visible</p>
-        ${renderBreadcrumb(baseArgs, defaultItems)}
+        ${renderBreadcrumb(baseArgs, demoItems)}
       </div>
     </div>
   `;
@@ -200,7 +207,7 @@ const renderMobile = () => {
 
 const renderWithCustomSeparator = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: true,
@@ -216,14 +223,14 @@ const renderWithCustomSeparator = () => {
         <mud-breadcrumb id="${id1}" max-visible="${baseArgs.maxVisible}">
           <span slot="separator" style="color: var(--color-text-base-tertiary); width: 12px; text-align: center;">/</span>
         </mud-breadcrumb>
-        ${setItemsScript(id1, defaultItems)}
+        ${setItemsScript(id1, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">middot separator</p>
         <mud-breadcrumb id="${id2}" max-visible="${baseArgs.maxVisible}">
           <span slot="separator" style="color: var(--color-text-base-tertiary); width: 16px; text-align: center;">·</span>
         </mud-breadcrumb>
-        ${setItemsScript(id2, defaultItems)}
+        ${setItemsScript(id2, demoItems)}
       </div>
     </div>
   `;
@@ -231,7 +238,7 @@ const renderWithCustomSeparator = () => {
 
 const renderEdgeCases = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: true,
@@ -241,18 +248,18 @@ const renderEdgeCases = () => {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
       <p style="${sectionLabelStyle}">Two items only — single parent link plus active page.</p>
       ${renderBreadcrumb(baseArgs, [
-        { label: 'Acasă', href: '/' },
-        { label: 'Profil', active: true },
+        { label: 'Home', href: '/' },
+        { label: 'Profile', active: true },
       ])}
       <p style="${sectionLabelStyle}">Single item — only the active page (no separator).</p>
-      ${renderBreadcrumb(baseArgs, [{ label: 'Acasă', active: true }])}
+      ${renderBreadcrumb(baseArgs, [{ label: 'Home', active: true }])}
     </div>
   `;
 };
 
 const renderLongLabels = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: false, // keep desktop trail at every width so the truncation+tooltip is observable
@@ -265,16 +272,16 @@ const renderLongLabels = () => {
       ${renderBreadcrumb(baseArgs, longLabelItems)}
       <p style="${headingStyle}">Labels exactly at the 30-character threshold do NOT get a tooltip — they fit inline.</p>
       ${renderBreadcrumb(baseArgs, [
-        { label: 'Acasă', href: '/' },
+        { label: 'Home', href: '/' },
         { label: 'Exactly thirty characters here', href: '/borderline' },
-        { label: 'Detalii plată', active: true },
+        { label: 'Payment details', active: true },
       ])}
       <p style="${headingStyle}">A very long label in the active position also gets the tooltip treatment.</p>
       ${renderBreadcrumb(baseArgs, [
-        { label: 'Acasă', href: '/' },
-        { label: 'Servicii', href: '/servicii' },
+        { label: 'Home', href: '/' },
+        { label: 'Services', href: '/servicii' },
         {
-          label: 'Confirmarea identității prin certificat digital MSign avansat',
+          label: 'Identity confirmation through an advanced MSign digital certificate',
           active: true,
         },
       ])}
@@ -284,7 +291,7 @@ const renderLongLabels = () => {
 
 const renderWithLeadingIcon = () => {
   const baseArgs: BreadcrumbArgs = {
-    items: defaultItems,
+    items: demoItems,
     maxVisible: 4,
     separator: '',
     responsive: false,
@@ -298,10 +305,10 @@ const renderWithLeadingIcon = () => {
       <mud-breadcrumb>
         <mud-breadcrumb-item href="/">
           <mud-icon slot="icon-start" name="home-line"></mud-icon>
-          Acasă
+          Home
         </mud-breadcrumb-item>
-        <mud-breadcrumb-item href="/servicii">Servicii</mud-breadcrumb-item>
-        <mud-breadcrumb-item active>Detalii plată</mud-breadcrumb-item>
+        <mud-breadcrumb-item href="/servicii">Services</mud-breadcrumb-item>
+        <mud-breadcrumb-item active>Payment details</mud-breadcrumb-item>
       </mud-breadcrumb>
     </div>
   `;
@@ -311,10 +318,10 @@ const renderSlotMode = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
     <p style="${sectionLabelStyle}">Slot-mode — declare crumbs as markup. The parent skips its internal separator logic in this mode; consumers compose freely.</p>
     <mud-breadcrumb>
-      <mud-breadcrumb-item href="/">Acasă</mud-breadcrumb-item>
-      <mud-breadcrumb-item href="/servicii">Servicii</mud-breadcrumb-item>
+      <mud-breadcrumb-item href="/">Home</mud-breadcrumb-item>
+      <mud-breadcrumb-item href="/servicii">Services</mud-breadcrumb-item>
       <mud-breadcrumb-item href="/servicii/mpay">MPay</mud-breadcrumb-item>
-      <mud-breadcrumb-item active>Detalii plată</mud-breadcrumb-item>
+      <mud-breadcrumb-item active>Payment details</mud-breadcrumb-item>
     </mud-breadcrumb>
   </div>
 `;
@@ -360,7 +367,7 @@ export default meta;
 type Story = StoryObj<BreadcrumbArgs>;
 
 // ---------------------------------------------------------------------------
-// Default — 4 items linear (Acasă > Servicii > MPay > Detalii plată)
+// Default — 4 items linear (Home > Services > MPay > Payment details)
 // ---------------------------------------------------------------------------
 export const Default: Story = {
   render: renderDefault,
@@ -389,7 +396,7 @@ export const AllStates: Story = {
     docs: {
       source: {
         code: docsSourceDefault({
-          items: defaultItems,
+          items: demoItems,
           maxVisible: 4,
           separator: '',
           responsive: true,
@@ -443,7 +450,7 @@ export const Mobile: Story = {
     docs: {
       source: {
         code: docsSourceDefault({
-          items: defaultItems,
+          items: demoItems,
           maxVisible: 4,
           separator: '',
           responsive: true,
@@ -463,7 +470,7 @@ export const WithCustomSeparator: Story = {
         code: `<mud-breadcrumb id="my-breadcrumb">
   <span slot="separator">/</span>
 </mud-breadcrumb>
-<script>document.getElementById('my-breadcrumb').items = ${JSON.stringify(defaultItems, null, 2)};</script>`,
+<script>document.getElementById('my-breadcrumb').items = ${JSON.stringify(demoItems, null, 2)};</script>`,
       },
     },
   },
@@ -478,9 +485,9 @@ export const LongLabels: Story = {
         code: `<mud-breadcrumb id="long" responsive="false"></mud-breadcrumb>
 <script>
   document.getElementById('long').items = [
-    { label: 'Acasă', href: '/' },
-    { label: 'Eticheta foarte lungă care depășește treizeci de caractere', href: '/seo-long' },
-    { label: 'Detalii plată', active: true },
+    { label: 'Home', href: '/' },
+    { label: 'A very long label that goes past thirty characters', href: '/seo-long' },
+    { label: 'Payment details', active: true },
   ];
 </script>`,
       },
@@ -498,10 +505,10 @@ export const WithLeadingIcon: Story = {
 <mud-breadcrumb id="leading" responsive="false"></mud-breadcrumb>
 <script>
   document.getElementById('leading').items = [
-    { label: 'Acasă', href: '/', iconStart: 'home-line' },
-    { label: 'Servicii', href: '/servicii' },
+    { label: 'Home', href: '/', iconStart: 'home-line' },
+    { label: 'Services', href: '/servicii' },
     { label: 'MPay', href: '/servicii/mpay' },
-    { label: 'Detalii plată', active: true },
+    { label: 'Payment details', active: true },
   ];
 </script>
 
@@ -509,10 +516,10 @@ export const WithLeadingIcon: Story = {
 <mud-breadcrumb>
   <mud-breadcrumb-item href="/">
     <mud-icon slot="icon-start" name="home-line"></mud-icon>
-    Acasă
+    Home
   </mud-breadcrumb-item>
-  <mud-breadcrumb-item href="/servicii">Servicii</mud-breadcrumb-item>
-  <mud-breadcrumb-item active>Detalii plată</mud-breadcrumb-item>
+  <mud-breadcrumb-item href="/servicii">Services</mud-breadcrumb-item>
+  <mud-breadcrumb-item active>Payment details</mud-breadcrumb-item>
 </mud-breadcrumb>`,
       },
     },
@@ -526,7 +533,7 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: docsSourceDefault({
-          items: defaultItems,
+          items: demoItems,
           maxVisible: 4,
           separator: '',
           responsive: true,
@@ -544,10 +551,10 @@ export const SlotMode: Story = {
     docs: {
       source: {
         code: `<mud-breadcrumb>
-  <mud-breadcrumb-item href="/">Acasă</mud-breadcrumb-item>
-  <mud-breadcrumb-item href="/servicii">Servicii</mud-breadcrumb-item>
+  <mud-breadcrumb-item href="/">Home</mud-breadcrumb-item>
+  <mud-breadcrumb-item href="/servicii">Services</mud-breadcrumb-item>
   <mud-breadcrumb-item href="/servicii/mpay">MPay</mud-breadcrumb-item>
-  <mud-breadcrumb-item active>Detalii plată</mud-breadcrumb-item>
+  <mud-breadcrumb-item active>Payment details</mud-breadcrumb-item>
 </mud-breadcrumb>`,
       },
     },
@@ -558,7 +565,7 @@ export const SlotMode: Story = {
 export const CoverageGuard: Story = {
   tags: ['!autodocs', '!dev'],
   render: () => /*html*/ `<mud-breadcrumb id="mud-breadcrumb-coverage"></mud-breadcrumb>
-    <script>(function(){const el=document.getElementById('mud-breadcrumb-coverage');if(el)el.items=${JSON.stringify(defaultItems)};})();</script>`,
+    <script>(function(){const el=document.getElementById('mud-breadcrumb-coverage');if(el)el.items=${JSON.stringify(demoItems)};})();</script>`,
   parameters: {
     controls: { disable: true },
     docs: { disable: true },

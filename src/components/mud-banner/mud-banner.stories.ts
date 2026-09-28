@@ -31,7 +31,7 @@ const renderBanner = (args: BannerArgs) => /*html*/ `
 `;
 
 const sectionStyle = 'display: flex; flex-direction: column; gap: var(--spacing-16); align-items: stretch;';
-const MESSAGE = 'Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.';
+const MESSAGE = 'Scheduled maintenance today. Some services may be temporarily unavailable.';
 
 const meta: Meta<BannerArgs> = {
   title: 'Components/Banner',
@@ -139,8 +139,8 @@ export const AllVariants: Story = { render: renderAllVariants, parameters: { con
 // ---------------------------------------------------------------------------
 const renderWithLink = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-banner variant="info" emphasis="strong" dismissible link-text="Detalii" link-href="#">${MESSAGE}</mud-banner>
-    <mud-banner variant="warning" emphasis="subtle" dismissible link-text="Detalii" link-href="#">${MESSAGE}</mud-banner>
+    <mud-banner variant="info" emphasis="strong" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
+    <mud-banner variant="warning" emphasis="subtle" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
   </div>
 `;
 export const WithLink: Story = { render: renderWithLink, parameters: { controls: { disable: true } } };

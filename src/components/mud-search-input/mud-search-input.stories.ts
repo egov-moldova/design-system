@@ -144,7 +144,7 @@ export const Shapes: Story = {
       SEARCH_INPUT_SHAPES.map(shape =>
         cell(
           shape,
-          /*html*/ `<mud-search-input aria-label="Caută în listă" shape="${shape}" placeholder="Caută…"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" shape="${shape}" placeholder="Search…"></mud-search-input>`,
         ),
       ).join(''),
     ),
@@ -153,7 +153,7 @@ export const Shapes: Story = {
     docs: {
       source: {
         code: SEARCH_INPUT_SHAPES.map(
-          s => `<mud-search-input aria-label="Caută în listă" shape="${s}" placeholder="Caută…"></mud-search-input>`,
+          s => `<mud-search-input aria-label="Search the list" shape="${s}" placeholder="Search…"></mud-search-input>`,
         ).join('\n'),
       },
     },
@@ -167,7 +167,7 @@ export const AllSizes: Story = {
       SEARCH_INPUT_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<mud-search-input aria-label="Caută în listă" size="${size}" placeholder="Caută…"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" size="${size}" placeholder="Search…"></mud-search-input>`,
         ),
       ).join(''),
     ),
@@ -176,7 +176,7 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: SEARCH_INPUT_SIZES.map(
-          s => `<mud-search-input aria-label="Caută în listă" size="${s}" placeholder="Caută…"></mud-search-input>`,
+          s => `<mud-search-input aria-label="Search the list" size="${s}" placeholder="Search…"></mud-search-input>`,
         ).join('\n'),
       },
     },
@@ -190,27 +190,27 @@ export const States: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" placeholder="Caută…"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Search…"></mud-search-input>`,
         ),
         cell(
           'filled (clear button visible)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="permis de conducere"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="driving licence"></mud-search-input>`,
         ),
         cell(
           'loading',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="permis de conducere" loading></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="driving licence" loading></mud-search-input>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" placeholder="Caută…" disabled></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Search…" disabled></mud-search-input>`,
         ),
         cell(
           'required + labeled',
-          /*html*/ `<mud-search-input label="Căutare" placeholder="Caută…" required></mud-search-input>`,
+          /*html*/ `<mud-search-input label="Lookup" placeholder="Search…" required></mud-search-input>`,
         ),
         cell(
           'with helper text',
-          /*html*/ `<mud-search-input label="Căutare" placeholder="Caută…" helper-text="Caută după nume, MIDR sau IDNP."></mud-search-input>`,
+          /*html*/ `<mud-search-input label="Lookup" placeholder="Search…" helper-text="Search by name, MIDR or IDNP."></mud-search-input>`,
         ),
       ].join(''),
     ),
@@ -219,12 +219,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-search-input aria-label="Caută în listă" placeholder="Caută…"></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" value="permis de conducere"></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" value="permis de conducere" loading></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" placeholder="Caută…" disabled></mud-search-input>',
-          '<mud-search-input label="Căutare" placeholder="Caută…" required></mud-search-input>',
-          '<mud-search-input label="Căutare" placeholder="Caută…" helper-text="Caută după nume, MIDR sau IDNP."></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" placeholder="Search…"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="driving licence"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="driving licence" loading></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" placeholder="Search…" disabled></mud-search-input>',
+          '<mud-search-input label="Lookup" placeholder="Search…" required></mud-search-input>',
+          '<mud-search-input label="Lookup" placeholder="Search…" helper-text="Search by name, MIDR or IDNP."></mud-search-input>',
         ].join('\n'),
       },
     },
@@ -238,27 +238,27 @@ export const WithSubmitButton: Story = {
       [
         cell(
           'rectangular — empty (button disabled)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" placeholder="Caută…" with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Search…" with-button></mud-search-input>`,
         ),
         cell(
           'rectangular — filled (button active)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="permis de conducere" with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="driving licence" with-button></mud-search-input>`,
         ),
         cell(
           'circular — empty (button disabled)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" shape="circular" placeholder="Caută…" with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" shape="circular" placeholder="Search…" with-button></mud-search-input>`,
         ),
         cell(
           'circular — filled (button active)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" shape="circular" value="cazier judiciar" with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" shape="circular" value="criminal record certificate" with-button></mud-search-input>`,
         ),
         cell(
           'lg — filled + loading',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" size="lg" value="permis de conducere" loading with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" size="lg" value="driving licence" loading with-button></mud-search-input>`,
         ),
         cell(
           'labeled + helper',
-          /*html*/ `<mud-search-input label="Căutare" placeholder="Caută…" helper-text="Apasă pe buton sau Enter pentru a căuta." with-button></mud-search-input>`,
+          /*html*/ `<mud-search-input label="Lookup" placeholder="Search…" helper-text="Press the button or Enter to search." with-button></mud-search-input>`,
         ),
       ].join(''),
     ),
@@ -267,10 +267,10 @@ export const WithSubmitButton: Story = {
     docs: {
       source: {
         code: [
-          '<mud-search-input aria-label="Caută în listă" placeholder="Caută…" with-button></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" value="permis de conducere" with-button></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" shape="circular" value="cazier judiciar" with-button></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" size="lg" value="permis de conducere" loading with-button></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" placeholder="Search…" with-button></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="driving licence" with-button></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" shape="circular" value="criminal record certificate" with-button></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" size="lg" value="driving licence" loading with-button></mud-search-input>',
         ].join('\n'),
       },
     },
@@ -284,13 +284,13 @@ export const WithCustomIcon: Story = {
       [
         cell(
           'icon-start slot override',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" placeholder="Filtrează…">
+          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Filter…">
             <mud-icon slot="icon-start" name="filter" size="20"></mud-icon>
           </mud-search-input>`,
         ),
         cell(
           'iconName prop override',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" icon-name="document" placeholder="Caută în documente"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" icon-name="document" placeholder="Search documents"></mud-search-input>`,
         ),
       ].join(''),
     ),
@@ -299,8 +299,8 @@ export const WithCustomIcon: Story = {
     docs: {
       source: {
         code: [
-          '<mud-search-input aria-label="Caută în listă" placeholder="Filtrează…"><mud-icon slot="icon-start" name="filter" size="20"></mud-icon></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" icon-name="document" placeholder="Caută în documente"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" placeholder="Filter…"><mud-icon slot="icon-start" name="filter" size="20"></mud-icon></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" icon-name="document" placeholder="Search documents"></mud-search-input>',
         ].join('\n'),
       },
     },
@@ -314,11 +314,11 @@ export const WithoutClearButton: Story = {
       [
         cell(
           'clearable=false (persistent filter)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="serviciu activ" clearable="false"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="active service" clearable="false"></mud-search-input>`,
         ),
         cell(
           'default (clear visible)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="serviciu activ"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="active service"></mud-search-input>`,
         ),
       ].join(''),
     ),
@@ -327,8 +327,8 @@ export const WithoutClearButton: Story = {
     docs: {
       source: {
         code: [
-          '<mud-search-input aria-label="Caută în listă" value="serviciu activ" clearable="false"></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" value="serviciu activ"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="active service" clearable="false"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="active service"></mud-search-input>',
         ].join('\n'),
       },
     },
@@ -342,19 +342,19 @@ export const EdgeCases: Story = {
       [
         cell(
           'long value truncation',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" value="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" value="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></mud-search-input>`,
         ),
         cell(
           'long helper truncation (two lines)',
-          /*html*/ `<mud-search-input label="Căutare" placeholder="Caută…" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-search-input>`,
+          /*html*/ `<mud-search-input label="Lookup" placeholder="Search…" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-search-input>`,
         ),
         cell(
           'no label (toolbar usage)',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" placeholder="Caută…"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Search…"></mud-search-input>`,
         ),
         cell(
           'circular + lg + value',
-          /*html*/ `<mud-search-input aria-label="Caută în listă" shape="circular" size="lg" value="permis"></mud-search-input>`,
+          /*html*/ `<mud-search-input aria-label="Search the list" shape="circular" size="lg" value="licence"></mud-search-input>`,
         ),
       ].join(''),
     ),
@@ -363,9 +363,9 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-search-input aria-label="Caută în listă" value="…long value…"></mud-search-input>',
-          '<mud-search-input label="Căutare" helper-text="…long helper…"></mud-search-input>',
-          '<mud-search-input aria-label="Caută în listă" placeholder="Caută…"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" value="…long value…"></mud-search-input>',
+          '<mud-search-input label="Lookup" helper-text="…long helper…"></mud-search-input>',
+          '<mud-search-input aria-label="Search the list" placeholder="Search…"></mud-search-input>',
         ].join('\n'),
       },
     },

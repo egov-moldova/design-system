@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -49,7 +49,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 282px">
-                <mud-time-input label="Ora programării" helper-text="Între 08:00 și 17:00"></mud-time-input>
+                <mud-time-input label="Appointment time" helper-text="Between 08:00 and 17:00"></mud-time-input>
               </div>
               <span class="label">helper-text</span>
             </div>
@@ -80,7 +80,7 @@
             <div class="cell">
               <div style="width: 100%; max-width: 282px">
                 <mud-time-input>
-                  <span slot="label">Ora sosirii</span>
+                  <span slot="label">Arrival time</span>
                   <span slot="helper">Format <code>HH:MM</code>, 24 de ore</span>
                 </mud-time-input>
               </div>
@@ -88,7 +88,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 282px">
-                <mud-time-input aria-label="Ora sosirii" value="09:30"></mud-time-input>
+                <mud-time-input aria-label="Arrival time" value="09:30"></mud-time-input>
               </div>
               <span class="label">no visible label · aria-label</span>
             </div>
@@ -104,15 +104,15 @@
                   min="08:00"
                   max="17:30"
                   value="09:00"
-                  label="Program de lucru"
-                  helper-text="Orele din afara intervalului sunt inactive"
+                  label="Working hours"
+                  helper-text="Hours outside the range are inactive"
                 ></mud-time-input>
               </div>
               <span class="label">min/max bounds</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 282px">
-                <mud-time-input min="08:00" max="17:30" value="19:45" label="Program de lucru"></mud-time-input>
+                <mud-time-input min="08:00" max="17:30" value="19:45" label="Working hours"></mud-time-input>
               </div>
               <span class="label">out-of-range value</span>
             </div>
@@ -124,7 +124,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 282px">
-                <mud-time-input value="11:" label="Ora" helper-text="Continuă să completezi"></mud-time-input>
+                <mud-time-input value="11:" label="Ora" helper-text="Keep filling in"></mud-time-input>
               </div>
               <span class="label">incomplete value</span>
             </div>
@@ -134,7 +134,7 @@
                   invalid=""
                   value="11:15"
                   label="Ora"
-                  error-text="Ora selectată nu mai este disponibilă"
+                  error-text="The selected time is no longer available"
                 ></mud-time-input>
               </div>
               <span class="label">invalid + error-text</span>
@@ -150,8 +150,8 @@
                 id="ti-form"
                 style="display: flex; flex-direction: column; gap: var(--spacing-16); max-width: 282px"
               >
-                <mud-time-input id="ti-events" name="arrival" required="" label="Ora sosirii"></mud-time-input>
-                <button type="submit">Trimite</button>
+                <mud-time-input id="ti-events" name="arrival" required="" label="Arrival time"></mud-time-input>
+                <button type="submit">Submit</button>
               </form>
               <span class="label">required · submit an empty field to see the error</span>
             </div>

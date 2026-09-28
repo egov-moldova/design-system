@@ -247,7 +247,7 @@ export const Docked: Story = {
   name: 'Docked',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;">
-      <mud-date-input label="Data programării" value="23/05/2026"></mud-date-input>
+      <mud-date-input label="Appointment date" value="23/05/2026"></mud-date-input>
       <div style="margin-top: var(--spacing-4);">
         <mud-date-picker mode="single" breakpoint="docked" value="2026-05-23"></mud-date-picker>
       </div>
@@ -268,7 +268,7 @@ export const ComposedWithDateInput: Story = {
   name: 'ComposedWithDateInput',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;" id="composed-host">
-      <mud-date-input id="composed-input" label="Data programării" placeholder="ZZ/LL/AAAA"></mud-date-input>
+      <mud-date-input id="composed-input" label="Appointment date" placeholder="DD/MM/YYYY"></mud-date-input>
       <div style="margin-top: var(--spacing-8);">
         <mud-date-picker id="composed-picker" mode="single" breakpoint="desktop"></mud-date-picker>
       </div>
@@ -365,6 +365,32 @@ export const EdgeCases: Story = {
           '<mud-date-picker value="2027-01-01"></mud-date-picker>',
         ].join('\n'),
       },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the month and weekday names, the first-day rule and the built-in Today label
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesDatePicker = (locale: string) =>
+  `<mud-date-picker locale="${locale}" mode="single" value="2026-05-15" today-shortcut></mud-date-picker>`;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-24); padding: var(--spacing-24);">
+      ${LOCALES.map(locale => cell(`locale="${locale}"`, localesDatePicker(locale))).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesDatePicker).join('\n') },
     },
   },
 };

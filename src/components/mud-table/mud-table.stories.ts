@@ -35,7 +35,7 @@ const group = (caption: string, body: string, hint?: string) => /*html*/ `
 `;
 
 // ---------------------------------------------------------------------------
-// Romanian-voice fixture data
+// Fixture data
 // ---------------------------------------------------------------------------
 
 const baseColumns: TableColumn[] = [
@@ -45,6 +45,13 @@ const baseColumns: TableColumn[] = [
   { key: 'amount', label: 'Sumă', align: 'end', sortable: true },
 ];
 
+// English copy of `baseColumns` for every story that is not a Figma reference.
+const demoColumns: TableColumn[] = [
+  { key: 'name', label: 'Name', sortable: true },
+  { key: 'email', label: 'Email', sortable: true },
+  { key: 'status', label: 'Status', align: 'start' },
+  { key: 'amount', label: 'Amount', align: 'end', sortable: true },
+];
 const baseRows: TableRowData[] = [
   { id: 'r1', name: 'Alexandra Pop', email: 'alexandra.pop@gov.md', status: 'platit', amount: '1.250 MDL' },
   { id: 'r2', name: 'Mihai Ionescu', email: 'mihai.ionescu@gov.md', status: 'asteptare', amount: '480 MDL' },
@@ -54,9 +61,9 @@ const baseRows: TableRowData[] = [
 ];
 
 const statusTagMap: Record<string, { semantic: string; label: string }> = {
-  platit: { semantic: 'success', label: 'Plătit' },
-  asteptare: { semantic: 'accent', label: 'În așteptare' },
-  anulat: { semantic: 'danger', label: 'Anulat' },
+  platit: { semantic: 'success', label: 'Paid' },
+  asteptare: { semantic: 'accent', label: 'Pending' },
+  anulat: { semantic: 'danger', label: 'Cancelled' },
 };
 
 const renderStatusSlot = (rowIndex: number, statusKey: string) => {
@@ -66,8 +73,8 @@ const renderStatusSlot = (rowIndex: number, statusKey: string) => {
 
 const renderRowActionsSlot = (rowIndex: number) => /*html*/ `
   <span slot="cell-actions-${rowIndex}" style="display:inline-flex; gap: var(--spacing-4);">
-    <mud-button appearance="text" size="sm">Vizualizează</mud-button>
-    <mud-button appearance="text" size="sm" variant="destructive">Șterge</mud-button>
+    <mud-button appearance="text" size="sm">View</mud-button>
+    <mud-button appearance="text" size="sm" variant="destructive">Delete</mud-button>
   </span>
 `;
 
@@ -219,9 +226,9 @@ export const AllRowStyles: Story = {
   render: () =>
     wrap(
       [
-        group('divided', renderTable('tbl-divided', baseColumns, baseRows, { rowStyle: 'divided' })),
-        group('zebra', renderTable('tbl-zebra', baseColumns, baseRows, { rowStyle: 'zebra' })),
-        group('borderless', renderTable('tbl-borderless', baseColumns, baseRows, { rowStyle: 'borderless' })),
+        group('divided', renderTable('tbl-divided', demoColumns, baseRows, { rowStyle: 'divided' })),
+        group('zebra', renderTable('tbl-zebra', demoColumns, baseRows, { rowStyle: 'zebra' })),
+        group('borderless', renderTable('tbl-borderless', demoColumns, baseRows, { rowStyle: 'borderless' })),
       ].join(''),
     ),
 };
@@ -231,9 +238,9 @@ export const AllHeaderStyles: Story = {
   render: () =>
     wrap(
       [
-        group('default', renderTable('tbl-hdr-default', baseColumns, baseRows, { headerStyle: 'default' })),
-        group('inverted', renderTable('tbl-hdr-inverted', baseColumns, baseRows, { headerStyle: 'inverted' })),
-        group('white', renderTable('tbl-hdr-white', baseColumns, baseRows, { headerStyle: 'white' })),
+        group('default', renderTable('tbl-hdr-default', demoColumns, baseRows, { headerStyle: 'default' })),
+        group('inverted', renderTable('tbl-hdr-inverted', demoColumns, baseRows, { headerStyle: 'inverted' })),
+        group('white', renderTable('tbl-hdr-white', demoColumns, baseRows, { headerStyle: 'white' })),
       ].join(''),
     ),
 };
@@ -248,13 +255,13 @@ export const Sortable: Story = {
           renderTable(
             'tbl-sortable',
             [
-              { key: 'name', label: 'Nume', sortable: true },
+              { key: 'name', label: 'Name', sortable: true },
               { key: 'email', label: 'Email', sortable: true },
               { key: 'status', label: 'Status' },
-              { key: 'amount', label: 'Sumă', align: 'end', sortable: true },
+              { key: 'amount', label: 'Amount', align: 'end', sortable: true },
             ],
             baseRows,
-            { ariaLabel: 'Tabel sortabil' },
+            { ariaLabel: 'Sortable table' },
           ),
           'aria-sort reflects the currently sorted column; the chevron rotates between asc and desc.',
         ),
@@ -268,23 +275,23 @@ export const DisableSort: Story = {
     // Same columns as Sortable (name/email/amount marked sortable) — the
     // table-level `disable-sort` switch overrides them all at once.
     const sortableColumns: TableColumn[] = [
-      { key: 'name', label: 'Nume', sortable: true },
+      { key: 'name', label: 'Name', sortable: true },
       { key: 'email', label: 'Email', sortable: true },
       { key: 'status', label: 'Status' },
-      { key: 'amount', label: 'Sumă', align: 'end', sortable: true },
+      { key: 'amount', label: 'Amount', align: 'end', sortable: true },
     ];
     return wrap(
       [
         group(
           'Sorting enabled (per-column `sortable: true`)',
-          renderTable('tbl-sort-on', sortableColumns, baseRows, { ariaLabel: 'Tabel sortabil' }),
+          renderTable('tbl-sort-on', sortableColumns, baseRows, { ariaLabel: 'Sortable table' }),
           'Headers show the sort chevron, are focusable, and emit `mudSort`.',
         ),
         group(
           'Sorting disabled (`disable-sort`)',
           renderTable('tbl-sort-off', sortableColumns, baseRows, {
             disableSort: true,
-            ariaLabel: 'Tabel cu sortare dezactivată',
+            ariaLabel: 'Table with sorting disabled',
           }),
           'The same columns now render as plain labels — no chevron, not focusable, no aria-sort, no `mudSort`. Useful for read-only or loading states without touching the columns array.',
         ),
@@ -300,10 +307,10 @@ export const Selectable: Story = {
       [
         group(
           'Multi-row selection',
-          renderTable('tbl-selectable', baseColumns, baseRows, {
+          renderTable('tbl-selectable', demoColumns, baseRows, {
             selectable: true,
             hoverable: true,
-            ariaLabel: 'Tabel cu selecție',
+            ariaLabel: 'Table with selection',
           }),
           'The leading checkbox column toggles row selection; the header checkbox toggles all rows (with indeterminate state).',
         ),
@@ -318,7 +325,7 @@ export const WithStatusBadges: Story = {
     return wrap(
       group(
         'Status cells composed with `mud-tag`',
-        renderTable('tbl-status', baseColumns, baseRows, { rowStyle: 'divided' }, tagSlots),
+        renderTable('tbl-status', demoColumns, baseRows, { rowStyle: 'divided' }, tagSlots),
         'Per-row slot name pattern: `cell-{key}-{index}` — drop in any element.',
       ),
     );
@@ -328,7 +335,7 @@ export const WithStatusBadges: Story = {
 export const WithActions: Story = {
   name: 'WithActions',
   render: () => {
-    const columnsWithActions: TableColumn[] = [...baseColumns, { key: 'actions', label: 'Acțiuni', align: 'end' }];
+    const columnsWithActions: TableColumn[] = [...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }];
     const slots = baseRows.map((_, idx) => renderRowActionsSlot(idx)).join('');
     return wrap(
       group(
@@ -345,7 +352,7 @@ export const Hoverable: Story = {
     wrap(
       group(
         'Hoverable rows — pointer cursor + background tint on hover',
-        renderTable('tbl-hover', baseColumns, baseRows, { hoverable: true }),
+        renderTable('tbl-hover', demoColumns, baseRows, { hoverable: true }),
         'Hover affordance is independent of selection; rows still emit `mudRowClick` when clicked.',
       ),
     ),
@@ -381,8 +388,8 @@ export const AllDataTypes: Story = {
         const tag = statusTagMap[String(row.status)];
         return /*html*/ `
           <mud-tag slot="cell-status-${idx}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
-          <mud-checkbox slot="cell-verified-${idx}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmat"></mud-checkbox>
-          <mud-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Editează">
+          <mud-checkbox slot="cell-verified-${idx}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmed"></mud-checkbox>
+          <mud-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Edit">
             <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
           </mud-button>
         `;
@@ -405,22 +412,22 @@ export const EmptyState: Story = {
       [
         group(
           'Empty state — default message',
-          renderTable('tbl-empty-default', baseColumns, [], { ariaLabel: 'Tabel gol' }),
+          renderTable('tbl-empty-default', demoColumns, [], { ariaLabel: 'Empty table' }),
         ),
         group(
           'Empty state — custom slot content',
-          `<mud-table id="tbl-empty-custom" aria-label="Tabel gol cu mesaj personalizat">
+          `<mud-table id="tbl-empty-custom" aria-label="Empty table with a custom message">
              <span slot="empty" style="display:flex; flex-direction:column; gap: var(--spacing-8); align-items:center;">
                <mud-icon name="document" size="24" color="icon-base-tertiary"></mud-icon>
-               <strong>Nu există plăți înregistrate.</strong>
-               <span style="color: var(--color-text-base-tertiary);">Adăugați o plată nouă pentru a începe.</span>
+               <strong>No payments recorded.</strong>
+               <span style="color: var(--color-text-base-tertiary);">Add a new payment to get started.</span>
              </span>
            </mud-table>
            <script>
              (function(){
                const el = document.getElementById('tbl-empty-custom');
                if (el) {
-                 el.columns = ${stringify(baseColumns)};
+                 el.columns = ${stringify(demoColumns)};
                  el.rows = [];
                }
              })();
@@ -436,17 +443,17 @@ export const Loading: Story = {
     wrap(
       group(
         'Loading skeleton — slotted in via the `empty` slot',
-        `<mud-table id="tbl-loading" aria-label="Tabel în încărcare">
+        `<mud-table id="tbl-loading" aria-label="Table loading">
            <span slot="empty" style="display:flex; flex-direction:column; gap: var(--spacing-12); align-items:center; padding: var(--spacing-24);">
              <mud-spinner size="md"></mud-spinner>
-             <span style="color: var(--color-text-base-tertiary);">Se încarcă datele…</span>
+             <span style="color: var(--color-text-base-tertiary);">Loading data…</span>
            </span>
          </mud-table>
          <script>
            (function(){
              const el = document.getElementById('tbl-loading');
              if (el) {
-               el.columns = ${stringify(baseColumns)};
+               el.columns = ${stringify(demoColumns)};
                el.rows = [];
              }
            })();
@@ -465,7 +472,7 @@ export const Mobile: Story = {
       <p style="${captionStyle}">Viewport ≤ 640 px — inline cell padding 16 px</p>
       <p style="${hintStyle}">The table keeps its structure and scrolls horizontally when it does not fit.</p>
       <div style="max-width: 420px;">
-        ${renderTable('tbl-mobile', baseColumns, baseRows, { ariaLabel: 'Tabel mobil', rowStyle: 'divided' })}
+        ${renderTable('tbl-mobile', demoColumns, baseRows, { ariaLabel: 'Mobile table', rowStyle: 'divided' })}
       </div>
     </div>
   `,
@@ -476,13 +483,13 @@ export const EdgeCases: Story = {
   render: () => {
     const wideColumns: TableColumn[] = [
       { key: 'id', label: 'ID' },
-      { key: 'name', label: 'Nume complet' },
-      { key: 'email', label: 'Adresă de e-mail' },
-      { key: 'phone', label: 'Telefon' },
-      { key: 'address', label: 'Adresă' },
+      { key: 'name', label: 'Full name' },
+      { key: 'email', label: 'Email address' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'address', label: 'Address' },
       { key: 'role', label: 'Rol' },
-      { key: 'department', label: 'Departament' },
-      { key: 'amount', label: 'Sumă', align: 'end' },
+      { key: 'department', label: 'Department' },
+      { key: 'amount', label: 'Amount', align: 'end' },
     ];
     const wideRows: TableRowData[] = [
       {
@@ -490,9 +497,9 @@ export const EdgeCases: Story = {
         name: 'Alexandra-Maria Constantinescu-Popescu',
         email: 'alexandra.maria.constantinescu@cancelaria.gov.md',
         phone: '+373 22 123 456',
-        address: 'Str. Ștefan cel Mare 105, MD-2012 Chișinău',
-        role: 'Director executiv',
-        department: 'Cancelaria de Stat',
+        address: '105 Ștefan cel Mare St., MD-2012 Chișinău',
+        role: 'Executive director',
+        department: 'State Chancellery',
         amount: '12.450,75 MDL',
       },
       {
@@ -502,7 +509,7 @@ export const EdgeCases: Story = {
         phone: '+373 22 222 333',
         address: 'Bd. Negruzzi 1',
         role: 'Inspector',
-        department: 'Finanțe',
+        department: 'Finance',
         amount: '480 MDL',
       },
       {
@@ -510,9 +517,9 @@ export const EdgeCases: Story = {
         name: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
         email: 'foarte.lung.de.email@subdomeniu.exemplu.gov.md',
         phone: '+373 22 999 888',
-        address: 'Str. lungă fără limită care depășește mărimea coloanei standard 245A',
-        role: 'Manager superior de proiecte digitale',
-        department: 'Transformare digitală',
+        address: 'A long street name without limit that exceeds the standard column size 245A',
+        role: 'Senior digital projects manager',
+        department: 'Digital transformation',
         amount: '99.999,99 MDL',
       },
     ];
@@ -520,9 +527,38 @@ export const EdgeCases: Story = {
       [
         group(
           'Many columns + long content (horizontal scroll)',
-          renderTable('tbl-wide', wideColumns, wideRows, { rowStyle: 'zebra', ariaLabel: 'Tabel cu multe coloane' }),
+          renderTable('tbl-wide', wideColumns, wideRows, { rowStyle: 'zebra', ariaLabel: 'Table with many columns' }),
         ),
       ].join(''),
     );
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in empty-state message
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+export const Locales: Story = {
+  render: () =>
+    wrap(
+      LOCALES.map(locale =>
+        group(
+          `locale="${locale}"`,
+          renderTable(`tbl-locale-${locale}`, demoColumns, [], { ariaLabel: 'Empty table', locale }),
+        ),
+      ).join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: {
+        code: LOCALES.map(locale => `<mud-table locale="${locale}" aria-label="Empty table"></mud-table>`).join('\n'),
+      },
+    },
   },
 };

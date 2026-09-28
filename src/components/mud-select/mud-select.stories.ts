@@ -367,10 +367,10 @@ export const Open: Story = {
 
 const COUNTRY_OPTIONS = /*html*/ `
   <option value="opt-1">Moldova (Republica Moldova)</option>
-  <option value="opt-2">România</option>
-  <option value="opt-3">Ucraina</option>
+  <option value="opt-2">Romania</option>
+  <option value="opt-3">Ukraine</option>
   <option value="opt-4">A very long option label that should truncate before the trailing chevron icon</option>
-  <option value="opt-5">Federația Rusă</option>
+  <option value="opt-5">Russian Federation</option>
 `;
 
 export const WithLongOptions: Story = {
@@ -451,7 +451,7 @@ const CITY_OPTIONS = /*html*/ `
     <option value="soroca">Soroca</option>
     <option value="edinet">Edineț</option>
   </optgroup>
-  <optgroup label="Centru">
+  <optgroup label="Central">
     <option value="chisinau">Chișinău</option>
     <option value="orhei">Orhei</option>
     <option value="ungheni">Ungheni</option>
@@ -519,7 +519,7 @@ export const OptionsFromData: Story = {
     wrap(
       cell(
         'rendered from an array',
-        select('size="large" label="Oraș" placeholder="Alege un oraș"', optionsFromData(CITIES)),
+        select('size="large" label="City" placeholder="Choose a city"', optionsFromData(CITIES)),
       ),
     ),
   parameters: {
@@ -533,7 +533,7 @@ export const OptionsFromData: Story = {
         code: [
           'const cities = [{ value: "chisinau", label: "Chișinău" }, /* … */];',
           '',
-          '<mud-select size="large" label="Oraș" placeholder="Alege un oraș">',
+          '<mud-select size="large" label="City" placeholder="Choose a city">',
           '  {cities.map(city => <option value={city.value}>{city.label}</option>)}',
           '</mud-select>',
         ].join('\n'),
@@ -543,9 +543,9 @@ export const OptionsFromData: Story = {
 };
 
 const DISABLED_OPTIONS = /*html*/ `
-  <option value="pickup">Ridicare personală</option>
+  <option value="pickup">Personal pickup</option>
   <option value="courier" disabled>Curier (indisponibil azi)</option>
-  <optgroup label="Poștă" disabled>
+  <optgroup label="Post" disabled>
     <option value="post-standard">Standard</option>
     <option value="post-express">Express</option>
   </optgroup>
@@ -556,8 +556,8 @@ export const DisabledOptions: Story = {
   render: () =>
     wrap(
       [
-        cell('closed', select('size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS)),
-        cell('open', select('size="large" label="Livrare" placeholder="Alege metoda" open', DISABLED_OPTIONS)),
+        cell('closed', select('size="large" label="Delivery" placeholder="Choose a method"', DISABLED_OPTIONS)),
+        cell('open', select('size="large" label="Delivery" placeholder="Choose a method" open', DISABLED_OPTIONS)),
       ].join(''),
     ),
   parameters: {
@@ -568,7 +568,7 @@ export const DisabledOptions: Story = {
           '`disabled` on an `<option>` makes that one choice unselectable; `disabled` on an `<optgroup>` disables every option under it, and an option cannot opt back in — the same rule a native `<select>` applies. Keyboard navigation skips them all.',
       },
       source: {
-        code: sourceFor('size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS),
+        code: sourceFor('size="large" label="Delivery" placeholder="Choose a method"', DISABLED_OPTIONS),
       },
     },
   },
@@ -584,7 +584,7 @@ const ADD_OPTION = `
   const n = group.children.length + 1;
   const option = document.createElement('option');
   option.value = 'oras-' + n;
-  option.textContent = 'Oraș ' + n;
+  option.textContent = 'City ' + n;
   group.appendChild(option);
 `;
 
@@ -603,11 +603,11 @@ export const DynamicOptions: Story = {
   render: () => /*html*/ `
       <div id="mud-select-dynamic" style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px; min-block-size: ${OPEN_CELL_BLOCK_SIZE};">
         <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-12);">
-          <mud-button size="sm" variant="secondary" onclick="${ADD_OPTION}">Adaugă opțiune</mud-button>
-          <mud-button size="sm" variant="secondary" onclick="${REMOVE_OPTION}">Elimină ultima</mud-button>
-          <mud-button size="sm" variant="secondary" onclick="${TOGGLE_DISABLED}">Comută disabled</mud-button>
+          <mud-button size="sm" variant="secondary" onclick="${ADD_OPTION}">Add option</mud-button>
+          <mud-button size="sm" variant="secondary" onclick="${REMOVE_OPTION}">Drop last option</mud-button>
+          <mud-button size="sm" variant="secondary" onclick="${TOGGLE_DISABLED}">Toggle disabled</mud-button>
         </div>
-        <mud-select size="large" label="Oraș" placeholder="Alege un oraș" open>
+        <mud-select size="large" label="City" placeholder="Choose a city" open>
           <optgroup label="Nord">
             <option value="balti">Bălți</option>
           </optgroup>
@@ -623,7 +623,7 @@ export const DynamicOptions: Story = {
       },
       source: {
         code: [
-          '<mud-select size="large" label="Oraș" placeholder="Alege un oraș">',
+          '<mud-select size="large" label="City" placeholder="Choose a city">',
           '  <optgroup label="Nord">',
           '    <option value="balti">Bălți</option>',
           '  </optgroup>',
@@ -642,8 +642,8 @@ export const Searchable: Story = {
   render: () =>
     wrap(
       [
-        cell('type to filter', select('size="large" label="Oraș" searchable placeholder="Caută oraș"', CITY_OPTIONS)),
-        cell('open', select('size="large" label="Oraș" searchable placeholder="Caută oraș" open', CITY_OPTIONS)),
+        cell('type to filter', select('size="large" label="City" searchable placeholder="Search city"', CITY_OPTIONS)),
+        cell('open', select('size="large" label="City" searchable placeholder="Search city" open', CITY_OPTIONS)),
       ].join(''),
     ),
   parameters: {
@@ -654,7 +654,7 @@ export const Searchable: Story = {
           'With `searchable`, the control itself is the query box. Matching ignores case and diacritics, so `chisinau` finds Chișinău and `balti` finds Bălți; a group disappears when none of its options match. Without `searchable`, the same keystrokes jump the highlight instead, as a native `<select>` does.',
       },
       source: {
-        code: sourceFor('size="large" label="Oraș" searchable placeholder="Caută oraș"', CITY_OPTIONS),
+        code: sourceFor('size="large" label="City" searchable placeholder="Search city"', CITY_OPTIONS),
       },
     },
   },
@@ -666,7 +666,7 @@ export const NoResults: Story = {
     wrap(
       cell(
         'nothing matches the query',
-        select('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit" open', CITY_OPTIONS),
+        select('size="large" label="City" searchable empty-label="No city found" open', CITY_OPTIONS),
       ),
     ),
   play: async ({ canvasElement }) => {
@@ -685,10 +685,11 @@ export const NoResults: Story = {
     controls: { disable: true },
     docs: {
       description: {
-        story: 'The empty state is `empty-label`, a prop with the Romanian default `Nicio opțiune`.',
+        story:
+          'The empty state is `empty-label`, a prop whose default is the built-in "no options" message of the active locale.',
       },
       source: {
-        code: sourceFor('size="large" label="Oraș" searchable empty-label="Niciun oraș găsit"', CITY_OPTIONS),
+        code: sourceFor('size="large" label="City" searchable empty-label="No city found"', CITY_OPTIONS),
       },
     },
   },
@@ -699,7 +700,7 @@ const FORM_CITY_OPTIONS = /*html*/ `
     <option value="balti">Bălți</option>
     <option value="soroca">Soroca</option>
   </optgroup>
-  <optgroup label="Centru">
+  <optgroup label="Central">
     <option value="chisinau" selected>Chișinău</option>
     <option value="orhei">Orhei</option>
   </optgroup>
@@ -719,11 +720,11 @@ export const InForm: Story = {
         style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); max-width: 420px;"
         onsubmit="${SUBMIT_HANDLER}"
       >
-        ${select('name="oras" size="large" label="Oraș" placeholder="Alege un oraș" required', FORM_CITY_OPTIONS)}
-        ${select('name="livrare" size="large" label="Livrare" placeholder="Alege metoda"', DISABLED_OPTIONS)}
+        ${select('name="oras" size="large" label="City" placeholder="Choose a city" required', FORM_CITY_OPTIONS)}
+        ${select('name="delivery" size="large" label="Delivery" placeholder="Choose a method"', DISABLED_OPTIONS)}
         <div style="display: flex; gap: var(--spacing-12);">
-          <mud-button variant="primary" size="md" type="submit">Trimite</mud-button>
-          <mud-button variant="secondary" size="md" type="reset">Resetează</mud-button>
+          <mud-button variant="primary" size="md" type="submit">Submit</mud-button>
+          <mud-button variant="secondary" size="md" type="reset">Reset</mud-button>
         </div>
         <pre id="mud-select-form-output" style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary); margin: 0;"></pre>
       </form>
@@ -738,12 +739,37 @@ export const InForm: Story = {
       source: {
         code: [
           '<form>',
-          `  ${sourceFor('name="oras" size="large" label="Oraș" required', '\n    <option value="chisinau" selected>Chișinău</option>\n    <!-- … -->\n  ')}`,
-          '  <mud-button variant="primary" type="submit">Trimite</mud-button>',
-          '  <mud-button variant="secondary" type="reset">Resetează</mud-button>',
+          `  ${sourceFor('name="oras" size="large" label="City" required', '\n    <option value="chisinau" selected>Chișinău</option>\n    <!-- … -->\n  ')}`,
+          '  <mud-button variant="primary" type="submit">Submit</mud-button>',
+          '  <mud-button variant="secondary" type="reset">Reset</mud-button>',
           '</form>',
         ].join('\n'),
       },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in empty-state label of an open select with no options
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesSelect = (locale: string) => select(`locale="${locale}" size="large" label="City" open`, '');
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-24); padding: var(--spacing-24); min-height: 200px;">
+      ${LOCALES.map(locale => /*html*/ `<div style="display: flex; flex-direction: column; gap: var(--spacing-8);"><span style="${cellLabelStyle}">locale="${locale}"</span>${localesSelect(locale)}</div>`).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesSelect).join('\n') },
     },
   },
 };

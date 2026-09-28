@@ -361,3 +361,36 @@ export const OverflowActive: Story = {
     },
   },
 };
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in Previous / Next labels in ro-MD, en-US and ru-MD
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
+      ${LOCALES.map(
+        locale => /*html*/ `
+      <div>
+        <p style="${cellLabelStyle}">locale="${locale}"</p>
+        <mud-pagination locale="${locale}" current-page="3" total-pages="9"></mud-pagination>
+      </div>`,
+      ).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: {
+        code: LOCALES.map(
+          locale => `<mud-pagination locale="${locale}" current-page="3" total-pages="9"></mud-pagination>`,
+        ).join('\n'),
+      },
+    },
+  },
+};

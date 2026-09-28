@@ -21,9 +21,9 @@ const headingStyle =
 // Romanian voice — multi-step onboarding flow for a public-service portal.
 // ---------------------------------------------------------------------------
 const defaultSteps: StepperStep[] = [
-  { label: 'Pasul 1: Date personale', status: 'completed' },
-  { label: 'Pasul 2: Documente', status: 'current' },
-  { label: 'Pasul 3: Confirmare', status: 'pending' },
+  { label: 'Step 1: Personal data', status: 'completed' },
+  { label: 'Step 2: Documents', status: 'current' },
+  { label: 'Step 3: Confirmation', status: 'pending' },
 ];
 
 const verticalSteps: StepperStep[] = [
@@ -34,49 +34,49 @@ const verticalSteps: StepperStep[] = [
 ];
 
 const allStatesSteps: StepperStep[] = [
-  { label: 'Finalizat', status: 'completed' },
-  { label: 'Curent', status: 'current' },
-  { label: 'Disponibil', status: 'available' },
-  { label: 'În așteptare', status: 'pending' },
-  { label: 'Eroare', status: 'error' },
+  { label: 'Completed', status: 'completed' },
+  { label: 'Current', status: 'current' },
+  { label: 'Available', status: 'available' },
+  { label: 'Pending', status: 'pending' },
+  { label: 'Error', status: 'error' },
 ];
 
 const withSupportingTextSteps: StepperStep[] = [
   {
-    label: 'Pasul 1: Date personale',
-    supportingText: 'Nume, prenume, CNP',
+    label: 'Step 1: Personal data',
+    supportingText: 'Name, surname, personal ID',
     status: 'completed',
   },
   {
-    label: 'Pasul 2: Documente',
-    supportingText: 'Carte de identitate, adeverință',
+    label: 'Step 2: Documents',
+    supportingText: 'Identity card, certificate',
     status: 'current',
   },
   {
-    label: 'Pasul 3: Plată',
-    supportingText: 'Selectați metoda de plată',
+    label: 'Step 3: Payment',
+    supportingText: 'Select the payment method',
     status: 'pending',
   },
   {
-    label: 'Pasul 4: Confirmare',
-    supportingText: 'Verificați datele introduse',
+    label: 'Step 4: Confirmation',
+    supportingText: 'Check the data you entered',
     status: 'pending',
   },
 ];
 
 const numberedSteps: StepperStep[] = [
-  { label: 'Date personale', status: 'completed' },
-  { label: 'Documente', status: 'completed' },
-  { label: 'Plată', status: 'current' },
-  { label: 'Confirmare', status: 'pending' },
-  { label: 'Finalizare', status: 'pending' },
+  { label: 'Personal data', status: 'completed' },
+  { label: 'Documents', status: 'completed' },
+  { label: 'Payment', status: 'current' },
+  { label: 'Confirmation', status: 'pending' },
+  { label: 'Completion', status: 'pending' },
 ];
 
 const iconSteps: StepperStep[] = [
-  { label: 'Date personale', iconName: 'person', status: 'completed' },
-  { label: 'Documente', iconName: 'document', status: 'current' },
-  { label: 'Plată', iconName: 'wallet', status: 'pending' },
-  { label: 'Confirmare', iconName: 'checkmark-large', status: 'pending' },
+  { label: 'Personal data', iconName: 'person', status: 'completed' },
+  { label: 'Documents', iconName: 'document', status: 'current' },
+  { label: 'Payment', iconName: 'wallet', status: 'pending' },
+  { label: 'Confirmation', iconName: 'checkmark-large', status: 'pending' },
 ];
 
 const manySteps: StepperStep[] = [
@@ -91,11 +91,11 @@ const manySteps: StepperStep[] = [
 ];
 
 const interactiveSteps: StepperStep[] = [
-  { label: 'Pasul 1: Date personale', status: 'completed' },
-  { label: 'Pasul 2: Documente', status: 'completed' },
-  { label: 'Pasul 3: Plată', status: 'current' },
-  { label: 'Pasul 4: Confirmare', status: 'available' },
-  { label: 'Pasul 5: Finalizare', status: 'pending' },
+  { label: 'Step 1: Personal data', status: 'completed' },
+  { label: 'Step 2: Documents', status: 'completed' },
+  { label: 'Step 3: Payment', status: 'current' },
+  { label: 'Step 4: Confirmation', status: 'available' },
+  { label: 'Step 5: Completion', status: 'pending' },
 ];
 
 let storyInstance = 0;
@@ -215,7 +215,7 @@ export const Default: Story = {
     steps: defaultSteps,
     orientation: 'horizontal',
     interactive: false,
-    ariaLabel: 'Pași de înregistrare',
+    ariaLabel: 'Registration steps',
   },
   parameters: {
     docs: {
@@ -292,7 +292,7 @@ export const Interactive: Story = {
     steps: interactiveSteps,
     orientation: 'horizontal',
     interactive: true,
-    ariaLabel: 'Pași de înregistrare',
+    ariaLabel: 'Registration steps',
   },
   parameters: {
     docs: {
@@ -301,7 +301,7 @@ export const Interactive: Story = {
           steps: interactiveSteps,
           orientation: 'horizontal',
           interactive: true,
-          ariaLabel: 'Pași de înregistrare',
+          ariaLabel: 'Registration steps',
         }),
       },
     },
@@ -322,7 +322,7 @@ export const NonInteractive: Story = {
     steps: defaultSteps,
     orientation: 'horizontal',
     interactive: false,
-    ariaLabel: 'Pași de înregistrare',
+    ariaLabel: 'Registration steps',
   },
   parameters: { controls: { disable: true } },
 };
@@ -340,7 +340,7 @@ export const AllStates: Story = {
           steps: allStatesSteps,
           orientation: 'horizontal',
           interactive: false,
-          ariaLabel: 'Toate stările',
+          ariaLabel: 'All states',
         })}
       </div>
       <div>
@@ -350,7 +350,7 @@ export const AllStates: Story = {
             steps: allStatesSteps,
             orientation: 'vertical',
             interactive: false,
-            ariaLabel: 'Toate stările',
+            ariaLabel: 'All states',
           })}
         </div>
       </div>
@@ -370,7 +370,7 @@ export const WithSupportingText: Story = {
         steps: withSupportingTextSteps,
         orientation: 'vertical',
         interactive: false,
-        ariaLabel: 'Pași cu detalii',
+        ariaLabel: 'Steps with details',
       })}
     </div>
   `,
@@ -388,7 +388,7 @@ export const NumberedIndicators: Story = {
         steps: numberedSteps,
         orientation: 'horizontal',
         interactive: false,
-        ariaLabel: 'Pași numerotați',
+        ariaLabel: 'Numbered steps',
       })}
     </div>
   `,
@@ -406,7 +406,7 @@ export const IconIndicators: Story = {
         steps: iconSteps,
         orientation: 'horizontal',
         interactive: false,
-        ariaLabel: 'Pași cu pictograme',
+        ariaLabel: 'Steps with icons',
       })}
     </div>
   `,
@@ -425,7 +425,7 @@ export const StepIndicatorOnly: Story = {
           orientation: 'horizontal',
           interactive: false,
           compact: true,
-          ariaLabel: 'Indicator pași',
+          ariaLabel: 'Step indicator',
         })}
       </div>
     `,
@@ -451,12 +451,12 @@ export const Mobile: Story = {
         <p style="${headingStyle}">horizontal — full-width dot rail (343px)</p>
         <p style="${sectionLabelStyle}">The Figma "Breakpoints — mobile" representation: <code>compact</code> hides the step numbers + labels, leaving a dot rail. Filled brand + checkmark = completed, hollow ring = current/upcoming.</p>
         <div style="max-width: 343px;">
-          ${renderStepper({ steps: mobileSteps, orientation: 'horizontal', interactive: false, compact: true, ariaLabel: 'Pași (mobil)' })}
+          ${renderStepper({ steps: mobileSteps, orientation: 'horizontal', interactive: false, compact: true, ariaLabel: 'Steps (mobile)' })}
         </div>
       </div>
       <div>
         <p style="${headingStyle}">vertical — compact dot rail</p>
-        ${renderStepper({ steps: mobileSteps, orientation: 'vertical', interactive: false, compact: true, ariaLabel: 'Pași (mobil, vertical)' })}
+        ${renderStepper({ steps: mobileSteps, orientation: 'vertical', interactive: false, compact: true, ariaLabel: 'Steps (mobile, vertical)' })}
       </div>
     </div>
   `,
@@ -468,7 +468,7 @@ export const Mobile: Story = {
           'Set the `compact` attribute for the mobile breakpoint. The step numbers and text labels are hidden, leaving a dot rail; progress is conveyed by the per-status fills (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). The step labels remain in the accessibility tree.',
       },
       source: {
-        code: `<mud-stepper compact aria-label="Pași"></mud-stepper>
+        code: `<mud-stepper compact aria-label="Steps"></mud-stepper>
 <script>
   document.querySelector('mud-stepper').steps = [
     { label: 'Pasul 1', status: 'completed' },
@@ -494,7 +494,7 @@ export const EdgeCases: Story = {
           steps: manySteps,
           orientation: 'horizontal',
           interactive: false,
-          ariaLabel: 'Pași multipli',
+          ariaLabel: 'Multiple steps',
         })}
       </div>
       <div>
@@ -505,7 +505,7 @@ export const EdgeCases: Story = {
             steps: manySteps,
             orientation: 'horizontal',
             interactive: false,
-            ariaLabel: 'Pași multipli compacți',
+            ariaLabel: 'Multiple compact steps',
           })}
         </div>
       </div>
@@ -513,10 +513,10 @@ export const EdgeCases: Story = {
         <p style="${headingStyle}">single step</p>
         <p style="${sectionLabelStyle}">A one-step tracker — no connectors render.</p>
         ${renderStepper({
-          steps: [{ label: 'Doar un singur pas', status: 'current' }],
+          steps: [{ label: 'Only one step', status: 'current' }],
           orientation: 'horizontal',
           interactive: false,
-          ariaLabel: 'Un singur pas',
+          ariaLabel: 'A single step',
         })}
       </div>
     </div>

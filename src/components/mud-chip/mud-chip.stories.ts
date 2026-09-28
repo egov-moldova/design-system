@@ -126,7 +126,7 @@ extension.
     count: 0,
     disabled: false,
     removable: false,
-    label: 'Apartament',
+    label: 'Apartment',
     locale: '',
   },
 };
@@ -171,25 +171,25 @@ const renderAllTypes = () => /*html*/ `
     <div>
       <p style="${captionStyle}">Filter — default / selected</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip>Apartament</mud-chip>
-        <mud-chip selected>Casă</mud-chip>
+        <mud-chip>Apartment</mud-chip>
+        <mud-chip selected>House</mud-chip>
       </div>
     </div>
     <div>
       <p style="${captionStyle}">Input — default / removable</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip type="input">Comercial</mud-chip>
+        <mud-chip type="input">Commercial</mud-chip>
         <mud-chip type="input" removable>Ion Popescu</mud-chip>
       </div>
     </div>
   </div>
 `;
 const docsSourceAllTypes = /*html*/ `<!-- filter -->
-<mud-chip>Apartament</mud-chip>
-<mud-chip selected>Casă</mud-chip>
+<mud-chip>Apartment</mud-chip>
+<mud-chip selected>House</mud-chip>
 
 <!-- input -->
-<mud-chip type="input">Comercial</mud-chip>
+<mud-chip type="input">Commercial</mud-chip>
 <mud-chip type="input" removable>Ion Popescu</mud-chip>`;
 export const AllTypes: Story = {
   render: renderAllTypes,
@@ -204,26 +204,26 @@ const renderAllSizes = () => /*html*/ `
     <div>
       <p style="${captionStyle}">Filter</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip size="sm">Apartament</mud-chip>
-        <mud-chip size="md">Apartament</mud-chip>
-        <mud-chip size="sm" selected>Casă</mud-chip>
-        <mud-chip size="md" selected>Casă</mud-chip>
+        <mud-chip size="sm">Apartment</mud-chip>
+        <mud-chip size="md">Apartment</mud-chip>
+        <mud-chip size="sm" selected>House</mud-chip>
+        <mud-chip size="md" selected>House</mud-chip>
       </div>
     </div>
     <div>
       <p style="${captionStyle}">Input</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip type="input" size="sm">Comercial</mud-chip>
-        <mud-chip type="input" size="md">Comercial</mud-chip>
+        <mud-chip type="input" size="sm">Commercial</mud-chip>
+        <mud-chip type="input" size="md">Commercial</mud-chip>
         <mud-chip type="input" size="sm" removable>Ion Popescu</mud-chip>
         <mud-chip type="input" size="md" removable>Ion Popescu</mud-chip>
       </div>
     </div>
   </div>
 `;
-const docsSourceAllSizes = /*html*/ `<mud-chip size="sm">Apartament</mud-chip>
-<mud-chip size="md">Apartament</mud-chip>
-<mud-chip size="md" selected>Casă</mud-chip>
+const docsSourceAllSizes = /*html*/ `<mud-chip size="sm">Apartment</mud-chip>
+<mud-chip size="md">Apartment</mud-chip>
+<mud-chip size="md" selected>House</mud-chip>
 <mud-chip type="input" size="md" removable>Ion Popescu</mud-chip>`;
 export const AllSizes: Story = {
   render: renderAllSizes,
@@ -237,11 +237,11 @@ const renderWithIcon = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
     <mud-chip>
       <mud-icon slot="icon-start" name="map-pin" size="20"></mud-icon>
-      Apartament
+      Apartment
     </mud-chip>
     <mud-chip selected>
       <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-      Casă
+      House
     </mud-chip>
     <mud-chip type="input" removable>
       <mud-icon slot="icon-start" name="map-pin" size="20"></mud-icon>
@@ -251,12 +251,12 @@ const renderWithIcon = () => /*html*/ `
 `;
 const docsSourceWithIcon = /*html*/ `<mud-chip>
   <mud-icon slot="icon-start" name="map-pin" size="20"></mud-icon>
-  Apartament
+  Apartment
 </mud-chip>
 
 <mud-chip selected>
   <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-  Casă
+  House
 </mud-chip>
 
 <mud-chip type="input" removable>
@@ -275,12 +275,12 @@ const renderRemovable = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
     <mud-chip type="input" removable>Ion Popescu</mud-chip>
     <mud-chip type="input" size="sm" removable>Maria Ionescu</mud-chip>
-    <mud-chip type="input" removable disabled>Vasile (dezactivat)</mud-chip>
+    <mud-chip type="input" removable disabled>Vasile (disabled)</mud-chip>
   </div>
 `;
 const docsSourceRemovable = /*html*/ `<mud-chip type="input" removable>Ion Popescu</mud-chip>
 <mud-chip type="input" size="sm" removable>Maria Ionescu</mud-chip>
-<mud-chip type="input" removable disabled>Vasile (dezactivat)</mud-chip>`;
+<mud-chip type="input" removable disabled>Vasile (disabled)</mud-chip>`;
 export const Removable: Story = {
   render: renderRemovable,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceRemovable } } },
@@ -291,23 +291,23 @@ export const Removable: Story = {
 // ---------------------------------------------------------------------------
 const renderMultiSelectionGroup = () => /*html*/ `
   <div style="${sectionStyle}">
-    <p style="${captionStyle}">Tip de proprietate (mai multe selecții permise)</p>
-    <div style="${groupStyle}" role="group" aria-label="Tip de proprietate">
-      <mud-chip selection-mode="multi" selected>Apartament</mud-chip>
-      <mud-chip selection-mode="multi">Casă</mud-chip>
-      <mud-chip selection-mode="multi" selected>Comercial</mud-chip>
-      <mud-chip selection-mode="multi">Teren</mud-chip>
-      <mud-chip selection-mode="multi">Garaj</mud-chip>
-      <mud-chip selection-mode="multi">Depozit</mud-chip>
+    <p style="${captionStyle}">Property type (multiple selections allowed)</p>
+    <div style="${groupStyle}" role="group" aria-label="Property type">
+      <mud-chip selection-mode="multi" selected>Apartment</mud-chip>
+      <mud-chip selection-mode="multi">House</mud-chip>
+      <mud-chip selection-mode="multi" selected>Commercial</mud-chip>
+      <mud-chip selection-mode="multi">Land</mud-chip>
+      <mud-chip selection-mode="multi">Garage</mud-chip>
+      <mud-chip selection-mode="multi">Warehouse</mud-chip>
     </div>
   </div>
 `;
 // `selection-mode="multi"` renders the leading check automatically on selected (Figma 524:3964).
-const docsSourceMultiSelectionGroup = /*html*/ `<div role="group" aria-label="Tip de proprietate">
-  <mud-chip selection-mode="multi" selected>Apartament</mud-chip>
-  <mud-chip selection-mode="multi">Casă</mud-chip>
-  <mud-chip selection-mode="multi" selected>Comercial</mud-chip>
-  <mud-chip selection-mode="multi">Teren</mud-chip>
+const docsSourceMultiSelectionGroup = /*html*/ `<div role="group" aria-label="Property type">
+  <mud-chip selection-mode="multi" selected>Apartment</mud-chip>
+  <mud-chip selection-mode="multi">House</mud-chip>
+  <mud-chip selection-mode="multi" selected>Commercial</mud-chip>
+  <mud-chip selection-mode="multi">Land</mud-chip>
 </div>`;
 export const MultiSelectionGroup: Story = {
   render: renderMultiSelectionGroup,
@@ -353,14 +353,14 @@ export const WithAvatar: Story = {
 // ---------------------------------------------------------------------------
 const renderNumberedBadge = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
-    <mud-chip count="3">Apartament</mud-chip>
-    <mud-chip selected count="3">Casă</mud-chip>
-    <mud-chip size="sm" count="12">Comercial</mud-chip>
-    <mud-chip selected size="sm" count="12">Teren</mud-chip>
+    <mud-chip count="3">Apartment</mud-chip>
+    <mud-chip selected count="3">House</mud-chip>
+    <mud-chip size="sm" count="12">Commercial</mud-chip>
+    <mud-chip selected size="sm" count="12">Land</mud-chip>
   </div>
 `;
-const docsSourceNumberedBadge = /*html*/ `<mud-chip count="3">Apartament</mud-chip>
-<mud-chip selected count="3">Casă</mud-chip>`;
+const docsSourceNumberedBadge = /*html*/ `<mud-chip count="3">Apartment</mud-chip>
+<mud-chip selected count="3">House</mud-chip>`;
 export const NumberedBadge: Story = {
   render: renderNumberedBadge,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceNumberedBadge } } },
@@ -371,15 +371,15 @@ export const NumberedBadge: Story = {
 // ---------------------------------------------------------------------------
 const renderDisabled = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
-    <mud-chip disabled>Apartament</mud-chip>
-    <mud-chip selected disabled>Casă</mud-chip>
-    <mud-chip type="input" disabled>Comercial</mud-chip>
+    <mud-chip disabled>Apartment</mud-chip>
+    <mud-chip selected disabled>House</mud-chip>
+    <mud-chip type="input" disabled>Commercial</mud-chip>
     <mud-chip type="input" removable disabled>Ion Popescu</mud-chip>
   </div>
 `;
-const docsSourceDisabled = /*html*/ `<mud-chip disabled>Apartament</mud-chip>
-<mud-chip selected disabled>Casă</mud-chip>
-<mud-chip type="input" disabled>Comercial</mud-chip>
+const docsSourceDisabled = /*html*/ `<mud-chip disabled>Apartment</mud-chip>
+<mud-chip selected disabled>House</mud-chip>
+<mud-chip type="input" disabled>Commercial</mud-chip>
 <mud-chip type="input" removable disabled>Ion Popescu</mud-chip>`;
 export const Disabled: Story = {
   render: renderDisabled,
@@ -392,37 +392,37 @@ export const Disabled: Story = {
 const renderEdgeCases = () => /*html*/ `
   <div style="${sectionStyle}">
     <div>
-      <p style="${captionStyle}">Etichete lungi se truncă cu ellipsis</p>
+      <p style="${captionStyle}">Long labels are truncated with an ellipsis</p>
       <div style="display: flex; gap: var(--spacing-8); inline-size: 220px; margin-top: var(--spacing-8);">
-        <mud-chip style="inline-size: 100%;">Apartament cu trei camere în centrul Chișinăului</mud-chip>
+        <mud-chip style="inline-size: 100%;">Three-room apartment in central Chișinău</mud-chip>
       </div>
     </div>
     <div>
-      <p style="${captionStyle}">Diacritice românești (ă â î ș ț)</p>
+      <p style="${captionStyle}">Accented characters (é ü ñ)</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip selected>Înălțime mărită</mud-chip>
-        <mud-chip>Țărănești</mud-chip>
-        <mud-chip>Așteaptă confirmarea</mud-chip>
+        <mud-chip selected>Élevé and extra tall</mud-chip>
+        <mud-chip>Über cool</mud-chip>
+        <mud-chip>Señor waits</mud-chip>
       </div>
     </div>
     <div>
-      <p style="${captionStyle}">Doar prop label (slot gol)</p>
+      <p style="${captionStyle}">Label prop only (empty slot)</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip label="Apartament din prop"></mud-chip>
+        <mud-chip label="Apartment from prop"></mud-chip>
       </div>
     </div>
   </div>
 `;
 const docsSourceEdgeCases = /*html*/ `<!-- truncation -->
 <div style="max-inline-size: 220px;">
-  <mud-chip>Apartament cu trei camere în centrul Chișinăului</mud-chip>
+  <mud-chip>Three-room apartment in central Chișinău</mud-chip>
 </div>
 
 <!-- diacritics -->
-<mud-chip selected>Înălțime mărită</mud-chip>
+<mud-chip selected>Élevé and extra tall</mud-chip>
 
 <!-- label prop fallback -->
-<mud-chip label="Apartament din prop"></mud-chip>`;
+<mud-chip label="Apartment from prop"></mud-chip>`;
 export const EdgeCases: Story = {
   render: renderEdgeCases,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },

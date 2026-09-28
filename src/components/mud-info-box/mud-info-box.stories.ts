@@ -300,17 +300,17 @@ const renderEdgeCases = () => /*html*/ `
   <div style="${stackStyle}">
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
       <span style="${captionStyle}">Heading + close + actions</span>
-      <mud-info-box variant="warning" emphasis="strong" title-text="Sesiunea va expira" closable>
-        Salvați modificările pentru a evita pierderea datelor. Veți fi deconectat automat în 2 minute.
-        <mud-button slot="actions" size="sm">Prelungește sesiunea</mud-button>
-        <mud-link slot="actions" href="#" size="sm">Detalii</mud-link>
+      <mud-info-box variant="warning" emphasis="strong" title-text="Session about to expire" closable>
+        Save your changes to avoid losing data. You will be signed out automatically in 2 minutes.
+        <mud-button slot="actions" size="sm">Extend session</mud-button>
+        <mud-link slot="actions" href="#" size="sm">Details</mud-link>
       </mud-info-box>
     </div>
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
-      <span style="${captionStyle}">Long body, diacritics (ă â î ș ț)</span>
+      <span style="${captionStyle}">Long body, accented characters (é ü ñ)</span>
       <mud-info-box variant="error" emphasis="subtle">
-        Înălțimea conținutului poate depăși o singură linie; caseta crește pe verticală păstrând alinierea
-        pictogramei la prima linie de text, fără a deplasa butonul de închidere.
+        The content height can exceed a single line; the box grows vertically while keeping the alignment
+        of the icon with the first line of text, without moving the close button.
       </mud-info-box>
     </div>
   </div>
