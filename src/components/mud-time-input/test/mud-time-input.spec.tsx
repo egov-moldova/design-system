@@ -1,6 +1,7 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import '../mud-time-input';
 import '../../mud-time-picker/mud-time-picker';
 
@@ -649,6 +650,18 @@ describe('mud-time-input', () => {
   });
 });
 
+/** Renders a time input in the state that reports one validity message (each case names its own attributes). */
+function renderTimeInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-time-input {...all}></mud-time-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
 describeLocales<TimeInputMessages>('mud-time-input', TIME_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { label: 'x', value: '11:15', clearable: 'true' };
@@ -675,10 +688,10 @@ describeLocales<TimeInputMessages>('mud-time-input', TIME_INPUT_MESSAGES, {
     return null;
   },
   overrides: { clearLabel: 'clearLabel', triggerLabel: 'triggerLabel', pickerLabel: 'pickerLabel' },
-  unreachable: {
-    hourErrorText: 'requires a complete, out-of-range hour segment — asserted directly above',
-    minuteErrorText: 'requires a complete, out-of-range minute segment — asserted directly above',
-    rangeErrorText: 'requires min/max plus an out-of-range value — asserted directly above',
-    requiredErrorText: "requires the native 'invalid' form event — asserted directly above",
-  },
+  validity: [
+    { key: 'hourErrorText', prop: 'hourErrorText', render: renderTimeInput({ value: '25:00' }) },
+    { key: 'minuteErrorText', prop: 'minuteErrorText', render: renderTimeInput({ value: '12:99' }) },
+    { key: 'rangeErrorText', prop: 'rangeErrorText', render: renderTimeInput({ value: '09:00', min: '10:00' }) },
+    { key: 'requiredErrorText', prop: 'requiredErrorText', render: renderTimeInput({ required: 'true' }) },
+  ],
 });

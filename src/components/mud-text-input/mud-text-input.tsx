@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXT_INPUT_MESSAGES } from './mud-text-input.messages';
 import type { TextInputMessages } from './mud-text-input.messages';
@@ -126,6 +126,43 @@ export class MudTextInput {
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
+  /**
+   * Validation message reported when the value does not match `pattern`, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea nu respectă formatul cerut.' (ro-MD)
+   */
+  @Prop({ attribute: 'pattern-mismatch' }) patternMismatch?: string;
+
+  /**
+   * Validation message reported when the value is shorter than `minlength`, and `errorText` is
+   * unset. `{min}` is replaced by the limit. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Introduceți cel puțin {min} caractere.' (ro-MD)
+   */
+  @Prop({ attribute: 'too-short' }) tooShort?: string;
+
+  /**
+   * Validation message reported when the value is longer than `maxlength`, and `errorText` is
+   * unset. `{max}` is replaced by the limit. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Introduceți cel mult {max} caractere.' (ro-MD)
+   */
+  @Prop({ attribute: 'too-long' }) tooLong?: string;
+
+  /**
+   * Validation message reported when a `type="email"` value is not an email address, and
+   * `errorText` is unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Introduceți o adresă de e-mail validă.' (ro-MD)
+   */
+  @Prop({ attribute: 'type-mismatch-email' }) typeMismatchEmail?: string;
+
+  /**
+   * Validation message reported when a `type="url"` value is not a URL, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Introduceți o adresă URL validă.' (ro-MD)
+   */
+  @Prop({ attribute: 'type-mismatch-url' }) typeMismatchUrl?: string;
+
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
 
@@ -194,7 +231,10 @@ export class MudTextInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity();
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {
@@ -207,7 +247,25 @@ export class MudTextInput {
     return localeMessages('mud-text-input', this.host, this.locale, TEXT_INPUT_MESSAGES, {
       clearLabel: this.clearLabel,
       requiredMessage: this.requiredMessage,
+      patternMismatch: this.patternMismatch,
+      tooShort: this.tooShort,
+      tooLong: this.tooLong,
+      typeMismatchEmail: this.typeMismatchEmail,
+      typeMismatchUrl: this.typeMismatchUrl,
     });
+  }
+
+  /** The message for the first native constraint the control reports, in the component's locale. */
+  private nativeMessage(nv: ValidityState): string {
+    const m = this.messages();
+    if (nv.typeMismatch) return this.type === 'url' ? m.typeMismatchUrl : m.typeMismatchEmail;
+    if (nv.patternMismatch) return m.patternMismatch;
+    if (nv.tooShort) {
+      const min = this.minLength ?? 0;
+      return formatMessage(m.tooShort, this.host, this.locale, { count: min, min });
+    }
+    const max = this.maxLength ?? 0;
+    return formatMessage(m.tooLong, this.host, this.locale, { count: max, max });
   }
 
   componentWillLoad() {
@@ -218,6 +276,12 @@ export class MudTextInput {
 
   @Watch('required')
   onRequiredChange() {
+    this.syncValidity();
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
     this.syncValidity();
   }
 
@@ -242,7 +306,7 @@ export class MudTextInput {
         if (nv.tooLong) flags.tooLong = true;
         if (nv.typeMismatch) flags.typeMismatch = true;
         if (nv.patternMismatch || nv.tooShort || nv.tooLong || nv.typeMismatch) {
-          message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeInput.validationMessage;
+          message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeMessage(nv);
         }
       }
     }

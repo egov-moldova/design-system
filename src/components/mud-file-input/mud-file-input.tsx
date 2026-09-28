@@ -107,7 +107,8 @@ export class MudFileInput {
   /**
    * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the
    * brand-blue inline link. The trailing space is intentional — the link
-   * follows on the same line. Overrides the `locale`'s copy when set to a non-empty string.
+   * follows on the same line. Overrides the `locale`'s copy when set to a string; an empty
+   * string renders nothing.
    * @default 'Trage și plasează sau ' (ro-MD)
    */
   @Prop({ attribute: 'cta-text' }) ctaText?: string;
@@ -123,22 +124,22 @@ export class MudFileInput {
   /**
    * Body text shown while a drag is over the drop zone (Figma "Active" state).
    * Replaces the resting body + hides the icon for the duration of the drag.
-   * Overrides the `locale`'s copy when set to a non-empty string.
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing.
    * @default 'Eliberează pentru a încărca' (ro-MD)
    */
   @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText?: string;
 
   /**
    * Top-left caption inside the field row, shown below the dropzone. When set to a
-   * non-empty string it replaces the caption verbatim; otherwise, when `accept` is
-   * provided, it is derived from `accept` as `Formate acceptate: jpg, png, pdf` (ro-MD).
+   * string it replaces the caption verbatim, and an empty string hides it; otherwise, when
+   * `accept` is provided, it is derived from `accept` as `Formate acceptate: jpg, png, pdf` (ro-MD).
    */
   @Prop({ attribute: 'supported-formats-text' }) supportedFormatsText?: string;
 
   /**
    * Top-right caption inside the field row, shown below the dropzone. When set to a
-   * non-empty string it replaces the caption verbatim; otherwise, when `maxSize` is
-   * provided, it is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB` (ro-MD).
+   * string it replaces the caption verbatim, and an empty string hides it; otherwise, when
+   * `maxSize` is provided, it is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB` (ro-MD).
    */
   @Prop({ attribute: 'max-size-text' }) maxSizeText?: string;
 
@@ -200,16 +201,27 @@ export class MudFileInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity(this.files);
+      forceUpdate(this);
+    });
   }
 
   /** Built-in strings in the resolved locale, with the override props on top. */
   private messages(): FileInputMessages {
-    return localeMessages('mud-file-input', this.host, this.locale, FILE_INPUT_MESSAGES, {
-      ctaText: this.ctaText,
-      chooseFilesText: this.chooseFilesText,
-      dropzoneActiveText: this.dropzoneActiveText,
-    });
+    return localeMessages(
+      'mud-file-input',
+      this.host,
+      this.locale,
+      FILE_INPUT_MESSAGES,
+      {
+        ctaText: this.ctaText,
+        chooseFilesText: this.chooseFilesText,
+        dropzoneActiveText: this.dropzoneActiveText,
+      },
+      // Visible optional captions: `""` renders nothing, as before the dictionary existed.
+      ['ctaText', 'dropzoneActiveText'],
+    );
   }
 
   componentWillLoad() {
@@ -259,6 +271,12 @@ export class MudFileInput {
 
   @Watch('required')
   protected onRequiredChange() {
+    this.syncValidity(this.files);
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  protected onLocaleChange() {
     this.syncValidity(this.files);
   }
 
@@ -626,7 +644,7 @@ export class MudFileInput {
   }
 
   private resolvedSupportedFormatsText(): string | undefined {
-    if (this.supportedFormatsText && this.supportedFormatsText.trim().length > 0) return this.supportedFormatsText;
+    if (typeof this.supportedFormatsText === 'string') return this.supportedFormatsText;
     if (!this.accept) return undefined;
     const formats = this.formatsFromAccept(this.accept);
     return formats
@@ -635,7 +653,7 @@ export class MudFileInput {
   }
 
   private resolvedMaxSizeText(): string | undefined {
-    if (this.maxSizeText && this.maxSizeText.trim().length > 0) return this.maxSizeText;
+    if (typeof this.maxSizeText === 'string') return this.maxSizeText;
     if (this.maxSize === undefined) return undefined;
     const m = this.messages();
     return formatMessage(m.maxSizeText, this.host, this.locale, { size: this.formatBytes(this.maxSize, m) });

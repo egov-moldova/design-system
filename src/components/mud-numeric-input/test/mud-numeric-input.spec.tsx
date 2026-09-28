@@ -7,10 +7,12 @@ import '../mud-numeric-input';
 // mock-doc environment cannot satisfy. We only assert that the wrapped
 // elements appear in the shadow tree.
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { NUMERIC_INPUT_SIZES, NUMERIC_INPUT_VARIANTS } from '../mud-numeric-input.types';
 import { NUMERIC_INPUT_MESSAGES } from '../mud-numeric-input.messages';
 import type { NumericInputMessages } from '../mud-numeric-input.messages';
+import type { NumericInputErrorDetail } from '../mud-numeric-input.types';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -828,6 +830,213 @@ describe('mud-numeric-input', () => {
   });
 });
 
+/** Renders a numeric input in the state that reports one validity message (each case names its own attributes). */
+function renderNumericInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-numeric-input {...all}></mud-numeric-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
+type Entry = number | null | 'ambiguous';
+type NumericHost = { value?: number; formStateRestoreCallback: (state: string) => void };
+
+/** Types `raw` into a focused field and reports the value, the last `mudInput` and every `mudError`. */
+const typeEntry = async (raw: string, locale?: string, pageLang?: string) => {
+  const errors: NumericInputErrorDetail[] = [];
+  const inputs: Array<number | null> = [];
+  const { root } = await render(
+    <mud-numeric-input
+      label="x"
+      locale={locale}
+      onMudError={(event: CustomEvent<NumericInputErrorDetail>) => errors.push(event.detail)}
+      onMudInput={(event: CustomEvent<{ value: number | null }>) => inputs.push(event.detail.value)}
+    ></mud-numeric-input>,
+    pageLang ? { stageAttrs: { lang: pageLang } } : undefined,
+  );
+  const native = queryNative(root) as HTMLInputElement;
+  native.dispatchEvent(new FocusEvent('focus'));
+  native.value = raw;
+  native.dispatchEvent(new Event('input', { bubbles: true }));
+  await flush();
+  return { root, native, errors, value: (root as unknown as NumericHost).value, lastInput: inputs[inputs.length - 1] };
+};
+
+/** The `ambiguousMessage` a field of `dictionary` shows, with the locale's decimal separator filled in. */
+const ambiguousText = (dictionary: 'ro-MD' | 'en-US' | 'ru-MD', decimal: string) =>
+  NUMERIC_INPUT_MESSAGES[dictionary].ambiguousMessage.replace('{decimal}', decimal);
+
+describe('mud-numeric-input typed entry', () => {
+  // Typed input, focused, grouping off. The same rows under every locale (and with `locale` unset).
+  const EVERYWHERE: Array<[string, Entry]> = [
+    ['1234,5', 1234.5],
+    ['1234.5', 1234.5],
+    // All Unicode spaces are stripped: U+0020, U+00A0, U+202F, and `'`.
+    ['1 234,5', 1234.5],
+    ['1\u00a0234,5', 1234.5],
+    ['1\u202f234,5', 1234.5],
+    ["1'234,5", 1234.5],
+    // Both separators: the last one is the decimal.
+    ['1.234,5', 1234.5],
+    ['1,234.5', 1234.5],
+    // One separator repeated: grouping.
+    ['1.234.567', 1234567],
+    ['1,234,567', 1234567],
+    // One separator once: the decimal.
+    ['1.5', 1.5],
+    ['1,5', 1.5],
+    ['1234.5', 1234.5],
+    ['\u22125', -5],
+    ['-5', -5],
+    ['abc', null],
+    ['1e5', null],
+    ['1.2.3', null],
+    ['-', null],
+  ];
+  // The locale's own group character followed by exactly three final digits is ambiguous.
+  const BY_LOCALE: Array<[string | undefined, string, Entry]> = [
+    ['ro-MD', '1.234', 'ambiguous'],
+    ['ro-MD', '1,234', 1.234],
+    ['en-US', '1,234', 'ambiguous'],
+    ['en-US', '1.234', 1.234],
+    ['ru-MD', '1.234', 1.234],
+    ['ru-MD', '1,234', 1.234],
+    [undefined, '1.234', 1.234],
+    [undefined, '1,234', 1.234],
+  ];
+
+  describe('parse table', () => {
+    const check = (raw: string, expected: Entry, locale: string | undefined) => async () => {
+      const { value, lastInput, errors } = await typeEntry(raw, locale);
+      if (expected === 'ambiguous') {
+        const decimal = locale === 'ro-MD' ? ',' : '.';
+        expect(value).toBeUndefined();
+        expect(lastInput).toBeNull();
+        expect(errors).toEqual([
+          { reason: 'ambiguous', rawValue: raw, message: ambiguousText(locale as 'ro-MD' | 'en-US', decimal) },
+        ]);
+      } else if (expected === null) {
+        expect(value).toBeUndefined();
+        expect(lastInput).toBeNull();
+        expect(errors).toEqual([]);
+      } else {
+        expect(value).toBe(expected);
+        expect(lastInput).toBe(expected);
+        expect(errors).toEqual([]);
+      }
+    };
+
+    for (const locale of [undefined, 'ro-MD', 'ru-MD', 'en-US']) {
+      for (const [raw, expected] of EVERYWHERE) {
+        it(`${JSON.stringify(raw)} → ${String(expected)} under ${locale ?? 'no locale'}`, check(raw, expected, locale));
+      }
+    }
+    for (const [locale, raw, expected] of BY_LOCALE) {
+      it(`${JSON.stringify(raw)} → ${String(expected)} under ${locale ?? 'no locale'}`, check(raw, expected, locale));
+    }
+
+    it('reads a page lang of ro-MD like no locale: without a locale the field never groups, so 1.234 is 1.234', async () => {
+      const { value, errors } = await typeEntry('1.234', undefined, 'ro-MD');
+      expect(value).toBe(1.234);
+      expect(errors).toEqual([]);
+    });
+
+    it('keeps the raw text and raises the error again when an ambiguous entry is committed', async () => {
+      const { root, native, errors } = await typeEntry('1.234', 'ro-MD');
+      native.dispatchEvent(new FocusEvent('blur'));
+      await flush();
+      expect((root as unknown as NumericHost).value).toBeUndefined();
+      expect(native.value).toBe('1.234');
+      expect(errors.map(error => error.reason)).toEqual(['ambiguous', 'ambiguous']);
+    });
+
+    const ambiguousMessageFor = async (override: string) => {
+      const raised: NumericInputErrorDetail[] = [];
+      const { root } = await render(
+        <mud-numeric-input
+          label="x"
+          locale="en-US"
+          ambiguousMessage={override}
+          onMudError={(event: CustomEvent<NumericInputErrorDetail>) => raised.push(event.detail)}
+        ></mud-numeric-input>,
+      );
+      const native = queryNative(root) as HTMLInputElement;
+      native.value = '1,234';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      return raised[0]?.message;
+    };
+
+    it('ambiguousMessage override beats the locale', async () => {
+      expect(await ambiguousMessageFor('Write it without a comma')).toBe('Write it without a comma');
+    });
+
+    it('empty ambiguousMessage falls back', async () => {
+      expect(await ambiguousMessageFor('')).toBe(ambiguousText('en-US', '.'));
+    });
+  });
+
+  describe('round trip', () => {
+    const VALUES: Array<{ value: number; precision?: number }> = [
+      { value: 1.234 },
+      { value: 0.125, precision: 3 },
+      { value: 1.5, precision: 3 },
+      { value: 1234.5 },
+      { value: -0.5 },
+    ];
+    const SETUPS: Array<{ name: string; locale?: string; pageLang?: string }> = [
+      { name: 'locale unset' },
+      { name: 'ro-MD', locale: 'ro-MD' },
+      { name: 'ru-MD', locale: 'ru-MD' },
+      { name: 'en-US', locale: 'en-US' },
+      { name: 'page lang ro-MD', pageLang: 'ro-MD' },
+    ];
+
+    for (const setup of SETUPS) {
+      for (const { value, precision } of VALUES) {
+        const title = `${value}${precision === undefined ? '' : ` (precision ${precision})`} under ${setup.name}`;
+        const mount = () =>
+          render(
+            <mud-numeric-input label="x" locale={setup.locale} value={value} precision={precision}></mud-numeric-input>,
+            setup.pageLang ? { stageAttrs: { lang: setup.pageLang } } : undefined,
+          );
+
+        it(`focus → blur leaves ${title} unchanged`, async () => {
+          const { root } = await mount();
+          const native = queryNative(root) as HTMLInputElement;
+          native.dispatchEvent(new FocusEvent('focus'));
+          await flush();
+          native.dispatchEvent(new FocusEvent('blur'));
+          await flush();
+          expect((root as unknown as NumericHost).value).toBe(value);
+        });
+
+        it(`formStateRestoreCallback(String(v)) restores ${title}`, async () => {
+          const { root } = await mount();
+          const host = root as unknown as NumericHost;
+          host.value = undefined;
+          host.formStateRestoreCallback(String(value));
+          await flush();
+          expect(host.value).toBe(value);
+        });
+      }
+    }
+
+    it('shows the focused number with the locale decimal and no grouping', async () => {
+      const { root } = await render(<mud-numeric-input label="x" locale="ro-MD" value={1234.5}></mud-numeric-input>);
+      const native = queryNative(root) as HTMLInputElement;
+      expect(native.value).toBe('1.234,5');
+      native.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      expect(native.value).toBe('1234,5');
+    });
+  });
+});
+
 describeLocales<NumericInputMessages>('mud-numeric-input', NUMERIC_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { 'label': 'x', 'value': '5', 'clearable': 'true', 'show-steppers': 'true' };
@@ -851,9 +1060,22 @@ describeLocales<NumericInputMessages>('mud-numeric-input', NUMERIC_INPUT_MESSAGE
     return null;
   },
   overrides: { incrementLabel: 'incrementLabel', decrementLabel: 'decrementLabel', clearLabel: 'clearLabel' },
+  validity: [
+    { key: 'requiredMessage', prop: 'requiredMessage', render: renderNumericInput({ required: 'true' }) },
+    {
+      key: 'minMessage',
+      prop: 'minMessage',
+      render: renderNumericInput({ min: '10', value: '5' }),
+      vars: { min: '10' },
+    },
+    {
+      key: 'maxMessage',
+      prop: 'maxMessage',
+      render: renderNumericInput({ max: '3', value: '5' }),
+      vars: { max: '3' },
+    },
+  ],
   unreachable: {
-    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
-    minMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
-    maxMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+    ambiguousMessage: 'only surfaces via mudError on an ambiguous entry — asserted by the `parse table` cases above',
   },
 });

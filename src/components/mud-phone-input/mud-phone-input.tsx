@@ -256,7 +256,10 @@ export class MudPhoneInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity();
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {
@@ -290,6 +293,12 @@ export class MudPhoneInput {
 
   @Watch('required')
   onRequiredChange() {
+    this.syncValidity();
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
     this.syncValidity();
   }
 

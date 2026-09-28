@@ -445,6 +445,8 @@ export class MudDateInput {
   @Watch('type')
   @Watch('required')
   @Watch('disabled')
+  // A new locale changes the message given to `setValidity`, so it re-runs the same sync.
+  @Watch('locale')
   revalidate() {
     this.updateValidation(this.value);
   }
@@ -528,7 +530,10 @@ export class MudDateInput {
       this.mql.addEventListener('change', this.handleViewportChange);
     }
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.updateValidation(this.value);
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {

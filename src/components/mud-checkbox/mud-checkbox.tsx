@@ -195,9 +195,18 @@ export class MudCheckbox {
     this.updateValidity(this.checked);
   }
 
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
+    this.updateValidity(this.checked);
+  }
+
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.updateValidity(this.checked);
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {

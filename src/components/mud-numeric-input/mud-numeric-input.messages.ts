@@ -15,6 +15,8 @@ export interface NumericInputMessages {
   minMessage: string;
   /** Validation message reported when the value is above `max`. Carries a `{max}` placeholder. */
   maxMessage: string;
+  /** `mudError` text for an entry that could be a thousands group or a decimal. Carries a `{decimal}` placeholder. */
+  ambiguousMessage: string;
 }
 
 export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
@@ -25,6 +27,8 @@ export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
     requiredMessage: 'Acest câmp este obligatoriu.',
     minMessage: 'Valoarea minimă este {min}.',
     maxMessage: 'Valoarea maximă este {max}.',
+    ambiguousMessage:
+      'Valoarea este ambiguă. Scrieți numărul fără separator de mii și folosiți „{decimal}” pentru zecimale.',
   },
   'en-US': {
     incrementLabel: 'Increase',
@@ -33,6 +37,8 @@ export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
     requiredMessage: 'This field is required.',
     minMessage: 'The minimum value is {min}.',
     maxMessage: 'The maximum value is {max}.',
+    ambiguousMessage:
+      'The value is ambiguous. Write the number without a thousands separator and use “{decimal}” for decimals.',
   },
   'ru-MD': {
     incrementLabel: 'Увеличить',
@@ -41,5 +47,7 @@ export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
     requiredMessage: 'Это поле обязательно для заполнения.',
     minMessage: 'Минимальное значение — {min}.',
     maxMessage: 'Максимальное значение — {max}.',
+    ambiguousMessage:
+      'Значение неоднозначно. Запишите число без разделителя тысяч и используйте «{decimal}» для десятичных знаков.',
   },
 };

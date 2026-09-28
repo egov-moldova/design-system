@@ -23,7 +23,14 @@ export interface NumericInputStepDetail {
 
 export interface NumericInputErrorDetail {
   /** Machine-readable reason. */
-  reason: 'out-of-range' | 'not-a-number';
+  reason: 'out-of-range' | 'not-a-number' | 'ambiguous';
   /** Raw string the user typed when the validation tripped. */
   rawValue: string;
+  /**
+   * Human-readable text in the field's locale. Set for `reason: 'ambiguous'` only: the entry
+   * uses the locale's own grouping character followed by exactly three digits (`1.234` under
+   * `ro-MD`), which could be a thousands group or a decimal, so the field yields no value
+   * instead of guessing.
+   */
+  message?: string;
 }

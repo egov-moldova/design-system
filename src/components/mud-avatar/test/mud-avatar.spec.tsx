@@ -346,6 +346,22 @@ describe('mud-avatar', () => {
   });
 });
 
+describe('mud-avatar — initialsLabel override', () => {
+  it('initialsLabel override beats the locale', async () => {
+    const { root } = await render(
+      <mud-avatar locale="en-US" initials="AB" initials-label="Profile {initials}"></mud-avatar>,
+    );
+    expect(root?.getAttribute('aria-label')).toBe('Profile AB');
+  });
+
+  it('empty initialsLabel falls back', async () => {
+    const { root } = await render(<mud-avatar locale="en-US" initials="AB" initials-label=""></mud-avatar>);
+    expect(root?.getAttribute('aria-label')).toBe(
+      formatMessage(AVATAR_MESSAGES['en-US'].initialsLabel, root!, 'en-US', { initials: 'AB' }),
+    );
+  });
+});
+
 describeLocales<AvatarMessages>('mud-avatar', AVATAR_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { type: 'icon' };
@@ -363,5 +379,7 @@ describeLocales<AvatarMessages>('mud-avatar', AVATAR_MESSAGES, {
     return null;
   },
   overrides: { fallbackLabel: 'fallbackLabel' },
-  unreachable: { initialsLabel: 'exercised via a separate assertion (formatMessage against AB)' },
+  unreachable: {
+    initialsLabel: 'carries an {initials} placeholder — asserted by `empty initialsLabel falls back` above',
+  },
 });

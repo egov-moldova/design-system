@@ -17,6 +17,15 @@ import type { NumericInputMessages } from './mud-numeric-input.messages';
 
 let numericInputInstanceCounter = 0;
 
+/** What a typed or pasted string means to the field. */
+type ParsedEntry = { kind: 'number'; value: number } | { kind: 'ambiguous' } | { kind: 'invalid' };
+
+const INVALID_ENTRY: ParsedEntry = { kind: 'invalid' };
+
+/** `1`–`3` digits, then only groups of exactly three: the shape a thousands-grouped integer has. */
+const isGroupedInteger = (parts: string[]): boolean =>
+  parts.length > 0 && /^\d{1,3}$/.test(parts[0]) && parts.slice(1).every(part => /^\d{3}$/.test(part));
+
 /**
  * Numeric Input — numeric-entry control with stacked step buttons.
  *
@@ -187,6 +196,14 @@ export class MudNumericInput {
   @Prop({ attribute: 'max-message' }) maxMessage?: string;
 
   /**
+   * Text of the `mudError` (`reason: 'ambiguous'`) raised for an entry that could be a thousands
+   * group or a decimal, such as `1.234` under `ro-MD`. `{decimal}` is replaced by the locale's
+   * decimal separator. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea este ambiguă. Scrieți numărul fără separator de mii și folosiți „{decimal}” pentru zecimale.' (ro-MD)
+   */
+  @Prop({ attribute: 'ambiguous-message' }) ambiguousMessage?: string;
+
+  /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
    * Maps to the native `aria-valuetext` on the spinbutton. An `aria-valuetext`
    * attribute on the host is read once on load and stripped; later updates go
@@ -212,9 +229,14 @@ export class MudNumericInput {
 
   /**
    * BCP-47 locale used to group the displayed value with thousands separators
-   * and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the
-   * value displays ungrouped. Grouping is applied while the field is not being
-   * edited; on focus the raw editable number is shown so the caret stays sane.
+   * (e.g. `ro-MD` → `1.250,00`). When unset the value displays ungrouped. Grouping
+   * is applied while the field is not being edited; on focus the number is shown
+   * with the locale's decimal separator and no grouping (`1250,00`) so the caret
+   * stays sane. Typed input is read the same way under every locale: spaces and `'`
+   * are ignored, and when both `.` and `,` occur the last one is the decimal. A
+   * single separator is a decimal, except the locale's own grouping character
+   * followed by exactly three digits (`1.234` under `ro-MD`), which raises `mudError`
+   * with `reason: 'ambiguous'` instead of guessing.
    *
    * Also selects the language of the built-in copy (steppers, clear button, validation
    * messages): unset, the copy follows the closest ancestor `lang` (`<html lang>`
@@ -328,6 +350,14 @@ export class MudNumericInput {
     this.syncValidity();
   }
 
+  // The visible number and the validity message are strings built once from the locale, so a
+  // new locale rebuilds both.
+  @Watch('locale')
+  onLocaleChange() {
+    if (!this.isFocused) this.displayValue = this.formatForDisplay(this.value);
+    this.syncValidity();
+  }
+
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
   // warn in dev and fall back to the default instead of throwing.
   @Watch('variant')
@@ -367,7 +397,10 @@ export class MudNumericInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity();
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {
@@ -384,6 +417,7 @@ export class MudNumericInput {
       requiredMessage: this.requiredMessage,
       minMessage: this.minMessage,
       maxMessage: this.maxMessage,
+      ambiguousMessage: this.ambiguousMessage,
     });
   }
 
@@ -408,9 +442,10 @@ export class MudNumericInput {
 
   formStateRestoreCallback(state: string | File | FormData | null) {
     if (typeof state === 'string') {
-      const parsed = this.parseRaw(state);
-      this.value = parsed ?? undefined;
-      this.displayValue = state;
+      // The state is this component's own `String(value)`: plain dot-decimal, whatever the locale.
+      const parsed = state.trim() === '' ? Number.NaN : Number(state);
+      this.value = Number.isFinite(parsed) ? parsed : undefined;
+      this.displayValue = this.formatForDisplay(this.value);
       this.syncFormValue(this.value);
       this.syncValidity();
     }
@@ -443,13 +478,13 @@ export class MudNumericInput {
         message =
           this.errorText && this.errorText.length > 0
             ? this.errorText
-            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.min });
+            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.formatNumber(this.min, false) });
       } else if (this.max !== undefined && v > this.max) {
         flags.rangeOverflow = true;
         message =
           this.errorText && this.errorText.length > 0
             ? this.errorText
-            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.max });
+            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.formatNumber(this.max, false) });
       }
     }
 
@@ -490,22 +525,49 @@ export class MudNumericInput {
   }
 
   /**
-   * Parse a raw string entry into a number. Strips the locale grouping
-   * separator, normalises the decimal separator (locale / `,` → `.`), trims
-   * whitespace, and rejects everything else. Stays lenient about sign and
-   * fractions — `allow-negative` / `allow-decimal` are enforced in `commit`.
+   * Read a typed or pasted entry, the same way under every locale. Every Unicode space and `'`
+   * is dropped and the Unicode minus (U+2212, which `ru-*` writes) counts as `-`. Then:
+   * - `.` and `,` both present: the last one is the decimal, the other groups thousands;
+   * - one of them repeated: it groups thousands (`1.234.567`);
+   * - one of them once: it is the decimal (`1.5`, `1,5`, `1234.5`) — except the locale's own
+   *   grouping character followed by exactly three digits (`1.234` under `ro-MD`), which could
+   *   be either, so the entry is `ambiguous` rather than guessed.
+   * Stays lenient about sign and fractions — `allow-negative` / `allow-decimal` are enforced in
+   * `commit`.
    */
-  private parseRaw(raw: string): number | null {
-    const trimmed = (raw ?? '').trim();
-    if (trimmed === '' || trimmed === '-' || trimmed === '.' || trimmed === ',') return null;
-    const { group, decimal } = this.localeSeparators();
-    let s = trimmed;
-    if (group) s = s.split(group).join('');
-    if (decimal && decimal !== '.') s = s.split(decimal).join('.');
-    s = s.replace(',', '.');
-    if (!/^-?\d*\.?\d*$/.test(s)) return null;
-    const num = Number(s);
-    return Number.isFinite(num) ? num : null;
+  private parseRaw(raw: string): ParsedEntry {
+    const compact = (raw ?? '').replace(/[\s']/g, '').replace(/\u2212/g, '-');
+    const negative = compact.startsWith('-');
+    const body = negative ? compact.slice(1) : compact;
+    if (!/^[\d.,]+$/.test(body) || !/\d/.test(body)) return INVALID_ENTRY;
+
+    const dots = body.split('.').length - 1;
+    const commas = body.split(',').length - 1;
+    let canonical: string;
+    if (dots > 0 && commas > 0) {
+      const decimal = body.lastIndexOf('.') > body.lastIndexOf(',') ? '.' : ',';
+      const grouping = decimal === '.' ? ',' : '.';
+      const halves = body.split(decimal);
+      if (halves.length !== 2) return INVALID_ENTRY;
+      const integerParts = halves[0].split(grouping);
+      if (!isGroupedInteger(integerParts)) return INVALID_ENTRY;
+      canonical = `${integerParts.join('')}.${halves[1]}`;
+    } else if (dots + commas > 1) {
+      const parts = body.split(dots > 0 ? '.' : ',');
+      if (!isGroupedInteger(parts)) return INVALID_ENTRY;
+      canonical = parts.join('');
+    } else if (dots + commas === 1) {
+      const separator = dots > 0 ? '.' : ',';
+      const [integer, fraction] = body.split(separator);
+      if (integer.length > 0 && fraction.length === 3 && separator === this.localeSeparators().group) {
+        return { kind: 'ambiguous' };
+      }
+      canonical = `${integer || '0'}.${fraction}`;
+    } else {
+      canonical = body;
+    }
+    const num = Number(negative ? `-${canonical}` : canonical);
+    return Number.isFinite(num) ? { kind: 'number', value: num } : INVALID_ENTRY;
   }
 
   /** Clamp a number to `[min, max]`. */
@@ -534,11 +596,21 @@ export class MudNumericInput {
   /** Render a number for display. Grouped per `locale` while not being edited. */
   private formatForDisplay(value: number | undefined): string {
     if (value === undefined || value === null || !Number.isFinite(value)) return '';
-    if (this.locale && !this.isFocused) {
+    return this.formatNumber(value, this.isFocused);
+  }
+
+  /**
+   * The field's own number rule, also used for the `{min}` / `{max}` of its messages so they
+   * read like the field. With a `locale`: its decimal separator, grouped unless `focused`
+   * (typing needs a plain number, and the parser never sees a group separator this component
+   * wrote). Without one: `String(value)`, or `toFixed(precision)`.
+   */
+  private formatNumber(value: number, focused: boolean): string {
+    const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
+    if (this.locale) {
       try {
-        const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
         return new Intl.NumberFormat(formatLocale(this.host, this.locale), {
-          useGrouping: true,
+          useGrouping: !focused,
           minimumFractionDigits: digits,
           maximumFractionDigits: digits ?? 20,
         }).format(value);
@@ -546,11 +618,7 @@ export class MudNumericInput {
         /* fall through to the plain rendering */
       }
     }
-    if (this.precision !== undefined) {
-      const digits = Math.max(0, Math.floor(this.precision));
-      return value.toFixed(digits);
-    }
-    return String(value);
+    return digits !== undefined ? value.toFixed(digits) : String(value);
   }
 
   private canStep(direction: NumericInputStepDirection): boolean {
@@ -618,14 +686,21 @@ export class MudNumericInput {
     const target = ev.target as HTMLInputElement;
     const raw = target.value;
     this.displayValue = raw;
-    const parsed = this.parseRaw(raw);
-    if (parsed === null) {
+    const entry = this.parseRaw(raw);
+    if (entry.kind === 'ambiguous') {
+      this.value = undefined;
+      this.mudInput.emit({ value: null });
+      this.emitAmbiguous(raw);
+      return;
+    }
+    if (entry.kind === 'invalid') {
       // Empty / partial entry (e.g. "-" or ".") — emit current parsed state
       // (null) but don't clear the @Prop so the user's keystroke survives.
       this.value = raw.trim() === '' ? undefined : this.value;
       this.mudInput.emit({ value: null });
       return;
     }
+    const parsed = entry.value;
     // Surface out-of-range as a soft error event but DO NOT clamp during
     // typing — clamping mid-entry would yank the caret and confuse the user.
     if (this.min !== undefined && parsed < this.min) {
@@ -636,6 +711,14 @@ export class MudNumericInput {
     this.value = parsed;
     this.mudInput.emit({ value: parsed });
   };
+
+  /** Ambiguous entries yield no value; the raw text stays so the user can fix it. */
+  private emitAmbiguous(raw: string): void {
+    const message = formatMessage(this.messages().ambiguousMessage, this.host, this.locale, {
+      decimal: this.localeSeparators().decimal,
+    });
+    this.mudError.emit({ reason: 'ambiguous', rawValue: raw, message });
+  }
 
   private handleChange = () => {
     // Native `change` fires after the user commits (blur / Enter on most
@@ -678,8 +761,13 @@ export class MudNumericInput {
   };
 
   private commitFromDisplay(): void {
-    const parsed = this.parseRaw(this.displayValue);
-    if (parsed === null) {
+    const entry = this.parseRaw(this.displayValue);
+    if (entry.kind === 'ambiguous') {
+      this.value = undefined;
+      this.emitAmbiguous(this.displayValue);
+      return;
+    }
+    if (entry.kind === 'invalid') {
       // The field is empty or contains an unparseable string.
       if (this.displayValue.trim() === '') {
         this.value = undefined;
@@ -693,7 +781,7 @@ export class MudNumericInput {
       }
       return;
     }
-    const committed = this.commit(parsed);
+    const committed = this.commit(entry.value);
     this.value = committed;
     this.displayValue = this.formatForDisplay(committed);
     this.mudChange.emit({ value: committed });

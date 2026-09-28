@@ -2,7 +2,7 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-checkbox';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { CHECKBOX_SIZES } from '../mud-checkbox.types';
 import { CHECKBOX_MESSAGES } from '../mud-checkbox.messages';
 import type { CheckboxMessages } from '../mud-checkbox.messages';
@@ -522,7 +522,16 @@ describeLocales<CheckboxMessages>('mud-checkbox', CHECKBOX_MESSAGES, {
     return root as Element;
   },
   read: () => null,
-  unreachable: {
-    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-checkbox {...attrs}></mud-checkbox>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
   },
 });

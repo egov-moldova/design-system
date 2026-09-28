@@ -2,7 +2,7 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-input-chip';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { INPUT_CHIP_MESSAGES } from '../mud-input-chip.messages';
 import type { InputChipMessages } from '../mud-input-chip.messages';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from '../mud-input-chip.types';
@@ -471,9 +471,18 @@ describeLocales<InputChipMessages>('mud-input-chip', INPUT_CHIP_MESSAGES, {
     return root as Element;
   },
   read: () => null,
+  validity: {
+    key: 'requiredText',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-input-chip {...attrs}></mud-input-chip>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
   unreachable: {
-    requiredText:
-      'only surfaces via ElementInternals validity on a native form submit — covered by the shared validity contract',
     patternRejectionText:
       'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
     duplicateRejectionText:

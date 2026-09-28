@@ -7,7 +7,8 @@ import '../mud-text-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from '../mud-text-input.types';
 import { TEXT_INPUT_MESSAGES } from '../mud-text-input.messages';
 import type { TextInputMessages } from '../mud-text-input.messages';
@@ -439,6 +440,24 @@ describe('mud-text-input', () => {
   });
 });
 
+/**
+ * Renders a text input whose native control reports `flags`, as a browser would (mock-doc has no
+ * constraint validation), then re-runs the component's validity sync against that control.
+ */
+function renderNativeInvalid(flags: Partial<ValidityState>, attrs: Record<string, string> = {}): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', value: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-text-input {...all}></mud-text-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    Object.defineProperty(queryNative(root), 'validity', { value: flags, configurable: true });
+    (root as unknown as { value: string }).value = 'xy';
+    await flush();
+    return root as Element;
+  };
+}
+
 describeLocales<TextInputMessages>('mud-text-input', TEXT_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { label: 'x', clearable: 'true', value: 'hello' };
@@ -456,7 +475,41 @@ describeLocales<TextInputMessages>('mud-text-input', TEXT_INPUT_MESSAGES, {
     return null;
   },
   overrides: { clearLabel: 'clearLabel' },
-  unreachable: {
-    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
-  },
+  validity: [
+    {
+      key: 'requiredMessage',
+      prop: 'requiredMessage',
+      render: async (props, ancestorLang) => {
+        const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+        const { root } = await render(
+          <mud-text-input {...attrs}></mud-text-input>,
+          ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+        );
+        return root as Element;
+      },
+    },
+    { key: 'patternMismatch', prop: 'patternMismatch', render: renderNativeInvalid({ patternMismatch: true }) },
+    {
+      key: 'tooShort',
+      prop: 'tooShort',
+      render: renderNativeInvalid({ tooShort: true }, { minlength: '5' }),
+      vars: { count: 5, min: 5 },
+    },
+    {
+      key: 'tooLong',
+      prop: 'tooLong',
+      render: renderNativeInvalid({ tooLong: true }, { maxlength: '3' }),
+      vars: { count: 3, max: 3 },
+    },
+    {
+      key: 'typeMismatchEmail',
+      prop: 'typeMismatchEmail',
+      render: renderNativeInvalid({ typeMismatch: true }, { type: 'email' }),
+    },
+    {
+      key: 'typeMismatchUrl',
+      prop: 'typeMismatchUrl',
+      render: renderNativeInvalid({ typeMismatch: true }, { type: 'url' }),
+    },
+  ],
 });

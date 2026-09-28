@@ -1,6 +1,7 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import '../mud-date-input';
 // The range and type tests read props off the nested picker, so it hydrates too.
 import '../../mud-date-picker/mud-date-picker';
@@ -1273,6 +1274,18 @@ describe('mud-date-input', () => {
   });
 });
 
+/** Renders a date input in the state that reports one validity message (each case names its own attributes). */
+function renderDateInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-date-input {...all}></mud-date-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
 describeLocales<DateInputMessages>('mud-date-input', DATE_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { label: 'x', value: '15/04/2025', clearable: 'true' };
@@ -1299,15 +1312,25 @@ describeLocales<DateInputMessages>('mud-date-input', DATE_INPUT_MESSAGES, {
     return null;
   },
   overrides: { clearLabel: 'clearLabel', pickerLabel: 'pickerLabel', openPickerLabel: 'openPickerLabel' },
-  unreachable: {
-    dayErrorText: 'requires a complete, out-of-range day segment — covered by this component’s own validation tests',
-    monthErrorText:
-      'requires a complete, out-of-range month segment — covered by this component’s own validation tests',
-    yearErrorText: 'requires a complete, out-of-range year segment — covered by this component’s own validation tests',
-    dateErrorText: 'requires a complete but non-existent date — covered by this component’s own validation tests',
-    rangeErrorText: 'requires min/max plus an out-of-range date — covered by this component’s own validation tests',
-    orderErrorText:
-      'requires type="date-range" with an end date before the start — covered by this component’s own validation tests',
-    requiredErrorText: "requires the native 'invalid' form event — covered by this component’s own validation tests",
-  },
+  validity: [
+    { key: 'dayErrorText', prop: 'dayErrorText', render: renderDateInput({ value: '32/04/2025' }), vars: { max: 31 } },
+    { key: 'monthErrorText', prop: 'monthErrorText', render: renderDateInput({ value: '15/13/2025' }) },
+    { key: 'yearErrorText', prop: 'yearErrorText', render: renderDateInput({ value: '15/04/1800' }) },
+    {
+      key: 'dateErrorText',
+      prop: 'dateErrorText',
+      render: renderDateInput({ value: '15/04/0999', min: '0900-01-01' }),
+    },
+    {
+      key: 'rangeErrorText',
+      prop: 'rangeErrorText',
+      render: renderDateInput({ value: '15/04/2025', min: '2025-05-01' }),
+    },
+    {
+      key: 'orderErrorText',
+      prop: 'orderErrorText',
+      render: renderDateInput({ type: 'date-range', value: '20/04/2025 - 10/04/2025' }),
+    },
+    { key: 'requiredErrorText', prop: 'requiredErrorText', render: renderDateInput({ required: 'true' }) },
+  ],
 });

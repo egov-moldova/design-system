@@ -495,11 +495,39 @@ describe('mud-pagination', () => {
   });
 });
 
+describe('mud-pagination — template overrides', () => {
+  const en = PAGINATION_MESSAGES['en-US'];
+
+  it('empty prevAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} prevAriaLabel="" />);
+    expect(queryPrev(root)?.getAttribute('aria-label')).toBe(en.prevAriaLabel.replace('{page}', '2'));
+  });
+
+  it('empty nextAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} nextAriaLabel="" />);
+    expect(queryNext(root)?.getAttribute('aria-label')).toBe(en.nextAriaLabel.replace('{page}', '4'));
+  });
+
+  it('empty pageAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={2} totalPages={5} pageAriaLabel="" />);
+    const second = queryPageButtons(root).find(button => button.textContent?.trim() === '2');
+    expect(second?.getAttribute('aria-label')).toBe(en.pageAriaLabel.replace('{page}', '2').replace('{total}', '5'));
+  });
+
+  it('empty overflowAriaLabel falls back', async () => {
+    const { root } = await render(
+      <mud-pagination locale="en-US" currentPage={10} totalPages={20} overflowAriaLabel="" />,
+    );
+    const leading = queryEllipses(root).find(trigger => trigger.getAttribute('data-key') === 'leading');
+    expect(leading?.getAttribute('aria-label')).toBe(en.overflowAriaLabel.replace('{from}', '2').replace('{to}', '8'));
+  });
+});
+
 describeLocales<PaginationMessages>('mud-pagination', PAGINATION_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { 'current-page': '3', 'total-pages': '5' };
     if (props.locale !== undefined) attrs.locale = String(props.locale);
-    if (props.navLabel !== undefined) attrs.label = String(props.navLabel);
+    if (props.label !== undefined) attrs.label = String(props.label);
     if (props.prevLabel !== undefined) attrs['prev-label'] = String(props.prevLabel);
     if (props.nextLabel !== undefined) attrs['next-label'] = String(props.nextLabel);
     const { root } = await render(
@@ -514,13 +542,12 @@ describeLocales<PaginationMessages>('mud-pagination', PAGINATION_MESSAGES, {
     if (key === 'nextLabel') return queryNext(host)?.querySelector('.nav-label')?.textContent ?? null;
     return null;
   },
-  overrides: { navLabel: 'navLabel', prevLabel: 'prevLabel', nextLabel: 'nextLabel' },
+  overrides: { navLabel: 'label', prevLabel: 'prevLabel', nextLabel: 'nextLabel' },
+  captions: ['prevLabel', 'nextLabel'],
   unreachable: {
-    prevAriaLabel: 'carries a {page} placeholder — formatMessage substitution covered by the aria contract tests above',
-    nextAriaLabel: 'carries a {page} placeholder — formatMessage substitution covered by the aria contract tests above',
-    pageAriaLabel:
-      'carries {page}/{total} placeholders — formatMessage substitution covered by the aria contract tests above',
-    overflowAriaLabel:
-      'carries {from}/{to} placeholders — formatMessage substitution covered by the aria contract tests above',
+    prevAriaLabel: 'carries a {page} placeholder — asserted by `empty prevAriaLabel falls back` above',
+    nextAriaLabel: 'carries a {page} placeholder — asserted by `empty nextAriaLabel falls back` above',
+    pageAriaLabel: 'carries {page}/{total} placeholders — asserted by `empty pageAriaLabel falls back` above',
+    overflowAriaLabel: 'carries {from}/{to} placeholders — asserted by `empty overflowAriaLabel falls back` above',
   },
 });

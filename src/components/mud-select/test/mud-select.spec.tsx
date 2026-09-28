@@ -2,7 +2,7 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-select';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { SELECT_SIZES, SELECT_VARIANTS } from '../mud-select.types';
 import { SELECT_MESSAGES } from '../mud-select.messages';
 import type { SelectMessages } from '../mud-select.messages';
@@ -1014,7 +1014,17 @@ describeLocales<SelectMessages>('mud-select', SELECT_MESSAGES, {
     return null;
   },
   overrides: { emptyLabel: 'emptyLabel', listboxLabel: 'listboxLabel' },
-  unreachable: {
-    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  captions: ['emptyLabel'],
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-select {...attrs}></mud-select>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
   },
 });

@@ -142,7 +142,7 @@ export class MudSelect {
 
   /**
    * Shown in place of the list when nothing matches the query. Overrides the `locale`'s copy
-   * when set to a non-empty string.
+   * when set to a string; an empty string renders nothing.
    * @default 'Nicio opțiune' (ro-MD)
    */
   @Prop({ attribute: 'empty-label' }) emptyLabel?: string;
@@ -224,17 +224,28 @@ export class MudSelect {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity();
+      forceUpdate(this);
+    });
     this.observeOptions();
   }
 
   /** Built-in strings in the resolved locale, with the override props on top. */
   private messages(): SelectMessages {
-    return localeMessages('mud-select', this.host, this.locale, SELECT_MESSAGES, {
-      emptyLabel: this.emptyLabel,
-      listboxLabel: this.listboxLabel,
-      requiredMessage: this.requiredMessage,
-    });
+    return localeMessages(
+      'mud-select',
+      this.host,
+      this.locale,
+      SELECT_MESSAGES,
+      {
+        emptyLabel: this.emptyLabel,
+        listboxLabel: this.listboxLabel,
+        requiredMessage: this.requiredMessage,
+      },
+      // A visible optional caption: `""` renders nothing, as it did before the dictionary existed.
+      ['emptyLabel'],
+    );
   }
 
   /**
@@ -330,6 +341,12 @@ export class MudSelect {
 
   @Watch('required')
   handleRequiredChange() {
+    this.syncValidity();
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
     this.syncValidity();
   }
 

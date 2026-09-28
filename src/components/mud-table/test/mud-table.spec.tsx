@@ -409,6 +409,14 @@ describe('mud-table', () => {
   });
 
   describe('selectRowLabel override', () => {
+    it('empty selectRowLabel falls back', async () => {
+      const { root, waitForChanges } = await render(<mud-table locale="en-US" select-row-label="" />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
+      expect(checkbox?.label).toBe(TABLE_MESSAGES['en-US'].selectRowLabel.replace('{row}', '1'));
+    });
+
     it('fills the {row} placeholder with the 1-based row index', async () => {
       const { root, waitForChanges } = await render(<mud-table />);
       setProps(root, { columns, rows, selectable: true });
@@ -458,6 +466,6 @@ describeLocales<TableMessages>('mud-table', TABLE_MESSAGES, {
   overrides: { emptyText: 'emptyText', selectAllLabel: 'selectAllLabel' },
   unreachable: {
     selectRowLabel:
-      'carries a {row} placeholder filled per-row by formatMessage, and requires non-empty rows while emptyText requires none — covered by this component’s own selectRowLabel-override tests',
+      'carries a {row} placeholder filled per row, and needs rows where emptyText needs none — asserted by `empty selectRowLabel falls back` above',
   },
 });

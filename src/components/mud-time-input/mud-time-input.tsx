@@ -300,6 +300,8 @@ export class MudTimeInput {
   @Watch('max')
   @Watch('required')
   @Watch('disabled')
+  // A new locale changes the message given to `setValidity`, so it re-runs the same sync.
+  @Watch('locale')
   revalidate() {
     this.updateValidation(this.value);
   }
@@ -365,7 +367,10 @@ export class MudTimeInput {
 
   connectedCallback() {
     this.captureAriaLabel();
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.updateValidation(this.value);
+      forceUpdate(this);
+    });
     // Keep a later `aria-label` change in sync; removing it re-fires with no attribute.
     if (typeof MutationObserver === 'undefined') return;
     this.ariaLabelObserver = new MutationObserver(() => this.captureAriaLabel());

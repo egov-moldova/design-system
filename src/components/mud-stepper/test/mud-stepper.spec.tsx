@@ -439,6 +439,24 @@ const SUFFIX_INDEX: Record<string, number> = {
   pendingSuffix: 4,
 };
 
+describe('mud-stepper — supportingSeparator override', () => {
+  const stepsWithSupport: StepperStep[] = [{ label: 'Step', supportingText: 'Details', status: 'current' }];
+  const nameOf = async (separator: string) => {
+    const { root } = await render(
+      <mud-stepper locale="en-US" steps={stepsWithSupport} supporting-separator={separator}></mud-stepper>,
+    );
+    return root?.shadowRoot?.querySelector('li.step')?.getAttribute('aria-label') ?? '';
+  };
+
+  it('supportingSeparator override beats the locale', async () => {
+    expect(await nameOf(' / ')).toContain('Step / Details');
+  });
+
+  it('empty supportingSeparator falls back', async () => {
+    expect(await nameOf('')).toContain(`Step${STEPPER_MESSAGES['en-US'].supportingSeparator}Details`);
+  });
+});
+
 describeLocales<StepperMessages>('mud-stepper', STEPPER_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = {};
@@ -480,6 +498,6 @@ describeLocales<StepperMessages>('mud-stepper', STEPPER_MESSAGES, {
   },
   unreachable: {
     supportingSeparator:
-      'joins label and supportingText inside one aria-label string — exercised directly by the "includes supportingText" assertion above',
+      'joins label and supportingText inside one aria-label string — asserted by `empty supportingSeparator falls back` above',
   },
 });

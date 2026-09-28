@@ -3,7 +3,7 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 import '../mud-file-input';
 import '../../mud-file-item/mud-file-item';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { FILE_INPUT_MESSAGES } from '../mud-file-input.messages';
 import type { FileInputMessages } from '../mud-file-input.messages';
 import { FILE_INPUT_SIZES } from '../mud-file-input.types';
@@ -621,6 +621,34 @@ describe('mud-file-input', () => {
   });
 });
 
+describe('mud-file-input — visible caption overrides', () => {
+  const text = (root: Element | undefined, selector: string) =>
+    (root?.shadowRoot?.querySelector(selector)?.textContent ?? '').trim();
+
+  it('empty supportedFormatsText hides', async () => {
+    const derived = await render(<mud-file-input label="x" accept=".png"></mud-file-input>);
+    expect(text(derived.root, '.captions__formats')).not.toBe('');
+    const { root } = await render(<mud-file-input label="x" accept=".png" supported-formats-text=""></mud-file-input>);
+    expect(text(root, '.captions__formats')).toBe('');
+  });
+
+  it('empty maxSizeText hides', async () => {
+    const derived = await render(<mud-file-input label="x" max-size="1048576"></mud-file-input>);
+    expect(text(derived.root, '.captions__max-size')).not.toBe('');
+    const { root } = await render(<mud-file-input label="x" max-size="1048576" max-size-text=""></mud-file-input>);
+    expect(text(root, '.captions__max-size')).toBe('');
+  });
+
+  it('empty dropzoneActiveText hides', async () => {
+    const shown = await render(<mud-file-input label="x" class="is-active-demo"></mud-file-input>);
+    expect(text(shown.root, '.dropzone-text')).not.toBe('');
+    const { root } = await render(
+      <mud-file-input label="x" class="is-active-demo" dropzone-active-text=""></mud-file-input>,
+    );
+    expect(text(root, '.dropzone-text')).toBe('');
+  });
+});
+
 describeLocales<FileInputMessages>('mud-file-input', FILE_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { label: 'x' };
@@ -639,19 +667,29 @@ describeLocales<FileInputMessages>('mud-file-input', FILE_INPUT_MESSAGES, {
     return null;
   },
   overrides: { ctaText: 'ctaText', chooseFilesText: 'chooseFilesText' },
+  captions: ['ctaText'],
+  validity: {
+    key: 'requiredText',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-file-input {...attrs}></mud-file-input>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
   unreachable: {
-    dropzoneActiveText: 'only shows during a live drag-over — covered by the component’s own Active-state tests',
+    dropzoneActiveText: 'only shows during a live drag-over — asserted by `empty dropzoneActiveText hides` above',
     supportedFormatsText:
-      'a derived caption template, rendered filled or not at all — covered by the component’s own derivation tests',
+      'a derived caption template, rendered filled or not at all — asserted by `empty supportedFormatsText hides` above',
     maxSizeText:
-      'a derived caption template, rendered filled or not at all — covered by the component’s own derivation tests',
+      'a derived caption template, rendered filled or not at all — asserted by `empty maxSizeText hides` above',
     sizeUnitBytes: 'the unit renders merged into the derived maxSizeText caption, never isolated',
     sizeUnitKB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
     sizeUnitMB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
     sizeUnitGB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
     sizeUnitTB: 'the unit renders merged into the derived maxSizeText caption, never isolated',
-    requiredText:
-      'only surfaces via ElementInternals validity on a native form submit — covered by the shared validity contract',
     addedOneAnnouncement:
       'only renders in the live region after a file is accepted — covered by the component’s own announcement tests',
     removedAnnouncement:

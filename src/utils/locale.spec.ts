@@ -149,6 +149,70 @@ describe('localeMessages', () => {
     localeMessages('mud-test', inLang(), 'ro-MD', TABLE, { closeLabel: 'X' });
     expect(TABLE['ro-MD'].closeLabel).toBe('Închide');
   });
+
+  describe('empty override classes', () => {
+    // name (accessible name / announcement) and message (validation message): `""` falls back.
+    it('an empty accessible-name override falls back to the dictionary', () => {
+      const messages = localeMessages('mud-test', inLang(), 'en-US', TABLE, { closeLabel: '' });
+      expect(messages.closeLabel).toBe('Close');
+    });
+
+    it('an empty validation-message override falls back, since setValidity throws on an empty message', () => {
+      const messages = localeMessages('mud-test', inLang(), 'en-US', TABLE, { openLabel: '' }, []);
+      expect(messages.openLabel).toBe('Open');
+    });
+
+    // caption: `""` renders nothing; only undefined / null fall back.
+    it('an empty caption override hides the text', () => {
+      const messages = localeMessages('mud-test', inLang(), 'en-US', TABLE, { closeLabel: '' }, ['closeLabel']);
+      expect(messages.closeLabel).toBe('');
+    });
+
+    it('a caption override that is unset or null still falls back', () => {
+      const messages = localeMessages(
+        'mud-test',
+        inLang(),
+        'en-US',
+        TABLE,
+        { closeLabel: undefined, openLabel: null },
+        ['closeLabel', 'openLabel'],
+      );
+      expect(messages).toEqual(TABLE['en-US']);
+    });
+
+    it('a caption opt-in leaves the other overrides in their own class', () => {
+      const messages = localeMessages('mud-test', inLang(), 'en-US', TABLE, { closeLabel: '', openLabel: '' }, [
+        'closeLabel',
+      ]);
+      expect(messages).toEqual({ closeLabel: '', openLabel: 'Open' });
+    });
+  });
+});
+
+describe('ElementInternals shim', () => {
+  const internals = () => document.createElement('div').attachInternals() as ElementInternals;
+
+  it('throws a TypeError on a true flag with an empty message, as Chromium does', () => {
+    expect(() => internals().setValidity({ valueMissing: true }, '')).toThrow(TypeError);
+  });
+
+  it('throws a TypeError on a true flag with a missing message', () => {
+    expect(() => internals().setValidity({ customError: true })).toThrow(TypeError);
+  });
+
+  it('accepts an empty message when every flag is false, and clears with no arguments', () => {
+    expect(() => internals().setValidity({})).not.toThrow();
+    expect(() => internals().setValidity({ valueMissing: false }, '')).not.toThrow();
+  });
+
+  it('records the last (flags, message) for specs', () => {
+    const host = document.createElement('div');
+    host.attachInternals().setValidity({ valueMissing: true }, 'Required');
+    expect((host as unknown as { __mudInternals: { lastValidity: unknown } }).__mudInternals.lastValidity).toEqual({
+      flags: { valueMissing: true },
+      message: 'Required',
+    });
+  });
 });
 
 describe('formatLocale', () => {

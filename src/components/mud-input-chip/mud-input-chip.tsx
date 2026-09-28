@@ -162,7 +162,10 @@ export class MudInputChip {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = observeDocumentLang(() => {
+      this.syncValidity(this.chips);
+      forceUpdate(this);
+    });
   }
 
   disconnectedCallback() {
@@ -184,6 +187,12 @@ export class MudInputChip {
 
   @Watch('required')
   onRequiredChange() {
+    this.syncValidity(this.chips);
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
     this.syncValidity(this.chips);
   }
 

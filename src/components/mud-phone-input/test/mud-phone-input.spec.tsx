@@ -2,7 +2,8 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-phone-input';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../mud-phone-input.types';
@@ -882,6 +883,18 @@ describe('mud-phone-input', () => {
   });
 });
 
+/** Renders a phone input in the state that reports one validity message (each case names its own attributes). */
+function renderPhoneInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-phone-input {...all}></mud-phone-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
 describeLocales<PhoneInputMessages>('mud-phone-input', PHONE_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = { type: 'international', open: 'true' };
@@ -899,11 +912,11 @@ describeLocales<PhoneInputMessages>('mud-phone-input', PHONE_INPUT_MESSAGES, {
       return host.shadowRoot?.querySelector('.listbox')?.getAttribute('aria-label') ?? null;
     return null;
   },
+  validity: [
+    { key: 'requiredText', render: renderPhoneInput({ required: 'true' }) },
+    { key: 'incompleteText', render: renderPhoneInput({ value: '+3736212' }) },
+  ],
   unreachable: {
-    requiredText:
-      'only surfaces via ElementInternals validity on a native form submit — covered by the shared validity contract',
-    incompleteText:
-      'only surfaces via ElementInternals validity, or invalid without errorText — covered by the component’s own validation tests',
     clearValueLabel:
       'the clear button only renders while focused with a populated value — covered by the component’s own tests',
     clearSearchLabel:

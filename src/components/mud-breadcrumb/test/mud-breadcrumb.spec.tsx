@@ -685,7 +685,7 @@ describeLocales<BreadcrumbMessages>('mud-breadcrumb', BREADCRUMB_MESSAGES, {
   render: async (props, ancestorLang) => {
     const attrs: Record<string, string> = {};
     if (props.locale !== undefined) attrs.locale = String(props.locale);
-    if (props.navLabel !== undefined) attrs.label = String(props.navLabel);
+    if (props.label !== undefined) attrs.label = String(props.label);
     if (props.overflowLabel !== undefined) attrs['overflow-label'] = String(props.overflowLabel);
     if (props.loadingLabel !== undefined) attrs['loading-label'] = String(props.loadingLabel);
     const items: BreadcrumbItem[] = [
@@ -710,7 +710,7 @@ describeLocales<BreadcrumbMessages>('mud-breadcrumb', BREADCRUMB_MESSAGES, {
       return host.shadowRoot?.querySelector('mud-spinner')?.getAttribute('aria-label') ?? null;
     return null;
   },
-  overrides: { navLabel: 'navLabel', overflowLabel: 'overflowLabel', loadingLabel: 'loadingLabel' },
+  overrides: { navLabel: 'label', overflowLabel: 'overflowLabel', loadingLabel: 'loadingLabel' },
 });
 
 describeLocales<BreadcrumbItemMessages>('mud-breadcrumb-item', BREADCRUMB_ITEM_MESSAGES, {

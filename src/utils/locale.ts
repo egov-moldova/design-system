@@ -91,10 +91,18 @@ export interface Plural {
 
 /**
  * A component's built-in strings in its resolved locale (see `resolveLocale`), with each
- * override applied on top. An override wins only when it is a non-empty string: an empty
- * `aria-label` names nothing, so it is never what a consumer meant. A plural message's
- * override stays a plain string, applied for every count — the same rule, since `messages[key]`
- * only ever holds a string once an override wins.
+ * override applied on top. Three classes of override prop exist (`scripts/eslint/override-classes.json`):
+ * - an accessible name (`*Label`, `*AriaLabel`, announcements) and a validation message
+ *   (`*Message`, `*ErrorText`, `requiredText`): wins only when it is a non-empty string — an
+ *   empty `aria-label` names nothing, and `setValidity` throws on an empty message;
+ * - a visible optional caption, listed in `captions`: any string wins, `""` included, so
+ *   `""` renders nothing, exactly as HTML's own `placeholder=""` does. Only `undefined` / `null`
+ *   falls back to the dictionary.
+ * A plural message's override stays a plain string, applied for every count — the same rule,
+ * since `messages[key]` only ever holds a string once an override wins.
+ *
+ * @param captions The keys whose override may be an empty string. Caption keys only: the list
+ *   is checked against `override-classes.json` by `scripts/check-locale-specs.mjs`.
  */
 export const localeMessages = <M extends { [K in keyof M]: string | Plural }>(
   component: string,
@@ -102,11 +110,13 @@ export const localeMessages = <M extends { [K in keyof M]: string | Plural }>(
   locale: string | null | undefined,
   table: LocaleMessages<M>,
   overrides: { [K in keyof M]?: string | null } = {},
+  captions: ReadonlyArray<keyof M> = [],
 ): M => {
   const messages = { ...table[resolveLocale(component, host, locale)] };
   for (const key of Object.keys(overrides) as Array<keyof M>) {
     const value = overrides[key];
-    if (typeof value === 'string' && value.trim().length > 0) messages[key] = value as M[keyof M];
+    if (typeof value !== 'string') continue;
+    if (value.trim().length > 0 || captions.includes(key)) messages[key] = value as M[keyof M];
   }
   return messages;
 };

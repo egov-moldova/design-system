@@ -90,14 +90,16 @@ export class MudPagination {
 
   /**
    * Visible label for the Previous button (desktop only — hidden on `sm`).
-   * Overrides the `locale`'s copy when set to a non-empty string.
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing
+   * (the button keeps its `prev-aria-label`).
    * @default 'Anterior' (ro-MD)
    */
   @Prop({ attribute: 'prev-label' }) prevLabel?: string;
 
   /**
    * Visible label for the Next button (desktop only — hidden on `sm`).
-   * Overrides the `locale`'s copy when set to a non-empty string.
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing
+   * (the button keeps its `next-aria-label`).
    * @default 'Următor' (ro-MD)
    */
   @Prop({ attribute: 'next-label' }) nextLabel?: string;
@@ -283,15 +285,23 @@ export class MudPagination {
 
   /** Built-in strings in the resolved locale, with the override props on top. */
   private messages(): PaginationMessages {
-    return localeMessages('mud-pagination', this.host, this.locale, PAGINATION_MESSAGES, {
-      navLabel: this.label,
-      prevLabel: this.prevLabel,
-      nextLabel: this.nextLabel,
-      prevAriaLabel: this.prevAriaLabel,
-      nextAriaLabel: this.nextAriaLabel,
-      pageAriaLabel: this.pageAriaLabel,
-      overflowAriaLabel: this.overflowAriaLabel,
-    });
+    return localeMessages(
+      'mud-pagination',
+      this.host,
+      this.locale,
+      PAGINATION_MESSAGES,
+      {
+        navLabel: this.label,
+        prevLabel: this.prevLabel,
+        nextLabel: this.nextLabel,
+        prevAriaLabel: this.prevAriaLabel,
+        nextAriaLabel: this.nextAriaLabel,
+        pageAriaLabel: this.pageAriaLabel,
+        overflowAriaLabel: this.overflowAriaLabel,
+      },
+      // Visible optional captions: `""` renders nothing, as it did before the dictionary existed.
+      ['prevLabel', 'nextLabel'],
+    );
   }
 
   private clampPage(page: number): number {

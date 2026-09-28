@@ -7,7 +7,7 @@ import '../mud-search-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from '../mud-search-input.types';
 import { SEARCH_INPUT_MESSAGES } from '../mud-search-input.messages';
 import type { SearchInputMessages } from '../mud-search-input.messages';
@@ -627,7 +627,16 @@ describeLocales<SearchInputMessages>('mud-search-input', SEARCH_INPUT_MESSAGES, 
     return null;
   },
   overrides: { submitLabel: 'submitLabel', clearLabel: 'clearLabel' },
-  unreachable: {
-    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-search-input {...attrs}></mud-search-input>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
   },
 });
