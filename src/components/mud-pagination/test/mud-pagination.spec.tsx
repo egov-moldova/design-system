@@ -1,7 +1,10 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-pagination';
 
+import { PAGINATION_MESSAGES } from '../mud-pagination.messages';
+import type { PaginationMessages } from '../mud-pagination.messages';
 import { ELLIPSIS, PAGINATION_SIZES } from '../mud-pagination.types';
 
 // ---------------------------------------------------------------------------
@@ -490,4 +493,34 @@ describe('mud-pagination', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describeLocales<PaginationMessages>('mud-pagination', PAGINATION_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'current-page': '3', 'total-pages': '5' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.navLabel !== undefined) attrs.label = String(props.navLabel);
+    if (props.prevLabel !== undefined) attrs['prev-label'] = String(props.prevLabel);
+    if (props.nextLabel !== undefined) attrs['next-label'] = String(props.nextLabel);
+    const { root } = await render(
+      <mud-pagination {...attrs}></mud-pagination>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'navLabel') return queryNav(host)?.getAttribute('aria-label') ?? null;
+    if (key === 'prevLabel') return queryPrev(host)?.querySelector('.nav-label')?.textContent ?? null;
+    if (key === 'nextLabel') return queryNext(host)?.querySelector('.nav-label')?.textContent ?? null;
+    return null;
+  },
+  overrides: { navLabel: 'navLabel', prevLabel: 'prevLabel', nextLabel: 'nextLabel' },
+  unreachable: {
+    prevAriaLabel: 'carries a {page} placeholder — formatMessage substitution covered by the aria contract tests above',
+    nextAriaLabel: 'carries a {page} placeholder — formatMessage substitution covered by the aria contract tests above',
+    pageAriaLabel:
+      'carries {page}/{total} placeholders — formatMessage substitution covered by the aria contract tests above',
+    overflowAriaLabel:
+      'carries {from}/{to} placeholders — formatMessage substitution covered by the aria contract tests above',
+  },
 });

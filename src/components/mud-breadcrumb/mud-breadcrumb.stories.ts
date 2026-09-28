@@ -8,6 +8,7 @@ type BreadcrumbArgs = {
   separator: string;
   responsive: boolean;
   ariaLabel: string;
+  locale?: string;
 };
 
 const sectionLabelStyle =
@@ -86,6 +87,7 @@ const renderBreadcrumb = (args: BreadcrumbArgs, items: BreadcrumbItem[] = args.i
       separator="${args.separator}"
       ${args.responsive ? '' : 'responsive="false"'}
       ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+      ${args.locale ? `locale="${args.locale}"` : ''}
       ${extraAttrs}
     ></mud-breadcrumb>
     ${setItemsScript(id, items)}
@@ -343,8 +345,13 @@ const meta: Meta<BreadcrumbArgs> = {
     },
     ariaLabel: {
       control: 'text',
-      description: 'Accessible name for the `<nav>` landmark.',
-      table: { defaultValue: { summary: 'Breadcrumb' } },
+      description: "Accessible name for the `<nav>` landmark. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Fir de navigare (ro-RO)' } },
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
     },
   },
 };
@@ -363,6 +370,7 @@ export const Default: Story = {
     separator: '',
     responsive: true,
     ariaLabel: '',
+    locale: '',
   },
   parameters: {
     docs: {

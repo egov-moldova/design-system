@@ -1,6 +1,11 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { BREADCRUMB_MESSAGES } from './mud-breadcrumb.messages';
+import type { BreadcrumbMessages } from './mud-breadcrumb.messages';
 import type { BreadcrumbItem, BreadcrumbSelectDetail } from './mud-breadcrumb.types';
 import { BREADCRUMB_TRUNCATE_AT } from './mud-breadcrumb.types';
 
@@ -61,21 +66,42 @@ export class MudBreadcrumb {
 
   /**
    * Accessible name for the navigation landmark when no `aria-label` is set on the
-   * host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also
-   * works — the consumer-supplied attribute wins.
+   * host. Overrides the `locale`'s copy when set to a non-empty string. Setting
+   * `aria-label` directly on the host also works — the consumer-supplied attribute wins.
+   * @default 'Breadcrumb' (ro-RO)
    */
   @Prop() label?: string;
+
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label of the overflow ("…") trigger that reveals the collapsed crumbs.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Arată paginile ascunse' (ro-RO)
+   */
+  @Prop() overflowLabel?: string;
+
+  /**
+   * Accessible label of the spinner shown for a `loading` crumb. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Se încarcă' (ro-RO)
+   */
+  @Prop() loadingLabel?: string;
 
   @Element() host!: HTMLMudBreadcrumbElement;
 
   @State() private menuOpen: boolean = false;
   @State() private focusedMenuIndex: number = -1;
-  @State() private resolvedAriaLabel: string = 'Breadcrumb';
+  /** The consumer's own `aria-label` on the host, `undefined` while unset — see `observeAriaLabel`. */
+  @State() private resolvedAriaLabel?: string;
   /** Cached clone source captured from `slot="separator"` on connect. */
   private customSeparatorTemplate?: Element;
-
-  /** Emits when any crumb is activated (click or keyboard). */
-  @Event({ bubbles: true, composed: true }) mudSelect!: EventEmitter<BreadcrumbSelectDetail>;
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   @Watch('maxVisible')
   validateMaxVisible(newValue: number): void {
@@ -85,10 +111,8 @@ export class MudBreadcrumb {
     }
   }
 
-  @Watch('label')
-  syncLabel(next?: string): void {
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
-  }
+  /** Emits when any crumb is activated (click or keyboard). */
+  @Event({ bubbles: true, composed: true }) mudSelect!: EventEmitter<BreadcrumbSelectDetail>;
 
   /** Close the overflow menu when a click lands outside it. */
   @Listen('click', { target: 'window' })
@@ -160,27 +184,32 @@ export class MudBreadcrumb {
     return Array.from(root.querySelectorAll<HTMLElement>('.overflow-menu-item'));
   }
 
+  connectedCallback(): void {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+  }
+
+  disconnectedCallback(): void {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
   /**
-   * Capture consumer-supplied content on connect:
-   *  - `aria-label` attribute → stripped from the host and stored as `resolvedAriaLabel`
-   *    to avoid the Stencil observer/render loop (same pattern as mud-radio / mud-switch /
-   *    mud-tooltip / mud-accordion).
-   *  - First element with `slot="separator"` → cloned and re-used between every crumb,
-   *    instead of the prior `innerHTML` round-trip (SECURITY-INNERHTML).
+   * Capture consumer-supplied content on connect: the first element with
+   * `slot="separator"` → cloned and re-used between every crumb, instead of the prior
+   * `innerHTML` round-trip (SECURITY-INNERHTML).
    */
   componentWillLoad(): void {
-    this.captureAriaLabel();
     this.captureSeparatorSlot();
   }
 
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.label && this.label.length > 0) {
-      this.resolvedAriaLabel = this.label;
-    }
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): BreadcrumbMessages {
+    return localeMessages('mud-breadcrumb', this.host, this.locale, BREADCRUMB_MESSAGES, {
+      navLabel: this.label,
+      overflowLabel: this.overflowLabel,
+      loadingLabel: this.loadingLabel,
+    });
   }
 
   private captureSeparatorSlot(): void {
@@ -246,7 +275,11 @@ export class MudBreadcrumb {
    */
   /** Builds the inner label markup (icon + text) without any tooltip wrap. */
   private renderLabelBody(item: BreadcrumbItem) {
-    if (item.loading) return <mud-spinner size="xs" variant="dark" label="Loading"></mud-spinner>;
+    if (item.loading) {
+      return (
+        <mud-spinner size="xs" variant="dark" locale={this.locale} label={this.messages().loadingLabel}></mud-spinner>
+      );
+    }
     return (
       <span class="crumb-label">
         {item.iconStart && <mud-icon class="crumb-icon-start" name={item.iconStart} size={16}></mud-icon>}
@@ -312,7 +345,7 @@ export class MudBreadcrumb {
     return items.length - 1;
   }
 
-  private renderDesktop(items: BreadcrumbItem[]) {
+  private renderDesktop(items: BreadcrumbItem[], overflowLabel: string) {
     const limit = Math.max(2, this.maxVisible);
     const shouldCollapse = items.length > limit;
     const currentIndex = this.resolveCurrentIndex(items);
@@ -348,7 +381,7 @@ export class MudBreadcrumb {
           <button
             type="button"
             class="overflow-trigger"
-            aria-label="Show collapsed pages"
+            aria-label={overflowLabel}
             aria-haspopup="menu"
             aria-expanded={this.menuOpen ? 'true' : 'false'}
             aria-activedescendant={activeDescId}
@@ -438,11 +471,14 @@ export class MudBreadcrumb {
   render() {
     const items = this.items;
     const useItems = Array.isArray(items) && items.length > 0;
+    const m = this.messages();
+    const navLabel = this.resolvedAriaLabel ?? m.navLabel;
+    const hostLang = this.locale ? resolvedLocale('mud-breadcrumb', this.host, this.locale) : undefined;
     return (
-      <Host role="navigation" aria-label={this.resolvedAriaLabel}>
+      <Host role="navigation" aria-label={navLabel} lang={hostLang}>
         {useItems ? (
           <div class="root" data-responsive={this.responsive ? 'true' : 'false'}>
-            <div class="desktop">{this.renderDesktop(items!)}</div>
+            <div class="desktop">{this.renderDesktop(items!, m.overflowLabel)}</div>
             {this.responsive && <div class="mobile">{this.renderMobile(items!)}</div>}
           </div>
         ) : (

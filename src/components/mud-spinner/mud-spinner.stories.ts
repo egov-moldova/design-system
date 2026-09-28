@@ -6,11 +6,17 @@ import type { SpinnerSize, SpinnerVariant } from './mud-spinner.types';
 type SpinnerArgs = {
   size: SpinnerSize;
   variant: SpinnerVariant;
+  locale: string;
   label: string;
 };
 
 const renderSpinner = (args: SpinnerArgs) => /*html*/ `
-  <mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>
+  <mud-spinner
+    size="${args.size}"
+    variant="${args.variant}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.label ? `label="${args.label}"` : ''}
+  ></mud-spinner>
 `;
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center;';
@@ -42,10 +48,15 @@ const meta: Meta<SpinnerArgs> = {
       description: 'Color treatment.',
       table: { defaultValue: { summary: 'brand' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     label: {
       control: 'text',
-      description: 'Accessible label announced to screen readers.',
-      table: { defaultValue: { summary: 'Loading' } },
+      description: "Accessible label announced to screen readers. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Se încarcă (ro-RO)' } },
     },
   },
 };
@@ -55,7 +66,7 @@ type Story = StoryObj<SpinnerArgs>;
 
 export const Default: Story = {
   render: renderSpinner,
-  args: { size: 'md', variant: 'brand', label: 'Loading' },
+  args: { size: 'md', variant: 'brand', locale: '', label: '' },
   parameters: {
     docs: {
       source: {
@@ -64,7 +75,7 @@ export const Default: Story = {
         // transform whenever controls change, so the snippet stays in sync.
         type: 'dynamic',
         transform: (_code: string, { args }: { args: SpinnerArgs }) =>
-          `<mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>`,
+          `<mud-spinner size="${args.size}" variant="${args.variant}"></mud-spinner>`,
       },
     },
   },

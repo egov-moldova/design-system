@@ -1,6 +1,10 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { BREADCRUMB_ITEM_MESSAGES } from './mud-breadcrumb-item.messages';
+import type { BreadcrumbItemMessages } from './mud-breadcrumb-item.messages';
 import { BREADCRUMB_TRUNCATE_AT } from './mud-breadcrumb.types';
 
 /**
@@ -63,9 +67,24 @@ export class MudBreadcrumbItem {
    */
   @Prop() label?: string;
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label of the spinner shown while `loading` is set. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Se încarcă' (ro-RO)
+   */
+  @Prop() loadingLabel?: string;
+
   @State() private hasIconStartSlot: boolean = false;
 
   @Element() host!: HTMLMudBreadcrumbItemElement;
+
+  private stopLang?: () => void;
 
   /**
    * Fired when the crumb is activated (click or Enter/Space on a non-link crumb).
@@ -73,6 +92,21 @@ export class MudBreadcrumbItem {
    */
   @Event({ bubbles: true, composed: true, cancelable: true })
   mudSelect!: EventEmitter<{ label: string; href?: string }>;
+
+  connectedCallback() {
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): BreadcrumbItemMessages {
+    return localeMessages('mud-breadcrumb-item', this.host, this.locale, BREADCRUMB_ITEM_MESSAGES, {
+      loadingLabel: this.loadingLabel,
+    });
+  }
 
   private readonly onIconStartSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
@@ -108,7 +142,7 @@ export class MudBreadcrumbItem {
       'icon-start--visible': this.hasIconStartSlot,
     };
     const labelBody = this.loading ? (
-      <mud-spinner size="xs" variant="dark" label="Loading"></mud-spinner>
+      <mud-spinner size="xs" variant="dark" locale={this.locale} label={this.messages().loadingLabel}></mud-spinner>
     ) : (
       <span class="crumb-content">
         <span class={iconClasses}>
@@ -147,11 +181,13 @@ export class MudBreadcrumbItem {
       </span>
     );
 
+    const hostLang = this.locale ? resolvedLocale('mud-breadcrumb-item', this.host, this.locale) : undefined;
     return (
       <Host
         aria-current={this.active ? 'page' : null}
         aria-disabled={this.disabled ? 'true' : null}
         aria-busy={this.loading ? 'true' : null}
+        lang={hostLang}
       >
         {needsTooltip ? (
           <mud-tooltip content={this.label} position="top">

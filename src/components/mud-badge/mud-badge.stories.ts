@@ -12,6 +12,8 @@ type BadgeArgs = {
   max: number;
   ariaLabel?: string;
   disabled?: boolean;
+  locale: string;
+  notificationLabel: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center;';
@@ -20,7 +22,9 @@ const renderBadge = (args: BadgeArgs) => {
   const countAttr = args.type === 'numbered' && args.count !== undefined ? `count="${args.count}"` : '';
   const ariaAttr = args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '';
   const disabledAttr = args.disabled ? 'disabled' : '';
-  return /*html*/ `<mud-badge type="${args.type}" variant="${args.variant}" size="${args.size}" max="${args.max}" ${countAttr} ${ariaAttr} ${disabledAttr}></mud-badge>`;
+  const localeAttr = args.locale ? `locale="${args.locale}"` : '';
+  const notificationLabelAttr = args.notificationLabel ? `notification-label="${args.notificationLabel}"` : '';
+  return /*html*/ `<mud-badge type="${args.type}" variant="${args.variant}" size="${args.size}" max="${args.max}" ${countAttr} ${ariaAttr} ${disabledAttr} ${localeAttr} ${notificationLabelAttr}></mud-badge>`;
 };
 
 const meta: Meta<BadgeArgs> = {
@@ -63,6 +67,16 @@ const meta: Meta<BadgeArgs> = {
       description: 'Renders the disabled design, replacing the variant colors.',
       table: { defaultValue: { summary: 'false' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
+    notificationLabel: {
+      control: 'text',
+      description: "Accessible-name fallback with no count. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Notificare (ro-RO)' } },
+    },
   },
 };
 export default meta;
@@ -71,7 +85,16 @@ type Story = StoryObj<BadgeArgs>;
 
 export const Default: Story = {
   render: renderBadge,
-  args: { type: 'numbered', variant: 'danger', size: 'md', count: 3, max: 99, disabled: false },
+  args: {
+    type: 'numbered',
+    variant: 'danger',
+    size: 'md',
+    count: 3,
+    max: 99,
+    disabled: false,
+    locale: '',
+    notificationLabel: '',
+  },
   parameters: {
     docs: {
       source: {

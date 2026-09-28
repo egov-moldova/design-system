@@ -15,6 +15,9 @@ type AvatarArgs = {
   iconName: IconName;
   ariaLabel: string;
   badge: 'none' | 'dot' | 'count';
+  locale: string;
+  initialsLabel: string;
+  fallbackLabel: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -63,6 +66,9 @@ const renderAvatar = (args: AvatarArgs) => /*html*/ `
     ${args.initials ? `initials="${args.initials}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
     ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.initialsLabel ? `initials-label="${args.initialsLabel}"` : ''}
+    ${args.fallbackLabel ? `fallback-label="${args.fallbackLabel}"` : ''}
   >${renderBadgeChild(args.badge, args.size)}</mud-avatar>
 `;
 
@@ -391,6 +397,21 @@ const meta: Meta<AvatarArgs> = {
       description: 'Demo helper — slots a notification badge child.',
       table: { defaultValue: { summary: 'none' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
+    initialsLabel: {
+      control: 'text',
+      description: "Accessible name when only initials are set. Overrides the locale's copy.",
+      name: 'initials-label',
+    },
+    fallbackLabel: {
+      control: 'text',
+      description: "Accessible name when nothing is set. Overrides the locale's copy.",
+      name: 'fallback-label',
+    },
   },
 };
 export default meta;
@@ -412,6 +433,9 @@ export const Default: Story = {
     iconName: 'person',
     ariaLabel: '',
     badge: 'none',
+    locale: '',
+    initialsLabel: '',
+    fallbackLabel: '',
   },
   parameters: {
     docs: {

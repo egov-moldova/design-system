@@ -13,6 +13,7 @@ type PaginationArgs = {
   prevLabel: string;
   nextLabel: string;
   ariaLabel: string;
+  locale: string;
 };
 
 const renderPagination = (args: PaginationArgs) => /*html*/ `
@@ -23,9 +24,10 @@ const renderPagination = (args: PaginationArgs) => /*html*/ `
     sibling-count="${args.siblingCount}"
     boundary-count="${args.boundaryCount}"
     ${args.showPrevNext ? '' : 'show-prev-next="false"'}
-    prev-label="${args.prevLabel}"
-    next-label="${args.nextLabel}"
-    aria-label="${args.ariaLabel}"
+    ${args.prevLabel ? `prev-label="${args.prevLabel}"` : ''}
+    ${args.nextLabel ? `next-label="${args.nextLabel}"` : ''}
+    ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-pagination>
 `;
 
@@ -37,9 +39,9 @@ const docsSourceDefault = (args: PaginationArgs) => {
     args.siblingCount !== 1 ? `sibling-count="${args.siblingCount}"` : '',
     args.boundaryCount !== 1 ? `boundary-count="${args.boundaryCount}"` : '',
     args.showPrevNext ? '' : 'show-prev-next="false"',
-    args.prevLabel !== 'Anterior' ? `prev-label="${args.prevLabel}"` : '',
-    args.nextLabel !== 'Următor' ? `next-label="${args.nextLabel}"` : '',
-    args.ariaLabel !== 'Navigare pagini' ? `aria-label="${args.ariaLabel}"` : '',
+    args.prevLabel ? `prev-label="${args.prevLabel}"` : '',
+    args.nextLabel ? `next-label="${args.nextLabel}"` : '',
+    args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -102,7 +104,12 @@ const meta: Meta<PaginationArgs> = {
     ariaLabel: {
       control: 'text',
       name: 'aria-label',
-      description: 'Accessible name for the outer `<nav>` landmark.',
+      description: "Accessible name for the outer `<nav>` landmark. Overrides the locale's copy.",
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
     },
   },
 };
@@ -122,9 +129,10 @@ export const Default: Story = {
     siblingCount: 1,
     boundaryCount: 1,
     showPrevNext: true,
-    prevLabel: 'Anterior',
-    nextLabel: 'Următor',
-    ariaLabel: 'Navigare pagini',
+    prevLabel: '',
+    nextLabel: '',
+    ariaLabel: '',
+    locale: '',
   },
   parameters: {
     docs: {

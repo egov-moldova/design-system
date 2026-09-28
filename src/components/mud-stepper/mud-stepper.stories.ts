@@ -9,6 +9,7 @@ type StepperArgs = {
   compact?: boolean;
   currentStep?: number;
   ariaLabel: string;
+  locale?: string;
 };
 
 const sectionLabelStyle =
@@ -140,6 +141,7 @@ const renderStepper = (args: StepperArgs, steps: StepperStep[] = args.steps) => 
       ${args.compact ? 'compact' : ''}
       ${typeof args.currentStep === 'number' ? `current-step="${args.currentStep}"` : ''}
       ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+      ${args.locale ? `locale="${args.locale}"` : ''}
     ></mud-stepper>
     ${setStepsScript(id, steps)}
     ${args.interactive ? stepNavigationScript(id) : ''}
@@ -191,7 +193,12 @@ const meta: Meta<StepperArgs> = {
     ariaLabel: {
       control: 'text',
       description: 'Native `aria-label` attribute on the host — accessible name for the list landmark.',
-      table: { defaultValue: { summary: 'Progress tracker' } },
+      table: { defaultValue: { summary: 'Pași (ro-RO)' } },
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
     },
   },
 };
