@@ -446,13 +446,17 @@ export class MudPhoneInput {
     return [...moldova, ...rest];
   }
 
-  /** Apply the search-query filter on top of the active list. Empty query → full list. */
+  /**
+   * Apply the search-query filter on top of the active list. Empty query → full list.
+   * Matches the displayed (localized) name and the data table's English `name` too, so
+   * "Germany" still finds Germany on a Romanian or Russian page.
+   */
   private filteredCountries(): PhoneCountry[] {
     const all = this.activeCountries();
     const q = this.searchQuery.trim().toLowerCase();
     if (q.length === 0) return all;
     return all.filter(c => {
-      const haystack = `${this.displayName(c)} ${c.code} ${c.iso}`.toLowerCase();
+      const haystack = `${this.displayName(c)} ${c.name} ${c.code} ${c.iso}`.toLowerCase();
       return haystack.includes(q);
     });
   }

@@ -801,6 +801,19 @@ describe('mud-phone-input', () => {
       expect(queryClearButton(root)?.hasAttribute('tabindex')).toBe(false);
     });
 
+    it('matches the English country name on a non-English page', async () => {
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" locale="ru-RU" open></mud-phone-input>,
+      );
+      const search = querySearchInput(root)!;
+      search.value = 'germany';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      const options = queryOptions(root);
+      expect(options).toHaveLength(1);
+      expect(options[0].textContent).toContain('+49');
+    });
+
     it('keeps the search clear button in the tab order when visible', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
       const search = querySearchInput(root)!;
