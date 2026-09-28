@@ -34,8 +34,9 @@ jobs:
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
-      # package.json carries 0.0.0-development; the published version exists
-      # only in this run and is never committed back.
+      # package.json carries the version last published (the one Storybook
+      # shows); the version stamped here exists only in this run and is never
+      # committed back.
       - name: Set version
         id: version
         env:

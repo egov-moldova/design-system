@@ -39,8 +39,8 @@ addons.register('age-theme-sync', () => {
 });
 
 // "Version: …" under the brand title. On a local server it reads
-// `development`; elsewhere it is the version the build resolved (main.mjs
-// resolveMudVersion), and `development` when it resolved none. Storybook renders
+// `development`; elsewhere it is package.json's version, which the build passes
+// in (main.mjs `env`), and `development` when it has none. Storybook renders
 // `brandTitle` as HTML when no `brandImage` is set, so the line is markup. The
 // brand link lays its content out in a row, so both lines sit in one column
 // wrapper; a bare second span would land beside the title, not under it.
