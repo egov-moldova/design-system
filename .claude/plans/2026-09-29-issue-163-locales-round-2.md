@@ -2,7 +2,7 @@
 
 **Execution**: workflow — `2026-09-29-issue-163-locales-round-2.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
 
-**Reviewed:** none
+**Reviewed:** critic f54d7f21 — preflight round 1 (2 legs, bf40e5ba), critic round 2 (2 lenses, 97fc1907), critic round 3 (1 lens, f54d7f21); every finding folded; the 3-round cap ended the loop — Dan's go given 2026-09-29 (dedicated implementation stage; ambiguous numeric input → explicit error, Dan's choice)
 
 ## Goal
 
