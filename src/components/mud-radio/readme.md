@@ -23,6 +23,7 @@ and `name`-based exclusivity across siblings.
 | `ariaLabelledby` | `aria-labelledby` | ID of the element labelling the radio. Used when label content lives outside the component.                                                                                                                                | `string \| undefined` | `undefined` |
 | `checked`        | `checked`         | Whether the radio is currently selected.                                                                                                                                                                                   | `boolean`             | `false`     |
 | `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                 | `boolean`             | `false`     |
+| `errorText`      | `error-text`      | Plain-text error message shown under the label and supporting text when `invalid` is set (Figma radio-label Error, 585:35232). Linked to the internal control through `aria-describedby`.                                  | `string \| undefined` | `undefined` |
 | `invalid`        | `invalid`         | Maps to Figma's "Error" state — border and selected dot turn red. Sets `aria-invalid` on the internal control.                                                                                                             | `boolean`             | `false`     |
 | `label`          | `label`           | Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` / `mud-checkbox` convention. | `string \| undefined` | `undefined` |
 | `name`           | `name`            | Form-control `name`. Used during form submission and for grouping radios.                                                                                                                                                  | `string \| undefined` | `undefined` |
@@ -56,6 +57,7 @@ and `name`-based exclusivity across siblings.
 | ------------------- | ----------- |
 | `"control"`         |             |
 | `"dot"`             |             |
+| `"error"`           |             |
 | `"label"`           |             |
 | `"layout"`          |             |
 | `"native"`          |             |
@@ -70,9 +72,15 @@ and `name`-based exclusivity across siblings.
 
  - [mud-menu-item](../mud-menu)
 
+### Depends on
+
+- [mud-inline-message](../mud-inline-message)
+
 ### Graph
 ```mermaid
 graph TD;
+  mud-radio --> mud-inline-message
+  mud-inline-message --> mud-icon
   mud-menu-item --> mud-radio
   style mud-radio fill:#f9f,stroke:#333,stroke-width:4px
 ```

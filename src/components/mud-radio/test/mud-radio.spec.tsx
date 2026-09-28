@@ -293,6 +293,52 @@ describe('mud-radio', () => {
     });
   });
 
+  describe('error message (Figma radio-label Error)', () => {
+    const queryError = (root: Element | null | undefined): HTMLElement | null =>
+      (root?.shadowRoot?.querySelector('.error') ?? null) as HTMLElement | null;
+
+    it('renders a small error inline-message when invalid + error-text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>);
+      const error = queryError(root);
+      expect(error?.tagName.toLowerCase()).toBe('mud-inline-message');
+      expect(error?.getAttribute('variant')).toBe('error');
+      expect(error?.getAttribute('size')).toBe('small');
+      expect(error?.textContent).toBe('Alegeți o opțiune.');
+      expect(root?.classList.contains('has-error-message')).toBe(true);
+    });
+
+    it('renders no message when error-text is set but the radio is valid', async () => {
+      const { root } = await render(<mud-radio aria-label="x" error-text="Alegeți o opțiune."></mud-radio>);
+      expect(queryError(root)).toBeNull();
+      expect(root?.classList.contains('has-error-message')).toBe(false);
+      expect(queryNative(root)?.hasAttribute('aria-describedby')).toBe(false);
+    });
+
+    it('renders no message for whitespace-only error-text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="   "></mud-radio>);
+      expect(queryError(root)).toBeNull();
+    });
+
+    it('describes the input by the message, after the supporting text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>);
+      (root as unknown as { onSupportingTextSlotChange: (ev: Event) => void }).onSupportingTextSlotChange({
+        target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE }] },
+      } as unknown as Event);
+      await flush();
+      const ids = queryNative(root)?.getAttribute('aria-describedby')?.split(' ');
+      expect(ids).toEqual([querySupportingEl(root)?.id, queryError(root)?.id]);
+    });
+
+    it('removes the message when the radio becomes valid again', async () => {
+      const { root, setProps } = await render(
+        <mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>,
+      );
+      await setProps({ invalid: false });
+      expect(queryError(root)).toBeNull();
+      expect(queryNative(root)?.hasAttribute('aria-describedby')).toBe(false);
+    });
+  });
+
   describe('invalid + checked combination', () => {
     it('reflects both invalid and checked on the host', async () => {
       const { root } = await render(<mud-radio label="x" invalid checked></mud-radio>);

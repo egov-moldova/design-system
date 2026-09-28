@@ -43,6 +43,10 @@ message use `mud-toast` / `mud-banner`. The icon is decorative.
 
 ## Dependencies
 
+### Used by
+
+ - [mud-radio](../mud-radio)
+
 ### Depends on
 
 - [mud-icon](../mud-icon)
@@ -51,6 +55,7 @@ message use `mud-toast` / `mud-banner`. The icon is decorative.
 ```mermaid
 graph TD;
   mud-inline-message --> mud-icon
+  mud-radio --> mud-inline-message
   style mud-inline-message fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

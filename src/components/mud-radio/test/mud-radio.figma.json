@@ -105,16 +105,20 @@
         "reason": "radio-label Selected/Disabled/Small/Supporting — as 13:69."
       },
       {
-        "node": "585:35229",
-        "reason": "radio-label Unselected/Error/Medium — NOT covered: the error message this variant can show is not implemented in mud-radio (see rl-error and the report). The red radio stroke is pinned by rb-error."
-      },
-      {
         "node": "2824:5670",
-        "reason": "radio-label Unselected/Error/Small — as 585:35229."
+        "reason": "radio-label Unselected/Error/Small — as rl-error-message at the Small rung: the same inline-message Error/Small 6px under the label; Small type pinned by rl-sm."
       },
       {
         "node": "2824:5695",
-        "reason": "radio-label Unselected/Error/Small/Supporting — as 585:35229."
+        "reason": "radio-label Unselected/Error/Small/Supporting — as rl-error at the Small rung: the same inline-message Error/Small 6px under the text (2824:5697, 2824:5701); Small type pinned by rl-supporting-sm."
+      },
+      {
+        "node": "585:35229",
+        "reason": "radio-label Unselected/Error/Medium — covered by rl-error-message through instance 578:34916: the variant itself exports with the error message hidden (its 👁️ Error Message property is off), so the state cites the instance on the Label Group States frame (578:34869) that turns it on."
+      },
+      {
+        "node": "585:35232",
+        "reason": "radio-label Unselected/Error/Medium/Supporting — covered by rl-error through instance 578:34962: the variant itself exports with the error message hidden (its 👁️ Error Message property is off), so the state cites the instance on the Label Group States frame (578:34869) that turns it on."
       }
     ]
   },
@@ -244,14 +248,14 @@
       ]
     },
     {
-      "name": "rb-focus",
-      "node": "51:426",
-      "pixel": false,
-      "html": "<mud-radio size=\"md\"><span slot=\"label\">Label</span></mud-radio>",
       "interaction": {
         "type": "focus",
         "target": "mud-radio .native"
       },
+      "name": "rb-focus",
+      "node": "51:426",
+      "pixel": false,
+      "html": "<mud-radio size=\"md\"><span slot=\"label\">Label</span></mud-radio>",
       "expect": [
         {
           "target": "mud-radio .visual",
@@ -372,17 +376,84 @@
       ]
     },
     {
-      "name": "rl-error",
-      "node": "585:35232",
-      "pixel": false,
-      "html": "<div style=\"width:361px\"><mud-radio size=\"md\" invalid><span slot=\"label\">Label</span><span slot=\"supporting-text\">Supporting text</span></mud-radio></div>",
+      "name": "rl-error-message",
+      "node": "578:34916",
+      "capture": {
+        "selector": "mud-radio .layout",
+        "bleed": "auto"
+      },
+      "html": "<mud-radio size=\"md\" invalid error-text=\"Error message\"><span slot=\"label\">Transforming Services</span></mud-radio>",
       "expect": [
         {
           "target": "mud-radio .visual",
           "styles": {
             "borderTopColor": "#D92D20"
           },
-          "note": "Figma 585:35233 strokes the radio #D92D20. The error message 585:35249 below the text — a 16px circle-error icon and 12/16 #D92D20 text, 6px under the supporting text — has no counterpart in mud-radio and is left unpinned; see the report."
+          "note": "Figma I578:34916;585:35230 strokes the radio #D92D20."
+        },
+        {
+          "target": "mud-radio .content",
+          "styles": {
+            "rowGap": "6px"
+          },
+          "note": "Figma I578:34916;585:35237 stacks the label and the error message 6px apart."
+        },
+        {
+          "target": "mud-radio .error",
+          "styles": {
+            "columnGap": "4px",
+            "fontFamily": "Onest",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#D92D20",
+            "textContent": "Error message"
+          },
+          "note": "Figma I578:34916;585:35238 is inline-message Error/Small (132:4110): a 16px icon 4px from Desktop/Caption/Medium text in #D92D20."
+        },
+        {
+          "target": "mud-radio .error .icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px",
+            "color": "#D92D20"
+          },
+          "note": "Figma 132:4111 is 16/circle-error-filled at 16x16; mud-inline-message tints it with the danger icon colour."
+        }
+      ]
+    },
+    {
+      "name": "rl-error",
+      "node": "578:34962",
+      "capture": {
+        "selector": "mud-radio .layout",
+        "bleed": "auto"
+      },
+      "html": "<div style=\"width:361px\"><mud-radio size=\"md\" invalid error-text=\"Error message\"><span slot=\"label\">Transforming Services</span><span slot=\"supporting-text\">Moldova’s digital evolution is at the heart of seamless public service delivery.</span></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .visual",
+          "styles": {
+            "borderTopColor": "#D92D20"
+          },
+          "note": "Figma I578:34962;585:35233 strokes the radio #D92D20."
+        },
+        {
+          "target": "mud-radio .content",
+          "styles": {
+            "rowGap": "6px"
+          },
+          "note": "Figma I578:34962;585:35248 stacks the text block and the error message 6px apart; the text block keeps its 2px gap (I578:34962;585:35234)."
+        },
+        {
+          "target": "mud-radio .error",
+          "styles": {
+            "textContent": "Error message",
+            "color": "#D92D20",
+            "fontSize": "12px",
+            "lineHeight": "16px"
+          },
+          "note": "Figma I578:34962;585:35249 is inline-message Error/Small (132:4110) under the supporting text."
         }
       ]
     }

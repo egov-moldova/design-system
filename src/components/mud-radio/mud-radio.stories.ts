@@ -12,9 +12,12 @@ type RadioArgs = {
   readonly: boolean;
   label: string;
   supportingText: string;
+  errorText: string;
   name: string;
   value: string;
 };
+
+const ERROR_TEXT = 'Select an option to continue.';
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
@@ -37,6 +40,8 @@ type CbOpts = {
   value?: string;
   /** Aria-label override — wins over the `label` prop for AT only. */
   ariaLabel?: string;
+  /** Error message shown under the text while `invalid` is set. */
+  errorText?: string;
 };
 
 const cb = (opts: CbOpts = {}): string => {
@@ -45,6 +50,7 @@ const cb = (opts: CbOpts = {}): string => {
     opts.name ? `name="${opts.name}"` : '',
     opts.value ? `value="${opts.value}"` : '',
     opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
+    opts.errorText ? `error-text="${opts.errorText}"` : '',
     opts.flags ?? '',
   ]
     .filter(Boolean)
@@ -65,6 +71,7 @@ const renderRadio = (args: RadioArgs) =>
     size: args.size,
     label: args.label,
     supporting: args.supportingText,
+    errorText: args.errorText || undefined,
     name: args.name || undefined,
     value: args.value || undefined,
     flags: [
@@ -106,6 +113,10 @@ const meta: Meta<RadioArgs> = {
       control: 'text',
       description: 'Slotted supporting text (rendered as `<span slot="supporting-text">…</span>`).',
     },
+    errorText: {
+      control: 'text',
+      description: 'Error message shown under the text while `invalid` is set (`error-text`).',
+    },
     name: { control: 'text', description: 'Form-control `name`.' },
     value: { control: 'text', description: 'Value submitted with the form when checked.' },
   },
@@ -126,6 +137,7 @@ export const Default: Story = {
     readonly: false,
     label: 'Acord',
     supportingText: '',
+    errorText: '',
     name: '',
     value: '',
   },
@@ -303,24 +315,41 @@ export const Error: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 760px;">
         ${[
-          cell('error (unselected)', cb({ label: 'Decline', flags: 'invalid' })),
-          cell('error (selected)', cb({ label: 'Decline', flags: 'invalid checked' })),
+          cell('error + message', cb({ label: 'Decline', errorText: ERROR_TEXT, flags: 'invalid' })),
+          cell('error (selected), no message', cb({ label: 'Decline', flags: 'invalid checked' })),
           cell(
-            'error + supporting',
-            cb({ label: 'Decline', supporting: 'This option blocks the request.', flags: 'invalid' }),
+            'error + supporting + message',
+            cb({
+              label: 'Decline',
+              supporting: 'This option blocks the request.',
+              errorText: ERROR_TEXT,
+              flags: 'invalid',
+            }),
           ),
-          cell('error (sm)', cb({ size: 'sm', label: 'Decline', flags: 'invalid checked' })),
+          cell(
+            'error (sm) + message',
+            cb({ size: 'sm', label: 'Decline', errorText: ERROR_TEXT, flags: 'invalid checked' }),
+          ),
         ].join('')}
       </div>
     `,
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          '`invalid` turns the radio red. With `error-text` it also shows the message under the label and supporting text, linked to the control through `aria-describedby`.',
+      },
       source: {
         code: docsCode(
-          cb({ label: 'Decline', flags: 'invalid' }),
+          cb({ label: 'Decline', errorText: ERROR_TEXT, flags: 'invalid' }),
           cb({ label: 'Decline', flags: 'invalid checked' }),
-          cb({ label: 'Decline', supporting: 'This option blocks the request.', flags: 'invalid' }),
+          cb({
+            label: 'Decline',
+            supporting: 'This option blocks the request.',
+            errorText: ERROR_TEXT,
+            flags: 'invalid',
+          }),
         ),
       },
     },

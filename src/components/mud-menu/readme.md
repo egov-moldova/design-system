@@ -75,6 +75,8 @@ graph TD;
   mud-menu-item --> mud-checkbox
   mud-menu-item --> mud-radio
   mud-checkbox --> mud-icon
+  mud-radio --> mud-inline-message
+  mud-inline-message --> mud-icon
   style mud-menu-item fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

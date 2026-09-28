@@ -87,6 +87,13 @@ export class MudRadio {
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
+  /**
+   * Plain-text error message shown under the label and supporting text when
+   * `invalid` is set (Figma radio-label Error, 585:35232). Linked to the
+   * internal control through `aria-describedby`.
+   */
+  @Prop({ attribute: 'error-text' }) errorText?: string;
+
   /** ID of the element labelling the radio. Used when label content lives outside the component. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
@@ -122,6 +129,7 @@ export class MudRadio {
   private readonly inputId = `mud-radio-input-${this.instanceId}`;
   private readonly labelId = `mud-radio-label-${this.instanceId}`;
   private readonly supportingId = `mud-radio-supporting-${this.instanceId}`;
+  private readonly errorId = `mud-radio-error-${this.instanceId}`;
   private initialChecked: boolean = false;
   private stopAriaLabel?: () => void;
 
@@ -299,6 +307,10 @@ export class MudRadio {
     return this.disabled || this.fieldsetDisabled;
   }
 
+  private hasErrorMessage(): boolean {
+    return this.invalid && Boolean(this.errorText && this.errorText.trim().length > 0);
+  }
+
   render() {
     const effectivelyDisabled = this.isInert();
     // Slot-first content: visible label / supporting text live ONLY in their
@@ -324,8 +336,10 @@ export class MudRadio {
       undefined;
     const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
+    const hasError = this.hasErrorMessage();
     const describedByIds: string[] = [];
     if (hasSupporting) describedByIds.push(this.supportingId);
+    if (hasError) describedByIds.push(this.errorId);
     const ariaDescribedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
 
     const hostClasses = {
@@ -336,6 +350,7 @@ export class MudRadio {
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': hasLabel,
       'has-supporting-text': hasSupporting,
+      'has-error-message': hasError,
     };
 
     return (
@@ -384,13 +399,25 @@ export class MudRadio {
             Without this, the wrapper would be `hidden` on first render and
             `slotchange` wouldn't fire reliably in all browsers.
           */}
-          <span class="text" part="text">
-            <span class="label-text" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange} />
+          {/*
+            `.content` stacks the text block and the error message 6px apart
+            (Figma "Container" 585:35248); `.text` keeps its own 2px label /
+            supporting gap (585:35234).
+          */}
+          <span class="content">
+            <span class="text" part="text">
+              <span class="label-text" id={this.labelId} part="label">
+                <slot name="label" onSlotchange={this.onLabelSlotChange} />
+              </span>
+              <span class="supporting-text" id={this.supportingId} part="supporting-text">
+                <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange} />
+              </span>
             </span>
-            <span class="supporting-text" id={this.supportingId} part="supporting-text">
-              <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange} />
-            </span>
+            {hasError ? (
+              <mud-inline-message class="error" id={this.errorId} part="error" variant="error" size="small">
+                {this.errorText?.trim()}
+              </mud-inline-message>
+            ) : null}
           </span>
         </label>
       </Host>
