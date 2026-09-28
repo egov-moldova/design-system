@@ -113,8 +113,10 @@ describe('mud-date-picker', () => {
     });
 
     it('sets the host lang to the format locale of an explicit locale', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       const unsupported = await render(<mud-date-picker locale="de-DE"></mud-date-picker>);
       expect(unsupported.root?.getAttribute('lang')).toBe('ro-MD');
+      warn.mockRestore();
       const regional = await render(<mud-date-picker locale="en-GB"></mud-date-picker>);
       expect(regional.root?.getAttribute('lang')).toBe('en-GB');
     });

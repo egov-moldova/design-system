@@ -240,8 +240,10 @@ describe('formatLocale', () => {
   });
 
   it('resolves a language with no dictionary to the shown dictionary locale', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     expect(formatLocale(inLang(), 'de-DE')).toBe('ro-MD');
     expect(formatLocale(inLang('ar-EG'), undefined)).toBe('ro-MD');
+    warn.mockRestore();
   });
 
   it('warns once for an explicit locale with no dictionary, not for a page lang', () => {
@@ -309,7 +311,9 @@ describe('formatMessage', () => {
   it('selects the plural form of the RESOLVED locale, never the raw tag', () => {
     // locale="de" has no dictionary → resolves to ro-MD, whose `few` form (2-19 except
     // 11-19) must be chosen for count 2 — not a form keyed by "de".
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     expect(formatMessage(PLURAL, inLang(), 'de', { count: 2 })).toBe('2 fișiere respinse');
+    warn.mockRestore();
   });
 
   it.each([
