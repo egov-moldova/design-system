@@ -1541,3 +1541,99 @@ describe('run-all: Phase 5 (sentinel round 2)', () => {
     assert.match(r.cause, /contended|pid 333/);
   });
 });
+
+describe('run-all: a noTarget finding agrees with the verdict (issue #129)', () => {
+  const noTarget = (severity = 'warning') => ({
+    severity,
+    code: 'NO-TARGET',
+    message: 'nothing to check',
+    noTarget: true,
+  });
+  const row = findings => ({
+    id: '09',
+    name: 'a11y-tree',
+    wave: 'C',
+    ok: !findings.some(f => f.severity === 'error'),
+    exitCode: findings.some(f => f.severity === 'error') ? 1 : 0,
+    durationMs: 1,
+    summary: {
+      errors: findings.filter(f => f.severity === 'error').length,
+      warnings: findings.filter(f => f.severity === 'warning').length,
+      info: 0,
+    },
+    findings,
+  });
+
+  it('#2: an error-severity noTarget on a row that owes nothing is neither a blocker nor a failure', () => {
+    const combined = aggregate({ targetArg: 'mud-fx', results: [row([noTarget('error')])], durationMs: 1 });
+    assert.deepEqual(combined.blockers, []);
+    assert.equal(combined.ok, true);
+    assert.equal(combined.results[0].ok, true);
+  });
+
+  it('#2: a graded error beside it still blocks, and only it is listed', () => {
+    const graded = { severity: 'error', code: 'REAL', message: 'a real error' };
+    const combined = aggregate({ targetArg: 'mud-fx', results: [row([noTarget('error'), graded])], durationMs: 1 });
+    assert.deepEqual(combined.blockers, ['a11y-tree/REAL']);
+    assert.equal(combined.ok, false);
+  });
+
+  it('#1: a noTarget of any severity on a row that owes a target makes the run not ok, listed as no-target', () => {
+    for (const severity of ['warning', 'error', 'info']) {
+      const combined = aggregate({
+        targetArg: 'mud-fx',
+        results: [row([noTarget(severity)])],
+        durationMs: 1,
+        owes: () => true,
+      });
+      assert.equal(combined.ok, false, severity);
+      assert.equal(combined.results[0].ok, false, severity);
+      assert.deepEqual(combined.blockers, ['a11y-tree/no-target:NO-TARGET'], severity);
+      assert.equal(combined.summary.incomplete, 1, severity);
+    }
+  });
+
+  it("#1: an INCOMPLETE entry's verify: command exits non-zero while the finding is present, and 0 once it is gone", async () => {
+    const env = { FIXTURE_NO_TARGET: 'warning' };
+    const p = pipeline({ argv: ['mud-fx', '--no-figma', '--verdict'], env });
+    await runAudit(p.args, p.deps);
+    const v = verdictOf(p.auditDir);
+    assert.equal(v.state, 'INCOMPLETE');
+    const entry = v.entries.find(e => e.check.startsWith('09 '));
+    assert.match(entry.cause, /no target resolved \(FIXTURE-NO-TARGET\)/);
+    const argv = entry.verify.replace(/^node scripts\/audit\/run-all\.mjs /, '').split(' ');
+    assert.deepEqual(argv.slice(-3), ['--only', '09', '--json']);
+
+    const stillOpen = pipeline({ argv, env });
+    assert.equal((await runAudit(stillOpen.args, stillOpen.deps)).combined.ok, false);
+    const fixed = pipeline({ argv });
+    assert.equal((await runAudit(fixed.args, fixed.deps)).combined.ok, true);
+  });
+
+  it('#2: with an error-severity noTarget on every row, run-all and the verdict both say not-passing, with no graded blocker', async () => {
+    const p = pipeline({ argv: ['mud-fx', '--no-figma', '--verdict'], env: { FIXTURE_NO_TARGET: 'error' } });
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.combined.ok, false);
+    assert.equal(
+      r.combined.blockers.some(b => b.endsWith('/FIXTURE-NO-TARGET')),
+      false,
+    );
+    assert.equal(verdictOf(p.auditDir).state, 'INCOMPLETE');
+  });
+
+  it('#4: row 11 excused (no manifest) yet run through --figma-dir: its noTarget does not fail run-all, and the verdict stays NEEDS-DECISION', async () => {
+    const p = pipeline({
+      argv: ['mud-fx', '--figma-dir', './typo', '--verdict'],
+      env: { FIXTURE_NO_TARGET: 'warning', FIXTURE_NO_TARGET_IF_ARG: '--figma-dir' },
+    });
+    const r = await runAudit(p.args, p.deps);
+    const row11 = r.combined.results.find(x => x.id === '11');
+    assert.ok(row11, 'row 11 ran in story mode');
+    assert.equal(infoOf(r.combined, row11.name, 'FIXTURE-NO-TARGET').length, 1);
+    assert.equal(r.combined.ok, true);
+    const v = verdictOf(p.auditDir);
+    assert.equal(v.state, 'NEEDS-DECISION');
+    assert.equal(v.entries.filter(e => e.kind === 'INCOMPLETE').length, 0);
+    assert.ok(v.warnings.some(w => w.check.startsWith('11 ') && w.code === 'FIXTURE-NO-TARGET'));
+  });
+});

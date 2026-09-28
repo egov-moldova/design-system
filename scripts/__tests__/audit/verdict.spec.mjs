@@ -846,3 +846,72 @@ describe('verdict: Phase 5 (sentinel round 2)', () => {
     assert.equal('awaitingLegs' in summary.components[0], false);
   });
 });
+
+describe('verdict: latent defects found during the #115 review (issue #129)', () => {
+  it('#3: an unknown depth read from disk is INCOMPLETE with a named cause, never PRODUCTION-READY', () => {
+    for (const depth of ['Deep', 'thorough']) {
+      const e = cleanEnvelope();
+      e.audit.depth = depth;
+      const v = computeVerdict({ envelope: e });
+      assert.equal(v.state, 'INCOMPLETE', depth);
+      assert.equal(v.level, undefined, depth);
+      assert.match(v.entries[0].cause, new RegExp(`unknown depth "${depth}"`));
+      assert.match(v.entries[0].cause, /quick\|standard\|deep/);
+    }
+  });
+
+  it('#3: a known depth adds no depth entry', () => {
+    for (const depth of ['quick', 'standard', 'deep']) {
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }) });
+      assert.equal(v.state, 'PASS', depth);
+    }
+  });
+
+  it('#4: row 11 excused (no manifest) but run via --figma-dir reports its noTarget findings as warnings', () => {
+    const e = cleanEnvelope({ figma: FIGMA_ABSENT });
+    e.results.push({
+      id: '11',
+      name: 'check-11',
+      wave: 'C',
+      ok: true,
+      status: 'ok',
+      exitCode: 0,
+      durationMs: 1,
+      summary: { errors: 0, warnings: 2, info: 0 },
+      error: null,
+      component: 'mud-fx',
+    });
+    e.findingsByTool['check-11'] = [
+      { severity: 'warning', code: 'PIXEL-NO-REFERENCES', message: 'no references', noTarget: true },
+      { severity: 'warning', code: 'PIXEL-NO-STORIES', message: 'no stories', noTarget: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'NEEDS-DECISION');
+    assert.equal(v.entries.filter(x => x.kind === 'INCOMPLETE').length, 0);
+    assert.deepEqual(
+      v.warnings.filter(w => w.check === '11 check-11').map(w => w.code),
+      ['PIXEL-NO-REFERENCES', 'PIXEL-NO-STORIES'],
+    );
+    assert.equal(v.rows.find(r => r.id === '11').warnings, 2);
+  });
+
+  it('#4: the same row with a committed manifest still owes its target — INCOMPLETE', () => {
+    const e = cleanEnvelope();
+    e.findingsByTool['check-11'] = [
+      { severity: 'warning', code: 'PIXEL-NO-REFERENCES', message: 'no references', noTarget: true },
+    ];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.state, 'INCOMPLETE');
+    assert.equal(v.entries[0].check, '11 check-11');
+  });
+
+  it('#5: a not-applicable finding with no message notes its code, never "undefined"', () => {
+    const e = cleanEnvelope();
+    e.findingsByTool['check-02'] = [{ severity: 'info', code: 'X', notApplicable: true }];
+    e.findingsByTool['check-04'] = [{ severity: 'info', notApplicable: true }];
+    const v = computeVerdict({ envelope: e });
+    assert.equal(v.rows.find(r => r.id === '02').note, 'X');
+    assert.equal(v.rows.find(r => r.id === '04').note, 'not applicable');
+    assert.doesNotMatch(renderFixBrief(v), /undefined/);
+  });
+});

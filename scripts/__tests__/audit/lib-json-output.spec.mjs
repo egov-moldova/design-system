@@ -20,6 +20,7 @@ import {
   isValidLevel,
   isValidRowStatus,
   finding,
+  findingClass,
 } from '../../audit/lib/json-output.mjs';
 
 const LIB = fileURLToPath(new URL('../../audit/lib/json-output.mjs', import.meta.url));
@@ -168,5 +169,20 @@ describe('json-output: emit', () => {
     assert.ok(stdout.length > 65_536, `expected more than one pipe buffer, got ${stdout.length} bytes`);
     const envelope = JSON.parse(stdout);
     assert.equal(envelope.meta.padding.length, 200_000);
+  });
+});
+
+describe('json-output: findingClass — the one classification run-all and the verdict share (issue #129)', () => {
+  it('noTarget wins, then notApplicable, else graded — whatever the severity', () => {
+    for (const severity of ['error', 'warning', 'info']) {
+      assert.equal(findingClass({ severity, noTarget: true, notApplicable: true }), 'noTarget');
+      assert.equal(findingClass({ severity, notApplicable: true }), 'notApplicable');
+      assert.equal(findingClass({ severity }), 'graded');
+    }
+  });
+
+  it('agrees with finding(), which demotes a notApplicable finding that is also noTarget', () => {
+    const f = finding({ severity: 'error', code: 'X', message: 'm', noTarget: true, notApplicable: true });
+    assert.equal(findingClass(f), 'noTarget');
   });
 });

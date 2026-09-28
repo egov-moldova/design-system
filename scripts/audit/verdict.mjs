@@ -44,12 +44,14 @@ import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import { headManifestRelPath, manifestRelPath } from './lib/figma-manifest.mjs';
 import {
   AI_FINDINGS_SCHEMA_VERSION,
+  FINDING_CLASS,
   LEVEL,
   ROW_STATUS,
   SCHEMA_VERSION,
   STATE,
   SUMMARY_SCHEMA_VERSION,
   VERDICT_SCHEMA_VERSION,
+  findingClass,
   schemaMajor,
 } from './lib/json-output.mjs';
 import { REPORT_END, code, renderChanges, renderFixBrief, rerenderCommand } from './lib/fix-brief.mjs';
@@ -114,6 +116,20 @@ export function excuseFor(id, { noFigma = false, figma = null, browserWaiver = n
   }
   if (BROWSER_IDS.includes(id) && browserWaiver) return `browser: waived (${browserWaiver})`;
   return null;
+}
+
+/**
+ * Whether a row that ran owes a target: required at `depth` and not excused.
+ * Its noTarget findings are then INCOMPLETE; on any other row — including an
+ * excused one that ran anyway, as row 11 does under `--figma-dir` — they are
+ * warnings. Shared with run-all.mjs, whose exit has to agree. Pure.
+ *
+ * @param {string} id
+ * @param {string} depth
+ * @param {{ noFigma?: boolean, figma?: object|null, browserWaiver?: string|null }} ctx
+ */
+export function owesTarget(id, depth, ctx) {
+  return (REQUIRED_CHECKS[depth] ?? REQUIRED_CHECKS.standard).includes(id) && !excuseFor(id, ctx);
 }
 
 // ─── Pure computation ────────────────────────────────────────────────────
@@ -323,6 +339,19 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       verify: freshRunCommand(component, depth),
     });
   }
+  // The CLI validates --depth, but --rerender and --run-dir read envelopes
+  // from disk: an unknown depth would otherwise be graded against the standard
+  // table and still reach levelFor's PRODUCTION-READY branch.
+  if (envelope && !Object.hasOwn(REQUIRED_CHECKS, depth)) {
+    const known = Object.keys(REQUIRED_CHECKS).join('|');
+    addIncomplete({
+      kind: STATE.INCOMPLETE,
+      check: 'run-all',
+      cause: `unknown depth "${depth}" in the envelope — expected one of ${known}`,
+      prerequisite: 'none',
+      verify: `yarn audit:component ${component} --depth <${known}>`,
+    });
+  }
   if (envelope?.preflight && envelope.preflight.ok === false) {
     addIncomplete({
       kind: STATE.INCOMPLETE,
@@ -405,15 +434,19 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       // carries both, so "checked nothing but should have" is never demoted
       // to a note; `finding()` cannot produce that pair, but a row's own
       // literal object or an advisory file can.
-      const doesNotApply = f => f.notApplicable === true && f.noTarget !== true;
-      const notApplicable = allFindings.filter(doesNotApply);
-      if (notApplicable.length) out.note = notApplicable.map(f => f.message).join('; ');
-      // A required row that checked nothing (Decision §5): INCOMPLETE, not a
-      // FAIL — the fix is a missing input, and it never also lands in R4's
-      // warnings below. On a row the depth does not require it is a warning
-      // (T23): nothing was owed, but nothing was checked either.
-      const noTargetFindings = allFindings.filter(f => f.noTarget === true);
-      const graded = allFindings.filter(f => f.noTarget !== true && !doesNotApply(f));
+      const ofClass = c => allFindings.filter(f => findingClass(f) === c);
+      const notApplicable = ofClass(FINDING_CLASS.NOT_APPLICABLE);
+      if (notApplicable.length) {
+        out.note = notApplicable.map(f => f.message ?? f.code ?? 'not applicable').join('; ');
+      }
+      // A row that owed a target and checked nothing (Decision §5): INCOMPLETE,
+      // not a FAIL — the fix is a missing input, and it never also lands in R4's
+      // warnings below. On a row that owed nothing — not required at this depth
+      // (T23), or excused yet run anyway — it is a warning: nothing was owed,
+      // but nothing was checked either.
+      const owed = owesTarget(id, depth, ctx);
+      const noTargetFindings = ofClass(FINDING_CLASS.NO_TARGET);
+      const graded = ofClass(FINDING_CLASS.GRADED);
       // The row's counts come from the same groups that produce its entries —
       // graded errors and warnings, plus every noTarget finding where it is
       // reported as a warning — never from the script's own summary, which
@@ -421,9 +454,9 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       // exclusion from that summary drifted every time a finding kind was
       // added (plan `2026-09-23-audit-report-summary-and-delta.md`).
       out.errors = graded.filter(f => f.severity === 'error').length;
-      out.warnings = graded.filter(f => f.severity === 'warning').length + (isRequired ? 0 : noTargetFindings.length);
-      if (!isRequired) addWarnings(noTargetFindings, `${id} ${row.name}`, verifyCommand(component, depth, id));
-      if (isRequired) {
+      out.warnings = graded.filter(f => f.severity === 'warning').length + (owed ? 0 : noTargetFindings.length);
+      if (!owed) addWarnings(noTargetFindings, `${id} ${row.name}`, verifyCommand(component, depth, id));
+      if (owed) {
         for (const f of noTargetFindings) {
           addIncomplete({
             kind: STATE.INCOMPLETE,

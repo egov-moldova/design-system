@@ -8,6 +8,8 @@
  *
  *   FIXTURE_FAIL_FOR=<component>  → one error-severity finding for that component
  *   FIXTURE_CRASH=1               → exit 2 with no envelope
+ *   FIXTURE_NO_TARGET=<severity>  → one noTarget finding (FIXTURE-NO-TARGET) at that severity
+ *   FIXTURE_NO_TARGET_IF_ARG=<a>  → ... only on a row run-all passed argument <a> (e.g. --figma-dir)
  */
 import { readFileSync } from 'node:fs';
 import { buildResult, emit, finding } from '../../../../../audit/lib/json-output.mjs';
@@ -33,6 +35,17 @@ if (process.env.FIXTURE_FAIL_FOR === target) {
       file: `src/components/${target}/${target}.tsx`,
       line: 3,
       message: 'seeded error',
+    }),
+  );
+}
+const onlyIfArg = process.env.FIXTURE_NO_TARGET_IF_ARG;
+if (process.env.FIXTURE_NO_TARGET && (!onlyIfArg || rest.includes(onlyIfArg))) {
+  findings.push(
+    finding({
+      severity: process.env.FIXTURE_NO_TARGET,
+      code: 'FIXTURE-NO-TARGET',
+      message: 'nothing to check',
+      noTarget: true,
     }),
   );
 }
