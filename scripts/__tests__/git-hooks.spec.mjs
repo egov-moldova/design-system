@@ -20,9 +20,11 @@ function statusOf(run) {
   return run.status;
 }
 
+// No `--config`: resolved from ROOT exactly as `.husky/commit-msg` resolves it, so a
+// second config file that shadows commitlint.config.mjs changes what this suite tests.
 function commitlint(message) {
   return statusOf(
-    spawnSync(process.execPath, [COMMITLINT, '--config', path.join(ROOT, 'commitlint.config.mjs')], {
+    spawnSync(process.execPath, [COMMITLINT], {
       cwd: ROOT,
       input: message,
       encoding: 'utf8',
@@ -78,7 +80,8 @@ function merge(dir) {
 
 describe('commit-msg hook: commitlint config', () => {
   it('rejects a message that is not a Conventional Commit', () => {
-    assert.notEqual(commitlint('bad message\n'), 0);
+    // 1 is a rule rejection; with no config found commitlint exits 9 ("Please add rules").
+    assert.equal(commitlint('bad message\n'), 1);
   });
 
   it('accepts a Conventional Commit', () => {

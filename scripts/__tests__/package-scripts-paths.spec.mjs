@@ -30,7 +30,7 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.
  * asserted that should not be, which fails loudly, names itself, and is fixed
  * by adding one entry here.
  */
-const WRITE_FLAGS = new Set(['-o', '--output', '--outFile', '-s', '--stencilFile', '-t', '--tokensFile']);
+const WRITE_FLAGS = new Set(['-o', '--output', '--outFile']);
 
 /**
  * A token names a repo path when it carries a separator or a source extension,

@@ -117,7 +117,7 @@ files you did not edit — that is why it is the sanctioned command in
 
 It becomes a scope problem the moment `main` is *not* clean: the formatter then
 rewrites every drifted file in the repo. Observed on PR #12, where `main` was red
-and unrelated infrastructure plus `web-components/CDN_TEST.html` were rewritten.
+and unrelated infrastructure plus a hand-maintained CDN demo page were rewritten.
 Infrastructure has since moved to the Azure DevOps operations repository.
 
 **Pre-existing drift is decided per file, by who owns it.** Reverting a drifted
@@ -130,7 +130,7 @@ so the revert and the ignore rule always travel together:
 | Hand-maintained artifact — for example, demo pages | Add it to `.prettierignore`, then `git checkout main -- <path>` | This repo's JS toolchain does not own those files, and formatting them is churn in someone else's review |
 
 Resolved that way on PR #12. The legacy infrastructure files later moved out of
-this source repository; `web-components/CDN_TEST.html` remains ignored. Twelve
+this source repository, and the unused demo page was deleted (#124). Twelve
 source files stayed formatted in two `style:` commits because `yarn lint` is a
 blocking CI step and was red on main.
 

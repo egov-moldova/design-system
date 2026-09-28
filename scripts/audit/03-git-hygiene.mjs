@@ -47,7 +47,7 @@ Options:
 const ALLOWED_BARE_BRANCHES = new Set(['main', 'master', 'develop', 'staging', 'production']);
 
 // Conventional Commits regex — type(scope)?: subject
-// types per the repo's commitlint.config.js (extends @commitlint/config-conventional)
+// types per the repo's commitlint.config.mjs (extends @commitlint/config-conventional)
 const CONVENTIONAL_TYPES = [
   'feat',
   'fix',
