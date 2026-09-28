@@ -1,6 +1,6 @@
 # Issue #163, round 2 — Moldovan locales, locale-correct formatting, English demo content
 
-**Execution**: legs dispatched per the Execution matrix; each leg prompt carries Global constraints, Decision and its own phase in full
+**Execution**: workflow — `2026-09-29-issue-163-locales-round-2.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
 
 **Reviewed:** none
 
