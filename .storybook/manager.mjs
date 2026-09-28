@@ -15,7 +15,7 @@ const STORAGE_KEY = 'age-storybook-mode';
 const initialMode = readStoredMode();
 
 addons.setConfig({
-  theme: initialMode === 'dark' ? darkTheme : lightTheme,
+  theme: withVersion(initialMode === 'dark' ? darkTheme : lightTheme),
 });
 
 applyDocumentTheme(initialMode);
@@ -37,6 +37,27 @@ addons.register('age-theme-sync', () => {
     window.location.reload();
   });
 });
+
+// "Version: …" under the brand title. On a local server it reads
+// `development`; elsewhere it is the version the build resolved (main.mjs
+// resolveMudVersion), and `development` when it resolved none. Storybook renders
+// `brandTitle` as HTML when no `brandImage` is set, so the line is markup. The
+// brand link lays its content out in a row, so both lines sit in one column
+// wrapper; a bare second span would land beside the title, not under it.
+function versionLabel() {
+  const { hostname } = window.location;
+  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
+  const built = (process.env.MUD_SIDEBAR_VERSION ?? '').trim();
+  return isLocal || !built ? 'development' : built;
+}
+
+function withVersion(theme) {
+  const label = versionLabel().replace(/[&<>"']/g, ch => `&#${ch.charCodeAt(0)};`);
+  return {
+    ...theme,
+    brandTitle: `<span style="display: inline-flex; flex-direction: column; gap: 2px;">${theme.brandTitle}<span style="font-size: 12px; line-height: 16px; font-weight: 400; color: ${theme.textMutedColor};">Version: ${label}</span></span>`,
+  };
+}
 
 function readStoredMode() {
   try {

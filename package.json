@@ -482,6 +482,7 @@
       },
       "files": [
         ".storybook/**/*",
+        "package.json",
         "scripts/cleanup-storybook-fonts.mjs",
         "src/**/*.stories.ts",
         "src/**/*.mdx"

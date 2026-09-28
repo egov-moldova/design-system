@@ -8,6 +8,46 @@ const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// The version the sidebar shows under the title (manager.mjs):
+//   1. package.json's version, once a release pipeline has stamped it
+//      (`npm pkg set version=…`) before building Storybook;
+//   2. else, for a production build, the version npm publishes under the `dev`
+//      dist-tag, or `latest` once a release has caught up with it (1.2.0
+//      outranks 1.2.0-dev.1). The committed package.json only ever carries
+//      the 0.0.0-development placeholder, so a build from a plain checkout
+//      has nothing else to go on;
+//   3. else '' (a dev server, or npm out of reach): the sidebar reads "development".
+const UNSTAMPED_VERSION = '0.0.0-development';
+const MUD_DIST_TAGS_URL = 'https://registry.npmjs.org/-/package/@egov-moldova/mud/dist-tags';
+
+const versionCore = version => version.split('-')[0].split('.').map(Number);
+
+function newerOf(dev, latest) {
+  if (!dev || !latest) return dev || latest || '';
+  const [a, b] = [versionCore(dev), versionCore(latest)];
+  for (let i = 0; i < 3; i += 1) {
+    if (a[i] !== b[i]) return a[i] > b[i] ? dev : latest;
+  }
+  return latest; // Same x.y.z: the release outranks its prereleases.
+}
+
+async function resolveMudVersion() {
+  const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+  if (version && version !== UNSTAMPED_VERSION) return version;
+  if (isDev) return '';
+  try {
+    const response = await fetch(MUD_DIST_TAGS_URL, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return '';
+    const { dev, latest } = await response.json();
+    return newerOf(dev, latest);
+  } catch {
+    return '';
+  }
+}
+
+// Both builders (manager and preview) apply the `env` preset; look npm up once.
+let mudVersion;
+
 // In order of appearance in the UI (toolbar, addons panel, then docs)
 //
 // `@storybook/addon-vitest` (dev only) adds the "Component tests" panel. It was
@@ -48,6 +88,9 @@ export default {
     { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
+  // The manager bundle receives every key of this preset as a build-time
+  // `process.env.<KEY>`; see resolveMudVersion() above.
+  env: async config => ({ ...config, MUD_SIDEBAR_VERSION: await (mudVersion ??= resolveMudVersion()) }),
   framework: {
     name: getAbsolutePath('@storybook/web-components-vite'),
     options: {},
