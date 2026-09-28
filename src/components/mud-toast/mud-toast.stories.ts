@@ -11,6 +11,7 @@ type ToastArgs = {
   titleText: string;
   iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -20,7 +21,8 @@ const renderToast = (args: ToastArgs) => /*html*/ `
     closable="${args.closable}"
     ${args.titleText ? `title-text="${args.titleText}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-toast>
 `;
 
@@ -79,10 +81,15 @@ the consumer is responsible for animating out and removing the element.
       description: 'Override the default per-variant icon (mud-icon name). Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot text content.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -92,7 +99,8 @@ the consumer is responsible for animating out and removing the element.
     titleText: 'Mesaj important',
     iconName: '',
     body: 'Vă informăm despre modificările aduse serviciului.',
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 

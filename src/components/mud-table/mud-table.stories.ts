@@ -10,6 +10,7 @@ type StoryArgs = {
   selectable: boolean;
   disableSort: boolean;
   ariaLabel: string;
+  locale: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -94,6 +95,7 @@ const renderTable = (
     args.selectable ? 'selectable' : '',
     args.disableSort ? 'disable-sort' : '',
     args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -152,6 +154,11 @@ const meta: Meta<StoryArgs> = {
       control: 'text',
       description: 'Accessible label propagated to the rendered `<table>` element.',
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
   parameters: {
     docs: {
@@ -183,6 +190,7 @@ export const Default: Story = {
     selectable: false,
     disableSort: false,
     ariaLabel: 'Lista de plăți recente',
+    locale: '',
   },
   render: args => wrap(renderTable('tbl-default', baseColumns, baseRows, args)),
   parameters: {

@@ -1,8 +1,12 @@
-import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TOOLTIP_MESSAGES } from './mud-tooltip.messages';
+import type { TooltipMessages } from './mud-tooltip.messages';
 
 import {
   OPPOSITE_POSITION,
@@ -149,6 +153,26 @@ export class MudTooltip {
    */
   @Prop({ reflect: true }) showArrow: boolean = true;
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Accessible label for the `coach` variant's close button. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Închide tooltip-ul' (ro-RO)
+   */
+  @Prop() closeLabel?: string;
+
+  /**
+   * Dismiss hint shown in the `coach` variant's body. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Apasă Esc pentru a închide.' (ro-RO)
+   */
+  @Prop() dismissHint?: string;
+
   @State() private resolvedPosition: TooltipResolvedPosition = 'top';
 
   /**
@@ -240,9 +264,21 @@ export class MudTooltip {
   private documentClickHandler: ((event: MouseEvent) => void) | null = null;
   private documentKeydownHandler: ((event: KeyboardEvent) => void) | null = null;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): TooltipMessages {
+    return localeMessages('mud-tooltip', this.host, this.locale, TOOLTIP_MESSAGES, {
+      closeLabel: this.closeLabel,
+      dismissHint: this.dismissHint,
+    });
   }
 
   componentWillLoad() {
@@ -282,6 +318,7 @@ export class MudTooltip {
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
     this.clearShowTimer();
     this.clearHideTimer();
     this.detachTriggerListeners();
@@ -765,14 +802,14 @@ export class MudTooltip {
     return VALID_TRIGGER_TAGS.includes(tag) ? null : invalidSlottedTag(tag, VALID_TRIGGER_TAGS);
   }
 
-  private renderCloseButton() {
+  private renderCloseButton(closeLabel: string) {
     // Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG):
     // the close glyph scales with `width/height: 100%` of the close button
     // (`--tooltip-close-size`, ~16px). mud-icon's `cross-small` ships at
     // 16/20/24 — would visibly enlarge on coach-sm. Same precedent as the
     // intrinsic glyphs in mud-checkbox and mud-chip.
     return (
-      <button type="button" class="close" aria-label="Închide tooltip-ul" onClick={this.handleCloseButtonClick}>
+      <button type="button" class="close" aria-label={closeLabel} onClick={this.handleCloseButtonClick}>
         <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" class="close-icon">
           <path
             d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5"
@@ -786,8 +823,10 @@ export class MudTooltip {
   }
 
   render() {
+    const m = this.messages();
     const isCoach = this.variant === 'coach';
     const triggerError = this.validateTriggerSlot();
+    const hostLang = this.locale ? resolvedLocale('mud-tooltip', this.host, this.locale) : undefined;
 
     return (
       <Host
@@ -796,6 +835,7 @@ export class MudTooltip {
           [`position-${this.resolvedPosition}`]: true,
           [`variant-${this.variant}`]: true,
         }}
+        lang={hostLang}
       >
         {triggerError && <div class="slot-error">{triggerError}</div>}
         <span class="trigger">
@@ -811,9 +851,9 @@ export class MudTooltip {
         >
           <div class="content">
             <slot>{this.content}</slot>
-            {isCoach && <p class="hint">Apasă Esc pentru a închide.</p>}
+            {isCoach && <p class="hint">{m.dismissHint}</p>}
           </div>
-          {isCoach && this.renderCloseButton()}
+          {isCoach && this.renderCloseButton(m.closeLabel)}
           {this.showArrow && <span class="arrow" aria-hidden="true" />}
         </div>
       </Host>

@@ -1,6 +1,9 @@
 import { render, h, describe, it, expect } from '@stencil/vitest';
 
 import '../mud-info-box';
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { INFO_BOX_MESSAGES } from '../mud-info-box.messages';
+import type { InfoBoxMessages } from '../mud-info-box.messages';
 import { INFO_BOX_DEFAULT_ICONS, INFO_BOX_VARIANTS, INFO_BOX_EMPHASES } from '../mud-info-box.types';
 
 describe('mud-info-box', () => {
@@ -147,4 +150,22 @@ describe('mud-info-box', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describeLocales<InfoBoxMessages>('mud-info-box', INFO_BOX_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { closable: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    const { root } = await render(
+      <mud-info-box {...attrs}>Body</mud-info-box>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('.close')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel' },
 });

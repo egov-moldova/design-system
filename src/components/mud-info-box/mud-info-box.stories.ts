@@ -13,6 +13,7 @@ type InfoBoxArgs = {
   titleText: string;
   iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -27,7 +28,8 @@ const renderInfoBox = (args: InfoBoxArgs) => /*html*/ `
     ${args.hideIcon ? 'hide-icon' : ''}
     ${args.titleText ? `title-text="${args.titleText}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-info-box>
 `;
 
@@ -91,10 +93,15 @@ transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
       description: 'Override the default per-variant icon. Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot body content.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -106,7 +113,8 @@ transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
     titleText: '',
     iconName: '',
     body: DEMO_BODY,
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 

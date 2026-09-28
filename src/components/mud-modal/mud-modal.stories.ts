@@ -15,6 +15,7 @@ type ModalArgs = {
   closeOnEscape: boolean;
   destructive: boolean;
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -67,7 +68,8 @@ const renderModal = (args: ModalArgs) => /*html*/ `
       ${args.closeOnBackdrop ? '' : 'close-on-backdrop="false"'}
       ${args.closeOnEscape ? '' : 'close-on-escape="false"'}
       ${args.destructive ? 'destructive' : ''}
-      close-label="${args.closeLabel}"
+      ${args.locale ? `locale="${args.locale}"` : ''}
+      ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
     >
       ${args.body}
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
@@ -169,10 +171,15 @@ Romanian voice: defaults use **Confirmă** / **Anulează** / **Continuă** /
       table: { defaultValue: { summary: 'false' } },
     },
     body: { control: 'text', description: 'Default-slot text content (body copy).' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the × button.',
+      description: "Accessible label for the × button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -188,7 +195,8 @@ Romanian voice: defaults use **Confirmă** / **Anulează** / **Continuă** /
     closeOnEscape: true,
     destructive: false,
     body: 'Această acțiune va salva modificările făcute în formular. Continuați?',
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 export default meta;

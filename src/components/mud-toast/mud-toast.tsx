@@ -1,7 +1,11 @@
-import { Component, Element, Event, Host, Listen, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TOAST_MESSAGES } from './mud-toast.messages';
+import type { ToastMessages } from './mud-toast.messages';
 import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS, TOAST_DISMISS_FALLBACK_MS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
 
@@ -77,11 +81,16 @@ export class MudToast {
   @Prop() iconName?: IconName;
 
   /**
-   * Close-button accessible label. Defaults to the Romanian "Închide".
-   * Provide an alternative for non-Romanian locales.
-   * @default 'Închide'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
    */
-  @Prop() closeLabel: string = 'Închide';
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Închide' (ro-RO)
+   */
+  @Prop() closeLabel?: string;
 
   @State() private hasIconStart: boolean = false;
   @State() private hasActions: boolean = false;
@@ -97,6 +106,7 @@ export class MudToast {
   @Event() mudClose!: EventEmitter<void>;
 
   private dismissTimer?: ReturnType<typeof setTimeout>;
+  private stopLang?: () => void;
 
   /** Ends the close fade-out; the entrance animation ends here too and is ignored. */
   @Listen('animationend')
@@ -104,13 +114,27 @@ export class MudToast {
     if (ev.animationName === 'toast-dismiss') this.finishDismiss();
   }
 
+  connectedCallback(): void {
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+  }
+
   componentWillLoad(): void {
     this.detectSlots();
   }
 
   disconnectedCallback(): void {
+    this.stopLang?.();
     clearTimeout(this.dismissTimer);
     this.dismissTimer = undefined;
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): ToastMessages {
+    return localeMessages('mud-toast', this.host, this.locale, TOAST_MESSAGES, {
+      closeLabel: this.closeLabel,
+    });
   }
 
   private detectSlots(): void {
@@ -186,9 +210,11 @@ export class MudToast {
   }
 
   render() {
+    const m = this.messages();
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
+    const hostLang = this.locale ? resolvedLocale('mud-toast', this.host, this.locale) : undefined;
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
@@ -199,7 +225,7 @@ export class MudToast {
     };
 
     return (
-      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
+      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true" lang={hostLang}>
         <div class="main">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
@@ -229,7 +255,7 @@ export class MudToast {
           <button
             class="close"
             type="button"
-            aria-label={this.closeLabel}
+            aria-label={m.closeLabel}
             onClick={this.handleCloseClick}
             onKeyDown={this.handleCloseKeyDown}
           >

@@ -13,6 +13,7 @@ type BannerArgs = {
   linkHref: string;
   iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -24,7 +25,8 @@ const renderBanner = (args: BannerArgs) => /*html*/ `
     ${args.linkText ? `link-text="${args.linkText}"` : ''}
     ${args.linkHref ? `link-href="${args.linkHref}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-banner>
 `;
 
@@ -84,10 +86,15 @@ button; the consumer animates out and removes the element.
       description: 'Override the default per-variant icon. Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot message text.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -99,7 +106,8 @@ button; the consumer animates out and removes the element.
     linkHref: '#',
     iconName: '',
     body: MESSAGE,
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 

@@ -1,8 +1,12 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TABLE_MESSAGES } from './mud-table.messages';
+import type { TableMessages } from './mud-table.messages';
 import type {
   TableColumn,
   TableHeaderStyle,
@@ -127,6 +131,34 @@ export class MudTable {
   @Prop({ attribute: 'row-id-field' }) rowIdField: string = 'id';
 
   /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Empty-state text shown when `rows` is empty or undefined. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Nu există date de afișat.' (ro-RO)
+   */
+  @Prop({ attribute: 'empty-text' }) emptyText?: string;
+
+  /**
+   * Accessible label for the header "select all rows" checkbox. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Selectează toate rândurile' (ro-RO)
+   */
+  @Prop({ attribute: 'select-all-label' }) selectAllLabel?: string;
+
+  /**
+   * Accessible label for a row's selection checkbox. Carries a `{row}` placeholder, filled
+   * with the row's 1-based position. Overrides the `locale`'s copy when set to a non-empty
+   * string.
+   * @default 'Selectează rândul {row}' (ro-RO)
+   */
+  @Prop({ attribute: 'select-row-label' }) selectRowLabel?: string;
+
+  /**
    * The host's `aria-label` (attribute or native `ariaLabel` property), propagated
    * to the rendered `<table>` element.
    */
@@ -173,13 +205,27 @@ export class MudTable {
   }
 
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): TableMessages {
+    return localeMessages('mud-table', this.host, this.locale, TABLE_MESSAGES, {
+      emptyText: this.emptyText,
+      selectAllLabel: this.selectAllLabel,
+      selectRowLabel: this.selectRowLabel,
+    });
   }
 
   private getRowId(row: TableRowData, index: number): string {
@@ -357,12 +403,12 @@ export class MudTable {
     );
   }
 
-  private renderEmptyState(colSpan: number) {
+  private renderEmptyState(colSpan: number, emptyText: string) {
     return (
       <tr class="empty-row">
         <td class="empty-cell" colSpan={colSpan}>
           <slot name="empty">
-            <span class="empty-text">Nu există date de afișat.</span>
+            <span class="empty-text">{emptyText}</span>
           </slot>
         </td>
       </tr>
@@ -370,6 +416,8 @@ export class MudTable {
   }
 
   render() {
+    const m = this.messages();
+    const hostLang = this.locale ? resolvedLocale('mud-table', this.host, this.locale) : undefined;
     const columns = this.columns ?? [];
     const rows = this.rows ?? [];
     const hasRows = rows.length > 0;
@@ -379,7 +427,7 @@ export class MudTable {
     const someSelected = this.someRowsSelected();
 
     return (
-      <Host>
+      <Host lang={hostLang}>
         <div
           class="table-scroll"
           tabindex={0}
@@ -403,7 +451,7 @@ export class MudTable {
                   <th class="th th--selection" scope="col" data-table-selection="">
                     <mud-checkbox
                       size="sm"
-                      label="Selectează toate rândurile"
+                      label={m.selectAllLabel}
                       checked={allSelected}
                       indeterminate={someSelected}
                       onMudChange={this.handleSelectAll}
@@ -445,7 +493,7 @@ export class MudTable {
               </tr>
             </thead>
             <tbody class="tbody">
-              {!hasRows && this.renderEmptyState(totalColumns)}
+              {!hasRows && this.renderEmptyState(totalColumns, m.emptyText)}
               {hasRows &&
                 rows.map((row, rowIndex) => {
                   const rowId = this.getRowId(row, rowIndex);
@@ -466,7 +514,7 @@ export class MudTable {
                         <td class="td td--selection" data-table-selection="">
                           <mud-checkbox
                             size="sm"
-                            label={`Selectează rândul ${rowIndex + 1}`}
+                            label={formatMessage(m.selectRowLabel, this.host, this.locale, { row: rowIndex + 1 })}
                             checked={selected}
                             onMudChange={(event: Event) => this.handleRowSelect(event, rowId)}
                           />

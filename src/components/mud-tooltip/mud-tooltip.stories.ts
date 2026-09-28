@@ -13,6 +13,9 @@ type TooltipArgs = {
   triggerLabel: string;
   maxWidth: number;
   showDelay: number;
+  locale: string;
+  closeLabel: string;
+  dismissHint: string;
 };
 
 const renderTooltip = (args: TooltipArgs) => /*html*/ `
@@ -24,6 +27,9 @@ const renderTooltip = (args: TooltipArgs) => /*html*/ `
     ${args.open ? 'open' : ''}
     max-width="${args.maxWidth}"
     show-delay="${args.showDelay}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
+    ${args.dismissHint ? `dismiss-hint="${args.dismissHint}"` : ''}
   >
     <button slot="trigger" type="button">${args.triggerLabel}</button>
     ${args.content}
@@ -131,6 +137,23 @@ tooltip body alongside the control.
       description: 'Hover show-delay (ms). Focus/click/manual ignore it.',
       table: { defaultValue: { summary: '200' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
+    closeLabel: {
+      name: 'close-label',
+      control: 'text',
+      description: "Accessible label for the coach variant's close button. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Închide tooltip-ul' } },
+    },
+    dismissHint: {
+      name: 'dismiss-hint',
+      control: 'text',
+      description: "Dismiss hint shown in the coach variant's body. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Apasă Esc pentru a închide.' } },
+    },
   },
   args: {
     size: 'sm',
@@ -142,6 +165,9 @@ tooltip body alongside the control.
     triggerLabel: 'Detalii suplimentare',
     maxWidth: 200,
     showDelay: 0,
+    locale: '',
+    closeLabel: '',
+    dismissHint: '',
   },
 };
 

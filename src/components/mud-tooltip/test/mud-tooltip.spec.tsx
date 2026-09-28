@@ -2,6 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-tooltip';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { TOOLTIP_MESSAGES } from '../mud-tooltip.messages';
+import type { TooltipMessages } from '../mud-tooltip.messages';
 import { TOOLTIP_POSITIONS, TOOLTIP_SIZES, TOOLTIP_VARIANTS } from '../mud-tooltip.types';
 
 const queryBubble = (root: Element | null | undefined): HTMLElement | null =>
@@ -517,4 +520,29 @@ describe('mud-tooltip', () => {
       expect(bubble.textContent?.trim()).toContain('Ajutor: introdu codul');
     });
   });
+});
+
+describeLocales<TooltipMessages>('mud-tooltip', TOOLTIP_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { variant: 'coach', open: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    if (props.dismissHint !== undefined) attrs['dismiss-hint'] = String(props.dismissHint);
+    const { root } = await render(
+      <mud-tooltip {...attrs}>
+        <button slot="trigger" type="button">
+          T
+        </button>
+        Body
+      </mud-tooltip>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    if (key === 'dismissHint') return host.shadowRoot?.querySelector('.hint')?.textContent ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel', dismissHint: 'dismissHint' },
 });
