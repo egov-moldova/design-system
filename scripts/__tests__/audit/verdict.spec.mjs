@@ -857,7 +857,26 @@ describe('verdict: latent defects found during the #115 review (issue #129)', ()
       assert.equal(v.level, undefined, depth);
       assert.match(v.entries[0].cause, new RegExp(`unknown depth "${depth}"`));
       assert.match(v.entries[0].cause, /quick\|standard\|deep/);
+      assert.equal(v.entries[0].verify, 'yarn audit:component mud-fx --depth standard');
     }
+  });
+
+  it('#3: a depth naming an Object.prototype key is INCOMPLETE too, never a throw', () => {
+    for (const depth of ['toString', 'constructor', '__proto__']) {
+      const e = cleanEnvelope();
+      e.audit.depth = depth;
+      const v = computeVerdict({ envelope: e });
+      assert.equal(v.state, 'INCOMPLETE', depth);
+    }
+  });
+
+  it('#3: every verify: under an unknown depth is a command the CLI accepts', () => {
+    const e = cleanEnvelope();
+    e.audit.depth = 'thorough';
+    e.results = e.results.filter(r => r.id !== '09');
+    const v = computeVerdict({ envelope: e });
+    assert.ok(v.entries.length >= 2);
+    for (const entry of v.entries) assert.match(entry.verify, /--depth standard( |$)/);
   });
 
   it('#3: a known depth adds no depth entry', () => {
@@ -909,8 +928,10 @@ describe('verdict: latent defects found during the #115 review (issue #129)', ()
     const e = cleanEnvelope();
     e.findingsByTool['check-02'] = [{ severity: 'info', code: 'X', notApplicable: true }];
     e.findingsByTool['check-04'] = [{ severity: 'info', notApplicable: true }];
+    e.findingsByTool['check-05'] = [{ severity: 'info', code: 'Y', message: '', notApplicable: true }];
     const v = computeVerdict({ envelope: e });
     assert.equal(v.rows.find(r => r.id === '02').note, 'X');
+    assert.equal(v.rows.find(r => r.id === '05').note, 'Y');
     assert.equal(v.rows.find(r => r.id === '04').note, 'not applicable');
     assert.doesNotMatch(renderFixBrief(v), /undefined/);
   });

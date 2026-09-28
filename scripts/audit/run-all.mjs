@@ -1030,9 +1030,8 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
         components.length === 0
           ? {
               ok: combined.ok,
-              incomplete: combined.results.some(
-                r => r.status === ROW_STATUS.CRASHED || r.status === ROW_STATUS.MISSING_PREREQ,
-              ),
+              // Counted by aggregate(): crashed or unprepared rows and owed noTarget findings.
+              incomplete: combined.summary.incomplete > 0,
             }
           : null;
       result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
@@ -1154,17 +1153,20 @@ export function aggregate({
     !(r.findings ?? []).some(f => f.code === 'STRUCTURE-NOT-FOUND');
   // A script's own `ok` and `summary.errors` count every error-severity
   // finding; the ungraded ones are taken back out here, never re-graded.
-  const ungradedErrors = r =>
-    (r.findings ?? []).filter(f => f.severity === 'error' && findingClass(f) !== FINDING_CLASS.GRADED).length;
-  const gradedErrors = r => (r.summary?.errors ?? 0) - ungradedErrors(r);
-  const owedNoTargets = r =>
-    rowStatus(r) === ROW_STATUS.OK && owes(r)
-      ? (r.findings ?? []).filter(f => findingClass(f) === FINDING_CLASS.NO_TARGET)
-      : [];
-  // Only when ungraded errors are all that made the script say not-ok; a row
-  // that is not ok with no errors at all still failed.
-  const ranClean = r => r.ok || (rowStatus(r) === ROW_STATUS.OK && ungradedErrors(r) > 0 && gradedErrors(r) === 0);
-  const rowOk = r => (ranClean(r) || excused(r)) && owedNoTargets(r).length === 0;
+  const classify = r => {
+    const findings = r.findings ?? [];
+    const ran = rowStatus(r) === ROW_STATUS.OK;
+    const ungradedErrors = findings.filter(
+      f => f.severity === 'error' && findingClass(f) !== FINDING_CLASS.GRADED,
+    ).length;
+    const gradedErrors = (r.summary?.errors ?? 0) - ungradedErrors;
+    const owedNoTargets = ran && owes(r) ? findings.filter(f => findingClass(f) === FINDING_CLASS.NO_TARGET) : [];
+    // Only when ungraded errors are all that made the script say not-ok; a row
+    // that is not ok with no errors at all still failed.
+    const ranClean = r.ok || (ran && ungradedErrors > 0 && gradedErrors === 0);
+    return { gradedErrors, owedNoTargets, ok: (ranClean || excused(r)) && owedNoTargets.length === 0 };
+  };
+  const classOf = new Map(results.map(r => [r, classify(r)]));
   let blockingErrors = 0;
 
   for (const r of results) {
@@ -1172,7 +1174,7 @@ export function aggregate({
       summary.errors += r.summary.errors ?? 0;
       summary.warnings += r.summary.warnings ?? 0;
       summary.info += r.summary.info ?? 0;
-      if (!reportOnly.has(r.name)) blockingErrors += gradedErrors(r);
+      if (!reportOnly.has(r.name)) blockingErrors += classOf.get(r).gradedErrors;
     }
     if (r.findings) {
       findingsByTool[r.name] = [...(findingsByTool[r.name] ?? []), ...r.findings];
@@ -1183,7 +1185,7 @@ export function aggregate({
     }
   }
 
-  const ok = blockingErrors === 0 && results.every(rowOk);
+  const ok = blockingErrors === 0 && results.every(r => classOf.get(r).ok);
 
   const rows = results.map(r => {
     const script = scriptsById.get(r.id);
@@ -1192,16 +1194,16 @@ export function aggregate({
       summary.incomplete += 1;
       blockers.push(`${r.name}/${status}`);
     }
-    const noTargets = owedNoTargets(r);
-    if (noTargets.length) {
+    const { owedNoTargets } = classOf.get(r);
+    if (owedNoTargets.length) {
       summary.incomplete += 1;
-      for (const f of noTargets) blockers.push(`${r.name}/no-target:${f.code}`);
+      for (const f of owedNoTargets) blockers.push(`${r.name}/no-target:${f.code ?? 'no code'}`);
     }
     const row = {
       id: r.id,
       name: r.name,
       wave: r.wave,
-      ok: rowOk(r),
+      ok: classOf.get(r).ok,
       status,
       exitCode: r.exitCode,
       durationMs: r.durationMs,

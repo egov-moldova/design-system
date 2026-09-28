@@ -129,7 +129,22 @@ export function excuseFor(id, { noFigma = false, figma = null, browserWaiver = n
  * @param {{ noFigma?: boolean, figma?: object|null, browserWaiver?: string|null }} ctx
  */
 export function owesTarget(id, depth, ctx) {
-  return (REQUIRED_CHECKS[depth] ?? REQUIRED_CHECKS.standard).includes(id) && !excuseFor(id, ctx);
+  return requiredFor(depth).includes(id) && !excuseFor(id, ctx);
+}
+
+/** Whether `depth` names a row of REQUIRED_CHECKS — own keys only, so `toString` or `__proto__` does not. Pure. */
+function isKnownDepth(depth) {
+  return Object.hasOwn(REQUIRED_CHECKS, depth);
+}
+
+/** The ids `depth` requires; an unknown depth is graded as standard (and reported INCOMPLETE). Pure. */
+function requiredFor(depth) {
+  return isKnownDepth(depth) ? REQUIRED_CHECKS[depth] : REQUIRED_CHECKS.standard;
+}
+
+/** A depth the CLI accepts, for the commands a verdict hands out. Pure. */
+function cliDepth(depth) {
+  return isKnownDepth(depth) ? depth : 'standard';
 }
 
 // ─── Pure computation ────────────────────────────────────────────────────
@@ -154,11 +169,11 @@ function errorClass(row) {
 }
 
 function verifyCommand(component, depth, id) {
-  return `node scripts/audit/run-all.mjs ${component} --depth ${depth} --only ${id} --json`;
+  return `node scripts/audit/run-all.mjs ${component} --depth ${cliDepth(depth)} --only ${id} --json`;
 }
 
 function freshRunCommand(component, depth) {
-  return `yarn audit:component ${component} --depth ${depth}`;
+  return `yarn audit:component ${component} --depth ${cliDepth(depth)}`;
 }
 
 /** Map the orchestrator's HEAD copy back to the manifest a fixer edits (Design §8). */
@@ -342,14 +357,14 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   // The CLI validates --depth, but --rerender and --run-dir read envelopes
   // from disk: an unknown depth would otherwise be graded against the standard
   // table and still reach levelFor's PRODUCTION-READY branch.
-  if (envelope && !Object.hasOwn(REQUIRED_CHECKS, depth)) {
+  if (envelope && !isKnownDepth(depth)) {
     const known = Object.keys(REQUIRED_CHECKS).join('|');
     addIncomplete({
       kind: STATE.INCOMPLETE,
       check: 'run-all',
       cause: `unknown depth "${depth}" in the envelope — expected one of ${known}`,
-      prerequisite: 'none',
-      verify: `yarn audit:component ${component} --depth <${known}>`,
+      prerequisite: `re-run at one of ${known}`,
+      verify: freshRunCommand(component, depth),
     });
   }
   if (envelope?.preflight && envelope.preflight.ok === false) {
@@ -362,7 +377,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
     });
   }
 
-  const required = REQUIRED_CHECKS[depth] ?? REQUIRED_CHECKS.standard;
+  const required = requiredFor(depth);
   const resultRows = envelope?.results ?? [];
   const byId = new Map(resultRows.map(r => [r.id, r]));
   const findingsByTool = envelope?.findingsByTool ?? {};
@@ -437,7 +452,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       const ofClass = c => allFindings.filter(f => findingClass(f) === c);
       const notApplicable = ofClass(FINDING_CLASS.NOT_APPLICABLE);
       if (notApplicable.length) {
-        out.note = notApplicable.map(f => f.message ?? f.code ?? 'not applicable').join('; ');
+        out.note = notApplicable.map(f => f.message || f.code || 'not applicable').join('; ');
       }
       // A row that owed a target and checked nothing (Decision §5): INCOMPLETE,
       // not a FAIL — the fix is a missing input, and it never also lands in R4's

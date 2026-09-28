@@ -53,7 +53,7 @@ not run), `4` `NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the
 located failure. The envelope at `audit/_run/envelope.json` is read only to
 display the `blockers` array (each entry `tool/CODE`, e.g.
 `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`, `name/status` for a crashed
-row, or `name/no-target:CODE` for a required row that found nothing to check)
+row, or `name/no-target:CODE` for a required, unexcused row that found nothing to check)
 alongside the fix brief — it never overrides the exit-status branch
 above.
 

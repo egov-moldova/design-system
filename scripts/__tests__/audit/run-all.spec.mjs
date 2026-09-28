@@ -1578,6 +1578,41 @@ describe('run-all: a noTarget finding agrees with the verdict (issue #129)', () 
     assert.equal(combined.ok, false);
   });
 
+  it('--changed selecting nothing, an owed noTarget on a repo-level row (03) → INCOMPLETE, not FAIL', async () => {
+    const p = pipeline({
+      argv: ['--changed', '--depth', 'quick', '--verdict'],
+      changed: [],
+      env: { FIXTURE_NO_TARGET: 'warning' },
+    });
+    const r = await runAudit(p.args, p.deps);
+    assert.equal(r.combined.ok, false);
+    assert.equal(r.summary.state, 'INCOMPLETE');
+  });
+
+  it('a code-less owed noTarget is listed as no-target:no code, never undefined', () => {
+    const { code: _code, ...codeless } = noTarget();
+    const combined = aggregate({ targetArg: 'mud-fx', results: [row([codeless])], durationMs: 1, owes: () => true });
+    assert.deepEqual(combined.blockers, ['a11y-tree/no-target:no code']);
+  });
+
+  it('#2: an error-severity notApplicable finding is neither a blocker nor a failure', () => {
+    const na = { severity: 'error', code: 'NA', message: 'does not apply', notApplicable: true };
+    const combined = aggregate({ targetArg: 'mud-fx', results: [row([na])], durationMs: 1 });
+    assert.deepEqual(combined.blockers, []);
+    assert.equal(combined.ok, true);
+  });
+
+  it('#1: an owed noTarget on a report-only row still makes the run not ok — report-only covers graded errors, as in the verdict', () => {
+    const combined = aggregate({
+      targetArg: 'mud-fx',
+      results: [{ ...row([noTarget()]), id: '16', name: 'stencil-contract' }],
+      durationMs: 1,
+      owes: () => true,
+    });
+    assert.equal(combined.ok, false);
+    assert.deepEqual(combined.blockers, ['stencil-contract/no-target:NO-TARGET']);
+  });
+
   it('#1: a noTarget of any severity on a row that owes a target makes the run not ok, listed as no-target', () => {
     for (const severity of ['warning', 'error', 'info']) {
       const combined = aggregate({
