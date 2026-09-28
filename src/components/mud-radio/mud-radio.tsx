@@ -14,8 +14,8 @@ let radioInstanceCounter = 0;
  * `<input type="radio">` inside shadow DOM and paints the visual circle
  * with CSS. Form participation works via `formAssociated` +
  * `ElementInternals.setFormValue`. The component is the standalone radio
- * primitive; a future `mud-radio-group` molecule will manage roving focus
- * and `name`-based exclusivity across siblings.
+ * primitive; `mud-radio-group` groups radios into one Tab stop with
+ * arrow-key selection and gives them one `name`.
  *
  * @element mud-radio
  *

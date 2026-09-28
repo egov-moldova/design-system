@@ -1,0 +1,39 @@
+{
+  "radioGroup": {
+    "gap": {
+      "$value": "{spacing.12}",
+      "$type": "dimension",
+      "$comment": "No Figma design for the group (the Radio page draws only single radio-labels). Label, options and error message stack 12px apart, the same rhythm as the options."
+    },
+    "options": {
+      "gap": {
+        "vertical": {
+          "$value": "{spacing.12}",
+          "$type": "dimension",
+          "$comment": "Stacked options 12px apart, as the mud-radio Group story laid them out before this component. Also the row gap when a horizontal group wraps."
+        },
+        "horizontal": {
+          "$value": "{spacing.24}",
+          "$type": "dimension",
+          "$comment": "Options in a row 24px apart: twice the 12px radio-to-label gap, so each option reads as one unit."
+        }
+      }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": {
+        "md": { "$value": "{fontSize.16}", "$type": "dimension" },
+        "sm": { "$value": "{fontSize.14}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "md": { "$value": "{lineHeight.24}", "$type": "dimension" },
+        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" }
+      },
+      "color": {
+        "default": { "$value": "{color.text.base.default}", "$type": "color" },
+        "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      }
+    }
+  }
+}

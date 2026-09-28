@@ -1,0 +1,8 @@
+{
+  "component": "mud-radio-group",
+  "figma": {
+    "design": "none",
+    "reason": "The Figma Radio page (Label Group States, 578:34869) draws only single radio-labels, each pinned by mud-radio's own manifest. The group layout (label, 12px stacked or 24px horizontal option gaps, group error message) has no frame; it is built from the radio's type and spacing scale in radio-group.tokens.json.",
+    "decidedBy": "vitalie, 2026-09-28: no design for the group, build it from tokens"
+  }
+}

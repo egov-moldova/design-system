@@ -385,7 +385,7 @@ export const Disabled: Story = {
 };
 
 export const Group: Story = {
-  name: 'Group (preview)',
+  name: 'Group (without mud-radio-group)',
   render: () => /*html*/ `
       <fieldset style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); max-width: 360px;">
         <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); padding: 0 var(--spacing-4);">Select an option</legend>
@@ -399,7 +399,7 @@ export const Group: Story = {
     docs: {
       description: {
         story:
-          'Multiple `mud-radio` siblings sharing a `name` form an implicit group. A dedicated `mud-radio-group` molecule that adds roving-focus and arrow-key navigation will land in a follow-up PR.',
+          'Multiple `mud-radio` siblings sharing a `name` form an implicit group, but each radio is its own Tab stop and the arrow keys do nothing. Wrap them in `mud-radio-group` (Components/Radio Group) for one Tab stop, arrow-key selection and a group label.',
       },
       source: {
         code: docsCode(
