@@ -7,7 +7,10 @@ import '../mud-text-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from '../mud-text-input.types';
+import { TEXT_INPUT_MESSAGES } from '../mud-text-input.messages';
+import type { TextInputMessages } from '../mud-text-input.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -434,4 +437,26 @@ describe('mud-text-input', () => {
       expect(queryClear(root)).toBeNull();
     });
   });
+});
+
+describeLocales<TextInputMessages>('mud-text-input', TEXT_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x', clearable: 'true', value: 'hello' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    const { root } = await render(
+      <mud-text-input {...attrs}></mud-text-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.control-clear')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { clearLabel: 'clearLabel' },
+  unreachable: {
+    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  },
 });

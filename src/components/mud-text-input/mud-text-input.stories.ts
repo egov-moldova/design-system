@@ -19,6 +19,7 @@ type InputArgs = {
   loading: boolean;
   invalid: boolean;
   clearable: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -39,6 +40,7 @@ const renderInput = (args: InputArgs) => /*html*/ `
     ${args.loading ? 'loading' : ''}
     ${args.invalid ? 'invalid' : ''}
     ${args.clearable ? 'clearable' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-text-input>
 `;
 
@@ -58,6 +60,7 @@ const docsSourceDefault = (args: InputArgs) => {
     args.loading ? 'loading' : '',
     args.invalid ? 'invalid' : '',
     args.clearable ? 'clearable' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -97,6 +100,11 @@ const meta: Meta<InputArgs> = {
     loading: { control: 'boolean' },
     invalid: { control: 'boolean' },
     clearable: { control: 'boolean', description: 'Shows a trailing clear (×) button while the field holds a value.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -121,6 +129,7 @@ export const Default: Story = {
     loading: false,
     invalid: false,
     clearable: false,
+    locale: '',
   },
   parameters: {
     docs: {

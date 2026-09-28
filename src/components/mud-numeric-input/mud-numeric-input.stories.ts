@@ -21,6 +21,7 @@ type NumericInputArgs = {
   invalid: boolean;
   loading: boolean;
   showSteppers: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -44,6 +45,7 @@ const renderNumericInput = (args: NumericInputArgs) => /*html*/ `
     ${args.invalid ? 'invalid' : ''}
     ${args.loading ? 'loading' : ''}
     ${args.showSteppers ? '' : 'show-steppers="false"'}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-numeric-input>
 `;
 
@@ -66,6 +68,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
     args.invalid ? 'invalid' : '',
     args.loading ? 'loading' : '',
     args.showSteppers ? '' : 'show-steppers="false"',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -104,6 +107,12 @@ const meta: Meta<NumericInputArgs> = {
     invalid: { control: 'boolean' },
     loading: { control: 'boolean', description: 'Renders a brand spinner in place of the stepper stack.' },
     showSteppers: { control: 'boolean', description: 'Render the stacked stepper buttons.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description:
+        'BCP-47 locale for thousands-grouping and the built-in copy. Grouping stays off when unset; copy follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -131,6 +140,7 @@ export const Default: Story = {
     invalid: false,
     loading: false,
     showSteppers: true,
+    locale: '',
   },
   parameters: {
     docs: {

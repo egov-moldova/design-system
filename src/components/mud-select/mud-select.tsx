@@ -10,6 +10,7 @@ import {
   readTask,
   State,
   Watch,
+  forceUpdate,
   h,
 } from '@stencil/core';
 
@@ -18,6 +19,10 @@ import type { SelectChangeDetail, SelectEntry, SelectOptionEntry, SelectSize, Se
 import { filterEntries, foldForSearch, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
 import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { SELECT_MESSAGES } from './mud-select.messages';
+import type { SelectMessages } from './mud-select.messages';
 
 let selectInstanceCounter = 0;
 
@@ -130,24 +135,32 @@ export class MudSelect {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Shown in place of the list when nothing matches the query.
-   * @default 'Nicio opțiune'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
    */
-  @Prop({ attribute: 'empty-label' }) emptyLabel: string = 'Nicio opțiune';
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Shown in place of the list when nothing matches the query. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Nicio opțiune' (ro-RO)
+   */
+  @Prop({ attribute: 'empty-label' }) emptyLabel?: string;
 
   /**
    * Names the listbox for assistive technology when the field has no visible
-   * label and no `aria-label` to borrow.
-   * @default 'Opțiuni'
+   * label and no `aria-label` to borrow. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Opțiuni' (ro-RO)
    */
-  @Prop({ attribute: 'listbox-label' }) listboxLabel: string = 'Opțiuni';
+  @Prop({ attribute: 'listbox-label' }) listboxLabel?: string;
 
   /**
    * Validation message reported when the field is `required` and nothing is
-   * selected.
-   * @default 'Selectați o opțiune.'
+   * selected. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Selectați o opțiune.' (ro-RO)
    */
-  @Prop({ attribute: 'required-message' }) requiredMessage: string = 'Selectați o opțiune.';
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
   /**
    * Lets the user narrow the list by typing into the control.
@@ -207,10 +220,21 @@ export class MudSelect {
   private optionsObserver?: MutationObserver;
   private typeaheadBuffer: string = '';
   private typeaheadTimer?: ReturnType<typeof setTimeout>;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
     this.observeOptions();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): SelectMessages {
+    return localeMessages('mud-select', this.host, this.locale, SELECT_MESSAGES, {
+      emptyLabel: this.emptyLabel,
+      listboxLabel: this.listboxLabel,
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   /**
@@ -267,7 +291,7 @@ export class MudSelect {
     if (!this.internals) return;
     const value = (this.value ?? '').trim();
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, this.requiredMessage, this.triggerEl);
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.triggerEl);
       return;
     }
     this.internals.setValidity({});
@@ -396,6 +420,7 @@ export class MudSelect {
       window.removeEventListener('scroll', this.positionListbox, true);
     }
     this.stopAriaLabel?.();
+    this.stopLang?.();
     this.optionsObserver?.disconnect();
     this.optionsObserver = undefined;
     if (this.typeaheadTimer !== undefined) clearTimeout(this.typeaheadTimer);
@@ -767,10 +792,12 @@ export class MudSelect {
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const hostLang = this.locale ? resolvedLocale('mud-select', this.host, this.locale) : undefined;
     const opts = this.resolvedOptions();
     // From the whole model, not the filtered view: a query that matches nothing
     // must not make the current selection look as though it had been cleared.
@@ -805,7 +832,7 @@ export class MudSelect {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={hostLang}>
         <label class="label" htmlFor={this.triggerId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -885,7 +912,7 @@ export class MudSelect {
             part="listbox"
             role="listbox"
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? this.listboxLabel) : undefined}
+            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? m.listboxLabel) : undefined}
             hidden={!this.open}
             style={
               this.listboxMaxBlockSize
@@ -900,7 +927,7 @@ export class MudSelect {
               // cannot be chosen, and the keyboard agrees — it walks the option
               // model, which is empty here, so nothing can land on this row.
               <div class="listbox-empty" role="option" aria-disabled="true" aria-selected="false">
-                {this.emptyLabel}
+                {m.emptyLabel}
               </div>
             ) : (
               toRows(this.visibleEntries()).map((row, rowIndex) => {

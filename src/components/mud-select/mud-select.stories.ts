@@ -16,6 +16,7 @@ type SelectArgs = {
   readonly: boolean;
   invalid: boolean;
   searchable: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -58,6 +59,7 @@ const renderSelect = (args: SelectArgs) =>
       ${args.readonly ? 'readonly' : ''}
       ${args.invalid ? 'invalid' : ''}
       ${args.searchable ? 'searchable' : ''}
+      ${args.locale ? `locale="${args.locale}"` : ''}
     `);
 
 const docsSourceDefault = (args: SelectArgs) => {
@@ -74,6 +76,7 @@ const docsSourceDefault = (args: SelectArgs) => {
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
     args.searchable ? 'searchable' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -106,6 +109,11 @@ const meta: Meta<SelectArgs> = {
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
     searchable: { control: 'boolean', description: 'Lets the user narrow the list by typing into the control.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -128,6 +136,7 @@ export const Default: Story = {
     readonly: false,
     invalid: false,
     searchable: false,
+    locale: '',
   },
   parameters: {
     docs: {

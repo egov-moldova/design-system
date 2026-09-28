@@ -7,7 +7,10 @@ import '../mud-search-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from '../mud-search-input.types';
+import { SEARCH_INPUT_MESSAGES } from '../mud-search-input.messages';
+import type { SearchInputMessages } from '../mud-search-input.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -602,4 +605,29 @@ describe('mud-search-input', () => {
       expect(host.value).toBe('certificat');
     });
   });
+});
+
+describeLocales<SearchInputMessages>('mud-search-input', SEARCH_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'label': 'x', 'value': 'hello', 'with-button': 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.submitLabel !== undefined) attrs['submit-label'] = String(props.submitLabel);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    const { root } = await render(
+      <mud-search-input {...attrs}></mud-search-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'submitLabel')
+      return host.shadowRoot?.querySelector('.submit-button')?.getAttribute('aria-label') ?? null;
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.clear-button')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { submitLabel: 'submitLabel', clearLabel: 'clearLabel' },
+  unreachable: {
+    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  },
 });

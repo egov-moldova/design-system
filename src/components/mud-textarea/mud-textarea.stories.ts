@@ -19,6 +19,7 @@ type TextareaArgs = {
   disabled: boolean;
   readonly: boolean;
   invalid: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -40,6 +41,7 @@ const renderTextarea = (args: TextareaArgs) => /*html*/ `
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-textarea>
 `;
 
@@ -60,6 +62,7 @@ const docsSourceDefault = (args: TextareaArgs) => {
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -100,6 +103,11 @@ const meta: Meta<TextareaArgs> = {
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -125,6 +133,7 @@ export const Default: Story = {
     disabled: false,
     readonly: false,
     invalid: false,
+    locale: '',
   },
   parameters: {
     docs: {

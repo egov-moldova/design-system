@@ -12,6 +12,7 @@ type ChipArgs = {
   disabled: boolean;
   removable: boolean;
   label: string;
+  locale: string;
 };
 
 const renderChip = (args: ChipArgs) => /*html*/ `
@@ -23,6 +24,7 @@ const renderChip = (args: ChipArgs) => /*html*/ `
     ${args.disabled ? 'disabled' : ''}
     ${args.removable ? 'removable' : ''}
     ${typeof args.count === 'number' && args.count > 0 ? `count="${args.count}"` : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   >${args.label}</mud-chip>
 `;
 
@@ -35,6 +37,7 @@ const docsSourceDefault = (args: ChipArgs) => {
     args.disabled ? 'disabled' : '',
     args.removable ? 'removable' : '',
     typeof args.count === 'number' && args.count > 0 ? `count="${args.count}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -109,6 +112,11 @@ extension.
       description: 'Trailing close button. Only meaningful when `type="input"`.',
     },
     label: { control: 'text', description: 'Default-slot text content.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
   args: {
     type: 'filter',
@@ -119,6 +127,7 @@ extension.
     disabled: false,
     removable: false,
     label: 'Apartament',
+    locale: '',
   },
 };
 

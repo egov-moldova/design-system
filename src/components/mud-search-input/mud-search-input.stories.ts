@@ -15,6 +15,7 @@ type SearchArgs = {
   clearable: boolean;
   loading: boolean;
   withButton: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -33,6 +34,7 @@ const renderSearch = (args: SearchArgs) => /*html*/ `
     ${args.clearable ? '' : 'clearable="false"'}
     ${args.loading ? 'loading' : ''}
     ${args.withButton ? 'with-button' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-search-input>
 `;
 
@@ -49,6 +51,7 @@ const docsSourceDefault = (args: SearchArgs) => {
     args.clearable ? '' : 'clearable="false"',
     args.loading ? 'loading' : '',
     args.withButton ? 'with-button' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -83,6 +86,11 @@ const meta: Meta<SearchArgs> = {
       control: 'boolean',
       description: 'Renders a trailing brand-blue submit button (Figma `Button=True`).',
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -104,6 +112,7 @@ export const Default: Story = {
     clearable: true,
     loading: false,
     withButton: false,
+    locale: '',
   },
   parameters: {
     docs: {

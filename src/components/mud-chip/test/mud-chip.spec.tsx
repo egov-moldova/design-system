@@ -2,7 +2,10 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-chip';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import { CHIP_SIZES, CHIP_TYPES } from '../mud-chip.types';
+import { CHIP_MESSAGES } from '../mud-chip.messages';
+import type { ChipMessages } from '../mud-chip.messages';
 
 const queryControl = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.control') ?? null) as HTMLButtonElement | null;
@@ -434,4 +437,22 @@ describe('mud-chip', () => {
       expect(root?.shadowRoot?.querySelector('.count')).toBeNull();
     });
   });
+});
+
+describeLocales<ChipMessages>('mud-chip', CHIP_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { type: 'input', removable: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.removeLabel !== undefined) attrs['remove-label'] = String(props.removeLabel);
+    const { root } = await render(
+      <mud-chip {...attrs}></mud-chip>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'removeLabel') return queryRemove(host)?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { removeLabel: 'removeLabel' },
 });

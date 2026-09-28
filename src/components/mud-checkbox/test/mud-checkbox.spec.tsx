@@ -2,7 +2,10 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-checkbox';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import { CHECKBOX_SIZES } from '../mud-checkbox.types';
+import { CHECKBOX_MESSAGES } from '../mud-checkbox.messages';
+import type { CheckboxMessages } from '../mud-checkbox.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -506,4 +509,20 @@ describe('mud-checkbox', () => {
       expect((root as unknown as { checked: boolean }).checked).toBe(true);
     });
   });
+});
+
+describeLocales<CheckboxMessages>('mud-checkbox', CHECKBOX_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-checkbox {...attrs}></mud-checkbox>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: () => null,
+  unreachable: {
+    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  },
 });

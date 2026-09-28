@@ -14,6 +14,7 @@ type CheckboxArgs = {
   label: string;
   supportingText: string;
   errorText: string;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -36,6 +37,8 @@ type CbOpts = {
   ariaLabel?: string;
   /** Raw inner markup override. When set, ignores `label`/`supporting`. */
   rawSlots?: string;
+  /** Language of the built-in copy (`locale` attribute). */
+  locale?: string;
 };
 
 const cb = (opts: CbOpts = {}): string => {
@@ -43,6 +46,7 @@ const cb = (opts: CbOpts = {}): string => {
     opts.size && opts.size !== 'md' ? `size="${opts.size}"` : '',
     opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
     opts.errorText ? `error-text="${opts.errorText}"` : '',
+    opts.locale ? `locale="${opts.locale}"` : '',
     opts.flags ?? '',
   ]
     .filter(Boolean)
@@ -67,6 +71,7 @@ const renderCheckbox = (args: CheckboxArgs) =>
     label: args.label,
     supporting: args.supportingText,
     errorText: args.errorText,
+    locale: args.locale,
     flags: [
       args.checked && 'checked',
       args.indeterminate && 'indeterminate',
@@ -113,6 +118,11 @@ const meta: Meta<CheckboxArgs> = {
       description:
         'Plain-text error message (`error-text`). Shown with the error icon when `invalid` is set; replaces supporting text.',
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+    },
   },
 };
 
@@ -133,6 +143,7 @@ export const Default: Story = {
     label: 'Acord',
     supportingText: '',
     errorText: '',
+    locale: '',
   },
   parameters: {
     docs: {

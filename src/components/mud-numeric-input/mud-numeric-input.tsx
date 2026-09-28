@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { NUMERIC_INPUT_SIZES, NUMERIC_INPUT_VARIANTS } from './mud-numeric-input.types';
 import type {
@@ -11,6 +11,9 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { formatMessage, intlTag, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
+import type { NumericInputMessages } from './mud-numeric-input.messages';
 
 let numericInputInstanceCounter = 0;
 
@@ -149,17 +152,39 @@ export class MudNumericInput {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Accessible label for the increment button. Defaults to Romanian "Crește"
-   * per the institutional voice.
-   * @default 'Crește'
+   * Accessible label for the increment button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Crește' (ro-RO)
    */
-  @Prop({ attribute: 'increment-label' }) incrementLabel: string = 'Crește';
+  @Prop({ attribute: 'increment-label' }) incrementLabel?: string;
 
   /**
-   * Accessible label for the decrement button. Defaults to Romanian "Scade".
-   * @default 'Scade'
+   * Accessible label for the decrement button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Scade' (ro-RO)
    */
-  @Prop({ attribute: 'decrement-label' }) decrementLabel: string = 'Scade';
+  @Prop({ attribute: 'decrement-label' }) decrementLabel?: string;
+
+  /**
+   * Validation message reported when the field is `required` and empty. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Acest câmp este obligatoriu.' (ro-RO)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
+  /**
+   * Validation message reported when the value is below `min`. Carries a `{min}` placeholder.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea minimă este {min}.' (ro-RO)
+   */
+  @Prop({ attribute: 'min-message' }) minMessage?: string;
+
+  /**
+   * Validation message reported when the value is above `max`. Carries a `{max}` placeholder.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea maximă este {max}.' (ro-RO)
+   */
+  @Prop({ attribute: 'max-message' }) maxMessage?: string;
 
   /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
@@ -190,6 +215,11 @@ export class MudNumericInput {
    * and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the
    * value displays ungrouped. Grouping is applied while the field is not being
    * edited; on focus the raw editable number is shown so the caret stays sane.
+   *
+   * Also selects the language of the built-in copy (steppers, clear button, validation
+   * messages): unset, the copy follows the closest ancestor `lang` (`<html lang>`
+   * included), else `ro-RO`. Number grouping is unaffected by that fallback — it stays off
+   * unless `locale` itself is set.
    */
   @Prop() locale?: string;
 
@@ -201,10 +231,11 @@ export class MudNumericInput {
   @Prop({ reflect: true }) clearable: boolean = false;
 
   /**
-   * Accessible label for the clear button. Defaults to the Romanian "Șterge".
-   * @default 'Șterge'
+   * Accessible label for the clear button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Șterge' (ro-RO)
    */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+  @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
   /**
    * Maximum number of characters accepted by the field (native `maxlength`).
@@ -275,6 +306,7 @@ export class MudNumericInput {
   private initialValue: number | undefined;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   @Watch('ariaValuetext')
   syncAriaValuetextProp(next?: string) {
@@ -335,10 +367,24 @@ export class MudNumericInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): NumericInputMessages {
+    return localeMessages('mud-numeric-input', this.host, this.locale, NUMERIC_INPUT_MESSAGES, {
+      incrementLabel: this.incrementLabel,
+      decrementLabel: this.decrementLabel,
+      clearLabel: this.clearLabel,
+      requiredMessage: this.requiredMessage,
+      minMessage: this.minMessage,
+      maxMessage: this.maxMessage,
+    });
   }
 
   componentWillLoad() {
@@ -385,18 +431,25 @@ export class MudNumericInput {
     const flags: ValidityStateFlags = {};
     let message: string | undefined;
     const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
+    const messages = this.messages();
 
     if (this.required && isEmpty) {
       flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : messages.requiredMessage;
     } else if (!isEmpty) {
       const v = this.value as number;
       if (this.min !== undefined && v < this.min) {
         flags.rangeUnderflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea minimă este ${this.min}.`;
+        message =
+          this.errorText && this.errorText.length > 0
+            ? this.errorText
+            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.min });
       } else if (this.max !== undefined && v > this.max) {
         flags.rangeOverflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea maximă este ${this.max}.`;
+        message =
+          this.errorText && this.errorText.length > 0
+            ? this.errorText
+            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.max });
       }
     }
 
@@ -426,7 +479,7 @@ export class MudNumericInput {
   private localeSeparators(): { group: string; decimal: string } {
     if (!this.locale) return { group: '', decimal: '.' };
     try {
-      const parts = new Intl.NumberFormat(this.locale).formatToParts(12345.6);
+      const parts = new Intl.NumberFormat(intlTag(this.locale)).formatToParts(12345.6);
       return {
         group: parts.find(p => p.type === 'group')?.value ?? '',
         decimal: parts.find(p => p.type === 'decimal')?.value ?? '.',
@@ -484,7 +537,7 @@ export class MudNumericInput {
     if (this.locale && !this.isFocused) {
       try {
         const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
-        return new Intl.NumberFormat(this.locale, {
+        return new Intl.NumberFormat(intlTag(this.locale), {
           useGrouping: true,
           minimumFractionDigits: digits,
           maximumFractionDigits: digits ?? 20,
@@ -724,10 +777,12 @@ export class MudNumericInput {
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const hostLang = this.locale ? resolvedLocale('mud-numeric-input', this.host, this.locale) : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');
@@ -755,7 +810,7 @@ export class MudNumericInput {
     const ariaValueNow = this.value !== undefined && Number.isFinite(this.value) ? String(this.value) : undefined;
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={hostLang}>
         <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -827,7 +882,7 @@ export class MudNumericInput {
               class="clear-button"
               part="clear-button"
               tabindex={-1}
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
@@ -843,7 +898,7 @@ export class MudNumericInput {
                 class="stepper-button stepper-button-up"
                 part="stepper-up"
                 tabindex={-1}
-                aria-label={this.incrementLabel}
+                aria-label={m.incrementLabel}
                 disabled={!canStepUp}
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('up')}
@@ -855,7 +910,7 @@ export class MudNumericInput {
                 class="stepper-button stepper-button-down"
                 part="stepper-down"
                 tabindex={-1}
-                aria-label={this.decrementLabel}
+                aria-label={m.decrementLabel}
                 disabled={!canStepDown}
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('down')}

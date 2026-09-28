@@ -1,9 +1,13 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TEXT_INPUT_MESSAGES } from './mud-text-input.messages';
+import type { TextInputMessages } from './mud-text-input.messages';
 
 let inputInstanceCounter = 0;
 
@@ -102,8 +106,25 @@ export class MudTextInput {
   /** Placeholder shown when the control is empty. */
   @Prop() placeholder?: string;
 
-  /** Accessible label for the clear (×) button. Only used when `clearable` is set. */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Golește câmpul';
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label for the clear (×) button. Only used when `clearable` is set. Overrides
+   * the `locale`'s copy when set to a non-empty string.
+   * @default 'Golește câmpul' (ro-RO)
+   */
+  @Prop({ attribute: 'clear-label' }) clearLabel?: string;
+
+  /**
+   * Validation message reported when the field is `required` and empty, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Acest câmp este obligatoriu.' (ro-RO)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
@@ -169,13 +190,24 @@ export class MudTextInput {
   private nativeInput?: HTMLInputElement;
   private initialValue: string = '';
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TextInputMessages {
+    return localeMessages('mud-text-input', this.host, this.locale, TEXT_INPUT_MESSAGES, {
+      clearLabel: this.clearLabel,
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   componentWillLoad() {
@@ -198,7 +230,7 @@ export class MudTextInput {
 
     if (isMissing) {
       flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().requiredMessage;
     } else if (this.nativeInput) {
       // Mirror native HTML5 constraint validation (pattern / minLength / maxLength / typeMismatch).
       // `validity` is always present in a real browser; the mock DOM used in unit
@@ -364,10 +396,12 @@ export class MudTextInput {
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const hostLang = this.locale ? resolvedLocale('mud-text-input', this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -382,7 +416,7 @@ export class MudTextInput {
     };
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={hostLang}>
         <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -434,7 +468,7 @@ export class MudTextInput {
               type="button"
               class="control-clear"
               part="clear"
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               tabIndex={-1}
               onMouseDown={ev => ev.preventDefault()}
               onClick={this.handleClear}

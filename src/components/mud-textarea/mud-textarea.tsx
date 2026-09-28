@@ -1,9 +1,13 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TEXTAREA_MESSAGES } from './mud-textarea.messages';
+import type { TextareaMessages } from './mud-textarea.messages';
 
 let textareaInstanceCounter = 0;
 
@@ -99,6 +103,19 @@ export class MudTextarea {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-RO`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Validation message reported when the field is `required` and empty. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Completați acest câmp.' (ro-RO)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
+  /**
    * Minimum visible rows for the native control. Drives the initial height
    * floor before the user resizes vertically.
    * @default 4
@@ -150,13 +167,23 @@ export class MudTextarea {
   private initialValue: string = '';
   private nativeEl?: HTMLTextAreaElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = observeDocumentLang(() => forceUpdate(this));
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TextareaMessages {
+    return localeMessages('mud-textarea', this.host, this.locale, TEXTAREA_MESSAGES, {
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   componentWillLoad() {
@@ -174,7 +201,7 @@ export class MudTextarea {
     if (!this.internals) return;
     const value = this.value ?? '';
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.nativeEl);
       return;
     }
     this.internals.setValidity({});
@@ -331,6 +358,7 @@ export class MudTextarea {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const hostLang = this.locale ? resolvedLocale('mud-textarea', this.host, this.locale) : undefined;
     const counterCurrent = (this.value ?? '').length;
     const counterOver = this.isCounterOverLimit();
 
@@ -347,7 +375,7 @@ export class MudTextarea {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={hostLang}>
         <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}

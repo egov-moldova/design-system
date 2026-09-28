@@ -7,7 +7,10 @@ import '../mud-numeric-input';
 // mock-doc environment cannot satisfy. We only assert that the wrapped
 // elements appear in the shadow tree.
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import { NUMERIC_INPUT_SIZES, NUMERIC_INPUT_VARIANTS } from '../mud-numeric-input.types';
+import { NUMERIC_INPUT_MESSAGES } from '../mud-numeric-input.messages';
+import type { NumericInputMessages } from '../mud-numeric-input.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -823,4 +826,34 @@ describe('mud-numeric-input', () => {
       expect(queryNative(root)?.getAttribute('aria-valuetext')).toBe('doi');
     });
   });
+});
+
+describeLocales<NumericInputMessages>('mud-numeric-input', NUMERIC_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'label': 'x', 'value': '5', 'clearable': 'true', 'show-steppers': 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.incrementLabel !== undefined) attrs['increment-label'] = String(props.incrementLabel);
+    if (props.decrementLabel !== undefined) attrs['decrement-label'] = String(props.decrementLabel);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    const { root } = await render(
+      <mud-numeric-input {...attrs}></mud-numeric-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'incrementLabel')
+      return host.shadowRoot?.querySelector('.stepper-button-up')?.getAttribute('aria-label') ?? null;
+    if (key === 'decrementLabel')
+      return host.shadowRoot?.querySelector('.stepper-button-down')?.getAttribute('aria-label') ?? null;
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.clear-button')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { incrementLabel: 'incrementLabel', decrementLabel: 'decrementLabel', clearLabel: 'clearLabel' },
+  unreachable: {
+    requiredMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+    minMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+    maxMessage: "requires the native 'invalid' form event — covered by this component's own validation tests",
+  },
 });
