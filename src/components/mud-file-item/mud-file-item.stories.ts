@@ -83,7 +83,7 @@ export const Default: Story = {
     errorText: '',
     disabled: false,
     noRemove: false,
-    removeLabel: 'Elimină fișierul',
+    removeLabel: '',
     locale: '',
   },
   parameters: {

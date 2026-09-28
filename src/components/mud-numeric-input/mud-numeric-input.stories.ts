@@ -487,18 +487,21 @@ export const WithStep: Story = {
   render: () =>
     wrap2col(
       [
-        cell('step=1 (default)', /*html*/ `<mud-numeric-input size="lg" label="Pași" value="5"></mud-numeric-input>`),
+        cell(
+          'step=1 (default)',
+          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="5"></mud-numeric-input>`,
+        ),
         cell(
           'step=0.5',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="2.5" step="0.5" precision="1"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="2.5" step="0.5" precision="1"></mud-numeric-input>`,
         ),
         cell(
           'step=10',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="100" step="10"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="100" step="10"></mud-numeric-input>`,
         ),
         cell(
           'step=100',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="1000" step="100"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="1000" step="100"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -507,10 +510,10 @@ export const WithStep: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Pași" value="5"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="2.5" step="0.5" precision="1"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="100" step="10"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="1000" step="100"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cantitate" value="5"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cantitate" value="2.5" step="0.5" precision="1"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cantitate" value="100" step="10"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cantitate" value="1000" step="100"></mud-numeric-input>',
         ].join('\n'),
       },
     },

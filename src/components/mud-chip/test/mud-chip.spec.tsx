@@ -441,7 +441,12 @@ describe('mud-chip', () => {
 
 describeLocales<ChipMessages>('mud-chip', CHIP_MESSAGES, {
   render: async (props, ancestorLang) => {
-    const attrs: Record<string, string> = { type: 'input', removable: 'true' };
+    // `aria-labelledby` satisfies `hasAccessibleName()` (silences the "chips require a
+    // label" warning) without going through `resolveLabelText()` — unlike `label`,
+    // slot content or `aria-label`, none of which this fixture can carry: the remove
+    // button's aria-label is built as `${removeLabel} ${labelText}` once `labelText` is
+    // non-empty, which would break the exact value `read` compares `removeLabel` against.
+    const attrs: Record<string, string> = { 'type': 'input', 'removable': 'true', 'aria-labelledby': 'ext-label' };
     if (props.locale !== undefined) attrs.locale = String(props.locale);
     if (props.removeLabel !== undefined) attrs['remove-label'] = String(props.removeLabel);
     const { root } = await render(

@@ -386,7 +386,7 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Introduceți o zi validă (01-31)."></mud-text-input>`,
         ),
         cell(
           'explicit destructive',
@@ -399,7 +399,7 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></mud-text-input>',
+          '<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Introduceți o zi validă (01-31)."></mud-text-input>',
           '<mud-text-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Câmpul este obligatoriu" invalid></mud-text-input>',
         ].join('\n'),
       },
@@ -485,7 +485,7 @@ export const WithIcons: Story = {
       [
         cell(
           'icon-start',
-          /*html*/ `<mud-text-input size="lg" label="Search" placeholder="Search">
+          /*html*/ `<mud-text-input size="lg" label="Find" placeholder="Find">
             <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
           </mud-text-input>`,
         ),
@@ -502,7 +502,7 @@ export const WithIcons: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="Search" placeholder="Search"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" placeholder="Find"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-text-input>',
           '<mud-text-input size="lg" label="Date" placeholder="Placeholder"><mud-icon slot="icon-end" name="calendar" size="24"></mud-icon></mud-text-input>',
         ].join('\n'),
       },
@@ -517,21 +517,21 @@ export const Clearable: Story = {
       [
         cell(
           'filled — clear visible',
-          /*html*/ `<mud-text-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Find" value="Chișinău" clearable placeholder="Find"></mud-text-input>`,
         ),
         cell(
           'empty — clear hidden',
-          /*html*/ `<mud-text-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Find" clearable placeholder="Type to reveal ×"></mud-text-input>`,
         ),
         cell(
           'with leading icon',
-          /*html*/ `<mud-text-input size="lg" label="Search" value="Bălți" clearable placeholder="Search">
+          /*html*/ `<mud-text-input size="lg" label="Find" value="Bălți" clearable placeholder="Find">
             <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
           </mud-text-input>`,
         ),
         cell(
           'md size',
-          /*html*/ `<mud-text-input size="md" label="Search" value="Orhei" clearable placeholder="Search"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="md" label="Find" value="Orhei" clearable placeholder="Find"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -544,8 +544,8 @@ export const Clearable: Story = {
       },
       source: {
         code: [
-          '<mud-text-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-text-input>',
-          '<mud-text-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" value="Chișinău" clearable placeholder="Find"></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" clearable placeholder="Type to reveal ×"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -602,7 +602,7 @@ export const AccessibleName: Story = {
     await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Căutare servicii'));
     await expect(host.hasAttribute('aria-label')).toBe(false);
 
-    host.setAttribute('aria-label', 'Caută');
-    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Caută'));
+    host.setAttribute('aria-label', 'Găsește');
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Găsește'));
   },
 };

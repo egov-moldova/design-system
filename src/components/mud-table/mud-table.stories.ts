@@ -365,17 +365,23 @@ export const AllDataTypes: Story = {
       { key: 'verified', label: 'Checkbox', align: 'center' },
       { key: 'actions', label: 'Action', align: 'end' },
     ];
+    // `verified` is deliberately NOT a `row` key: the "Checkbox" column has no fallback
+    // text — every row slots in a real `<mud-checkbox>` — and mud-table's generic cell
+    // renderer stringifies whatever raw value a column key holds (`String(row[key])`) as
+    // that fallback, so a boolean `row.verified` would render the non-localizable text
+    // "true"/"false" into the cell alongside (and behind) the slotted checkbox.
+    const verifiedFlags = [true, false, true];
     const rows: TableRowData[] = [
-      { id: 'r1', name: 'Alexandra Pop', amount: '1.250 MDL', status: 'platit', verified: true },
-      { id: 'r2', name: 'Mihai Ionescu', amount: '480 MDL', status: 'asteptare', verified: false },
-      { id: 'r3', name: 'Diana Cojocaru', amount: '3.120 MDL', status: 'platit', verified: true },
+      { id: 'r1', name: 'Alexandra Pop', amount: '1.250 MDL', status: 'platit' },
+      { id: 'r2', name: 'Mihai Ionescu', amount: '480 MDL', status: 'asteptare' },
+      { id: 'r3', name: 'Diana Cojocaru', amount: '3.120 MDL', status: 'platit' },
     ];
     const slots = rows
       .map((row, idx) => {
         const tag = statusTagMap[String(row.status)];
         return /*html*/ `
           <mud-tag slot="cell-status-${idx}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
-          <mud-checkbox slot="cell-verified-${idx}" ${row.verified ? 'checked' : ''} aria-label="Confirmat"></mud-checkbox>
+          <mud-checkbox slot="cell-verified-${idx}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmat"></mud-checkbox>
           <mud-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Editează">
             <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
           </mud-button>

@@ -455,7 +455,7 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>`,
+          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>`,
         ),
         cell(
           'explicit destructive',
@@ -468,7 +468,7 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>',
           '<mud-date-input variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>',
         ].join('\n'),
       },

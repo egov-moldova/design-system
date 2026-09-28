@@ -321,7 +321,7 @@ export const WithIcons: Story = {
       [
         cell(
           'icon-start',
-          select('size="large" label="Country" placeholder="Pick a country"', `${ICON_START}${OPTIONS}`),
+          select('size="large" label="Region" placeholder="Pick a country"', `${ICON_START}${OPTIONS}`),
         ),
         cell('with selected value', select('size="large" label="Plan" value="opt-1"', `${ICON_SEARCH}${OPTIONS}`)),
       ].join(''),
@@ -335,7 +335,7 @@ export const WithIcons: Story = {
       },
       source: {
         code: [
-          sourceFor('size="large" label="Country" placeholder="Pick a country"', `\n  ${ICON_START}${OPTIONS_ELIDED}`),
+          sourceFor('size="large" label="Region" placeholder="Pick a country"', `\n  ${ICON_START}${OPTIONS_ELIDED}`),
           sourceFor('size="large" label="Plan" value="opt-1"', `\n  ${ICON_SEARCH}${OPTIONS_ELIDED}`),
         ].join('\n'),
       },
@@ -642,8 +642,8 @@ export const Searchable: Story = {
   render: () =>
     wrap(
       [
-        cell('type to filter', select('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS)),
-        cell('open', select('size="large" label="Oraș" searchable placeholder="Caută" open', CITY_OPTIONS)),
+        cell('type to filter', select('size="large" label="Oraș" searchable placeholder="Caută oraș"', CITY_OPTIONS)),
+        cell('open', select('size="large" label="Oraș" searchable placeholder="Caută oraș" open', CITY_OPTIONS)),
       ].join(''),
     ),
   parameters: {
@@ -654,7 +654,7 @@ export const Searchable: Story = {
           'With `searchable`, the control itself is the query box. Matching ignores case and diacritics, so `chisinau` finds Chișinău and `balti` finds Bălți; a group disappears when none of its options match. Without `searchable`, the same keystrokes jump the highlight instead, as a native `<select>` does.',
       },
       source: {
-        code: sourceFor('size="large" label="Oraș" searchable placeholder="Caută"', CITY_OPTIONS),
+        code: sourceFor('size="large" label="Oraș" searchable placeholder="Caută oraș"', CITY_OPTIONS),
       },
     },
   },
