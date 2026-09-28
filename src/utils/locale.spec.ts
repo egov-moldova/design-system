@@ -73,6 +73,12 @@ describe('inheritedLang', () => {
     expect(inheritedLang(inner)).toBe('en-US');
   });
 
+  it('terminates on a detached element whose own `host` points at itself (mock-doc Stencil host)', () => {
+    const el = document.createElement('div');
+    Object.defineProperty(el, 'host', { value: el });
+    expect(inheritedLang(el)).toBeUndefined();
+  });
+
   it('stops at an empty lang', () => {
     const outer = document.createElement('div');
     outer.setAttribute('lang', 'en');

@@ -39,7 +39,10 @@ export const inheritedLang = (el: Element): string | undefined => {
     if (node.nodeType === 1 && (node as Element).hasAttribute('lang')) {
       return (node as Element).getAttribute('lang') || undefined;
     }
-    node = node.parentNode ?? (node as ShadowRoot).host ?? null;
+    // Only a shadow root (nodeType 11) is crossed to its host. In mock-doc a detached Stencil
+    // host's own `host` property is the element itself, so reading `.host` off any parentless
+    // node would loop forever on a render scheduled after `remove()`.
+    node = node.parentNode ?? (node.nodeType === 11 ? (node as ShadowRoot).host : null);
   }
   return undefined;
 };
