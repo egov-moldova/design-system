@@ -124,8 +124,11 @@ Per-script extras land under `meta` (e.g. `meta.contract` for
 `meta.diff` for `13-token-diff`).
 
 A finding with `noTarget: true` says the script found nothing to check — no story, no
-reference, no coverage entry, no token export. On a row the depth requires, the verdict
-reads it as `INCOMPLETE` (the fix is a missing input), never as a pass with a warning.
+reference, no coverage entry, no token export. On a row that owes a target — required at
+the depth and not excused (`verdict.mjs` `owesTarget`) — the verdict reads it as
+`INCOMPLETE` (the fix is a missing input), never as a pass with a warning, and `run-all.mjs`
+exits 1 with a `name/no-target:CODE` blocker, at any severity. On any other row, including
+an excused row that ran anyway (row 11 under `--figma-dir`), it is a warning in both.
 
 ### Exit codes
 
@@ -134,7 +137,7 @@ Every script and `run-all.mjs`:
 | code | meaning |
 |------|---------|
 | 0    | clean — no errors (warnings + info OK) |
-| 1    | one or more error-severity findings |
+| 1    | one or more error-severity findings; for `run-all.mjs`, one or more graded errors, a crashed or missing-prerequisite row, or a `noTarget` finding on a row that owes a target |
 | 2    | internal error (bad CLI args, file missing, JSON parse failure, etc.) |
 
 Warnings DO NOT change the exit code — callers that want stricter behavior can
@@ -287,7 +290,12 @@ The orchestrator returns one combined envelope:
 Each `results[]` row carries `status` — `ok` (an envelope arrived, whatever its
 findings), `crashed`, `missing-prereq` or `skipped` — so a crashed script is
 never read as zero errors. With `--verdict` the per-component envelope also
-carries `audit` (depth, excuses, filters, Figma resolution). Gate on
+carries `audit` (depth, excuses, filters, Figma resolution). `blockers` lists
+graded errors (`tool/CODE`), crashed or unprepared rows (`name/status`) and owed
+`noTarget` findings (`name/no-target:CODE`). `summary.errors` / `warnings` /
+`info` stay the raw sum of each script's own counts, so they can show errors that
+are not blockers; `summary.incomplete` is counted here — one per crashed or
+unprepared row and per row with an owed `noTarget`. Gate on
 `verdict.mjs`, not on `ok` or `blockers`.
 
 ## Waves
@@ -317,8 +325,9 @@ The only writer of `verdict.json`. It rebuilds the file from its inputs on every
 run, so a hand-edited or model-written verdict never survives the next run.
 
 - **State**, first match wins: `INCOMPLETE` (a row crashed, missed its
-  prerequisite, a required id did not run without an excuse, or a required row
-  reported a `noTarget` finding) → `FAIL` (any
+  prerequisite, a required id did not run without an excuse, a row that owes a
+  target reported a `noTarget` finding, or the envelope names an unknown depth)
+  → `FAIL` (any
   blocking error finding) → `NEEDS-DECISION` (no Figma manifest at `HEAD` at
   `standard`+) → `PASS`.
 - **Level**, on `PASS` only: `CLEAN-STATIC` (`quick`, or any browser-waived

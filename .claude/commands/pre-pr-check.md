@@ -52,8 +52,9 @@ status only: `0` `PASS`; STOP on anything else — `1` `FAIL`, `3` `INCOMPLETE`
 not run), `4` `NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the
 located failure. The envelope at `audit/_run/envelope.json` is read only to
 display the `blockers` array (each entry `tool/CODE`, e.g.
-`antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`, or `name/status` for a crashed
-row) alongside the fix brief — it never overrides the exit-status branch
+`antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`, `name/status` for a crashed
+row, or `name/no-target:CODE` for a required, unexcused row that found nothing to check)
+alongside the fix brief — it never overrides the exit-status branch
 above.
 
 If you also want git + branch + commit hygiene as part of Wave 1, you already
@@ -98,7 +99,7 @@ Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patte
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
 - Gate: `yarn audit:component --changed --depth quick --no-browser --json` (§ Fast Path) exits 0 —
   the single run this wave depends on. On a non-zero exit, escalate its `audit/_run/envelope.json`
-  `blockers` (each `tool/CODE` / `name/status`) alongside the fix brief.
+  `blockers` (each `tool/CODE` / `name/status` / `name/no-target:CODE`) alongside the fix brief.
 - Merge driver still registered — `git config --get merge.ours.driver` returns `true`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)

@@ -21,8 +21,10 @@
  *   1.3.0 — a finding may carry `noTarget: true`: "this required row checked
  *           nothing" (plan `2026-09-22-audit-depths-sentinel-fixes.md`
  *           Decision §5). `verdict.mjs` maps it to an INCOMPLETE entry on a
- *           required row, never a counted error or warning; on a row the
- *           depth does not require, to a warning, counted as one.
+ *           row that owes a target (required and not excused, `owesTarget`),
+ *           never a counted error or warning; on any other row, to a warning,
+ *           counted as one. No shape change since; `findingClass` below is the
+ *           classification run-all and the verdict share.
  *   1.4.0 — a finding may carry `notApplicable: true` (severity `info`): the
  *           check does not apply to this component, and the message says why
  *           (Decision 13). `verdict.mjs` shows it as the row's `note`.
@@ -293,4 +295,26 @@ export function finding({ severity, code, file, line, column, message, snippet, 
   if (noTarget) f.noTarget = true;
   if (applies) f.notApplicable = true;
   return f;
+}
+
+/** What a finding says about its row, whatever its severity (see `findingClass`). */
+export const FINDING_CLASS = Object.freeze({
+  GRADED: 'graded',
+  NO_TARGET: 'noTarget',
+  NOT_APPLICABLE: 'notApplicable',
+});
+
+/**
+ * The one classification of a finding, shared by `run-all.mjs`'s aggregate and
+ * `verdict.mjs` so the two never grade the same finding differently: only a
+ * `graded` finding is an error or a warning. `noTarget` wins over
+ * `notApplicable`, as in `finding()`; a literal object that bypassed
+ * `finding()` can carry both, or either at error severity. Pure.
+ *
+ * @param {{ noTarget?: boolean, notApplicable?: boolean }} f
+ */
+export function findingClass(f) {
+  if (f.noTarget === true) return FINDING_CLASS.NO_TARGET;
+  if (f.notApplicable === true) return FINDING_CLASS.NOT_APPLICABLE;
+  return FINDING_CLASS.GRADED;
 }

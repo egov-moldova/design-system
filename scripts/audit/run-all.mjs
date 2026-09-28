@@ -52,14 +52,29 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REPO_ROOT, componentOfSpec, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
-import { ROW_STATUS, SCHEMA_VERSION, STATE, finding, flushStdout } from './lib/json-output.mjs';
+import {
+  FINDING_CLASS,
+  ROW_STATUS,
+  SCHEMA_VERSION,
+  STATE,
+  finding,
+  findingClass,
+  flushStdout,
+} from './lib/json-output.mjs';
 import { resolveHeadManifest } from './lib/figma-manifest.mjs';
 import { checkEnv, formatIncomplete } from './lib/env-preflight.mjs';
 import { parseCli } from './lib/cli-args.mjs';
 import { detectChangedComponents } from './lib/changed-components.mjs';
 import { acquireLock, ensureWorktreeStorybook, isValidLockToken, releaseLock } from './lib/storybook-helpers.mjs';
 import { figmaToken } from './figma-refs.mjs';
-import { DEFERRED_CHECKS, REQUIRED_CHECKS, excuseFor, writeSummary, writeVerdictForRun } from './verdict.mjs';
+import {
+  DEFERRED_CHECKS,
+  REQUIRED_CHECKS,
+  excuseFor,
+  owesTarget,
+  writeSummary,
+  writeVerdictForRun,
+} from './verdict.mjs';
 
 const TOOL = 'run-all';
 
@@ -960,6 +975,13 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
     const shared = [...sharedEarly, ...sharedLate];
 
     const prerequisites = [...prereqs.values()].map(p => ({ id: p.id, ok: p.ok }));
+    const figmaOf = new Map(plans.map(p => [p.component, p.figma]));
+    const owes = r =>
+      owesTarget(r.id, args.depth, {
+        noFigma: args.noFigma,
+        figma: figmaOf.get(r.component) ?? null,
+        browserWaiver: args.browserWaiver ?? null,
+      });
     const perComponent = perComponentResults.map(({ plan, results, durationMs }) => {
       const envelope = aggregate({
         targetArg: plan.component,
@@ -969,6 +991,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
         noBrowser: args.noBrowser,
         registry: d.registry,
         repoRoot,
+        owes,
       });
       envelope.audit = {
         ...auditBase,
@@ -991,6 +1014,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
             noBrowser: args.noBrowser,
             registry: d.registry,
             repoRoot,
+            owes,
           });
     combined.components = components;
     combined.meta.depth = args.depth;
@@ -1006,9 +1030,8 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
         components.length === 0
           ? {
               ok: combined.ok,
-              incomplete: combined.results.some(
-                r => r.status === ROW_STATUS.CRASHED || r.status === ROW_STATUS.MISSING_PREREQ,
-              ),
+              // Counted by aggregate(): crashed or unprepared rows and owed noTarget findings.
+              incomplete: combined.summary.incomplete > 0,
             }
           : null;
       result.summary = writeSummary(auditDir, { depth: args.depth, runs, repoLevel });
@@ -1098,6 +1121,12 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  *                          so misconfigured runners are visible.
  *   meta.layer2Required  — true ONLY in interactive local runs (no CI, no
  *                          --no-browser).
+ *
+ * Findings are classified by `findingClass`, as the verdict does: only a
+ * graded error is a blocker. A noTarget finding on a row that `owes(r)` a
+ * target (`verdict.mjs` owesTarget) makes the envelope not ok and counts the
+ * row as incomplete — so a noTarget entry's `verify:` (`--only <id>`) exits 1
+ * until the target exists; on any other row it changes nothing.
  */
 export function aggregate({
   targetArg,
@@ -1107,6 +1136,7 @@ export function aggregate({
   noBrowser = false,
   registry = AUDIT_SCRIPTS,
   repoRoot = REPO_ROOT,
+  owes = () => false,
 }) {
   const summary = { errors: 0, warnings: 0, info: 0, incomplete: 0 };
   const blockers = [];
@@ -1121,6 +1151,22 @@ export function aggregate({
     r.exitCode === 1 &&
     r.summary !== undefined &&
     !(r.findings ?? []).some(f => f.code === 'STRUCTURE-NOT-FOUND');
+  // A script's own `ok` and `summary.errors` count every error-severity
+  // finding; the ungraded ones are taken back out here, never re-graded.
+  const classify = r => {
+    const findings = r.findings ?? [];
+    const ran = rowStatus(r) === ROW_STATUS.OK;
+    const ungradedErrors = findings.filter(
+      f => f.severity === 'error' && findingClass(f) !== FINDING_CLASS.GRADED,
+    ).length;
+    const gradedErrors = (r.summary?.errors ?? 0) - ungradedErrors;
+    const owedNoTargets = ran && owes(r) ? findings.filter(f => findingClass(f) === FINDING_CLASS.NO_TARGET) : [];
+    // Only when ungraded errors are all that made the script say not-ok; a row
+    // that is not ok with no errors at all still failed.
+    const ranClean = r.ok || (ran && ungradedErrors > 0 && gradedErrors === 0);
+    return { gradedErrors, owedNoTargets, ok: (ranClean || excused(r)) && owedNoTargets.length === 0 };
+  };
+  const classOf = new Map(results.map(r => [r, classify(r)]));
   let blockingErrors = 0;
 
   for (const r of results) {
@@ -1128,17 +1174,18 @@ export function aggregate({
       summary.errors += r.summary.errors ?? 0;
       summary.warnings += r.summary.warnings ?? 0;
       summary.info += r.summary.info ?? 0;
-      if (!reportOnly.has(r.name)) blockingErrors += r.summary.errors ?? 0;
+      if (!reportOnly.has(r.name)) blockingErrors += classOf.get(r).gradedErrors;
     }
     if (r.findings) {
       findingsByTool[r.name] = [...(findingsByTool[r.name] ?? []), ...r.findings];
       for (const f of r.findings) {
-        if (f.severity === 'error' && !reportOnly.has(r.name)) blockers.push(`${r.name}/${f.code}`);
+        const graded = findingClass(f) === FINDING_CLASS.GRADED;
+        if (graded && f.severity === 'error' && !reportOnly.has(r.name)) blockers.push(`${r.name}/${f.code}`);
       }
     }
   }
 
-  const ok = blockingErrors === 0 && results.every(r => r.ok || excused(r));
+  const ok = blockingErrors === 0 && results.every(r => classOf.get(r).ok);
 
   const rows = results.map(r => {
     const script = scriptsById.get(r.id);
@@ -1147,11 +1194,16 @@ export function aggregate({
       summary.incomplete += 1;
       blockers.push(`${r.name}/${status}`);
     }
+    const { owedNoTargets } = classOf.get(r);
+    if (owedNoTargets.length) {
+      summary.incomplete += 1;
+      for (const f of owedNoTargets) blockers.push(`${r.name}/no-target:${f.code ?? 'NO-CODE'}`);
+    }
     const row = {
       id: r.id,
       name: r.name,
       wave: r.wave,
-      ok: r.ok || excused(r),
+      ok: classOf.get(r).ok,
       status,
       exitCode: r.exitCode,
       durationMs: r.durationMs,
