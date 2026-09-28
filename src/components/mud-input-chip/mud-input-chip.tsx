@@ -12,7 +12,7 @@ import type {
   InputChipSize,
   InputChipVariant,
 } from './mud-input-chip.types';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { INPUT_CHIP_MESSAGES } from './mud-input-chip.messages';
 import type { InputChipMessages } from './mud-input-chip.messages';
@@ -112,7 +112,7 @@ export class MudInputChip {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
@@ -541,7 +541,7 @@ export class MudInputChip {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const maxReached = this.isMaxReached();
     const placeholder = this.chips.length === 0 ? this.placeholder : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-input-chip', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,

@@ -67,9 +67,9 @@ const meta: Meta<DatePickerArgs> = {
     disabledDates: { control: 'text', description: 'JSON-encoded array of ISO dates to disable.' },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
       description:
-        'BCP-47 locale tag for weekday/month rendering and the "Today" shortcut language. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+        'BCP-47 locale tag for weekday/month rendering and the "Today" shortcut language. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     firstDayOfWeek: { control: 'number', description: '0=Sunday, 1=Monday (default).' },
     todayShortcut: {
@@ -304,7 +304,7 @@ export const RomanianLocale: Story = {
   name: 'RomanianLocale',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); display: flex; gap: var(--spacing-32); flex-wrap: wrap;">
-      ${cell('ro-RO (default)', /*html*/ `<mud-date-picker mode="single" value="2026-05-23"></mud-date-picker>`)}
+      ${cell('ro-MD (default)', /*html*/ `<mud-date-picker mode="single" value="2026-05-23"></mud-date-picker>`)}
       ${cell(
         'en-US',
         /*html*/ `<mud-date-picker mode="single" value="2026-05-23" locale="en-US" first-day-of-week="0"></mud-date-picker>`,
@@ -316,7 +316,7 @@ export const RomanianLocale: Story = {
     docs: {
       description: {
         story:
-          'All weekday + month names come from `Intl.DateTimeFormat` — switching the `locale` prop swaps the language without code changes. Romanian (ro-RO) starts weeks on Monday; en-US on Sunday.',
+          'All weekday + month names come from `Intl.DateTimeFormat` — switching the `locale` prop swaps the language without code changes. Romanian (ro-MD) starts weeks on Monday; en-US on Sunday.',
       },
       source: {
         code: [

@@ -1,4 +1,4 @@
-import { render } from '@stencil/vitest';
+import { describe, render } from '@stencil/vitest';
 
 import { describeLocales } from './locale.test-helpers';
 import type { LocaleMessages, Plural } from './locale';
@@ -10,7 +10,7 @@ interface FixtureMessages {
 }
 
 const FIXTURE_MESSAGES: LocaleMessages<FixtureMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     closeLabel: 'Închide',
     rejectedAnnouncement: {
       one: '{count} fișier respins',
@@ -22,7 +22,7 @@ const FIXTURE_MESSAGES: LocaleMessages<FixtureMessages> = {
     closeLabel: 'Close',
     rejectedAnnouncement: { one: '{count} file rejected', other: '{count} files rejected' },
   },
-  'ru-RU': {
+  'ru-MD': {
     closeLabel: 'Закрыть',
     rejectedAnnouncement: {
       one: '{count} файл отклонён',
@@ -40,6 +40,9 @@ class MudLocaleFixture extends HTMLElement {
   }
 
   connectedCallback() {
+    // A Stencil component gets this class when it hydrates; `render()` polls for it (5 s) before
+    // returning. This plain custom element never hydrates, so it sets the flag itself.
+    this.classList.add('hydrated');
     this.paint();
   }
 
@@ -75,11 +78,11 @@ class MudLocaleFixture extends HTMLElement {
 
 // `formatMessage` resolves its own locale internally; this only picks which table row a
 // plural override (never used here) would need — kept simple since the fixture has none.
-function resolvedTableLocale(el: MudLocaleFixture): 'ro-RO' | 'en-US' | 'ru-RU' {
+function resolvedTableLocale(el: MudLocaleFixture): 'ro-MD' | 'en-US' | 'ru-MD' {
   const raw = (el.locale ?? '').toLowerCase();
   if (raw.startsWith('en')) return 'en-US';
-  if (raw.startsWith('ru')) return 'ru-RU';
-  return 'ro-RO';
+  if (raw.startsWith('ru')) return 'ru-MD';
+  return 'ro-MD';
 }
 
 if (!customElements.get('mud-locale-fixture')) customElements.define('mud-locale-fixture', MudLocaleFixture);
@@ -91,17 +94,20 @@ const attrsFrom = (props: Record<string, unknown>): string => {
     .join(' ');
 };
 
-describeLocales('mud-locale-fixture', FIXTURE_MESSAGES, {
-  render: async (props, ancestorLang) => {
-    const html = `<mud-locale-fixture ${attrsFrom(props)}></mud-locale-fixture>`;
-    const { root } = await render(html, ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined);
-    return root as Element;
-  },
-  read: (host, key) => {
-    if (key === 'closeLabel') return host.shadowRoot?.querySelector('.close-label')?.textContent ?? null;
-    if (key === 'rejectedAnnouncement') return host.shadowRoot?.querySelector('.rejected')?.textContent ?? null;
-    return null;
-  },
-  overrides: { closeLabel: 'closeLabel' },
-  pluralCounts: { rejectedAnnouncement: 'rejectedCount' },
+// A case that waits out a timeout again fails here instead of costing seconds silently.
+describe('mud-locale-fixture', { timeout: 1000 }, () => {
+  describeLocales('mud-locale-fixture', FIXTURE_MESSAGES, {
+    render: async (props, ancestorLang) => {
+      const html = `<mud-locale-fixture ${attrsFrom(props)}></mud-locale-fixture>`;
+      const { root } = await render(html, ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined);
+      return root as Element;
+    },
+    read: (host, key) => {
+      if (key === 'closeLabel') return host.shadowRoot?.querySelector('.close-label')?.textContent ?? null;
+      if (key === 'rejectedAnnouncement') return host.shadowRoot?.querySelector('.rejected')?.textContent ?? null;
+      return null;
+    },
+    overrides: { closeLabel: 'closeLabel' },
+    pluralCounts: { rejectedAnnouncement: 'rejectedCount' },
+  });
 });

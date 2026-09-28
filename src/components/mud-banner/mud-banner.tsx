@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BANNER_MESSAGES } from './mud-banner.messages';
 import type { BannerMessages } from './mud-banner.messages';
@@ -84,13 +84,13 @@ export class MudBanner {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Închide' (ro-RO)
+   * @default 'Închide' (ro-MD)
    */
   @Prop() closeLabel?: string;
 
@@ -178,7 +178,7 @@ export class MudBanner {
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
-    const hostLang = this.locale ? resolvedLocale('mud-banner', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,

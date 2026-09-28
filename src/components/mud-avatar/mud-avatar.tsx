@@ -1,7 +1,7 @@
 import { Component, Element, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { AVATAR_MESSAGES } from './mud-avatar.messages';
 import type { AvatarMessages } from './mud-avatar.messages';
@@ -81,21 +81,21 @@ export class MudAvatar {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible-name fallback when only initials (no `name`) are set. Carries a `{initials}`
    * placeholder. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Avatar pentru {initials}' (ro-RO)
+   * @default 'Avatar pentru {initials}' (ro-MD)
    */
   @Prop() initialsLabel?: string;
 
   /**
    * Accessible-name fallback when neither `name` nor initials are set. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Avatar utilizator' (ro-RO)
+   * @default 'Avatar utilizator' (ro-MD)
    */
   @Prop() fallbackLabel?: string;
 
@@ -180,7 +180,7 @@ export class MudAvatar {
 
     // `aria-label` is set imperatively by `hostLabel` (see `nameHostWithFallback`)
     // so the attribute is not declared on `<Host>` here.
-    const hostLang = this.locale ? resolvedLocale('mud-avatar', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     return (
       <Host role="img" lang={hostLang}>

@@ -21,7 +21,7 @@ export interface InputChipMessages {
 }
 
 export const INPUT_CHIP_MESSAGES: LocaleMessages<InputChipMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     requiredText: 'Acest câmp este obligatoriu.',
     patternRejectionText: 'Valoarea "{value}" nu este în formatul așteptat.',
     duplicateRejectionText: 'Valoarea "{value}" este deja adăugată.',
@@ -45,7 +45,7 @@ export const INPUT_CHIP_MESSAGES: LocaleMessages<InputChipMessages> = {
     pastedAnnouncement: { one: '{count} value added', other: '{count} values added' },
     removeChipLabel: 'Remove {chip}',
   },
-  'ru-RU': {
+  'ru-MD': {
     requiredText: 'Это поле обязательно для заполнения.',
     patternRejectionText: 'Значение «{value}» не соответствует ожидаемому формату.',
     duplicateRejectionText: 'Значение «{value}» уже добавлено.',

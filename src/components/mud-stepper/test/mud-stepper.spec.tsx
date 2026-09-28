@@ -70,7 +70,7 @@ describe('mud-stepper', () => {
       // List semantics live on the HOST (a roleless host carrying aria-label trips
       // axe `aria-prohibited-attr`); the inner <ol> is presentational.
       expect(root?.getAttribute('role')).toBe('list');
-      expect(root?.getAttribute('aria-label')).toBe(STEPPER_MESSAGES['ro-RO'].navLabel);
+      expect(root?.getAttribute('aria-label')).toBe(STEPPER_MESSAGES['ro-MD'].navLabel);
       expect(queryRoot(root)?.getAttribute('role')).toBe('none');
     });
 

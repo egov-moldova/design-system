@@ -109,9 +109,9 @@ const meta: Meta<NumericInputArgs> = {
     showSteppers: { control: 'boolean', description: 'Render the stacked stepper buttons.' },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
       description:
-        'BCP-47 locale for thousands-grouping and the built-in copy. Grouping stays off when unset; copy follows the closest ancestor `lang`, else `ro-RO`.',
+        'BCP-47 locale for thousands-grouping and the built-in copy. Grouping stays off when unset; copy follows the closest ancestor `lang`, else `ro-MD`.',
     },
   },
 };

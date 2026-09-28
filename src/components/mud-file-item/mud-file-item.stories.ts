@@ -62,7 +62,7 @@ const meta: Meta<FileItemArgs> = {
     locale: {
       control: 'select',
       options: ['', ...MUD_LOCALES],
-      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     disabled: { control: 'boolean' },
     noRemove: { control: 'boolean' },

@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Method, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { MODAL_MESSAGES } from './mud-modal.messages';
 import type { ModalMessages } from './mud-modal.messages';
@@ -150,14 +150,14 @@ export class MudModal {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Accessible label for the close × button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Închide' (ro-RO)
+   * @default 'Închide' (ro-MD)
    */
   @Prop() closeLabel?: string;
 
@@ -479,7 +479,7 @@ export class MudModal {
 
   render() {
     const m = this.messages();
-    const hostLang = this.locale ? resolvedLocale('mud-modal', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const hostClasses = {
       'has-title': this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0),
       'has-icon': this.hasIconSlot,

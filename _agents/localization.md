@@ -7,7 +7,7 @@ messages, `aria-label` values, and screen-reader-only text. **Load when adding
 or changing any of these.**
 
 Not copy, so not in scope: `mud-icon` names, CSS keywords (`currentColor`),
-country and locale codes (`'MD'`, `'ro-RO'`), event names, `data-*` values,
+country and locale codes (`'MD'`, `'ro-MD'`), event names, `data-*` values,
 token names. Those are identifiers.
 
 ---
@@ -15,7 +15,7 @@ token names. Those are identifiers.
 ## The model
 
 Every `mud-*` component that ships copy resolves it from a built-in
-`ro-RO` / `en-US` / `ru-RU` dictionary, selected by a `locale` prop:
+`ro-MD` / `en-US` / `ru-MD` dictionary, selected by a `locale` prop:
 
 1. **One `mud-<name>.messages.ts` dictionary per component**, next to it —
    never a central per-language file (a translation fix would touch a file
@@ -23,9 +23,9 @@ Every `mud-*` component that ships copy resolves it from a built-in
    full reasoning). Never exported from `src/index.ts`.
 2. **`locale?: LocaleProp`** (`MudLocale | (string & {})`) resolves, first
    match wins: the component's own `locale` prop → the closest ancestor
-   `lang` attribute (crossing shadow roots) → `ro-RO`. Missing everywhere →
-   `ro-RO`, no warning. Set but unsupported → one `console.warn`, falls back
-   to `ro-RO`.
+   `lang` attribute (crossing shadow roots) → `ro-MD`. Missing everywhere →
+   `ro-MD`, no warning. Set but unsupported → one `console.warn`, falls back
+   to `ro-MD`.
 3. **Per-string override props stay**, as optional overrides of the
    dictionary: a prop set to a non-empty string wins over the resolved
    locale's entry; an empty string falls back to the dictionary too (an empty
@@ -35,11 +35,19 @@ Every `mud-*` component that ships copy resolves it from a built-in
    ternary. Placeholders are `{name}`, filled by `formatMessage`.
 5. **The shared helpers live in `src/utils/locale.ts`**: `MUD_LOCALES`,
    `MudLocale`, `DEFAULT_LOCALE`, `matchLocale`, `inheritedLang`,
-   `resolveLocale`, `resolvedLocale`, `localeMessages`, `formatMessage`,
+   `resolveLocale`, `formatLocale`, `localeMessages`, `formatMessage`,
    `intlTag`, `observeDocumentLang`. Never reimplement resolution locally.
-6. **A component whose `locale` is explicit sets `lang` on its outermost
-   shadow element** to the resolved `MudLocale` (WCAG 3.1.2), and a parent
-   rendering another `mud-*` component passes `locale={this.locale}` down.
+6. **One formatting rule: `formatLocale(this.host, this.locale)`** is the tag
+   every `Intl` call uses (dates, numbers, region names) — the `locale` prop,
+   else the ancestor `lang`, else `ro-MD`. A bare `ro` / `ru` takes the
+   `MudLocale` region (`ro-MD` / `ru-MD`); a tag with a region is used as
+   given (`en-GB`); a language with no dictionary (`de-DE`) resolves to the
+   shown dictionary's locale, so labels and formats never mix languages.
+   `formatMessage` formats number placeholders through it with grouping off.
+7. **A component whose `locale` is explicit sets `lang` on its outermost
+   shadow element** to `formatLocale(this.host, this.locale)` (WCAG 3.1.2),
+   and a parent rendering another `mud-*` component passes
+   `locale={this.locale}` down.
 
 See `mud-date-input` / `mud-date-picker` / `mud-time-input` for the reference
 implementation, and the plan's `## Component recipe`
@@ -55,10 +63,10 @@ shape (dictionary file, `@Prop() locale`, `messages()`,
    override of one.** Never a literal in JSX, never returned from a method,
    never hidden in a `@State` default. If a consumer cannot see or override
    it, it is a bug.
-2. **The dictionary's `ro-RO` entry is the library's language.** `en-US` and
-   `ru-RU` come from the same dictionary; an English literal in a `.tsx` is
+2. **The dictionary's `ro-MD` entry is the library's language.** `en-US` and
+   `ru-MD` come from the same dictionary; an English literal in a `.tsx` is
    an untranslated string, not a neutral one.
-3. **Document an override prop's default** with `@default 'Închide' (ro-RO)`
+3. **Document an override prop's default** with `@default 'Închide' (ro-MD)`
    in its JSDoc, so the shipped copy is visible in the generated readme.
 
 ---
@@ -76,7 +84,7 @@ in an English or Russian interface hearing Romanian (or the reverse).
 <button class="overflow-trigger" aria-label="Show collapsed pages">
 
 // right
-/** Accessible name for the overflow trigger. @default 'Arată paginile ascunse' (ro-RO) */
+/** Accessible name for the overflow trigger. @default 'Arată paginile ascunse' (ro-MD) */
 @Prop({ attribute: 'overflow-label' }) overflowLabel?: string;
 ...
 private messages() {
@@ -109,7 +117,7 @@ which now wires `mud/no-hardcoded-copy` in at `error`) reports any string
 literal in `src/components/**/*.tsx` outside a `.messages.ts` file — complete
 for JSX descendants, a stated heuristic elsewhere (a single-word literal like
 `'Loading'` passes the non-JSX half; `node scripts/eslint/copy-probe.mjs`,
-a Storybook runtime scan under `lang="ru-RU"`, is what catches those).
+a Storybook runtime scan under `lang="ru-MD"`, is what catches those).
 
 ---
 
@@ -120,7 +128,7 @@ a Storybook runtime scan under `lang="ru-RU"`, is what catches those).
 - [ ] No user-facing string returned from a method or defaulted in `@State`
       — read it through `messages()`/`formatMessage()` instead.
 - [ ] A count-dependent string is a `Plural`, never a ternary on the count.
-- [ ] Every override prop is documented with its `ro-RO` `@default`.
+- [ ] Every override prop is documented with its `ro-MD` `@default`.
 - [ ] `aria-label`s and visually-hidden text were checked too — they are
       copy, even though they are never drawn.
 - [ ] A component rendering another `mud-*` component passes

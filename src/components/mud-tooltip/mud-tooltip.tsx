@@ -3,7 +3,7 @@ import type { EventEmitter } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TOOLTIP_MESSAGES } from './mud-tooltip.messages';
 import type { TooltipMessages } from './mud-tooltip.messages';
@@ -155,21 +155,21 @@ export class MudTooltip {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Accessible label for the `coach` variant's close button. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Închide tooltip-ul' (ro-RO)
+   * @default 'Închide tooltip-ul' (ro-MD)
    */
   @Prop() closeLabel?: string;
 
   /**
    * Dismiss hint shown in the `coach` variant's body. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Apasă Esc pentru a închide.' (ro-RO)
+   * @default 'Apasă Esc pentru a închide.' (ro-MD)
    */
   @Prop() dismissHint?: string;
 
@@ -826,7 +826,7 @@ export class MudTooltip {
     const m = this.messages();
     const isCoach = this.variant === 'coach';
     const triggerError = this.validateTriggerSlot();
-    const hostLang = this.locale ? resolvedLocale('mud-tooltip', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     return (
       <Host

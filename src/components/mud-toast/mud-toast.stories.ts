@@ -83,8 +83,8 @@ the consumer is responsible for animating out and removing the element.
     body: { control: 'text', description: 'Default-slot text content.' },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
-      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     closeLabel: {
       name: 'close-label',

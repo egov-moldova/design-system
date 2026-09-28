@@ -11,7 +11,7 @@ export interface SelectMessages {
 }
 
 export const SELECT_MESSAGES: LocaleMessages<SelectMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     emptyLabel: 'Nicio opțiune',
     listboxLabel: 'Opțiuni',
     requiredMessage: 'Selectați o opțiune.',
@@ -21,7 +21,7 @@ export const SELECT_MESSAGES: LocaleMessages<SelectMessages> = {
     listboxLabel: 'Options',
     requiredMessage: 'Select an option.',
   },
-  'ru-RU': {
+  'ru-MD': {
     emptyLabel: 'Нет вариантов',
     listboxLabel: 'Варианты',
     requiredMessage: 'Выберите вариант.',

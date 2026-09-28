@@ -21,7 +21,7 @@ import {
   readSegments,
   segmentIndexAt,
 } from '../../utils/segment-mask';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type { TimePickerChangeDetail } from '../mud-time-picker/mud-time-picker.types';
 import { TIME_INPUT_MESSAGES } from './mud-time-input.messages';
@@ -156,49 +156,49 @@ export class MudTimeInput {
 
   /**
    * Language of the built-in labels and error messages. Unset, the component follows the
-   * closest ancestor `lang` (`<html lang>` included), else `ro-RO`.
+   * closest ancestor `lang` (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Accessible label for the clear (×) button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Șterge' (ro-RO)
+   * @default 'Șterge' (ro-MD)
    */
   @Prop() clearLabel?: string;
 
   /**
    * Accessible label for the clock button that opens the picker. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Deschide selectorul de oră' (ro-RO)
+   * @default 'Deschide selectorul de oră' (ro-MD)
    */
   @Prop() triggerLabel?: string;
 
   /**
    * Accessible name of the picker dialog. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Selectează ora' (ro-RO)
+   * @default 'Selectează ora' (ro-MD)
    */
   @Prop() pickerLabel?: string;
 
   /**
    * Message shown when a complete hour segment is outside 00–23. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Ora trebuie să fie între 00 și 23' (ro-RO)
+   * @default 'Ora trebuie să fie între 00 și 23' (ro-MD)
    */
   @Prop() hourErrorText?: string;
 
   /**
    * Message shown when a complete minute segment is outside 00–59. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Minutele trebuie să fie între 00 și 59' (ro-RO)
+   * @default 'Minutele trebuie să fie între 00 și 59' (ro-MD)
    */
   @Prop() minuteErrorText?: string;
 
   /**
    * Message shown when a complete time is outside `min` / `max`. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Ora este în afara intervalului permis' (ro-RO)
+   * @default 'Ora este în afara intervalului permis' (ro-MD)
    */
   @Prop() rangeErrorText?: string;
 
@@ -206,7 +206,7 @@ export class MudTimeInput {
    * Message shown when a `required` field is empty and a form submit found it so. The same
    * text is the form's validation message. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Introduceți ora' (ro-RO)
+   * @default 'Introduceți ora' (ro-MD)
    */
   @Prop() requiredErrorText?: string;
 
@@ -705,7 +705,7 @@ export class MudTimeInput {
     // Truthy check, not `??`: an explicit empty placeholder still shows the format hint.
     const placeholder = this.placeholder?.trim() ? this.placeholder : TIME_MASK.pattern;
     const ghost = ghostParts(TIME_MASK, this.value);
-    const hostLang = this.locale ? resolvedLocale('mud-time-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': inert,

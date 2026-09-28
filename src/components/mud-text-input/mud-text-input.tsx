@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXT_INPUT_MESSAGES } from './mud-text-input.messages';
 import type { TextInputMessages } from './mud-text-input.messages';
@@ -108,21 +108,21 @@ export class MudTextInput {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible label for the clear (×) button. Only used when `clearable` is set. Overrides
    * the `locale`'s copy when set to a non-empty string.
-   * @default 'Golește câmpul' (ro-RO)
+   * @default 'Golește câmpul' (ro-MD)
    */
   @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
   /**
    * Validation message reported when the field is `required` and empty, and `errorText` is
    * unset. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Acest câmp este obligatoriu.' (ro-RO)
+   * @default 'Acest câmp este obligatoriu.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
@@ -401,7 +401,7 @@ export class MudTextInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-text-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,

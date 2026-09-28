@@ -13,7 +13,7 @@ import {
   writeTask,
 } from '@stencil/core';
 
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TIME_PICKER_MESSAGES } from './mud-time-picker.messages';
 import type { TimePickerMessages } from './mud-time-picker.messages';
@@ -74,25 +74,25 @@ export class MudTimePicker {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Accessible name of the picker. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Selectează ora' (ro-RO)
+   * @default 'Selectează ora' (ro-MD)
    */
   @Prop() label?: string;
 
   /**
    * Accessible name of the hour column. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Ore' (ro-RO)
+   * @default 'Ore' (ro-MD)
    */
   @Prop() hoursLabel?: string;
 
   /**
    * Accessible name of the minute column. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Minute' (ro-RO)
+   * @default 'Minute' (ro-MD)
    */
   @Prop() minutesLabel?: string;
 
@@ -353,7 +353,7 @@ export class MudTimePicker {
     const m = this.messages();
     const hoursColumn = this.renderColumn('hours', m.hoursLabel);
     const minutesColumn = this.renderColumn('minutes', m.minutesLabel);
-    const hostLang = this.locale ? resolvedLocale('mud-time-picker', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host role="group" aria-label={m.label} lang={hostLang}>
         <div class="columns" part="columns">

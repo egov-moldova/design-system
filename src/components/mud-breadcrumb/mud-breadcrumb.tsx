@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_MESSAGES } from './mud-breadcrumb.messages';
 import type { BreadcrumbMessages } from './mud-breadcrumb.messages';
@@ -68,27 +68,27 @@ export class MudBreadcrumb {
    * Accessible name for the navigation landmark when no `aria-label` is set on the
    * host. Overrides the `locale`'s copy when set to a non-empty string. Setting
    * `aria-label` directly on the host also works — the consumer-supplied attribute wins.
-   * @default 'Breadcrumb' (ro-RO)
+   * @default 'Breadcrumb' (ro-MD)
    */
   @Prop() label?: string;
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible label of the overflow ("…") trigger that reveals the collapsed crumbs.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Arată paginile ascunse' (ro-RO)
+   * @default 'Arată paginile ascunse' (ro-MD)
    */
   @Prop() overflowLabel?: string;
 
   /**
    * Accessible label of the spinner shown for a `loading` crumb. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Se încarcă' (ro-RO)
+   * @default 'Se încarcă' (ro-MD)
    */
   @Prop() loadingLabel?: string;
 
@@ -473,7 +473,7 @@ export class MudBreadcrumb {
     const useItems = Array.isArray(items) && items.length > 0;
     const m = this.messages();
     const navLabel = this.resolvedAriaLabel ?? m.navLabel;
-    const hostLang = this.locale ? resolvedLocale('mud-breadcrumb', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host role="navigation" aria-label={navLabel} lang={hostLang}>
         {useItems ? (

@@ -12,7 +12,7 @@ export interface TableMessages {
 }
 
 export const TABLE_MESSAGES: LocaleMessages<TableMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     emptyText: 'Nu există date de afișat.',
     selectAllLabel: 'Selectează toate rândurile',
     selectRowLabel: 'Selectează rândul {row}',
@@ -22,7 +22,7 @@ export const TABLE_MESSAGES: LocaleMessages<TableMessages> = {
     selectAllLabel: 'Select all rows',
     selectRowLabel: 'Select row {row}',
   },
-  'ru-RU': {
+  'ru-MD': {
     emptyText: 'Нет данных для отображения.',
     selectAllLabel: 'Выбрать все строки',
     selectRowLabel: 'Выбрать строку {row}',

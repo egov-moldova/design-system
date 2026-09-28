@@ -12,7 +12,7 @@ import type {
   FileInputSize,
   FileInputVariant,
 } from './mud-file-input.types';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { FILE_INPUT_MESSAGES } from './mud-file-input.messages';
 import type { FileInputMessages } from './mud-file-input.messages';
@@ -100,7 +100,7 @@ export class MudFileInput {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
@@ -108,7 +108,7 @@ export class MudFileInput {
    * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the
    * brand-blue inline link. The trailing space is intentional — the link
    * follows on the same line. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Trage și plasează sau ' (ro-RO)
+   * @default 'Trage și plasează sau ' (ro-MD)
    */
   @Prop({ attribute: 'cta-text' }) ctaText?: string;
 
@@ -116,7 +116,7 @@ export class MudFileInput {
    * Label for the inline "choose files" link. Rendered as an underlined
    * brand-blue button that opens the native file picker. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Alege fișiere' (ro-RO)
+   * @default 'Alege fișiere' (ro-MD)
    */
   @Prop({ attribute: 'choose-files-text' }) chooseFilesText?: string;
 
@@ -124,21 +124,21 @@ export class MudFileInput {
    * Body text shown while a drag is over the drop zone (Figma "Active" state).
    * Replaces the resting body + hides the icon for the duration of the drag.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Eliberează pentru a încărca' (ro-RO)
+   * @default 'Eliberează pentru a încărca' (ro-MD)
    */
   @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText?: string;
 
   /**
    * Top-left caption inside the field row, shown below the dropzone. When set to a
    * non-empty string it replaces the caption verbatim; otherwise, when `accept` is
-   * provided, it is derived from `accept` as `Formate acceptate: jpg, png, pdf` (ro-RO).
+   * provided, it is derived from `accept` as `Formate acceptate: jpg, png, pdf` (ro-MD).
    */
   @Prop({ attribute: 'supported-formats-text' }) supportedFormatsText?: string;
 
   /**
    * Top-right caption inside the field row, shown below the dropzone. When set to a
    * non-empty string it replaces the caption verbatim; otherwise, when `maxSize` is
-   * provided, it is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB` (ro-RO).
+   * provided, it is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB` (ro-MD).
    */
   @Prop({ attribute: 'max-size-text' }) maxSizeText?: string;
 
@@ -666,7 +666,7 @@ export class MudFileInput {
     const maxSizeCaption = this.resolvedMaxSizeText();
     const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
     const isButton = this.variant === 'button';
-    const hostLang = this.locale ? resolvedLocale('mud-file-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,

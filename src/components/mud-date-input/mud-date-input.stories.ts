@@ -101,7 +101,7 @@ const meta: Meta<DateInputArgs> = {
       control: 'select',
       options: ['', ...DATE_INPUT_LOCALES],
       description:
-        'Language of every built-in label and error message, plus the calendar popover. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+        'Language of every built-in label and error message, plus the calendar popover. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },

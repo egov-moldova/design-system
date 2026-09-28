@@ -19,7 +19,7 @@ export interface PhoneInputMessages {
 }
 
 export const PHONE_INPUT_MESSAGES: LocaleMessages<PhoneInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     requiredText: 'Acest câmp este obligatoriu.',
     incompleteText: 'Numărul de telefon este incomplet',
     searchCountryText: 'Caută țara',
@@ -37,7 +37,7 @@ export const PHONE_INPUT_MESSAGES: LocaleMessages<PhoneInputMessages> = {
     noCountryFoundText: 'No country found',
     countryListLabel: 'Country',
   },
-  'ru-RU': {
+  'ru-MD': {
     requiredText: 'Это поле обязательно для заполнения.',
     incompleteText: 'Номер телефона неполный',
     searchCountryText: 'Поиск страны',

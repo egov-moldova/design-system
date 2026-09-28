@@ -7,7 +7,7 @@ export interface BannerMessages {
 }
 
 export const BANNER_MESSAGES: LocaleMessages<BannerMessages> = {
-  'ro-RO': { closeLabel: 'Închide' },
+  'ro-MD': { closeLabel: 'Închide' },
   'en-US': { closeLabel: 'Close' },
-  'ru-RU': { closeLabel: 'Закрыть' },
+  'ru-MD': { closeLabel: 'Закрыть' },
 };

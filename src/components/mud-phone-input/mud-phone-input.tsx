@@ -25,7 +25,7 @@ import type {
   PhoneInputVariant,
 } from './mud-phone-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { intlTag, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
 import type { PhoneInputMessages } from './mud-phone-input.messages';
@@ -190,7 +190,7 @@ export class MudPhoneInput {
   /**
    * Language of the built-in copy and of the country names shown in the listbox
    * (`Intl.DisplayNames`). Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
@@ -272,7 +272,7 @@ export class MudPhoneInput {
 
   /** The `Intl` tag whose dictionary/region names are shown — the resolved `MudLocale`, canonicalised. */
   private displayTag(): string {
-    return intlTag(resolvedLocale('mud-phone-input', this.host, this.locale));
+    return formatLocale(this.host, this.locale);
   }
 
   private displayName(country: PhoneCountry): string {
@@ -874,7 +874,7 @@ export class MudPhoneInput {
       id: this.triggerId,
     };
     const triggerAriaLabel = `${this.displayName(country)}, ${country.code}`;
-    const hostLang = this.locale ? resolvedLocale('mud-phone-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     return (
       <Host class={hostClasses} lang={hostLang} aria-busy={this.loading ? 'true' : null}>

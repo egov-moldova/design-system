@@ -29,7 +29,7 @@ export interface DateInputMessages {
 }
 
 export const DATE_INPUT_MESSAGES: LocaleMessages<DateInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     clearLabel: 'Șterge',
     pickerLabel: 'Selectează data',
     openPickerLabel: 'Deschide calendarul',
@@ -53,7 +53,7 @@ export const DATE_INPUT_MESSAGES: LocaleMessages<DateInputMessages> = {
     orderErrorText: 'The end date must be after the start date',
     requiredErrorText: 'Enter a date',
   },
-  'ru-RU': {
+  'ru-MD': {
     clearLabel: 'Очистить',
     pickerLabel: 'Выбрать дату',
     openPickerLabel: 'Открыть календарь',

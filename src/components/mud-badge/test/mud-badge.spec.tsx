@@ -103,7 +103,7 @@ describe('mud-badge', () => {
     expect(root?.shadowRoot?.querySelector('.badge-count')).toBeFalsy();
     expect(root?.shadowRoot?.querySelector('.badge-dot')).toBeFalsy();
     // Still announces a meaningful accessible name.
-    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-RO'].notificationLabel);
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
   it('uses the visible count as the accessible name when no aria-label is set', async () => {
@@ -113,12 +113,12 @@ describe('mud-badge', () => {
 
   it('falls back to the locale notification label for dot type with no aria-label', async () => {
     const { root } = await render(<mud-badge type="dot" />);
-    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-RO'].notificationLabel);
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
   it('falls back to the locale notification label for numbered type with no count and no aria-label', async () => {
     const { root } = await render(<mud-badge type="numbered" />);
-    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-RO'].notificationLabel);
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
   it('honors a custom aria-label override', async () => {

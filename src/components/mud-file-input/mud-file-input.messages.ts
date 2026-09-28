@@ -48,7 +48,7 @@ export interface FileInputMessages {
 }
 
 export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     ctaText: 'Trage și plasează sau ',
     chooseFilesText: 'Alege fișiere',
     dropzoneActiveText: 'Eliberează pentru a încărca',
@@ -100,7 +100,7 @@ export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
     typeRejectionGenericText: 'Format not allowed.',
     countRejectionText: 'Maximum {max} files allowed.',
   },
-  'ru-RU': {
+  'ru-MD': {
     ctaText: 'Перетащите или ',
     chooseFilesText: 'выберите файлы',
     dropzoneActiveText: 'Отпустите, чтобы загрузить',

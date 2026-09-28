@@ -113,7 +113,7 @@ const meta: Meta<FileInputArgs> = {
     locale: {
       control: 'select',
       options: ['', ...MUD_LOCALES],
-      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     accept: { control: 'text', description: 'MIME / extension allow-list (`.pdf,image/*`).' },
     maxSize: { control: 'number', description: 'Max per-file size in bytes.' },

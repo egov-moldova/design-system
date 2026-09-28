@@ -2,7 +2,7 @@ import type { LocaleMessages } from '../../utils/locale';
 
 /** Every built-in string of mud-file-item. The `sizeUnit*` keys are the byte-size
  * suffixes shown after the formatted number (`245 KB`) — locale copy, not a number
- * format: `ru-RU` uses `КБ`/`МБ`/`ГБ`, not the Latin `KB`/`MB`/`GB`. */
+ * format: `ru-MD` uses `КБ`/`МБ`/`ГБ`, not the Latin `KB`/`MB`/`GB`. */
 export interface FileItemMessages {
   /** Accessible label for the remove button. */
   removeLabel: string;
@@ -17,7 +17,7 @@ export interface FileItemMessages {
 }
 
 export const FILE_ITEM_MESSAGES: LocaleMessages<FileItemMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     removeLabel: 'Elimină fișierul',
     sizeUnitBytes: 'B',
     sizeUnitKB: 'KB',
@@ -31,7 +31,7 @@ export const FILE_ITEM_MESSAGES: LocaleMessages<FileItemMessages> = {
     sizeUnitMB: 'MB',
     sizeUnitGB: 'GB',
   },
-  'ru-RU': {
+  'ru-MD': {
     removeLabel: 'Удалить файл',
     sizeUnitBytes: 'Б',
     sizeUnitKB: 'КБ',

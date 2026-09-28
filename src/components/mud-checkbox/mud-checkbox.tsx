@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { CHECKBOX_MESSAGES } from './mud-checkbox.messages';
 import type { CheckboxMessages } from './mud-checkbox.messages';
@@ -120,14 +120,14 @@ export class MudCheckbox {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Validation message reported when the field is `required` and unchecked. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Bifați această casetă pentru a continua.' (ro-RO)
+   * @default 'Bifați această casetă pentru a continua.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
@@ -313,7 +313,7 @@ export class MudCheckbox {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    const hostLang = this.locale ? resolvedLocale('mud-checkbox', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     // Slot-first content: the visible label / supporting text live ONLY in
     // their respective slots. The `label` / `supportingText` props are
     // accessible-name fallbacks (mirrors mud-button).

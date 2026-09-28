@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { INFO_BOX_MESSAGES } from './mud-info-box.messages';
 import type { InfoBoxMessages } from './mud-info-box.messages';
@@ -84,13 +84,13 @@ export class MudInfoBox {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Închide' (ro-RO)
+   * @default 'Închide' (ro-MD)
    */
   @Prop() closeLabel?: string;
 
@@ -165,7 +165,7 @@ export class MudInfoBox {
     const m = this.messages();
     const iconName = this.resolveIconName();
     const hasTitle = !!(this.titleText && this.titleText.trim().length > 0);
-    const hostLang = this.locale ? resolvedLocale('mud-info-box', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'has-icon': !this.hideIcon,

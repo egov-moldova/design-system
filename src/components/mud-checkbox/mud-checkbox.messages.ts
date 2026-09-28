@@ -7,13 +7,13 @@ export interface CheckboxMessages {
 }
 
 export const CHECKBOX_MESSAGES: LocaleMessages<CheckboxMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     requiredMessage: 'Bifați această casetă pentru a continua.',
   },
   'en-US': {
     requiredMessage: 'Please check this box if you want to proceed.',
   },
-  'ru-RU': {
+  'ru-MD': {
     requiredMessage: 'Пожалуйста, отметьте этот пункт, чтобы продолжить.',
   },
 };

@@ -18,7 +18,7 @@ export interface NumericInputMessages {
 }
 
 export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     incrementLabel: 'Crește',
     decrementLabel: 'Scade',
     clearLabel: 'Șterge',
@@ -34,7 +34,7 @@ export const NUMERIC_INPUT_MESSAGES: LocaleMessages<NumericInputMessages> = {
     minMessage: 'The minimum value is {min}.',
     maxMessage: 'The maximum value is {max}.',
   },
-  'ru-RU': {
+  'ru-MD': {
     incrementLabel: 'Увеличить',
     decrementLabel: 'Уменьшить',
     clearLabel: 'Очистить',

@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h, readTask } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PAGINATION_MESSAGES } from './mud-pagination.messages';
 import type { PaginationMessages } from './mud-pagination.messages';
@@ -91,14 +91,14 @@ export class MudPagination {
   /**
    * Visible label for the Previous button (desktop only — hidden on `sm`).
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Anterior' (ro-RO)
+   * @default 'Anterior' (ro-MD)
    */
   @Prop({ attribute: 'prev-label' }) prevLabel?: string;
 
   /**
    * Visible label for the Next button (desktop only — hidden on `sm`).
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Următor' (ro-RO)
+   * @default 'Următor' (ro-MD)
    */
   @Prop({ attribute: 'next-label' }) nextLabel?: string;
 
@@ -109,13 +109,13 @@ export class MudPagination {
    * attribute wins and is captured on connect into `resolvedAriaLabel` (same
    * pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion /
    * mud-breadcrumb / mud-date-picker / mud-modal).
-   * @default 'Navigare pagini' (ro-RO)
+   * @default 'Navigare pagini' (ro-MD)
    */
   @Prop() label?: string;
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
@@ -123,7 +123,7 @@ export class MudPagination {
    * Accessible label template for the Previous button. The `{page}` token is
    * replaced with the target page number. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Pagina anterioară, mergi la pagina {page}' (ro-RO)
+   * @default 'Pagina anterioară, mergi la pagina {page}' (ro-MD)
    */
   @Prop({ attribute: 'prev-aria-label' }) prevAriaLabel?: string;
 
@@ -131,7 +131,7 @@ export class MudPagination {
    * Accessible label template for the Next button. The `{page}` token is
    * replaced with the target page number. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Pagina următoare, mergi la pagina {page}' (ro-RO)
+   * @default 'Pagina următoare, mergi la pagina {page}' (ro-MD)
    */
   @Prop({ attribute: 'next-aria-label' }) nextAriaLabel?: string;
 
@@ -139,7 +139,7 @@ export class MudPagination {
    * Accessible label template for an individual page button. Tokens `{page}`
    * and `{total}` are substituted with the page number and total page count.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Pagina {page} din {total}' (ro-RO)
+   * @default 'Pagina {page} din {total}' (ro-MD)
    */
   @Prop({ attribute: 'page-aria-label' }) pageAriaLabel?: string;
 
@@ -147,7 +147,7 @@ export class MudPagination {
    * Accessible label template for the overflow ("…") button. The `{from}`
    * and `{to}` tokens are replaced with the first and last page in the
    * collapsed range. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Arată paginile de la {from} la {to}' (ro-RO)
+   * @default 'Arată paginile de la {from} la {to}' (ro-MD)
    */
   @Prop({ attribute: 'overflow-aria-label' }) overflowAriaLabel?: string;
 
@@ -617,7 +617,7 @@ export class MudPagination {
     const m = this.messages();
     const navLabel = this.resolvedAriaLabel ?? m.navLabel;
     const slots = this.computeRange();
-    const hostLang = this.locale ? resolvedLocale('mud-pagination', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     return (
       <Host lang={hostLang}>

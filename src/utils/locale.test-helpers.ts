@@ -30,11 +30,11 @@ export interface DescribeLocalesOptions<M> {
 const isPlural = (value: string | Plural): value is Plural => typeof value === 'object' && value !== null;
 
 /**
- * Generates the shared locale contract's spec cases for one component: default `ro-RO`,
+ * Generates the shared locale contract's spec cases for one component: default `ro-MD`,
  * `locale="en-US"`, an ancestor `lang="ru"`, an override beating the locale, an empty override
  * falling back to the dictionary, an unsupported `locale` warning and falling back, a `locale`
- * change after mount re-rendering the copy, and — under `ru-RU` — the rendered shadow DOM
- * holding no `ro-RO`/`en-US` dictionary value. Iterates every key of `table['ro-RO']`; a key
+ * change after mount re-rendering the copy, and — under `ru-MD` — the rendered shadow DOM
+ * holding no `ro-MD`/`en-US` dictionary value. Iterates every key of `table['ro-MD']`; a key
  * neither reachable through `read` nor listed in `unreachable` fails the run.
  */
 export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
@@ -49,11 +49,11 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
     unreachable = {} as NonNullable<DescribeLocalesOptions<M>['unreachable']>,
     pluralCounts = {} as NonNullable<DescribeLocalesOptions<M>['pluralCounts']>,
   } = options;
-  const keys = Object.keys(table['ro-RO']) as Array<keyof M>;
-  const stringKeys = keys.filter(key => !isPlural(table['ro-RO'][key]) && !(key in unreachable));
-  const pluralKeys = keys.filter(key => isPlural(table['ro-RO'][key]));
+  const keys = Object.keys(table['ro-MD']) as Array<keyof M>;
+  const stringKeys = keys.filter(key => !isPlural(table['ro-MD'][key]) && !(key in unreachable));
+  const pluralKeys = keys.filter(key => isPlural(table['ro-MD'][key]));
 
-  const expectMessages = async (host: Element, locale: 'ro-RO' | 'en-US' | 'ru-RU', onlyKeys = stringKeys) => {
+  const expectMessages = async (host: Element, locale: 'ro-MD' | 'en-US' | 'ru-MD', onlyKeys = stringKeys) => {
     for (const key of onlyKeys) {
       expect(read(host, key)).toBe(table[locale][key]);
     }
@@ -67,9 +67,9 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       }
     });
 
-    it('defaults to ro-RO with no locale and no ancestor lang', async () => {
+    it('defaults to ro-MD with no locale and no ancestor lang', async () => {
       const host = await render({});
-      await expectMessages(host, 'ro-RO');
+      await expectMessages(host, 'ro-MD');
     });
 
     it('renders en-US when locale="en-US"', async () => {
@@ -77,9 +77,9 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       await expectMessages(host, 'en-US');
     });
 
-    it('renders ru-RU from an ancestor lang="ru"', async () => {
+    it('renders ru-MD from an ancestor lang="ru"', async () => {
       const host = await render({}, 'ru');
-      await expectMessages(host, 'ru-RU');
+      await expectMessages(host, 'ru-MD');
     });
 
     for (const [key, propName] of Object.entries(overrides) as [keyof M, string][]) {
@@ -94,14 +94,14 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       });
     }
 
-    it('warns and renders ro-RO for an unsupported locale', async () => {
+    it('warns and renders ro-MD for an unsupported locale', async () => {
       // At least once: a component that hands `locale` down to a locale-aware child (e.g.
       // mud-time-input → mud-time-picker) warns once per component, each deduplicated on
       // its own `component|locale` key — never zero, but not pinned to exactly one either.
       resetLocaleWarnings();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       const host = await render({ locale: 'de-DE' });
-      await expectMessages(host, 'ro-RO');
+      await expectMessages(host, 'ro-MD');
       expect(warn.mock.calls.length).toBeGreaterThanOrEqual(1);
       warn.mockRestore();
     });
@@ -109,27 +109,27 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
     it('re-renders its copy when locale changes after mount', async () => {
       const host = await render({ locale: 'en-US' });
       await expectMessages(host, 'en-US');
-      (host as unknown as Record<string, unknown>).locale = 'ru-RU';
+      (host as unknown as Record<string, unknown>).locale = 'ru-MD';
       await new Promise<void>(resolve => setTimeout(resolve, 0));
-      await expectMessages(host, 'ru-RU');
+      await expectMessages(host, 'ru-MD');
     });
 
-    it('shows no ro-RO or en-US dictionary value under ru-RU', async () => {
-      const host = await render({ locale: 'ru-RU' });
+    it('shows no ro-MD or en-US dictionary value under ru-MD', async () => {
+      const host = await render({ locale: 'ru-MD' });
       for (const key of stringKeys) {
         const rendered = read(host, key);
-        if (table['ro-RO'][key] !== table['ru-RU'][key]) expect(rendered).not.toBe(table['ro-RO'][key]);
-        if (table['en-US'][key] !== table['ru-RU'][key]) expect(rendered).not.toBe(table['en-US'][key]);
+        if (table['ro-MD'][key] !== table['ru-MD'][key]) expect(rendered).not.toBe(table['ro-MD'][key]);
+        if (table['en-US'][key] !== table['ru-MD'][key]) expect(rendered).not.toBe(table['en-US'][key]);
       }
     });
 
     for (const key of pluralKeys) {
       const propName = pluralCounts[key];
       if (!propName) continue;
-      it.each([1, 2, 5, 21])(`plural "${String(key)}" formats count %i for ro-RO`, async count => {
-        const host = await render({ locale: 'ro-RO', [propName]: count });
-        const plural = table['ro-RO'][key] as Plural;
-        expect(read(host, key)).toBe(formatMessage(plural, host, 'ro-RO', { count }));
+      it.each([1, 2, 5, 21])(`plural "${String(key)}" formats count %i for ro-MD`, async count => {
+        const host = await render({ locale: 'ro-MD', [propName]: count });
+        const plural = table['ro-MD'][key] as Plural;
+        expect(read(host, key)).toBe(formatMessage(plural, host, 'ro-MD', { count }));
       });
     }
   });

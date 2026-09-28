@@ -42,7 +42,7 @@ describe('mud-breadcrumb', () => {
   it('renders nav landmark with the default locale aria-label', async () => {
     const { root } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
     expect(root?.getAttribute('role')).toBe('navigation');
-    expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['ro-RO'].navLabel);
+    expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['ro-MD'].navLabel);
   });
 
   it('honors a custom aria-label', async () => {

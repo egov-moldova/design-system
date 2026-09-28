@@ -121,10 +121,10 @@ const themeDecorator = (story, context) => {
 // Issue #163: drives the component locale model's ancestor-`lang` fallback (see
 // `src/utils/locale.ts`'s `inheritedLang`). Sets `lang` on `<html>`, the closest ancestor
 // every story's components share, so any mud-* component with no explicit `locale` prop
-// follows this toolbar. `scripts/eslint/copy-probe.mjs` drives it via the `globals=lang:ru-RU`
+// follows this toolbar. `scripts/eslint/copy-probe.mjs` drives it via the `globals=lang:ru-MD`
 // query param rather than the toolbar UI.
 const langDecorator = (story, context) => {
-  document.documentElement.setAttribute('lang', context.globals.lang || 'ro-RO');
+  document.documentElement.setAttribute('lang', context.globals.lang || 'ro-MD');
   return story();
 };
 
@@ -162,18 +162,18 @@ export const globalTypes = {
       dynamicTitle: true,
     },
   },
-  // Issue #163: ancestor `lang`, applied to `<html>` by `langDecorator` below. `'ro-RO'` is
+  // Issue #163: ancestor `lang`, applied to `<html>` by `langDecorator` below. `'ro-MD'` is
   // the library's own default locale (src/utils/locale.ts DEFAULT_LOCALE).
   lang: {
     name: 'Lang',
     description: "Built-in copy language (mud-* components' ancestor `lang` fallback)",
-    defaultValue: 'ro-RO',
+    defaultValue: 'ro-MD',
     toolbar: {
       icon: 'globe',
       items: [
-        { value: 'ro-RO', title: 'Română (ro-RO)' },
-        { value: 'en-US', title: 'English (en-US)' },
-        { value: 'ru-RU', title: 'Русский (ru-RU)' },
+        { value: 'ro-MD', title: 'Română' },
+        { value: 'en-US', title: 'English' },
+        { value: 'ru-MD', title: 'Русский' },
       ],
       showName: true,
       dynamicTitle: true,

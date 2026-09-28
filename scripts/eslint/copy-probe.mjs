@@ -3,8 +3,8 @@
  * copy-probe.mjs — issue #163's acceptance bar, second row: the RUNTIME net over
  * `storybook-static/`. Serves the build locally, opens every story of every Phase 1-5
  * component (the folders that own a `*.messages.ts` dictionary — derived from the tree,
- * never a hand-kept list) with the Storybook `lang` global forced to `ru-RU`
- * (`.storybook/preview.js`'s `langDecorator`, set via the `globals=lang:ru-RU` query param
+ * never a hand-kept list) with the Storybook `lang` global forced to `ru-MD`
+ * (`.storybook/preview.js`'s `langDecorator`, set via the `globals=lang:ru-MD` query param
  * rather than the toolbar UI), and inspects component-owned text: shadow-root text nodes
  * and shadow-internal copy attributes, excluding assigned/slotted nodes (a light-DOM child of
  * any custom element — the walk never treats it as owned, matching the bar's wording; a
@@ -13,10 +13,10 @@
  * not need to re-open it).
  *
  * A hit is a component-owned instance that either:
- *   (a) equals a `ro-RO`/`en-US` dictionary value (a `{placeholder}` matches anything), or
+ *   (a) equals a `ro-MD`/`en-US` dictionary value (a `{placeholder}` matches anything), or
  *   (b) contains a Latin-letter word of 3+ letters, UNLESS the WHOLE instance equals one of
  *       that instance's own host's current attribute values (consumer input, read from the
- *       rendered DOM) or a `ru-RU` dictionary value.
+ *       rendered DOM) or a `ru-MD` dictionary value.
  * An instance whose closest owning host carries an explicit `locale` attribute is skipped
  * (its own `locale` beating the page `lang` is the designed behaviour) and counted separately.
  *
@@ -136,8 +136,8 @@ function buildMatcher(strings) {
 /**
  * Loads every `*.messages.ts` dictionary directly (Node 24 strips `.ts` type syntax at
  * import time — no build step needed; these files carry only type-only imports and object
- * literals, which is exactly what stripping supports). Returns the matcher for `ro-RO`/
- * `en-US` values, the matcher for `ru-RU` values, and the set of component folders found
+ * literals, which is exactly what stripping supports). Returns the matcher for `ro-MD`/
+ * `en-US` values, the matcher for `ru-MD` values, and the set of component folders found
  * (Phases 1-5's target set for story filtering).
  */
 async function loadDictionaries() {
@@ -151,9 +151,9 @@ async function loadDictionaries() {
     for (const exported of Object.values(mod)) {
       if (!exported || typeof exported !== 'object') continue;
       const keys = Object.keys(exported);
-      if (!['ro-RO', 'en-US', 'ru-RU'].every(k => keys.includes(k))) continue; // not a LocaleMessages export
-      roEn.push(...stringsOf(exported['ro-RO']), ...stringsOf(exported['en-US']));
-      ru.push(...stringsOf(exported['ru-RU']));
+      if (!['ro-MD', 'en-US', 'ru-MD'].every(k => keys.includes(k))) continue; // not a LocaleMessages export
+      roEn.push(...stringsOf(exported['ro-MD']), ...stringsOf(exported['en-US']));
+      ru.push(...stringsOf(exported['ru-MD']));
     }
   }
   return { matchesRoEn: buildMatcher(roEn), matchesRu: buildMatcher(ru), dirs };
@@ -337,7 +337,7 @@ async function scanStory(browser, baseUrl, storyId) {
   try {
     await page.addInitScript(recordRemovedAriaLabels);
     const url = `${baseUrl}/iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story&globals=${encodeURIComponent(
-      'lang:ru-RU',
+      'lang:ru-MD',
     )}`;
     await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
     await page.waitForTimeout(300); // Stencil hydration settling

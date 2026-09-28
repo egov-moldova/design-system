@@ -11,7 +11,7 @@ export interface BreadcrumbMessages {
 }
 
 export const BREADCRUMB_MESSAGES: LocaleMessages<BreadcrumbMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     navLabel: 'Fir de navigare',
     overflowLabel: 'Arată paginile ascunse',
     loadingLabel: 'Se încarcă',
@@ -21,7 +21,7 @@ export const BREADCRUMB_MESSAGES: LocaleMessages<BreadcrumbMessages> = {
     overflowLabel: 'Show collapsed pages',
     loadingLabel: 'Loading',
   },
-  'ru-RU': {
+  'ru-MD': {
     navLabel: 'Хлебные крошки',
     overflowLabel: 'Показать скрытые страницы',
     loadingLabel: 'Загрузка',

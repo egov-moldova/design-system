@@ -384,7 +384,7 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open onMudCountryChange={onCountryChange}></mud-phone-input>,
       );
-      // Sorted order (Moldova first, then Intl.Collator on the ro-RO display name):
+      // Sorted order (Moldova first, then Intl.Collator on the ro-MD display name):
       // MD, BG, FR, DE, GR, IL, IT, PT, GB, RO, RU, ES, US, TR, UA — RO sits at index 9.
       const options = queryOptions(root);
       options[9].click();
@@ -803,7 +803,7 @@ describe('mud-phone-input', () => {
 
     it('matches the English country name on a non-English page', async () => {
       const { root } = await render(
-        <mud-phone-input label="x" type="international" locale="ru-RU" open></mud-phone-input>,
+        <mud-phone-input label="x" type="international" locale="ru-MD" open></mud-phone-input>,
       );
       const search = querySearchInput(root)!;
       search.value = 'germany';

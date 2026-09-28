@@ -23,7 +23,7 @@ export interface PaginationMessages {
 }
 
 export const PAGINATION_MESSAGES: LocaleMessages<PaginationMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     navLabel: 'Navigare pagini',
     prevLabel: 'Anterior',
     nextLabel: 'Următor',
@@ -41,7 +41,7 @@ export const PAGINATION_MESSAGES: LocaleMessages<PaginationMessages> = {
     pageAriaLabel: 'Page {page} of {total}',
     overflowAriaLabel: 'Show pages {from} to {to}',
   },
-  'ru-RU': {
+  'ru-MD': {
     navLabel: 'Навигация по страницам',
     prevLabel: 'Назад',
     nextLabel: 'Далее',

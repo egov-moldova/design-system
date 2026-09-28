@@ -7,13 +7,13 @@ export interface ChipMessages {
 }
 
 export const CHIP_MESSAGES: LocaleMessages<ChipMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     removeLabel: 'Elimină',
   },
   'en-US': {
     removeLabel: 'Remove',
   },
-  'ru-RU': {
+  'ru-MD': {
     removeLabel: 'Удалить',
   },
 };

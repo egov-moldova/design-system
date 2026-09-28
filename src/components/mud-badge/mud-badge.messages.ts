@@ -7,13 +7,13 @@ export interface BadgeMessages {
 }
 
 export const BADGE_MESSAGES: LocaleMessages<BadgeMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     notificationLabel: 'Notificare',
   },
   'en-US': {
     notificationLabel: 'Notification',
   },
-  'ru-RU': {
+  'ru-MD': {
     notificationLabel: 'Уведомление',
   },
 };

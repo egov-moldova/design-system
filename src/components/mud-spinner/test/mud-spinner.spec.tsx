@@ -18,7 +18,7 @@ describe('mud-spinner', () => {
     const { root } = await render(<mud-spinner />);
 
     expect(root?.getAttribute('role')).toBe('status');
-    expect(root?.getAttribute('aria-label')).toBe(SPINNER_MESSAGES['ro-RO'].label);
+    expect(root?.getAttribute('aria-label')).toBe(SPINNER_MESSAGES['ro-MD'].label);
     expect(root?.getAttribute('aria-live')).toBe('polite');
     expect(root?.getAttribute('size')).toBe('md');
     expect(root?.getAttribute('variant')).toBe('brand');

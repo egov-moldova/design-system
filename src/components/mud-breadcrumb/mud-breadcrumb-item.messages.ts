@@ -7,13 +7,13 @@ export interface BreadcrumbItemMessages {
 }
 
 export const BREADCRUMB_ITEM_MESSAGES: LocaleMessages<BreadcrumbItemMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     loadingLabel: 'Se încarcă',
   },
   'en-US': {
     loadingLabel: 'Loading',
   },
-  'ru-RU': {
+  'ru-MD': {
     loadingLabel: 'Загрузка',
   },
 };

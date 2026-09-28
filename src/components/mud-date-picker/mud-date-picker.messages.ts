@@ -7,7 +7,7 @@ export interface DatePickerMessages {
 }
 
 export const DATE_PICKER_MESSAGES: LocaleMessages<DatePickerMessages> = {
-  'ro-RO': { todayLabel: 'Azi' },
+  'ro-MD': { todayLabel: 'Azi' },
   'en-US': { todayLabel: 'Today' },
-  'ru-RU': { todayLabel: 'Сегодня' },
+  'ru-MD': { todayLabel: 'Сегодня' },
 };

@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
-import { inheritedLang, intlTag, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { DATE_PICKER_MESSAGES } from './mud-date-picker.messages';
 import type { DatePickerMessages } from './mud-date-picker.messages';
@@ -70,7 +70,7 @@ function compareIso(a: string, b: string): number {
  * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
  *
  * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
- * no hard-coded strings. Romanian (`ro-RO`) is the default.
+ * no hard-coded strings. Romanian (`ro-MD`) is the default.
  *
  * Keyboard:
  * - Arrow keys move focus by day
@@ -133,14 +133,14 @@ export class MudDatePicker {
   /**
    * BCP-47 locale tag for weekday/month rendering (never rewritten — any valid tag reaches
    * `Intl` as given) and language of the "jump to today" footer shortcut. Unset, both follow
-   * the closest ancestor `lang` (`<html lang>` included), else `ro-RO`.
+   * the closest ancestor `lang` (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Label of the "jump to today" footer shortcut, when `todayShortcut` is set. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Azi' (ro-RO)
+   * @default 'Azi' (ro-MD)
    */
   @Prop() todayLabel?: string;
 
@@ -319,7 +319,7 @@ export class MudDatePicker {
 
   /** The BCP-47 tag handed to every `Intl` call — never rewritten, unlike the resolved `MudLocale`. */
   private resolvedIntlTag(): string {
-    return intlTag(this.locale ?? inheritedLang(this.host));
+    return formatLocale(this.host, this.locale);
   }
 
   private captureAriaLabel(): void {
@@ -879,7 +879,7 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
-    const hostLang = this.locale ? resolvedLocale('mud-date-picker', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId} lang={hostLang}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}

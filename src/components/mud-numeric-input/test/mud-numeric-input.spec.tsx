@@ -808,11 +808,11 @@ describe('mud-numeric-input', () => {
 
     it('groups thousands with the locale separators', async () => {
       const { root } = await render(
-        <mud-numeric-input label="Suma" locale="ro-RO" value={1234567}></mud-numeric-input>,
+        <mud-numeric-input label="Suma" locale="ro-MD" value={1234567}></mud-numeric-input>,
       );
       const shown = (queryNative(root) as HTMLInputElement).value;
 
-      // ro-RO groups with a dot; what matters here is that the field reads the
+      // ro-MD groups with a dot; what matters here is that the field reads the
       // separators off the locale instead of printing a bare 1234567.
       expect(shown).not.toBe('1234567');
       expect(shown.replace(/\D/g, '')).toBe('1234567');

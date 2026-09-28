@@ -9,7 +9,7 @@ export interface TextInputMessages {
 }
 
 export const TEXT_INPUT_MESSAGES: LocaleMessages<TextInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     clearLabel: 'Golește câmpul',
     requiredMessage: 'Acest câmp este obligatoriu.',
   },
@@ -17,7 +17,7 @@ export const TEXT_INPUT_MESSAGES: LocaleMessages<TextInputMessages> = {
     clearLabel: 'Clear field',
     requiredMessage: 'This field is required.',
   },
-  'ru-RU': {
+  'ru-MD': {
     clearLabel: 'Очистить поле',
     requiredMessage: 'Это поле обязательно для заполнения.',
   },

@@ -7,13 +7,13 @@ export interface TextareaMessages {
 }
 
 export const TEXTAREA_MESSAGES: LocaleMessages<TextareaMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     requiredMessage: 'Completați acest câmp.',
   },
   'en-US': {
     requiredMessage: 'Fill in this field.',
   },
-  'ru-RU': {
+  'ru-MD': {
     requiredMessage: 'Заполните это поле.',
   },
 };

@@ -22,7 +22,7 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type {
   DatePickerChangeDetail,
@@ -234,28 +234,28 @@ export class MudDateInput {
    * Language of the built-in labels and error messages, and of the calendar's month and
    * weekday names, which `mud-date-picker` takes from `Intl`. The typed value itself follows
    * `format`, not the locale. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Accessible label for the clear (×) button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Șterge' (ro-RO)
+   * @default 'Șterge' (ro-MD)
    */
   @Prop() clearLabel?: string;
 
   /**
    * Accessible name of the calendar dialog. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Selectează data' (ro-RO)
+   * @default 'Selectează data' (ro-MD)
    */
   @Prop() pickerLabel?: string;
 
   /**
    * Accessible name of the trailing button that opens the calendar. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Deschide calendarul' (ro-RO)
+   * @default 'Deschide calendarul' (ro-MD)
    */
   @Prop() openPickerLabel?: string;
 
@@ -263,49 +263,49 @@ export class MudDateInput {
    * Message for a day outside 01–31, or (once the month is known) past the number of days in
    * that month. Carries a `{max}` placeholder. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Ziua trebuie să fie între 01 și {max}' (ro-RO)
+   * @default 'Ziua trebuie să fie între 01 și {max}' (ro-MD)
    */
   @Prop() dayErrorText?: string;
 
   /**
    * Message for a month outside 01–12. Overrides the `locale`'s copy when set to a non-empty
    * string.
-   * @default 'Luna trebuie să fie între 01 și 12' (ro-RO)
+   * @default 'Luna trebuie să fie între 01 și 12' (ro-MD)
    */
   @Prop() monthErrorText?: string;
 
   /**
    * Message for a year outside the allowed years. Overrides the `locale`'s copy when set to
    * a non-empty string.
-   * @default 'Introduceți un an valid' (ro-RO)
+   * @default 'Introduceți un an valid' (ro-MD)
    */
   @Prop() yearErrorText?: string;
 
   /**
    * Message for a complete date that does not otherwise exist. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Introduceți o dată validă' (ro-RO)
+   * @default 'Introduceți o dată validă' (ro-MD)
    */
   @Prop() dateErrorText?: string;
 
   /**
    * Message for a complete date outside `min` / `max`. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Data este în afara intervalului permis' (ro-RO)
+   * @default 'Data este în afara intervalului permis' (ro-MD)
    */
   @Prop() rangeErrorText?: string;
 
   /**
    * `type="date-range"` only: message for an end date before the start date. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Data de sfârșit trebuie să fie după data de început' (ro-RO)
+   * @default 'Data de sfârșit trebuie să fie după data de început' (ro-MD)
    */
   @Prop() orderErrorText?: string;
 
   /**
    * Message shown when a required field is submitted empty. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Introduceți data' (ro-RO)
+   * @default 'Introduceți data' (ro-MD)
    */
   @Prop() requiredErrorText?: string;
 
@@ -1072,7 +1072,7 @@ export class MudDateInput {
     const pickerDates = this.dateParts(this.value).map(part => this.toIsoDate(part));
     const pickerMode: DatePickerMode = this.isRange() ? 'range' : 'single';
     const pickerHeaderStyle: DatePickerHeaderStyle = isMobilePopover || this.type === 'advanced' ? 'dropdown' : 'title';
-    const hostLang = this.locale ? resolvedLocale('mud-date-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,

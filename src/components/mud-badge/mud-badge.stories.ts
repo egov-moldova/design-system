@@ -69,13 +69,13 @@ const meta: Meta<BadgeArgs> = {
     },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
-      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     notificationLabel: {
       control: 'text',
       description: "Accessible-name fallback with no count. Overrides the locale's copy.",
-      table: { defaultValue: { summary: 'Notificare (ro-RO)' } },
+      table: { defaultValue: { summary: 'Notificare (ro-MD)' } },
     },
   },
 };

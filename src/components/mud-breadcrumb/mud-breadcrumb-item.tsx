@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_ITEM_MESSAGES } from './mud-breadcrumb-item.messages';
 import type { BreadcrumbItemMessages } from './mud-breadcrumb-item.messages';
@@ -69,14 +69,14 @@ export class MudBreadcrumbItem {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible label of the spinner shown while `loading` is set. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Se încarcă' (ro-RO)
+   * @default 'Se încarcă' (ro-MD)
    */
   @Prop() loadingLabel?: string;
 
@@ -181,7 +181,7 @@ export class MudBreadcrumbItem {
       </span>
     );
 
-    const hostLang = this.locale ? resolvedLocale('mud-breadcrumb-item', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host
         aria-current={this.active ? 'page' : null}

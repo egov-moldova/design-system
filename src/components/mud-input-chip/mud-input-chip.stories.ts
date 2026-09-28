@@ -76,7 +76,7 @@ const meta: Meta<InputChipArgs> = {
     locale: {
       control: 'select',
       options: ['', ...MUD_LOCALES],
-      description: 'Language of every built-in message. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      description: 'Language of every built-in message. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },

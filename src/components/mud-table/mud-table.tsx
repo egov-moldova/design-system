@@ -3,7 +3,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdat
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TABLE_MESSAGES } from './mud-table.messages';
 import type { TableMessages } from './mud-table.messages';
@@ -132,21 +132,21 @@ export class MudTable {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
    * Empty-state text shown when `rows` is empty or undefined. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Nu există date de afișat.' (ro-RO)
+   * @default 'Nu există date de afișat.' (ro-MD)
    */
   @Prop({ attribute: 'empty-text' }) emptyText?: string;
 
   /**
    * Accessible label for the header "select all rows" checkbox. Overrides the `locale`'s
    * copy when set to a non-empty string.
-   * @default 'Selectează toate rândurile' (ro-RO)
+   * @default 'Selectează toate rândurile' (ro-MD)
    */
   @Prop({ attribute: 'select-all-label' }) selectAllLabel?: string;
 
@@ -154,7 +154,7 @@ export class MudTable {
    * Accessible label for a row's selection checkbox. Carries a `{row}` placeholder, filled
    * with the row's 1-based position. Overrides the `locale`'s copy when set to a non-empty
    * string.
-   * @default 'Selectează rândul {row}' (ro-RO)
+   * @default 'Selectează rândul {row}' (ro-MD)
    */
   @Prop({ attribute: 'select-row-label' }) selectRowLabel?: string;
 
@@ -417,7 +417,7 @@ export class MudTable {
 
   render() {
     const m = this.messages();
-    const hostLang = this.locale ? resolvedLocale('mud-table', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const columns = this.columns ?? [];
     const rows = this.rows ?? [];
     const hasRows = rows.length > 0;

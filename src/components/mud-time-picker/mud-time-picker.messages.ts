@@ -11,7 +11,7 @@ export interface TimePickerMessages {
 }
 
 export const TIME_PICKER_MESSAGES: LocaleMessages<TimePickerMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     label: 'Selectează ora',
     hoursLabel: 'Ore',
     minutesLabel: 'Minute',
@@ -21,7 +21,7 @@ export const TIME_PICKER_MESSAGES: LocaleMessages<TimePickerMessages> = {
     hoursLabel: 'Hours',
     minutesLabel: 'Minutes',
   },
-  'ru-RU': {
+  'ru-MD': {
     label: 'Выбрать время',
     hoursLabel: 'Часы',
     minutesLabel: 'Минуты',

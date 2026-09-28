@@ -105,7 +105,7 @@ const meta: Meta<PhoneInputArgs> = {
       control: 'select',
       options: ['', ...MUD_LOCALES],
       description:
-        'Language of every built-in message plus the listbox country names. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+        'Language of every built-in message plus the listbox country names. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },

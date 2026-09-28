@@ -7,7 +7,7 @@ export interface InfoBoxMessages {
 }
 
 export const INFO_BOX_MESSAGES: LocaleMessages<InfoBoxMessages> = {
-  'ro-RO': { closeLabel: 'Închide' },
+  'ro-MD': { closeLabel: 'Închide' },
   'en-US': { closeLabel: 'Close' },
-  'ru-RU': { closeLabel: 'Закрыть' },
+  'ru-MD': { closeLabel: 'Закрыть' },
 };

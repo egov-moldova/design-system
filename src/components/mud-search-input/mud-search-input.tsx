@@ -10,7 +10,7 @@ import type {
   SearchInputSize,
 } from './mud-search-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SEARCH_INPUT_MESSAGES } from './mud-search-input.messages';
 import type { SearchInputMessages } from './mud-search-input.messages';
@@ -113,21 +113,21 @@ export class MudSearchInput {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible label for the trailing submit button. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Caută' (ro-RO)
+   * @default 'Caută' (ro-MD)
    */
   @Prop({ attribute: 'submit-label' }) submitLabel?: string;
 
   /**
    * Validation message reported when the field is `required` and empty. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Completați acest câmp.' (ro-RO)
+   * @default 'Completați acest câmp.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
@@ -159,7 +159,7 @@ export class MudSearchInput {
   /**
    * Accessible label for the trailing clear button. Overrides the `locale`'s copy when set
    * to a non-empty string.
-   * @default 'Șterge' (ro-RO)
+   * @default 'Șterge' (ro-MD)
    */
   @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
@@ -417,7 +417,7 @@ export class MudSearchInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-search-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
     // The clear affordance is a constant 20px pill with a 16px `cross-small`
     // glyph in Figma, regardless of field size (unlike the leading icon).

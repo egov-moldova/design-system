@@ -7,13 +7,13 @@ export interface SpinnerMessages {
 }
 
 export const SPINNER_MESSAGES: LocaleMessages<SpinnerMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     label: 'Se încarcă',
   },
   'en-US': {
     label: 'Loading',
   },
-  'ru-RU': {
+  'ru-MD': {
     label: 'Загрузка',
   },
 };

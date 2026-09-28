@@ -19,7 +19,7 @@ import type { SelectChangeDetail, SelectEntry, SelectOptionEntry, SelectSize, Se
 import { filterEntries, foldForSearch, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
 import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SELECT_MESSAGES } from './mud-select.messages';
 import type { SelectMessages } from './mud-select.messages';
@@ -136,14 +136,14 @@ export class MudSelect {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Shown in place of the list when nothing matches the query. Overrides the `locale`'s copy
    * when set to a non-empty string.
-   * @default 'Nicio opțiune' (ro-RO)
+   * @default 'Nicio opțiune' (ro-MD)
    */
   @Prop({ attribute: 'empty-label' }) emptyLabel?: string;
 
@@ -151,14 +151,14 @@ export class MudSelect {
    * Names the listbox for assistive technology when the field has no visible
    * label and no `aria-label` to borrow. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Opțiuni' (ro-RO)
+   * @default 'Opțiuni' (ro-MD)
    */
   @Prop({ attribute: 'listbox-label' }) listboxLabel?: string;
 
   /**
    * Validation message reported when the field is `required` and nothing is
    * selected. Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Selectați o opțiune.' (ro-RO)
+   * @default 'Selectați o opțiune.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
@@ -797,7 +797,7 @@ export class MudSelect {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-select', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const opts = this.resolvedOptions();
     // From the whole model, not the filtered view: a query that matches nothing
     // must not make the current selection look as though it had been cleared.

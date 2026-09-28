@@ -19,7 +19,7 @@ export interface StepperMessages {
 }
 
 export const STEPPER_MESSAGES: LocaleMessages<StepperMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     navLabel: 'Pași',
     completedSuffix: ', finalizat',
     currentSuffix: ', curent',
@@ -37,7 +37,7 @@ export const STEPPER_MESSAGES: LocaleMessages<StepperMessages> = {
     pendingSuffix: ', pending',
     supportingSeparator: ' — ',
   },
-  'ru-RU': {
+  'ru-MD': {
     navLabel: 'Индикатор прогресса',
     completedSuffix: ', завершено',
     currentSuffix: ', текущий',

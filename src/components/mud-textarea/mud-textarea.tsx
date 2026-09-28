@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXTAREA_MESSAGES } from './mud-textarea.messages';
 import type { TextareaMessages } from './mud-textarea.messages';
@@ -104,14 +104,14 @@ export class MudTextarea {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Validation message reported when the field is `required` and empty. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Completați acest câmp.' (ro-RO)
+   * @default 'Completați acest câmp.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
@@ -358,7 +358,7 @@ export class MudTextarea {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-textarea', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const counterCurrent = (this.value ?? '').length;
     const counterOver = this.isCounterOverLimit();
 

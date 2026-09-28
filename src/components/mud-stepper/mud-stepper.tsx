@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { STEPPER_MESSAGES } from './mud-stepper.messages';
 import type { StepperMessages } from './mud-stepper.messages';
@@ -41,7 +41,7 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
  * Set the native `aria-label` attribute on the host for the list landmark's
- * accessible name; it defaults to `'Pași'` (ro-RO), following `locale`/`lang`
+ * accessible name; it defaults to `'Pași'` (ro-MD), following `locale`/`lang`
  * like every other built-in string — see `navLabel`.
  *
  * @element mud-stepper
@@ -106,56 +106,56 @@ export class MudStepper {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible name of the `role="list"` host when no consumer `aria-label` is set.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Pași' (ro-RO)
+   * @default 'Pași' (ro-MD)
    */
   @Prop() navLabel?: string;
 
   /**
    * Appended to a step's accessible name when its status is `completed`. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ', finalizat' (ro-RO)
+   * @default ', finalizat' (ro-MD)
    */
   @Prop() completedSuffix?: string;
 
   /**
    * Appended to a step's accessible name when its status is `current`. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ', curent' (ro-RO)
+   * @default ', curent' (ro-MD)
    */
   @Prop() currentSuffix?: string;
 
   /**
    * Appended to a step's accessible name when its status is `available`. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ', disponibil' (ro-RO)
+   * @default ', disponibil' (ro-MD)
    */
   @Prop() availableSuffix?: string;
 
   /**
    * Appended to a step's accessible name when its status is `error`. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ', eroare' (ro-RO)
+   * @default ', eroare' (ro-MD)
    */
   @Prop() errorSuffix?: string;
 
   /**
    * Appended to a step's accessible name when its status is `pending`. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ', în așteptare' (ro-RO)
+   * @default ', în așteptare' (ro-MD)
    */
   @Prop() pendingSuffix?: string;
 
   /**
    * Joins a step's `label` and `supportingText` in its accessible name. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default ' — ' (ro-RO)
+   * @default ' — ' (ro-MD)
    */
   @Prop() supportingSeparator?: string;
 
@@ -393,7 +393,7 @@ export class MudStepper {
     // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
     const m = this.messages();
-    const hostLang = this.locale ? resolvedLocale('mud-stepper', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host role="list" class={{ 'is-compact': compactMode }} lang={hostLang}>
         <ol class="root" role="none">

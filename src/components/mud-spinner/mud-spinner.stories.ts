@@ -50,13 +50,13 @@ const meta: Meta<SpinnerArgs> = {
     },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
-      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     label: {
       control: 'text',
       description: "Accessible label announced to screen readers. Overrides the locale's copy.",
-      table: { defaultValue: { summary: 'Se încarcă (ro-RO)' } },
+      table: { defaultValue: { summary: 'Se încarcă (ro-MD)' } },
     },
   },
 };

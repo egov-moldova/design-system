@@ -11,7 +11,7 @@ export interface SearchInputMessages {
 }
 
 export const SEARCH_INPUT_MESSAGES: LocaleMessages<SearchInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     submitLabel: 'Caută',
     clearLabel: 'Șterge',
     requiredMessage: 'Completați acest câmp.',
@@ -21,7 +21,7 @@ export const SEARCH_INPUT_MESSAGES: LocaleMessages<SearchInputMessages> = {
     clearLabel: 'Clear',
     requiredMessage: 'Fill in this field.',
   },
-  'ru-RU': {
+  'ru-MD': {
     submitLabel: 'Поиск',
     clearLabel: 'Очистить',
     requiredMessage: 'Заполните это поле.',

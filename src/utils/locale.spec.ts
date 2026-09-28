@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from '@stencil/vitest
 
 import {
   DEFAULT_LOCALE,
+  formatLocale,
   formatMessage,
   inheritedLang,
   intlTag,
@@ -10,7 +11,7 @@ import {
   observeDocumentLang,
   resetLocaleWarnings,
   resolveLocale,
-  resolvedLocale,
+  MUD_LOCALES,
 } from './locale';
 import type { LocaleMessages, Plural } from './locale';
 
@@ -20,9 +21,9 @@ interface TestMessages {
 }
 
 const TABLE: LocaleMessages<TestMessages> = {
-  'ro-RO': { closeLabel: 'Închide', openLabel: 'Deschide' },
+  'ro-MD': { closeLabel: 'Închide', openLabel: 'Deschide' },
   'en-US': { closeLabel: 'Close', openLabel: 'Open' },
-  'ru-RU': { closeLabel: 'Закрыть', openLabel: 'Открыть' },
+  'ru-MD': { closeLabel: 'Закрыть', openLabel: 'Открыть' },
 };
 
 const inLang = (lang?: string): HTMLElement => {
@@ -35,16 +36,29 @@ const inLang = (lang?: string): HTMLElement => {
 
 afterEach(() => vi.restoreAllMocks());
 
+describe('locale identity', () => {
+  it('names the three built-in locales by their Moldovan regions', () => {
+    expect([...MUD_LOCALES]).toEqual(['ro-MD', 'ru-MD', 'en-US']);
+    expect(DEFAULT_LOCALE).toBe('ro-MD');
+  });
+
+  it('still accepts the legacy regional tags and bare languages', () => {
+    expect(matchLocale('ro-RO')).toBe('ro-MD');
+    expect(matchLocale('ru-RU')).toBe('ru-MD');
+    expect(matchLocale('ru')).toBe('ru-MD');
+  });
+});
+
 describe('matchLocale', () => {
   it('matches a supported tag exactly, case-insensitively', () => {
     expect(matchLocale('en-US')).toBe('en-US');
-    expect(matchLocale('ru-ru')).toBe('ru-RU');
+    expect(matchLocale('ru-md')).toBe('ru-MD');
   });
 
   it('falls back to the language subtag', () => {
     expect(matchLocale('en-GB')).toBe('en-US');
-    expect(matchLocale('ro')).toBe('ro-RO');
-    expect(matchLocale('ru_MD')).toBe('ru-RU');
+    expect(matchLocale('ro')).toBe('ro-MD');
+    expect(matchLocale('ru_MD')).toBe('ru-MD');
   });
 
   it('returns undefined for an unsupported or empty tag', () => {
@@ -94,20 +108,20 @@ describe('resolveLocale', () => {
   });
 
   it('uses the ancestor lang when the prop is not set', () => {
-    expect(resolveLocale('mud-test', inLang('ru'), undefined)).toBe('ru-RU');
+    expect(resolveLocale('mud-test', inLang('ru'), undefined)).toBe('ru-MD');
   });
 
-  it('defaults to ro-RO silently when neither names a supported locale', () => {
+  it('defaults to ro-MD silently when neither names a supported locale', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     expect(resolveLocale('mud-test', inLang(), undefined)).toBe(DEFAULT_LOCALE);
     expect(resolveLocale('mud-test', inLang('fr'), undefined)).toBe(DEFAULT_LOCALE);
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it('warns once for an unsupported locale prop and falls back to ro-RO', () => {
+  it('warns once for an unsupported locale prop and falls back to ro-MD', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-    expect(resolveLocale('mud-once', inLang(), 'de-DE')).toBe('ro-RO');
-    expect(resolveLocale('mud-once', inLang(), 'de-DE')).toBe('ro-RO');
+    expect(resolveLocale('mud-once', inLang(), 'de-DE')).toBe('ro-MD');
+    expect(resolveLocale('mud-once', inLang(), 'de-DE')).toBe('ro-MD');
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('[mud-once] locale="de-DE"'));
   });
@@ -124,26 +138,64 @@ describe('localeMessages', () => {
   });
 
   it('ignores an empty, whitespace-only or unset override', () => {
-    const messages = localeMessages('mud-test', inLang(), 'ru-RU', TABLE, {
+    const messages = localeMessages('mud-test', inLang(), 'ru-MD', TABLE, {
       closeLabel: '  ',
       openLabel: undefined,
     });
-    expect(messages).toEqual(TABLE['ru-RU']);
+    expect(messages).toEqual(TABLE['ru-MD']);
   });
 
   it('never mutates the table', () => {
-    localeMessages('mud-test', inLang(), 'ro-RO', TABLE, { closeLabel: 'X' });
-    expect(TABLE['ro-RO'].closeLabel).toBe('Închide');
+    localeMessages('mud-test', inLang(), 'ro-MD', TABLE, { closeLabel: 'X' });
+    expect(TABLE['ro-MD'].closeLabel).toBe('Închide');
   });
 });
 
-describe('resolvedLocale', () => {
-  it('is resolveLocale itself: same resolution, and calling both never double-warns', () => {
+describe('formatLocale', () => {
+  it('keeps an explicit locale that carries a region', () => {
+    expect(formatLocale(inLang(), 'ro-RO')).toBe('ro-RO');
+    expect(formatLocale(inLang(), 'en-GB')).toBe('en-GB');
+  });
+
+  it('gives a bare supported language the locale region', () => {
+    expect(formatLocale(inLang('ru'), undefined)).toBe('ru-MD');
+    expect(formatLocale(inLang('ro'), undefined)).toBe('ro-MD');
+  });
+
+  it('prefers the locale prop over the ancestor lang', () => {
+    expect(formatLocale(inLang('ru'), 'en-US')).toBe('en-US');
+  });
+
+  it('falls back to the default locale with nothing set', () => {
+    expect(formatLocale(inLang(), undefined)).toBe('ro-MD');
+    expect(formatLocale(inLang(), '  ')).toBe('ro-MD');
+  });
+
+  it('canonicalises an underscore tag', () => {
+    expect(formatLocale(inLang(), 'en_US')).toBe('en-US');
+  });
+
+  it('resolves a language with no dictionary to the shown dictionary locale', () => {
+    expect(formatLocale(inLang(), 'de-DE')).toBe('ro-MD');
+    expect(formatLocale(inLang('ar-EG'), undefined)).toBe('ro-MD');
+  });
+
+  it('warns once for an explicit locale with no dictionary, not for a page lang', () => {
     resetLocaleWarnings();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-    expect(resolvedLocale('mud-alias', inLang(), 'de-DE')).toBe('ro-RO');
-    expect(resolveLocale('mud-alias', inLang(), 'de-DE')).toBe('ro-RO');
+    formatLocale(inLang('ar-EG'), undefined);
+    expect(warn).not.toHaveBeenCalled();
+    formatLocale(inLang(), 'de-DE');
+    formatLocale(inLang(), 'de-DE');
     expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it('formats numbers in placeholders in that locale with grouping off', () => {
+    expect(formatMessage('{min}', inLang(), 'ro-MD', { min: 0.5 })).toBe('0,5');
+    expect(formatMessage('{min}', inLang(), 'en-US', { min: 0.5 })).toBe('0.5');
+    for (const locale of ['ro-MD', 'ru-MD', 'en-US', 'de-DE']) {
+      expect(formatMessage('{max}', inLang(), locale, { max: 1000 })).toBe('1000');
+    }
   });
 });
 
@@ -163,25 +215,25 @@ describe('intlTag', () => {
   });
 
   it('falls back to the matched MudLocale for a tag Intl cannot parse', () => {
-    expect(intlTag('xx-!!')).toBe('ro-RO');
-    expect(intlTag('fr-??')).toBe(DEFAULT_LOCALE); // "fr" matches no MudLocale either → ro-RO
+    expect(intlTag('xx-!!')).toBe('ro-MD');
+    expect(intlTag('fr-??')).toBe(DEFAULT_LOCALE); // "fr" matches no MudLocale either → ro-MD
   });
 
-  it('falls back to ro-RO for a missing tag', () => {
-    expect(intlTag(undefined)).toBe('ro-RO');
-    expect(intlTag('')).toBe('ro-RO');
+  it('falls back to ro-MD for a missing tag', () => {
+    expect(intlTag(undefined)).toBe('ro-MD');
+    expect(intlTag('')).toBe('ro-MD');
   });
 });
 
 describe('formatMessage', () => {
   it('fills a {name} placeholder', () => {
-    expect(formatMessage('Ziua trebuie să fie între 01 și {max}', inLang(), 'ro-RO', { max: 31 })).toBe(
+    expect(formatMessage('Ziua trebuie să fie între 01 și {max}', inLang(), 'ro-MD', { max: 31 })).toBe(
       'Ziua trebuie să fie între 01 și 31',
     );
   });
 
   it('leaves an unmatched placeholder untouched', () => {
-    expect(formatMessage('{missing}', inLang(), 'ro-RO', {})).toBe('{missing}');
+    expect(formatMessage('{missing}', inLang(), 'ro-MD', {})).toBe('{missing}');
   });
 
   const PLURAL: Plural = {
@@ -191,7 +243,7 @@ describe('formatMessage', () => {
   };
 
   it('selects the plural form of the RESOLVED locale, never the raw tag', () => {
-    // locale="de" has no dictionary → resolves to ro-RO, whose `few` form (2-19 except
+    // locale="de" has no dictionary → resolves to ro-MD, whose `few` form (2-19 except
     // 11-19) must be chosen for count 2 — not a form keyed by "de".
     expect(formatMessage(PLURAL, inLang(), 'de', { count: 2 })).toBe('2 fișiere respinse');
   });
@@ -200,9 +252,9 @@ describe('formatMessage', () => {
     [1, 'one'],
     [2, 'few'],
     [20, 'other'],
-  ])('ro-RO count %i selects the %s form', (count, form) => {
+  ])('ro-MD count %i selects the %s form', (count, form) => {
     const plural: Plural = { one: 'one', few: 'few', many: 'many', other: 'other' };
-    expect(formatMessage(plural, inLang(), 'ro-RO', { count })).toBe(form);
+    expect(formatMessage(plural, inLang(), 'ro-MD', { count })).toBe(form);
   });
 
   it.each([
@@ -210,9 +262,9 @@ describe('formatMessage', () => {
     [2, 'few'],
     [5, 'many'],
     [21, 'one'],
-  ])('ru-RU count %i selects the %s form', (count, form) => {
+  ])('ru-MD count %i selects the %s form', (count, form) => {
     const plural: Plural = { one: 'one', few: 'few', many: 'many', other: 'other' };
-    expect(formatMessage(plural, inLang(), 'ru-RU', { count })).toBe(form);
+    expect(formatMessage(plural, inLang(), 'ru-MD', { count })).toBe(form);
   });
 
   it.each([
@@ -225,8 +277,8 @@ describe('formatMessage', () => {
 
   it('renders the "other" form when count is missing or non-finite', () => {
     const plural: Plural = { one: 'one', other: 'other' };
-    expect(formatMessage(plural, inLang(), 'ro-RO', {})).toBe('other');
-    expect(formatMessage(plural, inLang(), 'ro-RO', { count: NaN })).toBe('other');
+    expect(formatMessage(plural, inLang(), 'ro-MD', {})).toBe('other');
+    expect(formatMessage(plural, inLang(), 'ro-MD', { count: NaN })).toBe('other');
   });
 
   it('falls back to "other" when the selected form is not set', () => {

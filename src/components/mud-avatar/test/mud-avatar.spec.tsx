@@ -288,13 +288,13 @@ describe('mud-avatar', () => {
     it('falls back to the locale initials label when only initials are set', async () => {
       const { root } = await render(<mud-avatar initials="AB"></mud-avatar>);
       expect(root?.getAttribute('aria-label')).toBe(
-        formatMessage(AVATAR_MESSAGES['ro-RO'].initialsLabel, root!, undefined, { initials: 'AB' }),
+        formatMessage(AVATAR_MESSAGES['ro-MD'].initialsLabel, root!, undefined, { initials: 'AB' }),
       );
     });
 
     it('falls back to the locale fallback label when nothing is set', async () => {
       const { root } = await render(<mud-avatar type="icon"></mud-avatar>);
-      expect(root?.getAttribute('aria-label')).toBe(AVATAR_MESSAGES['ro-RO'].fallbackLabel);
+      expect(root?.getAttribute('aria-label')).toBe(AVATAR_MESSAGES['ro-MD'].fallbackLabel);
     });
   });
 

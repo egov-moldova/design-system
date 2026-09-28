@@ -399,8 +399,8 @@ const meta: Meta<AvatarArgs> = {
     },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
-      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     initialsLabel: {
       control: 'text',

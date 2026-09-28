@@ -9,7 +9,7 @@ export interface TooltipMessages {
 }
 
 export const TOOLTIP_MESSAGES: LocaleMessages<TooltipMessages> = {
-  'ro-RO': { closeLabel: 'Închide tooltip-ul', dismissHint: 'Apasă Esc pentru a închide.' },
+  'ro-MD': { closeLabel: 'Închide tooltip-ul', dismissHint: 'Apasă Esc pentru a închide.' },
   'en-US': { closeLabel: 'Close the tooltip', dismissHint: 'Press Esc to close.' },
-  'ru-RU': { closeLabel: 'Закрыть подсказку', dismissHint: 'Нажмите Esc, чтобы закрыть.' },
+  'ru-MD': { closeLabel: 'Закрыть подсказку', dismissHint: 'Нажмите Esc, чтобы закрыть.' },
 };

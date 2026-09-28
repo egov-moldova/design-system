@@ -1,6 +1,6 @@
 import { Component, Element, Host, Prop, forceUpdate, h } from '@stencil/core';
 
-import { localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SPINNER_MESSAGES } from './mud-spinner.messages';
 import type { SpinnerMessages } from './mud-spinner.messages';
@@ -34,14 +34,14 @@ export class MudSpinner {
 
   /**
    * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
-   * (`<html lang>` included), else `ro-RO`.
+   * (`<html lang>` included), else `ro-MD`.
    */
   @Prop() locale?: LocaleProp;
 
   /**
    * Accessible label for screen readers. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Se încarcă' (ro-RO)
+   * @default 'Se încarcă' (ro-MD)
    */
   @Prop() label?: string;
 
@@ -66,7 +66,7 @@ export class MudSpinner {
 
   render() {
     const m = this.messages();
-    const hostLang = this.locale ? resolvedLocale('mud-spinner', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host role="status" aria-label={m.label} aria-live="polite" lang={hostLang}>
         <div class="arc" aria-hidden="true" />

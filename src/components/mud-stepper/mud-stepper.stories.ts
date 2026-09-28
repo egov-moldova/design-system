@@ -193,12 +193,12 @@ const meta: Meta<StepperArgs> = {
     ariaLabel: {
       control: 'text',
       description: 'Native `aria-label` attribute on the host — accessible name for the list landmark.',
-      table: { defaultValue: { summary: 'Pași (ro-RO)' } },
+      table: { defaultValue: { summary: 'Pași (ro-MD)' } },
     },
     locale: {
       control: 'select',
-      options: ['', 'ro-RO', 'en-US', 'ru-RU'],
-      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-RO`.',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
   },
 };

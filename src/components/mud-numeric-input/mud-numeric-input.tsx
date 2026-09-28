@@ -11,7 +11,7 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, intlTag, localeMessages, observeDocumentLang, resolvedLocale } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
 import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
 import type { NumericInputMessages } from './mud-numeric-input.messages';
 
@@ -154,35 +154,35 @@ export class MudNumericInput {
   /**
    * Accessible label for the increment button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Crește' (ro-RO)
+   * @default 'Crește' (ro-MD)
    */
   @Prop({ attribute: 'increment-label' }) incrementLabel?: string;
 
   /**
    * Accessible label for the decrement button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Scade' (ro-RO)
+   * @default 'Scade' (ro-MD)
    */
   @Prop({ attribute: 'decrement-label' }) decrementLabel?: string;
 
   /**
    * Validation message reported when the field is `required` and empty. Overrides the
    * `locale`'s copy when set to a non-empty string.
-   * @default 'Acest câmp este obligatoriu.' (ro-RO)
+   * @default 'Acest câmp este obligatoriu.' (ro-MD)
    */
   @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
   /**
    * Validation message reported when the value is below `min`. Carries a `{min}` placeholder.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Valoarea minimă este {min}.' (ro-RO)
+   * @default 'Valoarea minimă este {min}.' (ro-MD)
    */
   @Prop({ attribute: 'min-message' }) minMessage?: string;
 
   /**
    * Validation message reported when the value is above `max`. Carries a `{max}` placeholder.
    * Overrides the `locale`'s copy when set to a non-empty string.
-   * @default 'Valoarea maximă este {max}.' (ro-RO)
+   * @default 'Valoarea maximă este {max}.' (ro-MD)
    */
   @Prop({ attribute: 'max-message' }) maxMessage?: string;
 
@@ -218,7 +218,7 @@ export class MudNumericInput {
    *
    * Also selects the language of the built-in copy (steppers, clear button, validation
    * messages): unset, the copy follows the closest ancestor `lang` (`<html lang>`
-   * included), else `ro-RO`. Number grouping is unaffected by that fallback — it stays off
+   * included), else `ro-MD`. Number grouping is unaffected by that fallback — it stays off
    * unless `locale` itself is set.
    */
   @Prop() locale?: string;
@@ -233,7 +233,7 @@ export class MudNumericInput {
   /**
    * Accessible label for the clear button. Overrides the `locale`'s copy when set to a
    * non-empty string.
-   * @default 'Șterge' (ro-RO)
+   * @default 'Șterge' (ro-MD)
    */
   @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
@@ -479,7 +479,7 @@ export class MudNumericInput {
   private localeSeparators(): { group: string; decimal: string } {
     if (!this.locale) return { group: '', decimal: '.' };
     try {
-      const parts = new Intl.NumberFormat(intlTag(this.locale)).formatToParts(12345.6);
+      const parts = new Intl.NumberFormat(formatLocale(this.host, this.locale)).formatToParts(12345.6);
       return {
         group: parts.find(p => p.type === 'group')?.value ?? '',
         decimal: parts.find(p => p.type === 'decimal')?.value ?? '.',
@@ -537,7 +537,7 @@ export class MudNumericInput {
     if (this.locale && !this.isFocused) {
       try {
         const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
-        return new Intl.NumberFormat(intlTag(this.locale), {
+        return new Intl.NumberFormat(formatLocale(this.host, this.locale), {
           useGrouping: true,
           minimumFractionDigits: digits,
           maximumFractionDigits: digits ?? 20,
@@ -782,7 +782,7 @@ export class MudNumericInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? resolvedLocale('mud-numeric-input', this.host, this.locale) : undefined;
+    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');

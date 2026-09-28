@@ -19,7 +19,7 @@ export interface TimeInputMessages {
 }
 
 export const TIME_INPUT_MESSAGES: LocaleMessages<TimeInputMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     clearLabel: 'Șterge',
     triggerLabel: 'Deschide selectorul de oră',
     pickerLabel: 'Selectează ora',
@@ -37,7 +37,7 @@ export const TIME_INPUT_MESSAGES: LocaleMessages<TimeInputMessages> = {
     rangeErrorText: 'Time is outside the allowed range',
     requiredErrorText: 'Enter a time',
   },
-  'ru-RU': {
+  'ru-MD': {
     clearLabel: 'Очистить',
     triggerLabel: 'Открыть выбор времени',
     pickerLabel: 'Выбрать время',

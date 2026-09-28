@@ -9,7 +9,7 @@ export interface AvatarMessages {
 }
 
 export const AVATAR_MESSAGES: LocaleMessages<AvatarMessages> = {
-  'ro-RO': {
+  'ro-MD': {
     initialsLabel: 'Avatar pentru {initials}',
     fallbackLabel: 'Avatar utilizator',
   },
@@ -17,7 +17,7 @@ export const AVATAR_MESSAGES: LocaleMessages<AvatarMessages> = {
     initialsLabel: 'Avatar for {initials}',
     fallbackLabel: 'User avatar',
   },
-  'ru-RU': {
+  'ru-MD': {
     initialsLabel: 'Аватар для {initials}',
     fallbackLabel: 'Аватар пользователя',
   },

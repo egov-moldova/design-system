@@ -7,7 +7,7 @@ export interface ModalMessages {
 }
 
 export const MODAL_MESSAGES: LocaleMessages<ModalMessages> = {
-  'ro-RO': { closeLabel: 'Închide' },
+  'ro-MD': { closeLabel: 'Închide' },
   'en-US': { closeLabel: 'Close' },
-  'ru-RU': { closeLabel: 'Закрыть' },
+  'ru-MD': { closeLabel: 'Закрыть' },
 };
