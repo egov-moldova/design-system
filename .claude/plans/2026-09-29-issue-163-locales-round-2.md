@@ -39,7 +39,7 @@ string into dictionaries. Review of the result found:
    explicit "show nothing" (HTML's own `placeholder=""` semantics) and was the published
    behaviour (`supported-formats-text=""`, `max-size-text=""` hid their line).
 6. **Demo renders English.** All 40 `web-components/demo` pages carry `<html lang="en">`, so
-   the demo shows built-in copy in English; 7 `mud-date-picker.html` specimens pin
+   the demo shows built-in copy in English; 8 `mud-date-picker.html` specimens pin
    `locale="ro-RO"`. The demo has no locale control; its TOC filter's empty-group hiding is
    written (`main.ts` `group.hidden`) but defeated by `.toc__group { display: flex }`
    (`demo.css:239`).
@@ -61,17 +61,18 @@ Zero-tolerance list; every command runs as written, exit status unmasked, and ex
 pass state for every row (a row that passes on "no match" is written `! grep …`).
 
 - Round 1's bar still holds: `yarn lint && yarn test && yarn build && yarn test:scripts && yarn changelog.check && node scripts/check-props-kept.mjs && node scripts/check-locale-specs.mjs && yarn sp.build && node scripts/eslint/copy-probe.mjs` exits 0, with the probe driving the toolbar at `ru-MD`.
-- `src/utils/locale.spec.ts` asserts `MUD_LOCALES` equals `['ro-MD', 'ru-MD', 'en-US']`, `DEFAULT_LOCALE === 'ro-MD'`, `matchLocale('ro-RO') === 'ro-MD'`, `matchLocale('ru') === 'ru-MD'`, and the formatting rule (`formatLocale`) cases in Phase 1.
+- `npx vitest run --project spec src/utils/locale.spec.ts -t "locale identity"` passes and runs ≥ 1 test: it asserts `MUD_LOCALES` equals `['ro-MD', 'ru-MD', 'en-US']`, `DEFAULT_LOCALE === 'ro-MD'`, `matchLocale('ro-RO') === 'ro-MD'`, `matchLocale('ru') === 'ru-MD'`; `-t "formatLocale"` likewise runs the Phase 1 formatting cases.
+- `node scripts/check-locale-specs.mjs` exits 0 and additionally asserts, from the committed `scripts/eslint/override-classes.json` (component → override prop → `name` / `message` / `caption`): every override `@Prop` in `src/components/*/*.tsx` has a class, and each component's spec contains a test titled `empty <prop> falls back` (name, message) or `empty <prop> hides` (caption) for each of its override props; the numeric-input spec contains the tests `parse table` and `round trip`, whose tables have at least the rows listed below.
 - `! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx' --exclude='components.d.ts'`: no dictionary key, default, JSDoc `@default`, story argType or code path names them outside specs (specs keep them only to assert legacy input is still accepted; `components.d.ts` is generated and git-ignored).
 - `describeLocales` gains a validity case, run by every component that calls `setValidity`: after a locale change — through the `locale` prop and through the `<html lang>` observer's listener — the message the component last passed to `internals.setValidity` equals the new locale's message. The spec reads it from the `vitest-setup.ts` `ElementInternals` shim, which records `(flags, message)`; no public getter is added to any component. `node scripts/check-locale-specs.mjs` enforces that those 11 specs pass the option.
-- `mud-numeric-input` spec carries a parse table and a round-trip table. Parse (typed input, focused, grouping off): all Unicode spaces (U+0020, U+00A0, U+202F) and `'` are stripped; `1234,5` / `1234.5` → 1234.5 under every locale; `1.234,5` → 1234.5 and `1,234.5` → 1234.5 (both separators: the last one is the decimal); `1.234.567` / `1,234,567` → 1234567 (one separator repeated: grouping); `1.234` / `1,234` → 1.234 (one separator once: decimal); `−5` (U+2212) → -5; garbage → `null`. Round trip: for values 1.234, 0.125 (precision 3), 1.5 (precision 3), 1234.5 and -0.5, under `locale` unset, `ro-MD`, `ru-MD` and `en-US`, and under page `lang="ro-MD"`: focus → blur leaves the value unchanged and fires no `mudChange`, and `formStateRestoreCallback(String(v))` restores exactly `v`.
-- Every override prop is classified (Phase 2 inventory) as accessible name, validation message, or visible caption. Each visible caption has a spec case where `""` renders no caption; each accessible name and each validation message a case where `""` falls back (a validation message can never be empty: `setValidity` with a true flag and `""` throws).
+- `mud-numeric-input` spec carries a parse table and a round-trip table. Parse (typed input, focused, grouping off): all Unicode spaces (U+0020, U+00A0, U+202F) and `'` are stripped; `1234,5` / `1234.5` → 1234.5 under every locale; `1.234,5` → 1234.5 and `1,234.5` → 1234.5 (both separators: the last one is the decimal); `1.234.567` / `1,234,567` → 1234567 (one separator repeated: grouping); one separator once is the decimal (`1.5` → 1.5, `1,5` → 1.5, `1234.5` → 1234.5) unless it is the formatting locale's group character followed by exactly three final digits, which is ambiguous: `1.234` under `ro-MD` and `1,234` under `en-US` → no value and `mudError` with the `ambiguousMessage` text, while `1,234` under `ro-MD` → 1.234 and `1.234` under `en-US` → 1.234; `−5` (U+2212) → -5; garbage → `null`. Round trip: for values 1.234, 0.125 (precision 3), 1.5 (precision 3), 1234.5 and -0.5, under `locale` unset, `ro-MD`, `ru-MD` and `en-US`, and under page `lang="ro-MD"`: focus → blur leaves the value unchanged (`mudChange` keeps its released behaviour and may fire), and `formStateRestoreCallback(String(v))` restores exactly `v`.
+- The `vitest-setup.ts` `ElementInternals` shim throws `TypeError` when `setValidity` gets a true flag with an empty or missing message, as Chromium does, so `yarn test` fails on any path that could pass `""`.
 - `node scripts/eslint/copy-probe.mjs --content-language` exits 0: in consumer (light-DOM or attribute) content of any story, no Romanian letter (`ăâîșțşţĂÂÎȘȚŞŢ`), no Cyrillic letter, and no string equal to a `ro-MD` / `ru-MD` dictionary value — except values listed in `scripts/eslint/content-language.allow.json` (proper nouns and data such as `Chișinău`, each with a reason), stories whose id appears in a `src/components/*/test/*.figma.json` manifest, and `Locales` stories. A story is exempt as `Locales` only when its rendered DOM holds instances with an explicit `locale` resolving to each of `ro-MD`, `en-US` and `ru-MD` (structural, never by name).
 - `node scripts/check-content-language.mjs` exits 0: the same letter and dictionary-value checks, with the same allowlist, over the static sources `web-components/demo/index.html`, `web-components/demo/pages/**/*.html`, `web-components/demo/*.ts`, `.storybook/stories/*.mdx`, `src/components/*/*.mdx`; the demo chrome's three language labels (`Română`, `Русский`, `English`) are allowlisted by value.
 - `! grep -l '<html lang="en">' web-components/demo/index.html web-components/demo/pages/*/*.html`.
-- `node scripts/check-dev-all.mjs` exits 0 (committed, run on demand, not in CI — it starts servers): it starts `yarn dev:all`, asserts Storybook on 6007 and the demo on 5174 both answer HTTP 200, touches `src/components/mud-badge/mud-badge.tsx` (restoring its bytes afterwards) and asserts both still answer 200 after the rebuild; then, with Playwright at a 1280 px wide viewport, opens `web-components/demo/pages/navigation/mud-pagination.html` and the Storybook `mud-pagination` Docs page, switches the locale control to `Русский`, and asserts the first mounted `mud-pagination`'s visible next-button text changes to the `ru-MD` value of `nextLabel` without a reload.
+- `node scripts/check-dev-all.mjs` exits 0 (committed, run on demand, not in CI — it starts servers): it starts `yarn dev:all`, asserts Storybook on 6007 and the demo on 5174 both answer HTTP 200, touches `src/components/mud-badge/mud-badge.tsx` (restoring its bytes afterwards), waits until `dist/mud/mud.esm.js`'s mtime advances (fails after 60 s), and asserts that in both a Storybook `mud-badge` story and the demo `mud-badge` page a `mud-badge` has a rendered `shadowRoot`; then, with Playwright at a 1280 px wide viewport, opens `web-components/demo/pages/navigation/mud-pagination.html` and the Storybook `mud-pagination` Docs page, switches the locale control to `Русский`, and asserts the first mounted `mud-pagination`'s visible next-button text changes to the `ru-MD` value of `nextLabel` without a reload.
 - `node scripts/eslint/copy-probe.mjs --overflow` exits 0: under `ru-MD`, no component-owned text element in any story has `scrollWidth > clientWidth` where its computed `overflow` is not `visible`, except rows in `scripts/eslint/overflow.allow.json`, each carrying a reason.
-- `src/utils/locale.test-helpers.spec.ts` runs its cases under a `1000` ms vitest timeout (`describe(..., { timeout: 1000 })`), so `yarn test` fails if any case waits out a timeout again.
+- `src/utils/locale.test-helpers.spec.ts` runs its cases under a `1000` ms vitest timeout (`describe(name, { timeout: 1000 }, fn)` — Vitest 4 rejects a trailing options argument), so `yarn test` fails if any case waits out a timeout again.
 
 ## Spec / issue
 
@@ -114,21 +115,29 @@ Taken by Dan, 2026-09-28/29:
   the explicit `locale` prop, else the closest ancestor `lang`, else `DEFAULT_LOCALE`,
   canonicalised by `intlTag`. A tag with no region whose language matches a `MudLocale`
   takes that locale's region (`lang="ro"` → `ro-MD`, `lang="ru"` → `ru-MD`); a tag with a
-  region is used as given (`ro-RO`, `en-GB`). Every `Intl` call in a component uses it,
-  including number placeholders in `formatMessage` (`{min}` renders `0,5` under `ro-MD`);
-  the dictionary is still chosen by `resolveLocale` (language match). The shadow `lang`
-  attribute set when `locale` is explicit is `formatLocale` when its language equals the
-  shown dictionary's, else the dictionary's locale (an unsupported `locale="de-DE"` shows
-  `ro-MD` text, so it gets `lang="ro-MD"`, not `de-DE`). `mud-numeric-input` keeps "no
-  grouping when `locale` is unset" (its documented contract).
+  region whose language matches a `MudLocale` is used as given (`ro-RO`, `en-GB`); a tag
+  whose language has no `MudLocale` (`de-DE`, `ar-EG`) resolves to the shown dictionary's
+  locale, so a component never mixes Romanian labels with German dates or Arabic digits.
+  Every `Intl` call in a component uses it, including number placeholders in
+  `formatMessage`, formatted with `useGrouping: false` (`{max}` = 1000 renders `1000`,
+  never `1.000`, so a message can never show a number the parser reads back ambiguously;
+  `{min}` = 0.5 renders `0,5` under `ro-MD`). `mud-numeric-input` passes its `{min}` /
+  `{max}` already formatted by its own display rule, so its messages match its field. The
+  dictionary is still chosen by `resolveLocale` (language match), and the shadow `lang` set
+  when `locale` is explicit is `formatLocale`. `mud-numeric-input` keeps "no grouping when
+  `locale` is unset" (its documented contract) and its blurred display is unchanged.
 - **Numeric parsing B**, locale-independent and symmetric with the display. The focused
   display is the number with the locale's decimal and no grouping (`1234,5` under `ro-MD`;
   `String(value)` when `locale` is unset), so the parser never sees a group separator the
   component wrote. Typed or pasted text: strip every Unicode space and `'`; accept `−`
   (U+2212); if both `.` and `,` occur, the last one is the decimal and the others are
   grouping; if one of them occurs more than once, it is grouping; if one occurs once, it is
-  the decimal. `formStateRestoreCallback` parses its own serialized `String(value)` as
-  plain dot-decimal. This replaces the earlier "dot followed by 1–2 digits" rule, which
+  the decimal — except when it is the formatting locale's group character followed by
+  exactly three final digits (`1.234` under `ro-MD`, `1,234` under `en-US`): that input is
+  ambiguous, so it yields no value and a `mudError` with a new `ambiguousMessage` dictionary
+  key (plus override prop), never a silent guess. `formStateRestoreCallback` parses its own
+  serialized `String(value)` as plain dot-decimal. `mudChange` keeps its released "fires on
+  every commit" behaviour. This replaces the earlier "dot followed by 1–2 digits" rule, which
   re-read the component's own `1.234` as 1234 on blur.
 - **Empty override**, three classes: accessible names (`*Label`, `*AriaLabel`,
   announcements, `dismissHint`) — `""` falls back; validation messages (`*Message`,
@@ -140,11 +149,14 @@ Taken by Dan, 2026-09-28/29:
   accepts caption keys only.
 - **Text-input native messages**: `mud-text-input`'s pattern, length and type messages
   come from the browser (`nativeInput.validationMessage`, `mud-text-input.tsx:245`), in the
-  browser's UI language. They move into its dictionary (`patternMismatch`, `tooShort`,
-  `tooLong`, `typeMismatch`) with override props per the round-1 recipe, so they follow
-  `locale` like every other message.
-- **Validity follows locale**: a locale change (prop `@Watch` or the `<html lang>` observer)
-  re-runs the component's existing validity sync, not only `forceUpdate`.
+  browser's UI language. They move into its dictionary (`patternMismatch`, `tooShort`
+  with `{min}`, `tooLong` with `{max}`, `typeMismatchEmail`, `typeMismatchUrl`) with
+  override props per the round-1 recipe, so they follow `locale` like every other message.
+- **Validity follows locale**: a locale change re-runs the component's existing validity
+  sync, not only `forceUpdate`. No component has a `@Watch('locale')` today: each of the 11
+  gets one, and its `observeDocumentLang` callback calls the same sync. Syncs taking
+  arguments get their current state (`updateValidation(display)` in time-input and
+  date-input, `syncValidity(files)`, `syncValidity(chips)`, `updateValidity(checked)`).
 - **`breaking: true`** stays on the `Changed` fragment: a page with `lang="en"` / `lang="ru"`
   changes its built-in copy on upgrade with no code change.
 - **Phone-input order** stays: Moldova first, the rest alphabetical by localized name
@@ -191,35 +203,37 @@ every `src/components/*/*.tsx` and `*.spec.ts(x)` naming `ro-RO` / `ru-RU` or ca
 `.storybook/preview.js` (toolbar values and labels only), `scripts/eslint/copy-probe.mjs`
 (locale values only), `scripts/check-locale-specs.mjs`, `_agents/localization.md`, `AGENTS.md`
 (rule 13 tags only), `src/components/*/*.stories.ts` (locale argType options, defaults and
-descriptions only — no other story text; Phase 4 owns the rest later).
+descriptions, and any story text naming `ro-RO` / `ru-RU` as a tag — e.g. the date-picker
+`RomanianLocale` story's `cell('ro-RO (default)', …)` and its docs description; no other
+story text, Phase 4 owns the rest later).
 
 - [ ] `MUD_LOCALES = ['ro-MD', 'ru-MD', 'en-US']`, `DEFAULT_LOCALE = 'ro-MD'`; `matchLocale` unchanged in logic (language fallback already maps `ro-RO` → `ro-MD`).
 - [ ] Add `formatLocale(host, locale): string` per Decision; spec: explicit `ro-RO` → `ro-RO`; page `lang="ru"` → `ru-MD`; page `lang="ro"` → `ro-MD`; `en-GB` → `en-GB`; nothing → `ro-MD`; `en_US` → `en-US`.
-- [ ] `formatMessage` formats number vars with `Intl.NumberFormat(formatLocale(...))`; spec: `{min}` = 0.5 renders `0,5` under `ro-MD`, `0.5` under `en-US`.
+- [ ] `formatMessage` formats number vars with `Intl.NumberFormat(formatLocale(...), { useGrouping: false })`; spec: `{min}` = 0.5 renders `0,5` under `ro-MD`, `0.5` under `en-US`; `{max}` = 1000 renders `1000` in every locale; `formatLocale` for `locale="de-DE"` is `ro-MD`.
 - [ ] Rename every dictionary key; dictionary text unchanged (`git diff --word-diff` on `*.messages.ts` shows only keys).
 - [ ] `mud-date-picker`, `mud-phone-input`, `mud-numeric-input` (group display stays `locale`-only) and the shadow-`lang` recipe use `formatLocale` (shadow `lang` per Decision; spec: `locale="de-DE"` → shadow `lang="ro-MD"`); spec: under page `lang="ro-MD"` the date-picker's short weekday header is `Vin`.
 - [ ] `@default` JSDoc and docs name `ro-MD`; toolbar items `ro-MD` / `en-US` / `ru-MD` with titles `Română` / `English` / `Русский`, default `ro-MD`; probe drives `ru-MD`.
 - [ ] Specs asserting legacy input keep `ro-RO` / `ru-RU` literally, to prove they are still accepted.
-- [ ] Fix the ~5 s per case in `locale.test-helpers.spec.ts`: find the awaited timeout and remove its cause (never raise a timeout to hide it); then set `{ timeout: 1000 }` on the spec's `describe` so a regression fails `yarn test`.
+- [ ] Fix the ~5 s per case in `locale.test-helpers.spec.ts`: find the awaited timeout and remove its cause (never raise a timeout to hide it); then give the spec's `describe` a `{ timeout: 1000 }` options object as its second argument (`describe(name, { timeout: 1000 }, fn)`) so a regression fails `yarn test`.
 
 Verify: `fnm exec --using=24 -- yarn lint && fnm exec --using=24 -- yarn test.dev && ! grep -rnE "ro-RO|ru-RU" src --include='*.ts' --include='*.tsx' --exclude='*.spec.ts' --exclude='*.spec.tsx' --exclude='components.d.ts'`.
 
 ## Phase 2: Validity, parsing, empty overrides
 
-**Executor**: Sonnet 5.5 · high · Wave B (disjoint: Phase 2 owns component `.tsx`, `.messages.ts` and specs, `src/utils/locale*.ts`, `vitest-setup.ts`, `scripts/check-locale-specs.mjs`; Phase 3 owns `.storybook/preview.js`, `package.json`, `web-components/package.json`, `web-components/demo/{main.ts,demo.css,vite.config.ts}`, `scripts/check-dev-all.mjs`; Phase 4 owns `*.stories.ts`, `*.mdx`, `web-components/demo/pages/**`, `web-components/demo/index.html`, `src/components/_agents/storybook-stories.md`, `scripts/eslint/copy-probe.mjs`, `scripts/check-content-language.mjs`, `scripts/eslint/content-language.allow.json`. Each leg's Verify is scoped to its own paths; whole-repo `lint` / `sp.build` / `demo.web.build` run once by the controller after the wave) · implementer
+**Executor**: Sonnet 5.5 · high · Wave B (disjoint: Phase 2 owns component `.tsx`, `.messages.ts` and specs, `src/utils/locale*.ts`, `vitest-setup.ts`, `scripts/check-locale-specs.mjs`, `scripts/eslint/override-classes.json`; Phase 3 owns `.storybook/preview.js`, `package.json`, `web-components/package.json`, `web-components/demo/{main.ts,demo.css,vite.config.ts}`, `scripts/check-dev-all.mjs`; Phase 4 owns `*.stories.ts`, `*.mdx`, `web-components/demo/pages/**`, `web-components/demo/index.html`, `src/components/_agents/storybook-stories.md`, `scripts/eslint/copy-probe.mjs`, `scripts/check-content-language.mjs`, `scripts/eslint/content-language.allow.json`. Each leg's Verify is scoped to its own paths; whole-repo `lint` / `sp.build` / `demo.web.build` run once by the controller after the wave) · implementer
 
 **Files**: the 11 `setValidity` components' `.tsx`, `.messages.ts` and specs, `mud-numeric-input`
 `.tsx` and spec, `mud-text-input` `.tsx` / `.messages.ts` / spec (native messages), the components
 holding visible-caption overrides (inventory), `src/utils/locale.ts`, `src/utils/locale.spec.ts`,
 `src/utils/locale.test-helpers.ts`, `vitest-setup.ts` (the `ElementInternals` shim),
-`scripts/check-locale-specs.mjs`.
+`scripts/check-locale-specs.mjs`, `scripts/eslint/override-classes.json`.
 
-- [ ] Inventory: for every override prop in the 27 components, classify it per Decision (accessible name / validation message / visible caption); for a caption candidate, read the component at `d982190c` (`git show d982190c:<path>`) and record whether the prop existed and `""` rendered nothing. Write the table into the phase report, not a repo file.
+- [ ] Inventory: for every override prop in the 27 components, classify it per Decision (accessible name / validation message / visible caption); for a caption candidate, read the component at `d982190c` (`git show d982190c:<path>`) and record whether the prop existed and `""` rendered nothing. Commit the result as `scripts/eslint/override-classes.json` (Phase 2 owns it) and extend `check-locale-specs.mjs` per the Acceptance bar.
 - [ ] Captions: `""` renders nothing; names and validation messages: `""` falls back. `localeMessages` gains a typed per-key opt-in (caption keys only) rather than a second helper; spec all three classes.
-- [ ] `vitest-setup.ts`: the `ElementInternals` shim records the last `(flags, message)` passed to `setValidity`, readable by specs; existing specs stay green.
-- [ ] Locale change re-runs each component's own validity sync (its existing method, e.g. `updateValidation` / `revalidate`), from both the `locale` `@Watch` and the `observeDocumentLang` callback. `describeLocales` gains a `validity` option exercising both paths (the observer path through a stubbed `MutationObserver`, as `locale.spec.ts` already does); the 11 specs pass it; `check-locale-specs.mjs` requires it where `setValidity` appears.
+- [ ] `vitest-setup.ts`: the `ElementInternals` shim records the last `(flags, message)` passed to `setValidity`, readable by specs, and throws `TypeError` on a true flag with an empty or missing message; existing specs stay green (a spec that now throws exposes a real defect — fix the component, not the shim).
+- [ ] Add `@Watch('locale')` to each of the 11 components, calling its existing validity sync with its current state (per Decision); the `observeDocumentLang` callback calls the same sync before `forceUpdate`. `describeLocales` gains a `validity` option exercising both paths (the observer path through a stubbed `MutationObserver`, as `locale.spec.ts` already does); the 11 specs pass it; `check-locale-specs.mjs` requires it where `setValidity` appears.
 - [ ] `mud-text-input` native messages into its dictionary per Decision, with `describeLocales` coverage.
-- [ ] `parseRaw`, the focused display and `formStateRestoreCallback` per Decision; the parse and round-trip tables from the Acceptance bar.
+- [ ] `parseRaw`, the focused display, `formStateRestoreCallback` and the `ambiguousMessage` key + override prop per Decision (ro-MD / en-US / ru-MD text, checked for meaning); `{min}` / `{max}` passed pre-formatted by the field's own display rule; the `parse table` and `round trip` tests from the Acceptance bar.
 - [ ] Mutation check, recorded in the phase report: invert the English-name match in phone-input search, then the "last separator is the decimal" branch in `parseRaw`, one at a time; each must fail its spec; revert.
 
 Verify: `fnm exec --using=24 -- npx vitest run --project spec src/utils src/components/mud-numeric-input src/components/mud-text-input src/components/mud-time-input src/components/mud-date-input src/components/mud-phone-input src/components/mud-textarea src/components/mud-select src/components/mud-checkbox src/components/mud-search-input src/components/mud-input-chip src/components/mud-file-input && fnm exec --using=24 -- node scripts/check-locale-specs.mjs && fnm exec --using=24 -- npx eslint src/utils src/components vitest-setup.ts --ignore-pattern '**/*.stories.ts'`, then `yarn test.dev` for any other component folder the inventory touched.
@@ -253,7 +267,7 @@ Verify: `fnm exec --using=24 -- npx eslint .storybook/preview.js web-components/
 - [ ] List the protected story ids: `grep -ho '"story": *"[^"]*"' src/components/*/test/*.figma.json | sort -u` (32 today). Their story text does not change.
 - [ ] Translate every other story's Romanian demo content to English; keep Moldovan data values. A text that collides with an `en-US` dictionary value is reworded (the probe flags it).
 - [ ] A `Locales` story on each component with visible built-in copy. Starting list: pagination, file-input, stepper, table, select, phone-input, date-picker, time-picker, breadcrumb, search-input; confirm it by rendering each component with a dictionary whose value appears as a visible text node (not only in an `aria-*` attribute), add any missed, drop any with none, and state the final list in the phase report. Three instances with explicit `locale="ro-MD"` / `"en-US"` / `"ru-MD"`.
-- [ ] Demo pages: `<html lang="ro-MD">`; content to English; the date-picker's 7 `locale="ro-RO"` pins removed except the dedicated `ru-MD` / `en-US` / `ar-EG` specimens (kept as locale specimens; `ar-EG` warns by design).
+- [ ] Demo pages: `<html lang="ro-MD">`; content to English; the date-picker's 8 `locale="ro-RO"` pins removed; its `locale="ru-RU"` specimen renamed to `ru-MD`; the `en-US` and `ar-EG` specimens kept (`ar-EG` shows `ro-MD` text and formatting and warns, by design); `! grep -rnE 'ro-RO|ru-RU' web-components/demo/pages` passes.
 - [ ] `storybook-stories.md`: demo content is English; Figma-reference stories keep Figma's text; `Locales` stories are the one place a story pins `locale`.
 - [ ] `copy-probe.mjs --content-language`: the check from the Acceptance bar, reusing the probe's story iteration; protected ids from the manifests, `Locales` stories recognised structurally (explicit-`locale` instances resolving to all three locales), never by name.
 - [ ] `scripts/check-content-language.mjs` over the static sources, sharing the letter set, dictionary-value check and `content-language.allow.json` with the probe (one module, imported by both); a `node --test` spec in `test:scripts` with one passing and one failing fixture.
