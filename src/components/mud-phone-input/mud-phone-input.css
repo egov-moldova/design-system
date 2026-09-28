@@ -200,16 +200,17 @@
   box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-hover);
 }
 
-:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control,
-:host(.is-open:not(.is-disabled):not(.is-readonly)) .control {
+/* Focus paints the field only while the number input itself has focus. An open
+   country list is not focus: Figma 10758:2541 draws the field in its Default
+   state under the open list, and moves the focus to the list's search input. */
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
   outline-color: var(--_border-color-focus);
   /* The outer focus ring is drawn outside the control, where the native input
      cannot reach it — it stays on `.control`. */
   box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
 }
 
-:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control::after,
-:host(.is-open:not(.is-disabled):not(.is-readonly)) .control::after {
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control::after {
   box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-focus);
 }
 
@@ -488,9 +489,14 @@ button.country-trigger:disabled {
   background-color: var(--phone-input-listbox-background);
 }
 
+/* Figma's focused search field (933:29631, drawn under the open list in
+   10758:2542) has a 2px stroke. The 1px border plus a 1px inset shadow make
+   it, so the content does not move. */
 .listbox-search:focus-within {
   border-color: var(--phone-input-default-border-focus);
-  box-shadow: 0 0 0 var(--spacing-4) var(--phone-input-default-focus-ring);
+  box-shadow:
+    inset 0 0 0 var(--border-width-1) var(--phone-input-default-border-focus),
+    0 0 0 var(--spacing-4) var(--phone-input-default-focus-ring);
 }
 
 .listbox-search-icon {

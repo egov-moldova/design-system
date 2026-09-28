@@ -583,6 +583,39 @@
           "note": "Figma 3318:18191 strokes 2px #0058D2 and carries Focus Ring/Large/Default, `0 0 0 4px #CCDEF6`. The second border pixel is an inset shadow on the emphasis overlay, so the outer ring is the only shadow on the control itself."
         }
       ]
+    },
+    {
+      "name": "open-list-large-international",
+      "node": "10758:2539",
+      "pixel": false,
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\"></mud-phone-input></div>",
+      "interaction": {
+        "type": "click",
+        "target": "mud-phone-input .country-trigger"
+      },
+      "expect": [
+        {
+          "target": "mud-phone-input .control",
+          "node": "10758:2540",
+          "styles": {
+            "outlineWidth": "1px",
+            "outlineColor": "#D9D9D9",
+            "boxShadow": "none"
+          },
+          "note": "Under the open country list (10758:2541) Figma draws the field as the Default International variant (7854:6657): a 1px #D9D9D9 stroke and no effect. Opening the list is not focus on the field; the focus moves to the list's search input."
+        },
+        {
+          "target": "mud-phone-input .listbox-search",
+          "node": "10758:2542",
+          "styles": {
+            "boxHeight": "40px",
+            "borderTopWidth": "1px",
+            "borderTopColor": "#0058D2",
+            "boxShadow": "inset 0 0 0 1px #0058D2, 0 0 0 4px #CCDEF6"
+          },
+          "note": "The search field is search-input-rectangular in State=Focus (933:29631), with the caret drawn in its placeholder: a 2px #0058D2 stroke and Focus Ring/Large/Default, 0 0 0 4px #CCDEF6. The 1px border plus a 1px inset shadow make the 2px stroke, so the content does not move."
+        }
+      ]
     }
   ]
 }
