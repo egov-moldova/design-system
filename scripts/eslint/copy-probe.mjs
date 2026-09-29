@@ -48,10 +48,11 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { extname, join, relative } from 'node:path';
+import { extname, isAbsolute, join, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { launchBrowser, mapLimit } from '../audit/lib/browser-context.mjs';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { dictionaryHit, loadAllowlist, loadDictionaryValues, makeChecker } from './content-language.mjs';
 
 const ROOT = process.cwd();
@@ -94,22 +95,43 @@ const COPY_ATTRS = [
  * Resolves a request path under `dir`, refusing anything that escapes it. `path.relative`
  * (not `startsWith`) is what catches a sibling directory sharing `dir`'s prefix
  * (`storybook-static-x/` against `storybook-static/`) — a bare prefix check has no separator
- * boundary and passes it.
+ * boundary and passes it. The escape test is `isAbsolute(rel)` (a request path already absolute
+ * on `dir`, e.g. reaching a different drive/root) or `rel` being exactly `..` or starting with
+ * `..` + the path separator — never a bare `rel.startsWith('..')`, which would also refuse a
+ * legitimately-named file or directory like `..foo`.
  */
 export function resolveStaticPath(dir, urlPath) {
   const filePath = join(dir, urlPath === '/' ? 'index.html' : urlPath);
   const rel = relative(dir, filePath);
-  const escapes = rel.startsWith('..') || rel.startsWith('/');
+  const escapes = isAbsolute(rel) || rel === '..' || rel.startsWith(`..${sep}`);
   if (escapes || !existsSync(filePath) || statSync(filePath).isDirectory()) {
     return join(dir, 'index.html');
   }
   return filePath;
 }
 
+/**
+ * Decodes the path portion of a request URL, or `null` for a malformed percent-escape (a lone
+ * `%` or an invalid UTF-8 sequence) — `decodeURIComponent` throws on those, and a request error
+ * must never crash the probe's own server.
+ */
+export function decodeUrlPath(url) {
+  try {
+    return decodeURIComponent((url ?? '/').split('?')[0]);
+  } catch {
+    return null;
+  }
+}
+
 function serveStatic(dir, port) {
   return new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
-      const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0]);
+      const urlPath = decodeUrlPath(req.url);
+      if (urlPath === null) {
+        res.writeHead(400);
+        res.end();
+        return;
+      }
       const filePath = resolveStaticPath(dir, urlPath);
       try {
         const body = readFileSync(filePath);
@@ -770,7 +792,7 @@ async function main() {
 
 // Guarded so a test can `import` this module (for `resolveStaticPath`) without triggering the
 // full probe run — importing a script must never have a side effect only running it should have.
-if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+if (isEntrypoint(import.meta.url)) {
   main().catch(err => {
     console.error('[copy-probe] failed:', err);
     process.exit(1);

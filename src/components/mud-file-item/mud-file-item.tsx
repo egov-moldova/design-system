@@ -4,8 +4,9 @@ import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } f
 import { FILE_ITEM_STATES } from './mud-file-item.types';
 import { FILE_GLYPH_SRC } from './mud-file-item.glyph';
 import type { FileItemRemoveDetail, FileItemState } from './mud-file-item.types';
-import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
+import { formatFileSize } from '../../utils/file-size';
 import { FILE_ITEM_MESSAGES } from './mud-file-item.messages';
 import type { FileItemMessages } from './mud-file-item.messages';
 
@@ -158,12 +159,7 @@ export class MudFileItem {
 
   private formatSize(bytes: number | undefined, m: FileItemMessages): string {
     if (bytes === undefined || bytes === null) return '';
-    const formatNumber = (value: number): string =>
-      new Intl.NumberFormat(formatLocale(this.host, this.locale), { maximumFractionDigits: 1 }).format(value);
-    if (bytes < 1024) return `${bytes} ${m.sizeUnitBytes}`;
-    if (bytes < 1024 * 1024) return `${formatNumber(bytes / 1024)} ${m.sizeUnitKB}`;
-    if (bytes < 1024 * 1024 * 1024) return `${formatNumber(bytes / (1024 * 1024))} ${m.sizeUnitMB}`;
-    return `${formatNumber(bytes / (1024 * 1024 * 1024))} ${m.sizeUnitGB}`;
+    return formatFileSize(bytes, this.host, this.locale, [m.sizeUnitBytes, m.sizeUnitKB, m.sizeUnitMB, m.sizeUnitGB]);
   }
 
   render() {
@@ -179,7 +175,7 @@ export class MudFileItem {
     // Resting (uploaded) and error rows are removable; uploading shows a spinner
     // and success shows a confirmation tick instead (per Figma).
     const showRemove = !this.noRemove && (this.state === 'uploaded' || isError);
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     return (
       <Host
@@ -187,8 +183,9 @@ export class MudFileItem {
           [`state-${this.state}`]: true,
           'is-disabled': this.disabled,
         }}
+        lang={lang}
       >
-        <div class="row" part="row" lang={hostLang}>
+        <div class="row" part="row">
           {showLeadingIcon ? (
             <span class="leading-icon" part="leading-icon" aria-hidden="true">
               {this.previewSrc && !this.previewFailed ? (

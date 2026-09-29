@@ -10,7 +10,7 @@ import type {
   SearchInputSize,
 } from './mud-search-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SEARCH_INPUT_MESSAGES } from './mud-search-input.messages';
 import type { SearchInputMessages } from './mud-search-input.messages';
@@ -426,7 +426,7 @@ export class MudSearchInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     // The clear affordance is a constant 20px pill with a 16px `cross-small`
     // glyph in Figma, regardless of field size (unlike the leading icon).
@@ -452,8 +452,8 @@ export class MudSearchInput {
     const submitDisabled = effectivelyDisabled || this.value === '';
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

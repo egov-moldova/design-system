@@ -167,9 +167,10 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       await expectMessages(host, 'ro-MD');
     });
 
-    it('renders en-US when locale="en-US"', async () => {
+    it('renders en-US when locale="en-US", and carries lang="en-US" on the host', async () => {
       const host = await render({ locale: 'en-US' });
       await expectMessages(host, 'en-US');
+      expect(host.getAttribute('lang')).toBe('en-US');
     });
 
     it('renders ru-MD from an ancestor lang="ru"', async () => {
@@ -262,12 +263,16 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       await expectMessages(host, 'ru-MD');
     });
 
-    it('clears back to ro-MD when locale is unset again, with no ancestor lang', async () => {
+    it('clears back to ro-MD when locale is unset again, with no ancestor lang, and the host carries no lang', async () => {
       const host = await render({ locale: 'en-US' });
       await expectMessages(host, 'en-US');
       (host as unknown as Record<string, unknown>).locale = undefined;
+      // A nested locale-aware child (e.g. mud-breadcrumb -> mud-spinner) re-renders on its own
+      // tick once its forwarded `locale` prop changes — one extra flush past the host's own.
+      await flush();
       await flush();
       await expectMessages(host, 'ro-MD');
+      expect(host.getAttribute('lang')).toBeNull();
       for (const { key, render: renderInvalid, vars = {} } of validityCases) {
         const invalidHost = await renderInvalid({ locale: 'en-US' });
         (invalidHost as unknown as Record<string, unknown>).locale = undefined;
@@ -275,12 +280,22 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
         expect(lastValidity(invalidHost)?.message).toBe(
           formatMessage(table['ro-MD'][key], invalidHost, undefined, vars),
         );
+        expect(invalidHost.getAttribute('lang')).toBeNull();
       }
     });
 
-    it('writes no lang attribute on the host itself', async () => {
-      const host = await render({ locale: 'en-US' });
-      expect(host.getAttribute('lang')).toBeNull();
+    it('a consumer lang="ru" on the host survives a set-then-clear of locale', async () => {
+      const host = await render({});
+      host.setAttribute('lang', 'ru');
+      (host as unknown as Record<string, unknown>).locale = 'en-US';
+      await flush();
+      expect(host.getAttribute('lang')).toBe('en-US');
+      await expectMessages(host, 'en-US');
+      (host as unknown as Record<string, unknown>).locale = undefined;
+      await flush();
+      await flush();
+      expect(host.getAttribute('lang')).toBe('ru');
+      await expectMessages(host, 'ru-MD');
     });
 
     it('shows no ro-MD or en-US dictionary value under ru-MD', async () => {

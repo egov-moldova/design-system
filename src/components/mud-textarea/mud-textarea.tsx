@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXTAREA_MESSAGES } from './mud-textarea.messages';
 import type { TextareaMessages } from './mud-textarea.messages';
@@ -367,7 +367,7 @@ export class MudTextarea {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     const counterCurrent = (this.value ?? '').length;
     const counterOver = this.isCounterOverLimit();
 
@@ -384,8 +384,8 @@ export class MudTextarea {
     };
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

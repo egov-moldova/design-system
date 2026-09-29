@@ -12,8 +12,9 @@ import type {
   FileInputSize,
   FileInputVariant,
 } from './mud-file-input.types';
-import { formatLocale, formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
+import { formatFileSize } from '../../utils/file-size';
 import { FILE_INPUT_MESSAGES } from './mud-file-input.messages';
 import type { FileInputMessages } from './mud-file-input.messages';
 
@@ -636,18 +637,7 @@ export class MudFileInput {
   private formatBytes(bytes: number, m: FileInputMessages): string {
     const units = [m.sizeUnitBytes, m.sizeUnitKB, m.sizeUnitMB, m.sizeUnitGB, m.sizeUnitTB];
     if (!Number.isFinite(bytes) || bytes <= 0) return `0 ${units[0]}`;
-    let value = bytes;
-    let unit = 0;
-    while (value >= 1024 && unit < units.length - 1) {
-      value /= 1024;
-      unit += 1;
-    }
-    // `Intl.NumberFormat` (never `toFixed`, always `.`) so the decimal separator follows the
-    // resolved locale: `1,5 MB` under `ro-MD`, `1.5 MB` under `en-US`.
-    const formatted = new Intl.NumberFormat(formatLocale(this.host, this.locale), {
-      maximumFractionDigits: 1,
-    }).format(value);
-    return `${formatted} ${units[unit]}`;
+    return formatFileSize(bytes, this.host, this.locale, units);
   }
 
   private resolvedSupportedFormatsText(): string | undefined {
@@ -691,7 +681,7 @@ export class MudFileInput {
     const maxSizeCaption = this.resolvedMaxSizeText();
     const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
     const isButton = this.variant === 'button';
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -703,8 +693,8 @@ export class MudFileInput {
     };
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={this.dropzoneId} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={this.dropzoneId} id={this.labelId} part="label">
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
               {labelText}

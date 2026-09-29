@@ -156,7 +156,7 @@ const isButtonLikeInputValue = (attr, ancestors) => {
       : typeValue?.type === 'JSXExpressionContainer' && typeValue.expression?.type === 'Literal'
         ? typeValue.expression.value
         : null;
-  return typeof literalType === 'string' && BUTTON_LIKE_INPUT_TYPES.has(literalType);
+  return typeof literalType === 'string' && BUTTON_LIKE_INPUT_TYPES.has(literalType.toLowerCase());
 };
 
 /**

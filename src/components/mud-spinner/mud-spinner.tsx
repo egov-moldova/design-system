@@ -1,6 +1,6 @@
 import { Component, Element, Host, Prop, forceUpdate, h } from '@stencil/core';
 
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SPINNER_MESSAGES } from './mud-spinner.messages';
 import type { SpinnerMessages } from './mud-spinner.messages';
@@ -66,10 +66,10 @@ export class MudSpinner {
 
   render() {
     const m = this.messages();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="status" aria-label={m.label} aria-live="polite">
-        <div class="arc" aria-hidden="true" lang={hostLang} />
+      <Host role="status" aria-label={m.label} aria-live="polite" lang={lang}>
+        <div class="arc" aria-hidden="true" />
       </Host>
     );
   }

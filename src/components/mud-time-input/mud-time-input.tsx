@@ -21,7 +21,7 @@ import {
   readSegments,
   segmentIndexAt,
 } from '../../utils/segment-mask';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type { TimePickerChangeDetail } from '../mud-time-picker/mud-time-picker.types';
 import { TIME_INPUT_MESSAGES } from './mud-time-input.messages';
@@ -710,7 +710,7 @@ export class MudTimeInput {
     // Truthy check, not `??`: an explicit empty placeholder still shows the format hint.
     const placeholder = this.placeholder?.trim() ? this.placeholder : TIME_MASK.pattern;
     const ghost = ghostParts(TIME_MASK, this.value);
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': inert,
@@ -725,8 +725,8 @@ export class MudTimeInput {
     };
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : this.label?.trim()}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

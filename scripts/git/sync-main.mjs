@@ -32,9 +32,11 @@
  *            --no-fetch  --skip-build  --skip-checks  --help
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { parseArgs as parseNodeArgs } from 'node:util';
 
 const CHANGELOG = 'CHANGELOG.md';
@@ -424,7 +426,6 @@ export function main(argv = process.argv.slice(2), cwd = process.cwd()) {
   }
 }
 
-// realpath on both sides: Node resolves symlinks for import.meta.url but not for argv[1].
-if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
+if (isEntrypoint(import.meta.url)) {
   process.exitCode = main();
 }

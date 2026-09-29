@@ -12,7 +12,7 @@ import type {
   InputChipSize,
   InputChipVariant,
 } from './mud-input-chip.types';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { INPUT_CHIP_MESSAGES } from './mud-input-chip.messages';
 import type { InputChipMessages } from './mud-input-chip.messages';
@@ -553,7 +553,7 @@ export class MudInputChip {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const maxReached = this.isMaxReached();
     const placeholder = this.chips.length === 0 ? this.placeholder : undefined;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -567,8 +567,8 @@ export class MudInputChip {
     };
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

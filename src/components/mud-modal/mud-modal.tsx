@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Method, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { MODAL_MESSAGES } from './mud-modal.messages';
 import type { ModalMessages } from './mud-modal.messages';
@@ -479,7 +479,7 @@ export class MudModal {
 
   render() {
     const m = this.messages();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     const hostClasses = {
       'has-title': this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0),
       'has-icon': this.hasIconSlot,
@@ -497,11 +497,10 @@ export class MudModal {
     const ariaLabel = !hasTitle ? this.resolvedAriaLabel : undefined;
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <dialog
           ref={el => (this.dialogRef = el as HTMLDialogElement)}
           class="dialog"
-          lang={hostLang}
           aria-modal="true"
           aria-labelledby={labelledBy}
           aria-label={ariaLabel}

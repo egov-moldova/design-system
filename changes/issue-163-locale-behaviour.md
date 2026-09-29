@@ -20,9 +20,9 @@ every other built-in string in the library: `'Loading'`, `'Breadcrumb'`, `'Notif
 required message `'Please check this box if you want to proceed.'`. Set `locale="en-US"` (or
 an ancestor `lang="en"`) to get the English text back.
 
-When `locale` is set, the component marks its own rendered copy with `lang` on the outermost
-element of its shadow root. The host element's `lang` and the content you slot into it are
-left untouched.
+When `locale` is set, the component sets `lang` on its host element, so screen readers read its
+built-in copy in that language; content you slot into it inherits the same language. Clearing
+`locale` removes that `lang`, and a `lang` you had put on the host yourself comes back.
 
 Every override prop that previously carried a hardcoded default (e.g. `closeLabel: string =
 'Închide'`) is now `string | undefined` with no default value assigned in code — reading it
@@ -61,7 +61,9 @@ type widen to `string | undefined`.
 existing `{ reason: 'out-of-range' | 'not-a-number'; rawValue }` plus `{ reason: 'ambiguous';
 rawValue; message }`. An entry such as `1.234` under `ro-MD`, where the locale's own grouping
 character is followed by exactly three digits, is now reported as ambiguous instead of being
-guessed. A consumer with an exhaustive `switch` over `reason` must add the new case.
+guessed. A consumer with an exhaustive `switch` over `reason` must add the new case, and an
+`interface` that `extends NumericInputErrorDetail` must become a type intersection (`type MyErr =
+NumericInputErrorDetail & { … }`), since an interface cannot extend a union.
 
 This entry is marked `breaking` because a page with `lang="en"` or `lang="ru"` changes its
 built-in copy on upgrade with no code change, and because of the two type changes above.

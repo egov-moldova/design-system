@@ -11,7 +11,7 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
 import type { NumericInputMessages } from './mud-numeric-input.messages';
@@ -283,11 +283,15 @@ export class MudNumericInput {
   @State() private fieldsetDisabled: boolean = false;
   @State() private displayValue: string = '';
   /**
-   * The raw text of the last ambiguous commit reported through `mudError`/`mudChange` — both
-   * the native `change` handler and `blur` call `commitFromDisplay` for the same user commit,
-   * so a repeat with unchanged text is a duplicate report, not a second commit.
+   * The raw text of the last commit reported through `mudError`/`mudChange` — both the native
+   * `change` handler and `blur` call `commitFromDisplay` for the same user commit, so a repeat
+   * with the exact same text is that duplicate call, not a second commit, whatever the commit's
+   * result (number, blank, not-a-number, ambiguous). Reset — so the next identical text DOES
+   * emit again — by a keystroke (`handleInput`), `formResetCallback`, and a programmatic
+   * `value` write (`handleValueChange`); `commitFromDisplay` itself re-affirms it at the end,
+   * after any of those resets that its own `value` assignment may have triggered mid-commit.
    */
-  private lastAmbiguousCommit?: string;
+  private lastCommittedText?: string;
   /**
    * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
    * internal control when no visible label is present.
@@ -393,6 +397,9 @@ export class MudNumericInput {
 
   @Watch('value')
   handleValueChange(next: number | undefined) {
+    // Any `value` write — programmatic or `commitFromDisplay`'s own — resets the dedupe key;
+    // `commitFromDisplay` re-affirms it afterward for its own commit (see `lastCommittedText`).
+    this.lastCommittedText = undefined;
     this.syncFormValue(next);
     // Keep the visible field in sync when the prop is changed externally and
     // the user isn't actively editing — before `syncValidity`, which reads
@@ -443,6 +450,7 @@ export class MudNumericInput {
   }
 
   formResetCallback() {
+    this.lastCommittedText = undefined;
     this.value = this.initialValue;
     this.displayValue = this.formatForDisplay(this.initialValue);
     this.syncFormValue(this.initialValue);
@@ -699,6 +707,9 @@ export class MudNumericInput {
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     const raw = target.value;
+    // A keystroke always resets the dedupe key, even when it leaves `this.value` unchanged
+    // (e.g. still-invalid text), so the next commit of unchanged text still emits.
+    this.lastCommittedText = undefined;
     this.displayValue = raw;
     const entry = this.parseRaw(raw);
     if (entry.kind === 'ambiguous') {
@@ -780,37 +791,42 @@ export class MudNumericInput {
   };
 
   private commitFromDisplay(): void {
-    const entry = this.parseRaw(this.displayValue);
+    // `change` and `blur` both call this for the same user commit; a repeat with the exact
+    // same text is that duplicate call, not a second commit — whatever its result. A `value`
+    // assignment below re-runs `handleValueChange`, which resets this key; it is re-affirmed
+    // to `text` at every return point, after any such reset, so it reflects THIS commit once
+    // the function is done.
+    const text = this.displayValue;
+    if (this.lastCommittedText === text) return;
+    const entry = this.parseRaw(text);
     if (entry.kind === 'ambiguous') {
-      // `change` and `blur` both call this for the same user commit; a repeat with the exact
-      // same still-ambiguous text is that duplicate call, not a second commit.
-      if (this.lastAmbiguousCommit === this.displayValue) return;
-      this.lastAmbiguousCommit = this.displayValue;
       this.value = undefined;
-      this.emitAmbiguous(this.displayValue);
+      this.emitAmbiguous(text);
       this.syncValidity();
       this.mudChange.emit({ value: null });
+      this.lastCommittedText = text;
       return;
     }
-    this.lastAmbiguousCommit = undefined;
     if (entry.kind === 'invalid') {
       // The field is empty or contains an unparseable string.
-      if (this.displayValue.trim() === '') {
+      if (text.trim() === '') {
         this.value = undefined;
         this.displayValue = '';
         this.mudChange.emit({ value: null });
       } else {
         // Non-numeric residue (rare with our input mask) — surface an error
         // and reset the display to the last committed value.
-        this.mudError.emit({ reason: 'not-a-number', rawValue: this.displayValue });
+        this.mudError.emit({ reason: 'not-a-number', rawValue: text });
         this.displayValue = this.formatForDisplay(this.value);
       }
+      this.lastCommittedText = text;
       return;
     }
     const committed = this.commit(entry.value);
     this.value = committed;
     this.displayValue = this.formatForDisplay(committed);
     this.mudChange.emit({ value: committed });
+    this.lastCommittedText = text;
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
@@ -896,7 +912,7 @@ export class MudNumericInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');
@@ -924,14 +940,8 @@ export class MudNumericInput {
     const ariaValueNow = this.value !== undefined && Number.isFinite(this.value) ? String(this.value) : undefined;
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
-        <label
-          class="label"
-          htmlFor={`numeric-input-${this.instanceId}`}
-          id={this.labelId}
-          part="label"
-          lang={hostLang}
-        >
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
+        <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

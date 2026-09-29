@@ -1,7 +1,7 @@
 import { Component, Element, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { AVATAR_MESSAGES } from './mud-avatar.messages';
 import type { AvatarMessages } from './mud-avatar.messages';
@@ -180,11 +180,11 @@ export class MudAvatar {
 
     // `aria-label` is set imperatively by `hostLabel` (see `nameHostWithFallback`)
     // so the attribute is not declared on `<Host>` here.
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host role="img">
-        <span lang={hostLang} class={{ inner: true, [`type-${mode}`]: true }}>
+      <Host role="img" lang={lang}>
+        <span class={{ inner: true, [`type-${mode}`]: true }}>
           {mode === 'photo' && (
             <img
               class="photo"

@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXT_INPUT_MESSAGES } from './mud-text-input.messages';
 import type { TextInputMessages } from './mud-text-input.messages';
@@ -465,7 +465,7 @@ export class MudTextInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -480,8 +480,8 @@ export class MudTextInput {
     };
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
-        <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
+        <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

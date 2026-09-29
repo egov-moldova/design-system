@@ -2,7 +2,7 @@ import { describe, render } from '@stencil/vitest';
 
 import { describeLocales } from './locale.test-helpers';
 import type { LocaleMessages, Plural } from './locale';
-import { formatMessage, localeMessages } from './locale';
+import { formatMessage, hostLang, localeMessages } from './locale';
 
 interface FixtureMessages {
   closeLabel: string;
@@ -63,6 +63,11 @@ class MudLocaleFixture extends HTMLElement {
   }
 
   private paint() {
+    // Mirrors a real Stencil component's `<Host lang={hostLang(this.host, this.locale)}>`:
+    // the shared locale contract now covers the host's own `lang` too.
+    const lang = hostLang(this, this.locale);
+    if (lang) this.setAttribute('lang', lang);
+    else this.removeAttribute('lang');
     const shadow = this.shadowRoot ?? this.attachShadow({ mode: 'open' });
     const overrides = { closeLabel: this.getAttribute('close-label') };
     const m = localeMessages('mud-locale-fixture', this, this.locale, FIXTURE_MESSAGES, overrides);

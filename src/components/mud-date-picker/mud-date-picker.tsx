@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
-import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { DATE_PICKER_MESSAGES } from './mud-date-picker.messages';
 import type { DatePickerMessages } from './mud-date-picker.messages';
@@ -662,7 +662,7 @@ export class MudDatePicker {
     const prevAria = navAria(-1);
     const nextAria = navAria(1);
     return (
-      <div class="header" part="header" lang={shadowLang(this.host, this.locale)}>
+      <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
           <mud-icon name="chevron-left" size={20}></mud-icon>
         </button>
@@ -884,8 +884,9 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
+      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId} lang={lang}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
         {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}

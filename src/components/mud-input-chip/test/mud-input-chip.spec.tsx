@@ -3,7 +3,6 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 import '../mud-input-chip';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
-import { formatMessage } from '../../../utils/locale';
 import { INPUT_CHIP_MESSAGES } from '../mud-input-chip.messages';
 import type { InputChipMessages } from '../mud-input-chip.messages';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from '../mud-input-chip.types';
@@ -298,31 +297,22 @@ describe('mud-input-chip', () => {
       expect(queryNative(root)?.hasAttribute('disabled')).toBe(true);
     });
 
-    it.each([[1, 'ro-MD'] as const, [3, 'ro-MD'] as const, [21, 'ro-MD'] as const])(
-      'maxRejectionText pluralizes {max}=%i under %s (20+ takes "de")',
-      async (max, locale) => {
-        const onError = vi.fn();
-        const chips = Array.from({ length: max }, (_, i) => `c${i}`);
-        const { root } = await render(
-          <mud-input-chip
-            label="x"
-            locale={locale}
-            chips={chips}
-            max-chips={max}
-            onMudError={onError}
-          ></mud-input-chip>,
-        );
-        (root as unknown as { value: string }).value = 'overflow';
-        await flush();
-        pressOnInput(root, 'Enter');
-        await flush();
-        const expected = formatMessage(INPUT_CHIP_MESSAGES[locale].maxRejectionText, root!, locale, {
-          max,
-          count: max,
-        });
-        expect(onError.mock.calls[0][0].detail.message).toBe(expected);
-      },
-    );
+    it.each([
+      [1, 'ro-MD', 'Maximum 1 valoare permisă.'] as const,
+      [3, 'ro-MD', 'Maximum 3 valori permise.'] as const,
+      [21, 'ro-MD', 'Maximum 21 de valori permise.'] as const,
+    ])('maxRejectionText pluralizes {max}=%i under %s (20+ takes "de")', async (max, locale, expected) => {
+      const onError = vi.fn();
+      const chips = Array.from({ length: max }, (_, i) => `c${i}`);
+      const { root } = await render(
+        <mud-input-chip label="x" locale={locale} chips={chips} max-chips={max} onMudError={onError}></mud-input-chip>,
+      );
+      (root as unknown as { value: string }).value = 'overflow';
+      await flush();
+      pressOnInput(root, 'Enter');
+      await flush();
+      expect(onError.mock.calls[0][0].detail.message).toBe(expected);
+    });
   });
 
   describe('pattern validation', () => {

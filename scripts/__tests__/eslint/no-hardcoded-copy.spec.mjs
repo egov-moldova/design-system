@@ -178,6 +178,16 @@ describe('mud/no-hardcoded-copy — JSX half', () => {
     assert.equal(messages.length, 2);
   });
 
+  it('reports the value of <input type="Submit"> (type compared case-insensitively)', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <input type="Submit" value="Trimite formularul" />; } }
+    `);
+    assert.equal(messages.length, 1);
+    assert.match(messages[0], /Trimite formularul/);
+  });
+
   it('does not report the value of an <input type="text"> (a form value, not copy)', async () => {
     const messages = await lint(`
       import { Component, h } from '@stencil/core';

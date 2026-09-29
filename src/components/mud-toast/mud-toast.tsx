@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, forceUpdate, h } 
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TOAST_MESSAGES } from './mud-toast.messages';
 import type { ToastMessages } from './mud-toast.messages';
@@ -214,7 +214,7 @@ export class MudToast {
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
@@ -225,8 +225,8 @@ export class MudToast {
     };
 
     return (
-      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
-        <div class="main" lang={hostLang}>
+      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true" lang={lang}>
+        <div class="main">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
               <mud-icon

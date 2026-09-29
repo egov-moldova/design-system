@@ -25,7 +25,7 @@ import type {
   PhoneInputVariant,
 } from './mud-phone-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
 import type { PhoneInputMessages } from './mud-phone-input.messages';
@@ -908,11 +908,11 @@ export class MudPhoneInput {
       id: this.triggerId,
     };
     const triggerAriaLabel = `${this.displayName(country)}, ${country.code}`;
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
-        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
+        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

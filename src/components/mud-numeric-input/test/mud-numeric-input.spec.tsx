@@ -1072,6 +1072,64 @@ describe('mud-numeric-input typed entry', () => {
       expect(lastValidity(root)?.flags).toEqual({});
     });
 
+    describe('commit dedupe across change + blur, for every commit kind', () => {
+      it('typed 42, then change and blur on the same commit, emits mudChange once', async () => {
+        const onChange = vi.fn();
+        const { root } = await render(<mud-numeric-input label="x" onMudChange={onChange}></mud-numeric-input>);
+        const native = queryNative(root)!;
+        native.value = '42';
+        native.dispatchEvent(new Event('input', { bubbles: true }));
+        await flush();
+        // Native `change` fires before `blur` on the same user commit — both call
+        // `commitFromDisplay` with the same committed text.
+        native.dispatchEvent(new Event('change', { bubbles: true }));
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0].detail).toEqual({ value: 42 });
+      });
+
+      it('clearing the field, then change and blur on the same commit, emits mudChange(null) once', async () => {
+        const onChange = vi.fn();
+        const { root } = await render(
+          <mud-numeric-input label="x" value={42} onMudChange={onChange}></mud-numeric-input>,
+        );
+        const native = queryNative(root)!;
+        native.value = '';
+        native.dispatchEvent(new Event('input', { bubbles: true }));
+        await flush();
+        native.dispatchEvent(new Event('change', { bubbles: true }));
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0].detail).toEqual({ value: null });
+      });
+
+      it('an ambiguous commit after formResetCallback emits again, even with the exact same text', async () => {
+        const errors: NumericInputErrorDetail[] = [];
+        const { root } = await render(
+          <mud-numeric-input
+            label="x"
+            locale="ro-MD"
+            onMudError={(event: CustomEvent<NumericInputErrorDetail>) => errors.push(event.detail)}
+          ></mud-numeric-input>,
+        );
+        const native = queryNative(root)!;
+        native.value = '1.234';
+        native.dispatchEvent(new Event('input', { bubbles: true }));
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        errors.length = 0;
+        (root as unknown as { formResetCallback: () => void }).formResetCallback();
+        await flush();
+        native.value = '1.234';
+        native.dispatchEvent(new Event('input', { bubbles: true }));
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        expect(errors.some(error => error.reason === 'ambiguous')).toBe(true);
+      });
+    });
+
     describe('{min} / {max} in the range messages', () => {
       const messageFor = async (props: Record<string, unknown>) => {
         const { root } = await render(

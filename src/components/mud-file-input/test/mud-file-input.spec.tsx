@@ -4,7 +4,6 @@ import '../mud-file-input';
 import '../../mud-file-item/mud-file-item';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
-import { formatMessage } from '../../../utils/locale';
 import { FILE_INPUT_MESSAGES } from '../mud-file-input.messages';
 import type { FileInputMessages } from '../mud-file-input.messages';
 import { FILE_INPUT_SIZES } from '../mud-file-input.types';
@@ -377,29 +376,26 @@ describe('mud-file-input', () => {
       expect(onError.mock.calls[0][0].detail.code).toBe('count');
     });
 
-    it.each([[1, 'ro-MD'] as const, [3, 'ro-MD'] as const, [21, 'ro-MD'] as const])(
-      'countRejectionText pluralizes {max}=%i under %s (20+ takes "de")',
-      async (max, locale) => {
-        const onError = vi.fn();
-        const { root } = await render(
-          <mud-file-input label="x" locale={locale} multiple max-files={max} onMudError={onError}></mud-file-input>,
-        );
-        const dropzone = queryDropzone(root)!;
-        // One more file than `max` guarantees at least one `count` rejection at every value.
-        const files = Array.from({ length: max + 1 }, (_, i) => makeFile(`f${i}.pdf`, 100));
-        const dataTransfer = { files } as unknown as DataTransfer;
-        dropzone.dispatchEvent(
-          Object.assign(new Event('drop', { bubbles: true, cancelable: true }), { dataTransfer }) as DragEvent,
-        );
-        await flush();
-        const expected = formatMessage(FILE_INPUT_MESSAGES[locale].countRejectionText, root!, locale, {
-          max,
-          count: max,
-        });
-        const countCall = onError.mock.calls.find(call => call[0].detail.code === 'count');
-        expect(countCall?.[0].detail.message).toBe(expected);
-      },
-    );
+    it.each([
+      [1, 'ro-MD', 'Maximum 1 fișier permis.'] as const,
+      [3, 'ro-MD', 'Maximum 3 fișiere permise.'] as const,
+      [21, 'ro-MD', 'Maximum 21 de fișiere permise.'] as const,
+    ])('countRejectionText pluralizes {max}=%i under %s (20+ takes "de")', async (max, locale, expected) => {
+      const onError = vi.fn();
+      const { root } = await render(
+        <mud-file-input label="x" locale={locale} multiple max-files={max} onMudError={onError}></mud-file-input>,
+      );
+      const dropzone = queryDropzone(root)!;
+      // One more file than `max` guarantees at least one `count` rejection at every value.
+      const files = Array.from({ length: max + 1 }, (_, i) => makeFile(`f${i}.pdf`, 100));
+      const dataTransfer = { files } as unknown as DataTransfer;
+      dropzone.dispatchEvent(
+        Object.assign(new Event('drop', { bubbles: true, cancelable: true }), { dataTransfer }) as DragEvent,
+      );
+      await flush();
+      const countCall = onError.mock.calls.find(call => call[0].detail.code === 'count');
+      expect(countCall?.[0].detail.message).toBe(expected);
+    });
 
     it('replaces the file when multiple is false', async () => {
       const { root } = await render(<mud-file-input label="x"></mud-file-input>);

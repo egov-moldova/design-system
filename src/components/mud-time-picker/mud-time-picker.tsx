@@ -13,7 +13,7 @@ import {
   writeTask,
 } from '@stencil/core';
 
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TIME_PICKER_MESSAGES } from './mud-time-picker.messages';
 import type { TimePickerMessages } from './mud-time-picker.messages';
@@ -353,10 +353,10 @@ export class MudTimePicker {
     const m = this.messages();
     const hoursColumn = this.renderColumn('hours', m.hoursLabel);
     const minutesColumn = this.renderColumn('minutes', m.minutesLabel);
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="group" aria-label={m.label}>
-        <div class="columns" part="columns" lang={hostLang}>
+      <Host role="group" aria-label={m.label} lang={lang}>
+        <div class="columns" part="columns">
           {hoursColumn}
           <div class="separator" part="separator" aria-hidden="true">
             {Array.from({ length: VISIBLE_ROWS }, (_, row) => (

@@ -22,7 +22,7 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type {
   DatePickerChangeDetail,
@@ -1077,7 +1077,7 @@ export class MudDateInput {
     const pickerDates = this.dateParts(this.value).map(part => this.toIsoDate(part));
     const pickerMode: DatePickerMode = this.isRange() ? 'range' : 'single';
     const pickerHeaderStyle: DatePickerHeaderStyle = isMobilePopover || this.type === 'advanced' ? 'dropdown' : 'title';
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -1094,8 +1094,8 @@ export class MudDateInput {
     const ghost = ghostParts(this.mask(), this.value);
 
     return (
-      <Host class={hostClasses}>
-        <label class="label" htmlFor={`date-input-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
+      <Host class={hostClasses} lang={lang}>
+        <label class="label" htmlFor={`date-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

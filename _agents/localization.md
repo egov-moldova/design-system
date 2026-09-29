@@ -53,10 +53,17 @@ Every `mud-*` component that ships copy resolves it from a built-in
    given (`en-GB`); a language with no dictionary (`de-DE`) resolves to the
    shown dictionary's locale, so labels and formats never mix languages.
    `formatMessage` formats number placeholders through it with grouping off.
-7. **A component whose `locale` is explicit sets `lang` on its outermost
-   shadow element** to `formatLocale(this.host, this.locale)` (WCAG 3.1.2),
-   and a parent rendering another `mud-*` component passes
-   `locale={this.locale}` down.
+7. **A component whose `locale` is explicit sets `lang` on its host**
+   through `<Host lang={hostLang(this.host, this.locale)}>` (WCAG 3.1.2). The
+   host is the one element that covers all of a component's own copy: copy is
+   spread over sibling shadow elements and over host-level `aria-label`s, so no
+   single shadow element carries it. `hostLang` remembers the value it wrote,
+   so `inheritedLang` never reads it back after `locale` is cleared, and it
+   restores a `lang` the consumer had put on the host. Content slotted into a
+   component with an explicit `locale` inherits that language — the accepted
+   cost of host placement. A parent rendering another `mud-*` component in its
+   own shadow DOM passes `locale={this.locale}` down; slotted `mud-*` children
+   inherit it through the host.
 
 See `mud-date-input` / `mud-date-picker` / `mud-time-input` for the reference
 implementation, and the plan's `## Component recipe`

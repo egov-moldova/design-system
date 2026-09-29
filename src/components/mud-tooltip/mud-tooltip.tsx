@@ -3,7 +3,7 @@ import type { EventEmitter } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TOOLTIP_MESSAGES } from './mud-tooltip.messages';
 import type { TooltipMessages } from './mud-tooltip.messages';
@@ -826,7 +826,7 @@ export class MudTooltip {
     const m = this.messages();
     const isCoach = this.variant === 'coach';
     const triggerError = this.validateTriggerSlot();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     return (
       <Host
@@ -835,9 +835,10 @@ export class MudTooltip {
           [`position-${this.resolvedPosition}`]: true,
           [`variant-${this.variant}`]: true,
         }}
+        lang={lang}
       >
         {triggerError && <div class="slot-error">{triggerError}</div>}
-        <span class="trigger" lang={hostLang}>
+        <span class="trigger">
           <slot name="trigger" />
         </span>
 

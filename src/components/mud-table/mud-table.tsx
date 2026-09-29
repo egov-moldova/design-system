@@ -3,7 +3,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdat
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TABLE_MESSAGES } from './mud-table.messages';
 import type { TableMessages } from './mud-table.messages';
@@ -417,7 +417,7 @@ export class MudTable {
 
   render() {
     const m = this.messages();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     const columns = this.columns ?? [];
     const rows = this.rows ?? [];
     const hasRows = rows.length > 0;
@@ -427,11 +427,10 @@ export class MudTable {
     const someSelected = this.someRowsSelected();
 
     return (
-      <Host>
+      <Host lang={lang}>
         <div
           class="table-scroll"
           tabindex={0}
-          lang={hostLang}
           role={this.resolvedAriaLabel ? 'region' : undefined}
           aria-label={this.resolvedAriaLabel}
         >

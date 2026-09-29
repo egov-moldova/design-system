@@ -27,7 +27,10 @@ export interface NumericInputStepDetail {
  */
 export type NumericInputErrorDetail =
   | {
-      /** The parsed value fell outside `min` / `max`. */
+      /**
+       * The parsed value fell outside `min` / `max` (`out-of-range`), or the text held
+       * non-numeric residue past whatever the input mask lets through (`not-a-number`).
+       */
       reason: 'out-of-range' | 'not-a-number';
       /** Raw string the user typed when the validation tripped. */
       rawValue: string;

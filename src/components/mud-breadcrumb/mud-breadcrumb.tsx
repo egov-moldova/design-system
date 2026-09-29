@@ -3,7 +3,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdat
 
 import { nameHostWithFallback } from '../../utils/aria-label';
 import type { HostAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_MESSAGES } from './mud-breadcrumb.messages';
 import type { BreadcrumbMessages } from './mud-breadcrumb.messages';
@@ -481,16 +481,22 @@ export class MudBreadcrumb {
     const items = this.items;
     const useItems = Array.isArray(items) && items.length > 0;
     const m = this.messages();
-    const hostLang = shadowLang(this.host, this.locale);
+    // Pre-built, and `hostLang` computed only after: `renderDesktop`/`renderMobile` call
+    // `this.messages()` again internally (the loading spinner's label), which must still see
+    // this render's PRE-`hostLang` state to resolve correctly while `locale` is being cleared
+    // (see `hostLang`'s own doc on `inheritedLang`'s mid-render staleness detection).
+    const desktop = useItems ? this.renderDesktop(items!, m.overflowLabel) : null;
+    const mobile = useItems && this.responsive ? this.renderMobile(items!) : null;
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="navigation">
+      <Host role="navigation" lang={lang}>
         {useItems ? (
-          <div class="root" data-responsive={this.responsive ? 'true' : 'false'} lang={hostLang}>
-            <div class="desktop">{this.renderDesktop(items!, m.overflowLabel)}</div>
-            {this.responsive && <div class="mobile">{this.renderMobile(items!)}</div>}
+          <div class="root" data-responsive={this.responsive ? 'true' : 'false'}>
+            <div class="desktop">{desktop}</div>
+            {this.responsive && <div class="mobile">{mobile}</div>}
           </div>
         ) : (
-          <ol class="trail trail--slot" lang={hostLang}>
+          <ol class="trail trail--slot">
             <slot />
           </ol>
         )}

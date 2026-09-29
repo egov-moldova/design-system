@@ -12,7 +12,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
-import { resolveStaticPath } from '../../eslint/copy-probe.mjs';
+import { decodeUrlPath, resolveStaticPath } from '../../eslint/copy-probe.mjs';
 
 const tempDirs = [];
 afterEach(() => {
@@ -65,5 +65,27 @@ describe('copy-probe.mjs — resolveStaticPath', () => {
   it('refuses a dotdot escape above dir entirely', () => {
     const { dir } = fixture();
     assert.equal(resolveStaticPath(dir, '/../../etc/passwd'), path.join(dir, 'index.html'));
+  });
+
+  it('serves a file literally named with a leading ".." (not a traversal)', () => {
+    const { dir } = fixture();
+    fs.writeFileSync(path.join(dir, '..foo.html'), '<html>dotdot-prefixed name</html>');
+    assert.equal(resolveStaticPath(dir, '/..foo.html'), path.join(dir, '..foo.html'));
+  });
+});
+
+describe('copy-probe.mjs — decodeUrlPath', () => {
+  it('decodes an ordinary path', () => {
+    assert.equal(decodeUrlPath('/iframe.html?id=x'), '/iframe.html');
+  });
+
+  it('defaults to "/" for a missing url', () => {
+    assert.equal(decodeUrlPath(undefined), '/');
+  });
+
+  it('returns null (never throws) for a malformed percent-escape', () => {
+    assert.doesNotThrow(() => decodeUrlPath('/%'));
+    assert.equal(decodeUrlPath('/%'), null);
+    assert.equal(decodeUrlPath('/%E0%A4%A'), null);
   });
 });

@@ -20,10 +20,13 @@
  *
  * Cleanup guarantee: whatever happens (success, failed assertion, thrown error, SIGINT / SIGTERM
  * / SIGHUP, process exit) the process group of `yarn dev:all` is signalled (SIGTERM, then
- * SIGKILL), anything still LISTENING on 6007 / 5174 is killed (the ports were verified free
- * before the start, so any listener is ours), and `mud-badge.tsx` is written back byte-for-byte
- * from the Buffer read before the edit. The final `exit` hook repeats the synchronous parts, so
- * even a crash in the async cleanup leaves neither servers nor an edited component behind.
+ * SIGKILL), and anything still LISTENING on 6007 / 5174 in THAT process group is killed — never
+ * an unrelated process a developer happens to have listening there, even transiently. `exit` and
+ * the signal handlers are installed inside `main()`, never at module load, so importing this
+ * module (a test does) installs nothing. `mud-badge.tsx` is written back byte-for-byte from the
+ * Buffer read before the edit; a restore that fails during cleanup fails the whole run (no PASS
+ * line) even when every other step passed. The final `exit` hook repeats the synchronous parts,
+ * so even a crash in the async cleanup leaves neither servers nor an edited component behind.
  *
  * Playwright is the repo's own devDependency, driven from this local script — never the shared
  * Playwright MCP browser.
@@ -35,6 +38,8 @@ import { closeSync, existsSync, globSync, openSync, readFileSync, statSync, writ
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const STORYBOOK = 'http://localhost:6007';
@@ -50,6 +55,7 @@ let child;
 let logFd;
 let badgeOriginal; // Buffer, set before the first write to BADGE_TSX
 let cleaned = false;
+let badgeRestoreOk = true; // flips false when a cleanup-time restore (safeRestoreBadge) fails
 
 const step = message => console.log(`\n[check-dev-all] ${message}`);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
@@ -65,13 +71,28 @@ function restoreBadge() {
  * closing `logFd`), so a broken filesystem write here can never abort the rest of cleanup or
  * fail silently. Exported (and `restore`/`badgeTsxPath`/`log` are parameters, not module
  * globals) so a test can exercise the catch branch without touching the real filesystem.
+ *
+ * Returns whether the restore succeeded — `cleanupSync` uses this to fail the whole run
+ * (`exitOutcome`) even when nothing else failed, since a `PASS` line must never coexist with a
+ * leftover edit in `mud-badge.tsx`.
  */
 export function safeRestoreBadge(restore, badgeTsxPath, log = console.error) {
   try {
     restore();
+    return true;
   } catch (error) {
     log(`\n[check-dev-all] FAILED TO RESTORE ${badgeTsxPath} — restore it by hand: ${error?.message ?? error}`);
+    return false;
   }
+}
+
+/**
+ * Exit code for the run: a thrown `main()` always fails it, and so does a badge that never
+ * made it back to its original contents during cleanup, even when every other step passed —
+ * pulled out as a pure function so this decision is testable without starting real servers.
+ */
+export function exitOutcome(failure, badgeRestoreOk) {
+  return failure || !badgeRestoreOk ? 1 : 0;
 }
 
 function signalGroup(signal) {
@@ -92,8 +113,25 @@ function listenerPids() {
   return [...pids];
 }
 
+/** The process group id of `pid`, or `undefined` when `ps` can't see it (already gone). */
+function pgidOf(pid) {
+  const out = spawnSync('ps', ['-o', 'pgid=', '-p', String(pid)], { encoding: 'utf8' });
+  const pgid = Number(out.stdout.trim());
+  return Number.isInteger(pgid) && pgid > 0 ? pgid : undefined;
+}
+
+/**
+ * Listener pids on our ports that belong to the process group this run started (`child`, spawned
+ * `detached: true`, so its pid IS that group's id) — never "whatever listens on the port": a
+ * developer's own unrelated `yarn dev` sharing the port at the wrong moment must not be killed.
+ */
+function ourListenerPids() {
+  if (!child?.pid) return [];
+  return listenerPids().filter(pid => pgidOf(pid) === child.pid);
+}
+
 function killListeners() {
-  for (const pid of listenerPids()) {
+  for (const pid of ourListenerPids()) {
     try {
       process.kill(pid, 'SIGKILL');
     } catch {
@@ -106,7 +144,7 @@ function killListeners() {
 function cleanupSync() {
   signalGroup('SIGKILL');
   killListeners();
-  safeRestoreBadge(restoreBadge, BADGE_TSX);
+  if (!safeRestoreBadge(restoreBadge, BADGE_TSX)) badgeRestoreOk = false;
   if (logFd !== undefined) {
     try {
       closeSync(logFd);
@@ -124,13 +162,6 @@ async function cleanup() {
   const deadline = Date.now() + 10_000;
   while (Date.now() < deadline && listenerPids().length > 0) await sleep(250);
   cleanupSync();
-}
-
-process.on('exit', cleanupSync);
-for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
-  process.on(signal, () => {
-    cleanup().finally(() => process.exit(130));
-  });
 }
 
 async function httpStatus(url) {
@@ -203,6 +234,17 @@ async function switchStorybookLang(page) {
 }
 
 async function main() {
+  // Registered here, not at module top level: importing this module (a test does, for
+  // `safeRestoreBadge`/`exitOutcome`) must never install a handler that could SIGKILL whatever
+  // is listening on 6007/5174 when the test process exits — including a developer's own
+  // unrelated `yarn dev`.
+  process.on('exit', cleanupSync);
+  for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+    process.on(signal, () => {
+      cleanup().finally(() => process.exit(130));
+    });
+  }
+
   // Preflight: a foreign server on our ports would make every later assertion meaningless.
   assert(listenerPids().length === 0, `something already listens on ${PORTS.join(' or ')}; stop it first`);
   assert(existsSync(BADGE_TSX), `${BADGE_TSX} is missing`);
@@ -305,10 +347,10 @@ async function main() {
   }
 }
 
-// Guarded so a test can `import` this module (for `safeRestoreBadge`) without starting real
-// dev servers and a browser — importing a script must never have a side effect only running
-// it should have.
-if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+// Guarded so a test can `import` this module (for `safeRestoreBadge`/`exitOutcome`) without
+// starting real dev servers and a browser — importing a script must never have a side effect
+// only running it should have.
+if (isEntrypoint(import.meta.url)) {
   let failure;
   try {
     await main();
@@ -321,8 +363,10 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     console.error(`\n[check-dev-all] FAIL: ${failure.stack ?? failure}`);
     const tail = existsSync(LOG_FILE) ? readFileSync(LOG_FILE, 'utf8').split('\n').slice(-40).join('\n') : '';
     console.error(`\n[check-dev-all] last lines of ${LOG_FILE}:\n${tail}`);
-    process.exit(1);
+  } else if (!badgeRestoreOk) {
+    console.error('\n[check-dev-all] FAIL: mud-badge.tsx was not restored during cleanup (see message above)');
   }
-  console.log('\n[check-dev-all] PASS');
-  process.exit(0);
+  const code = exitOutcome(failure, badgeRestoreOk);
+  if (code === 0) console.log('\n[check-dev-all] PASS');
+  process.exit(code);
 }

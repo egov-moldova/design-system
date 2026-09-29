@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { STEPPER_MESSAGES } from './mud-stepper.messages';
 import type { StepperMessages } from './mud-stepper.messages';
@@ -393,10 +393,10 @@ export class MudStepper {
     // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
     const m = this.messages();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="list" class={{ 'is-compact': compactMode }}>
-        <ol class="root" role="none" lang={hostLang}>
+      <Host role="list" class={{ 'is-compact': compactMode }} lang={lang}>
+        <ol class="root" role="none">
           {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length, m)) : <slot />}
         </ol>
       </Host>

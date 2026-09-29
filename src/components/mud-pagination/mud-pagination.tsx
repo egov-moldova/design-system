@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h, readTask } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PAGINATION_MESSAGES } from './mud-pagination.messages';
 import type { PaginationMessages } from './mud-pagination.messages';
@@ -627,11 +627,11 @@ export class MudPagination {
     const m = this.messages();
     const navLabel = this.resolvedAriaLabel ?? m.navLabel;
     const slots = this.computeRange();
-    const hostLang = shadowLang(this.host, this.locale);
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host>
-        <nav class="root" aria-label={navLabel} lang={hostLang}>
+      <Host lang={lang}>
+        <nav class="root" aria-label={navLabel}>
           {this.renderPrev(m)}
           <ul class="pages" role="list">
             {slots.map(slot => (isOverflow(slot) ? this.renderOverflow(slot, m) : this.renderPageItem(slot, m)))}

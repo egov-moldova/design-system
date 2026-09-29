@@ -177,6 +177,17 @@ describe('mud-breadcrumb', () => {
       const slottedTrail = root?.shadowRoot?.querySelector('.trail--slot');
       expect(slottedTrail).toBeTruthy();
     });
+
+    it('a slotted mud-breadcrumb-item with no locale of its own follows the breadcrumb explicit locale', async () => {
+      const { root } = await render(
+        <mud-breadcrumb locale="en-US">
+          <mud-breadcrumb-item loading>Loading item</mud-breadcrumb-item>
+        </mud-breadcrumb>,
+      );
+      const item = root?.querySelector('mud-breadcrumb-item');
+      const spinner = item?.shadowRoot?.querySelector('mud-spinner');
+      expect(spinner?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['en-US'].loadingLabel);
+    });
   });
 
   describe('loading state', () => {
