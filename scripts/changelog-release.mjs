@@ -51,8 +51,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { isEntrypoint } from './lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 
 /** Keep a Changelog types, in the order a reader upgrading needs them: what breaks first. */
 export const TYPES = ['Removed', 'Changed', 'Deprecated', 'Added', 'Fixed', 'Security', 'Internal'];
@@ -301,7 +300,7 @@ function main(argv) {
   console.log(`${CHANGELOG}: added ${version} — ${date} from ${fragments.length} fragment(s).`);
 }
 
-if (isEntrypoint(import.meta.url)) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     main(process.argv.slice(2));
   } catch (error) {

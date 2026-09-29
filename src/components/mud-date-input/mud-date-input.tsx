@@ -22,7 +22,7 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type {
   DatePickerChangeDetail,
@@ -530,10 +530,14 @@ export class MudDateInput {
       this.mql.addEventListener('change', this.handleViewportChange);
     }
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.updateValidation(this.value);
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidation(this.value);
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
@@ -1208,7 +1212,7 @@ export class MudDateInput {
                     mode={pickerMode}
                     breakpoint={pickerBreakpoint}
                     headerStyle={pickerHeaderStyle}
-                    locale={this.locale}
+                    locale={childLocale(this.host, this.locale)}
                     value={this.isRange() ? undefined : (pickerDates[0] ?? undefined)}
                     rangeStart={this.isRange() ? (pickerDates[0] ?? undefined) : undefined}
                     rangeEnd={this.isRange() ? (pickerDates[1] ?? undefined) : undefined}

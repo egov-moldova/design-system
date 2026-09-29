@@ -87,10 +87,19 @@ describe('inheritedLang', () => {
     expect(inheritedLang(inner)).toBe('en-US');
   });
 
-  it('terminates on a detached element whose own `host` points at itself (mock-doc Stencil host)', () => {
-    const el = document.createElement('div');
-    Object.defineProperty(el, 'host', { value: el });
-    expect(inheritedLang(el)).toBeUndefined();
+  it('crosses a shadow root to a detached host whose own `host` points at itself, without looping (mock-doc Stencil host)', () => {
+    // Reaches the guard through a REAL shadow-root crossing (nodeType 11), unlike a bare element:
+    // `host` is detached (nodeType 1, so the walk's `nodeType === 11` check must gate the `.host`
+    // read that follows it) with a self-referential `.host` — the mock-doc quirk noted on
+    // `inheritedLang` (a removed render's host can still report itself as its own `host`). If the
+    // walk read `.host` unconditionally (`node.parentNode ?? (node as ShadowRoot).host`), reaching
+    // `host` a second time would loop on it forever, since `host.host === host` too.
+    const host = document.createElement('div');
+    Object.defineProperty(host, 'host', { value: host });
+    const shadow = host.attachShadow({ mode: 'open' });
+    const inner = document.createElement('span');
+    shadow.appendChild(inner);
+    expect(inheritedLang(inner)).toBeUndefined();
   });
 
   it('stops at an empty lang', () => {

@@ -162,10 +162,14 @@ export class MudInputChip {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.syncValidity(this.chips);
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity(this.chips);
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {

@@ -171,10 +171,14 @@ export class MudTextarea {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.syncValidity();
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {

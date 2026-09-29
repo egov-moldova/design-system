@@ -35,7 +35,6 @@ import { fileURLToPath } from 'node:url';
 import { Command, CommanderError } from 'commander';
 
 import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
-import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 const SCRIPT_FILE = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = path.dirname(SCRIPT_FILE);
@@ -944,6 +943,10 @@ async function main(argv = process.argv) {
   };
 }
 
+function isEntrypoint() {
+  return process.argv[1] ? path.resolve(process.argv[1]) === SCRIPT_FILE : false;
+}
+
 function printFatalError(error) {
   if (error instanceof CliError) {
     console.error(`Error: ${error.message}`);
@@ -983,7 +986,7 @@ export {
   validateInputStructure,
 };
 
-if (isEntrypoint(import.meta.url)) {
+if (isEntrypoint()) {
   main()
     .then(result => process.exit(result.exitCode))
     .catch(printFatalError);

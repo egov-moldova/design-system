@@ -19,11 +19,7 @@
  *
  * Also covered: `runMain` (tracks a separate `threw` boolean, so a falsy rejection —
  * `Promise.reject()`, `throw undefined` — still fails the run instead of reading like nothing
- * was thrown) and `shouldKillPortListeners` (cleanup kills whatever is listening on our ports
- * only once THIS run's own preflight has passed — wireit spawns every script `detached: true` of
- * its own, so Storybook/the demo server are never in `yarn dev:all`'s process group and a
- * group-based filter can never find them; gating on the preflight instead is what keeps this from
- * killing an unrelated listener a developer already had on the port).
+ * was thrown).
  *
  * Only these pure exports are exercised here: `check-dev-all.mjs` is deliberately excluded from
  * `test:scripts` (it starts real dev servers and drives a real browser — see its module doc),
@@ -33,7 +29,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { exitOutcome, runMain, safeRestoreBadge, shouldKillPortListeners } from '../check-dev-all.mjs';
+import { exitOutcome, runMain, safeRestoreBadge } from '../check-dev-all.mjs';
 
 describe('check-dev-all.mjs — importing the module', () => {
   it('registers no process exit/signal handlers (they live inside main())', () => {
@@ -148,15 +144,5 @@ describe('check-dev-all.mjs — runMain', () => {
     assert.equal(result.threw, true);
     assert.equal(result.failure, undefined);
     assert.equal(exitOutcome(result.threw, true), 1);
-  });
-});
-
-describe('check-dev-all.mjs — shouldKillPortListeners', () => {
-  it("is true once this run's preflight has passed", () => {
-    assert.equal(shouldKillPortListeners(true), true);
-  });
-
-  it('is false before the preflight has passed — a listener there predates this run', () => {
-    assert.equal(shouldKillPortListeners(false), false);
   });
 });

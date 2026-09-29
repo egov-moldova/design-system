@@ -9,9 +9,8 @@
  * entrypoint) makes the two sides diverge — the script silently skips `main()` and exits 0
  * having done nothing. `--preserve-symlinks-main` flips the other side too: it leaves
  * `import.meta.url` pointed at the link instead of resolving it, so a naive "realpath argv[1]
- * only" fix still diverges under that flag. `realpathSync` on BOTH sides is the fix; this is the
- * one place that comparison lives, replacing four copies that had drifted into two different
- * call shapes.
+ * only" fix still diverges under that flag. `realpathSync` on BOTH sides is the fix. The scripts
+ * this branch added use it; moving the repo's other entrypoint checks onto it is a separate change.
  */
 import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

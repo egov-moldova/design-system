@@ -41,7 +41,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { cpSync } from 'node:fs';
 import os from 'node:os';
 import { join } from 'node:path';
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { REPO_ROOT } from './lib/component-paths.mjs';
 import { getProcessStartTime } from './lib/storybook-helpers.mjs';
 
@@ -402,7 +402,7 @@ async function main() {
   }
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main()
     .then(code => {

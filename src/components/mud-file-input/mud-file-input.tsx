@@ -12,7 +12,7 @@ import type {
   FileInputSize,
   FileInputVariant,
 } from './mud-file-input.types';
-import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { formatFileSize } from '../../utils/file-size';
 import { FILE_INPUT_MESSAGES } from './mud-file-input.messages';
@@ -202,10 +202,14 @@ export class MudFileInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.syncValidity(this.files);
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity(this.files);
+        forceUpdate(this);
+      },
+    );
   }
 
   /** Built-in strings in the resolved locale, with the override props on top. */
@@ -832,7 +836,7 @@ export class MudFileInput {
                   size={file.size}
                   preview-src={this.previewUrls.get(file)}
                   disabled={effectivelyDisabled}
-                  locale={this.locale}
+                  locale={childLocale(this.host, this.locale)}
                   onMudRemove={this.handleRemove(index)}
                 />
               </li>

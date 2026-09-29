@@ -83,13 +83,28 @@ export const withLangObserver = async (run: (fire: () => void) => Promise<void>)
   try {
     await run(() => {
       for (const observer of created) {
-        if (observer.target === document.documentElement && observer.options?.attributeFilter?.includes('lang')) {
+        // `subtree: true` is what makes a real MutationObserver see a mutation on a
+        // light-DOM descendant of `document.documentElement` rather than only on
+        // `document.documentElement` itself — the fixture's mutated element (the
+        // `stageAttrs`/`ancestorLang` wrapper, or a component's own host) is always such a
+        // descendant, never `document.documentElement` itself, so gating on it here is what
+        // makes this stub fail a listener that dropped `subtree: true`.
+        if (
+          observer.target === document.documentElement &&
+          observer.options?.subtree === true &&
+          observer.options?.attributeFilter?.includes('lang')
+        ) {
           observer.callback([], observer as unknown as MutationObserver);
         }
       }
     });
   } finally {
     (globalThis as unknown as { MutationObserver: unknown }).MutationObserver = original;
+    // Same leak this function guards against on entry (see the comment above): a listener
+    // this block's own run leaked must not outlive the stub it was registered against, or the
+    // NEXT `withLangObserver` block's fresh stub never receives the `document.documentElement`
+    // observation either.
+    resetDocumentLangObserver();
   }
 };
 

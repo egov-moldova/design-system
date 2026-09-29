@@ -100,7 +100,11 @@ export class MudBadge {
 
   connectedCallback() {
     this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {

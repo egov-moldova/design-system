@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
-import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_ITEM_MESSAGES } from './mud-breadcrumb-item.messages';
 import type { BreadcrumbItemMessages } from './mud-breadcrumb-item.messages';
@@ -94,7 +94,11 @@ export class MudBreadcrumbItem {
   mudSelect!: EventEmitter<{ label: string; href?: string }>;
 
   connectedCallback() {
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {
@@ -142,7 +146,12 @@ export class MudBreadcrumbItem {
       'icon-start--visible': this.hasIconStartSlot,
     };
     const labelBody = this.loading ? (
-      <mud-spinner size="xs" variant="dark" locale={this.locale} label={this.messages().loadingLabel}></mud-spinner>
+      <mud-spinner
+        size="xs"
+        variant="dark"
+        locale={childLocale(this.host, this.locale)}
+        label={this.messages().loadingLabel}
+      ></mud-spinner>
     ) : (
       <span class="crumb-content">
         <span class={iconClasses}>

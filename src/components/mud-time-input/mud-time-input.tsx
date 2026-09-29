@@ -21,7 +21,7 @@ import {
   readSegments,
   segmentIndexAt,
 } from '../../utils/segment-mask';
-import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type { TimePickerChangeDetail } from '../mud-time-picker/mud-time-picker.types';
 import { TIME_INPUT_MESSAGES } from './mud-time-input.messages';
@@ -367,10 +367,14 @@ export class MudTimeInput {
 
   connectedCallback() {
     this.captureAriaLabel();
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.updateValidation(this.value);
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidation(this.value);
+        forceUpdate(this);
+      },
+    );
     // Keep a later `aria-label` change in sync; removing it re-fires with no attribute.
     if (typeof MutationObserver === 'undefined') return;
     this.ariaLabelObserver = new MutationObserver(() => this.captureAriaLabel());
@@ -819,7 +823,7 @@ export class MudTimeInput {
                 value={TIME_RE.test(this.value) ? this.value : undefined}
                 min={this.min}
                 max={this.max}
-                locale={this.locale}
+                locale={childLocale(this.host, this.locale)}
                 onMudChange={this.handlePickerChange}
               ></mud-time-picker>
             </div>

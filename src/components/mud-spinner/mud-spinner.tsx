@@ -50,7 +50,11 @@ export class MudSpinner {
   private stopLang?: () => void;
 
   connectedCallback() {
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {

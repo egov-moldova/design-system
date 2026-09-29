@@ -203,10 +203,14 @@ export class MudCheckbox {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = watchDocumentLang(this.host, () => {
-      this.updateValidity(this.checked);
-      forceUpdate(this);
-    });
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidity(this.checked);
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {

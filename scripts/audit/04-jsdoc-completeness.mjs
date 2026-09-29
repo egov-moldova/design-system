@@ -18,7 +18,7 @@
  *   node scripts/audit/04-jsdoc-completeness.mjs mud-button [--json] [--out file]
  *   node scripts/audit/04-jsdoc-completeness.mjs --all
  */
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
@@ -329,7 +329,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

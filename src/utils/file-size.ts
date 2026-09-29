@@ -1,5 +1,8 @@
 import { formatNumber } from './locale';
 
+/** `formatFileSize`'s number options — a stable object identity shared across every call. */
+const FILE_SIZE_NUMBER_OPTIONS: Intl.NumberFormatOptions = { useGrouping: false, maximumFractionDigits: 1 };
+
 /**
  * `bytes` as a human-readable size in the component's resolved locale (`1,5 MB` under
  * `ro-MD`, `1.5 MB` under `en-US`): repeatedly divided by 1024 while it stays at or above it
@@ -29,6 +32,6 @@ export const formatFileSize = (
     value = rounded / 1024;
     unitIndex += 1;
   }
-  const formatted = formatNumber(host, locale, value, { useGrouping: false, maximumFractionDigits: 1 });
+  const formatted = formatNumber(host, locale, value, FILE_SIZE_NUMBER_OPTIONS);
   return `${formatted} ${units[unitIndex]}`;
 };

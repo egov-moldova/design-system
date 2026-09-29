@@ -184,7 +184,7 @@ A component with an explicit `locale` sets `lang` on its own element while `loca
 - accessible names and validation messages fall back to the dictionary, because an empty `aria-label` names nothing and an empty validation message is invalid;
 - a few visible optional captions render nothing: `mud-file-input` `supported-formats-text`, `max-size-text`, `cta-text` and `dropzone-active-text`, `mud-select` `empty-label`, and `mud-pagination` `prev-label` and `next-label`.
 
-**Changing the language at runtime** — changing a `lang` attribute anywhere in the page (`<html>` or any element in the document) re-renders the components below it, including their validation messages, and so does changing a component's `locale`. A `lang` changed inside another component's shadow root is read on that component's next render only.
+**Changing the language at runtime** — changing a `lang` attribute anywhere in the page (`<html>` or any element in the document) re-renders the components below it, including their validation messages, and so does changing a component's `locale`. A `lang` changed inside another component's shadow root is read by the components inside that shadow root on their next render only.
 
 **Country list** — `mud-phone-input` lists Moldova first and the other countries alphabetically by their name in the active locale. A country list you pass in keeps your order.
 

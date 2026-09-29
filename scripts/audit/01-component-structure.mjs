@@ -19,7 +19,7 @@
  *   node scripts/audit/01-component-structure.mjs --all --json
  */
 import { statSync } from 'node:fs';
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
 import { listChangedComponents } from './lib/changed-components.mjs';
@@ -218,7 +218,7 @@ async function resolveTargets(args) {
 }
 
 // Only run when invoked directly — tests import analyzeComponent without triggering main.
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

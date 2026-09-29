@@ -29,7 +29,7 @@ import { readFileSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { glob } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo, REPO_ROOT } from './lib/component-paths.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
@@ -231,7 +231,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

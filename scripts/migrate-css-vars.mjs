@@ -29,8 +29,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 
-import { isEntrypoint as isEntrypointModule } from './lib/is-entrypoint.mjs';
-
 import { MAPPING as TOKEN_MAPPING } from './migrate-component-token-refs.mjs';
 
 const SCRIPT_FILE = fileURLToPath(import.meta.url);
@@ -302,7 +300,7 @@ function main(argv = process.argv) {
   return unmatchedAggregate.size > 0 ? 1 : 0;
 }
 
-const isEntrypoint = isEntrypointModule(import.meta.url);
+const isEntrypoint = process.argv[1] && path.resolve(process.argv[1]) === SCRIPT_FILE;
 if (isEntrypoint) {
   process.exit(main());
 }

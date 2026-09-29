@@ -47,7 +47,11 @@ class MudLocaleFixture extends HTMLElement {
     this.classList.add('hydrated');
     // Mirrors a real Stencil component's `connectedCallback` `watchDocumentLang` wiring, so this
     // fixture re-renders when an ancestor's `lang` changes too.
-    this.stopLang = watchDocumentLang(this, () => this.paint());
+    this.stopLang = watchDocumentLang(
+      this,
+      () => this.locale,
+      () => this.paint(),
+    );
     this.paint();
   }
 

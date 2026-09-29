@@ -29,7 +29,7 @@ import { writeFileSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { resolveComponentPaths, normalizeComponentName, relativeToRepo } from '../audit/lib/component-paths.mjs';
 import { extractContractFromTsx } from '../audit/14-component-contract.mjs';
 
@@ -343,7 +343,7 @@ function pascalCase(s) {
     .join('');
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

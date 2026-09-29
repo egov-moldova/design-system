@@ -28,7 +28,7 @@
  *   yarn sp.dev.watch
  *   node scripts/audit/15-style-parity.mjs mud-date-picker --json
  */
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
@@ -364,7 +364,7 @@ async function main() {
   process.exit(exitCodeFromSummary(result.summary));
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     if (err.message === PLAYWRIGHT_INSTALL_HINT || err.message === PLAYWRIGHT_BROWSER_HINT) {

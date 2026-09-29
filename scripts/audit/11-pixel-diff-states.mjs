@@ -36,7 +36,7 @@
  *   node scripts/audit/11-pixel-diff-states.mjs mud-date-picker --json
  *   node scripts/audit/11-pixel-diff-states.mjs mud-button --figma-dir ./figma-refs/mud-button --json   # story mode
  */
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { existsSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -625,7 +625,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     if (err.message === PLAYWRIGHT_INSTALL_HINT || err.message === PLAYWRIGHT_BROWSER_HINT) {

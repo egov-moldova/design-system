@@ -3,7 +3,7 @@ import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdat
 
 import { nameHostWithFallback } from '../../utils/aria-label';
 import type { HostAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_MESSAGES } from './mud-breadcrumb.messages';
 import type { BreadcrumbMessages } from './mud-breadcrumb.messages';
@@ -191,7 +191,11 @@ export class MudBreadcrumb {
 
   connectedCallback(): void {
     this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback(): void {
@@ -286,7 +290,12 @@ export class MudBreadcrumb {
   private renderLabelBody(item: BreadcrumbItem) {
     if (item.loading) {
       return (
-        <mud-spinner size="xs" variant="dark" locale={this.locale} label={this.messages().loadingLabel}></mud-spinner>
+        <mud-spinner
+          size="xs"
+          variant="dark"
+          locale={childLocale(this.host, this.locale)}
+          label={this.messages().loadingLabel}
+        ></mud-spinner>
       );
     }
     return (

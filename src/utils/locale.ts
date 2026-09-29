@@ -172,6 +172,20 @@ export const formatLocale = (host: Element, locale: string | null | undefined): 
   return region ? tag : own;
 };
 
+/**
+ * The `locale` a component hands to a `mud-*` it renders in its OWN shadow DOM (date-input →
+ * date-picker, time-input → time-picker, file-input → file-item, breadcrumb → spinner /
+ * breadcrumb-item, …): the parent's own RESOLVED format tag (`formatLocale(host, locale)`),
+ * never the raw `locale` prop. The raw prop is wrong here for the same reason `inheritedLang`
+ * skips `el`'s own `lang`: the nested child's `inheritedLang` walk crosses the shadow boundary
+ * and lands on the PARENT's host, where it reads whatever `lang` that host itself carries — a
+ * `lang` the parent's own resolution never reads back (see `inheritedLang`). Passing the
+ * resolved tag instead makes the child's `locale` prop explicit, so its own resolution
+ * short-circuits straight to that tag regardless of what `lang` its ancestor chain carries,
+ * matching the parent's own dictionary and format locale exactly.
+ */
+export const childLocale = (host: Element, locale: string | null | undefined): string => formatLocale(host, locale);
+
 const pluralRulesCache = new Map<string, Intl.PluralRules>();
 
 const pluralRulesFor = (locale: MudLocale): Intl.PluralRules => {
@@ -183,23 +197,27 @@ const pluralRulesFor = (locale: MudLocale): Intl.PluralRules => {
   return rules;
 };
 
-const numberFormatCache = new Map<string, WeakMap<Intl.NumberFormatOptions, Intl.NumberFormat>>();
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
 
 /**
- * An `Intl.NumberFormat` for `tag` + `options`, cached per `tag` and `options` OBJECT IDENTITY
- * (never per call, and never by serializing `options`) — pass a module-level constant `options`
- * object to hit the cache; a fresh object literal built on every call never does.
+ * The cache key's option half: only the `Intl.NumberFormatOptions` fields this codebase ever
+ * passes (`useGrouping`, `minimumFractionDigits`, `maximumFractionDigits`) — never
+ * `JSON.stringify`, which would key on property order and on fields nothing here sets.
+ */
+const numberFormatOptionsKey = (options: Intl.NumberFormatOptions): string =>
+  `${options.useGrouping}|${options.minimumFractionDigits}|${options.maximumFractionDigits}`;
+
+/**
+ * An `Intl.NumberFormat` for `tag` + `options`, cached per `tag` and per `options` VALUE (the
+ * fields `numberFormatOptionsKey` reads) — two calls with equal but DISTINCT `options` objects
+ * hit the same cache entry, not only calls sharing one module-level constant object.
  */
 export const numberFormatFor = (tag: string, options: Intl.NumberFormatOptions): Intl.NumberFormat => {
-  let byOptions = numberFormatCache.get(tag);
-  if (!byOptions) {
-    byOptions = new WeakMap();
-    numberFormatCache.set(tag, byOptions);
-  }
-  let formatter = byOptions.get(options);
+  const key = `${tag}|${numberFormatOptionsKey(options)}`;
+  let formatter = numberFormatCache.get(key);
   if (!formatter) {
     formatter = new Intl.NumberFormat(tag, options);
-    byOptions.set(options, formatter);
+    numberFormatCache.set(key, formatter);
   }
   return formatter;
 };
@@ -340,17 +358,33 @@ export const hostLang = (host: Element, locale: string | null | undefined): stri
   locale?.trim() ? formatLocale(host, locale) : undefined;
 
 /**
- * `observeDocumentLang`, labeled with the host's own tag so a throwing listener is traceable to
- * its component: `console.error('[<tag>] lang-change listener threw', err)`. `onChange` typically
- * calls `forceUpdate(this)`.
+ * `observeDocumentLang`, gated to the component's own RESOLVED locale: `locale` is the
+ * component's `locale`-prop getter (e.g. `() => this.locale`), re-read on every document-wide
+ * `lang` mutation. `onChange` fires only when the pair (dictionary `MudLocale`, `Intl` format
+ * tag) that mutation resolves to for `host` actually changed since the last firing — so a `lang`
+ * mutation anywhere under `document.documentElement`, including another mounted component's own
+ * host-lang write (`hostLang`), no longer re-renders every OTHER mounted component, only the
+ * ones whose own resolution it actually moved. Labeled with the host's own tag so a throwing
+ * listener is traceable to its component: `console.error('[<tag>] lang-change listener threw',
+ * err)`. `onChange` typically calls `forceUpdate(this)`.
  *
  * @returns A function that stops listening; call it from `disconnectedCallback`.
  */
-export const watchDocumentLang = (host: Element, onChange: () => void): (() => void) =>
-  observeDocumentLang(() => {
+export const watchDocumentLang = (
+  host: Element,
+  locale: () => string | null | undefined,
+  onChange: () => void,
+): (() => void) => {
+  const resolvedKey = () => `${resolveLocaleQuiet(host, locale())}|${formatLocale(host, locale())}`;
+  let lastKey = resolvedKey();
+  return observeDocumentLang(() => {
+    const key = resolvedKey();
+    if (key === lastKey) return;
+    lastKey = key;
     try {
       onChange();
     } catch (err) {
       console.error(`[${host.localName}] lang-change listener threw`, err);
     }
   });
+};

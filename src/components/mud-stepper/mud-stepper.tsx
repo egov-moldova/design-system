@@ -191,7 +191,11 @@ export class MudStepper {
     // `aria-label` (attribute or native `ariaLabel` property) wins and stays on
     // the host; while there is none, the host gets the fallback.
     this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {

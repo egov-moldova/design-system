@@ -115,7 +115,11 @@ export class MudToast {
   }
 
   connectedCallback(): void {
-    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   componentWillLoad(): void {

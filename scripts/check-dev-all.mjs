@@ -25,7 +25,7 @@
  * one group alone cannot reach them. Cleanup instead kills whatever is LISTENING on 6007 / 5174
  * outright, but only once this run's own preflight has passed (ports were free, badge present):
  * from that point on, anything found on those ports was started by this run
- * (`shouldKillPortListeners`); a listener seen before the preflight passes, or during a cleanup
+ * (`killListeners`); a listener seen before the preflight passes, or during a cleanup
  * from a throw that happened before it ran, predates this run and is left alone — never an
  * unrelated process a developer happens to have listening there. `exit` and the signal handlers
  * are installed inside `main()`, never at module load, so importing this module (a test does)
@@ -140,8 +140,7 @@ function listenerPids() {
 }
 
 /**
- * Whether cleanup should kill whatever is listening on our ports — pulled out as a pure function
- * so the decision is testable without starting real servers or listeners.
+ * Kills whatever listens on our ports, but only once this run's preflight has passed.
  *
  * Wireit spawns EVERY script `detached: true` (node_modules/wireit/lib/script-child-process.js),
  * so Storybook and the demo server each end up in their OWN process group — never `child.pid`'s
@@ -151,13 +150,13 @@ function listenerPids() {
  * those ports afterward was started by this run and is safe to kill outright; before it passes
  * (or on a cleanup from an early throw, when it never ran) a listener there predates this run and
  * must be left alone — killing it would be killing a developer's own unrelated server.
+ *
+ * Known limits: two runs started before either binds its ports both pass their preflight and can
+ * kill each other's servers; the exit hook's SIGKILL leaves wireit's detached non-listening
+ * watchers (`stencil --watch`, `tokens.watch`) running. Run one check at a time.
  */
-export function shouldKillPortListeners(preflightPassed) {
-  return preflightPassed === true;
-}
-
 function killListeners() {
-  if (!shouldKillPortListeners(preflightPassed)) return;
+  if (!preflightPassed) return;
   for (const pid of listenerPids()) {
     try {
       process.kill(pid, 'SIGKILL');

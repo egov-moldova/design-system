@@ -12,9 +12,10 @@ title: numeric parsing, validation messages after a locale change, and locale-fo
   decimal. The one ambiguous shape, the locale's own group character followed by exactly three
   digits (`1.234` under `ro-MD`, `1,234` under `en-US`), yields no value: the field reports
   `badInput` with the new `ambiguousMessage` text (override prop `ambiguous-message`), so a form
-  does not submit it silently, and committing it emits one `mudError` with `reason:
-  'ambiguous'` and a `mudChange` with `value: null`, like any other commit. `formStateRestoreCallback` restores
-  exactly the serialized value.
+  does not submit it silently. A `mudError` with `reason: 'ambiguous'` is emitted while typing
+  and again on each commit, and each commit emits a `mudChange` with `value: null`; a commit
+  fires on both `change` and `blur`, as every commit of this component already did.
+  `formStateRestoreCallback` restores exactly the serialized value.
 - File sizes in `mud-file-input` and `mud-file-item` use the locale's decimal (`1,5 MB` under
   `ro-MD`); they used a dot, which reads as a thousands separator in Romanian and Russian. They
   now show at most one decimal and drop a trailing zero (`2 KB`, not `2.0 KB`; GB sizes keep

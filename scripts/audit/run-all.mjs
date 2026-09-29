@@ -49,7 +49,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
-import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { fileURLToPath } from 'node:url';
 import { REPO_ROOT, componentOfSpec, listAllComponents, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import {
@@ -1323,7 +1323,7 @@ function colorize(noColor) {
   };
 }
 
-const isDirectRun = isEntrypoint(import.meta.url);
+const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);
