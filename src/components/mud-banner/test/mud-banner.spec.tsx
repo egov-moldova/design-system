@@ -183,6 +183,53 @@ describe('mud-banner', () => {
     });
   });
 
+  describe('actions slot', () => {
+    it('shows the actions wrapper only when the slot is filled', async () => {
+      const { root } = await render(
+        <mud-banner>
+          M
+          <a slot="actions" href="/status">
+            Detalii
+          </a>
+        </mud-banner>,
+      );
+      expect(root?.classList.contains('has-actions')).toBe(true);
+      expect(root?.shadowRoot?.querySelector('.actions slot[name="actions"]')).not.toBeNull();
+
+      const { root: bare } = await render(<mud-banner>M</mud-banner>);
+      expect(bare?.classList.contains('has-actions')).toBe(false);
+    });
+
+    it('replaces the deprecated link props when filled', async () => {
+      const { root } = await render(
+        <mud-banner link-text="Vechi" link-href="/old">
+          M
+          <a slot="actions" href="/new">
+            Nou
+          </a>
+        </mud-banner>,
+      );
+      expect(queryLink(root)).toBeNull();
+      expect(root?.classList.contains('has-link')).toBe(false);
+    });
+
+    it('warns once that linkText is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-banner link-text="Detalii">M</mud-banner>);
+      Object.assign(root as object, { linkText: 'Alt text' });
+      await waitForChanges();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('are deprecated'))).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it('does not warn without linkText', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(<mud-banner>M</mud-banner>);
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('deprecated'))).toHaveLength(0);
+      warn.mockRestore();
+    });
+  });
+
   describe('content + aria-label', () => {
     it('projects the default-slot message', async () => {
       const { root } = await render(<mud-banner>Mentenanță programată</mud-banner>);

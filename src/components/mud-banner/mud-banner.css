@@ -60,6 +60,18 @@
   cursor: pointer;
 }
 
+/* Inline actions after the message; they replace the deprecated link props. */
+.actions {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--banner-actions-gap);
+}
+
+:host(:not(.has-actions)) .actions {
+  display: none;
+}
+
 .close {
   position: absolute;
   /* Figma puts the 16px glyph 16px from the right edge (106:1029 at x=1216 of

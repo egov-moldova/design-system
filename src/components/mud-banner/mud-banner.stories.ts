@@ -9,8 +9,6 @@ type BannerArgs = {
   variant: BannerVariant;
   emphasis: BannerEmphasis;
   dismissible: boolean;
-  linkText: string;
-  linkHref: string;
   iconName: IconName | '';
   body: string;
   locale: string;
@@ -22,8 +20,6 @@ const renderBanner = (args: BannerArgs) => /*html*/ `
     variant="${args.variant}"
     emphasis="${args.emphasis}"
     ${args.dismissible ? 'dismissible' : ''}
-    ${args.linkText ? `link-text="${args.linkText}"` : ''}
-    ${args.linkHref ? `link-href="${args.linkHref}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
     ${args.locale ? `locale="${args.locale}"` : ''}
     ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
@@ -77,8 +73,6 @@ button; the consumer animates out and removes the element.
       description: 'Renders a trailing × button that emits `mudDismiss`.',
       table: { defaultValue: { summary: 'false' } },
     },
-    linkText: { name: 'link-text', control: 'text', description: 'Optional inline link text.' },
-    linkHref: { name: 'link-href', control: 'text', description: 'Href for the inline link.' },
     iconName: {
       name: 'icon-name',
       control: 'select',
@@ -102,8 +96,6 @@ button; the consumer animates out and removes the element.
     variant: 'info',
     emphasis: 'strong',
     dismissible: true,
-    linkText: '',
-    linkHref: '#',
     iconName: '',
     body: MESSAGE,
     locale: '',
@@ -135,15 +127,32 @@ const renderAllVariants = () => /*html*/ `
 export const AllVariants: Story = { render: renderAllVariants, parameters: { controls: { disable: true } } };
 
 // ---------------------------------------------------------------------------
-// WithLink — inline "Click here" affordance
+// WithActions — the inline "Click here" affordance, a mud-link in the actions slot
 // ---------------------------------------------------------------------------
-const renderWithLink = () => /*html*/ `
+const renderWithActions = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-banner variant="info" emphasis="strong" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
-    <mud-banner variant="warning" emphasis="subtle" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
+    <mud-banner variant="info" emphasis="strong" dismissible>
+      ${MESSAGE}
+      <mud-link slot="actions" href="#" size="md" variant="white">Details</mud-link>
+    </mud-banner>
+    <mud-banner variant="warning" emphasis="subtle" dismissible>
+      ${MESSAGE}
+      <mud-link slot="actions" href="#" size="md">Details</mud-link>
+    </mud-banner>
   </div>
 `;
-export const WithLink: Story = { render: renderWithLink, parameters: { controls: { disable: true } } };
+export const WithActions: Story = {
+  render: renderWithActions,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Figma\'s "Click here" is the link component (Primary, 16). Put a `mud-link` in the `actions` slot; on `emphasis="strong"` use `variant="white"`. The `link-text` / `link-href` props are deprecated.',
+      },
+    },
+  },
+};
 
 // ---------------------------------------------------------------------------
 // CoverageGuard — Stencil constructor branch coverage

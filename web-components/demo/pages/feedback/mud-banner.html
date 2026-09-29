@@ -45,17 +45,20 @@
         <div class="subsection">
           <h3>Link and close</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
-            <mud-banner variant="info" emphasis="subtle" link-text="Details" link-href="#link-target">
+            <mud-banner variant="info" emphasis="subtle">
               Scheduled maintenance today.
+              <mud-link slot="actions" href="#link-target" size="md">Details</mud-link>
             </mud-banner>
-            <mud-banner variant="info" emphasis="strong" link-text="Details" link-href="#link-target">
+            <mud-banner variant="info" emphasis="strong">
               Scheduled maintenance today.
+              <mud-link slot="actions" href="#link-target" size="md" variant="white">Details</mud-link>
             </mud-banner>
             <mud-banner variant="warning" emphasis="subtle" dismissible="">
               Your session expires in 5 minutes.
             </mud-banner>
-            <mud-banner variant="error" emphasis="strong" dismissible="" link-text="Try again" link-href="#link-target">
+            <mud-banner variant="error" emphasis="strong" dismissible="">
               The electronic signing service is currently unavailable.
+              <mud-link slot="actions" href="#link-target" size="md" variant="white">Try again</mud-link>
             </mud-banner>
           </div>
           <span class="label">
@@ -80,9 +83,10 @@
         <div class="subsection">
           <h3>Edge cases</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
-            <mud-banner variant="warning" emphasis="subtle" dismissible="" link-text="Details" link-href="#link-target">
+            <mud-banner variant="warning" emphasis="subtle" dismissible="">
               Very long message: starting on 15 April, submitting applications for identity documents is done
               exclusively by online appointment, and the physical counters will serve urgent cases only.
+              <mud-link slot="actions" href="#link-target" size="md">Details</mud-link>
             </mud-banner>
             <div style="max-width: 420px">
               <mud-banner variant="info" emphasis="subtle" dismissible="">
