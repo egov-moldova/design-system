@@ -448,9 +448,6 @@ const renderEdgeCases = () => /*html*/ `
       </mud-accordion-item>
     </mud-accordion>
 
-    <p style="${sectionLabelStyle}">Render data-driven via prop items[].</p>
-    <mud-accordion id="data-driven" mode="single"></mud-accordion>
-
     <p style="${sectionLabelStyle}">Forced mobile breakpoint (typography reduced to 22/30).</p>
     <mud-accordion mode="multiple" breakpoint="mobile" style="max-width: 343px;">
       <mud-accordion-item heading="Mobile version" supporting-text="Reduces typography to 22px / 30px">
@@ -461,18 +458,6 @@ const renderEdgeCases = () => /*html*/ `
       </mud-accordion-item>
     </mud-accordion>
   </div>
-  <script>
-    requestAnimationFrame(() => {
-      const el = document.getElementById('data-driven');
-      if (el) {
-        el.items = [
-          { id: 'srv-1', heading: 'Tax services', supportingText: 'Declarations and payments', content: 'File tax declarations and pay taxes directly online.', open: true },
-          { id: 'srv-2', heading: 'Social services', supportingText: 'Pensions, allowances, benefits', content: 'Check the status of social requests and collect certified documents.' },
-          { id: 'srv-3', heading: 'Notary services', supportingText: 'Authentications and certifications', content: 'Book a notary appointment and check the authenticated documents.' },
-        ];
-      }
-    });
-  </script>
 `;
 
 const docsSourceEdgeCases = /*html*/ `<!-- Single item -->
@@ -484,15 +469,6 @@ const docsSourceEdgeCases = /*html*/ `<!-- Single item -->
 <mud-accordion mode="multiple">
   <mud-accordion-item heading="Question with a very long title..." supporting-text="...">...</mud-accordion-item>
 </mud-accordion>
-
-<!-- Data-driven with items prop -->
-<mud-accordion id="data-driven" mode="single"></mud-accordion>
-<script>
-  document.getElementById('data-driven').items = [
-    { id: 'srv-1', heading: 'Tax services', supportingText: 'Declarations and payments', content: '...', open: true },
-    { id: 'srv-2', heading: 'Social services', supportingText: '...', content: '...' },
-  ];
-</script>
 
 <!-- Forced mobile breakpoint -->
 <mud-accordion mode="multiple" breakpoint="mobile" style="max-width: 343px;">

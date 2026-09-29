@@ -248,7 +248,7 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 - **States:** default → hover → active → focus-visible → disabled → loading. Focus indicator uses brand blue at 1.5px outline plus 2px offset; visible against every surface.
 - **Hover / Focus:** 150ms `ease-out` transition on background, border, and label color. No transform, no scale, no shadow change.
 - **Loading:** centered `mud-spinner` (xs on sm, sm on md/lg) replaces label; `aria-busy="true"`, control remains in tab order but does not fire activation.
-- **Icon-only:** square footprint, equal padding, `slot="icon"`, requires `label` prop for screen readers.
+- **Icon-only:** square footprint, equal padding, `slot="icon"`, requires an `aria-label` for screen readers.
 
 ### Button Group (`mud-button-group`)
 

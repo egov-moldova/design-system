@@ -20,7 +20,8 @@
         "node": "205:2499",
         "reason": "input-chip Type=Avatar/State=Focus — the Close ring it draws is the same 205:2477 treatment input-remove-focus pins, over the avatar body input-avatar pins."
       }
-    ]
+    ],
+    "fixtureNote": "Figma's `⌨️ Label` property is plain text, so every fixture slots the word \"Label\": the chip's visible text only comes from its default slot. Its deprecated `label` prop is an accessible name, never rendered."
   },
   "defaults": {
     "story": "components-chip--default",

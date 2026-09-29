@@ -11,27 +11,47 @@
         <h2>&lt;mud-accordion&gt;</h2>
 
         <div class="subsection">
-          <h3>Data-driven (<code>items</code> prop, mode="multiple")</h3>
+          <h3>Declarative items, mode="multiple"</h3>
           <div style="width: 100%; max-width: 640px">
             <mud-accordion
               id="demo-accordion-data"
               mode="multiple"
               appearance="default"
               label="Frequently asked questions"
-            ></mud-accordion>
+            >
+              <mud-accordion-item
+                item-id="a1"
+                heading="How do I create an account?"
+                supporting-text="MPass sign-in"
+                open=""
+              >
+                <p style="margin: 0">Open the portal and sign in with MPass.</p>
+              </mud-accordion-item>
+              <mud-accordion-item item-id="a2" heading="How do I recover my password?">
+                <p style="margin: 0">Use the recovery option by email or SMS.</p>
+              </mud-accordion-item>
+              <mud-accordion-item item-id="a3" heading="How do I contact support?" supporting-text="Hotline 1234">
+                <p style="margin: 0">Call the hotline or write by email.</p>
+              </mud-accordion-item>
+            </mud-accordion>
           </div>
-          <span class="label">items set as a JS property (arrays cannot be set via attribute)</span>
+          <span class="label">&lt;mud-accordion-item&gt; children (the <code>items</code> prop is deprecated)</span>
         </div>
 
         <div class="subsection">
-          <h3>Single mode + trail-sites appearance (<code>items</code> prop)</h3>
+          <h3>Single mode + trail-sites appearance</h3>
           <div style="width: 100%; max-width: 640px">
-            <mud-accordion
-              id="demo-accordion-single"
-              mode="single"
-              appearance="trail-sites"
-              label="Services"
-            ></mud-accordion>
+            <mud-accordion id="demo-accordion-single" mode="single" appearance="trail-sites" label="Services">
+              <mud-accordion-item item-id="s1" heading="Identity card" open="">
+                <p style="margin: 0">Appointment for issuing the documents.</p>
+              </mud-accordion-item>
+              <mud-accordion-item item-id="s2" heading="Biometric passport">
+                <p style="margin: 0">Submit the request online.</p>
+              </mud-accordion-item>
+              <mud-accordion-item item-id="s3" heading="Driving licence">
+                <p style="margin: 0">Renewal and replacement.</p>
+              </mud-accordion-item>
+            </mud-accordion>
           </div>
           <span class="label">mode="single" — opening one collapses the others</span>
         </div>
@@ -78,47 +98,6 @@
           </div>
           <span class="label">long no-space heading, diacritics, RTL, empty body</span>
         </div>
-
-        <script type="module">
-          customElements.whenDefined('mud-accordion').then(() => {
-            const data = document.getElementById('demo-accordion-data');
-            if (data) {
-              data.items = [
-                {
-                  id: 'a1',
-                  heading: 'How do I create an account?',
-                  supportingText: 'MPass sign-in',
-                  content: 'Open the portal and sign in with MPass.',
-                  open: true,
-                },
-                {
-                  id: 'a2',
-                  heading: 'How do I recover my password?',
-                  content: 'Use the recovery option by email or SMS.',
-                },
-                {
-                  id: 'a3',
-                  heading: 'How do I contact support?',
-                  supportingText: 'Hotline 1234',
-                  content: 'Call the hotline or write by email.',
-                },
-              ];
-            }
-            const single = document.getElementById('demo-accordion-single');
-            if (single) {
-              single.items = [
-                {
-                  id: 's1',
-                  heading: 'Identity card',
-                  content: 'Appointment for issuing the documents.',
-                  open: true,
-                },
-                { id: 's2', heading: 'Biometric passport', content: 'Submit the request online.' },
-                { id: 's3', heading: 'Driving licence', content: 'Renewal and replacement.' },
-              ];
-            }
-          });
-        </script>
       </section>
     </main>
     <script type="module" src="/main.ts"></script>

@@ -434,10 +434,8 @@ export class MudTable {
    * potentially in the hundreds, per-cell slot tracking would add measurable
    * cost for a contract that already matches the slot+data model.
    *
-   * ANTIPATTERN-026 was designed for atom-scale components where slot and
-   * prop are two parallel content channels. For data grids the pattern is
-   * inverted (data is primary, slot is override) and the regex check is a
-   * known false positive — left as-is by design.
+   * Data is primary and the slot is the override, which is why mud-table is in
+   * ANTIPATTERN-026's HYBRID_CONTENT_COMPONENTS allow-list.
    */
   private renderCellContent(column: TableColumn, row: TableRowData, rowId: string, rowIndex: number) {
     const byId = `cell-${column.key}-${rowId}`;

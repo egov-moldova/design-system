@@ -46,7 +46,7 @@ const DELIVERY: Option[] = [
 // ---------- Markup helpers ----------
 //
 // Options carry their visible text in `mud-radio`'s `label` / `supporting-text`
-// slots (the props of the same name are accessible-name fallbacks only).
+// slots; the props of the same name render the same text.
 
 const option = (o: Option): string => {
   const attrs = [`value="${o.value}"`, o.disabled ? 'disabled' : ''].filter(Boolean).join(' ');

@@ -8,7 +8,8 @@
         "node": "51:412",
         "reason": "Indeterminate/Focus/Medium — the ring is the same Focus Ring/Small the two focus states below pin, over the same brand fill indeterminate-md already pins."
       }
-    ]
+    ],
+    "fixtureNote": "The label-group fixtures slot their text; each has a -prop twin that passes the same text through the `label` / `supporting-text` props, which render it identically. The text itself is not asserted: it lives in the light DOM, and a shadow element wrapping a <slot> reports no textContent of its own."
   },
   "defaults": {
     "story": "components-checkbox--default",
