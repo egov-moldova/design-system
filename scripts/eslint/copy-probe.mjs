@@ -31,10 +31,20 @@
  * dictionary check and allowlist live in `content-language.mjs`, shared with
  * `scripts/check-content-language.mjs` (the static sources).
  *
+ * `--overflow` (issue #163, round 2) checks the layout cost of longer translations: under
+ * `ru-MD`, in every story, no component-owned text element — an element inside a shadow root
+ * with a text node of its own that equals a `ru-MD` dictionary value — may have
+ * `scrollWidth > clientWidth` while its computed `overflow-x` is not `visible` (text clipped or
+ * scrolled away). Consumer content (a deliberately long `label`) is not a translation cost and
+ * is not checked; an element 1px wide or less is a visually-hidden text by design. A flag is fixed in the
+ * component's CSS through tokens, or listed in `overflow.allow.json` with a reason:
+ * `[{ component, element, story?, reason }]`, where `element` is `tag.class.class` as printed
+ * in the report and an omitted `story` matches every story.
+ *
  * Requires `yarn sp.build` to have produced `storybook-static/` first — this script only
  * serves what is already built, it never invokes Storybook itself.
  *
- * Usage: node scripts/eslint/copy-probe.mjs [--content-language]
+ * Usage: node scripts/eslint/copy-probe.mjs [--content-language | --overflow]
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -557,10 +567,125 @@ async function scanStory(browser, baseUrl, storyId) {
   }
 }
 
+// ── `--overflow`: longer translations must not be clipped ──
+
+/**
+ * Walks every shadow root under `document.body` and returns the component-owned text elements
+ * (an element with a non-empty text node of its own, inside a shadow root) whose content is
+ * wider than its box while `overflow-x` is not `visible`. Serialised by `page.evaluate`.
+ */
+function collectOverflow() {
+  const flags = [];
+  const describe = el => {
+    const classes = [...el.classList].sort().map(c => `.${c}`);
+    return `${el.tagName.toLowerCase()}${classes.join('')}`;
+  };
+  const check = (el, host) => {
+    const ownText = [...el.childNodes].some(n => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
+    if (!ownText) return;
+    const style = getComputedStyle(el);
+    if (style.overflowX === 'visible') return;
+    // A 1px slack absorbs sub-pixel rounding; a box 1px wide or less is visually hidden on purpose.
+    if (el.scrollWidth - el.clientWidth <= 1 || el.clientWidth <= 1) return;
+    flags.push({
+      component: host.tagName.toLowerCase(),
+      element: describe(el),
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+      overflow: style.overflowX,
+      textOverflow: style.textOverflow,
+      text: el.textContent.trim().slice(0, 60),
+      fullText: el.textContent.trim(),
+    });
+  };
+  const walk = (root, host) => {
+    for (const el of root.querySelectorAll('*')) {
+      if (host) check(el, host);
+      if (el.shadowRoot) walk(el.shadowRoot, el);
+    }
+  };
+  walk(document.body, null);
+  return flags;
+}
+
+async function scanStoryOverflow(browser, baseUrl, storyId) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const page = await context.newPage();
+  try {
+    const url = `${baseUrl}/iframe.html?id=${encodeURIComponent(storyId)}&viewMode=story&globals=${encodeURIComponent(
+      'lang:ru-MD',
+    )}`;
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
+    await page.waitForTimeout(300); // Stencil hydration settling
+    return await page.evaluate(collectOverflow);
+  } finally {
+    await context.close();
+  }
+}
+
+function loadOverflowAllowlist() {
+  const path = join(ROOT, 'scripts/eslint/overflow.allow.json');
+  const entries = JSON.parse(readFileSync(path, 'utf8'));
+  for (const e of entries) {
+    if (!e.component || !e.element || !e.reason)
+      throw new Error(`${path}: every entry needs component, element and reason`);
+  }
+  return entries;
+}
+
+async function mainOverflow() {
+  const { matchesRu } = await loadDictionaries();
+  if (!existsSync(STATIC_DIR)) {
+    console.error(`[copy-probe] ${STATIC_DIR} does not exist. Run \`yarn sp.build\` first.`);
+    process.exit(1);
+  }
+  const allow = loadOverflowAllowlist();
+  const used = new Set();
+  const server = await serveStatic(STATIC_DIR, 0);
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const { browser, close } = await launchBrowser({ headless: true });
+  const hits = [];
+  let allowed = 0;
+  let stories = [];
+  try {
+    stories = await fetchStories(baseUrl, null);
+    console.log(`[copy-probe --overflow] ${stories.length} stories under ru-MD.`);
+    await mapLimit(stories, CONCURRENCY, async story => {
+      for (const flag of await scanStoryOverflow(browser, baseUrl, story.id)) {
+        if (!matchesRu(flag.fullText)) continue; // consumer content, not a translation
+        const row = allow.find(
+          e => e.component === flag.component && e.element === flag.element && (!e.story || e.story === story.id),
+        );
+        if (row) {
+          used.add(row);
+          allowed++;
+        } else hits.push({ story: story.id, ...flag });
+      }
+    });
+  } finally {
+    await close();
+    server.close();
+  }
+  for (const hit of hits.sort((a, b) => a.story.localeCompare(b.story))) {
+    console.log(
+      `${hit.story} · ${hit.component} · ${hit.element} · scrollWidth ${hit.scrollWidth} > clientWidth ${hit.clientWidth} · ` +
+        `overflow ${hit.overflow} · text-overflow ${hit.textOverflow} · "${hit.text}"`,
+    );
+  }
+  for (const row of allow.filter(e => !used.has(e))) {
+    console.log(`[copy-probe --overflow] note: allowlist row never matched: ${row.component} ${row.element}`);
+  }
+  console.log(
+    `[copy-probe --overflow] stories: ${stories.length}, allowlisted flags: ${allowed}, hits: ${hits.length}`,
+  );
+  process.exit(hits.length > 0 ? 1 : 0);
+}
+
 // ── Main ──
 
 async function main() {
   if (process.argv.includes('--content-language')) return mainContentLanguage();
+  if (process.argv.includes('--overflow')) return mainOverflow();
   if (!existsSync(STATIC_DIR)) {
     console.error(`[copy-probe] ${STATIC_DIR} does not exist. Run \`yarn sp.build\` first.`);
     process.exit(1);

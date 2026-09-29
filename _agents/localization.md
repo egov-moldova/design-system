@@ -28,8 +28,17 @@ Every `mud-*` component that ships copy resolves it from a built-in
    to `ro-MD`.
 3. **Per-string override props stay**, as optional overrides of the
    dictionary: a prop set to a non-empty string wins over the resolved
-   locale's entry; an empty string falls back to the dictionary too (an empty
-   `aria-label` is never what a consumer means).
+   locale's entry. An empty string has three outcomes, recorded per prop in
+   `scripts/eslint/override-classes.json` (`name` / `message` / `caption`):
+   accessible names (`*Label`, `*AriaLabel`, announcements, `dismissHint`) and
+   validation messages (`*Message`, `*ErrorText`, `requiredText`, rejection
+   texts) fall back to the dictionary — an empty `aria-label` names nothing and
+   `setValidity` throws on an empty message; a visible optional caption
+   renders nothing on `""`, as it did before the dictionary existed. A prop is
+   a caption only if it existed at `d982190c` and `""` rendered nothing there;
+   every prop added since falls back. Each component's spec carries
+   `empty <prop> falls back` or `empty <prop> hides` for every override prop
+   (`node scripts/check-locale-specs.mjs`).
 4. **Count-dependent copy is a `Plural`** (`one`/`few`/`many`/`other`, chosen
    by `Intl.PluralRules` on the *resolved* locale), never a `n === 1 ? … : …`
    ternary. Placeholders are `{name}`, filled by `formatMessage`.
@@ -118,6 +127,17 @@ literal in `src/components/**/*.tsx` outside a `.messages.ts` file — complete
 for JSX descendants, a stated heuristic elsewhere (a single-word literal like
 `'Loading'` passes the non-JSX half; `node scripts/eslint/copy-probe.mjs`,
 a Storybook runtime scan under `lang="ru-MD"`, is what catches those).
+
+Two more probes run over the built Storybook (`yarn sp.build` first):
+`node scripts/eslint/copy-probe.mjs --content-language` fails on Romanian or
+Cyrillic letters in demo content (consumer content stays English; `Locales`
+stories and stories named by a `test/*.figma.json` manifest are exempt), and
+`node scripts/eslint/copy-probe.mjs --overflow` fails when a `ru-MD` dictionary
+string is clipped (`scrollWidth > clientWidth` under a non-`visible` overflow).
+Fix a flag in the component's CSS through tokens, or list it in
+`scripts/eslint/overflow.allow.json` with a reason. `yarn locale.report` prints
+every dictionary as a key × `ro-MD` / `en-US` / `ru-MD` table for translation
+review; the en/ru text is unreviewed until a native speaker signs it off.
 
 ---
 

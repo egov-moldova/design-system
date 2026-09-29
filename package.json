@@ -95,6 +95,7 @@
     "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
     "changelog.check": "node scripts/changelog-release.mjs --check",
+    "locale.report": "node scripts/locale-report.mjs",
     "changelog.release": "node scripts/changelog-release.mjs",
     "check": "wireit",
     "check.ci": "wireit",
