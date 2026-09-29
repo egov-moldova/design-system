@@ -214,5 +214,6 @@ Tracked in #165, one PR per phase:
 
 - `mud-checkbox`, `mud-radio`, `mud-switch`: `label` / `supportingText` are an accessible name
   only; they become hybrids (phase 3).
-- `mud-button`, `mud-service-button`, `mud-chip`: `label` is an accessible name only; they
-  forward the native `aria-label` first, then deprecate `label` (phase 8).
+- `mud-button`, `mud-service-button`, `mud-chip`: `label` is still an accessible name only,
+  deprecated in favour of the native `aria-label`, which they forward; it goes away in the next
+  major.

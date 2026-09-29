@@ -1,8 +1,39 @@
-import { render, h, describe, it, expect } from '@stencil/vitest';
+import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-service-button';
 
 describe('mud-service-button', () => {
+  describe('native aria-label', () => {
+    it('moves the host aria-label onto the internal control', async () => {
+      const { root } = await render(<mud-service-button aria-label="Închide">X</mud-service-button>);
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Închide');
+    });
+
+    it('wins over the deprecated label prop', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-service-button aria-label="Nativ" label="Vechi">
+          X
+        </mud-service-button>,
+      );
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Nativ');
+      warn.mockRestore();
+    });
+
+    it('warns once that label is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-service-button label="Vechi">X</mud-service-button>);
+      Object.assign(root as object, { label: 'Alt' });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([m]: unknown[]) =>
+        String(m).includes('[mud-service-button] `label` as an accessible name is deprecated'),
+      );
+      expect(calls).toHaveLength(1);
+      warn.mockRestore();
+    });
+  });
+
   it('renders with default props (appearance=primary, type=button)', async () => {
     const { root, waitForChanges } = await render(<mud-service-button>Plătește cu mpay</mud-service-button>);
     await waitForChanges();

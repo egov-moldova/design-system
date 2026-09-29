@@ -392,7 +392,7 @@ export const AllDataTypes: Story = {
         return /*html*/ `
           <mud-tag slot="cell-status-${row.id}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
           <mud-checkbox slot="cell-verified-${row.id}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmed"></mud-checkbox>
-          <mud-button slot="cell-actions-${row.id}" appearance="text" size="sm" icon-only label="Edit">
+          <mud-button slot="cell-actions-${row.id}" appearance="text" size="sm" icon-only aria-label="Edit">
             <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
           </mud-button>
         `;

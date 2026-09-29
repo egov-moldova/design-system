@@ -9,6 +9,37 @@ const queryControl = (root: Element | null | undefined): HTMLButtonElement | HTM
   (root?.shadowRoot?.querySelector('.control') ?? null) as HTMLButtonElement | HTMLAnchorElement | null;
 
 describe('mud-button', () => {
+  describe('native aria-label', () => {
+    it('moves the host aria-label onto the internal control', async () => {
+      const { root } = await render(<mud-button aria-label="Închide">X</mud-button>);
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Închide');
+    });
+
+    it('wins over the deprecated label prop', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-button aria-label="Nativ" label="Vechi">
+          X
+        </mud-button>,
+      );
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Nativ');
+      warn.mockRestore();
+    });
+
+    it('warns once that label is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-button label="Vechi">X</mud-button>);
+      Object.assign(root as object, { label: 'Alt' });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([m]: unknown[]) =>
+        String(m).includes('[mud-button] `label` as an accessible name is deprecated'),
+      );
+      expect(calls).toHaveLength(1);
+      warn.mockRestore();
+    });
+  });
+
   it('renders with default props reflected on host', async () => {
     const { root } = await render(<mud-button>Click me</mud-button>);
 

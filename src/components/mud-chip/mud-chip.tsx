@@ -2,6 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { CHIP_MESSAGES } from './mud-chip.messages';
@@ -84,9 +85,11 @@ export class MudChip {
 
   /**
    * Accessible-name fallback. Used as `aria-label` on the internal `<button>`
-   * when the default slot is empty (and no explicit `aria-label` is set). Does
-   * NOT render visible text — use the default slot for that. Matches the
-   * `mud-button` convention.
+   * when the default slot is empty and the host has no native `aria-label`. Does
+   * NOT render visible text — use the default slot for that.
+   *
+   * @deprecated `label` means visible text everywhere else in the library. Set the
+   * native `aria-label` attribute instead; `label` goes away in the next major.
    */
   @Prop() label?: string;
 
@@ -114,6 +117,8 @@ export class MudChip {
   @State() private hasIconStart: boolean = false;
   @State() private hasAvatar: boolean = false;
   @State() private hasLabelSlot: boolean = false;
+  /** The host's native `aria-label`, moved onto the internal `<button>`. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudChipElement;
 
@@ -128,8 +133,11 @@ export class MudChip {
   @Event() mudRemove!: EventEmitter<void>;
 
   private stopLang?: () => void;
+  private stopAriaLabel?: () => void;
+  private warnedLabelDeprecated = false;
 
   connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
     this.stopLang = watchDocumentLang(
       this.host,
       () => this.locale,
@@ -139,6 +147,7 @@ export class MudChip {
 
   disconnectedCallback() {
     this.stopLang?.();
+    this.stopAriaLabel?.();
   }
 
   /** Built-in strings in the resolved locale, with the override props on top. */
@@ -159,8 +168,15 @@ export class MudChip {
       );
     }
     if (!this.hasAccessibleName()) {
+      console.warn('[mud-chip] chips require a label — provide text via the default slot, or an `aria-label`.');
+    }
+  }
+
+  componentDidRender() {
+    if (this.label?.trim() && !this.warnedLabelDeprecated) {
+      this.warnedLabelDeprecated = true;
       console.warn(
-        '[mud-chip] chips require a label — provide text via the default slot, the `label` prop, or `aria-label`.',
+        '[mud-chip] `label` as an accessible name is deprecated: set the native `aria-label` attribute instead. It goes away in the next major.',
       );
     }
   }
@@ -214,8 +230,8 @@ export class MudChip {
   };
 
   private hasAccessibleName(): boolean {
+    if (this.resolvedAriaLabel) return true;
     if (this.label && this.label.trim().length > 0) return true;
-    if (this.host.hasAttribute('aria-label')) return true;
     if (this.host.hasAttribute('aria-labelledby')) return true;
     if (this.hasLabelSlot) return true;
     // Final safety net for environments (unit tests) where slotchange does not
@@ -225,9 +241,8 @@ export class MudChip {
   }
 
   private resolveLabelText(): string {
+    if (this.resolvedAriaLabel) return this.resolvedAriaLabel.trim();
     if (this.label && this.label.trim().length > 0) return this.label.trim();
-    const ariaLabel = this.host.getAttribute('aria-label');
-    if (ariaLabel && ariaLabel.trim().length > 0) return ariaLabel.trim();
     const text = (this.host.textContent ?? '').trim();
     return text;
   }
@@ -271,10 +286,10 @@ export class MudChip {
     const ariaPressed = isFilter ? (this.selected ? 'true' : 'false') : null;
     const ariaDisabled = this.disabled ? 'true' : null;
     const tabIndexAttr = this.disabled ? -1 : 0;
-    // Slot-first content (matches mud-button/mud-checkbox): visible text lives
-    // ONLY in the default slot. The `label` prop is an ARIA-only fallback for
-    // the button's accessible name when no slot content is provided.
-    const ariaLabelAttr = !this.hasLabelSlot ? labelText || undefined : undefined;
+    // Visible text lives only in the default slot. The host's native `aria-label`
+    // names the button whatever the slot holds; without one, the deprecated
+    // `label` names it when the slot is empty.
+    const ariaLabelAttr = this.resolvedAriaLabel ?? (!this.hasLabelSlot ? labelText || undefined : undefined);
     // `multi` filter chips surface selection with a leading ✓ (Figma 524:3964),
     // so consumers no longer hand-slot a checkmark icon.
     const showCheck = isFilter && this.selectionMode === 'multi' && this.selected;

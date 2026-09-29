@@ -406,9 +406,9 @@ const renderEdgeCases = () => /*html*/ `
       </div>
     </div>
     <div>
-      <p style="${captionStyle}">Label prop only (empty slot)</p>
+      <p style="${captionStyle}">aria-label only (empty slot)</p>
       <div style="${rowStyle}; margin-top: var(--spacing-8);">
-        <mud-chip label="Apartment from prop"></mud-chip>
+        <mud-chip aria-label="Apartment from prop"></mud-chip>
       </div>
     </div>
   </div>
@@ -421,8 +421,8 @@ const docsSourceEdgeCases = /*html*/ `<!-- truncation -->
 <!-- diacritics -->
 <mud-chip selected>Élevé and extra tall</mud-chip>
 
-<!-- label prop fallback -->
-<mud-chip label="Apartment from prop"></mud-chip>`;
+<!-- aria-label, empty slot -->
+<mud-chip aria-label="Apartment from prop"></mud-chip>`;
 export const EdgeCases: Story = {
   render: renderEdgeCases,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
