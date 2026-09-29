@@ -44,6 +44,94 @@ const USAGE = defaultUsage(
 );
 
 /**
+ * Components whose documented content API is a hybrid: a text prop that renders,
+ * and a slot that overrides it (ANTIPATTERN-026). Issue #165 decided the rule
+ * (Option C of docs/backlog/2026-05-27-slot-first-content-refactor.md); each
+ * entry carries the reason. A new hybrid is added here deliberately, never
+ * silenced in place.
+ */
+export const HYBRID_CONTENT_COMPONENTS = new Map([
+  // Field labels and helper text: a plain string in ~95% of uses, and the
+  // component wires it itself (`<label for>`, `aria-describedby`).
+  ['mud-checkbox', 'field label and supporting text'],
+  ['mud-date-input', 'field label and helper text'],
+  ['mud-file-input', 'field label and helper text'],
+  ['mud-input-chip', 'field label and helper text'],
+  ['mud-numeric-input', 'field label and helper text'],
+  ['mud-phone-input', 'field label and helper text'],
+  ['mud-radio', 'field label and supporting text'],
+  ['mud-search-input', 'field label and helper text'],
+  ['mud-select', 'field label and helper text'],
+  ['mud-switch', 'field label and supporting text'],
+  ['mud-text-input', 'field label and helper text'],
+  ['mud-textarea', 'field label and helper text'],
+  ['mud-time-input', 'field label and helper text'],
+  // Short plain text with a rich override.
+  ['mud-accordion-item', 'heading and supporting text'],
+  ['mud-breadcrumb-item', 'item label'],
+  ['mud-menu-item', 'item label'],
+  ['mud-modal', 'title (wired to aria-labelledby) and image'],
+  ['mud-separator', 'separator label'],
+  ['mud-sidebar-item', 'item label'],
+  ['mud-tab', 'tab label'],
+  ['mud-tag', 'tag label'],
+  ['mud-tooltip', 'tooltip content'],
+  // Data first, slot as the per-cell override.
+  ['mud-table', 'cell values, header labels and the empty-state text'],
+]);
+
+/** `content` with JS comments replaced by spaces, newlines kept, so line numbers hold. */
+export function blankJsComments(content) {
+  return content.replace(
+    /\/\*[\s\S]*?\*\/|(^|[^:'"`\\])\/\/[^\n]*/g,
+    (match, lead = '') => lead + match.slice(lead.length).replace(/[^\n]/g, ' '),
+  );
+}
+
+/** Index of the `}` closing the `{` at `open`, or -1. */
+function matchingBrace(text, open) {
+  let depth = 0;
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}' && --depth === 0) return i;
+  }
+  return -1;
+}
+
+/**
+ * Whether JSX `text` holds a `{...}` in the position of a child — text content —
+ * rather than inside a tag's attributes. With `insideOnly`, a child of an element
+ * counts but a top-level expression does not (for a JS body mixing code and JSX).
+ */
+export function hasChildExpression(text, from = 0, insideOnly = false) {
+  let elementDepth = 0;
+  for (let i = from; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '<' && /[A-Za-z/]/.test(text[i + 1] ?? '')) {
+      const closing = text[i + 1] === '/';
+      let j = i + 1;
+      for (; j < text.length && text[j] !== '>'; j++) {
+        if (text[j] === '{') {
+          j = matchingBrace(text, j);
+          if (j === -1) return false;
+        }
+      }
+      const selfClosing = text[j - 1] === '/';
+      if (closing) elementDepth = Math.max(0, elementDepth - 1);
+      else if (!selfClosing) elementDepth++;
+      i = j;
+    } else if (ch === '{') {
+      if (!insideOnly || elementDepth > 0) return true;
+      const end = matchingBrace(text, i);
+      if (end === -1) return false;
+      if (hasChildExpression(text.slice(i + 1, end), 0, true)) return true;
+      i = end;
+    }
+  }
+  return false;
+}
+
+/**
  * Pattern registry. Each entry:
  *   - code:     stable identifier (referenced by AI workflows and tests)
  *   - severity: error | warning | info
@@ -381,22 +469,27 @@ export const FILE_CHECKS = [
     },
   },
   {
-    // Slot-first content rule (see src/components/_agents/slot-patterns.md).
-    // Visible content must come from the slot — not from a parallel `@Prop()`
-    // rendered as the slot's fallback child. Reference: mud-button keeps
-    // `label` as ARIA-only; the visible label lives in the default <slot>.
+    // Content API rule (src/components/_agents/slot-patterns.md, "Prop, Slot or Hybrid"):
+    // a text prop rendered as a slot's fallback (a hybrid) is the documented API
+    // of the components in HYBRID_CONTENT_COMPONENTS only. Anywhere else it is a
+    // second way to set the same content that nobody decided on.
     //
-    // Detection: any <slot ...>...</slot> whose inner contains a JSX
-    // expression `{...}`. Static-element fallbacks (e.g. `<slot name="icon">
-    // <mud-icon name="default" /></slot>`) are allowed and pass through.
+    // Flags text, not markup: a `{...}` in the position of a child (the fallback's
+    // text) counts; an attribute value (`<mud-icon name={iconName} />`, a default
+    // icon) and a comment do not.
+    //   Variant A — inside the slot:   <slot name="x">{this.label}</slot>
+    //   Variant B — beside the slot:   <slot /> {!this.hasLabelSlot && labelText}
+    //     (only behind a `has*Slot` guard, the "slot is empty" marker, so a data
+    //     render such as `{this.renderDataTabs()}` beside a slot is not a fallback)
     code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
     severity: 'warning',
     scope: 'tsx',
     ruleScope: 'project',
-    check: (content, ctx) => {
+    check: (raw, ctx) => {
+      if (HYBRID_CONTENT_COMPONENTS.has(ctx.componentName)) return [];
+      const content = blankJsComments(raw);
       const findings = [];
 
-      // Variant A — fallback INSIDE the slot:  <slot ...>{expr}</slot>
       const openRe = /<slot\b[^>]*[^/]>/g;
       let m;
       while ((m = openRe.exec(content)) !== null) {
@@ -404,66 +497,42 @@ export const FILE_CHECKS = [
         const closeIdx = content.indexOf('</slot>', openEnd);
         if (closeIdx === -1) continue;
         const inner = content.slice(openEnd, closeIdx);
-        if (!/\S/.test(inner)) continue;
-        const exprMatch = inner.match(/\{[^}]+\}/);
-        if (!exprMatch) continue;
-        const lineIdx = content.slice(0, m.index).split('\n').length;
+        if (!hasChildExpression(inner, 0)) continue;
         findings.push(
           finding({
             severity: 'warning',
             code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
             file: ctx.fileRel,
-            line: lineIdx,
+            line: content.slice(0, m.index).split('\n').length,
             message:
-              'Slot has a JSX-expression fallback (likely a prop-derived value). Visible content should come from the slot only; props that mirror slot content create two ways to set the same value and break light-DOM inspection.',
+              'Slot falls back to text from a JSX expression (a hybrid: text prop, slot overrides it). Hybrids are the documented API only of the components in HYBRID_CONTENT_COMPONENTS.',
             snippet: `${m[0]}${inner.trim().slice(0, 60)}…</slot>`.slice(0, 140),
-            fix: 'Remove the prop and rely on the slot. If the prop is ARIA-only, render it as aria-label on the host or internal control — not inside the slot.',
+            fix: 'Plain text the component wires itself stays a prop; rich content is a slot. If this component should be a hybrid (a field label or helper text, short plain text), add it to HYBRID_CONTENT_COMPONENTS with the reason.',
           }),
         );
       }
 
-      // Variant B — sibling fallback after a self-closing or empty slot:
-      //   <slot ... />     OR  <slot ...></slot>
-      //   {!this.hasSlot && this.label ? ... : null}
-      //
-      // Heuristic: the next non-whitespace content after the slot opens a JSX
-      // `{...}` block, AND the expression references either `this.<prop>` or a
-      // `has*Slot` boolean guard (the marker for a "if slot is empty then fall
-      // back to prop" pattern). Static-element siblings (`<slot /><span>…</span>`)
-      // are NOT flagged because they're not JSX expressions.
       const siblingSlotRe = /<slot\b[^>]*(?:\/>|>\s*<\/slot>)/g;
       let s;
       while ((s = siblingSlotRe.exec(content)) !== null) {
-        const after = content.slice(siblingSlotRe.lastIndex, siblingSlotRe.lastIndex + 240);
-        const trimmed = after.replace(/^\s+/, '');
+        const trimmed = content.slice(siblingSlotRe.lastIndex, siblingSlotRe.lastIndex + 240).replace(/^\s+/, '');
         if (!trimmed.startsWith('{')) continue;
-        let depth = 0;
-        let end = -1;
-        for (let i = 0; i < trimmed.length; i++) {
-          if (trimmed[i] === '{') depth++;
-          else if (trimmed[i] === '}') {
-            depth--;
-            if (depth === 0) {
-              end = i;
-              break;
-            }
-          }
-        }
+        const end = matchingBrace(trimmed, 0);
         if (end === -1) continue;
-        const expr = trimmed.slice(0, end + 1);
-        const isPropFallback = /this\.\w+/.test(expr) || /\bhas\w*Slot\b/.test(expr);
-        if (!isPropFallback) continue;
-        const lineIdx = content.slice(0, s.index).split('\n').length;
+        const body = trimmed.slice(1, end);
+        if (!/\bhas\w*Slot\b/.test(body)) continue;
+        // A bare value is text; markup counts only when an element inside it renders text.
+        if (/<[A-Za-z]/.test(body) && !hasChildExpression(body, 0, true)) continue;
         findings.push(
           finding({
             severity: 'warning',
             code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
             file: ctx.fileRel,
-            line: lineIdx,
+            line: content.slice(0, s.index).split('\n').length,
             message:
-              'Slot sibling renders a prop-derived JSX expression as a fallback (visible-text-when-slot-empty pattern). Same two-ways-to-set-content problem as the in-slot fallback variant; route consumers through the slot or convert the prop to an ARIA-only fallback.',
-            snippet: `${s[0]} ${expr.slice(0, 80)}…`.slice(0, 160),
-            fix: 'Drop the sibling JSX expression. If the prop is ARIA-only, set aria-label on the host/internal control instead of rendering text.',
+              'Slot sibling renders text when the slot is empty (a hybrid: text prop, slot overrides it). Hybrids are the documented API only of the components in HYBRID_CONTENT_COMPONENTS.',
+            snippet: `${s[0]} ${trimmed.slice(0, end + 1).slice(0, 80)}…`.slice(0, 160),
+            fix: 'Plain text the component wires itself stays a prop; rich content is a slot. If this component should be a hybrid (a field label or helper text, short plain text), add it to HYBRID_CONTENT_COMPONENTS with the reason.',
           }),
         );
       }
