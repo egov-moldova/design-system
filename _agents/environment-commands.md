@@ -149,6 +149,7 @@ yarn test.dev
 # Development (wireit orchestrates dependencies + services automatically)
 yarn sp.dev.watch              # Storybook (port 6007) + Stencil watch + auto-rebuild
 yarn dev                       # Stencil + Storybook + token watch (wireit services)
+yarn dev:all                   # yarn dev + the web-components demo (5174) on one Stencil watcher; check: node scripts/check-dev-all.mjs
 yarn dx:prepare                # First-time setup: tokens + custom-elements (wireit parallel)
 yarn dx:clean                  # Clean all build artifacts
 

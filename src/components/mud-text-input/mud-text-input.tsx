@@ -131,7 +131,7 @@ export class MudTextInput {
    * unset. Overrides the `locale`'s copy when set to a non-empty string.
    * @default 'Valoarea nu respectă formatul cerut.' (ro-MD)
    */
-  @Prop({ attribute: 'pattern-mismatch' }) patternMismatch?: string;
+  @Prop({ attribute: 'pattern-mismatch-message' }) patternMismatchMessage?: string;
 
   /**
    * Validation message reported when the value is shorter than `minlength`, and `errorText` is
@@ -139,7 +139,7 @@ export class MudTextInput {
    * non-empty string.
    * @default 'Introduceți cel puțin {min} caractere.' (ro-MD)
    */
-  @Prop({ attribute: 'too-short' }) tooShort?: string;
+  @Prop({ attribute: 'too-short-message' }) tooShortMessage?: string;
 
   /**
    * Validation message reported when the value is longer than `maxlength`, and `errorText` is
@@ -147,21 +147,21 @@ export class MudTextInput {
    * non-empty string.
    * @default 'Introduceți cel mult {max} caractere.' (ro-MD)
    */
-  @Prop({ attribute: 'too-long' }) tooLong?: string;
+  @Prop({ attribute: 'too-long-message' }) tooLongMessage?: string;
 
   /**
    * Validation message reported when a `type="email"` value is not an email address, and
    * `errorText` is unset. Overrides the `locale`'s copy when set to a non-empty string.
    * @default 'Introduceți o adresă de e-mail validă.' (ro-MD)
    */
-  @Prop({ attribute: 'type-mismatch-email' }) typeMismatchEmail?: string;
+  @Prop({ attribute: 'type-mismatch-email-message' }) typeMismatchEmailMessage?: string;
 
   /**
    * Validation message reported when a `type="url"` value is not a URL, and `errorText` is
    * unset. Overrides the `locale`'s copy when set to a non-empty string.
    * @default 'Introduceți o adresă URL validă.' (ro-MD)
    */
-  @Prop({ attribute: 'type-mismatch-url' }) typeMismatchUrl?: string;
+  @Prop({ attribute: 'type-mismatch-url-message' }) typeMismatchUrlMessage?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
@@ -247,11 +247,11 @@ export class MudTextInput {
     return localeMessages('mud-text-input', this.host, this.locale, TEXT_INPUT_MESSAGES, {
       clearLabel: this.clearLabel,
       requiredMessage: this.requiredMessage,
-      patternMismatch: this.patternMismatch,
-      tooShort: this.tooShort,
-      tooLong: this.tooLong,
-      typeMismatchEmail: this.typeMismatchEmail,
-      typeMismatchUrl: this.typeMismatchUrl,
+      patternMismatch: this.patternMismatchMessage,
+      tooShort: this.tooShortMessage,
+      tooLong: this.tooLongMessage,
+      typeMismatchEmail: this.typeMismatchEmailMessage,
+      typeMismatchUrl: this.typeMismatchUrlMessage,
     });
   }
 

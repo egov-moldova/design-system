@@ -99,12 +99,12 @@
   },
   "mud-text-input": {
     "clearLabel": "name",
-    "patternMismatch": "message",
+    "patternMismatchMessage": "message",
     "requiredMessage": "message",
-    "tooLong": "message",
-    "tooShort": "message",
-    "typeMismatchEmail": "message",
-    "typeMismatchUrl": "message"
+    "tooLongMessage": "message",
+    "tooShortMessage": "message",
+    "typeMismatchEmailMessage": "message",
+    "typeMismatchUrlMessage": "message"
   },
   "mud-textarea": {
     "requiredMessage": "message"

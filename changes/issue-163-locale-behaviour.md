@@ -37,8 +37,8 @@ on upgrade even with no code change.
 
 A `locale` (or ancestor `lang`) set to a valid BCP-47 tag with no built-in translation
 (`locale="fr-FR"` on `mud-date-picker` or `mud-numeric-input`) now logs one `console.warn`
-per component-and-tag, while number/date `Intl` formatting still follows that tag exactly
-as before.
+per component-and-tag. Its dates and numbers now format in the dictionary being shown
+(`ro-MD`), not in that tag, so the component never mixes Romanian labels with French dates.
 
 `mud-phone-input`'s default country list now sorts every entry but Moldova (which stays
 first) by `Intl.Collator` on the *displayed* (locale-aware) name rather than a fixed order —
@@ -46,14 +46,18 @@ under `ro-MD`, Romania moves from position 2 to position 10.
 
 **Migration:** no action needed to keep today's rendered copy — every default still resolves
 to `ro-MD` when no `locale`/`lang` is set. Read the seven strings above if a snapshot test
-asserts their old English text; import the component's `.messages.ts` entry instead. A
-consumer reading an override prop's value back in TypeScript sees its type widen to
-`string | undefined`.
+asserts their old English text; update the snapshot, or set `locale="en-US"` on the
+component under test. A consumer reading an override prop's value back in TypeScript sees its
+type widen to `string | undefined`.
 
-Whether the `string | undefined` read-back type change counts as `breaking` for this
-release is the release owner's call — marked `breaking: true` here since a consumer with
-`strict` TypeScript reading an override prop's value (not just setting it) would now see a
-type error; unmark it if that reading is not the intended bar.
+`mud-numeric-input`'s `mudError` detail (`NumericInputErrorDetail`) gains `reason:
+'ambiguous'` and an optional `message`: an entry such as `1.234` under `ro-MD`, where the
+locale's own grouping character is followed by exactly three digits, is now reported as
+ambiguous instead of being guessed. A consumer with an exhaustive `switch` over `reason` must
+add the new case.
+
+This entry is marked `breaking` because a page with `lang="en"` or `lang="ru"` changes its
+built-in copy on upgrade with no code change, and because of the two type changes above.
 
 The `en-US` and `ru-MD` translations are machine-drafted; no native speaker has reviewed
 them.

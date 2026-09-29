@@ -488,27 +488,27 @@ describeLocales<TextInputMessages>('mud-text-input', TEXT_INPUT_MESSAGES, {
         return root as Element;
       },
     },
-    { key: 'patternMismatch', prop: 'patternMismatch', render: renderNativeInvalid({ patternMismatch: true }) },
+    { key: 'patternMismatch', prop: 'patternMismatchMessage', render: renderNativeInvalid({ patternMismatch: true }) },
     {
       key: 'tooShort',
-      prop: 'tooShort',
+      prop: 'tooShortMessage',
       render: renderNativeInvalid({ tooShort: true }, { minlength: '5' }),
       vars: { count: 5, min: 5 },
     },
     {
       key: 'tooLong',
-      prop: 'tooLong',
+      prop: 'tooLongMessage',
       render: renderNativeInvalid({ tooLong: true }, { maxlength: '3' }),
       vars: { count: 3, max: 3 },
     },
     {
       key: 'typeMismatchEmail',
-      prop: 'typeMismatchEmail',
+      prop: 'typeMismatchEmailMessage',
       render: renderNativeInvalid({ typeMismatch: true }, { type: 'email' }),
     },
     {
       key: 'typeMismatchUrl',
-      prop: 'typeMismatchUrl',
+      prop: 'typeMismatchUrlMessage',
       render: renderNativeInvalid({ typeMismatch: true }, { type: 'url' }),
     },
   ],

@@ -22,7 +22,7 @@ title: numeric parsing, validation messages after a locale change, and locale-fo
   shows them.
 - `mud-text-input`'s pattern, length and type-mismatch messages came from the browser, in the
   browser's UI language, whatever the component's `locale`. They now come from the dictionary and
-  follow `locale`; override them with `pattern-mismatch`, `too-short`, `too-long`,
-  `type-mismatch-email` and `type-mismatch-url`.
+  follow `locale`; override them with `pattern-mismatch-message`, `too-short-message`,
+  `too-long-message`, `type-mismatch-email-message` and `type-mismatch-url-message`.
 
 The `en-US` and `ru-MD` translations are machine-drafted; no native speaker has reviewed them.

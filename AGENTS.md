@@ -113,6 +113,7 @@ ls dist/mud/tokens/*.css
 yarn sp.dev.watch              # Check Storybook (port 6007)
 lsof -i :6007
 yarn dev                       # Stencil + Storybook + token watch (wireit services)
+yarn dev:all                   # yarn dev + the web-components demo (5174) on one Stencil watcher
 yarn dx:prepare                # First-time setup: tokens + custom-elements
 yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-static, dist, loader, www)
 

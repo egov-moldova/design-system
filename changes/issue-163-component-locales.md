@@ -33,8 +33,8 @@ Dates, numbers and region names follow one rule: the `locale` prop, else the clo
 is used as given (`en-GB` formats dates as `15/05/2026`), and a language with no dictionary
 (`de-DE`) resolves to the dictionary being shown. Validation messages follow a locale change,
 and `mud-text-input`'s pattern, length and type messages come from the dictionary
-(`patternMismatch`, `tooShort`, `tooLong`, `typeMismatchEmail`, `typeMismatchUrl`, each with an
-override prop) instead of the browser's UI language; `mud-numeric-input` gained
+(`patternMismatch`, `tooShort`, `tooLong`, `typeMismatchEmail`, `typeMismatchUrl`, each with a
+`*Message` override prop) instead of the browser's UI language; `mud-numeric-input` gained
 `ambiguousMessage`. Storybook has a `lang` toolbar (Română / English / Русский) and the demo a
 language select.
 

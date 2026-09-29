@@ -3,6 +3,7 @@ dist/
 www/
 loader/
 storybook-static/
+web-components/demo/dist-demo/
 scripts/__fixtures__/
 
 # File Types
