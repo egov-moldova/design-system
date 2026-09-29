@@ -78,8 +78,9 @@ return <Host>{renderIcon()}{renderIcon()}</Host>;
 ```
 
 Slot APIs, validation of slotted content and slot detection:
-[`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md). Visible content comes from
-the slot, not from a prop rendered as its fallback (`script-02:ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`).
+[`slot-patterns.md`](../../../../src/components/_agents/slot-patterns.md). A text prop rendered as a
+slot's fallback (a hybrid) belongs only to the components that document it
+(`script-02:ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`).
 
 ---
 

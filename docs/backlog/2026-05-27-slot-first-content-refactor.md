@@ -1,10 +1,23 @@
 # Slot-First Content Refactor — Form-Input Family
 
-**Status**: Backlog — needs design-system decision before scheduling
+**Status**: Decided — Option C, in [#165](https://github.com/egov-moldova/design-system/issues/165) (2026-09-29)
 **Captured**: 2026-05-27
 **Source**: cor-checkbox audit (this conversation)
 **Detection rule**: `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK` in [scripts/audit/02-stencil-antipatterns.mjs](../../scripts/audit/02-stencil-antipatterns.mjs)
-**Canonical rule**: [src/components/_agents/slot-patterns.md](../../src/components/_agents/slot-patterns.md) → "No String Content Props as Slot Fallback"
+**Canonical rule**: [src/components/_agents/slot-patterns.md](../../src/components/_agents/slot-patterns.md) → "Prop, Slot or Hybrid — Content API Rule"
+
+---
+
+## Decision
+
+Option C, plus one meaning for `label`: a `label` prop always renders, and an
+accessible-name-only override comes from the native `aria-label` attribute. Hybrids (a text
+prop that renders, a slot that overrides it) are the documented API of the components listed
+in `HYBRID_CONTENT_COMPONENTS` (`scripts/audit/02-stencil-antipatterns.mjs`); the detector
+reports a hybrid anywhere else. Option A's wave 1 (`mud-checkbox`, `mud-radio`, `mud-switch`
+made slot-only with an accessible-name `label`) is reversed in #165 phase 3.
+
+The rest of this document is the record of the question as it was captured.
 
 ---
 
