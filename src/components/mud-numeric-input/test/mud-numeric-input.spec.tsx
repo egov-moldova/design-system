@@ -7,7 +7,7 @@ import '../mud-numeric-input';
 // mock-doc environment cannot satisfy. We only assert that the wrapped
 // elements appear in the shadow tree.
 
-import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import { describeLocales, lastValidity, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { NUMERIC_INPUT_SIZES, NUMERIC_INPUT_VARIANTS } from '../mud-numeric-input.types';
 import { NUMERIC_INPUT_MESSAGES } from '../mud-numeric-input.messages';
@@ -907,6 +907,11 @@ describe('mud-numeric-input typed entry', () => {
     ['ru-MD', '1,234', 1.234],
     [undefined, '1.234', 1.234],
     [undefined, '1,234', 1.234],
+    // A thousands group cannot start at 0, and a leading minus does not change that a group can.
+    ['ro-MD', '0.125', 0.125],
+    ['ro-MD', '0.250', 0.25],
+    ['en-US', '0,125', 0.125],
+    ['ro-MD', '-1.234', 'ambiguous'],
   ];
 
   describe('parse table', () => {
@@ -977,6 +982,82 @@ describe('mud-numeric-input typed entry', () => {
 
     it('empty ambiguousMessage falls back', async () => {
       expect(await ambiguousMessageFor('')).toBe(ambiguousText('en-US', '.'));
+    });
+
+    describe('ambiguous entry as form state', () => {
+      const mounted = async (props: { ambiguousMessage?: string; required?: boolean } = {}) => {
+        const changes: Array<number | null> = [];
+        const { root } = await render(
+          <mud-numeric-input
+            label="x"
+            locale="ro-MD"
+            value={50}
+            required={props.required}
+            ambiguousMessage={props.ambiguousMessage}
+            onMudChange={(event: CustomEvent<{ value: number | null }>) => changes.push(event.detail.value)}
+          ></mud-numeric-input>,
+        );
+        const native = queryNative(root) as HTMLInputElement;
+        native.dispatchEvent(new FocusEvent('focus'));
+        const type = async (raw: string) => {
+          native.value = raw;
+          native.dispatchEvent(new Event('input', { bubbles: true }));
+          await flush();
+        };
+        return { root, native, changes, type };
+      };
+
+      it('reports badInput with the ambiguous message while the text is ambiguous, then clears it', async () => {
+        const { root, type } = await mounted();
+        await type('1.234');
+        expect(lastValidity(root)?.flags).toEqual({ badInput: true });
+        expect(lastValidity(root)?.message).toBe(ambiguousText('ro-MD', ','));
+        await type('1,234');
+        expect(lastValidity(root)?.flags).toEqual({});
+      });
+
+      it('reports badInput rather than valueMissing on a required field', async () => {
+        const { root, type } = await mounted({ required: true });
+        await type('1.234');
+        expect(lastValidity(root)?.flags).toEqual({ badInput: true });
+      });
+
+      it('the ambiguousMessage override wins, and an empty one falls back', async () => {
+        const custom = await mounted({ ambiguousMessage: 'Use a comma' });
+        await custom.type('1.234');
+        expect(lastValidity(custom.root)?.message).toBe('Use a comma');
+        const fallback = await mounted({ ambiguousMessage: '' });
+        await fallback.type('1.234');
+        expect(lastValidity(fallback.root)?.message).toBe(ambiguousText('ro-MD', ','));
+      });
+
+      it('emits mudChange with the cleared value when an ambiguous entry is committed', async () => {
+        const { native, changes, type } = await mounted();
+        await type('1.234');
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        expect(changes).toEqual([null]);
+      });
+    });
+
+    describe('{min} / {max} in the range messages', () => {
+      const messageFor = async (props: Record<string, unknown>) => {
+        const { root } = await render(
+          h('mud-numeric-input', { label: 'x', locale: 'ro-MD', ...props }) as unknown as JSX.Element,
+        );
+        return lastValidity(root)?.message;
+      };
+
+      it('writes max=1000 the way it is typed under ro-MD, without a group', async () => {
+        const message = await messageFor({ max: 1000, value: 2000 });
+        expect(message).toContain('1000');
+        expect(message).not.toContain('1.000');
+      });
+
+      it('writes min=0.5 with the locale decimal', async () => {
+        const message = await messageFor({ min: 0.5, value: 0 });
+        expect(message).toContain('0,5');
+      });
     });
   });
 

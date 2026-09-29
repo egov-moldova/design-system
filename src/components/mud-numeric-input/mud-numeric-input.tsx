@@ -468,7 +468,11 @@ export class MudNumericInput {
     const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
     const messages = this.messages();
 
-    if (this.required && isEmpty) {
+    if (isEmpty && this.parseRaw(this.displayValue).kind === 'ambiguous') {
+      // The raw text is still on screen and could be read two ways: not the same as empty.
+      flags.badInput = true;
+      message = this.ambiguousText();
+    } else if (this.required && isEmpty) {
       flags.valueMissing = true;
       message = this.errorText && this.errorText.length > 0 ? this.errorText : messages.requiredMessage;
     } else if (!isEmpty) {
@@ -478,13 +482,13 @@ export class MudNumericInput {
         message =
           this.errorText && this.errorText.length > 0
             ? this.errorText
-            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.formatNumber(this.min, false) });
+            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.formatNumber(this.min, true) });
       } else if (this.max !== undefined && v > this.max) {
         flags.rangeOverflow = true;
         message =
           this.errorText && this.errorText.length > 0
             ? this.errorText
-            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.formatNumber(this.max, false) });
+            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.formatNumber(this.max, true) });
       }
     }
 
@@ -559,7 +563,8 @@ export class MudNumericInput {
     } else if (dots + commas === 1) {
       const separator = dots > 0 ? '.' : ',';
       const [integer, fraction] = body.split(separator);
-      if (integer.length > 0 && fraction.length === 3 && separator === this.localeSeparators().group) {
+      // A thousands group cannot start at 0, so `0.125` is a decimal whatever the locale.
+      if (/^[1-9]\d{0,2}$/.test(integer) && fraction.length === 3 && separator === this.localeSeparators().group) {
         return { kind: 'ambiguous' };
       }
       canonical = `${integer || '0'}.${fraction}`;
@@ -691,6 +696,7 @@ export class MudNumericInput {
       this.value = undefined;
       this.mudInput.emit({ value: null });
       this.emitAmbiguous(raw);
+      this.syncValidity();
       return;
     }
     if (entry.kind === 'invalid') {
@@ -698,6 +704,7 @@ export class MudNumericInput {
       // (null) but don't clear the @Prop so the user's keystroke survives.
       this.value = raw.trim() === '' ? undefined : this.value;
       this.mudInput.emit({ value: null });
+      this.syncValidity();
       return;
     }
     const parsed = entry.value;
@@ -714,10 +721,13 @@ export class MudNumericInput {
 
   /** Ambiguous entries yield no value; the raw text stays so the user can fix it. */
   private emitAmbiguous(raw: string): void {
-    const message = formatMessage(this.messages().ambiguousMessage, this.host, this.locale, {
+    this.mudError.emit({ reason: 'ambiguous', rawValue: raw, message: this.ambiguousText() });
+  }
+
+  private ambiguousText(): string {
+    return formatMessage(this.messages().ambiguousMessage, this.host, this.locale, {
       decimal: this.localeSeparators().decimal,
     });
-    this.mudError.emit({ reason: 'ambiguous', rawValue: raw, message });
   }
 
   private handleChange = () => {
@@ -765,6 +775,8 @@ export class MudNumericInput {
     if (entry.kind === 'ambiguous') {
       this.value = undefined;
       this.emitAmbiguous(this.displayValue);
+      this.syncValidity();
+      this.mudChange.emit({ value: null });
       return;
     }
     if (entry.kind === 'invalid') {
