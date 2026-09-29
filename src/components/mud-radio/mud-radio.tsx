@@ -74,16 +74,15 @@ export class MudRadio {
   @Prop() value?: string;
 
   /**
-   * Accessible-name fallback. Used as `aria-label` on the internal input when
-   * no `label` slot is provided. Does NOT render visible text — use the
-   * `label` slot for that. Matches the `mud-button` / `mud-checkbox` convention.
+   * Visible label text, which also names the input. The `label` slot replaces it
+   * for rich content. For an accessible name with no visible text, set the native
+   * `aria-label` attribute instead.
    */
   @Prop() label?: string;
 
   /**
-   * Accessible-description fallback. Reserved for future use as
-   * `aria-describedby` source when no `supporting-text` slot is provided.
-   * Does NOT render visible text — use the `supporting-text` slot for that.
+   * Visible supporting text below the label, wired to the input through
+   * `aria-describedby`. The `supporting-text` slot replaces it for rich content.
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
@@ -106,11 +105,6 @@ export class MudRadio {
   // custom element's implicit "generic" role).
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
-  // Flattened slotted-label text. axe's `label` rule cannot walk into a
-  // `<slot>` when computing the accessible name of an `aria-labelledby`
-  // target, so we mirror the slotted text onto the input's `aria-label`
-  // as a belt-and-suspenders.
-  @State() private slottedLabelText: string = '';
 
   @Element() host!: HTMLMudRadioElement;
 
@@ -250,18 +244,10 @@ export class MudRadio {
 
   private onLabelSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
-    const assignedNodes = slot.assignedNodes({ flatten: true });
-    this.hasLabelSlot = assignedNodes.some(node => {
+    this.hasLabelSlot = slot.assignedNodes({ flatten: true }).some(node => {
       if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
       return true;
     });
-    // Flatten the projected text so we can mirror it onto the input's
-    // aria-label — see `slottedLabelText` JSDoc above.
-    this.slottedLabelText = assignedNodes
-      .map(node => node.textContent ?? '')
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim();
   };
 
   private onSupportingTextSlotChange = (ev: Event) => {
@@ -313,28 +299,16 @@ export class MudRadio {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    // Slot-first content: visible label / supporting text live ONLY in their
-    // respective slots. `label` / `supportingText` props are accessible-name
-    // fallbacks for AT (matches mud-button / mud-checkbox).
-    const hasLabel = this.hasLabelSlot;
-    const hasSupporting = this.hasSupportingTextSlot;
-    // aria-label resolution. Priority:
-    //   1. explicit `resolvedAriaLabel` (consumer-set aria-label on host)
-    //   2. flattened slotted label text (so axe / NVDA stop seeing an
-    //      "empty" labelledby target — see slottedLabelText JSDoc)
-    //   3. `label` prop fallback (ARIA-only contract)
-    //   4. undefined
-    //
-    // aria-labelledby is still emitted alongside when a slot is present, so
-    // browsers that DO walk slots get the live label element + its
-    // text content for free; the duplicate aria-label is the
-    // belt-and-suspenders for tools that don't.
-    const ariaLabelAttr =
-      this.resolvedAriaLabel ??
-      (hasLabel ? this.slottedLabelText || undefined : undefined) ??
-      this.label?.trim() ??
-      undefined;
-    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
+    // Hybrid content: the `label` / `supportingText` props render as their
+    // slots' fallback text, and a filled slot replaces them.
+    const labelText = this.label?.trim() || undefined;
+    const supportingText = this.supportingText?.trim() || undefined;
+    const hasLabel = this.hasLabelSlot || labelText !== undefined;
+    const hasSupporting = this.hasSupportingTextSlot || supportingText !== undefined;
+    // The host's native aria-label overrides the accessible name; otherwise a
+    // visible label names the input through aria-labelledby.
+    const ariaLabelAttr = this.resolvedAriaLabel;
+    const ariaLabelledbyAttr = ariaLabelAttr ? undefined : hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const hasError = this.hasErrorMessage();
     const describedByIds: string[] = [];
@@ -407,10 +381,14 @@ export class MudRadio {
           <span class="content">
             <span class="text" part="text">
               <span class="label-text" id={this.labelId} part="label">
-                <slot name="label" onSlotchange={this.onLabelSlotChange} />
+                <slot name="label" onSlotchange={this.onLabelSlotChange}>
+                  {labelText}
+                </slot>
               </span>
               <span class="supporting-text" id={this.supportingId} part="supporting-text">
-                <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange} />
+                <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange}>
+                  {supportingText}
+                </slot>
               </span>
             </span>
             {hasError ? (

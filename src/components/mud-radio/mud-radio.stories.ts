@@ -23,10 +23,9 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 // ---------- Slot-first markup helper ----------
 //
-// `label` / `supportingText` props are ARIA-only fallbacks (see component
-// JSDoc); visible content lives exclusively in the `label` / `supporting-text`
-// slots. This helper composes the consumer-ready markup so stories stay
-// readable.
+// The `label` / `supporting-text` props render visible text; the slots of the
+// same names replace them for rich content. This helper uses the slots so every
+// story renders the same structure, rich or plain.
 
 type CbOpts = {
   size?: RadioSize;
@@ -38,7 +37,7 @@ type CbOpts = {
   name?: string;
   /** Submitted value when this radio is checked. */
   value?: string;
-  /** Aria-label override — wins over the `label` prop for AT only. */
+  /** Native aria-label: overrides the accessible name; the visible label stays. */
   ariaLabel?: string;
   /** Error message shown under the text while `invalid` is set. */
   errorText?: string;
@@ -107,7 +106,8 @@ const meta: Meta<RadioArgs> = {
     readonly: { control: 'boolean', description: 'Renders the control read-only.' },
     label: {
       control: 'text',
-      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+      description:
+        'Visible label. The story slots it (`<span slot="label">…</span>`); the `label` prop renders the same text.',
     },
     supportingText: {
       control: 'text',

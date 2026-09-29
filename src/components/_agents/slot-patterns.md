@@ -210,10 +210,8 @@ element (`<slot name="icon"><mud-icon name={iconName} /></slot>`) are not text a
 
 ### Not yet conforming
 
-Tracked in #165, one PR per phase:
+Until the next major (#165):
 
-- `mud-radio`: `label` / `supportingText` are an accessible name only; it becomes a hybrid like
-  `mud-checkbox` and `mud-switch` (phase 3, after #167).
 - `mud-button`, `mud-service-button`, `mud-chip`: `label` is still an accessible name only,
   deprecated in favour of the native `aria-label`, which they forward; it goes away in the next
   major.

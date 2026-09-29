@@ -296,6 +296,35 @@
       ]
     },
     {
+      "name": "rl-md-prop",
+      "node": "13:42",
+      "capture": {
+        "selector": "mud-radio .layout",
+        "bleed": "auto"
+      },
+      "html": "<mud-radio size=\"md\" label=\"Label\"></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .layout",
+          "styles": {
+            "columnGap": "12px"
+          },
+          "note": "Figma 13:42 sets the label 12px from the radio. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        },
+        {
+          "target": "mud-radio .label-text",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#121212"
+          },
+          "note": "Figma 13:44 is Desktop/Body/Default 500 in #121212. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        }
+      ]
+    },
+    {
       "name": "rl-sm",
       "node": "2824:5667",
       "pixel": false,
@@ -309,6 +338,23 @@
             "fontWeight": "500"
           },
           "note": "Figma 2824:5669 drops the Small label to Desktop/Body/Small 500."
+        }
+      ]
+    },
+    {
+      "name": "rl-sm-prop",
+      "node": "2824:5667",
+      "pixel": false,
+      "html": "<mud-radio size=\"sm\" label=\"Label\"></mud-radio>",
+      "expect": [
+        {
+          "target": "mud-radio .label-text",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 2824:5669 drops the Small label to Desktop/Body/Small 500. The same text from the label / supporting-text props (#165 phase 3) renders identically."
         }
       ]
     },
@@ -338,6 +384,31 @@
       ]
     },
     {
+      "name": "rl-supporting-md-prop",
+      "node": "13:54",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"md\" label=\"Label\" supporting-text=\"Supporting text\"></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .text",
+          "styles": {
+            "rowGap": "2px"
+          },
+          "note": "Figma 13:56 stacks label and supporting text 2px apart. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        },
+        {
+          "target": "mud-radio .supporting-text",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#757575"
+          },
+          "note": "Figma 13:58 is Desktop/Body/Small in #757575. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        }
+      ]
+    },
+    {
       "name": "rl-supporting-sm",
       "node": "2824:5690",
       "pixel": false,
@@ -350,6 +421,22 @@
             "lineHeight": "16px"
           },
           "note": "Figma 2824:5694 drops Small supporting text to Desktop/Caption/Medium, 12/16."
+        }
+      ]
+    },
+    {
+      "name": "rl-supporting-sm-prop",
+      "node": "2824:5690",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-radio size=\"sm\" label=\"Label\" supporting-text=\"Supporting text\"></mud-radio></div>",
+      "expect": [
+        {
+          "target": "mud-radio .supporting-text",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px"
+          },
+          "note": "Figma 2824:5694 drops Small supporting text to Desktop/Caption/Medium, 12/16. The same text from the label / supporting-text props (#165 phase 3) renders identically."
         }
       ]
     },
