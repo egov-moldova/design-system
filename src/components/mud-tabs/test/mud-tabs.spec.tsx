@@ -98,6 +98,32 @@ describe('mud-tabs', () => {
     });
   });
 
+  describe('mud-tab deprecated icon and badge slots', () => {
+    it('warns once, naming both slots, and still renders them', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-tab value="a" label="A">
+          <span slot="icon-start">i</span>
+          <span slot="badge">7</span>
+        </mud-tab>,
+      );
+      Object.assign(root as object, { label: 'B' });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('[mud-tab]'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('"icon-start" and "badge" slots are deprecated');
+      expect(root?.shadowRoot?.querySelector('slot[name="badge"]')).not.toBeNull();
+      warn.mockRestore();
+    });
+
+    it('does not warn for iconName and badgeCount', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(<mud-tab value="a" label="A" iconName="filter" badgeCount={3}></mud-tab>);
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('[mud-tab]'))).toHaveLength(0);
+      warn.mockRestore();
+    });
+  });
+
   describe('two sources: the tabs prop wins', () => {
     it('renders only the tabs prop, skips the children, and warns once', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
