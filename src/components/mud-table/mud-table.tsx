@@ -498,7 +498,7 @@ export class MudTable {
                   <th class="th th--selection" scope="col" data-table-selection="">
                     <mud-checkbox
                       size="sm"
-                      label={m.selectAllLabel}
+                      aria-label={m.selectAllLabel}
                       checked={allSelected}
                       indeterminate={someSelected}
                       onMudChange={this.handleSelectAll}
@@ -561,7 +561,7 @@ export class MudTable {
                         <td class="td td--selection" data-table-selection="">
                           <mud-checkbox
                             size="sm"
-                            label={formatMessage(m.selectRowLabel, this.host, this.locale, { row: rowIndex + 1 })}
+                            aria-label={formatMessage(m.selectRowLabel, this.host, this.locale, { row: rowIndex + 1 })}
                             checked={selected}
                             onMudChange={(event: Event) => this.handleRowSelect(event, rowId)}
                           />

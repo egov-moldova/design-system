@@ -28,7 +28,8 @@ let checkboxInstanceCounter = 0;
  * @element mud-checkbox
  *
  * @slot label - Rich label content. Replaces the `label` prop when present.
- * @slot supporting-text - Rich supporting/helper text below the label.
+ * @slot supporting-text - Rich supporting/helper text below the label. Replaces the
+ *                         `supportingText` prop when present.
  */
 @Component({
   tag: 'mud-checkbox',
@@ -94,16 +95,15 @@ export class MudCheckbox {
   @Prop() value?: string;
 
   /**
-   * Accessible-name fallback. Used as `aria-label` on the internal input
-   * when no `label` slot is provided. Does NOT render visible text — use
-   * the `label` slot for that. Matches the `mud-button` convention.
+   * Visible label text, which also names the input. The `label` slot replaces it
+   * for rich content. For an accessible name with no visible text, set the native
+   * `aria-label` attribute instead.
    */
   @Prop() label?: string;
 
   /**
-   * Accessible-description fallback. Reserved for future use as
-   * `aria-describedby` source when no `supporting-text` slot is provided.
-   * Does NOT render visible text — use the `supporting-text` slot for that.
+   * Visible supporting text below the label, wired to the input through
+   * `aria-describedby`. The `supporting-text` slot replaces it for rich content.
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
@@ -327,20 +327,18 @@ export class MudCheckbox {
   render() {
     const effectivelyDisabled = this.isInert();
     const lang = hostLang(this.host, this.locale);
-    // Slot-first content: the visible label / supporting text live ONLY in
-    // their respective slots. The `label` / `supportingText` props are
-    // accessible-name fallbacks (mirrors mud-button).
-    const showLabel = this.hasLabelSlot;
+    // Hybrid content: the `label` / `supportingText` props render as their
+    // slots' fallback text, and a filled slot replaces them.
+    const labelText = this.label?.trim() || undefined;
+    const supportingText = this.supportingText?.trim() || undefined;
+    const showLabel = this.hasLabelSlot || labelText !== undefined;
     const showError = this.hasErrorMessage();
-    // An error message takes the supporting slot's place when the field is invalid.
-    const showSupporting = this.hasSupportingSlot && !showError;
-    // aria-label resolution priority:
-    //   slot present                 → omit (aria-labelledby points at slot)
-    //   explicit aria-label override → resolvedAriaLabel
-    //   label prop fallback         → label
-    //   nothing                      → undefined
-    const ariaLabelAttr = showLabel ? undefined : (this.resolvedAriaLabel ?? this.label?.trim() ?? undefined);
-    const ariaLabelledbyAttr = showLabel ? this.labelId : this.ariaLabelledby;
+    // An error message takes the supporting text's place when the field is invalid.
+    const showSupporting = (this.hasSupportingSlot || supportingText !== undefined) && !showError;
+    // The host's native aria-label overrides the accessible name; otherwise a
+    // visible label names the input through aria-labelledby.
+    const ariaLabelAttr = this.resolvedAriaLabel;
+    const ariaLabelledbyAttr = ariaLabelAttr ? undefined : showLabel ? this.labelId : this.ariaLabelledby;
     const ariaDescribedbyAttr = showError ? this.errorId : showSupporting ? this.supportingId : undefined;
 
     const hostClasses = {
@@ -395,10 +393,14 @@ export class MudCheckbox {
 
           <span class="text" part="text">
             <span class="label" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange} />
+              <slot name="label" onSlotchange={this.onLabelSlotChange}>
+                {labelText}
+              </slot>
             </span>
             <span class="supporting" id={this.supportingId} part="supporting">
-              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange} />
+              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange}>
+                {supportingText}
+              </slot>
             </span>
             {showError ? (
               <span class="error" id={this.errorId} part="error">

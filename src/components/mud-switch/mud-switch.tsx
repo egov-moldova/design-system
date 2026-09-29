@@ -61,10 +61,9 @@ export class MudSwitch {
   @Prop() value?: string;
 
   /**
-   * Accessible-name fallback. Used as `aria-label` on the internal input when
-   * no `label` slot is provided. Does NOT render visible text — use the
-   * `label` slot for that. Matches the mud-button / mud-checkbox / mud-radio
-   * convention.
+   * Visible label text, which also names the switch. The `label` slot replaces it
+   * for rich content. For an accessible name with no visible text, set the native
+   * `aria-label` attribute instead.
    */
   @Prop() label?: string;
 
@@ -74,16 +73,11 @@ export class MudSwitch {
   @State() private hasLabelSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
-  // See mud-radio.tsx for the rationale on these pieces of cached state.
-  // Summary: `observeAriaLabel` reads + strips the host's `aria-label`
-  // (axe `aria-prohibited-attr` flags it on a custom-element host's implicit
-  // `generic` role); axe `label` cannot walk slots to find the projected
-  // label's text, so we also mirror the flattened slot text onto the internal
-  // input's `aria-label` so AT and axe both see a discoverable accessible name
-  // on the actual switch control.
+  // `observeAriaLabel` reads + strips the host's `aria-label` (axe
+  // `aria-prohibited-attr` flags it on a custom-element host's implicit
+  // `generic` role) and moves it onto the internal input.
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
-  @State() private slottedLabelText: string = '';
 
   @Element() host!: HTMLMudSwitchElement;
 
@@ -170,18 +164,10 @@ export class MudSwitch {
 
   private onLabelSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
-    const assignedNodes = slot.assignedNodes({ flatten: true });
-    this.hasLabelSlot = assignedNodes.some(node => {
+    this.hasLabelSlot = slot.assignedNodes({ flatten: true }).some(node => {
       if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
       return true;
     });
-    // Mirror slotted text onto the input's aria-label so axe / NVDA see a
-    // discoverable name (their accessible-name calc doesn't walk slots).
-    this.slottedLabelText = assignedNodes
-      .map(node => node.textContent ?? '')
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim();
   };
 
   private handleChange = (ev: Event) => {
@@ -210,21 +196,14 @@ export class MudSwitch {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    // Slot-first content: `label` / consumer-set aria-label are ARIA-only
-    // fallbacks; the slot is the sole source of visible text.
-    const hasLabel = this.hasLabelSlot;
-    // aria-label priority:
-    //   1. explicit consumer aria-label (resolvedAriaLabel)
-    //   2. flattened slotted text (so axe + AT that can't walk slots still
-    //      see an accessible name on the actual control)
-    //   3. label prop fallback
-    //   4. undefined
-    const ariaLabelAttr =
-      this.resolvedAriaLabel ??
-      (hasLabel ? this.slottedLabelText || undefined : undefined) ??
-      this.label?.trim() ??
-      undefined;
-    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
+    // Hybrid content: the `label` prop renders as the slot's fallback text, and
+    // a filled slot replaces it.
+    const labelText = this.label?.trim() || undefined;
+    const hasLabel = this.hasLabelSlot || labelText !== undefined;
+    // The host's native aria-label overrides the accessible name; otherwise a
+    // visible label names the input through aria-labelledby.
+    const ariaLabelAttr = this.resolvedAriaLabel;
+    const ariaLabelledbyAttr = ariaLabelAttr ? undefined : hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -270,7 +249,9 @@ export class MudSwitch {
           */}
           <span class="text" part="text">
             <span class="label-text" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange} />
+              <slot name="label" onSlotchange={this.onLabelSlotChange}>
+                {labelText}
+              </slot>
             </span>
           </span>
         </label>

@@ -212,14 +212,28 @@ describe('mud-checkbox', () => {
       expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
-    it('falls back to the label prop as input aria-label when no slot + no aria-label', async () => {
-      const { root } = await render(<mud-checkbox label="Fallback nume"></mud-checkbox>);
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Fallback nume');
+    it('renders the label prop as visible text that names the input', async () => {
+      const { root } = await render(<mud-checkbox label="Nume vizibil"></mud-checkbox>);
+      const label = root?.shadowRoot?.querySelector('.label');
+      expect(label?.textContent?.trim()).toBe('Nume vizibil');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBe(label?.id);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
-    it('explicit aria-label wins over the label prop', async () => {
-      const { root } = await render(<mud-checkbox label="ignored" aria-label="winning"></mud-checkbox>);
+    it('renders the supportingText prop and describes the input with it', async () => {
+      const { root } = await render(
+        <mud-checkbox label="Date" supporting-text="Acord pentru prelucrare."></mud-checkbox>,
+      );
+      const supporting = root?.shadowRoot?.querySelector('.supporting');
+      expect(supporting?.textContent?.trim()).toBe('Acord pentru prelucrare.');
+      expect(root?.classList.contains('has-supporting')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(supporting?.id);
+    });
+
+    it('explicit aria-label overrides the visible label as the accessible name', async () => {
+      const { root } = await render(<mud-checkbox label="vizibil" aria-label="winning"></mud-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('winning');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeNull();
     });
   });
 
@@ -258,9 +272,13 @@ describe('mud-checkbox', () => {
       expect(root?.classList.contains('has-label')).toBe(true);
     });
 
-    it('omits has-label when no slot is set (even if `label` prop is set)', async () => {
-      // Slot-first contract: prop alone does NOT toggle has-label.
-      const { root } = await render(<mud-checkbox label="not-rendered"></mud-checkbox>);
+    it('adds has-label for the label prop alone', async () => {
+      const { root } = await render(<mud-checkbox label="rendered"></mud-checkbox>);
+      expect(root?.classList.contains('has-label')).toBe(true);
+    });
+
+    it('omits has-label with neither a label prop nor a slot', async () => {
+      const { root } = await render(<mud-checkbox aria-label="doar nume"></mud-checkbox>);
       expect(root?.classList.contains('has-label')).toBe(false);
     });
 

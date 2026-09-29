@@ -38,6 +38,16 @@ const queryHeaderCells = (root: Element | null | undefined) =>
 const queryBodyRows = (root: Element | null | undefined) =>
   Array.from(root?.shadowRoot?.querySelectorAll('tbody tr') ?? []) as HTMLTableRowElement[];
 
+/**
+ * The accessible name the table gave a selection checkbox (its `aria-label`). A browser moves it
+ * onto the checkbox's input (`observeAriaLabel`); mock-doc has no MutationObserver, so a value set
+ * after the checkbox connected is still on its host.
+ */
+const checkboxName = (checkbox: Element | null | undefined): string | null =>
+  checkbox?.getAttribute('aria-label') ??
+  checkbox?.shadowRoot?.querySelector('input')?.getAttribute('aria-label') ??
+  null;
+
 const setProps = (el: Element | null | undefined, props: Record<string, unknown>) => {
   if (!el) return;
   Object.assign(el, props);
@@ -501,24 +511,23 @@ describe('mud-table', () => {
       const { root, waitForChanges } = await render(<mud-table locale="en-US" select-row-label="" />);
       setProps(root, { columns, rows, selectable: true });
       await waitForChanges();
-      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
-      expect(checkbox?.label).toBe(TABLE_MESSAGES['en-US'].selectRowLabel.replace('{row}', '1'));
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe(
+        TABLE_MESSAGES['en-US'].selectRowLabel.replace('{row}', '1'),
+      );
     });
 
     it('fills the {row} placeholder with the 1-based row index', async () => {
       const { root, waitForChanges } = await render(<mud-table />);
       setProps(root, { columns, rows, selectable: true });
       await waitForChanges();
-      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
-      expect(checkbox?.label).toBe('Selectează rândul 1');
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe('Selectează rândul 1');
     });
 
     it('honors a custom select-row-label override', async () => {
       const { root, waitForChanges } = await render(<mud-table select-row-label="Alege rândul {row}" />);
       setProps(root, { columns, rows, selectable: true });
       await waitForChanges();
-      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
-      expect(checkbox?.label).toBe('Alege rândul 1');
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe('Alege rândul 1');
     });
   });
 });
@@ -542,13 +551,7 @@ describeLocales<TableMessages>('mud-table', TABLE_MESSAGES, {
   },
   read: (host, key) => {
     if (key === 'emptyText') return host.shadowRoot?.querySelector('.empty-text')?.textContent ?? null;
-    if (key === 'selectAllLabel')
-      return (
-        host.shadowRoot
-          ?.querySelector('thead mud-checkbox')
-          ?.shadowRoot?.querySelector('input')
-          ?.getAttribute('aria-label') ?? null
-      );
+    if (key === 'selectAllLabel') return checkboxName(host.shadowRoot?.querySelector('thead mud-checkbox'));
     return null;
   },
   overrides: { emptyText: 'emptyText', selectAllLabel: 'selectAllLabel' },
