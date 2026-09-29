@@ -169,6 +169,7 @@ Because the components are native custom elements, they integrate with every mod
 
 - [Design](https://mud.egov.md/)
 - [MUD Design System on npm](https://www.npmjs.com/package/@egov-moldova/mud)
+- [Contributing and releases](CONTRIBUTING.md#publishing): building the library, and bumping its version with `yarn version.bump`
 - [eGov Moldova — Agency for Electronic Governance](https://egov.md)
 - [MDN — Using custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
 - [Stencil documentation](https://stenciljs.com/docs/introduction)

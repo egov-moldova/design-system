@@ -8,6 +8,11 @@ const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// The version the sidebar shows under the title (manager.mjs): package.json's,
+// as committed, or as a release pipeline stamped it before building Storybook.
+// A local server reads "development" whatever this is.
+const { version: MUD_VERSION } = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+
 // In order of appearance in the UI (toolbar, addons panel, then docs)
 //
 // `@storybook/addon-vitest` (dev only) adds the "Component tests" panel. It was
@@ -48,6 +53,9 @@ export default {
     { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
+  // The manager bundle receives every key of this preset as a build-time
+  // `process.env.<KEY>`; see MUD_VERSION above.
+  env: config => ({ ...config, MUD_SIDEBAR_VERSION: MUD_VERSION ?? '' }),
   framework: {
     name: getAbsolutePath('@storybook/web-components-vite'),
     options: {},

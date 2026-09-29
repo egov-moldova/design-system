@@ -162,6 +162,7 @@ web-components/
 | `yarn typecheck` | `tsc --noEmit` |
 | `yarn test` | Full unit test suite — `vitest run --project spec`, wireit-cached; compiles components from source and builds no `dist/` |
 | `yarn check` | `format` then the full local verify gate (`typecheck` + `lint` + `test`) — run this before opening a PR |
+| `yarn version.bump <dev\|patch\|minor\|major\|x.y.z>` | Sets the root `package.json` version for a release PR (see [Publishing](#publishing)) |
 
 ---
 
@@ -279,7 +280,19 @@ Internal contributors with write access to this repo should continue branching d
 
 Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Release configuration lives in the Azure DevOps `Design.System` operations repository. Its development and production pipelines run manually, check out `main` from this GitHub repository through a service connection, stamp the checked-out `package.json`, build the library, validate the package, and publish it. They never commit generated versions back to GitHub.
 
-Because of that, cut the changelog in a release PR before running the production pipeline: `yarn changelog.release <x.y.z>` moves the fragments in `changes/` into a new `## <x.y.z> — <date>` section of `CHANGELOG.md` and deletes them. Use the same version the pipeline will publish. Development (`-dev.N`) releases skip this step. Details: [`changes/README.md`](changes/README.md).
+The committed `package.json` carries the version last published, and the Storybook sidebar shows it under its title as `Version: <version>`. Every local server (`localhost`, `127.0.0.1`) reads `Version: development` instead. Because the pipelines never commit versions back, set it in the release PR to the same version the pipeline will publish, `-dev.N` releases included:
+
+```bash
+yarn version.bump dev       # 1.2.0-dev.1 → 1.2.0-dev.2, or 1.2.0 → 1.2.1-dev.1
+yarn version.bump patch     # 1.2.0-dev.2 → 1.2.0, or 1.2.0 → 1.2.1
+yarn version.bump minor     # 1.2.1-dev.2 → 1.3.0 (major likewise)
+yarn version.bump 1.3.0-dev.1   # exactly this version; it must be higher
+yarn version.bump dev --dry-run # print the change, write nothing
+```
+
+It changes only the `version` line of the root `package.json`, and refuses a version that is not higher than the current one.
+
+For the same reason, cut the changelog in a release PR before running the production pipeline: `yarn changelog.release <x.y.z>` moves the fragments in `changes/` into a new `## <x.y.z> — <date>` section of `CHANGELOG.md` and deletes them. Use the same version the pipeline will publish. Development (`-dev.N`) releases skip this step. Details: [`changes/README.md`](changes/README.md).
 
 For example, with npm `latest` at `1.1.9`, development releases use valid SemVer prereleases such as `1.1.10-dev.1`, `1.1.10-dev.2`, and so on under the `dev` dist-tag. Production publishes `1.1.10` under `latest`. The default release base is the next patch after npm `latest`; maintainers can provide an explicit future `x.y.z` base for minor or major releases.
 
