@@ -17,7 +17,7 @@ No slots, no events, no interactivity.
 | Property  | Attribute | Description                                                                                                                     | Type                                                        | Default     |
 | --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
 | `label`   | `label`   | Accessible label for screen readers. Overrides the `locale`'s copy when set to a non-empty string.                              | `string \| undefined`                                       | `undefined` |
-| `locale`  | `locale`  | Language of the built-in copy. Unset, the component follows the closest ancestor `lang` (`<html lang>` included), else `ro-RO`. | `"en-US" \| "ro-RO" \| "ru-RU" \| string & {} \| undefined` | `undefined` |
+| `locale`  | `locale`  | Language of the built-in copy. Unset, the component follows the closest ancestor `lang` (`<html lang>` included), else `ro-MD`. | `"en-US" \| "ro-MD" \| "ru-MD" \| string & {} \| undefined` | `undefined` |
 | `size`    | `size`    | Visual size rung.                                                                                                               | `"lg" \| "md" \| "sm" \| "xs"`                              | `'md'`      |
 | `variant` | `variant` | Color treatment.                                                                                                                | `"brand" \| "dark" \| "light" \| "light-on-color"`          | `'brand'`   |
 
