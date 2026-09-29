@@ -16,9 +16,11 @@
  * the tracked readmes, which on a consistent branch match what is committed.
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SRC = path.join(ROOT, 'src');
@@ -48,9 +50,7 @@ export function staleReason(src = SRC) {
   return null;
 }
 
-// realpath on both sides: Node resolves symlinks for import.meta.url but not for argv[1], so a
-// checkout reached through one (macOS /tmp -> /private/tmp) would otherwise skip the whole check.
-if (process.argv[1] && fileURLToPath(import.meta.url) === realpathSync(process.argv[1])) {
+if (isEntrypoint(import.meta.url)) {
   const reason = staleReason();
   if (reason) {
     console.log(`ensure-components-dts: ${reason}; running \`yarn build\``);

@@ -31,7 +31,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { isAbsolute, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import {
   resolveComponentPaths,
@@ -303,7 +303,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

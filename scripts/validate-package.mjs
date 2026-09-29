@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 import {
   parseFontFaces,
   stylesheetUrls,
@@ -631,6 +632,6 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
   return 1;
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (isEntrypoint(import.meta.url)) {
   process.exit(main());
 }

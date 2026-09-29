@@ -25,7 +25,7 @@ import { readFileSync, statSync, writeFileSync, mkdirSync, existsSync } from 'no
 import { join, relative, dirname } from 'node:path';
 import { glob } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { REPO_ROOT } from './lib/component-paths.mjs';
 
 const TOOL = 'measure-prompt-cost';
@@ -347,7 +347,7 @@ function renderComparisonSummary(envelope) {
   return lines.join('\n');
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);
