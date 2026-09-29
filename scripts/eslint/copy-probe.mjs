@@ -33,7 +33,7 @@
  *
  * `--overflow` (issue #163, round 2) checks the layout cost of longer translations: under
  * `ru-MD`, in every story, no component-owned text element — an element inside a shadow root
- * with a text node of its own that equals a `ru-MD` dictionary value — may have
+ * with a text node of its own that contains a `ru-MD` dictionary value — may have
  * `scrollWidth > clientWidth` while its computed `overflow-x` is not `visible` (text clipped or
  * scrolled away). Consumer content (a deliberately long `label`) is not a translation cost and
  * is not checked; an element 1px wide or less is a visually-hidden text by design. A flag is fixed in the
@@ -142,16 +142,28 @@ function stringsOf(table) {
 const PLACEHOLDER_RE = /\{[a-zA-Z0-9_]+\}/g;
 
 /** A dictionary string, with `{placeholder}` segments as wildcards, anchored to the whole text. */
-function wildcardRegex(str) {
+function wildcardRegex(str, anchored = true) {
   const escaped = str
     .split(PLACEHOLDER_RE)
     .map(part => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
     .join('.*?');
-  return new RegExp(`^${escaped}$`, 's');
+  return new RegExp(anchored ? `^${escaped}$` : escaped, 's');
 }
 
 function buildMatcher(strings) {
-  const regexes = strings.filter(Boolean).map(wildcardRegex);
+  const regexes = strings.filter(Boolean).map(str => wildcardRegex(str));
+  return text => regexes.some(re => re.test(text));
+}
+
+/**
+ * Text that CONTAINS a dictionary value — component copy composed with other text (a
+ * suffix after a label, a count before a unit). Values under three letters are skipped:
+ * a short word such as `из` would match almost any Russian text.
+ */
+function buildContainsMatcher(strings) {
+  const regexes = strings
+    .filter(str => str && str.replace(PLACEHOLDER_RE, '').replace(/[^\p{L}]/gu, '').length >= 3)
+    .map(str => wildcardRegex(str, false));
   return text => regexes.some(re => re.test(text));
 }
 
@@ -178,7 +190,7 @@ async function loadDictionaries() {
       ru.push(...stringsOf(exported['ru-MD']));
     }
   }
-  return { matchesRoEn: buildMatcher(roEn), matchesRu: buildMatcher(ru), dirs };
+  return { matchesRoEn: buildMatcher(roEn), matchesRu: buildMatcher(ru), containsRu: buildContainsMatcher(ru), dirs };
 }
 
 // ── Story discovery ──
@@ -634,7 +646,7 @@ function loadOverflowAllowlist() {
 }
 
 async function mainOverflow() {
-  const { matchesRu } = await loadDictionaries();
+  const { containsRu } = await loadDictionaries();
   if (!existsSync(STATIC_DIR)) {
     console.error(`[copy-probe] ${STATIC_DIR} does not exist. Run \`yarn sp.build\` first.`);
     process.exit(1);
@@ -652,7 +664,7 @@ async function mainOverflow() {
     console.log(`[copy-probe --overflow] ${stories.length} stories under ru-MD.`);
     await mapLimit(stories, CONCURRENCY, async story => {
       for (const flag of await scanStoryOverflow(browser, baseUrl, story.id)) {
-        if (!matchesRu(flag.fullText)) continue; // consumer content, not a translation
+        if (!containsRu(flag.fullText)) continue; // consumer content, not a translation
         const row = allow.find(
           e => e.component === flag.component && e.element === flag.element && (!e.story || e.story === story.id),
         );
