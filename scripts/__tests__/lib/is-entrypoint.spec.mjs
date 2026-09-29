@@ -1,5 +1,5 @@
 /**
- * scripts/lib/is-entrypoint.mjs — the shared `isEntrypoint` guard, replacing three separate
+ * scripts/lib/is-entrypoint.mjs — the shared `isEntrypoint` guard, replacing four separate
  * copies of "was this module the one Node was invoked to run" (two already realpath'd both
  * sides; two others — `copy-probe.mjs`, `check-dev-all.mjs` — compared `import.meta.url` to
  * `pathToFileURL(process.argv[1])` directly, which diverges through a symlinked entrypoint since
@@ -52,6 +52,44 @@ describe('is-entrypoint.mjs — isEntrypoint', () => {
       const importMetaUrl = pathToFileURL(fs.realpathSync(real)).href;
       assert.equal(isEntrypoint(importMetaUrl), true);
       assert.notEqual(pathToFileURL(link).href, importMetaUrl);
+    } finally {
+      process.argv[1] = originalArgv1;
+    }
+  });
+
+  it('is true when import.meta.url itself points at a symlink (--preserve-symlinks-main leaves it unresolved)', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'is-entrypoint-'));
+    tempDirs.push(root);
+    const real = path.join(root, 'real-script.mjs');
+    const link = path.join(root, 'linked-script.mjs');
+    fs.writeFileSync(real, '');
+    fs.symlinkSync(real, link);
+    const originalArgv1 = process.argv[1];
+    // argv[1] never gets symlink resolution from Node either way, so point it straight at the
+    // real file — the case under test is the OTHER side: import.meta.url on the link.
+    process.argv[1] = real;
+    try {
+      const importMetaUrl = pathToFileURL(link).href; // deliberately NOT realpath'd
+      assert.equal(isEntrypoint(importMetaUrl), true);
+      assert.notEqual(importMetaUrl, pathToFileURL(real).href);
+    } finally {
+      process.argv[1] = originalArgv1;
+    }
+  });
+
+  it('is true when BOTH import.meta.url and argv[1] are symlinks to the same real file', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'is-entrypoint-'));
+    tempDirs.push(root);
+    const real = path.join(root, 'real-script.mjs');
+    const linkA = path.join(root, 'link-a.mjs');
+    const linkB = path.join(root, 'link-b.mjs');
+    fs.writeFileSync(real, '');
+    fs.symlinkSync(real, linkA);
+    fs.symlinkSync(real, linkB);
+    const originalArgv1 = process.argv[1];
+    process.argv[1] = linkA;
+    try {
+      assert.equal(isEntrypoint(pathToFileURL(linkB).href), true);
     } finally {
       process.argv[1] = originalArgv1;
     }

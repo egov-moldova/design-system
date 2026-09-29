@@ -29,49 +29,21 @@ export const matchLocale = (tag: string | null | undefined): MudLocale | undefin
 };
 
 /**
- * Per-host bookkeeping for `hostLang`: `ownedLang` is the value THIS library last wrote onto
- * a host's `lang` attribute for an explicit `locale`; `consumerLang` is the value the consumer
- * itself had on the host right before the library's first write (or `null` when it had none).
- * Both are cleared together when `locale` is unset again, restoring the consumer's own value.
- */
-const ownedLang = new WeakMap<Element, string>();
-const consumerLang = new WeakMap<Element, string | null>();
-
-/**
- * The `lang` of the closest ancestor that sets one, crossing shadow roots, so a component
- * rendered inside another component's shadow DOM still reads the page's language.
- * An empty `lang=""` means "unknown" in HTML and stops the search.
- *
- * `el`'s OWN `lang` is treated specially when it still equals the value `hostLang` itself last
- * wrote there (`ownedLang`) — this is the walk's own starting host reading back its stale write
- * mid-render, BEFORE `hostLang` recomputes it for the current `locale` (render reads `lang`
- * before computing it; `@Watch('locale')` runs before any render at all). Resolving it as a
- * real ancestor lang would still show the component's own outgoing `locale`; skipping it
- * outright would lose a consumer's own `lang` mid-clear. So it resolves to what `hostLang` is
- * ABOUT to restore there (`consumerLang`) instead: the consumer's own value when it had one,
- * `undefined` right away for an explicit `lang=""` (still "unknown"), or the real ancestors
- * when the consumer never had one of its own.
+ * The `lang` of the closest ANCESTOR that sets one, crossing shadow roots, so a component
+ * rendered inside another component's shadow DOM still reads the page's language. `el`'s own
+ * `lang` is never read — the walk starts at `el`'s parent — so a value the component itself
+ * wrote to its own host (see `hostLang`) is never read back, and call order inside `render()`
+ * no longer matters. An empty `lang=""` means "unknown" in HTML and stops the search.
  */
 export const inheritedLang = (el: Element): string | undefined => {
-  let node: Node | null = el;
-  let start = true;
+  // Only a shadow root (nodeType 11) is crossed to its host. In mock-doc a detached Stencil
+  // host's own `host` property is the element itself, so reading `.host` off any parentless
+  // node would loop forever on a render scheduled after `remove()`.
+  let node: Node | null = el.parentNode;
   while (node) {
     if (node.nodeType === 1 && (node as Element).hasAttribute('lang')) {
-      const element = node as Element;
-      if (start && ownedLang.get(element) === element.getAttribute('lang')) {
-        const original = consumerLang.get(element);
-        if (original) return original;
-        if (original === '') return undefined;
-        // `original` is `null` (consumer had no `lang` of its own) or `undefined` (never
-        // recorded) — neither names a value, so the walk continues to the real ancestors.
-      } else {
-        return element.getAttribute('lang') || undefined;
-      }
+      return (node as Element).getAttribute('lang') || undefined;
     }
-    start = false;
-    // Only a shadow root (nodeType 11) is crossed to its host. In mock-doc a detached Stencil
-    // host's own `host` property is the element itself, so reading `.host` off any parentless
-    // node would loop forever on a render scheduled after `remove()`.
     node = node.parentNode ?? (node.nodeType === 11 ? (node as ShadowRoot).host : null);
   }
   return undefined;
@@ -211,32 +183,47 @@ const pluralRulesFor = (locale: MudLocale): Intl.PluralRules => {
   return rules;
 };
 
-const numberFormatCache = new Map<string, Intl.NumberFormat>();
+const numberFormatCache = new Map<string, WeakMap<Intl.NumberFormatOptions, Intl.NumberFormat>>();
 
-/** An `Intl.NumberFormat` for `tag` + `options`, cached per exact pair (never per call). */
-const numberFormatFor = (tag: string, options: Intl.NumberFormatOptions): Intl.NumberFormat => {
-  const key = `${tag}|${JSON.stringify(options)}`;
-  let formatter = numberFormatCache.get(key);
+/**
+ * An `Intl.NumberFormat` for `tag` + `options`, cached per `tag` and `options` OBJECT IDENTITY
+ * (never per call, and never by serializing `options`) — pass a module-level constant `options`
+ * object to hit the cache; a fresh object literal built on every call never does.
+ */
+export const numberFormatFor = (tag: string, options: Intl.NumberFormatOptions): Intl.NumberFormat => {
+  let byOptions = numberFormatCache.get(tag);
+  if (!byOptions) {
+    byOptions = new WeakMap();
+    numberFormatCache.set(tag, byOptions);
+  }
+  let formatter = byOptions.get(options);
   if (!formatter) {
     formatter = new Intl.NumberFormat(tag, options);
-    numberFormatCache.set(key, formatter);
+    byOptions.set(options, formatter);
   }
   return formatter;
 };
 
+/** `formatNumber`'s default `options` — a stable object identity, so the default path hits `numberFormatFor`'s cache too. */
+const DEFAULT_FORMAT_NUMBER_OPTIONS: Intl.NumberFormatOptions = { useGrouping: false };
+
 /**
  * `value` formatted in the component's resolved `formatLocale`, through the same cached
  * `Intl.NumberFormat` pool every other locale-aware number in this module draws from.
- * `options` defaults to grouping off, matching `fillPlaceholders`'s own placeholder numbers.
+ * `options` defaults to grouping off, matching `fillPlaceholders`'s own placeholder numbers
+ * (which additionally set `maximumFractionDigits: 20`, so a placeholder number never rounds).
  */
 export const formatNumber = (
   host: Element,
   locale: string | null | undefined,
   value: number,
-  options: Intl.NumberFormatOptions = { useGrouping: false },
+  options: Intl.NumberFormatOptions = DEFAULT_FORMAT_NUMBER_OPTIONS,
 ): string => numberFormatFor(formatLocale(host, locale), options).format(value);
 
 const isPlural = (value: string | Plural): value is Plural => typeof value === 'object' && value !== null;
+
+/** `fillPlaceholders`'s number options — a stable object identity shared across every call. */
+const PLACEHOLDER_NUMBER_OPTIONS: Intl.NumberFormatOptions = { useGrouping: false, maximumFractionDigits: 20 };
 
 /**
  * Fills `{name}` placeholders. A number is formatted in the component's `formatLocale` with
@@ -253,7 +240,7 @@ const fillPlaceholders = (
     if (!(name in vars)) return match;
     const value = vars[name];
     if (typeof value !== 'number' || !Number.isFinite(value)) return String(value);
-    return numberFormatFor(formatLocale(host, locale), { useGrouping: false, maximumFractionDigits: 20 }).format(value);
+    return formatNumber(host, locale, value, PLACEHOLDER_NUMBER_OPTIONS);
   });
 };
 
@@ -284,10 +271,14 @@ const langListeners = new Set<() => void>();
 let langObserver: MutationObserver | undefined;
 
 /**
- * Calls `onChange` whenever `<html lang>` changes, so a mounted component re-renders its copy
- * when an app switches language. One observer serves every component. A `lang` changed on an
- * intermediate ancestor is read on the component's next render only. Without
- * `MutationObserver` (the hydrate build, mock-doc) nothing is observed.
+ * Calls `onChange` whenever a `lang` attribute changes anywhere under `document.documentElement`
+ * — `<html lang>` itself, or any light-DOM descendant, including another `mud-*` component's own
+ * host once its `locale` changes — so a mounted component re-renders its copy when an ancestor's
+ * language changes (a slotted `mud-breadcrumb-item` follows a `mud-breadcrumb`'s `locale` set
+ * after mount, for instance). Shadow-internal `lang` (inside another component's shadow root)
+ * stays unobserved — `subtree` only reaches light-DOM descendants of `document.documentElement`.
+ * One observer serves every component. Without `MutationObserver` (the hydrate build, mock-doc)
+ * nothing is observed.
  *
  * @returns A function that stops listening; call it from `disconnectedCallback`.
  */
@@ -305,7 +296,7 @@ export const observeDocumentLang = (onChange: () => void): (() => void) => {
         }
       }
     });
-    langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'], subtree: true });
   }
   return () => {
     langListeners.delete(onChange);
@@ -317,36 +308,36 @@ export const observeDocumentLang = (onChange: () => void): (() => void) => {
 };
 
 /**
+ * Drops every registered `observeDocumentLang` listener and disconnects the shared observer.
+ * Test-only: mock-doc does not reliably run `disconnectedCallback` on every descendant a `remove()`
+ * cascades through (a nested locale-aware child, e.g. `mud-spinner` inside `mud-breadcrumb`, can
+ * outlive its host's removal) — a leaked listener then keeps `langObserver` bound to a PRIOR
+ * test's now-discarded `MutationObserver` stub, so the next test's own stub never gets the
+ * `document.documentElement` observation and its `fire()` reaches nothing. Call before installing
+ * a fresh stub (`withLangObserver` does this itself).
+ */
+export const resetDocumentLangObserver = (): void => {
+  langObserver?.disconnect();
+  langObserver = undefined;
+  langListeners.clear();
+};
+
+/**
  * The `lang` a component with an explicit `locale` puts on its own HOST (WCAG 3.1.2,
  * `_agents/localization.md` §7): the copy is spread over sibling shadow elements and
  * host-level `aria-label`s, so only the host names the language of all of it, and only the
  * host is visible to a slotted light-DOM child or a nested `mud-*` component reading an
- * ancestor `lang` — the very reason it must never CLOBBER a consumer's own host `lang`.
+ * ancestor `lang`.
  *
- * While `locale` is set: the host's current `lang` is captured into `consumerLang` UNLESS it
- * is already the value this function itself wrote last time (`ownedLang`) — so a consumer's
- * own `lang`, set before or after mounting, is remembered exactly once, never overwritten by
- * the library's own prior write. The resolved tag is returned and recorded as the new
- * `ownedLang`.
- *
- * While `locale` is unset: ownership is dropped and the consumer's captured `lang` is
- * returned (restoring it), or `undefined` when the consumer never had one — so `<Host
- * lang={hostLang(...)}>` removes the attribute exactly when the consumer's own markup never
- * carried it.
+ * Stateless: `formatLocale(host, locale)` while `locale` is a non-empty string, else
+ * `undefined` — nothing else, no side effects. A `lang` a consumer set directly on the host is
+ * overwritten for as long as `locale` is set, and is NOT restored once `locale` clears again
+ * (accepted consequence — the documented API for a component's own language is `locale`, never
+ * a consumer `lang` on its own host); `<Host lang={hostLang(...)}>` then carries no attribute
+ * at all, same as a Stencil `Host` prop that has always been `undefined`.
  */
-export const hostLang = (host: Element, locale: string | null | undefined): string | undefined => {
-  if (locale) {
-    const current = host.getAttribute('lang');
-    if (current !== (ownedLang.get(host) ?? null)) consumerLang.set(host, current);
-    const resolved = formatLocale(host, locale);
-    ownedLang.set(host, resolved);
-    return resolved;
-  }
-  ownedLang.delete(host);
-  const original = consumerLang.get(host);
-  consumerLang.delete(host);
-  return original ?? undefined;
-};
+export const hostLang = (host: Element, locale: string | null | undefined): string | undefined =>
+  locale?.trim() ? formatLocale(host, locale) : undefined;
 
 /**
  * `observeDocumentLang`, labeled with the host's own tag so a throwing listener is traceable to

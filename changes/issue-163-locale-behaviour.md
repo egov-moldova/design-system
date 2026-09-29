@@ -22,7 +22,8 @@ an ancestor `lang="en"`) to get the English text back.
 
 When `locale` is set, the component sets `lang` on its host element, so screen readers read its
 built-in copy in that language; content you slot into it inherits the same language. Clearing
-`locale` removes that `lang`, and a `lang` you had put on the host yourself comes back.
+`locale` removes that `lang`. A `lang` on the component's own element is not read as its
+language (use `locale`), and it is overwritten while `locale` is set.
 
 Every override prop that previously carried a hardcoded default (e.g. `closeLabel: string =
 'Închide'`) is now `string | undefined` with no default value assigned in code — reading it

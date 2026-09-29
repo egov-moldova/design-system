@@ -13,7 +13,7 @@ title: numeric parsing, validation messages after a locale change, and locale-fo
   digits (`1.234` under `ro-MD`, `1,234` under `en-US`), yields no value: the field reports
   `badInput` with the new `ambiguousMessage` text (override prop `ambiguous-message`), so a form
   does not submit it silently, and committing it emits one `mudError` with `reason:
-  'ambiguous'` and one `mudChange` with `value: null`. `formStateRestoreCallback` restores
+  'ambiguous'` and a `mudChange` with `value: null`, like any other commit. `formStateRestoreCallback` restores
   exactly the serialized value.
 - File sizes in `mud-file-input` and `mud-file-item` use the locale's decimal (`1,5 MB` under
   `ro-MD`); they used a dot, which reads as a thousands separator in Romanian and Russian. They

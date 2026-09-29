@@ -57,13 +57,17 @@ Every `mud-*` component that ships copy resolves it from a built-in
    through `<Host lang={hostLang(this.host, this.locale)}>` (WCAG 3.1.2). The
    host is the one element that covers all of a component's own copy: copy is
    spread over sibling shadow elements and over host-level `aria-label`s, so no
-   single shadow element carries it. `hostLang` remembers the value it wrote,
-   so `inheritedLang` never reads it back after `locale` is cleared, and it
-   restores a `lang` the consumer had put on the host. Content slotted into a
-   component with an explicit `locale` inherits that language — the accepted
-   cost of host placement. A parent rendering another `mud-*` component in its
-   own shadow DOM passes `locale={this.locale}` down; slotted `mud-*` children
-   inherit it through the host.
+   single shadow element carries it. `hostLang` is stateless, and
+   `inheritedLang(host)` starts at the host's parent, never at the host
+   itself, so a component never reads back the `lang` it wrote and call order
+   inside `render()` does not matter. A consumer's `lang` on the component's own
+   host is therefore not an input (the API is `locale`) and is overwritten while
+   `locale` is set. Content slotted into a component with an explicit `locale`
+   inherits that language — the accepted cost of host placement. A parent
+   rendering another `mud-*` component in its own shadow DOM passes
+   `locale={this.locale}` down; slotted `mud-*` children inherit it through the
+   host and re-render when it changes, because `observeDocumentLang` watches
+   `lang` on the whole document subtree.
 
 See `mud-date-input` / `mud-date-picker` / `mud-time-input` for the reference
 implementation, and the plan's `## Component recipe`

@@ -11,7 +11,15 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import {
+  formatLocale,
+  formatMessage,
+  formatNumber as formatLocaleNumber,
+  localeMessages,
+  numberFormatFor,
+  watchDocumentLang,
+  hostLang,
+} from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
 import type { NumericInputMessages } from './mud-numeric-input.messages';
@@ -22,6 +30,9 @@ let numericInputInstanceCounter = 0;
 type ParsedEntry = { kind: 'number'; value: number } | { kind: 'ambiguous' } | { kind: 'invalid' };
 
 const INVALID_ENTRY: ParsedEntry = { kind: 'invalid' };
+
+/** `localeSeparators`'s probe options — a stable object identity, so it hits `numberFormatFor`'s cache. */
+const SEPARATOR_PROBE_OPTIONS: Intl.NumberFormatOptions = {};
 
 /** `1`–`3` digits, then only groups of exactly three: the shape a thousands-grouped integer has. */
 const isGroupedInteger = (parts: string[]): boolean =>
@@ -283,16 +294,6 @@ export class MudNumericInput {
   @State() private fieldsetDisabled: boolean = false;
   @State() private displayValue: string = '';
   /**
-   * The raw text of the last commit reported through `mudError`/`mudChange` — both the native
-   * `change` handler and `blur` call `commitFromDisplay` for the same user commit, so a repeat
-   * with the exact same text is that duplicate call, not a second commit, whatever the commit's
-   * result (number, blank, not-a-number, ambiguous). Reset — so the next identical text DOES
-   * emit again — by a keystroke (`handleInput`), `formResetCallback`, and a programmatic
-   * `value` write (`handleValueChange`); `commitFromDisplay` itself re-affirms it at the end,
-   * after any of those resets that its own `value` assignment may have triggered mid-commit.
-   */
-  private lastCommittedText?: string;
-  /**
    * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
    * internal control when no visible label is present.
    */
@@ -397,9 +398,6 @@ export class MudNumericInput {
 
   @Watch('value')
   handleValueChange(next: number | undefined) {
-    // Any `value` write — programmatic or `commitFromDisplay`'s own — resets the dedupe key;
-    // `commitFromDisplay` re-affirms it afterward for its own commit (see `lastCommittedText`).
-    this.lastCommittedText = undefined;
     this.syncFormValue(next);
     // Keep the visible field in sync when the prop is changed externally and
     // the user isn't actively editing — before `syncValidity`, which reads
@@ -450,7 +448,6 @@ export class MudNumericInput {
   }
 
   formResetCallback() {
-    this.lastCommittedText = undefined;
     this.value = this.initialValue;
     this.displayValue = this.formatForDisplay(this.initialValue);
     this.syncFormValue(this.initialValue);
@@ -535,7 +532,9 @@ export class MudNumericInput {
   private localeSeparators(): { group: string; decimal: string } {
     if (!this.locale) return { group: '', decimal: '.' };
     try {
-      const parts = new Intl.NumberFormat(formatLocale(this.host, this.locale)).formatToParts(12345.6);
+      const parts = numberFormatFor(formatLocale(this.host, this.locale), SEPARATOR_PROBE_OPTIONS).formatToParts(
+        12345.6,
+      );
       return {
         group: parts.find(p => p.type === 'group')?.value ?? '',
         decimal: parts.find(p => p.type === 'decimal')?.value ?? '.',
@@ -631,11 +630,11 @@ export class MudNumericInput {
     const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
     if (this.locale) {
       try {
-        return new Intl.NumberFormat(formatLocale(this.host, this.locale), {
+        return formatLocaleNumber(this.host, this.locale, value, {
           useGrouping: !focused,
           minimumFractionDigits: digits,
           maximumFractionDigits: digits ?? 20,
-        }).format(value);
+        });
       } catch {
         /* fall through to the plain rendering */
       }
@@ -707,9 +706,6 @@ export class MudNumericInput {
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
     const raw = target.value;
-    // A keystroke always resets the dedupe key, even when it leaves `this.value` unchanged
-    // (e.g. still-invalid text), so the next commit of unchanged text still emits.
-    this.lastCommittedText = undefined;
     this.displayValue = raw;
     const entry = this.parseRaw(raw);
     if (entry.kind === 'ambiguous') {
@@ -791,42 +787,34 @@ export class MudNumericInput {
   };
 
   private commitFromDisplay(): void {
-    // `change` and `blur` both call this for the same user commit; a repeat with the exact
-    // same text is that duplicate call, not a second commit — whatever its result. A `value`
-    // assignment below re-runs `handleValueChange`, which resets this key; it is re-affirmed
-    // to `text` at every return point, after any such reset, so it reflects THIS commit once
-    // the function is done.
-    const text = this.displayValue;
-    if (this.lastCommittedText === text) return;
-    const entry = this.parseRaw(text);
+    // `change` and `blur` both call this for the same user commit, and both emit — no dedupe:
+    // released behaviour (compare `git show d982190c`).
+    const entry = this.parseRaw(this.displayValue);
     if (entry.kind === 'ambiguous') {
       this.value = undefined;
-      this.emitAmbiguous(text);
+      this.emitAmbiguous(this.displayValue);
       this.syncValidity();
       this.mudChange.emit({ value: null });
-      this.lastCommittedText = text;
       return;
     }
     if (entry.kind === 'invalid') {
       // The field is empty or contains an unparseable string.
-      if (text.trim() === '') {
+      if (this.displayValue.trim() === '') {
         this.value = undefined;
         this.displayValue = '';
         this.mudChange.emit({ value: null });
       } else {
         // Non-numeric residue (rare with our input mask) — surface an error
         // and reset the display to the last committed value.
-        this.mudError.emit({ reason: 'not-a-number', rawValue: text });
+        this.mudError.emit({ reason: 'not-a-number', rawValue: this.displayValue });
         this.displayValue = this.formatForDisplay(this.value);
       }
-      this.lastCommittedText = text;
       return;
     }
     const committed = this.commit(entry.value);
     this.value = committed;
     this.displayValue = this.formatForDisplay(committed);
     this.mudChange.emit({ value: committed });
-    this.lastCommittedText = text;
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {

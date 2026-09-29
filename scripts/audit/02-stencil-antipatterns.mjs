@@ -28,7 +28,7 @@
  * if they only want the count, but they gain precise navigation when desired.
  */
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import postcss from 'postcss';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
@@ -721,7 +721,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

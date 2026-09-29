@@ -481,13 +481,9 @@ export class MudBreadcrumb {
     const items = this.items;
     const useItems = Array.isArray(items) && items.length > 0;
     const m = this.messages();
-    // Pre-built, and `hostLang` computed only after: `renderDesktop`/`renderMobile` call
-    // `this.messages()` again internally (the loading spinner's label), which must still see
-    // this render's PRE-`hostLang` state to resolve correctly while `locale` is being cleared
-    // (see `hostLang`'s own doc on `inheritedLang`'s mid-render staleness detection).
+    const lang = hostLang(this.host, this.locale);
     const desktop = useItems ? this.renderDesktop(items!, m.overflowLabel) : null;
     const mobile = useItems && this.responsive ? this.renderMobile(items!) : null;
-    const lang = hostLang(this.host, this.locale);
     return (
       <Host role="navigation" lang={lang}>
         {useItems ? (

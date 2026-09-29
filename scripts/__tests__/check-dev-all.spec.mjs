@@ -17,6 +17,14 @@
  * registered inside `main()` only, so an import alone leaves `process`'s listener counts
  * unchanged.
  *
+ * Also covered: `runMain` (tracks a separate `threw` boolean, so a falsy rejection —
+ * `Promise.reject()`, `throw undefined` — still fails the run instead of reading like nothing
+ * was thrown) and `shouldKillPortListeners` (cleanup kills whatever is listening on our ports
+ * only once THIS run's own preflight has passed — wireit spawns every script `detached: true` of
+ * its own, so Storybook/the demo server are never in `yarn dev:all`'s process group and a
+ * group-based filter can never find them; gating on the preflight instead is what keeps this from
+ * killing an unrelated listener a developer already had on the port).
+ *
  * Only these pure exports are exercised here: `check-dev-all.mjs` is deliberately excluded from
  * `test:scripts` (it starts real dev servers and drives a real browser — see its module doc),
  * and importing it for them must not trigger that run — the module guards its entrypoint via
@@ -25,7 +33,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { exitOutcome, safeRestoreBadge } from '../check-dev-all.mjs';
+import { exitOutcome, runMain, safeRestoreBadge, shouldKillPortListeners } from '../check-dev-all.mjs';
 
 describe('check-dev-all.mjs — importing the module', () => {
   it('registers no process exit/signal handlers (they live inside main())', () => {
@@ -92,18 +100,63 @@ describe('check-dev-all.mjs — safeRestoreBadge', () => {
 
 describe('check-dev-all.mjs — exitOutcome', () => {
   it('is 0 when main() did not throw and the badge restore succeeded', () => {
-    assert.equal(exitOutcome(undefined, true), 0);
+    assert.equal(exitOutcome(false, true), 0);
   });
 
   it('is 1 when main() threw, even if the badge restore succeeded', () => {
-    assert.equal(exitOutcome(new Error('boom'), true), 1);
+    assert.equal(exitOutcome(true, true), 1);
   });
 
   it('is 1 when the badge restore failed, even though main() otherwise succeeded', () => {
-    assert.equal(exitOutcome(undefined, false), 1);
+    assert.equal(exitOutcome(false, false), 1);
   });
 
   it('is 1 when both main() threw and the badge restore failed', () => {
-    assert.equal(exitOutcome(new Error('boom'), false), 1);
+    assert.equal(exitOutcome(true, false), 1);
+  });
+});
+
+describe('check-dev-all.mjs — runMain', () => {
+  it('reports threw: false and no failure when mainFn resolves', async () => {
+    const result = await runMain(async () => 'ignored return value');
+    assert.deepEqual(result, { threw: false, failure: undefined });
+  });
+
+  it('reports threw: true and the error when mainFn throws normally', async () => {
+    const error = new Error('boom');
+    const result = await runMain(async () => {
+      throw error;
+    });
+    assert.equal(result.threw, true);
+    assert.equal(result.failure, error);
+  });
+
+  it('reports threw: true even when mainFn rejects with undefined (the bug exitOutcome(failure, ...) had)', async () => {
+    const result = await runMain(() => Promise.reject());
+    assert.equal(result.threw, true);
+    assert.equal(result.failure, undefined);
+    // The regression this guards: exitOutcome's old signature took the caught value itself, so
+    // `if (failure)` on `undefined` read identically to "nothing was thrown" and passed the run.
+    assert.equal(exitOutcome(result.threw, true), 1);
+  });
+
+  it('reports threw: true even when mainFn does `throw undefined`', async () => {
+    const result = await runMain(async () => {
+      // eslint-disable-next-line no-throw-literal -- exercising the exact falsy-throw regression
+      throw undefined;
+    });
+    assert.equal(result.threw, true);
+    assert.equal(result.failure, undefined);
+    assert.equal(exitOutcome(result.threw, true), 1);
+  });
+});
+
+describe('check-dev-all.mjs — shouldKillPortListeners', () => {
+  it("is true once this run's preflight has passed", () => {
+    assert.equal(shouldKillPortListeners(true), true);
+  });
+
+  it('is false before the preflight has passed — a listener there predates this run', () => {
+    assert.equal(shouldKillPortListeners(false), false);
   });
 });

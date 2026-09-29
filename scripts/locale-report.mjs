@@ -11,6 +11,8 @@ import { readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
+
 const DEFAULT_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LOCALES = ['ro-MD', 'en-US', 'ru-MD'];
 const PLURAL_ORDER = ['one', 'few', 'many', 'other'];
@@ -65,7 +67,7 @@ export async function buildReport(root = DEFAULT_ROOT, only = []) {
   return sections.join('\n\n');
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (isEntrypoint(import.meta.url)) {
   buildReport(DEFAULT_ROOT, process.argv.slice(2)).then(
     out => console.log(out),
     err => {

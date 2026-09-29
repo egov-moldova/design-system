@@ -19,7 +19,7 @@
  *   node scripts/audit/12-console-errors.mjs mud-button --json
  *   node scripts/audit/12-console-errors.mjs --all --json
  */
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { cpus } from 'node:os';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
@@ -318,7 +318,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     if (err.message === PLAYWRIGHT_INSTALL_HINT) {

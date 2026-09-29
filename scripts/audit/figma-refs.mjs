@@ -28,7 +28,7 @@
  *   node scripts/audit/figma-refs.mjs mud-date-picker --check --json
  *   node scripts/audit/figma-refs.mjs mud-date-picker --dry-run --json
  */
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -373,7 +373,7 @@ async function main() {
   process.exit(failed.length ? EXIT_FINDINGS : 0);
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: ${err.message}\n`);

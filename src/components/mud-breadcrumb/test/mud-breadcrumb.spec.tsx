@@ -1,6 +1,6 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 
-import { describeLocales } from '../../../utils/locale.test-helpers';
+import { describeLocales, withLangObserver } from '../../../utils/locale.test-helpers';
 import '../mud-breadcrumb';
 import '../mud-breadcrumb-item';
 import '../../mud-spinner/mud-spinner';
@@ -187,6 +187,26 @@ describe('mud-breadcrumb', () => {
       const item = root?.querySelector('mud-breadcrumb-item');
       const spinner = item?.shadowRoot?.querySelector('mud-spinner');
       expect(spinner?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['en-US'].loadingLabel);
+    });
+
+    it('a slotted mud-breadcrumb-item follows the breadcrumb locale set AFTER mount', async () => {
+      await withLangObserver(async fire => {
+        const { root, waitForChanges } = await render(
+          <mud-breadcrumb>
+            <mud-breadcrumb-item loading>Loading item</mud-breadcrumb-item>
+          </mud-breadcrumb>,
+        );
+        const item = root?.querySelector('mud-breadcrumb-item');
+        const spinner = () => item?.shadowRoot?.querySelector('mud-spinner');
+        expect(spinner()?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['ro-MD'].loadingLabel);
+        (root as unknown as { locale: string }).locale = 'en-US';
+        await waitForChanges();
+        // The breadcrumb's own host `lang` write is what the `<html lang>` observer picks
+        // up — this stub delivers that notification without a real MutationObserver.
+        fire();
+        await waitForChanges();
+        expect(spinner()?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['en-US'].loadingLabel);
+      });
     });
   });
 

@@ -31,7 +31,7 @@ import { writeFileSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { resolveComponentPaths, normalizeComponentName, relativeToRepo } from '../audit/lib/component-paths.mjs';
 import { extractContractFromTsx } from '../audit/14-component-contract.mjs';
 
@@ -314,7 +314,7 @@ function kebabAttr(name) {
   return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

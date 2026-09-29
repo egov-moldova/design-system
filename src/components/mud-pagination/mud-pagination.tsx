@@ -621,7 +621,7 @@ export class MudPagination {
   render() {
     // Hide entirely when there are no real pages to navigate.
     if (this.totalPages <= 1) {
-      return <Host aria-hidden="true" />;
+      return <Host aria-hidden="true" lang={hostLang(this.host, this.locale)} />;
     }
 
     const m = this.messages();

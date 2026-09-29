@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from '@stencil/vitest';
 
-import { formatMessage, resetLocaleWarnings } from './locale';
+import { formatMessage, resetDocumentLangObserver, resetLocaleWarnings } from './locale';
 import type { LocaleMessages, Plural } from './locale';
 
 /** Renders the component under test with the given props, waits for it to settle, and returns its host. */
@@ -47,17 +47,33 @@ const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 /**
  * Runs `run` with a `MutationObserver` stub in place (mock-doc has none, so `observeDocumentLang`
- * observes nothing otherwise) and hands it a `fire` that delivers a mutation to every observer
- * created meanwhile — the `<html lang>` listener path, without a real DOM.
+ * observes nothing otherwise) and hands it a `fire` that delivers a mutation to only the observer
+ * `observeDocumentLang` itself creates — identified by ITS OWN `observe()` call, `document.documentElement`
+ * with an `attributeFilter` naming `lang` — the `<html lang>` listener path, without a real DOM.
+ * Never every stub created meanwhile: a component using its own unrelated `MutationObserver` (e.g.
+ * `nameHostWithFallback`'s `aria-label` watcher) would, in a real browser, never fire from a `lang`
+ * mutation on a different target with a different `attributeFilter` — firing it anyway is a false
+ * mutation the component never asked for, and a STATEFUL watcher (one that infers "did the CONSUMER
+ * write this, or did I" from `takeRecords()`) misreads its own last write as a fresh consumer change.
  */
-const withLangObserver = async (run: (fire: () => void) => Promise<void>): Promise<void> => {
+export const withLangObserver = async (run: (fire: () => void) => Promise<void>): Promise<void> => {
+  // A listener leaked by an earlier `withLangObserver` block (mock-doc does not reliably run
+  // `disconnectedCallback` through every removed descendant) would otherwise keep `observeDocumentLang`
+  // bound to that block's now-discarded stub instance, so THIS block's fresh stub never gets the
+  // `document.documentElement` observation at all.
+  resetDocumentLangObserver();
   const original = globalThis.MutationObserver;
-  const created: Array<{ callback: MutationCallback }> = [];
+  const created: Array<{ callback: MutationCallback; target?: Node; options?: MutationObserverInit }> = [];
   class StubMutationObserver {
+    target?: Node;
+    options?: MutationObserverInit;
     constructor(readonly callback: MutationCallback) {
       created.push(this);
     }
-    observe(): void {}
+    observe(target: Node, options?: MutationObserverInit): void {
+      this.target = target;
+      this.options = options;
+    }
     disconnect(): void {}
     takeRecords(): MutationRecord[] {
       return [];
@@ -66,7 +82,11 @@ const withLangObserver = async (run: (fire: () => void) => Promise<void>): Promi
   (globalThis as unknown as { MutationObserver: unknown }).MutationObserver = StubMutationObserver;
   try {
     await run(() => {
-      for (const observer of created) observer.callback([], observer as unknown as MutationObserver);
+      for (const observer of created) {
+        if (observer.target === document.documentElement && observer.options?.attributeFilter?.includes('lang')) {
+          observer.callback([], observer as unknown as MutationObserver);
+        }
+      }
     });
   } finally {
     (globalThis as unknown as { MutationObserver: unknown }).MutationObserver = original;
@@ -118,13 +138,17 @@ const isPlural = (value: string | Plural): value is Plural => typeof value === '
 
 /**
  * Generates the shared locale contract's spec cases for one component: default `ro-MD`,
- * `locale="en-US"`, an ancestor `lang="ru"`, an override beating the locale, an empty override
- * falling back to the dictionary (a caption's hiding the text instead), an unsupported `locale`
- * warning and falling back, a `locale` change after mount re-rendering the copy, and — under
- * `ru-MD` — the rendered shadow DOM holding no `ro-MD`/`en-US` dictionary value. With the
- * `validity` option, each validity message also follows the locale through the `locale` prop and
- * the `<html lang>` observer. Iterates every key of `table['ro-MD']`; a key neither reachable
- * through `read`, nor a validity case, nor listed in `unreachable` fails the run.
+ * `locale="en-US"` carrying `lang="en-US"` on the host, an ancestor `lang="ru"`, an override
+ * beating the locale, an empty override falling back to the dictionary (a caption's hiding the
+ * text instead), an unsupported `locale` warning and falling back, a `locale` change after mount
+ * re-rendering the copy, clearing `locale` again (the copy and the host's own `lang` both follow
+ * the ancestors — a `lang` a consumer set directly on the host is overwritten while `locale` is
+ * set and NOT restored once it clears, per decision A), a parent element's `lang` changing after
+ * mount re-rendering the copy (`<html lang>` observer), and — under `ru-MD` — the rendered shadow
+ * DOM holding no `ro-MD`/`en-US` dictionary value. With the `validity` option, each validity
+ * message also follows the locale through the `locale` prop and the `<html lang>` observer.
+ * Iterates every key of `table['ro-MD']`; a key neither reachable through `read`, nor a validity
+ * case, nor listed in `unreachable` fails the run.
  */
 export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
   component: string,
@@ -284,7 +308,9 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       }
     });
 
-    it('a consumer lang="ru" on the host survives a set-then-clear of locale', async () => {
+    it('a lang set directly on the host is overwritten while locale is set, and not restored once cleared', async () => {
+      // Accepted consequence of decision A: the documented API for a component's own language
+      // is `locale`, never a consumer `lang` on its own host.
       const host = await render({});
       host.setAttribute('lang', 'ru');
       (host as unknown as Record<string, unknown>).locale = 'en-US';
@@ -294,8 +320,23 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       (host as unknown as Record<string, unknown>).locale = undefined;
       await flush();
       await flush();
-      expect(host.getAttribute('lang')).toBe('ru');
-      await expectMessages(host, 'ru-MD');
+      expect(host.getAttribute('lang')).toBeNull();
+      await expectMessages(host, 'ro-MD');
+    });
+
+    it('re-renders its copy when a parent element’s lang changes after mount', async () => {
+      await withLangObserver(async fire => {
+        const host = await render({}, 'en');
+        try {
+          await expectMessages(host, 'en-US');
+          langCarrier(host)?.setAttribute('lang', 'ru');
+          fire();
+          await flush();
+          await expectMessages(host, 'ru-MD');
+        } finally {
+          host.remove();
+        }
+      });
     });
 
     it('shows no ro-MD or en-US dictionary value under ru-MD', async () => {

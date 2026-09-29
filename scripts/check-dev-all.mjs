@@ -20,13 +20,19 @@
  *
  * Cleanup guarantee: whatever happens (success, failed assertion, thrown error, SIGINT / SIGTERM
  * / SIGHUP, process exit) the process group of `yarn dev:all` is signalled (SIGTERM, then
- * SIGKILL), and anything still LISTENING on 6007 / 5174 in THAT process group is killed — never
- * an unrelated process a developer happens to have listening there, even transiently. `exit` and
- * the signal handlers are installed inside `main()`, never at module load, so importing this
- * module (a test does) installs nothing. `mud-badge.tsx` is written back byte-for-byte from the
- * Buffer read before the edit; a restore that fails during cleanup fails the whole run (no PASS
- * line) even when every other step passed. The final `exit` hook repeats the synchronous parts,
- * so even a crash in the async cleanup leaves neither servers nor an edited component behind.
+ * SIGKILL). Wireit re-spawns every script it runs `detached: true` of its own, so Storybook and
+ * the demo server end up in process groups of their OWN, never `yarn dev:all`'s — signalling that
+ * one group alone cannot reach them. Cleanup instead kills whatever is LISTENING on 6007 / 5174
+ * outright, but only once this run's own preflight has passed (ports were free, badge present):
+ * from that point on, anything found on those ports was started by this run
+ * (`shouldKillPortListeners`); a listener seen before the preflight passes, or during a cleanup
+ * from a throw that happened before it ran, predates this run and is left alone — never an
+ * unrelated process a developer happens to have listening there. `exit` and the signal handlers
+ * are installed inside `main()`, never at module load, so importing this module (a test does)
+ * installs nothing. `mud-badge.tsx` is written back byte-for-byte from the Buffer read before the
+ * edit; a restore that fails during cleanup fails the whole run (no PASS line) even when every
+ * other step passed. The final `exit` hook repeats the synchronous parts, so even a crash in the
+ * async cleanup leaves neither servers nor an edited component behind.
  *
  * Playwright is the repo's own devDependency, driven from this local script — never the shared
  * Playwright MCP browser.
@@ -56,6 +62,7 @@ let logFd;
 let badgeOriginal; // Buffer, set before the first write to BADGE_TSX
 let cleaned = false;
 let badgeRestoreOk = true; // flips false when a cleanup-time restore (safeRestoreBadge) fails
+let preflightPassed = false; // flips true once main()'s preflight (ports free + badge present) succeeds
 
 const step = message => console.log(`\n[check-dev-all] ${message}`);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
@@ -87,12 +94,31 @@ export function safeRestoreBadge(restore, badgeTsxPath, log = console.error) {
 }
 
 /**
- * Exit code for the run: a thrown `main()` always fails it, and so does a badge that never
+ * Exit code for the run: a `main()` that threw always fails it, and so does a badge that never
  * made it back to its original contents during cleanup, even when every other step passed —
  * pulled out as a pure function so this decision is testable without starting real servers.
+ *
+ * Takes `threw`, a boolean, never the caught value itself: a falsy rejection (`Promise.reject()`
+ * with no reason, `throw undefined`) is still a thrown failure, but `if (failure)` on the caught
+ * value alone reads that case exactly like "nothing was thrown" and would report `PASS`.
  */
-export function exitOutcome(failure, badgeRestoreOk) {
-  return failure || !badgeRestoreOk ? 1 : 0;
+export function exitOutcome(threw, badgeRestoreOk) {
+  return threw || !badgeRestoreOk ? 1 : 0;
+}
+
+/**
+ * Runs `mainFn` and reports whether it threw, separately from what it threw — the boolean
+ * `exitOutcome` needs and `runMain`'s own reason for existing (see its doc). Pulled out as an
+ * exported pure-ish helper (its only side effect is running `mainFn`) so this tracking is
+ * testable with a fake `mainFn` that rejects with a falsy value, without starting real servers.
+ */
+export async function runMain(mainFn) {
+  try {
+    await mainFn();
+    return { threw: false, failure: undefined };
+  } catch (error) {
+    return { threw: true, failure: error };
+  }
 }
 
 function signalGroup(signal) {
@@ -113,25 +139,26 @@ function listenerPids() {
   return [...pids];
 }
 
-/** The process group id of `pid`, or `undefined` when `ps` can't see it (already gone). */
-function pgidOf(pid) {
-  const out = spawnSync('ps', ['-o', 'pgid=', '-p', String(pid)], { encoding: 'utf8' });
-  const pgid = Number(out.stdout.trim());
-  return Number.isInteger(pgid) && pgid > 0 ? pgid : undefined;
-}
-
 /**
- * Listener pids on our ports that belong to the process group this run started (`child`, spawned
- * `detached: true`, so its pid IS that group's id) — never "whatever listens on the port": a
- * developer's own unrelated `yarn dev` sharing the port at the wrong moment must not be killed.
+ * Whether cleanup should kill whatever is listening on our ports — pulled out as a pure function
+ * so the decision is testable without starting real servers or listeners.
+ *
+ * Wireit spawns EVERY script `detached: true` (node_modules/wireit/lib/script-child-process.js),
+ * so Storybook and the demo server each end up in their OWN process group — never `child.pid`'s
+ * (`child` is only `yarn dev:all`'s own group leader) — and a process-group filter can never find
+ * them. The preflight in `main()` already refuses to start unless 6007 and 5174 are free
+ * (`assert(listenerPids().length === 0, ...)`), so once THAT has passed, anything listening on
+ * those ports afterward was started by this run and is safe to kill outright; before it passes
+ * (or on a cleanup from an early throw, when it never ran) a listener there predates this run and
+ * must be left alone — killing it would be killing a developer's own unrelated server.
  */
-function ourListenerPids() {
-  if (!child?.pid) return [];
-  return listenerPids().filter(pid => pgidOf(pid) === child.pid);
+export function shouldKillPortListeners(preflightPassed) {
+  return preflightPassed === true;
 }
 
 function killListeners() {
-  for (const pid of ourListenerPids()) {
+  if (!shouldKillPortListeners(preflightPassed)) return;
+  for (const pid of listenerPids()) {
     try {
       process.kill(pid, 'SIGKILL');
     } catch {
@@ -248,6 +275,7 @@ async function main() {
   // Preflight: a foreign server on our ports would make every later assertion meaningless.
   assert(listenerPids().length === 0, `something already listens on ${PORTS.join(' or ')}; stop it first`);
   assert(existsSync(BADGE_TSX), `${BADGE_TSX} is missing`);
+  preflightPassed = true; // ports were free and the badge exists — anything found on our ports from here is ours
 
   const { chromium } = await import('playwright');
   const { PAGINATION_MESSAGES } = await import(
@@ -347,26 +375,21 @@ async function main() {
   }
 }
 
-// Guarded so a test can `import` this module (for `safeRestoreBadge`/`exitOutcome`) without
-// starting real dev servers and a browser — importing a script must never have a side effect
-// only running it should have.
+// Guarded so a test can `import` this module (for `safeRestoreBadge`/`exitOutcome`/`runMain`)
+// without starting real dev servers and a browser — importing a script must never have a side
+// effect only running it should have.
 if (isEntrypoint(import.meta.url)) {
-  let failure;
-  try {
-    await main();
-  } catch (error) {
-    failure = error;
-  }
+  const { threw, failure } = await runMain(main);
   await cleanup();
 
-  if (failure) {
-    console.error(`\n[check-dev-all] FAIL: ${failure.stack ?? failure}`);
+  if (threw) {
+    console.error(`\n[check-dev-all] FAIL: ${failure?.stack ?? failure}`);
     const tail = existsSync(LOG_FILE) ? readFileSync(LOG_FILE, 'utf8').split('\n').slice(-40).join('\n') : '';
     console.error(`\n[check-dev-all] last lines of ${LOG_FILE}:\n${tail}`);
   } else if (!badgeRestoreOk) {
     console.error('\n[check-dev-all] FAIL: mud-badge.tsx was not restored during cleanup (see message above)');
   }
-  const code = exitOutcome(failure, badgeRestoreOk);
+  const code = exitOutcome(threw, badgeRestoreOk);
   if (code === 0) console.log('\n[check-dev-all] PASS');
   process.exit(code);
 }

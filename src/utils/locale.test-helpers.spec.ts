@@ -2,7 +2,7 @@ import { describe, render } from '@stencil/vitest';
 
 import { describeLocales } from './locale.test-helpers';
 import type { LocaleMessages, Plural } from './locale';
-import { formatMessage, hostLang, localeMessages } from './locale';
+import { formatMessage, hostLang, localeMessages, watchDocumentLang } from './locale';
 
 interface FixtureMessages {
   closeLabel: string;
@@ -39,11 +39,20 @@ class MudLocaleFixture extends HTMLElement {
     return ['locale', 'close-label'];
   }
 
+  private stopLang?: () => void;
+
   connectedCallback() {
     // A Stencil component gets this class when it hydrates; `render()` polls for it (5 s) before
     // returning. This plain custom element never hydrates, so it sets the flag itself.
     this.classList.add('hydrated');
+    // Mirrors a real Stencil component's `connectedCallback` `watchDocumentLang` wiring, so this
+    // fixture re-renders when an ancestor's `lang` changes too.
+    this.stopLang = watchDocumentLang(this, () => this.paint());
     this.paint();
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
   }
 
   attributeChangedCallback() {
@@ -62,12 +71,18 @@ class MudLocaleFixture extends HTMLElement {
     else this.setAttribute('locale', value);
   }
 
+  /** The `lang` THIS fixture wrote on its own last paint (mirrors Stencil's own vnode bookkeeping). */
+  private lastPaintedLang?: string;
+
   private paint() {
-    // Mirrors a real Stencil component's `<Host lang={hostLang(this.host, this.locale)}>`:
-    // the shared locale contract now covers the host's own `lang` too.
+    // Mirrors a real Stencil component's `<Host lang={hostLang(this.host, this.locale)}>`: the
+    // vdom only ever adds/removes an attribute IT previously rendered a value for — it never
+    // reads the live DOM to decide, so a `lang` the consumer set directly (never rendered by
+    // this fixture) is left untouched when `hostLang` returns `undefined`.
     const lang = hostLang(this, this.locale);
     if (lang) this.setAttribute('lang', lang);
-    else this.removeAttribute('lang');
+    else if (this.lastPaintedLang !== undefined) this.removeAttribute('lang');
+    this.lastPaintedLang = lang;
     const shadow = this.shadowRoot ?? this.attachShadow({ mode: 'open' });
     const overrides = { closeLabel: this.getAttribute('close-label') };
     const m = localeMessages('mud-locale-fixture', this, this.locale, FIXTURE_MESSAGES, overrides);

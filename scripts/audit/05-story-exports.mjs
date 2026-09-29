@@ -23,7 +23,7 @@
  *   node scripts/audit/05-story-exports.mjs mud-button --json
  *   node scripts/audit/05-story-exports.mjs --all --json
  */
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
@@ -449,7 +449,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

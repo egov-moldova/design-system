@@ -12,8 +12,8 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 import {
   DEFAULT_ROOT,
   checkSource,
@@ -67,7 +67,7 @@ export async function checkContentLanguage(root = DEFAULT_ROOT) {
   return violations;
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (isEntrypoint(import.meta.url)) {
   const rootFlag = process.argv.indexOf('--root');
   const root = rootFlag > 0 ? process.argv[rootFlag + 1] : DEFAULT_ROOT;
   const violations = await checkContentLanguage(root);

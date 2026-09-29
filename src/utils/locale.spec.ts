@@ -73,10 +73,10 @@ describe('inheritedLang', () => {
     expect(inheritedLang(inLang('ru'))).toBe('ru');
   });
 
-  it('prefers the element’s own lang', () => {
+  it('ignores the element’s own lang, using the closest ancestor instead', () => {
     const el = inLang('ru');
     el.setAttribute('lang', 'en');
-    expect(inheritedLang(el)).toBe('en');
+    expect(inheritedLang(el)).toBe('ru');
   });
 
   it('crosses a shadow root to its host', () => {
