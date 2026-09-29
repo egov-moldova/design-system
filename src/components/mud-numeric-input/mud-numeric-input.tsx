@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { NUMERIC_INPUT_SIZES, NUMERIC_INPUT_VARIANTS } from './mud-numeric-input.types';
 import type {
@@ -11,8 +11,33 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import {
+  childLocale,
+  formatLocale,
+  formatMessage,
+  formatNumber as formatLocaleNumber,
+  localeMessages,
+  numberFormatFor,
+  watchDocumentLang,
+  hostLang,
+} from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
+import type { NumericInputMessages } from './mud-numeric-input.messages';
 
 let numericInputInstanceCounter = 0;
+
+/** What a typed or pasted string means to the field. */
+type ParsedEntry = { kind: 'number'; value: number } | { kind: 'ambiguous' } | { kind: 'invalid' };
+
+const INVALID_ENTRY: ParsedEntry = { kind: 'invalid' };
+
+/** `localeSeparators`'s probe options — a stable object identity, so it hits `numberFormatFor`'s cache. */
+const SEPARATOR_PROBE_OPTIONS: Intl.NumberFormatOptions = {};
+
+/** `1`–`3` digits, then only groups of exactly three: the shape a thousands-grouped integer has. */
+const isGroupedInteger = (parts: string[]): boolean =>
+  parts.length > 0 && /^\d{1,3}$/.test(parts[0]) && parts.slice(1).every(part => /^\d{3}$/.test(part));
 
 /**
  * Numeric Input — numeric-entry control with stacked step buttons.
@@ -149,17 +174,47 @@ export class MudNumericInput {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Accessible label for the increment button. Defaults to Romanian "Crește"
-   * per the institutional voice.
-   * @default 'Crește'
+   * Accessible label for the increment button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Crește' (ro-MD)
    */
-  @Prop({ attribute: 'increment-label' }) incrementLabel: string = 'Crește';
+  @Prop({ attribute: 'increment-label' }) incrementLabel?: string;
 
   /**
-   * Accessible label for the decrement button. Defaults to Romanian "Scade".
-   * @default 'Scade'
+   * Accessible label for the decrement button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Scade' (ro-MD)
    */
-  @Prop({ attribute: 'decrement-label' }) decrementLabel: string = 'Scade';
+  @Prop({ attribute: 'decrement-label' }) decrementLabel?: string;
+
+  /**
+   * Validation message reported when the field is `required` and empty. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Acest câmp este obligatoriu.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
+  /**
+   * Validation message reported when the value is below `min`. Carries a `{min}` placeholder.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea minimă este {min}.' (ro-MD)
+   */
+  @Prop({ attribute: 'min-message' }) minMessage?: string;
+
+  /**
+   * Validation message reported when the value is above `max`. Carries a `{max}` placeholder.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea maximă este {max}.' (ro-MD)
+   */
+  @Prop({ attribute: 'max-message' }) maxMessage?: string;
+
+  /**
+   * Text of the `mudError` (`reason: 'ambiguous'`) raised for an entry that could be a thousands
+   * group or a decimal, such as `1.234` under `ro-MD`. `{decimal}` is replaced by the locale's
+   * decimal separator. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea este ambiguă. Scrieți numărul fără separator de mii și folosiți „{decimal}” pentru zecimale.' (ro-MD)
+   */
+  @Prop({ attribute: 'ambiguous-message' }) ambiguousMessage?: string;
 
   /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
@@ -187,11 +242,21 @@ export class MudNumericInput {
 
   /**
    * BCP-47 locale used to group the displayed value with thousands separators
-   * and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the
-   * value displays ungrouped. Grouping is applied while the field is not being
-   * edited; on focus the raw editable number is shown so the caret stays sane.
+   * (e.g. `ro-MD` → `1.250,00`). When unset the value displays ungrouped. Grouping
+   * is applied while the field is not being edited; on focus the number is shown
+   * with the locale's decimal separator and no grouping (`1250,00`) so the caret
+   * stays sane. Typed input is read the same way under every locale: spaces and `'`
+   * are ignored, and when both `.` and `,` occur the last one is the decimal. A
+   * single separator is a decimal, except the locale's own grouping character
+   * followed by exactly three digits (`1.234` under `ro-MD`), which raises `mudError`
+   * with `reason: 'ambiguous'` instead of guessing.
+   *
+   * Also selects the language of the built-in copy (steppers, clear button, validation
+   * messages): unset, the copy follows the closest ancestor `lang` (`<html lang>`
+   * included), else `ro-MD`. Number grouping is unaffected by that fallback — it stays off
+   * unless `locale` itself is set.
    */
-  @Prop() locale?: string;
+  @Prop() locale?: LocaleProp;
 
   /**
    * When `true`, renders a trailing clear (×) button while the field holds a
@@ -201,10 +266,11 @@ export class MudNumericInput {
   @Prop({ reflect: true }) clearable: boolean = false;
 
   /**
-   * Accessible label for the clear button. Defaults to the Romanian "Șterge".
-   * @default 'Șterge'
+   * Accessible label for the clear button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Șterge' (ro-MD)
    */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+  @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
   /**
    * Maximum number of characters accepted by the field (native `maxlength`).
@@ -275,6 +341,7 @@ export class MudNumericInput {
   private initialValue: number | undefined;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   @Watch('ariaValuetext')
   syncAriaValuetextProp(next?: string) {
@@ -293,6 +360,14 @@ export class MudNumericInput {
 
   @Watch('max')
   onMaxChange() {
+    this.syncValidity();
+  }
+
+  // The visible number and the validity message are strings built once from the locale, so a
+  // new locale rebuilds both.
+  @Watch('locale')
+  onLocaleChange() {
+    if (!this.isFocused) this.displayValue = this.formatForDisplay(this.value);
     this.syncValidity();
   }
 
@@ -325,20 +400,44 @@ export class MudNumericInput {
   @Watch('value')
   handleValueChange(next: number | undefined) {
     this.syncFormValue(next);
-    this.syncValidity();
     // Keep the visible field in sync when the prop is changed externally and
-    // the user isn't actively editing.
+    // the user isn't actively editing — before `syncValidity`, which reads
+    // `displayValue` for its ambiguous-text check: syncing after it would grade
+    // validity against the stale text a fresh `value` just replaced.
     if (!this.isFocused) {
       this.displayValue = this.formatForDisplay(next);
     }
+    this.syncValidity();
   }
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): NumericInputMessages {
+    return localeMessages('mud-numeric-input', this.host, this.locale, NUMERIC_INPUT_MESSAGES, {
+      incrementLabel: this.incrementLabel,
+      decrementLabel: this.decrementLabel,
+      clearLabel: this.clearLabel,
+      requiredMessage: this.requiredMessage,
+      minMessage: this.minMessage,
+      maxMessage: this.maxMessage,
+      ambiguousMessage: this.ambiguousMessage,
+    });
   }
 
   componentWillLoad() {
@@ -362,9 +461,10 @@ export class MudNumericInput {
 
   formStateRestoreCallback(state: string | File | FormData | null) {
     if (typeof state === 'string') {
-      const parsed = this.parseRaw(state);
-      this.value = parsed ?? undefined;
-      this.displayValue = state;
+      // The state is this component's own `String(value)`: plain dot-decimal, whatever the locale.
+      const parsed = state.trim() === '' ? Number.NaN : Number(state);
+      this.value = Number.isFinite(parsed) ? parsed : undefined;
+      this.displayValue = this.formatForDisplay(this.value);
       this.syncFormValue(this.value);
       this.syncValidity();
     }
@@ -385,18 +485,29 @@ export class MudNumericInput {
     const flags: ValidityStateFlags = {};
     let message: string | undefined;
     const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
+    const messages = this.messages();
 
-    if (this.required && isEmpty) {
+    if (isEmpty && this.parseRaw(this.displayValue).kind === 'ambiguous') {
+      // The raw text is still on screen and could be read two ways: not the same as empty.
+      flags.badInput = true;
+      message = this.ambiguousText();
+    } else if (this.required && isEmpty) {
       flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : messages.requiredMessage;
     } else if (!isEmpty) {
       const v = this.value as number;
       if (this.min !== undefined && v < this.min) {
         flags.rangeUnderflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea minimă este ${this.min}.`;
+        message =
+          this.errorText && this.errorText.length > 0
+            ? this.errorText
+            : formatMessage(messages.minMessage, this.host, this.locale, { min: this.formatNumber(this.min, true) });
       } else if (this.max !== undefined && v > this.max) {
         flags.rangeOverflow = true;
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea maximă este ${this.max}.`;
+        message =
+          this.errorText && this.errorText.length > 0
+            ? this.errorText
+            : formatMessage(messages.maxMessage, this.host, this.locale, { max: this.formatNumber(this.max, true) });
       }
     }
 
@@ -426,7 +537,9 @@ export class MudNumericInput {
   private localeSeparators(): { group: string; decimal: string } {
     if (!this.locale) return { group: '', decimal: '.' };
     try {
-      const parts = new Intl.NumberFormat(this.locale).formatToParts(12345.6);
+      const parts = numberFormatFor(formatLocale(this.host, this.locale), SEPARATOR_PROBE_OPTIONS).formatToParts(
+        12345.6,
+      );
       return {
         group: parts.find(p => p.type === 'group')?.value ?? '',
         decimal: parts.find(p => p.type === 'decimal')?.value ?? '.',
@@ -437,22 +550,50 @@ export class MudNumericInput {
   }
 
   /**
-   * Parse a raw string entry into a number. Strips the locale grouping
-   * separator, normalises the decimal separator (locale / `,` → `.`), trims
-   * whitespace, and rejects everything else. Stays lenient about sign and
-   * fractions — `allow-negative` / `allow-decimal` are enforced in `commit`.
+   * Read a typed or pasted entry, the same way under every locale. Every Unicode space and `'`
+   * is dropped and the Unicode minus (U+2212, which `ru-*` writes) counts as `-`. Then:
+   * - `.` and `,` both present: the last one is the decimal, the other groups thousands;
+   * - one of them repeated: it groups thousands (`1.234.567`);
+   * - one of them once: it is the decimal (`1.5`, `1,5`, `1234.5`) — except the locale's own
+   *   grouping character followed by exactly three digits (`1.234` under `ro-MD`), which could
+   *   be either, so the entry is `ambiguous` rather than guessed.
+   * Stays lenient about sign and fractions — `allow-negative` / `allow-decimal` are enforced in
+   * `commit`.
    */
-  private parseRaw(raw: string): number | null {
-    const trimmed = (raw ?? '').trim();
-    if (trimmed === '' || trimmed === '-' || trimmed === '.' || trimmed === ',') return null;
-    const { group, decimal } = this.localeSeparators();
-    let s = trimmed;
-    if (group) s = s.split(group).join('');
-    if (decimal && decimal !== '.') s = s.split(decimal).join('.');
-    s = s.replace(',', '.');
-    if (!/^-?\d*\.?\d*$/.test(s)) return null;
-    const num = Number(s);
-    return Number.isFinite(num) ? num : null;
+  private parseRaw(raw: string): ParsedEntry {
+    const compact = (raw ?? '').replace(/[\s']/g, '').replace(/\u2212/g, '-');
+    const negative = compact.startsWith('-');
+    const body = negative ? compact.slice(1) : compact;
+    if (!/^[\d.,]+$/.test(body) || !/\d/.test(body)) return INVALID_ENTRY;
+
+    const dots = body.split('.').length - 1;
+    const commas = body.split(',').length - 1;
+    let canonical: string;
+    if (dots > 0 && commas > 0) {
+      const decimal = body.lastIndexOf('.') > body.lastIndexOf(',') ? '.' : ',';
+      const grouping = decimal === '.' ? ',' : '.';
+      const halves = body.split(decimal);
+      if (halves.length !== 2) return INVALID_ENTRY;
+      const integerParts = halves[0].split(grouping);
+      if (!isGroupedInteger(integerParts)) return INVALID_ENTRY;
+      canonical = `${integerParts.join('')}.${halves[1]}`;
+    } else if (dots + commas > 1) {
+      const parts = body.split(dots > 0 ? '.' : ',');
+      if (!isGroupedInteger(parts)) return INVALID_ENTRY;
+      canonical = parts.join('');
+    } else if (dots + commas === 1) {
+      const separator = dots > 0 ? '.' : ',';
+      const [integer, fraction] = body.split(separator);
+      // A thousands group cannot start at 0, so `0.125` is a decimal whatever the locale.
+      if (/^[1-9]\d{0,2}$/.test(integer) && fraction.length === 3 && separator === this.localeSeparators().group) {
+        return { kind: 'ambiguous' };
+      }
+      canonical = `${integer || '0'}.${fraction}`;
+    } else {
+      canonical = body;
+    }
+    const num = Number(negative ? `-${canonical}` : canonical);
+    return Number.isFinite(num) ? { kind: 'number', value: num } : INVALID_ENTRY;
   }
 
   /** Clamp a number to `[min, max]`. */
@@ -481,23 +622,29 @@ export class MudNumericInput {
   /** Render a number for display. Grouped per `locale` while not being edited. */
   private formatForDisplay(value: number | undefined): string {
     if (value === undefined || value === null || !Number.isFinite(value)) return '';
-    if (this.locale && !this.isFocused) {
+    return this.formatNumber(value, this.isFocused);
+  }
+
+  /**
+   * The field's own number rule, also used for the `{min}` / `{max}` of its messages so they
+   * read like the field. With a `locale`: its decimal separator, grouped unless `focused`
+   * (typing needs a plain number, and the parser never sees a group separator this component
+   * wrote). Without one: `String(value)`, or `toFixed(precision)`.
+   */
+  private formatNumber(value: number, focused: boolean): string {
+    const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
+    if (this.locale) {
       try {
-        const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
-        return new Intl.NumberFormat(this.locale, {
-          useGrouping: true,
+        return formatLocaleNumber(this.host, this.locale, value, {
+          useGrouping: !focused,
           minimumFractionDigits: digits,
           maximumFractionDigits: digits ?? 20,
-        }).format(value);
+        });
       } catch {
         /* fall through to the plain rendering */
       }
     }
-    if (this.precision !== undefined) {
-      const digits = Math.max(0, Math.floor(this.precision));
-      return value.toFixed(digits);
-    }
-    return String(value);
+    return digits !== undefined ? value.toFixed(digits) : String(value);
   }
 
   private canStep(direction: NumericInputStepDirection): boolean {
@@ -565,14 +712,23 @@ export class MudNumericInput {
     const target = ev.target as HTMLInputElement;
     const raw = target.value;
     this.displayValue = raw;
-    const parsed = this.parseRaw(raw);
-    if (parsed === null) {
+    const entry = this.parseRaw(raw);
+    if (entry.kind === 'ambiguous') {
+      this.value = undefined;
+      this.mudInput.emit({ value: null });
+      this.emitAmbiguous(raw);
+      this.syncValidity();
+      return;
+    }
+    if (entry.kind === 'invalid') {
       // Empty / partial entry (e.g. "-" or ".") — emit current parsed state
       // (null) but don't clear the @Prop so the user's keystroke survives.
       this.value = raw.trim() === '' ? undefined : this.value;
       this.mudInput.emit({ value: null });
+      this.syncValidity();
       return;
     }
+    const parsed = entry.value;
     // Surface out-of-range as a soft error event but DO NOT clamp during
     // typing — clamping mid-entry would yank the caret and confuse the user.
     if (this.min !== undefined && parsed < this.min) {
@@ -583,6 +739,17 @@ export class MudNumericInput {
     this.value = parsed;
     this.mudInput.emit({ value: parsed });
   };
+
+  /** Ambiguous entries yield no value; the raw text stays so the user can fix it. */
+  private emitAmbiguous(raw: string): void {
+    this.mudError.emit({ reason: 'ambiguous', rawValue: raw, message: this.ambiguousText() });
+  }
+
+  private ambiguousText(): string {
+    return formatMessage(this.messages().ambiguousMessage, this.host, this.locale, {
+      decimal: this.localeSeparators().decimal,
+    });
+  }
 
   private handleChange = () => {
     // Native `change` fires after the user commits (blur / Enter on most
@@ -625,8 +792,17 @@ export class MudNumericInput {
   };
 
   private commitFromDisplay(): void {
-    const parsed = this.parseRaw(this.displayValue);
-    if (parsed === null) {
+    // `change` and `blur` both call this for the same user commit, and both emit — no dedupe:
+    // released behaviour (compare `git show d982190c`).
+    const entry = this.parseRaw(this.displayValue);
+    if (entry.kind === 'ambiguous') {
+      this.value = undefined;
+      this.emitAmbiguous(this.displayValue);
+      this.syncValidity();
+      this.mudChange.emit({ value: null });
+      return;
+    }
+    if (entry.kind === 'invalid') {
       // The field is empty or contains an unparseable string.
       if (this.displayValue.trim() === '') {
         this.value = undefined;
@@ -640,7 +816,7 @@ export class MudNumericInput {
       }
       return;
     }
-    const committed = this.commit(parsed);
+    const committed = this.commit(entry.value);
     this.value = committed;
     this.displayValue = this.formatForDisplay(committed);
     this.mudChange.emit({ value: committed });
@@ -724,10 +900,12 @@ export class MudNumericInput {
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const lang = hostLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');
@@ -755,7 +933,7 @@ export class MudNumericInput {
     const ariaValueNow = this.value !== undefined && Number.isFinite(this.value) ? String(this.value) : undefined;
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
         <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -813,7 +991,12 @@ export class MudNumericInput {
               to the right edge across every state — matching the Figma master. */}
           {this.loading ? (
             <span class="control-spinner" part="spinner" aria-hidden="true">
-              <mud-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
+              <mud-spinner
+                size={this.size === 'lg' ? 'sm' : 'xs'}
+                variant="brand"
+                label=""
+                locale={childLocale(this.host, this.locale)}
+              />
             </span>
           ) : null}
 
@@ -827,7 +1010,7 @@ export class MudNumericInput {
               class="clear-button"
               part="clear-button"
               tabindex={-1}
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
@@ -843,7 +1026,7 @@ export class MudNumericInput {
                 class="stepper-button stepper-button-up"
                 part="stepper-up"
                 tabindex={-1}
-                aria-label={this.incrementLabel}
+                aria-label={m.incrementLabel}
                 disabled={!canStepUp}
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('up')}
@@ -855,7 +1038,7 @@ export class MudNumericInput {
                 class="stepper-button stepper-button-down"
                 part="stepper-down"
                 tabindex={-1}
-                aria-label={this.decrementLabel}
+                aria-label={m.decrementLabel}
                 disabled={!canStepDown}
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('down')}

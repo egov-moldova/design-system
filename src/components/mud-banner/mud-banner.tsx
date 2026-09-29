@@ -1,7 +1,11 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { BANNER_MESSAGES } from './mud-banner.messages';
+import type { BannerMessages } from './mud-banner.messages';
 import { BANNER_ASSERTIVE_VARIANTS, BANNER_DEFAULT_ICONS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
 
@@ -79,10 +83,16 @@ export class MudBanner {
   @Prop() iconName?: IconName;
 
   /**
-   * Close-button accessible label. Defaults to the Romanian "Închide".
-   * @default 'Închide'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop() closeLabel: string = 'Închide';
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Închide' (ro-MD)
+   */
+  @Prop() closeLabel?: string;
 
   @State() private hasIconStart: boolean = false;
 
@@ -94,8 +104,31 @@ export class MudBanner {
    */
   @Event() mudDismiss!: EventEmitter<void>;
 
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
   componentWillLoad(): void {
     this.detectSlots();
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): BannerMessages {
+    return localeMessages('mud-banner', this.host, this.locale, BANNER_MESSAGES, {
+      closeLabel: this.closeLabel,
+    });
   }
 
   private detectSlots(): void {
@@ -145,9 +178,11 @@ export class MudBanner {
   }
 
   render() {
+    const m = this.messages();
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
@@ -156,7 +191,7 @@ export class MudBanner {
     };
 
     return (
-      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
+      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true" lang={lang}>
         <div class="content">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
@@ -184,7 +219,7 @@ export class MudBanner {
             class="close"
             type="button"
             part="close"
-            aria-label={this.closeLabel}
+            aria-label={m.closeLabel}
             onClick={this.handleCloseClick}
             onKeyDown={this.handleCloseKeyDown}
           >

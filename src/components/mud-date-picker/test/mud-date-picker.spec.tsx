@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, h, it, render, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-date-picker';
-
+import { DATE_PICKER_MESSAGES } from '../mud-date-picker.messages';
+import type { DatePickerMessages } from '../mud-date-picker.messages';
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_MODES } from '../mud-date-picker.types';
 
 const queryCells = (root: Element | null | undefined): HTMLButtonElement[] =>
@@ -76,7 +78,7 @@ describe('mud-date-picker', () => {
     });
 
     it('renders 7 weekday labels', async () => {
-      const { root } = await render(<mud-date-picker locale="ro-RO"></mud-date-picker>);
+      const { root } = await render(<mud-date-picker locale="ro-MD"></mud-date-picker>);
       const labels = queryDayLabels(root);
       expect(labels.length).toBe(7);
     });
@@ -95,11 +97,28 @@ describe('mud-date-picker', () => {
       expect(title?.textContent?.toLowerCase()).toContain('may');
     });
 
-    it('first day of week defaults to Monday (ro-RO convention)', async () => {
-      const { root } = await render(<mud-date-picker locale="ro-RO"></mud-date-picker>);
+    it('first day of week defaults to Monday (ro-MD convention)', async () => {
+      const { root } = await render(<mud-date-picker locale="ro-MD"></mud-date-picker>);
       const labels = queryDayLabels(root);
       const firstLabelLong = labels[0]?.getAttribute('aria-label')?.toLowerCase();
       expect(firstLabelLong).toMatch(/luni|monday/);
+    });
+
+    it('formats weekday headers in the page lang="ro-MD"', async () => {
+      const { root } = await render(<mud-date-picker></mud-date-picker>, { stageAttrs: { lang: 'ro-MD' } });
+      const labels = queryDayLabels(root);
+      // Friday is the fifth column of a Monday-first week: narrow header `V`, long name `vineri`.
+      expect(labels[4]?.querySelector('[aria-hidden]')?.textContent).toBe('V');
+      expect(labels[4]?.getAttribute('aria-label')?.toLowerCase()).toBe('vineri');
+    });
+
+    it('sets the host lang to the format locale of an explicit locale', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const unsupported = await render(<mud-date-picker locale="de-DE"></mud-date-picker>);
+      expect(unsupported.root?.getAttribute('lang')).toBe('ro-MD');
+      warn.mockRestore();
+      const regional = await render(<mud-date-picker locale="en-GB"></mud-date-picker>);
+      expect(regional.root?.getAttribute('lang')).toBe('en-GB');
     });
 
     it('first day of week becomes Sunday when firstDayOfWeek=0', async () => {
@@ -717,4 +736,22 @@ describe('mud-date-picker', () => {
       expect(root?.classList.contains('mode-range')).toBe(true);
     });
   });
+});
+
+describeLocales<DatePickerMessages>('mud-date-picker', DATE_PICKER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'today-shortcut': 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.todayLabel !== undefined) attrs['today-label'] = String(props.todayLabel);
+    const { root } = await render(
+      <mud-date-picker {...attrs}></mud-date-picker>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'todayLabel') return host.shadowRoot?.querySelector('button.today-button')?.textContent ?? null;
+    return null;
+  },
+  overrides: { todayLabel: 'todayLabel' },
 });

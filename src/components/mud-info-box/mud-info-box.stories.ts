@@ -13,6 +13,7 @@ type InfoBoxArgs = {
   titleText: string;
   iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -27,7 +28,8 @@ const renderInfoBox = (args: InfoBoxArgs) => /*html*/ `
     ${args.hideIcon ? 'hide-icon' : ''}
     ${args.titleText ? `title-text="${args.titleText}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-info-box>
 `;
 
@@ -91,10 +93,15 @@ transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
       description: 'Override the default per-variant icon. Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot body content.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -106,7 +113,8 @@ transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
     titleText: '',
     iconName: '',
     body: DEMO_BODY,
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 
@@ -292,17 +300,17 @@ const renderEdgeCases = () => /*html*/ `
   <div style="${stackStyle}">
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
       <span style="${captionStyle}">Heading + close + actions</span>
-      <mud-info-box variant="warning" emphasis="strong" title-text="Sesiunea va expira" closable>
-        Salvați modificările pentru a evita pierderea datelor. Veți fi deconectat automat în 2 minute.
-        <mud-button slot="actions" size="sm">Prelungește sesiunea</mud-button>
-        <mud-link slot="actions" href="#" size="sm">Detalii</mud-link>
+      <mud-info-box variant="warning" emphasis="strong" title-text="Session about to expire" closable>
+        Save your changes to avoid losing data. You will be signed out automatically in 2 minutes.
+        <mud-button slot="actions" size="sm">Extend session</mud-button>
+        <mud-link slot="actions" href="#" size="sm">Details</mud-link>
       </mud-info-box>
     </div>
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
-      <span style="${captionStyle}">Long body, diacritics (ă â î ș ț)</span>
+      <span style="${captionStyle}">Long body, accented characters (é ü ñ)</span>
       <mud-info-box variant="error" emphasis="subtle">
-        Înălțimea conținutului poate depăși o singură linie; caseta crește pe verticală păstrând alinierea
-        pictogramei la prima linie de text, fără a deplasa butonul de închidere.
+        The content height can exceed a single line; the box grows vertically while keeping the alignment
+        of the icon with the first line of text, without moving the close button.
       </mud-info-box>
     </div>
   </div>

@@ -1,8 +1,12 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import '../mud-time-input';
 import '../../mud-time-picker/mud-time-picker';
 
+import { TIME_INPUT_MESSAGES } from '../mud-time-input.messages';
+import type { TimeInputMessages } from '../mud-time-input.messages';
 import { TIME_INPUT_SIZES, TIME_INPUT_VARIANTS } from '../mud-time-input.types';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
@@ -644,4 +648,50 @@ describe('mud-time-input', () => {
       expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
     });
   });
+});
+
+/** Renders a time input in the state that reports one validity message (each case names its own attributes). */
+function renderTimeInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-time-input {...all}></mud-time-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
+describeLocales<TimeInputMessages>('mud-time-input', TIME_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x', value: '11:15', clearable: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    if (props.triggerLabel !== undefined) attrs['trigger-label'] = String(props.triggerLabel);
+    if (props.pickerLabel !== undefined) attrs['picker-label'] = String(props.pickerLabel);
+    const { root } = await render(
+      <mud-time-input {...attrs}></mud-time-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    // Opens the picker so `pickerLabel` (the popover's aria-label) becomes reachable.
+    queryTrigger(root)?.click();
+    await flush();
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.clear-button')?.getAttribute('aria-label') ?? null;
+    if (key === 'triggerLabel')
+      return host.shadowRoot?.querySelector('.trailing-icon')?.getAttribute('aria-label') ?? null;
+    if (key === 'pickerLabel')
+      return host.shadowRoot?.querySelector('.picker-popover')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { clearLabel: 'clearLabel', triggerLabel: 'triggerLabel', pickerLabel: 'pickerLabel' },
+  validity: [
+    { key: 'hourErrorText', prop: 'hourErrorText', render: renderTimeInput({ value: '25:00' }) },
+    { key: 'minuteErrorText', prop: 'minuteErrorText', render: renderTimeInput({ value: '12:99' }) },
+    { key: 'rangeErrorText', prop: 'rangeErrorText', render: renderTimeInput({ value: '09:00', min: '10:00' }) },
+    { key: 'requiredErrorText', prop: 'requiredErrorText', render: renderTimeInput({ required: 'true' }) },
+  ],
 });

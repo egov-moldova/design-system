@@ -213,12 +213,12 @@ const renderEdgeCases = () => /*html*/ `
     <div style="${cellStyle}">
       <span style="${captionStyle}">long text — wraps, icon stays on first line</span>
       <mud-inline-message variant="warning">
-        Mesajul depășește o singură linie și se înfășoară pe mai multe rânduri, păstrând pictograma aliniată la prima linie.
+        The message exceeds a single line and wraps onto several rows, keeping the icon aligned with the first line.
       </mud-inline-message>
     </div>
     <div style="${cellStyle}">
       <span style="${captionStyle}">custom icon override</span>
-      <mud-inline-message variant="success" icon-name="sparkles">Profil verificat cu succes.</mud-inline-message>
+      <mud-inline-message variant="success" icon-name="sparkles">Profile verified successfully.</mud-inline-message>
     </div>
   </div>
 `;

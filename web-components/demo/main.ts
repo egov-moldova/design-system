@@ -11,7 +11,17 @@ import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './
 
 type Theme = 'light' | 'dark';
 
+type DemoLocale = 'ro-MD' | 'en-US' | 'ru-MD';
+
 const THEME_STORAGE_KEY = 'age-demo-theme';
+const LANG_STORAGE_KEY = 'age-demo-lang';
+
+/** Language pickers name the language in that language; `ro-MD` is the library default. */
+const LANG_OPTIONS: { value: DemoLocale; label: string; lang: string }[] = [
+  { value: 'ro-MD', label: 'Română', lang: 'ro' },
+  { value: 'en-US', label: 'English', lang: 'en' },
+  { value: 'ru-MD', label: 'Русский', lang: 'ru' },
+];
 
 /* ----------------------------------------------------------------- */
 /* Theme                                                              */
@@ -43,6 +53,49 @@ function buildThemeToggle(): HTMLButtonElement {
     applyTheme(next);
   });
   return button;
+}
+
+/* ----------------------------------------------------------------- */
+/* Language (component copy only — demo chrome and prose stay English) */
+/* ----------------------------------------------------------------- */
+const asDemoLocale = (value: string | null | undefined): DemoLocale | undefined =>
+  LANG_OPTIONS.find(o => o.value === value)?.value;
+
+/** `?lang=` beats the stored choice, which beats the library default. */
+function getInitialLang(): DemoLocale {
+  const fromUrl = asDemoLocale(new URLSearchParams(window.location.search).get('lang'));
+  return fromUrl ?? asDemoLocale(localStorage.getItem(LANG_STORAGE_KEY)) ?? 'ro-MD';
+}
+
+function applyLang(lang: DemoLocale) {
+  document.documentElement.lang = lang;
+  const select = document.querySelector<HTMLSelectElement>('[data-lang-select]');
+  if (select) select.value = lang;
+}
+
+/** A native <select>: a demo page loads only the component under test, never `mud-select`. */
+function buildLangSelect(): HTMLSelectElement {
+  const select = document.createElement('select');
+  select.setAttribute('data-lang-select', '');
+  select.setAttribute('aria-label', 'Component copy language');
+  select.title = 'Changes the built-in component copy only; demo content stays in English';
+  for (const option of LANG_OPTIONS) {
+    const node = el('option', { value: option.value, lang: option.lang }, option.label);
+    select.append(node);
+  }
+  select.addEventListener('change', () => {
+    const lang = asDemoLocale(select.value);
+    if (!lang) return;
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    // The explicit choice supersedes a `?lang=` override, or a reload would undo it.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('lang')) {
+      url.searchParams.delete('lang');
+      window.history.replaceState(null, '', url);
+    }
+    applyLang(lang);
+  });
+  return select;
 }
 
 /* ----------------------------------------------------------------- */
@@ -94,9 +147,9 @@ function renderComponentChrome(tag: string) {
       ? el('a', { href: pagePath(next.slug, next.entry.tag), title: 'Next component' }, `${next.entry.tag} →`)
       : el('span', {}, ''),
   );
-  nav.append(buildThemeToggle());
+  nav.append(buildLangSelect(), buildThemeToggle());
 
-  const header = el('header', { class: 'demo-header' }, lead, nav);
+  const header = el('header', { class: 'demo-header', lang: 'en' }, lead, nav);
   document.body.insertBefore(header, document.body.firstChild);
   document.title = `${tag} · @egov-moldova/mud-web-components`;
 }
@@ -107,9 +160,9 @@ function renderComponentChrome(tag: string) {
 function renderToc() {
   const header = el(
     'header',
-    { class: 'demo-header' },
+    { class: 'demo-header', lang: 'en' },
     el('div', { class: 'demo-header__lead' }, el('h1', {}, '@egov-moldova/mud-web-components')),
-    el('div', { class: 'demo-header__nav' }, buildThemeToggle()),
+    el('div', { class: 'demo-header__nav' }, buildLangSelect(), buildThemeToggle()),
   );
 
   const p1 = el(
@@ -140,7 +193,7 @@ function renderToc() {
     code('console.warn'),
     ' messages are expected.',
   );
-  const intro = el('div', { class: 'toc__intro' }, p1, p2);
+  const intro = el('div', { class: 'toc__intro', lang: 'en' }, p1, p2);
 
   const search = el('input', {
     'class': 'toc__search',
@@ -160,7 +213,7 @@ function renderToc() {
       );
       if (entry.blurb) card.append(el('span', { class: 'toc__card-blurb' }, entry.blurb));
       const li = el('li', {}, card);
-      li.dataset.search = `${entry.tag} ${entry.blurb ?? ''}`.toLowerCase();
+      li.dataset.search = `${entry.tag} ${entry.blurb ?? ''} ${cat.title}`.toLowerCase();
       list.append(li);
     }
     groups.push(el('section', { class: 'toc__group' }, el('h2', {}, cat.title), list));
@@ -184,6 +237,21 @@ function renderToc() {
     empty.hidden = anyVisible;
   });
 
+  // `/` jumps to the filter unless the user is already typing somewhere (composedPath
+  // reaches into shadow roots, where a component's own input is the real target).
+  document.addEventListener('keydown', event => {
+    if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.composedPath()[0];
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+    ) {
+      return;
+    }
+    event.preventDefault();
+    search.focus();
+  });
+
   const main = el('main', { class: 'toc' }, intro, search, ...groups, empty);
   document.body.append(header, main);
   document.title = '@egov-moldova/mud-web-components — table of contents';
@@ -198,6 +266,7 @@ function boot() {
   else if ('toc' in document.body.dataset) renderToc();
 
   applyTheme(getInitialTheme());
+  applyLang(getInitialLang());
   console.info('[demo] @egov-moldova/mud custom elements registered');
 }
 

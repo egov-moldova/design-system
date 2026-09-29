@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from './mud-input-chip.types';
 import { observeAriaLabel } from '../../utils/aria-label';
@@ -12,6 +12,10 @@ import type {
   InputChipSize,
   InputChipVariant,
 } from './mud-input-chip.types';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { INPUT_CHIP_MESSAGES } from './mud-input-chip.messages';
+import type { InputChipMessages } from './mud-input-chip.messages';
 
 let inputChipInstanceCounter = 0;
 
@@ -106,6 +110,12 @@ export class MudInputChip {
    */
   @Prop() separators: string = ',';
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -148,13 +158,29 @@ export class MudInputChip {
   private nativeInput?: HTMLInputElement;
   private initialChips: string[] = [];
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity(this.chips);
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale. This component has no override props —
+   * every key is either a validity/announcement message or an interpolated label. */
+  private messages(): InputChipMessages {
+    return localeMessages('mud-input-chip', this.host, this.locale, INPUT_CHIP_MESSAGES, {});
   }
 
   componentWillLoad() {
@@ -165,6 +191,12 @@ export class MudInputChip {
 
   @Watch('required')
   onRequiredChange() {
+    this.syncValidity(this.chips);
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
     this.syncValidity(this.chips);
   }
 
@@ -251,7 +283,7 @@ export class MudInputChip {
     const isMissing = this.required && chips.length === 0;
     const anchor = this.nativeInput ?? undefined;
     if (isMissing) {
-      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().requiredText;
       this.internals.setValidity({ valueMissing: true }, msg, anchor);
     } else {
       this.internals.setValidity({}, undefined, anchor);
@@ -307,13 +339,17 @@ export class MudInputChip {
   }
 
   private reasonMessage(code: InputChipErrorCode, value: string): string {
+    const m = this.messages();
     switch (code) {
       case 'pattern':
-        return `Valoarea "${value}" nu este în formatul așteptat.`;
+        return formatMessage(m.patternRejectionText, this.host, this.locale, { value });
       case 'duplicate':
-        return `Valoarea "${value}" este deja adăugată.`;
+        return formatMessage(m.duplicateRejectionText, this.host, this.locale, { value });
       case 'max':
-        return `Maximum ${this.maxChips ?? ''} valori permise.`;
+        return formatMessage(m.maxRejectionText, this.host, this.locale, {
+          max: this.maxChips ?? '',
+          count: this.maxChips ?? 0,
+        });
     }
   }
 
@@ -345,7 +381,7 @@ export class MudInputChip {
     const next = [...this.chips, trimmed];
     this.chips = next;
     this.value = '';
-    this.announcement = `Valoarea ${trimmed} a fost adăugată.`;
+    this.announcement = formatMessage(this.messages().addedAnnouncement, this.host, this.locale, { value: trimmed });
     this.mudChipAdd.emit({ chip: trimmed, chips: next });
     this.mudChange.emit({ chips: next });
     return true;
@@ -356,7 +392,7 @@ export class MudInputChip {
     if (target === undefined) return;
     const next = this.chips.filter((_, i) => i !== index);
     this.chips = next;
-    this.announcement = `Valoarea ${target} a fost eliminată.`;
+    this.announcement = formatMessage(this.messages().removedAnnouncement, this.host, this.locale, { value: target });
     this.mudChipRemove.emit({ chip: target, index, chips: next });
     this.mudChange.emit({ chips: next });
 
@@ -450,7 +486,7 @@ export class MudInputChip {
       if (this.isMaxReached()) break;
     }
     if (added > 0) {
-      this.announcement = `${added} valor${added === 1 ? 'e' : 'i'} adăugat${added === 1 ? 'ă' : 'e'}.`;
+      this.announcement = formatMessage(this.messages().pastedAnnouncement, this.host, this.locale, { count: added });
     }
   };
 
@@ -512,6 +548,7 @@ export class MudInputChip {
   };
 
   render() {
+    const m = this.messages();
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
@@ -520,6 +557,7 @@ export class MudInputChip {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const maxReached = this.isMaxReached();
     const placeholder = this.chips.length === 0 ? this.placeholder : undefined;
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -533,7 +571,7 @@ export class MudInputChip {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -566,7 +604,7 @@ export class MudInputChip {
                 data-chip-index={index}
                 tabIndex={effectivelyDisabled ? -1 : 0}
                 disabled={effectivelyDisabled}
-                aria-label={`Elimină ${chip}`}
+                aria-label={formatMessage(m.removeChipLabel, this.host, this.locale, { chip })}
                 onClick={this.handleChipRemoveClick(index)}
                 onKeyDown={this.handleChipKeyDown(index)}
               >

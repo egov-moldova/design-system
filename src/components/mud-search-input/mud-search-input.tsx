@@ -1,5 +1,5 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import type { IconName } from '../mud-icon/mud-icon.types';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from './mud-search-input.types';
@@ -10,6 +10,10 @@ import type {
   SearchInputSize,
 } from './mud-search-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { SEARCH_INPUT_MESSAGES } from './mud-search-input.messages';
+import type { SearchInputMessages } from './mud-search-input.messages';
 
 let searchInputInstanceCounter = 0;
 
@@ -108,11 +112,24 @@ export class MudSearchInput {
   @Prop({ reflect: true, attribute: 'with-button' }) withButton: boolean = false;
 
   /**
-   * Accessible label for the trailing submit button. Defaults to Romanian
-   * "Caută" per the institutional voice.
-   * @default 'Caută'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'submit-label' }) submitLabel: string = 'Caută';
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label for the trailing submit button. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Caută' (ro-MD)
+   */
+  @Prop({ attribute: 'submit-label' }) submitLabel?: string;
+
+  /**
+   * Validation message reported when the field is `required` and empty. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Completați acest câmp.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
   /**
    * Current value of the control. Reflects to the host attribute.
@@ -140,11 +157,11 @@ export class MudSearchInput {
   @Prop({ attribute: 'icon-name' }) iconName: IconName = 'search';
 
   /**
-   * Accessible label for the trailing clear button. Defaults to Romanian
-   * "Șterge" per the institutional voice.
-   * @default 'Șterge'
+   * Accessible label for the trailing clear button. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Șterge' (ro-MD)
    */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+  @Prop({ attribute: 'clear-label' }) clearLabel?: string;
 
   /** Native `autocomplete` attribute forwarded to the internal control. */
   @Prop() autocomplete?: string;
@@ -192,6 +209,7 @@ export class MudSearchInput {
   private initialValue: string = '';
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   @Watch('shape')
   validateShape(next: SearchInputShape) {
@@ -229,12 +247,36 @@ export class MudSearchInput {
     this.syncValidity();
   }
 
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
+    this.syncValidity();
+  }
+
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): SearchInputMessages {
+    return localeMessages('mud-search-input', this.host, this.locale, SEARCH_INPUT_MESSAGES, {
+      submitLabel: this.submitLabel,
+      clearLabel: this.clearLabel,
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   componentWillLoad() {
@@ -270,7 +312,7 @@ export class MudSearchInput {
     if (!this.internals) return;
     const value = (this.value ?? '').trim();
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.nativeEl);
       return;
     }
     this.internals.setValidity({});
@@ -384,9 +426,11 @@ export class MudSearchInput {
 
   render() {
     const effectivelyDisabled = this.isInert();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const lang = hostLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     // The clear affordance is a constant 20px pill with a 16px `cross-small`
     // glyph in Figma, regardless of field size (unlike the leading icon).
@@ -412,7 +456,7 @@ export class MudSearchInput {
     const submitDisabled = effectivelyDisabled || this.value === '';
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -459,7 +503,11 @@ export class MudSearchInput {
 
           {this.loading ? (
             <span class="control-spinner" part="spinner" aria-hidden="true">
-              <mud-spinner size={spinnerSize} variant={effectivelyDisabled ? 'dark' : 'brand'} />
+              <mud-spinner
+                size={spinnerSize}
+                variant={effectivelyDisabled ? 'dark' : 'brand'}
+                locale={childLocale(this.host, this.locale)}
+              />
             </span>
           ) : null}
 
@@ -473,7 +521,7 @@ export class MudSearchInput {
               class="clear-button"
               part="clear-button"
               tabindex={-1}
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
@@ -486,7 +534,7 @@ export class MudSearchInput {
               type="button"
               class="submit-button"
               part="submit-button"
-              aria-label={this.submitLabel}
+              aria-label={m.submitLabel}
               disabled={submitDisabled}
               aria-disabled={submitDisabled ? 'true' : null}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}

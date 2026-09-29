@@ -99,7 +99,7 @@ const docsSourceDefault = /*html*/ `<mud-sidebar aria-label="Main navigation">
 const renderWithSecondaryLabels = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-sidebar aria-label="Navigation with secondary labels">
-      <mud-sidebar-group heading="Servicii">
+      <mud-sidebar-group heading="Services">
         <mud-sidebar-item
           value="overview"
           icon="group"
@@ -122,10 +122,10 @@ const renderWithSecondaryLabels = () => /*html*/ `
         <mud-sidebar-item
           value="search"
           icon="search"
-          label="Search"
+          label="Find"
         ></mud-sidebar-item>
       </mud-sidebar-group>
-      <mud-sidebar-group heading="Configurare">
+      <mud-sidebar-group heading="Configuration">
         <mud-sidebar-item
           value="settings"
           icon="settings"
@@ -144,7 +144,7 @@ const renderWithSecondaryLabels = () => /*html*/ `
 `;
 
 const docsSourceWithSecondaryLabels = /*html*/ `<mud-sidebar aria-label="Navigation with secondary labels">
-  <mud-sidebar-group heading="Servicii">
+  <mud-sidebar-group heading="Services">
     <mud-sidebar-item value="overview" icon="group" label="Overview" secondary="Nou" active></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics" secondary="Beta"></mud-sidebar-item>
     <mud-sidebar-item value="documents" icon="document" label="Documents" secondary="47"></mud-sidebar-item>
@@ -156,7 +156,7 @@ const docsSourceWithSecondaryLabels = /*html*/ `<mud-sidebar aria-label="Navigat
 const renderWithTagsAndBadges = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-sidebar aria-label="Navigation with tags and badges">
-      <mud-sidebar-group heading="Cereri">
+      <mud-sidebar-group heading="Requests">
         <mud-sidebar-item
           value="overview"
           icon="group"
@@ -179,7 +179,7 @@ const renderWithTagsAndBadges = () => /*html*/ `
         <mud-sidebar-item
           value="search"
           icon="search"
-          label="Search"
+          label="Find"
           tag="New"
         ></mud-sidebar-item>
         <mud-sidebar-item
@@ -189,7 +189,7 @@ const renderWithTagsAndBadges = () => /*html*/ `
           tag="Beta"
         ></mud-sidebar-item>
       </mud-sidebar-group>
-      <mud-sidebar-group heading="Acțiuni">
+      <mud-sidebar-group heading="Actions">
         <mud-sidebar-item
           value="edit"
           icon="edit"
@@ -212,11 +212,11 @@ const renderWithTagsAndBadges = () => /*html*/ `
 `;
 
 const docsSourceWithTagsAndBadges = /*html*/ `<mud-sidebar aria-label="Navigation with tags and badges">
-  <mud-sidebar-group heading="Cereri">
+  <mud-sidebar-group heading="Requests">
     <mud-sidebar-item value="overview" icon="group" label="Overview" active></mud-sidebar-item>
     <mud-sidebar-item value="pending" icon="document" label="Pending" badge="1" badge-variant="notification"></mud-sidebar-item>
     <mud-sidebar-item value="completed" icon="download" label="Completed" badge="12"></mud-sidebar-item>
-    <mud-sidebar-item value="search" icon="search" label="Search" tag="New"></mud-sidebar-item>
+    <mud-sidebar-item value="search" icon="search" label="Find" tag="New"></mud-sidebar-item>
     <mud-sidebar-item value="analytics" icon="chart" label="Analytics" tag="Beta"></mud-sidebar-item>
   </mud-sidebar-group>
 </mud-sidebar>`;
@@ -305,7 +305,7 @@ const renderCollapsed = () => /*html*/ `
         <mud-sidebar-item
           value="search"
           icon="search"
-          label="Search"
+          label="Find"
         ></mud-sidebar-item>
         <mud-sidebar-item
           value="filter"
@@ -494,7 +494,7 @@ const docsSourceAllItemFeatures = /*html*/ `<!-- Icon + label (active — icon r
 <mud-sidebar-item value="analytics" icon="chart" label="Analytics" secondary="123"></mud-sidebar-item>
 
 <!-- Icon + outlined tag -->
-<mud-sidebar-item value="search" icon="search" label="Search" tag="New"></mud-sidebar-item>
+<mud-sidebar-item value="search" icon="search" label="Find" tag="New"></mud-sidebar-item>
 
 <!-- Icon + numbered badge -->
 <mud-sidebar-item value="documents" icon="document" label="Documents" badge="5"></mud-sidebar-item>

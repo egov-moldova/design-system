@@ -2,7 +2,10 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-select';
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { SELECT_SIZES, SELECT_VARIANTS } from '../mud-select.types';
+import { SELECT_MESSAGES } from '../mud-select.messages';
+import type { SelectMessages } from '../mud-select.messages';
 
 const baseOptions = [
   { value: 'opt-1', label: 'Option 1' },
@@ -991,4 +994,37 @@ describe('mud-select', () => {
       spy.mockRestore();
     });
   });
+});
+
+describeLocales<SelectMessages>('mud-select', SELECT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.emptyLabel !== undefined) attrs['empty-label'] = String(props.emptyLabel);
+    if (props.listboxLabel !== undefined) attrs['listbox-label'] = String(props.listboxLabel);
+    const { root } = await render(
+      <mud-select {...attrs} open></mud-select>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'emptyLabel') return host.shadowRoot?.querySelector('.listbox-empty')?.textContent?.trim() ?? null;
+    if (key === 'listboxLabel') return host.shadowRoot?.querySelector('.listbox')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { emptyLabel: 'emptyLabel', listboxLabel: 'listboxLabel' },
+  captions: ['emptyLabel'],
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-select {...attrs}></mud-select>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
 });

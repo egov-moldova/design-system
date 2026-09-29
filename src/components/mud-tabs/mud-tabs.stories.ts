@@ -139,7 +139,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label' },
               { value: 'setari', label: 'Label' },
             ],
-            { value: 'profil', ariaLabel: 'Variație etichetă' },
+            { value: 'profil', ariaLabel: 'Label variation' },
           ),
         ),
         cell(
@@ -152,7 +152,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label', iconName: 'notification' },
               { value: 'setari', label: 'Label', iconName: 'settings' },
             ],
-            { value: 'profil', ariaLabel: 'Variație pictogramă' },
+            { value: 'profil', ariaLabel: 'Icon variation' },
           ),
         ),
         cell(
@@ -165,7 +165,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label' },
               { value: 'setari', label: 'Label' },
             ],
-            { value: 'profil', ariaLabel: 'Variație contor' },
+            { value: 'profil', ariaLabel: 'Counter variation' },
           ),
         ),
         cell(
@@ -178,7 +178,7 @@ export const AllVariations: Story = {
               { value: 'plati', label: 'Label', iconName: 'credit-card' },
               { value: 'istoric', label: 'Label', iconName: 'clock' },
             ],
-            { value: 'profil', ariaLabel: 'Variație completă' },
+            { value: 'profil', ariaLabel: 'Full variation' },
           ),
         ),
         sectionHeading('Mobile (sm)'),
@@ -192,7 +192,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label' },
               { value: 'setari', label: 'Label' },
             ],
-            { value: 'profil', size: 'sm', ariaLabel: 'Variație etichetă sm' },
+            { value: 'profil', size: 'sm', ariaLabel: 'Label variation sm' },
           ),
         ),
         cell(
@@ -205,7 +205,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label', iconName: 'notification' },
               { value: 'setari', label: 'Label', iconName: 'settings' },
             ],
-            { value: 'profil', size: 'sm', ariaLabel: 'Variație pictogramă sm' },
+            { value: 'profil', size: 'sm', ariaLabel: 'Icon variation sm' },
           ),
         ),
         cell(
@@ -218,7 +218,7 @@ export const AllVariations: Story = {
               { value: 'notificari', label: 'Label' },
               { value: 'setari', label: 'Label' },
             ],
-            { value: 'profil', size: 'sm', ariaLabel: 'Variație contor sm' },
+            { value: 'profil', size: 'sm', ariaLabel: 'Counter variation sm' },
           ),
         ),
         cell(
@@ -231,7 +231,7 @@ export const AllVariations: Story = {
               { value: 'plati', label: 'Label', iconName: 'credit-card' },
               { value: 'istoric', label: 'Label', iconName: 'clock' },
             ],
-            { value: 'profil', size: 'sm', ariaLabel: 'Variație completă sm' },
+            { value: 'profil', size: 'sm', ariaLabel: 'Full variation sm' },
           ),
         ),
       ].join(''),
@@ -281,7 +281,7 @@ export const States: Story = {
               { value: 'b', label: 'Label' },
               { value: 'c', label: 'Label' },
             ],
-            { value: 'a', ariaLabel: 'Stare selectată' },
+            { value: 'a', ariaLabel: 'Selected state' },
           ),
         ),
         cell(
@@ -293,7 +293,7 @@ export const States: Story = {
               { value: 'b', label: 'Label' },
               { value: 'c', label: 'Label' },
             ],
-            { value: 'a', ariaLabel: 'Stare neselectată' },
+            { value: 'a', ariaLabel: 'Unselected state' },
           ),
         ),
         cell(
@@ -329,14 +329,14 @@ export const Overflow: Story = {
           renderTabsHtml(
             'tabs-of-right',
             [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente' },
-              { value: 'notificari', label: 'Notificări' },
-              { value: 'setari', label: 'Setări' },
-              { value: 'plati', label: 'Plăți' },
-              { value: 'istoric', label: 'Istoric' },
-              { value: 'preferinte', label: 'Preferințe' },
-              { value: 'securitate', label: 'Securitate' },
+              { value: 'profil', label: 'Profile' },
+              { value: 'documente', label: 'Documents' },
+              { value: 'notificari', label: 'Notifications' },
+              { value: 'setari', label: 'Settings' },
+              { value: 'plati', label: 'Payments' },
+              { value: 'istoric', label: 'History' },
+              { value: 'preferinte', label: 'Preferences' },
+              { value: 'securitate', label: 'Security' },
             ],
             { value: 'profil', ariaLabel: 'Overflow trailing' },
             '420px',
@@ -349,14 +349,14 @@ export const Overflow: Story = {
               <mud-tabs id="tabs-of-mid" aria-label="Overflow leading" value="setari"></mud-tabs>
             </div>
             ${renderTabsScript('tabs-of-mid', [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente' },
-              { value: 'notificari', label: 'Notificări' },
-              { value: 'setari', label: 'Setări' },
-              { value: 'plati', label: 'Plăți' },
-              { value: 'istoric', label: 'Istoric' },
-              { value: 'preferinte', label: 'Preferințe' },
-              { value: 'securitate', label: 'Securitate' },
+              { value: 'profil', label: 'Profile' },
+              { value: 'documente', label: 'Documents' },
+              { value: 'notificari', label: 'Notifications' },
+              { value: 'setari', label: 'Settings' },
+              { value: 'plati', label: 'Payments' },
+              { value: 'istoric', label: 'History' },
+              { value: 'preferinte', label: 'Preferences' },
+              { value: 'securitate', label: 'Security' },
             ])}
             <script>
               requestAnimationFrame(function(){
@@ -398,11 +398,11 @@ export const Mobile: Story = {
               ${renderTabsHtml(
                 'tabs-mobile-1',
                 [
-                  { value: 'profil', label: 'Profil' },
-                  { value: 'documente', label: 'Documente' },
-                  { value: 'notificari', label: 'Notificări' },
+                  { value: 'profil', label: 'Profile' },
+                  { value: 'documente', label: 'Documents' },
+                  { value: 'notificari', label: 'Notifications' },
                 ],
-                { value: 'profil', size: 'sm', ariaLabel: 'Mobil — etichetă' },
+                { value: 'profil', size: 'sm', ariaLabel: 'Mobile — label' },
               )}
             </div>
           `,
@@ -414,13 +414,13 @@ export const Mobile: Story = {
               ${renderTabsHtml(
                 'tabs-mobile-2',
                 [
-                  { value: 'profil', label: 'Profil', iconName: 'person' },
-                  { value: 'documente', label: 'Documente', iconName: 'document' },
-                  { value: 'notificari', label: 'Notificări', iconName: 'notification', badgeCount: 4 },
-                  { value: 'setari', label: 'Setări', iconName: 'settings' },
-                  { value: 'plati', label: 'Plăți', iconName: 'credit-card' },
+                  { value: 'profil', label: 'Profile', iconName: 'person' },
+                  { value: 'documente', label: 'Documents', iconName: 'document' },
+                  { value: 'notificari', label: 'Notifications', iconName: 'notification', badgeCount: 4 },
+                  { value: 'setari', label: 'Settings', iconName: 'settings' },
+                  { value: 'plati', label: 'Payments', iconName: 'credit-card' },
                 ],
-                { value: 'profil', size: 'sm', ariaLabel: 'Mobil — overflow' },
+                { value: 'profil', size: 'sm', ariaLabel: 'Mobile — overflow' },
               )}
             </div>
           `,
@@ -449,12 +449,12 @@ export const WithDisabled: Story = {
           renderTabsHtml(
             'tabs-disabled-one',
             [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente', disabled: true },
-              { value: 'notificari', label: 'Notificări' },
-              { value: 'setari', label: 'Setări' },
+              { value: 'profil', label: 'Profile' },
+              { value: 'documente', label: 'Documents', disabled: true },
+              { value: 'notificari', label: 'Notifications' },
+              { value: 'setari', label: 'Settings' },
             ],
-            { value: 'profil', ariaLabel: 'Cu tab dezactivat' },
+            { value: 'profil', ariaLabel: 'With a disabled tab' },
           ),
         ),
         cell(
@@ -462,12 +462,12 @@ export const WithDisabled: Story = {
           renderTabsHtml(
             'tabs-disabled-many',
             [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente', disabled: true },
-              { value: 'notificari', label: 'Notificări', badgeCount: 7, disabled: true },
-              { value: 'setari', label: 'Setări' },
+              { value: 'profil', label: 'Profile' },
+              { value: 'documente', label: 'Documents', disabled: true },
+              { value: 'notificari', label: 'Notifications', badgeCount: 7, disabled: true },
+              { value: 'setari', label: 'Settings' },
             ],
-            { value: 'profil', ariaLabel: 'Mai multe taburi dezactivate' },
+            { value: 'profil', ariaLabel: 'Several disabled tabs' },
           ),
         ),
       ].join(''),
@@ -481,22 +481,22 @@ export const WithPanels: Story = {
   name: 'WithPanels',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 720px;">
-      <mud-tabs id="tabs-panels" aria-label="Cont utilizator" value="profil">
-        <mud-tab value="profil" label="Profil"></mud-tab>
-        <mud-tab value="documente" label="Documente"></mud-tab>
-        <mud-tab value="notificari" label="Notificări"></mud-tab>
-        <mud-tab value="setari" label="Setări"></mud-tab>
+      <mud-tabs id="tabs-panels" aria-label="User account" value="profil">
+        <mud-tab value="profil" label="Profile"></mud-tab>
+        <mud-tab value="documente" label="Documents"></mud-tab>
+        <mud-tab value="notificari" label="Notifications"></mud-tab>
+        <mud-tab value="setari" label="Settings"></mud-tab>
         <div slot="panel-profil" style="font-size: var(--font-size-14); color: var(--color-text-base-default); line-height: 1.5;">
-          <strong>Profil utilizator.</strong> Aici vezi datele personale, fotografia de profil și preferințele afișate altor membri.
+          <strong>User profile.</strong> Here you see your personal data, profile photo and the preferences shown to other members.
         </div>
         <div slot="panel-documente" style="font-size: var(--font-size-14); color: var(--color-text-base-default); line-height: 1.5;">
-          <strong>Documente.</strong> Buletinul, contractele și actele tale de identitate stocate în siguranță.
+          <strong>Documents.</strong> Your ID card, contracts and identity documents stored safely.
         </div>
         <div slot="panel-notificari" style="font-size: var(--font-size-14); color: var(--color-text-base-default); line-height: 1.5;">
-          <strong>Notificări.</strong> Mesajele recente despre activitatea contului tău.
+          <strong>Notifications.</strong> Recent messages about your account activity.
         </div>
         <div slot="panel-setari" style="font-size: var(--font-size-14); color: var(--color-text-base-default); line-height: 1.5;">
-          <strong>Setări.</strong> Limba, fusul orar, alertele prin email și autentificarea în doi pași.
+          <strong>Settings.</strong> Language, time zone, email alerts and two-step authentication.
         </div>
       </mud-tabs>
     </div>
@@ -525,10 +525,10 @@ export const EdgeCases: Story = {
           renderTabsHtml(
             'tabs-ec-two',
             [
-              { value: 'a', label: 'Lista' },
-              { value: 'b', label: 'Hartă' },
+              { value: 'a', label: 'List' },
+              { value: 'b', label: 'Map' },
             ],
-            { value: 'a', ariaLabel: 'Două taburi' },
+            { value: 'a', ariaLabel: 'Two tabs' },
           ),
         ),
         cell(
@@ -538,11 +538,11 @@ export const EdgeCases: Story = {
               ${renderTabsHtml(
                 'tabs-ec-long',
                 [
-                  { value: 'a', label: 'Profil utilizator detaliat' },
-                  { value: 'b', label: 'Documente recente încărcate' },
-                  { value: 'c', label: 'Notificări nelinguistice' },
+                  { value: 'a', label: 'Detailed user profile' },
+                  { value: 'b', label: 'Recently uploaded documents' },
+                  { value: 'c', label: 'Non-linguistic notifications' },
                 ],
-                { value: 'a', ariaLabel: 'Etichete lungi' },
+                { value: 'a', ariaLabel: 'Long labels' },
               )}
             </div>
           `,
@@ -552,9 +552,9 @@ export const EdgeCases: Story = {
           renderTabsHtml(
             'tabs-ec-badges',
             [
-              { value: 'a', label: 'Mesaje', badgeCount: 99 },
-              { value: 'b', label: 'Cereri', badgeCount: 256 },
-              { value: 'c', label: 'Arhivă', badgeCount: 0 },
+              { value: 'a', label: 'Messages', badgeCount: 99 },
+              { value: 'b', label: 'Requests', badgeCount: 256 },
+              { value: 'c', label: 'Archive', badgeCount: 0 },
             ],
             { value: 'a', ariaLabel: 'Contoare mari' },
           ),
@@ -562,7 +562,7 @@ export const EdgeCases: Story = {
         cell(
           'empty tabs (defensive — renders nothing useful, no crash)',
           /*html*/ `
-            <mud-tabs aria-label="Listă goală"></mud-tabs>
+            <mud-tabs aria-label="Empty list"></mud-tabs>
           `,
         ),
       ].join(''),

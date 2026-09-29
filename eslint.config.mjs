@@ -10,6 +10,7 @@
 import tseslint from 'typescript-eslint';
 import stencil from '@stencil/eslint-plugin';
 import prettierConfig from 'eslint-config-prettier/flat';
+import noHardcodedCopy from './scripts/eslint/no-hardcoded-copy.mjs';
 
 export default tseslint.config(
   {
@@ -106,4 +107,21 @@ export default tseslint.config(
   },
 
   prettierConfig,
+
+  // Issue #163's guard, wired in at `error` once every component (Phases 1-5) migrated to
+  // the locale/dictionary model — kept in its own file (`scripts/eslint/no-hardcoded-copy.mjs`)
+  // so `scripts/eslint/copy.config.mjs` can run it standalone during earlier phases. Appended
+  // last per the plan's Global constraints (away from the `src/legacy/**` ignore above and the
+  // open-PR comment near it); it carries no style rule, so `prettierConfig` staying the
+  // previous entry is still effectively "last" for the concern that comment protects.
+  {
+    files: ['src/components/**/*.tsx'],
+    ignores: ['src/components/**/*.spec.tsx', 'src/components/**/*.stories.tsx'],
+    plugins: {
+      mud: { rules: { 'no-hardcoded-copy': noHardcodedCopy } },
+    },
+    rules: {
+      'mud/no-hardcoded-copy': 'error',
+    },
+  },
 );

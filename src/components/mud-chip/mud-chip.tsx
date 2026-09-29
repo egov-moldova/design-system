@@ -1,7 +1,11 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { CHIP_MESSAGES } from './mud-chip.messages';
+import type { ChipMessages } from './mud-chip.messages';
 
 /**
  * Chip — compact, pill-shaped control for filter selection or token display.
@@ -95,11 +99,17 @@ export class MudChip {
 
   /**
    * Accessible label for the remove button. The chip's own text is appended to
-   * it, so a chip reading "Ion Popescu" gets "Elimină Ion Popescu". Romanian by
-   * default, like every other user-facing string in the system.
-   * @default 'Elimină'
+   * it, so a chip reading "Ion Popescu" gets "Elimină Ion Popescu". Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Elimină' (ro-MD)
    */
-  @Prop({ attribute: 'remove-label' }) removeLabel: string = 'Elimină';
+  @Prop({ attribute: 'remove-label' }) removeLabel?: string;
+
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
 
   @State() private hasIconStart: boolean = false;
   @State() private hasAvatar: boolean = false;
@@ -116,6 +126,27 @@ export class MudChip {
    * Fires when the user activates the remove button on a `type="input"` chip.
    */
   @Event() mudRemove!: EventEmitter<void>;
+
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): ChipMessages {
+    return localeMessages('mud-chip', this.host, this.locale, CHIP_MESSAGES, {
+      removeLabel: this.removeLabel,
+    });
+  }
 
   componentWillLoad() {
     this.detectSlots();
@@ -231,7 +262,9 @@ export class MudChip {
   };
 
   render() {
+    const m = this.messages();
     const labelText = this.resolveLabelText();
+    const lang = hostLang(this.host, this.locale);
     const isFilter = this.type === 'filter';
     const isInput = this.type === 'input';
     const showRemove = isInput && this.removable;
@@ -256,7 +289,7 @@ export class MudChip {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <button
           class="control"
           type="button"
@@ -288,7 +321,7 @@ export class MudChip {
           <button
             class="remove"
             type="button"
-            aria-label={labelText ? `${this.removeLabel} ${labelText}` : this.removeLabel}
+            aria-label={labelText ? `${m.removeLabel} ${labelText}` : m.removeLabel}
             disabled={this.disabled}
             tabindex={this.disabled ? -1 : 0}
             onClick={this.handleRemoveClick}

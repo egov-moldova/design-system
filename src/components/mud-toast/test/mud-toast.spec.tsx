@@ -2,6 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-toast';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { TOAST_MESSAGES } from '../mud-toast.messages';
+import type { ToastMessages } from '../mud-toast.messages';
 import { TOAST_DISMISS_FALLBACK_MS, TOAST_VARIANTS } from '../mud-toast.types';
 
 const queryClose = (root: Element | null | undefined): HTMLButtonElement | null =>
@@ -340,4 +343,22 @@ describe('mud-toast', () => {
       expect(instance).toBeTruthy();
     });
   });
+});
+
+describeLocales<ToastMessages>('mud-toast', TOAST_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    const { root } = await render(
+      <mud-toast {...attrs}>Mesaj</mud-toast>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel' },
 });

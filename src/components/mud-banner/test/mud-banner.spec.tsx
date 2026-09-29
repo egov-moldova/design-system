@@ -2,6 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-banner';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { BANNER_MESSAGES } from '../mud-banner.messages';
+import type { BannerMessages } from '../mud-banner.messages';
 import { BANNER_EMPHASES, BANNER_VARIANTS } from '../mud-banner.types';
 
 const queryClose = (root: Element | null | undefined): HTMLButtonElement | null =>
@@ -198,4 +201,22 @@ describe('mud-banner', () => {
     expect(Ctor).toBeTruthy();
     expect(new Ctor!(false)).toBeTruthy();
   });
+});
+
+describeLocales<BannerMessages>('mud-banner', BANNER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { dismissible: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    const { root } = await render(
+      <mud-banner {...attrs}>M</mud-banner>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel' },
 });

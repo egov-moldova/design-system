@@ -97,7 +97,7 @@ Claude Code commands, subagents, skills and MCP servers are described in `CLAUDE
 10. **Minimal Builds**: Use `yarn tokens.build` (~5s) or Stencil watch (~2-5s) during dev; full `yarn build` only for final QA
 11. **Change Scope**: A PR touches only files the task required. `yarn format` is repo-wide (`prettier --write .`) — harmless while the repo is Prettier-clean, but if it rewrites files your task never touched, that drift ships as its own `style:` PR, never mixed into yours. Check `git diff --stat main...HEAD` before opening a PR. See `_agents/verification-git.md`.
 12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egov-moldova/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
-13. **Locale-First**: Every user-facing string — label, message, `aria-label`, screen-reader text — is a `@Prop()` with a Romanian (`ro-RO`) default and `@default` in its JSDoc. Never a literal in JSX, never returned from a method, never hidden in a `@State` default: if a consumer cannot pass it in, it is a bug. Full rule: `_agents/localization.md`.
+13. **Locale-First**: Every user-facing string — label, message, `aria-label`, screen-reader text — comes from a `mud-<name>.messages.ts` dictionary (`ro-MD` / `en-US` / `ru-MD`) selected by the component's `locale` prop, falling back to the closest ancestor `lang` (crossing shadow roots), then `ro-MD`. A per-string override `@Prop()` (`closeLabel`, `overflowLabel`, …) wins when set to a non-empty string; document its `ro-MD` default with `@default` in its JSDoc. Never a literal in JSX, never returned from a method, never hidden in a `@State` default: if a consumer cannot pass it in, it is a bug. Count-dependent copy is a `Plural` chosen by `Intl.PluralRules`; placeholders are `{name}` filled by `formatMessage`. `npx eslint -c scripts/eslint/copy.config.mjs src/components` and `yarn lint` (`mud/no-hardcoded-copy`) both enforce this. Full rule: `_agents/localization.md`.
 
 ---
 
@@ -113,6 +113,7 @@ ls dist/mud/tokens/*.css
 yarn sp.dev.watch              # Check Storybook (port 6007)
 lsof -i :6007
 yarn dev                       # Stencil + Storybook + token watch (wireit services)
+yarn dev:all                   # yarn dev + the web-components demo (5174) on one Stencil watcher
 yarn dx:prepare                # First-time setup: tokens + custom-elements
 yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-static, dist, loader, www)
 

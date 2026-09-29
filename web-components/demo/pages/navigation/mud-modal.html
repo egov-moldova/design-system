@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,24 +37,24 @@
         </div>
 
         <!-- Modal: default -->
-        <mud-modal id="modal-default" size="md" variant="default" title-text="Confirmați acțiunea">
+        <mud-modal id="modal-default" size="md" variant="default" title-text="Confirm the action">
           <p style="margin: 0">
-            Sunteți pe cale să trimiteți cererea către instituție. Verificați datele înainte de confirmare. Diacritice:
-            ăâîșțĂÂÎȘȚ.
+            You are about to send the request to the institution. Check the data before confirming. Accented characters:
+            éüñ.
           </p>
-          <mud-button slot="actions" variant="secondary" data-close="">Anulează</mud-button>
-          <mud-button slot="actions" variant="primary" data-close="">Confirmă</mud-button>
+          <mud-button slot="actions" variant="secondary" data-close="">Cancel</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Confirm</mud-button>
         </mud-modal>
 
         <!-- Modal: with-icon -->
-        <mud-modal id="modal-icon" size="sm" variant="with-icon" title-text="Cerere trimisă">
+        <mud-modal id="modal-icon" size="sm" variant="with-icon" title-text="Request sent">
           <mud-icon slot="icon" name="circle-info" variant="filled" size="32" color="icon-brand-default"></mud-icon>
-          <p style="margin: 0">Cererea dvs. a fost înregistrată cu numărul 2024-00123.</p>
-          <mud-button slot="actions" variant="primary" data-close="">Am înțeles</mud-button>
+          <p style="margin: 0">Your request was registered under number 2024-00123.</p>
+          <mud-button slot="actions" variant="primary" data-close="">Got it</mud-button>
         </mud-modal>
 
         <!-- Modal: with-image -->
-        <mud-modal id="modal-image" size="lg" variant="with-image" title-text="Serviciu nou disponibil">
+        <mud-modal id="modal-image" size="lg" variant="with-image" title-text="New service available">
           <div
             slot="image"
             style="
@@ -67,13 +67,13 @@
               );
             "
             role="img"
-            aria-label="Imagine reprezentativă serviciu"
+            aria-label="Representative service image"
           ></div>
           <p style="margin: 0">
-            Acum puteți depune cereri online pentru certificate de stare civilă. Procesul durează sub 5 minute.
+            You can now submit online requests for civil status certificates. The process takes under 5 minutes.
           </p>
-          <mud-button slot="actions" variant="secondary" data-close="">Mai târziu</mud-button>
-          <mud-button slot="actions" variant="primary" data-close="">Începe</mud-button>
+          <mud-button slot="actions" variant="secondary" data-close="">Later</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Start</mud-button>
         </mud-modal>
 
         <!-- Modal: destructive -->
@@ -82,21 +82,21 @@
           size="sm"
           variant="with-icon"
           destructive=""
-          title-text="Ștergeți contul?"
+          title-text="Delete the account?"
           close-on-backdrop="false"
         >
           <mud-icon slot="icon" name="delete" variant="filled" size="32" color="icon-status-error-default"></mud-icon>
-          <p style="margin: 0">Această acțiune este ireversibilă. Toate datele asociate vor fi șterse definitiv.</p>
-          <mud-button slot="actions" variant="secondary" data-close="">Renunță</mud-button>
-          <mud-button slot="actions" variant="primary" data-close="">Șterge definitiv</mud-button>
+          <p style="margin: 0">This action is irreversible. All associated data will be deleted permanently.</p>
+          <mud-button slot="actions" variant="secondary" data-close="">Give up</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Delete permanently</mud-button>
         </mud-modal>
 
         <!-- Modal: long body -->
-        <mud-modal id="modal-long" size="md" variant="default" title-text="Termeni și condiții">
+        <mud-modal id="modal-long" size="md" variant="default" title-text="Terms and conditions">
           <div>
             <p style="margin: 0 0 var(--spacing-12)">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
-              &amp; &lt; &gt; " '.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Accented characters: éüñ. RTL: مرحبا بكم.
+              Special: &amp; &lt; &gt; " '.
             </p>
             <p style="margin: 0 0 var(--spacing-12)">
               Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
@@ -111,14 +111,14 @@
               Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.
             </p>
             <p style="margin: 0 0 var(--spacing-12)">
-              Mollit anim id est laborum. Sectiune lunga pentru a verifica scroll-ul intern al modalului.
+              Mollit anim id est laborum. Long section to check the internal scroll of the modal.
             </p>
             <p style="margin: 0 0 var(--spacing-12)">
-              Repetare pentru depasire inaltime: paragraf 7, 8, 9 cu text suplimentar.
+              Repeat to exceed the height: paragraphs 7, 8, 9 with additional text.
             </p>
-            <p style="margin: 0">Final paragraf pentru a forta scroll-ul vertical in corpul modalului.</p>
+            <p style="margin: 0">Final paragraph to force vertical scrolling in the modal body.</p>
           </div>
-          <mud-button slot="actions" variant="secondary" data-close="">Refuz</mud-button>
+          <mud-button slot="actions" variant="secondary" data-close="">Decline</mud-button>
           <mud-button slot="actions" variant="primary" data-close="">Accept</mud-button>
         </mud-modal>
 

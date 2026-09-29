@@ -4,6 +4,7 @@ type TimePickerArgs = {
   value: string;
   min: string;
   max: string;
+  locale: string;
   label: string;
   hoursLabel: string;
   minutesLabel: string;
@@ -16,9 +17,10 @@ const renderTimePicker = (args: TimePickerArgs) => /*html*/ `
     ${args.value ? `value="${args.value}"` : ''}
     ${args.min ? `min="${args.min}"` : ''}
     ${args.max ? `max="${args.max}"` : ''}
-    label="${args.label}"
-    hours-label="${args.hoursLabel}"
-    minutes-label="${args.minutesLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.label ? `label="${args.label}"` : ''}
+    ${args.hoursLabel ? `hours-label="${args.hoursLabel}"` : ''}
+    ${args.minutesLabel ? `minutes-label="${args.minutesLabel}"` : ''}
   ></mud-time-picker>
 `;
 
@@ -40,9 +42,17 @@ const meta: Meta<TimePickerArgs> = {
     value: { control: 'text', description: 'Selected time, `HH:MM` (24-hour).' },
     min: { control: 'text', description: 'Earliest selectable time, `HH:MM` inclusive.' },
     max: { control: 'text', description: 'Latest selectable time, `HH:MM` inclusive.' },
-    label: { control: 'text', description: 'Accessible name of the picker.' },
-    hoursLabel: { control: 'text', description: 'Accessible name of the hour column.' },
-    minutesLabel: { control: 'text', description: 'Accessible name of the minute column.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
+    label: { control: 'text', description: "Accessible name of the picker. Overrides the locale's copy." },
+    hoursLabel: { control: 'text', description: "Accessible name of the hour column. Overrides the locale's copy." },
+    minutesLabel: {
+      control: 'text',
+      description: "Accessible name of the minute column. Overrides the locale's copy.",
+    },
   },
 };
 
@@ -56,9 +66,10 @@ export const Default: Story = {
     value: '11:15',
     min: '',
     max: '',
-    label: 'Selectează ora',
-    hoursLabel: 'Ore',
-    minutesLabel: 'Minute',
+    locale: '',
+    label: '',
+    hoursLabel: '',
+    minutesLabel: '',
   },
   parameters: {
     docs: {
@@ -111,7 +122,7 @@ export const InTimeInput: Story = {
   name: 'In a time input',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 282px; min-height: 420px;">
-      <mud-time-input size="lg" label="Ora programării" value="11:15"></mud-time-input>
+      <mud-time-input size="lg" label="Appointment time" value="11:15"></mud-time-input>
     </div>
   `,
   parameters: {
@@ -122,7 +133,7 @@ export const InTimeInput: Story = {
           'How the picker is usually met: `mud-time-input` opens it 8px under the field from its clock button (Figma Time frame 13810:9448). Picking a minute writes the time into the field and closes the dropdown; Escape closes it and returns focus to the clock button.',
       },
       source: {
-        code: '<mud-time-input size="lg" label="Ora programării" value="11:15"></mud-time-input>',
+        code: '<mud-time-input size="lg" label="Appointment time" value="11:15"></mud-time-input>',
       },
     },
   },

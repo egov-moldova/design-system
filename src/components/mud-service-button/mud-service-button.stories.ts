@@ -29,17 +29,17 @@ type ServiceButtonArgs = {
 
 /** Default verbose labels per Figma — service name + verb. */
 const DEFAULT_LABELS: Record<Service, string> = {
-  mcloud: 'Stochează cu mcloud',
-  mconnect: 'Conectează prin mconnect',
-  mdelivery: 'Livrează prin mdelivery',
-  mdocs: 'Gestionează prin mdocs',
-  mlearn: 'Învață cu mlearn',
-  mlog: 'Vezi jurnalul mlog',
-  mnotify: 'Trimite prin mnotify',
-  mpass: 'Autentifică-te prin mpass',
-  mpay: 'Plătește cu mpay',
-  mpower: 'Împuternicește cu mpower',
-  msign: 'Semnează prin msign',
+  mcloud: 'Store with mcloud',
+  mconnect: 'Connect through mconnect',
+  mdelivery: 'Deliver through mdelivery',
+  mdocs: 'Manage with mdocs',
+  mlearn: 'Learn with mlearn',
+  mlog: 'View the mlog journal',
+  mnotify: 'Send through mnotify',
+  mpass: 'Sign in with mpass',
+  mpay: 'Pay with mpay',
+  mpower: 'Delegate with mpower',
+  msign: 'Sign with msign',
 };
 
 const renderButton = (args: ServiceButtonArgs) => /*html*/ `
@@ -92,42 +92,42 @@ ${SERVICE_BUTTON_APPEARANCES.map(
   a => `<!-- ${a} -->
 <mud-service-button appearance="${a}">
   <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-  Plătește cu mpay
+  Pay with mpay
 </mud-service-button>
 
 <mud-service-button appearance="${a}" disabled>
   <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-  Plătește cu mpay
+  Pay with mpay
 </mud-service-button>
 
 <mud-service-button appearance="${a}" loading>
   <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-  Plătește cu mpay
+  Pay with mpay
 </mud-service-button>`,
 ).join('\n\n')}`;
 
 const docsSourceFullWidth = /*html*/ `<!-- Add the \`full-width\` attribute to expand the button to its container. -->
 <mud-service-button full-width appearance="primary">
   <mud-logo slot="badge" name="mpass-logo-logomark-only"></mud-logo>
-  Autentifică-te prin mpass
+  Sign in with mpass
 </mud-service-button>
 
 <mud-service-button full-width appearance="neutral">
   <mud-logo slot="badge" name="msign-logo-logomark-only"></mud-logo>
-  Semnează prin msign
+  Sign with msign
 </mud-service-button>`;
 
 const docsSourceLinkMode = /*html*/ `<!-- When \`href\` is set, the button renders as <a> instead of <button>. -->
 <mud-service-button href="https://mpay.gov.md" target="_blank" rel="noopener noreferrer">
   <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-  Plătește cu mpay
+  Pay with mpay
 </mud-service-button>`;
 
 const docsSourceCustomLabel = /*html*/ `<!-- The default slot accepts any inline text — override the verbose Figma label
      with shorter copy when the surrounding context already implies intent. -->
 <mud-service-button appearance="primary">
   <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-  Continuă
+  Continue
 </mud-service-button>
 
 <mud-service-button appearance="neutral">
@@ -244,7 +244,7 @@ export const States: Story = {
                 s => /*html*/ `
                   <mud-service-button appearance="${a}" ${s.attrs}>
                     <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-                    Plătește cu mpay
+                    Pay with mpay
                   </mud-service-button>
                 `,
               )
@@ -269,11 +269,11 @@ export const FullWidth: Story = {
     <div style="${stateCellStyle} max-width: 320px;">
       <mud-service-button full-width appearance="primary">
         <mud-logo slot="badge" name="mpass-logo-logomark-only"></mud-logo>
-        Autentifică-te prin mpass
+        Sign in with mpass
       </mud-service-button>
       <mud-service-button full-width appearance="neutral">
         <mud-logo slot="badge" name="msign-logo-logomark-only"></mud-logo>
-        Semnează prin msign
+        Sign with msign
       </mud-service-button>
     </div>
   `,
@@ -288,7 +288,7 @@ export const LinkMode: Story = {
   render: () => /*html*/ `
     <mud-service-button href="https://mpay.gov.md" target="_blank" rel="noopener noreferrer">
       <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-      Plătește cu mpay
+      Pay with mpay
     </mud-service-button>
   `,
 };
@@ -303,7 +303,7 @@ export const CustomLabel: Story = {
     <div style="${stateCellStyle}">
       <mud-service-button appearance="primary">
         <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>
-        Continuă
+        Continue
       </mud-service-button>
       <mud-service-button appearance="neutral">
         <mud-logo slot="badge" name="mpay-logo-logomark-only"></mud-logo>

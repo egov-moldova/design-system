@@ -34,12 +34,12 @@ const hintStyle =
 // ---------------------------------------------------------------------------
 
 const ROMANIAN_LABELS: Record<TagSemantic, string> = {
-  muted: 'Schiță',
+  muted: 'Draft',
   neutral: 'Nou',
-  accent: 'În așteptare',
-  success: 'Aprobat',
-  brand: 'Activ',
-  danger: 'Refuzat',
+  accent: 'Pending',
+  success: 'Approved',
+  brand: 'Active',
+  danger: 'Rejected',
 };
 
 const ICON_PATHS: Record<string, string> = {
@@ -85,8 +85,8 @@ supplementary metadata.
 
 Two visual scales coexist behind the same element:
 
-- \`variant="status"\` — the canonical **Status Tag** for state ("Activ",
-  "În așteptare", "Refuzat"). Medium-weight label, three surface
+- \`variant="status"\` — the canonical **Status Tag** for state ("Active",
+  "Waiting", "Rejected"). Medium-weight label, three surface
   treatments (\`subtle\`, \`strong\`, \`outlined\`) across six semantic
   colors (\`muted\`, \`neutral\`, \`accent\`, \`success\`, \`brand\`, \`danger\`).
 - \`variant="info"\` — the lighter **Info Tag**, intended for metadata
@@ -153,7 +153,7 @@ when the tag conveys a live state and the element will adopt
     size: 'md',
     type: 'subtle',
     semantic: 'neutral',
-    label: 'Activ',
+    label: 'Active',
     iconStart: '',
     iconEnd: '',
     disabled: false,
@@ -239,9 +239,9 @@ export const AllTypes: Story = {
             <p style="${captionStyle}">${t}</p>
             <div style="${rowStyle}">
               <mud-tag type="${t}" semantic="neutral">Nou</mud-tag>
-              <mud-tag type="${t}" semantic="brand">Activ</mud-tag>
-              <mud-tag type="${t}" semantic="success">Aprobat</mud-tag>
-              <mud-tag type="${t}" semantic="danger">Refuzat</mud-tag>
+              <mud-tag type="${t}" semantic="brand">Active</mud-tag>
+              <mud-tag type="${t}" semantic="success">Approved</mud-tag>
+              <mud-tag type="${t}" semantic="danger">Rejected</mud-tag>
             </div>
           </div>
         `,
@@ -252,7 +252,7 @@ export const AllTypes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand">Activ</mud-tag>`).join('\n'),
+        code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand">Active</mud-tag>`).join('\n'),
       },
     },
   },
@@ -274,11 +274,11 @@ export const Disabled: Story = {
           <div>
             <p style="${captionStyle}">${t}</p>
             <div style="${rowStyle}">
-              <mud-tag type="${t}" semantic="brand">Activ</mud-tag>
-              <mud-tag type="${t}" semantic="brand" disabled>Activ</mud-tag>
-              <mud-tag type="${t}" semantic="danger" disabled>Refuzat</mud-tag>
+              <mud-tag type="${t}" semantic="brand">Active</mud-tag>
+              <mud-tag type="${t}" semantic="brand" disabled>Active</mud-tag>
+              <mud-tag type="${t}" semantic="danger" disabled>Rejected</mud-tag>
               <mud-tag type="${t}" semantic="success" disabled>
-                <mud-icon slot="icon-start" name="checkmark-small"></mud-icon>Aprobat
+                <mud-icon slot="icon-start" name="checkmark-small"></mud-icon>Approved
               </mud-tag>
             </div>
           </div>
@@ -290,7 +290,7 @@ export const Disabled: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand" disabled>Activ</mud-tag>`).join('\n'),
+        code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand" disabled>Active</mud-tag>`).join('\n'),
       },
     },
   },
@@ -322,7 +322,7 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: ['md', 'sm'].map(size => `<mud-tag size="${size}" semantic="brand">Activ</mud-tag>`).join('\n'),
+        code: ['md', 'sm'].map(size => `<mud-tag size="${size}" semantic="brand">Active</mud-tag>`).join('\n'),
       },
     },
   },
@@ -341,15 +341,15 @@ export const WithIcon: Story = {
         <div style="${rowStyle}">
           <mud-tag type="subtle" semantic="success">
             <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-            Aprobat
+            Approved
           </mud-tag>
           <mud-tag type="subtle" semantic="accent">
             <mud-icon slot="icon-start" name="time" size="16"></mud-icon>
-            În așteptare
+            Waiting
           </mud-tag>
           <mud-tag type="subtle" semantic="danger">
             <mud-icon slot="icon-start" name="cross-small" size="16"></mud-icon>
-            Refuzat
+            Rejected
           </mud-tag>
         </div>
       </div>
@@ -357,11 +357,11 @@ export const WithIcon: Story = {
         <p style="${captionStyle}">Trailing icon</p>
         <div style="${rowStyle}">
           <mud-tag type="strong" semantic="brand">
-            Detalii
+            Details
             <mud-icon slot="icon-end" name="arrow-right" size="16"></mud-icon>
           </mud-tag>
           <mud-tag type="outlined" semantic="accent">
-            Expiră curând
+            Expires soon
             <mud-icon slot="icon-end" name="bubble-alert" size="16"></mud-icon>
           </mud-tag>
         </div>
@@ -371,7 +371,7 @@ export const WithIcon: Story = {
         <div style="${rowStyle}">
           <mud-tag type="subtle" semantic="brand">
             <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-            Verificat
+            Verified
             <mud-icon slot="icon-end" name="arrow-right" size="16"></mud-icon>
           </mud-tag>
         </div>
@@ -385,7 +385,7 @@ export const WithIcon: Story = {
         code: /*html*/ `
 <mud-tag type="subtle" semantic="success">
   <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-  Aprobat
+  Approved
 </mud-tag>`.trim(),
       },
     },
@@ -405,16 +405,16 @@ export const InfoVariant: Story = {
         regular-weight label and tighter padding read as part of the paragraph.
       </p>
       <p style="font-family: var(--font-family-primary); font-size: 14px; color: var(--color-text-base-default); margin: 0; max-width: 640px; line-height: 1.6;">
-        Apartamentul a fost adăugat pe platformă
-        <mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>
-        și include două zone de parcare
-        <mud-tag variant="info" type="subtle">Imobiliare</mud-tag>.
+        The apartment was added to the platform
+        <mud-tag variant="info" type="strong">2 hours ago</mud-tag>
+        and includes two parking spaces
+        <mud-tag variant="info" type="subtle">Real estate</mud-tag>.
       </p>
       <div>
         <p style="${captionStyle}">Info — Strong and Subtle (Figma info-tag 624:8934)</p>
         <div style="${rowStyle}">
-          <mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>
-          <mud-tag variant="info" type="subtle">Acum 2 ore</mud-tag>
+          <mud-tag variant="info" type="strong">2 hours ago</mud-tag>
+          <mud-tag variant="info" type="subtle">2 hours ago</mud-tag>
         </div>
       </div>
       <div>
@@ -422,11 +422,11 @@ export const InfoVariant: Story = {
         <div style="${rowStyle}">
           <mud-tag variant="info" type="strong">
             <mud-icon slot="icon-start" name="time" size="16"></mud-icon>
-            Acum 2 ore
+            2 hours ago
           </mud-tag>
           <mud-tag variant="info" type="subtle">
             <mud-icon slot="icon-start" name="time" size="16"></mud-icon>
-            Acum 2 ore
+            2 hours ago
           </mud-tag>
         </div>
       </div>
@@ -436,7 +436,7 @@ export const InfoVariant: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-tag variant="info" type="strong">Acum 2 ore</mud-tag>',
+        code: '<mud-tag variant="info" type="strong">2 hours ago</mud-tag>',
       },
     },
   },
@@ -455,28 +455,28 @@ export const Group: Story = {
         when the row overflows. Used inside cards, table rows, and filter bars.
       </p>
       <div style="${groupStyle}">
-        <mud-tag type="subtle" semantic="brand">Activ</mud-tag>
-        <mud-tag type="subtle" semantic="success">Aprobat</mud-tag>
-        <mud-tag type="subtle" semantic="accent">În așteptare</mud-tag>
-        <mud-tag type="subtle" semantic="danger">Refuzat</mud-tag>
-        <mud-tag type="subtle" semantic="accent">Expirat</mud-tag>
+        <mud-tag type="subtle" semantic="brand">Active</mud-tag>
+        <mud-tag type="subtle" semantic="success">Approved</mud-tag>
+        <mud-tag type="subtle" semantic="accent">Waiting</mud-tag>
+        <mud-tag type="subtle" semantic="danger">Rejected</mud-tag>
+        <mud-tag type="subtle" semantic="accent">Expired</mud-tag>
         <mud-tag type="subtle" semantic="neutral">Nou</mud-tag>
       </div>
       <div style="${groupStyle}">
         <mud-tag type="outlined" semantic="brand">
           <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-          Verificat
+          Verified
         </mud-tag>
-        <mud-tag type="outlined" semantic="success">Aprobat</mud-tag>
-        <mud-tag type="outlined" semantic="danger">Refuzat</mud-tag>
-        <mud-tag type="outlined" semantic="muted">Schiță</mud-tag>
+        <mud-tag type="outlined" semantic="success">Approved</mud-tag>
+        <mud-tag type="outlined" semantic="danger">Rejected</mud-tag>
+        <mud-tag type="outlined" semantic="muted">Draft</mud-tag>
       </div>
       <div style="${groupStyle}; max-width: 320px;">
-        <mud-tag type="subtle" semantic="brand">Apartament</mud-tag>
-        <mud-tag type="subtle" semantic="brand">3 camere</mud-tag>
-        <mud-tag type="subtle" semantic="brand">Etaj 2/5</mud-tag>
+        <mud-tag type="subtle" semantic="brand">Apartment</mud-tag>
+        <mud-tag type="subtle" semantic="brand">3 rooms</mud-tag>
+        <mud-tag type="subtle" semantic="brand">Floor 2/5</mud-tag>
         <mud-tag type="subtle" semantic="brand">76 m²</mud-tag>
-        <mud-tag type="subtle" semantic="success">Disponibil</mud-tag>
+        <mud-tag type="subtle" semantic="success">Available</mud-tag>
       </div>
     </div>
   `,
@@ -486,9 +486,9 @@ export const Group: Story = {
       source: {
         code: /*html*/ `
 <div style="display: flex; gap: var(--spacing-8); flex-wrap: wrap;">
-  <mud-tag type="subtle" semantic="brand">Activ</mud-tag>
-  <mud-tag type="subtle" semantic="success">Aprobat</mud-tag>
-  <mud-tag type="subtle" semantic="accent">În așteptare</mud-tag>
+  <mud-tag type="subtle" semantic="brand">Active</mud-tag>
+  <mud-tag type="subtle" semantic="success">Approved</mud-tag>
+  <mud-tag type="subtle" semantic="accent">Waiting</mud-tag>
 </div>`.trim(),
       },
     },
@@ -501,7 +501,7 @@ export const Group: Story = {
  */
 export const AccessibleName: Story = {
   name: 'Accessible Name (aria-label)',
-  render: () => /*html*/ `<mud-tag>Procesare</mud-tag>`,
+  render: () => /*html*/ `<mud-tag>Processing</mud-tag>`,
   parameters: {
     controls: { disable: true },
   },
@@ -511,9 +511,9 @@ export const AccessibleName: Story = {
     await waitFor(() => expect(host.shadowRoot).not.toBeNull());
     await expect(host.getAttribute('role')).toBeNull();
 
-    host.ariaLabel = 'Procesare în curs';
+    host.ariaLabel = 'Processing';
     await waitFor(() => expect(host.getAttribute('role')).toBe('status'));
-    await expect(host.getAttribute('aria-label')).toBe('Procesare în curs');
+    await expect(host.getAttribute('aria-label')).toBe('Processing');
 
     host.removeAttribute('aria-label');
     await waitFor(() => expect(host.getAttribute('role')).toBeNull());

@@ -1,6 +1,10 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
+import { formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { DATE_PICKER_MESSAGES } from './mud-date-picker.messages';
+import type { DatePickerMessages } from './mud-date-picker.messages';
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type {
   DatePickerBreakpoint,
@@ -66,7 +70,7 @@ function compareIso(a: string, b: string): number {
  * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
  *
  * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
- * no hard-coded strings. Romanian (`ro-RO`) is the default.
+ * no hard-coded strings. Romanian (`ro-MD`) is the default.
  *
  * Keyboard:
  * - Arrow keys move focus by day
@@ -126,8 +130,20 @@ export class MudDatePicker {
   /** ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays). */
   @Prop() disabledDates?: string[];
 
-  /** BCP-47 locale tag for weekday/month rendering. Defaults to Romanian. */
-  @Prop() locale: string = 'ro-RO';
+  /**
+   * BCP-47 locale tag for weekday/month rendering and language of the "jump to today" footer
+   * shortcut. Unset, both follow the closest ancestor `lang` (`<html lang>` included), else
+   * `ro-MD`. A tag whose language has no built-in dictionary (`de-DE`) reaches `Intl` as the
+   * shown dictionary's locale instead, with one `console.warn` — see `formatLocale`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Label of the "jump to today" footer shortcut, when `todayShortcut` is set. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Azi' (ro-MD)
+   */
+  @Prop() todayLabel?: string;
 
   /**
    * Accessible label for the entire picker. Set the `aria-label` attribute on
@@ -194,6 +210,7 @@ export class MudDatePicker {
   private focusOnRender: string | null = null;
   /** Where picking a year from the year chip leads back to: the view the chip was in. */
   private yearChipReturn: DatePickerView = 'days';
+  private stopLang?: () => void;
 
   @Watch('label')
   syncLabel(next?: string): void {
@@ -273,6 +290,18 @@ export class MudDatePicker {
     this.handleDayKeyDown(ev, iso);
   }
 
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
   componentWillLoad() {
     this.captureAriaLabel();
     this.syncViewFromValue();
@@ -284,6 +313,22 @@ export class MudDatePicker {
     if (!selector) return;
     this.focusOnRender = null;
     this.host.shadowRoot?.querySelector<HTMLElement>(selector)?.focus();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): DatePickerMessages {
+    return localeMessages('mud-date-picker', this.host, this.locale, DATE_PICKER_MESSAGES, {
+      todayLabel: this.todayLabel,
+    });
+  }
+
+  /**
+   * The BCP-47 tag handed to every `Intl` call — `formatLocale`'s result: a tag whose language
+   * has a built-in dictionary reaches `Intl` as given (region added when absent, `ro` → `ro-MD`);
+   * a tag whose language has none (`de-DE`) is rewritten to the shown dictionary's own locale.
+   */
+  private resolvedIntlTag(): string {
+    return formatLocale(this.host, this.locale);
   }
 
   private captureAriaLabel(): void {
@@ -323,14 +368,17 @@ export class MudDatePicker {
   /** Localized month + weekday strings via Intl. Never hard-coded. */
   private monthLabel(year: number, month: number): string {
     const date = new Date(Date.UTC(year, month, 1));
-    return new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+    return new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+      date,
+    );
   }
 
   /** Short weekday names starting at `firstDayOfWeek`. Locale-driven. */
   private weekdayLabels(): { short: string; long: string }[] {
+    const tag = this.resolvedIntlTag();
     // `narrow` → single-letter weekday headers (M T W T F S S), per the Figma.
-    const formatterShort = new Intl.DateTimeFormat(this.locale, { weekday: 'narrow', timeZone: 'UTC' });
-    const formatterLong = new Intl.DateTimeFormat(this.locale, { weekday: 'long', timeZone: 'UTC' });
+    const formatterShort = new Intl.DateTimeFormat(tag, { weekday: 'narrow', timeZone: 'UTC' });
+    const formatterLong = new Intl.DateTimeFormat(tag, { weekday: 'long', timeZone: 'UTC' });
     // 2024-01-07 is a Sunday in UTC — use as anchor.
     const sunday = Date.UTC(2024, 0, 7);
     const labels: { short: string; long: string }[] = [];
@@ -538,6 +586,38 @@ export class MudDatePicker {
   }
 
   /**
+   * The view a click on the header title cycles to: days → months → years → days. A class
+   * field (not an inline JSX arrow) so its literal view names never sit inside the render
+   * tree — see `mud/no-hardcoded-copy`'s JSX-descendant rule.
+   */
+  private readonly cycleView = (): void => {
+    this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days';
+  };
+
+  private readonly goToMonths = (): void => this.switchView('months');
+
+  private readonly goToDays = (): void => this.switchView('days');
+
+  private readonly goToYears = (): void => {
+    // The title cycles days → months → years, so it continues to the months; the year chip
+    // returns to the view it was opened from.
+    this.yearChipReturn = this.view === 'months' ? 'months' : 'days';
+    this.switchView('years');
+  };
+
+  private readonly pickMonth = (month: number): void => {
+    this.viewMonth = month;
+    this.goToDays();
+    this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
+  };
+
+  private readonly pickYear = (year: number): void => {
+    this.viewYear = year;
+    this.switchView(this.headerStyle === 'dropdown' ? this.yearChipReturn : 'months');
+    this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
+  };
+
+  /**
    * The day holding the grid's single tab stop: the focused day, else the
    * selection, today, or the first enabled day — whichever is first in the
    * visible month. The grid always keeps one, or focus would fall to <body>
@@ -555,19 +635,9 @@ export class MudDatePicker {
     return Math.floor(this.viewYear / YEARS_PER_PAGE_STEP) * YEARS_PER_PAGE_STEP;
   }
 
-  private todayLabel(): string {
-    // Localized "Today" label. We rely on Intl.RelativeTimeFormat for accuracy
-    // — `numeric: 'auto'` returns "today" / "azi" / "heute" depending on locale.
-    try {
-      return new Intl.RelativeTimeFormat(this.locale, { numeric: 'auto' }).format(0, 'day');
-    } catch {
-      return 'Today';
-    }
-  }
-
   private capitalize(s: string): string {
     if (!s) return s;
-    return s.charAt(0).toLocaleUpperCase(this.locale) + s.slice(1);
+    return s.charAt(0).toLocaleUpperCase(this.resolvedIntlTag()) + s.slice(1);
   }
 
   private renderHeader() {
@@ -584,7 +654,7 @@ export class MudDatePicker {
     const onPrev = () => (isYears || isMonths ? this.goToYear(-step) : this.goToMonth(-1));
     const onNext = () => (isYears || isMonths ? this.goToYear(step) : this.goToMonth(1));
     const monthAria = (delta: number) =>
-      new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+      new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
         new Date(Date.UTC(this.viewYear, this.viewMonth + delta, 1)),
       );
     const navAria = (direction: 1 | -1) =>
@@ -616,14 +686,7 @@ export class MudDatePicker {
 
   private renderHeaderTitle(monthYear: string) {
     return (
-      <button
-        type="button"
-        class="title"
-        part="title"
-        id={this.titleId}
-        aria-live="polite"
-        onClick={() => (this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days')}
-      >
+      <button type="button" class="title" part="title" id={this.titleId} aria-live="polite" onClick={this.cycleView}>
         {monthYear}
       </button>
     );
@@ -631,7 +694,7 @@ export class MudDatePicker {
 
   private renderHeaderDropdowns() {
     const monthName = this.capitalize(
-      new Intl.DateTimeFormat(this.locale, { month: 'long', timeZone: 'UTC' }).format(
+      new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', timeZone: 'UTC' }).format(
         new Date(Date.UTC(this.viewYear, this.viewMonth, 1)),
       ),
     );
@@ -648,7 +711,7 @@ export class MudDatePicker {
             part="month-dropdown"
             aria-haspopup="grid"
             aria-expanded="false"
-            onClick={() => this.switchView('months')}
+            onClick={this.goToMonths}
           >
             <span class="dropdown-label">{monthName}</span>
             <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
@@ -660,10 +723,7 @@ export class MudDatePicker {
           part="year-dropdown"
           aria-haspopup="grid"
           aria-expanded="false"
-          onClick={() => {
-            this.yearChipReturn = this.view === 'months' ? 'months' : 'days';
-            this.switchView('years');
-          }}
+          onClick={this.goToYears}
         >
           <span class="dropdown-label">{this.viewYear}</span>
           <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
@@ -692,6 +752,7 @@ export class MudDatePicker {
     for (let i = 0; i < 6; i++) rows.push(cells.slice(i * 7, i * 7 + 7));
     const today = this.todayIso;
     const tabStop = this.dayTabStop(cells);
+    const dayLabelFormatter = new Intl.DateTimeFormat(this.resolvedIntlTag(), { dateStyle: 'full', timeZone: 'UTC' });
     return (
       <div class="day-grid" role="grid" aria-labelledby={this.titleId} part="day-grid">
         {this.renderDayLabels()}
@@ -728,10 +789,7 @@ export class MudDatePicker {
                   aria-selected={isSelected ? 'true' : 'false'}
                   aria-disabled={disabled ? 'true' : null}
                   aria-current={isToday ? 'date' : null}
-                  aria-label={new Intl.DateTimeFormat(this.locale, {
-                    dateStyle: 'full',
-                    timeZone: 'UTC',
-                  }).format(cell.date)}
+                  aria-label={dayLabelFormatter.format(cell.date)}
                   disabled={disabled}
                   onClick={() => {
                     if (!disabled) this.selectDay(cell.iso);
@@ -751,7 +809,7 @@ export class MudDatePicker {
   }
 
   private renderMonthGrid() {
-    const formatter = new Intl.DateTimeFormat(this.locale, { month: 'short', timeZone: 'UTC' });
+    const formatter = new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'short', timeZone: 'UTC' });
     return (
       <div class="month-grid" role="grid" aria-labelledby={this.titleId} part="month-grid">
         {Array.from({ length: 12 }, (_, m) => {
@@ -764,11 +822,7 @@ export class MudDatePicker {
               part="month-cell"
               role="gridcell"
               aria-selected={isCurrent ? 'true' : 'false'}
-              onClick={() => {
-                this.viewMonth = m;
-                this.switchView('days');
-                this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
-              }}
+              onClick={() => this.pickMonth(m)}
             >
               {label}
             </button>
@@ -792,13 +846,7 @@ export class MudDatePicker {
               part="year-cell"
               role="gridcell"
               aria-selected={isCurrent ? 'true' : 'false'}
-              onClick={() => {
-                this.viewYear = year;
-                // The title cycles days → months → years, so it continues to the
-                // months; the year chip returns to the view it was opened from.
-                this.switchView(this.headerStyle === 'dropdown' ? this.yearChipReturn : 'months');
-                this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
-              }}
+              onClick={() => this.pickYear(year)}
             >
               {year}
             </button>
@@ -808,9 +856,8 @@ export class MudDatePicker {
     );
   }
 
-  private renderFooter() {
+  private renderFooter(today: string) {
     if (!this.todayShortcut || this.hideTodayShortcut) return null;
-    const today = this.todayLabel();
     const jumpToToday = () => {
       const now = new Date();
       this.viewYear = now.getUTCFullYear();
@@ -829,6 +876,7 @@ export class MudDatePicker {
   }
 
   render() {
+    const m = this.messages();
     const hostClasses = {
       [`mode-${this.mode}`]: true,
       [`breakpoint-${this.breakpoint}`]: true,
@@ -840,14 +888,15 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
+      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId} lang={lang}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
         {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}
         {this.view === 'months' ? this.renderMonthGrid() : null}
         {this.view === 'years' ? this.renderYearGrid() : null}
-        {this.renderFooter()}
+        {this.renderFooter(m.todayLabel)}
       </Host>
     );
   }

@@ -21,14 +21,15 @@ Space picks the focused option.
 
 ## Properties
 
-| Property       | Attribute       | Description                                                         | Type                  | Default            |
-| -------------- | --------------- | ------------------------------------------------------------------- | --------------------- | ------------------ |
-| `hoursLabel`   | `hours-label`   | Accessible name of the hour column.                                 | `string`              | `'Ore'`            |
-| `label`        | `label`         | Accessible name of the picker.                                      | `string`              | `'Selectează ora'` |
-| `max`          | `max`           | Latest selectable time, `HH:MM` inclusive.                          | `string \| undefined` | `undefined`        |
-| `min`          | `min`           | Earliest selectable time, `HH:MM` inclusive.                        | `string \| undefined` | `undefined`        |
-| `minutesLabel` | `minutes-label` | Accessible name of the minute column.                               | `string`              | `'Minute'`         |
-| `value`        | `value`         | Selected time, `HH:MM` (24-hour). Updated when a time is completed. | `string \| undefined` | `undefined`        |
+| Property       | Attribute       | Description                                                                                                                     | Type                                                        | Default     |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------- |
+| `hoursLabel`   | `hours-label`   | Accessible name of the hour column. Overrides the `locale`'s copy when set to a non-empty string.                               | `string \| undefined`                                       | `undefined` |
+| `label`        | `label`         | Accessible name of the picker. Overrides the `locale`'s copy when set to a non-empty string.                                    | `string \| undefined`                                       | `undefined` |
+| `locale`       | `locale`        | Language of the built-in copy. Unset, the component follows the closest ancestor `lang` (`<html lang>` included), else `ro-MD`. | `"en-US" \| "ro-MD" \| "ru-MD" \| string & {} \| undefined` | `undefined` |
+| `max`          | `max`           | Latest selectable time, `HH:MM` inclusive.                                                                                      | `string \| undefined`                                       | `undefined` |
+| `min`          | `min`           | Earliest selectable time, `HH:MM` inclusive.                                                                                    | `string \| undefined`                                       | `undefined` |
+| `minutesLabel` | `minutes-label` | Accessible name of the minute column. Overrides the `locale`'s copy when set to a non-empty string.                             | `string \| undefined`                                       | `undefined` |
+| `value`        | `value`         | Selected time, `HH:MM` (24-hour). Updated when a time is completed.                                                             | `string \| undefined`                                       | `undefined` |
 
 
 ## Events

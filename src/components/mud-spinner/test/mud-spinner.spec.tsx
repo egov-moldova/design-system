@@ -1,10 +1,13 @@
 import { render, h, describe, it, expect } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 // stencilVitestPlugin compiles the source on import and appends a
 // customElements.define(...) call — this side-effect import is what
 // registers the element before `render()` is called.
 import '../mud-spinner';
 
+import { SPINNER_MESSAGES } from '../mud-spinner.messages';
+import type { SpinnerMessages } from '../mud-spinner.messages';
 import type { SpinnerSize, SpinnerVariant } from '../mud-spinner.types';
 
 const SIZES: SpinnerSize[] = ['xs', 'sm', 'md', 'lg'];
@@ -15,7 +18,7 @@ describe('mud-spinner', () => {
     const { root } = await render(<mud-spinner />);
 
     expect(root?.getAttribute('role')).toBe('status');
-    expect(root?.getAttribute('aria-label')).toBe('Loading');
+    expect(root?.getAttribute('aria-label')).toBe(SPINNER_MESSAGES['ro-MD'].label);
     expect(root?.getAttribute('aria-live')).toBe('polite');
     expect(root?.getAttribute('size')).toBe('md');
     expect(root?.getAttribute('variant')).toBe('brand');
@@ -76,4 +79,22 @@ describe('mud-spinner', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describeLocales<SpinnerMessages>('mud-spinner', SPINNER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.label !== undefined) attrs.label = String(props.label);
+    const { root } = await render(
+      <mud-spinner {...attrs}></mud-spinner>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'label') return host.getAttribute('aria-label');
+    return null;
+  },
+  overrides: { label: 'label' },
 });

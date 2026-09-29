@@ -1,0 +1,14 @@
+[
+  { "value": "Chișinău", "reason": "Moldovan city name — realistic data value" },
+  { "value": "Bălți", "reason": "Moldovan city name — realistic data value" },
+  { "value": "Edineț", "reason": "Moldovan city name — realistic data value" },
+  { "value": "Ștefan cel Mare", "reason": "Street name (Chișinău's main boulevard) — realistic address data" },
+  { "value": "Ion Creangă", "reason": "Personal name — realistic Moldovan sample person" },
+  { "value": "Ștefan Țurcanu", "reason": "Personal name — realistic Moldovan sample person" },
+  { "value": "Ștefan Țăranu", "reason": "Personal name — realistic Moldovan sample person" },
+  { "value": "Ângela Mârza", "reason": "Personal name — realistic Moldovan sample person" },
+  { "value": "Răzvan Î. Șușnea", "reason": "Personal name — realistic Moldovan sample person" },
+  { "value": "Română", "reason": "Demo chrome language label — a language is named in its own language" },
+  { "value": "Русский", "reason": "Demo chrome language label — a language is named in its own language" },
+  { "value": "English", "reason": "Demo chrome language label — a language is named in its own language" }
+]

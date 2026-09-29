@@ -1,9 +1,14 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { FILE_ITEM_STATES } from './mud-file-item.types';
 import { FILE_GLYPH_SRC } from './mud-file-item.glyph';
 import type { FileItemRemoveDetail, FileItemState } from './mud-file-item.types';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { formatFileSize } from '../../utils/file-size';
+import { FILE_ITEM_MESSAGES } from './mud-file-item.messages';
+import type { FileItemMessages } from './mud-file-item.messages';
 
 /**
  * File Item — single-file row inside `mud-file-input` (or any file list surface).
@@ -56,11 +61,17 @@ export class MudFileItem {
   @Prop({ reflect: true, attribute: 'no-remove' }) noRemove: boolean = false;
 
   /**
-   * Accessible label for the remove button. Provided in Romanian by default
-   * to match the institutional voice.
-   * @default 'Elimină fișierul'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'remove-label' }) removeLabel: string = 'Elimină fișierul';
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Accessible label for the remove button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Elimină fișierul' (ro-MD)
+   */
+  @Prop({ attribute: 'remove-label' }) removeLabel?: string;
 
   @State() private previewFailed: boolean = false;
   /** True when the filename is visually clipped, which gates the hover tooltip. */
@@ -73,6 +84,15 @@ export class MudFileItem {
 
   private filenameEl?: HTMLElement;
   private resizeObserver?: ResizeObserver;
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
 
   componentDidLoad() {
     this.measureTruncation();
@@ -89,6 +109,14 @@ export class MudFileItem {
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): FileItemMessages {
+    return localeMessages('mud-file-item', this.host, this.locale, FILE_ITEM_MESSAGES, {
+      removeLabel: this.removeLabel,
+    });
   }
 
   /** Compare rendered vs content width to know if the name is clipped (tooltip-worthy). */
@@ -133,19 +161,17 @@ export class MudFileItem {
     }
   };
 
-  private formatSize(bytes: number | undefined): string {
+  private formatSize(bytes: number | undefined, m: FileItemMessages): string {
     if (bytes === undefined || bytes === null) return '';
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    return formatFileSize(bytes, this.host, this.locale, [m.sizeUnitBytes, m.sizeUnitKB, m.sizeUnitMB, m.sizeUnitGB]);
   }
 
   render() {
+    const m = this.messages();
     const isError = this.state === 'error';
     const isUploading = this.state === 'uploading';
     const isSuccess = this.state === 'success';
-    const sizeText = this.formatSize(this.size);
+    const sizeText = this.formatSize(this.size, m);
     const showErrorMessage = isError && Boolean(this.errorText?.trim());
     // The leading file glyph is dropped in the error state (Figma 558:…) so the
     // red status icon + message carry the meaning without competing chrome.
@@ -153,6 +179,7 @@ export class MudFileItem {
     // Resting (uploaded) and error rows are removable; uploading shows a spinner
     // and success shows a confirmation tick instead (per Figma).
     const showRemove = !this.noRemove && (this.state === 'uploaded' || isError);
+    const lang = hostLang(this.host, this.locale);
 
     return (
       <Host
@@ -160,6 +187,7 @@ export class MudFileItem {
           [`state-${this.state}`]: true,
           'is-disabled': this.disabled,
         }}
+        lang={lang}
       >
         <div class="row" part="row">
           {showLeadingIcon ? (
@@ -228,7 +256,7 @@ export class MudFileItem {
                 class="remove"
                 part="remove"
                 disabled={this.disabled}
-                aria-label={this.removeLabel}
+                aria-label={m.removeLabel}
                 aria-disabled={this.disabled ? 'true' : null}
                 onClick={this.handleRemove}
                 onKeyDown={this.handleRemoveKey}

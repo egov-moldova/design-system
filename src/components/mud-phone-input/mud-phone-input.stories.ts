@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';
 import type { PhoneInputSize, PhoneInputType, PhoneInputVariant } from './mud-phone-input.types';
 
@@ -13,6 +14,7 @@ type PhoneInputArgs = {
   defaultCountry: string;
   helperText: string;
   errorText: string;
+  locale: string;
   required: boolean;
   disabled: boolean;
   readonly: boolean;
@@ -33,6 +35,7 @@ const renderPhoneInput = (args: PhoneInputArgs) => /*html*/ `
     ${args.value ? `value="${args.value}"` : ''}
     helper-text="${args.helperText}"
     error-text="${args.errorText}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     ${args.required ? 'required' : ''}
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
@@ -52,6 +55,7 @@ const docsSourceDefault = (args: PhoneInputArgs) => {
     args.value ? `value="${args.value}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
@@ -97,6 +101,12 @@ const meta: Meta<PhoneInputArgs> = {
     value: { control: 'text', description: 'Canonical E.164 value (e.g. +37362123456).' },
     helperText: { control: 'text' },
     errorText: { control: 'text' },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description:
+        'Language of every built-in message plus the listbox country names. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -121,6 +131,7 @@ export const Default: Story = {
     value: '',
     helperText: '',
     errorText: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,
@@ -145,11 +156,12 @@ export const International: Story = {
     size: 'lg',
     type: 'international',
     defaultCountry: 'MD',
-    label: 'Telefon (internațional)',
+    label: 'Phone (international)',
     placeholder: '',
     value: '',
     helperText: '',
     errorText: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,
@@ -202,7 +214,7 @@ export const AllVariants: Story = {
       PHONE_INPUT_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<mud-phone-input variant="${variant}" size="lg" type="international" label="Număr de telefon"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="${variant}" size="lg" type="international" label="Phone number"></mud-phone-input>`,
         ),
       ).join(''),
     ),
@@ -215,8 +227,7 @@ export const AllVariants: Story = {
       },
       source: {
         code: PHONE_INPUT_VARIANTS.map(
-          v =>
-            `<mud-phone-input variant="${v}" size="lg" type="international" label="Număr de telefon"></mud-phone-input>`,
+          v => `<mud-phone-input variant="${v}" size="lg" type="international" label="Phone number"></mud-phone-input>`,
         ).join('\n'),
       },
     },
@@ -230,7 +241,7 @@ export const AllVariantsLocal: Story = {
       PHONE_INPUT_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<mud-phone-input variant="${variant}" size="lg" type="local" label="Număr de telefon"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="${variant}" size="lg" type="local" label="Phone number"></mud-phone-input>`,
         ),
       ).join(''),
     ),
@@ -243,7 +254,7 @@ export const AllVariantsLocal: Story = {
       },
       source: {
         code: PHONE_INPUT_VARIANTS.map(
-          v => `<mud-phone-input variant="${v}" size="lg" type="local" label="Număr de telefon"></mud-phone-input>`,
+          v => `<mud-phone-input variant="${v}" size="lg" type="local" label="Phone number"></mud-phone-input>`,
         ).join('\n'),
       },
     },
@@ -257,7 +268,7 @@ export const AllSizes: Story = {
       PHONE_INPUT_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<mud-phone-input size="${size}" type="international" label="Număr de telefon"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="${size}" type="international" label="Phone number"></mud-phone-input>`,
         ),
       ).join(''),
     ),
@@ -266,7 +277,7 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: PHONE_INPUT_SIZES.map(
-          s => `<mud-phone-input size="${s}" type="international" label="Număr de telefon"></mud-phone-input>`,
+          s => `<mud-phone-input size="${s}" type="international" label="Phone number"></mud-phone-input>`,
         ).join('\n'),
       },
     },
@@ -280,35 +291,35 @@ export const States: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number"></mud-phone-input>`,
         ),
         cell(
           'filled',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456"></mud-phone-input>`,
         ),
         cell(
           'loading',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>`,
         ),
         cell(
           'read-only',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" readonly></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" readonly></mud-phone-input>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" disabled></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" disabled></mud-phone-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" required></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" required></mud-phone-input>`,
         ),
         cell(
           'warning',
-          /*html*/ `<mud-phone-input variant="warning" size="lg" type="international" label="Număr de telefon" value="+37362"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="warning" size="lg" type="international" label="Phone number" value="+37362"></mud-phone-input>`,
         ),
         cell(
           'destructive',
-          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="international" label="Număr de telefon"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="international" label="Phone number"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -317,14 +328,14 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" readonly></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" disabled></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" required></mud-phone-input>',
-          '<mud-phone-input variant="warning" size="lg" type="international" label="Număr de telefon" value="+37362"></mud-phone-input>',
-          '<mud-phone-input variant="destructive" size="lg" type="international" label="Număr de telefon"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" readonly></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" disabled></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" required></mud-phone-input>',
+          '<mud-phone-input variant="warning" size="lg" type="international" label="Phone number" value="+37362"></mud-phone-input>',
+          '<mud-phone-input variant="destructive" size="lg" type="international" label="Phone number"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -338,27 +349,27 @@ export const WithCountrySelected: Story = {
       [
         cell(
           'Moldova (MD) — default',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="MD" value="+37362123456"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="MD" value="+37362123456"></mud-phone-input>`,
         ),
         cell(
-          'România (RO)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="RO" value="+40721987654"></mud-phone-input>`,
+          'Romania (RO)',
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="RO" value="+40721987654"></mud-phone-input>`,
         ),
         cell(
-          'Ucraina (UA)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="UA" value="+380501234567"></mud-phone-input>`,
+          'Ukraine (UA)',
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="UA" value="+380501234567"></mud-phone-input>`,
         ),
         cell(
           'Statele Unite (US)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="US" value="+12025550143"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="US" value="+12025550143"></mud-phone-input>`,
         ),
         cell(
           'Germania (DE)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="DE" value="+4915123456789"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="DE" value="+4915123456789"></mud-phone-input>`,
         ),
         cell(
           'Italia (IT)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="IT" value="+393311234567"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="IT" value="+393311234567"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -394,7 +405,7 @@ export const OpenDropdown: Story = {
     <div style="padding: var(--spacing-24); display: flex; gap: var(--spacing-48); align-items: flex-start; min-height: 800px;">
       <div style="display: flex; flex-direction: column; gap: var(--spacing-8); width: 320px;">
         <span style="${cellLabelStyle}">Listbox open — all 15 country flags visible</span>
-        <mud-phone-input id="mud-phone-input-open-fixture" type="international" size="lg" label="Număr de telefon" open></mud-phone-input>
+        <mud-phone-input id="mud-phone-input-open-fixture" type="international" size="lg" label="Phone number" open></mud-phone-input>
       </div>
     </div>
     <script>
@@ -412,7 +423,7 @@ export const OpenDropdown: Story = {
           'Open listbox shows all 15 countries side-by-side with their flags. Moldova (MD) is at the top — the home market — followed by the curated diaspora list (RO, RU, UA, US, GB, DE, FR, IT, ES, PT, IL, TR, BG, GR). Each row pairs the flag, Romanian country name, and E.164 dial code.',
       },
       source: {
-        code: '<mud-phone-input size="lg" type="international" label="Număr de telefon" open></mud-phone-input>',
+        code: '<mud-phone-input size="lg" type="international" label="Phone number" open></mud-phone-input>',
       },
     },
   },
@@ -425,19 +436,19 @@ export const Loading: Story = {
       [
         cell(
           'lg',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" loading helper-text="Se verifică numărul…"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" loading helper-text="Checking the number…"></mud-phone-input>`,
         ),
         cell(
           'md',
-          /*html*/ `<mud-phone-input size="md" type="international" label="Număr de telefon" value="+37362123456" loading helper-text="Se verifică numărul…"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="md" type="international" label="Phone number" value="+37362123456" loading helper-text="Checking the number…"></mud-phone-input>`,
         ),
         cell(
           'local + loading',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Număr de telefon" value="+37362123456" loading helper-text="Se verifică numărul…"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone number" value="+37362123456" loading helper-text="Checking the number…"></mud-phone-input>`,
         ),
         cell(
           'success + loading',
-          /*html*/ `<mud-phone-input variant="success" size="lg" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="success" size="lg" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -450,10 +461,10 @@ export const Loading: Story = {
       },
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>',
-          '<mud-phone-input size="md" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>',
-          '<mud-phone-input size="lg" type="local" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>',
-          '<mud-phone-input variant="success" size="lg" type="international" label="Număr de telefon" value="+37362123456" loading></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>',
+          '<mud-phone-input size="md" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone number" value="+37362123456" loading></mud-phone-input>',
+          '<mud-phone-input variant="success" size="lg" type="international" label="Phone number" value="+37362123456" loading></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -467,19 +478,19 @@ export const ReadOnly: Story = {
       [
         cell(
           'lg + intl',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" readonly></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" readonly></mud-phone-input>`,
         ),
         cell(
           'md + intl',
-          /*html*/ `<mud-phone-input size="md" type="international" label="Număr de telefon" value="+37362123456" readonly></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="md" type="international" label="Phone number" value="+37362123456" readonly></mud-phone-input>`,
         ),
         cell(
           'lg + local',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Număr de telefon" value="+37362123456" readonly></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone number" value="+37362123456" readonly></mud-phone-input>`,
         ),
         cell(
           'disabled (compare)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Număr de telefon" value="+37362123456" disabled></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone number" value="+37362123456" disabled></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -492,10 +503,10 @@ export const ReadOnly: Story = {
       },
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Telefon" value="+37362123456" readonly></mud-phone-input>',
-          '<mud-phone-input size="md" type="international" label="Telefon" value="+37362123456" readonly></mud-phone-input>',
-          '<mud-phone-input size="lg" type="local" label="Telefon" value="+37362123456" readonly></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Telefon" value="+37362123456" disabled></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" value="+37362123456" readonly></mud-phone-input>',
+          '<mud-phone-input size="md" type="international" label="Phone" value="+37362123456" readonly></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone" value="+37362123456" readonly></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" value="+37362123456" disabled></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -509,11 +520,11 @@ export const WithWarning: Story = {
       [
         cell(
           'warning + helper',
-          /*html*/ `<mud-phone-input variant="warning" size="lg" type="international" label="Telefon" value="+37362" helper-text="Verifică numărul"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="warning" size="lg" type="international" label="Phone" value="+37362" helper-text="Check the number"></mud-phone-input>`,
         ),
         cell(
           'warning + Romanian copy',
-          /*html*/ `<mud-phone-input variant="warning" size="lg" type="local" label="Telefon" value="+37362" helper-text="Acest număr nu este verificat încă"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="warning" size="lg" type="local" label="Phone" value="+37362" helper-text="This number has not been verified yet"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -526,8 +537,8 @@ export const WithWarning: Story = {
       },
       source: {
         code: [
-          '<mud-phone-input variant="warning" size="lg" type="international" label="Telefon" value="+37362" helper-text="Verifică numărul"></mud-phone-input>',
-          '<mud-phone-input variant="warning" size="lg" type="local" label="Telefon" value="+37362" helper-text="Acest număr nu este verificat încă"></mud-phone-input>',
+          '<mud-phone-input variant="warning" size="lg" type="international" label="Phone" value="+37362" helper-text="Check the number"></mud-phone-input>',
+          '<mud-phone-input variant="warning" size="lg" type="local" label="Phone" value="+37362" helper-text="This number has not been verified yet"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -541,11 +552,11 @@ export const WithSuccess: Story = {
       [
         cell(
           'success + helper',
-          /*html*/ `<mud-phone-input variant="success" size="lg" type="international" label="Telefon" value="+37362123456" helper-text="Numărul este valid"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="success" size="lg" type="international" label="Phone" value="+37362123456" helper-text="The number is valid"></mud-phone-input>`,
         ),
         cell(
           'success + local',
-          /*html*/ `<mud-phone-input variant="success" size="lg" type="local" label="Telefon" value="+37362123456" helper-text="Verificat"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="success" size="lg" type="local" label="Phone" value="+37362123456" helper-text="Verified"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -558,8 +569,8 @@ export const WithSuccess: Story = {
       },
       source: {
         code: [
-          '<mud-phone-input variant="success" size="lg" type="international" label="Telefon" value="+37362123456" helper-text="Numărul este valid"></mud-phone-input>',
-          '<mud-phone-input variant="success" size="lg" type="local" label="Telefon" value="+37362123456" helper-text="Verificat"></mud-phone-input>',
+          '<mud-phone-input variant="success" size="lg" type="international" label="Phone" value="+37362123456" helper-text="The number is valid"></mud-phone-input>',
+          '<mud-phone-input variant="success" size="lg" type="local" label="Phone" value="+37362123456" helper-text="Verified"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -573,11 +584,11 @@ export const Invalid: Story = {
       [
         cell(
           'invalid + default Romanian message',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" value="+37362" invalid></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" value="+37362" invalid></mud-phone-input>`,
         ),
         cell(
           'explicit destructive variant',
-          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="international" label="Telefon" value="+37362" error-text="Format invalid" invalid></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="international" label="Phone" value="+37362" error-text="Format invalid" invalid></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -586,8 +597,8 @@ export const Invalid: Story = {
     docs: {
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Telefon" value="+37362" invalid></mud-phone-input>',
-          '<mud-phone-input variant="destructive" size="lg" type="international" label="Telefon" value="+37362" error-text="Format invalid" invalid></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" value="+37362" invalid></mud-phone-input>',
+          '<mud-phone-input variant="destructive" size="lg" type="international" label="Phone" value="+37362" error-text="Format invalid" invalid></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -601,11 +612,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Număr de telefon" helper-text="Vom folosi numărul doar pentru notificări"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone number" helper-text="We will use the number for notifications only"></mud-phone-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Număr de telefon" required helper-text="Câmp obligatoriu"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone number" required helper-text="This field is required"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -614,8 +625,8 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<mud-phone-input size="lg" type="local" label="Număr de telefon" helper-text="Vom folosi numărul doar pentru notificări"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="local" label="Număr de telefon" required helper-text="Câmp obligatoriu"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone number" helper-text="We will use the number for notifications only"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone number" required helper-text="This field is required"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -629,11 +640,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + default Romanian message',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" value="+37362" invalid></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" value="+37362" invalid></mud-phone-input>`,
         ),
         cell(
           'invalid + explicit error',
-          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="local" label="Telefon" value="+37362" invalid error-text="Format invalid"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input variant="destructive" size="lg" type="local" label="Phone" value="+37362" invalid error-text="Format invalid"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -642,12 +653,12 @@ export const WithError: Story = {
     docs: {
       description: {
         story:
-          'Romanian-voice error copy. `errorText` defaults to "Numărul de telefon este incomplet" when `invalid` is set without a custom message.',
+          'Default error copy. `errorText` defaults to the built-in "incomplete phone number" message of the active locale when `invalid` is set without a custom message.',
       },
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Telefon" value="+37362" invalid></mud-phone-input>',
-          '<mud-phone-input variant="destructive" size="lg" type="local" label="Telefon" value="+37362" invalid error-text="Format invalid"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" value="+37362" invalid></mud-phone-input>',
+          '<mud-phone-input variant="destructive" size="lg" type="local" label="Phone" value="+37362" invalid error-text="Format invalid"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -661,11 +672,11 @@ export const TypeComparison: Story = {
       [
         cell(
           'local (default — MD-only)',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Telefon" value="+37362123456"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone" value="+37362123456"></mud-phone-input>`,
         ),
         cell(
           'international (changeable)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" value="+37362123456"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" value="+37362123456"></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -678,8 +689,8 @@ export const TypeComparison: Story = {
       },
       source: {
         code: [
-          '<mud-phone-input size="lg" type="local" label="Telefon" value="+37362123456"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Telefon" value="+37362123456"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone" value="+37362123456"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" value="+37362123456"></mud-phone-input>',
         ].join('\n'),
       },
     },
@@ -693,11 +704,11 @@ export const EdgeCases: Story = {
       [
         cell(
           'paste full E.164 (+44 detected → GB)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="MD" value="+447911123456"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="MD" value="+447911123456"></mud-phone-input>`,
         ),
         cell(
           'long international format (DE 11 digits)',
-          /*html*/ `<mud-phone-input size="lg" type="international" label="Telefon" default-country="DE" value="+4915123456789"></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="international" label="Phone" default-country="DE" value="+4915123456789"></mud-phone-input>`,
         ),
         cell(
           'label truncation (single line)',
@@ -705,7 +716,7 @@ export const EdgeCases: Story = {
         ),
         cell(
           'assistive truncation (two lines)',
-          /*html*/ `<mud-phone-input size="lg" type="local" label="Telefon" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-phone-input>`,
+          /*html*/ `<mud-phone-input size="lg" type="local" label="Phone" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-phone-input>`,
         ),
       ].join(''),
     ),
@@ -714,12 +725,38 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-phone-input size="lg" type="international" label="Telefon" default-country="MD" value="+447911123456"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="international" label="Telefon" default-country="DE" value="+4915123456789"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" default-country="MD" value="+447911123456"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="international" label="Phone" default-country="DE" value="+4915123456789"></mud-phone-input>',
           '<mud-phone-input size="lg" type="local" label="…long label…"></mud-phone-input>',
-          '<mud-phone-input size="lg" type="local" label="Telefon" helper-text="…long helper text…"></mud-phone-input>',
+          '<mud-phone-input size="lg" type="local" label="Phone" helper-text="…long helper text…"></mud-phone-input>',
         ].join('\n'),
       },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the country-search placeholder and the localized country names of the open list
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesPhoneInput = (locale: string) =>
+  `<mud-phone-input locale="${locale}" size="lg" type="international" label="Phone number" open></mud-phone-input>`;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-24); padding: var(--spacing-24); min-height: 420px;">
+      ${LOCALES.map(locale => /*html*/ `<div style="display: flex; flex-direction: column; gap: var(--spacing-8);"><span style="${cellLabelStyle}">locale="${locale}"</span>${localesPhoneInput(locale)}</div>`).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesPhoneInput).join('\n') },
     },
   },
 };

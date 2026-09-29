@@ -1,5 +1,17 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  State,
+  Watch,
+  forceUpdate,
+  h,
+} from '@stencil/core';
 
 import {
   applyMask,
@@ -9,7 +21,11 @@ import {
   readSegments,
   segmentIndexAt,
 } from '../../utils/segment-mask';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
 import type { TimePickerChangeDetail } from '../mud-time-picker/mud-time-picker.types';
+import { TIME_INPUT_MESSAGES } from './mud-time-input.messages';
+import type { TimeInputMessages } from './mud-time-input.messages';
 import { TIME_INPUT_SIZES, TIME_INPUT_VARIANTS } from './mud-time-input.types';
 import type {
   TimeInputChangeDetail,
@@ -138,29 +154,61 @@ export class MudTimeInput {
    */
   @Prop({ reflect: true }) clearable: boolean = false;
 
-  /** Accessible label for the clear (×) button. */
-  @Prop() clearLabel: string = 'Șterge';
-
-  /** Accessible label for the clock button that opens the picker. */
-  @Prop() triggerLabel: string = 'Deschide selectorul de oră';
-
-  /** Accessible name of the picker dialog. */
-  @Prop() pickerLabel: string = 'Selectează ora';
-
-  /** Message shown when a complete hour segment is outside 00–23. */
-  @Prop() hourErrorText: string = 'Ora trebuie să fie între 00 și 23';
-
-  /** Message shown when a complete minute segment is outside 00–59. */
-  @Prop() minuteErrorText: string = 'Minutele trebuie să fie între 00 și 59';
-
-  /** Message shown when a complete time is outside `min` / `max`. */
-  @Prop() rangeErrorText: string = 'Ora este în afara intervalului permis';
+  /**
+   * Language of the built-in labels and error messages. Unset, the component follows the
+   * closest ancestor `lang` (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
-   * Message shown when a `required` field is empty and a form submit found it
-   * so. The same text is the form's validation message.
+   * Accessible label for the clear (×) button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Șterge' (ro-MD)
    */
-  @Prop() requiredErrorText: string = 'Introduceți ora';
+  @Prop() clearLabel?: string;
+
+  /**
+   * Accessible label for the clock button that opens the picker. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Deschide selectorul de oră' (ro-MD)
+   */
+  @Prop() triggerLabel?: string;
+
+  /**
+   * Accessible name of the picker dialog. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Selectează ora' (ro-MD)
+   */
+  @Prop() pickerLabel?: string;
+
+  /**
+   * Message shown when a complete hour segment is outside 00–23. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Ora trebuie să fie între 00 și 23' (ro-MD)
+   */
+  @Prop() hourErrorText?: string;
+
+  /**
+   * Message shown when a complete minute segment is outside 00–59. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Minutele trebuie să fie între 00 și 59' (ro-MD)
+   */
+  @Prop() minuteErrorText?: string;
+
+  /**
+   * Message shown when a complete time is outside `min` / `max`. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Ora este în afara intervalului permis' (ro-MD)
+   */
+  @Prop() rangeErrorText?: string;
+
+  /**
+   * Message shown when a `required` field is empty and a form submit found it so. The same
+   * text is the form's validation message. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Introduceți ora' (ro-MD)
+   */
+  @Prop() requiredErrorText?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -211,6 +259,7 @@ export class MudTimeInput {
   private readonly pickerId = `time-input-picker-${this.instanceId}`;
   private initialValue: string = '';
   private ariaLabelObserver?: MutationObserver;
+  private stopLang?: () => void;
   /** Set when the picker opens; cleared once focus has moved into it. */
   private focusPickerOnRender: boolean = false;
   /** Whether the next open should move focus into the picker. */
@@ -251,6 +300,8 @@ export class MudTimeInput {
   @Watch('max')
   @Watch('required')
   @Watch('disabled')
+  // A new locale changes the message given to `setValidity`, so it re-runs the same sync.
+  @Watch('locale')
   revalidate() {
     this.updateValidation(this.value);
   }
@@ -316,6 +367,14 @@ export class MudTimeInput {
 
   connectedCallback() {
     this.captureAriaLabel();
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidation(this.value);
+        forceUpdate(this);
+      },
+    );
     // Keep a later `aria-label` change in sync; removing it re-fires with no attribute.
     if (typeof MutationObserver === 'undefined') return;
     this.ariaLabelObserver = new MutationObserver(() => this.captureAriaLabel());
@@ -325,6 +384,7 @@ export class MudTimeInput {
   disconnectedCallback() {
     this.ariaLabelObserver?.disconnect();
     this.ariaLabelObserver = undefined;
+    this.stopLang?.();
   }
 
   componentWillLoad() {
@@ -363,6 +423,19 @@ export class MudTimeInput {
   /** Whether focus is on the field, its buttons or anything in its popover. */
   private hasFocusWithin(): boolean {
     return document.activeElement === this.host || Boolean(this.host.shadowRoot?.activeElement);
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TimeInputMessages {
+    return localeMessages('mud-time-input', this.host, this.locale, TIME_INPUT_MESSAGES, {
+      clearLabel: this.clearLabel,
+      triggerLabel: this.triggerLabel,
+      pickerLabel: this.pickerLabel,
+      hourErrorText: this.hourErrorText,
+      minuteErrorText: this.minuteErrorText,
+      rangeErrorText: this.rangeErrorText,
+      requiredErrorText: this.requiredErrorText,
+    });
   }
 
   /**
@@ -477,7 +550,7 @@ export class MudTimeInput {
       this.internals.setValidity({ customError: true }, message, anchor);
     } else if (this.isValueMissing()) {
       // An empty required field blocks the form submit (SC 3.3.1).
-      this.internals.setValidity({ valueMissing: true }, this.requiredErrorText, anchor);
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredErrorText, anchor);
     } else {
       this.internals.setValidity({});
     }
@@ -489,13 +562,14 @@ export class MudTimeInput {
   }
 
   private validationMessage(error: TimeInputValidationError): string {
+    const m = this.messages();
     switch (error) {
       case 'hour':
-        return this.hourErrorText;
+        return m.hourErrorText;
       case 'minute':
-        return this.minuteErrorText;
+        return m.minuteErrorText;
       case 'range':
-        return this.rangeErrorText;
+        return m.rangeErrorText;
     }
   }
 
@@ -616,7 +690,7 @@ export class MudTimeInput {
     const consumer = this.errorText?.trim();
     if (this.invalid && consumer) return consumer;
     if (this.validationError && !this.isInert()) return this.validationMessage(this.validationError);
-    if (this.requiredShown && this.isValueMissing()) return this.requiredErrorText;
+    if (this.requiredShown && this.isValueMissing()) return this.messages().requiredErrorText;
     return '';
   }
 
@@ -633,12 +707,14 @@ export class MudTimeInput {
   }
 
   render() {
+    const m = this.messages();
     const inert = this.isInert();
     const isInvalid = this.isInvalid();
     const errorText = this.errorMessage();
     // Truthy check, not `??`: an explicit empty placeholder still shows the format hint.
     const placeholder = this.placeholder?.trim() ? this.placeholder : TIME_MASK.pattern;
     const ghost = ghostParts(TIME_MASK, this.value);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': inert,
@@ -653,7 +729,7 @@ export class MudTimeInput {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : this.label?.trim()}
@@ -712,7 +788,7 @@ export class MudTimeInput {
               class="clear-button"
               part="clear-button"
               tabindex={-1}
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
@@ -724,7 +800,7 @@ export class MudTimeInput {
             type="button"
             class="trailing-icon"
             part="trailing-icon"
-            aria-label={this.triggerLabel}
+            aria-label={m.triggerLabel}
             aria-haspopup="dialog"
             aria-expanded={this.pickerOpen ? 'true' : 'false'}
             // Only reference the popover while it is mounted (no dangling id for axe).
@@ -740,13 +816,14 @@ export class MudTimeInput {
               class="picker-popover"
               part="picker-popover"
               role="dialog"
-              aria-label={this.pickerLabel}
+              aria-label={m.pickerLabel}
               id={this.pickerId}
             >
               <mud-time-picker
                 value={TIME_RE.test(this.value) ? this.value : undefined}
                 min={this.min}
                 max={this.max}
+                locale={childLocale(this.host, this.locale)}
                 onMudChange={this.handlePickerChange}
               ></mud-time-picker>
             </div>

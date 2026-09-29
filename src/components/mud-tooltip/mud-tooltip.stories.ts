@@ -13,6 +13,9 @@ type TooltipArgs = {
   triggerLabel: string;
   maxWidth: number;
   showDelay: number;
+  locale: string;
+  closeLabel: string;
+  dismissHint: string;
 };
 
 const renderTooltip = (args: TooltipArgs) => /*html*/ `
@@ -24,6 +27,9 @@ const renderTooltip = (args: TooltipArgs) => /*html*/ `
     ${args.open ? 'open' : ''}
     max-width="${args.maxWidth}"
     show-delay="${args.showDelay}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
+    ${args.dismissHint ? `dismiss-hint="${args.dismissHint}"` : ''}
   >
     <button slot="trigger" type="button">${args.triggerLabel}</button>
     ${args.content}
@@ -131,6 +137,23 @@ tooltip body alongside the control.
       description: 'Hover show-delay (ms). Focus/click/manual ignore it.',
       table: { defaultValue: { summary: '200' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
+    closeLabel: {
+      name: 'close-label',
+      control: 'text',
+      description: "Accessible label for the coach variant's close button. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Close the tooltip' } },
+    },
+    dismissHint: {
+      name: 'dismiss-hint',
+      control: 'text',
+      description: "Dismiss hint shown in the coach variant's body. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Press Esc to close.' } },
+    },
   },
   args: {
     size: 'sm',
@@ -138,10 +161,13 @@ tooltip body alongside the control.
     variant: 'default',
     trigger: 'hover',
     open: false,
-    content: 'Ajutor: introdu codul de 13 cifre.',
-    triggerLabel: 'Detalii suplimentare',
+    content: 'Help: enter the 13-digit code.',
+    triggerLabel: 'More details',
     maxWidth: 200,
     showDelay: 0,
+    locale: '',
+    closeLabel: '',
+    dismissHint: '',
   },
 };
 
@@ -180,10 +206,10 @@ export const Default: Story = {
 // FocusTrigger — opens on keyboard focus (Tab) instead of hover.
 // ---------------------------------------------------------------------------
 export const FocusTrigger: Story = {
-  args: { trigger: 'focus', content: 'Apasă Tab pentru a focaliza.' },
+  args: { trigger: 'focus', content: 'Press Tab to focus.' },
   render: args => /*html*/ `
     <div style="${stageStyle}">
-      <p style="${captionStyle}">Apasă Tab pentru a focaliza butonul. Apasă Esc pentru a închide.</p>
+      <p style="${captionStyle}">Press Tab to focus the button. Press Esc to close.</p>
       ${renderTooltip(args)}
     </div>
   `,
@@ -191,8 +217,8 @@ export const FocusTrigger: Story = {
     docs: {
       source: {
         code: `<mud-tooltip trigger="focus">
-  <button slot="trigger" type="button">Detalii suplimentare</button>
-  Apasă Tab pentru a focaliza.
+  <button slot="trigger" type="button">More details</button>
+  Press Tab to focus.
 </mud-tooltip>`,
       },
     },
@@ -207,27 +233,27 @@ const renderAllSizes = () => /*html*/ `
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-12);">
       <p style="${captionStyle}">small</p>
       <mud-tooltip size="sm" trigger="manual" open>
-        <button slot="trigger" type="button" style="${buttonStyle}">Detalii</button>
-        Ajutor: dimensiune mică.
+        <button slot="trigger" type="button" style="${buttonStyle}">Details</button>
+        Help: small size.
       </mud-tooltip>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-12);">
       <p style="${captionStyle}">large</p>
       <mud-tooltip size="lg" trigger="manual" open>
-        <button slot="trigger" type="button" style="${buttonStyle}">Detalii</button>
-        Ajutor: dimensiune mare.
+        <button slot="trigger" type="button" style="${buttonStyle}">Details</button>
+        Help: large size.
       </mud-tooltip>
     </div>
   </div>
 `;
 const docsSourceAllSizes = /*html*/ `<mud-tooltip size="sm" trigger="manual" open>
-  <button slot="trigger" type="button">Detalii</button>
-  Ajutor: dimensiune mică.
+  <button slot="trigger" type="button">Details</button>
+  Help: small size.
 </mud-tooltip>
 
 <mud-tooltip size="lg" trigger="manual" open>
-  <button slot="trigger" type="button">Detalii</button>
-  Ajutor: dimensiune mare.
+  <button slot="trigger" type="button">Details</button>
+  Help: large size.
 </mud-tooltip>`;
 export const AllSizes: Story = {
   render: renderAllSizes,
@@ -246,7 +272,7 @@ const renderAllPositions = () => /*html*/ `
         <p style="${captionStyle}">${pos}</p>
         <mud-tooltip size="sm" position="${pos}" trigger="manual" open>
           <button slot="trigger" type="button" style="${buttonStyle}">Trigger</button>
-          Ajutor: poziție ${pos}.
+          Help: position ${pos}.
         </mud-tooltip>
       </div>`,
       )
@@ -255,22 +281,22 @@ const renderAllPositions = () => /*html*/ `
 `;
 const docsSourceAllPositions = /*html*/ `<mud-tooltip position="top" trigger="manual" open>
   <button slot="trigger" type="button">Trigger</button>
-  Ajutor: poziție top.
+  Help: position top.
 </mud-tooltip>
 
 <mud-tooltip position="right" trigger="manual" open>
   <button slot="trigger" type="button">Trigger</button>
-  Ajutor: poziție right.
+  Help: position right.
 </mud-tooltip>
 
 <mud-tooltip position="bottom" trigger="manual" open>
   <button slot="trigger" type="button">Trigger</button>
-  Ajutor: poziție bottom.
+  Help: position bottom.
 </mud-tooltip>
 
 <mud-tooltip position="left" trigger="manual" open>
   <button slot="trigger" type="button">Trigger</button>
-  Ajutor: poziție left.
+  Help: position left.
 </mud-tooltip>`;
 export const AllPositions: Story = {
   render: renderAllPositions,
@@ -282,18 +308,18 @@ export const AllPositions: Story = {
 // ---------------------------------------------------------------------------
 const renderAutoFlip = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-32); padding: var(--spacing-24);">
-    <p style="${captionStyle}">Plasează triggerul aproape de marginea de sus a vizibilei — tooltipul se inversează automat.</p>
+    <p style="${captionStyle}">Place the trigger close to the top edge of the viewport — the tooltip flips automatically.</p>
     <div style="display: flex; justify-content: center;">
       <mud-tooltip position="auto" trigger="manual" open>
-        <button slot="trigger" type="button" style="${buttonStyle}">Ajutor</button>
-        Auto-flip: poziția preferată este \`top\`, dar tooltipul a fost rotit la \`bottom\` pentru a evita ieșirea din ecran.
+        <button slot="trigger" type="button" style="${buttonStyle}">Help</button>
+        Auto-flip: the preferred position is \`top\`, but the tooltip was flipped to \`bottom\` to stay on screen.
       </mud-tooltip>
     </div>
   </div>
 `;
 const docsSourceAutoFlip = /*html*/ `<mud-tooltip position="auto" trigger="manual" open>
-  <button slot="trigger" type="button">Ajutor</button>
-  Auto-flip: poziția preferată este \`top\`, dar tooltipul a fost rotit la \`bottom\`.
+  <button slot="trigger" type="button">Help</button>
+  Auto-flip: the preferred position is \`top\`, but the tooltip was flipped to \`bottom\`.
 </mud-tooltip>`;
 export const AutoFlip: Story = {
   render: renderAutoFlip,
@@ -306,14 +332,14 @@ export const AutoFlip: Story = {
 const renderCoach = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-tooltip size="lg" variant="coach" trigger="manual" open max-width="280">
-      <button slot="trigger" type="button" style="${buttonStyle}">Buton instrucțional</button>
-      Folosește acest control pentru a trimite formularul. Detalii suplimentare apar pe pagina de confirmare.
+      <button slot="trigger" type="button" style="${buttonStyle}">Instruction button</button>
+      Use this control to submit the form. Additional details appear on the confirmation page.
     </mud-tooltip>
   </div>
 `;
 const docsSourceCoach = /*html*/ `<mud-tooltip size="lg" variant="coach" trigger="manual" open max-width="280">
-  <button slot="trigger" type="button">Buton instrucțional</button>
-  Folosește acest control pentru a trimite formularul. Detalii suplimentare apar pe pagina de confirmare.
+  <button slot="trigger" type="button">Instruction button</button>
+  Use this control to submit the form. Additional details appear on the confirmation page.
 </mud-tooltip>`;
 export const Coach: Story = {
   render: renderCoach,
@@ -327,13 +353,13 @@ const renderWithMaxWidth = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-tooltip size="lg" trigger="manual" open max-width="320">
       <button slot="trigger" type="button" style="${buttonStyle}">Trigger</button>
-      Tooltip cu o lățime maximă personalizată de 320 de pixeli. Folosit doar atunci când conținutul nu încape în 200px.
+      Tooltip with a custom maximum width of 320 pixels. Used only when the content does not fit in 200px.
     </mud-tooltip>
   </div>
 `;
 const docsSourceWithMaxWidth = /*html*/ `<mud-tooltip size="lg" trigger="manual" open max-width="320">
   <button slot="trigger" type="button">Trigger</button>
-  Tooltip cu o lățime maximă personalizată de 320 de pixeli.
+  Tooltip with a custom maximum width of 320 pixels.
 </mud-tooltip>`;
 export const WithMaxWidth: Story = {
   render: renderWithMaxWidth,
@@ -346,14 +372,14 @@ export const WithMaxWidth: Story = {
 const renderWithLongContent = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-tooltip size="lg" trigger="manual" open>
-      <button slot="trigger" type="button" style="${buttonStyle}">Detalii suplimentare</button>
-      Acesta este un tooltip cu mai multe linii de text care depășește lățimea unui singur rând.
+      <button slot="trigger" type="button" style="${buttonStyle}">More details</button>
+      This is a tooltip with several lines of text that exceeds the width of a single row.
     </mud-tooltip>
   </div>
 `;
 const docsSourceWithLongContent = /*html*/ `<mud-tooltip size="lg" trigger="manual" open>
-  <button slot="trigger" type="button">Detalii suplimentare</button>
-  Acesta este un tooltip cu mai multe linii de text care depășește lățimea unui singur rând.
+  <button slot="trigger" type="button">More details</button>
+  This is a tooltip with several lines of text that exceeds the width of a single row.
 </mud-tooltip>`;
 export const WithLongContent: Story = {
   render: renderWithLongContent,
@@ -370,18 +396,18 @@ const renderManual = () => /*html*/ `
   <div style="${stageStyle}">
     <mud-tooltip id="manual-tooltip" trigger="manual">
       <button slot="trigger" type="button" style="${buttonStyle}">Anchor</button>
-      Tooltipul este controlat din afară.
+      The tooltip is controlled from outside.
     </mud-tooltip>
     <button
       type="button"
       style="${buttonStyle}; margin-inline-start: var(--spacing-12);"
-      onclick="(function(b){var t=document.getElementById('manual-tooltip');if(t){t.open=!t.open;b.textContent=t.open?'Ascunde tooltip':'Arată tooltip';}})(this)"
-    >Arată tooltip</button>
+      onclick="(function(b){var t=document.getElementById('manual-tooltip');if(t){t.open=!t.open;b.textContent=t.open?'Hide tooltip':'Show tooltip';}})(this)"
+    >Show tooltip</button>
   </div>
 `;
 const docsSourceManual = /*html*/ `<mud-tooltip trigger="manual" open>
   <button slot="trigger" type="button">Anchor</button>
-  Tooltipul este controlat din afară.
+  The tooltip is controlled from outside.
 </mud-tooltip>`;
 export const Manual: Story = {
   render: renderManual,
@@ -394,35 +420,67 @@ export const Manual: Story = {
 const renderEdgeCases = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-32); padding: var(--spacing-24);">
     <div>
-      <p style="${captionStyle}">Diacritice românești (ă â î ș ț)</p>
+      <p style="${captionStyle}">Accented characters (é ü ñ)</p>
       <div style="${stageStyle}">
         <mud-tooltip size="lg" trigger="manual" open>
-          <button slot="trigger" type="button" style="${buttonStyle}">Întreabă</button>
-          Așteaptă confirmarea — câmpurile încărcate cu diacritice se afișează corect.
+          <button slot="trigger" type="button" style="${buttonStyle}">Ask</button>
+          Accented characters (é ü ñ) render correctly in loaded fields.
         </mud-tooltip>
       </div>
     </div>
     <div>
-      <p style="${captionStyle}">Lângă marginea din dreapta (poziție inițială \`right\` se inversează)</p>
+      <p style="${captionStyle}">Near the right edge (initial position \`right\` flips)</p>
       <div style="display: flex; justify-content: flex-end; padding-inline-end: var(--spacing-8);">
         <mud-tooltip position="right" trigger="manual" open>
           <button slot="trigger" type="button" style="${buttonStyle}">Edge</button>
-          Tooltipul se rotește la stânga când dreapta nu încape.
+          The tooltip flips to the left when the right side does not fit.
         </mud-tooltip>
       </div>
     </div>
   </div>
 `;
 const docsSourceEdgeCases = /*html*/ `<mud-tooltip size="lg" trigger="manual" open>
-  <button slot="trigger" type="button">Întreabă</button>
-  Așteaptă confirmarea — câmpurile încărcate cu diacritice se afișează corect.
+  <button slot="trigger" type="button">Ask</button>
+  Accented characters (é ü ñ) render correctly in loaded fields.
 </mud-tooltip>
 
 <mud-tooltip position="right" trigger="manual" open>
   <button slot="trigger" type="button">Edge</button>
-  Tooltipul se rotește la stânga când dreapta nu încape.
+  The tooltip flips to the left when the right side does not fit.
 </mud-tooltip>`;
 export const EdgeCases: Story = {
   render: renderEdgeCases,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the coach tooltip's built-in dismiss hint
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesTooltip = (locale: string) => /*html*/ `
+  <div style="${stageStyle}">
+    <mud-tooltip locale="${locale}" size="lg" variant="coach" trigger="manual" open max-width="240">
+      <button slot="trigger" type="button" style="${buttonStyle}">Instruction button</button>
+      Use this control to submit the form.
+    </mud-tooltip>
+  </div>
+`;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-24);">
+      ${LOCALES.map(locale => /*html*/ `<div><p style="${captionStyle}">locale="${locale}"</p>${localesTooltip(locale)}</div>`).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesTooltip).join('\n') },
+    },
+  },
 };

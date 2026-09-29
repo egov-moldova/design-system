@@ -144,10 +144,10 @@ export const Two: Story = {
         renderControlHtml(
           'sc-two',
           [
-            { value: 'lista', label: 'Lista' },
-            { value: 'harta', label: 'Hartă' },
+            { value: 'lista', label: 'List' },
+            { value: 'harta', label: 'Map' },
           ],
-          { value: 'lista', ariaLabel: 'Mod afișare' },
+          { value: 'lista', ariaLabel: 'Display mode' },
         ),
       ),
     ),
@@ -155,11 +155,11 @@ export const Two: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: `<mud-segmented-control aria-label="Mod afișare" value="lista"></mud-segmented-control>
+        code: `<mud-segmented-control aria-label="Display mode" value="lista"></mud-segmented-control>
 <script>
   document.querySelector('mud-segmented-control').segments = [
-    { value: 'lista', label: 'Lista' },
-    { value: 'harta', label: 'Hartă' },
+    { value: 'lista', label: 'List' },
+    { value: 'harta', label: 'Map' },
   ];
 </script>`,
       },
@@ -180,7 +180,7 @@ export const Three: Story = {
             { value: 'active', label: 'Active' },
             { value: 'inactive', label: 'Inactive' },
           ],
-          { value: 'active', ariaLabel: 'Filtru stare' },
+          { value: 'active', ariaLabel: 'Status filter' },
         ),
       ),
     ),
@@ -199,11 +199,11 @@ export const Four: Story = {
           'sc-four',
           [
             { value: 'zi', label: 'Zi' },
-            { value: 'saptamana', label: 'Săptămână' },
-            { value: 'luna', label: 'Lună' },
+            { value: 'saptamana', label: 'Week' },
+            { value: 'luna', label: 'Month' },
             { value: 'an', label: 'An' },
           ],
-          { value: 'saptamana', ariaLabel: 'Interval' },
+          { value: 'saptamana', ariaLabel: 'Range' },
         ),
       ),
     ),
@@ -224,11 +224,11 @@ export const FivePlus: Story = {
             [
               { value: 'toate', label: 'Toate' },
               { value: 'noi', label: 'Noi' },
-              { value: 'in-curs', label: 'În curs' },
-              { value: 'finalizate', label: 'Finalizate' },
+              { value: 'in-curs', label: 'In progress' },
+              { value: 'finalizate', label: 'Completed' },
               { value: 'expirate', label: 'Expirate' },
             ],
-            { value: 'noi', ariaLabel: 'Filtru solicitări' },
+            { value: 'noi', ariaLabel: 'Request filter' },
           ),
         ),
         cell(
@@ -285,7 +285,7 @@ export const Breakpoints: Story = {
                   { value: 'a', label: 'Label' },
                   { value: 'b', label: 'Label' },
                 ],
-                { value: 'a', fluid: true, ariaLabel: 'Breakpoint mobil' },
+                { value: 'a', fluid: true, ariaLabel: 'Mobile breakpoint' },
               )}
             </div>
           `,
@@ -301,10 +301,10 @@ export const Breakpoints: Story = {
       },
       source: {
         code: `<!-- Desktop: hugs content. -->
-<mud-segmented-control aria-label="Filtru" value="a"></mud-segmented-control>
+<mud-segmented-control aria-label="Filter" value="a"></mud-segmented-control>
 
 <!-- Mobile: full-width. -->
-<mud-segmented-control aria-label="Filtru" value="a" fluid></mud-segmented-control>`,
+<mud-segmented-control aria-label="Filter" value="a" fluid></mud-segmented-control>`,
       },
     },
   },
@@ -349,8 +349,8 @@ export const AllSizes: Story = {
             `sc-size-${size}`,
             [
               { value: 'zi', label: 'Zi' },
-              { value: 'saptamana', label: 'Săptămână' },
-              { value: 'luna', label: 'Lună' },
+              { value: 'saptamana', label: 'Week' },
+              { value: 'luna', label: 'Month' },
             ],
             { value: 'zi', size, ariaLabel: `Interval (${size})` },
           ),
@@ -369,8 +369,8 @@ export const AllSizes: Story = {
   for (const el of document.querySelectorAll('mud-segmented-control')) {
     el.segments = [
       { value: 'zi',         label: 'Zi' },
-      { value: 'saptamana',  label: 'Săptămână' },
-      { value: 'luna',       label: 'Lună' },
+      { value: 'saptamana',  label: 'Week' },
+      { value: 'luna',       label: 'Month' },
     ];
   }
 </script>`,
@@ -403,7 +403,7 @@ export const States: Story = {
               { value: 'a', label: 'Label' },
               { value: 'b', label: 'Label' },
             ],
-            { value: '', ariaLabel: 'Fără selecție' },
+            { value: '', ariaLabel: 'No selection' },
           ),
         ),
         cell(
@@ -441,8 +441,8 @@ export const Disabled: Story = {
             'sc-d-all',
             [
               { value: 'zi', label: 'Zi' },
-              { value: 'saptamana', label: 'Săptămână' },
-              { value: 'luna', label: 'Lună' },
+              { value: 'saptamana', label: 'Week' },
+              { value: 'luna', label: 'Month' },
             ],
             { value: 'saptamana', disabled: true, ariaLabel: 'Interval (disabled)' },
           ),
@@ -453,10 +453,10 @@ export const Disabled: Story = {
             'sc-d-one',
             [
               { value: 'zi', label: 'Zi' },
-              { value: 'saptamana', label: 'Săptămână', disabled: true },
-              { value: 'luna', label: 'Lună' },
+              { value: 'saptamana', label: 'Week', disabled: true },
+              { value: 'luna', label: 'Month' },
             ],
-            { value: 'zi', ariaLabel: 'Interval cu un segment dezactivat' },
+            { value: 'zi', ariaLabel: 'Range with a disabled segment' },
           ),
         ),
       ].join(''),
@@ -476,11 +476,11 @@ export const WithIcons: Story = {
           renderControlHtml(
             'sc-ic-three',
             [
-              { value: 'lista', label: 'Lista', iconName: 'bullet-list' },
-              { value: 'harta', label: 'Hartă', iconName: 'map-pin' },
-              { value: 'grila', label: 'Grilă', iconName: 'dot-grid' },
+              { value: 'lista', label: 'List', iconName: 'bullet-list' },
+              { value: 'harta', label: 'Map', iconName: 'map-pin' },
+              { value: 'grila', label: 'Grid', iconName: 'dot-grid' },
             ],
-            { value: 'lista', ariaLabel: 'Mod afișare' },
+            { value: 'lista', ariaLabel: 'Display mode' },
           ),
         ),
         cell(
@@ -488,10 +488,10 @@ export const WithIcons: Story = {
           renderControlHtml(
             'sc-ic-sm',
             [
-              { value: 'lista', label: 'Lista', iconName: 'bullet-list' },
-              { value: 'harta', label: 'Hartă', iconName: 'map-pin' },
+              { value: 'lista', label: 'List', iconName: 'bullet-list' },
+              { value: 'harta', label: 'Map', iconName: 'map-pin' },
             ],
-            { value: 'harta', size: 'sm', ariaLabel: 'Mod afișare (compact)' },
+            { value: 'harta', size: 'sm', ariaLabel: 'Display mode (compact)' },
           ),
         ),
       ].join(''),
@@ -511,9 +511,9 @@ export const Stacked: Story = {
   name: 'Stacked',
   render: () => {
     const segments: SegmentedControlSegment[] = [
-      { value: 'cetatean', label: 'Cetățean', iconName: 'bullet-list' },
-      { value: 'afacere', label: 'Afacere', iconName: 'map-pin' },
-      { value: 'institutii', label: 'Instituții', iconName: 'dot-grid' },
+      { value: 'cetatean', label: 'Citizen', iconName: 'bullet-list' },
+      { value: 'afacere', label: 'Business', iconName: 'map-pin' },
+      { value: 'institutii', label: 'Institutions', iconName: 'dot-grid' },
     ];
     return wrap(
       [
@@ -521,7 +521,7 @@ export const Stacked: Story = {
           'stacked — 288px (a 320px phone)',
           /*html*/ `
             <div style="inline-size: 288px;">
-              ${renderControlHtml('sc-stacked', segments, { value: 'cetatean', stacked: true, fluid: true, ariaLabel: 'Tip (stacked)' })}
+              ${renderControlHtml('sc-stacked', segments, { value: 'cetatean', stacked: true, fluid: true, ariaLabel: 'Type (stacked)' })}
             </div>
           `,
         ),
@@ -529,7 +529,7 @@ export const Stacked: Story = {
           'the same row, for comparison',
           /*html*/ `
             <div style="inline-size: 288px;">
-              ${renderControlHtml('sc-stacked-row', segments, { value: 'cetatean', fluid: true, ariaLabel: 'Tip (row)' })}
+              ${renderControlHtml('sc-stacked-row', segments, { value: 'cetatean', fluid: true, ariaLabel: 'Type (row)' })}
             </div>
           `,
         ),
@@ -571,7 +571,7 @@ export const EdgeCases: Story = {
                   },
                   { value: 'b', label: 'Services, Always at Your Fingertips' },
                 ],
-                { value: 'a', ariaLabel: 'Truncare etichetă' },
+                { value: 'a', ariaLabel: 'Label truncation' },
               )}
             </div>
           `,
@@ -583,11 +583,11 @@ export const EdgeCases: Story = {
               ${renderControlHtml(
                 'sc-ec-truncate-3',
                 [
-                  { value: 'a', label: 'Solicitări recente' },
-                  { value: 'b', label: 'Solicitări finalizate' },
-                  { value: 'c', label: 'Solicitări în așteptare îndelungată' },
+                  { value: 'a', label: 'Recent requests' },
+                  { value: 'b', label: 'Completed requests' },
+                  { value: 'c', label: 'Requests pending for a long time' },
                 ],
-                { value: 'a', ariaLabel: 'Truncare etichetă (3)' },
+                { value: 'a', ariaLabel: 'Label truncation (3)' },
               )}
             </div>
           `,
@@ -598,10 +598,10 @@ export const EdgeCases: Story = {
             'sc-ec-empty',
             [
               { value: 'zi', label: 'Zi' },
-              { value: 'saptamana', label: 'Săptămână' },
-              { value: 'luna', label: 'Lună' },
+              { value: 'saptamana', label: 'Week' },
+              { value: 'luna', label: 'Month' },
             ],
-            { value: '', ariaLabel: 'Fără selecție inițială' },
+            { value: '', ariaLabel: 'No initial selection' },
           ),
         ),
         cell(
@@ -615,7 +615,7 @@ export const EdgeCases: Story = {
                   { value: 'active', label: 'Active' },
                   { value: 'inactive', label: 'Inactive' },
                 ],
-                { value: 'toate', fluid: true, ariaLabel: 'Filtru (mobil)' },
+                { value: 'toate', fluid: true, ariaLabel: 'Filter (mobile)' },
               )}
             </div>
           `,
@@ -631,22 +631,22 @@ export const EdgeCases: Story = {
       },
       source: {
         code: `<!-- Long labels truncate with ellipsis. -->
-<mud-segmented-control aria-label="Truncare" value="a"></mud-segmented-control>
+<mud-segmented-control aria-label="Truncation" value="a"></mud-segmented-control>
 
 <!-- No initial selection — first enabled segment becomes the roving tab stop. -->
-<mud-segmented-control aria-label="Fără selecție"></mud-segmented-control>
+<mud-segmented-control aria-label="No selection"></mud-segmented-control>
 
 <!-- Mobile-width container (343px). -->
 <div style="inline-size: 343px;">
-  <mud-segmented-control aria-label="Filtru" value="toate"></mud-segmented-control>
+  <mud-segmented-control aria-label="Filter" value="toate"></mud-segmented-control>
 </div>
 
 <script>
   for (const el of document.querySelectorAll('mud-segmented-control')) {
     el.segments = [
-      { value: 'a', label: 'Solicitări recente' },
-      { value: 'b', label: 'Solicitări finalizate' },
-      { value: 'c', label: 'Solicitări în așteptare îndelungată' },
+      { value: 'a', label: 'Recent requests' },
+      { value: 'b', label: 'Completed requests' },
+      { value: 'c', label: 'Requests pending for a long time' },
     ];
   }
 </script>`,

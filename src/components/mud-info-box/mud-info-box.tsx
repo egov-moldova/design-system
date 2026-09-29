@@ -1,7 +1,11 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { INFO_BOX_MESSAGES } from './mud-info-box.messages';
+import type { InfoBoxMessages } from './mud-info-box.messages';
 import { INFO_BOX_DEFAULT_ICONS } from './mud-info-box.types';
 import type { InfoBoxEmphasis, InfoBoxVariant } from './mud-info-box.types';
 
@@ -79,10 +83,16 @@ export class MudInfoBox {
   @Prop() iconName?: IconName;
 
   /**
-   * Close-button accessible label. Defaults to the Romanian "Închide".
-   * @default 'Închide'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop() closeLabel: string = 'Închide';
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Închide' (ro-MD)
+   */
+  @Prop() closeLabel?: string;
 
   @State() private hasActions: boolean = false;
 
@@ -94,8 +104,31 @@ export class MudInfoBox {
    */
   @Event() mudClose!: EventEmitter<void>;
 
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
   componentWillLoad(): void {
     this.detectSlots();
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): InfoBoxMessages {
+    return localeMessages('mud-info-box', this.host, this.locale, INFO_BOX_MESSAGES, {
+      closeLabel: this.closeLabel,
+    });
   }
 
   private detectSlots(): void {
@@ -133,8 +166,10 @@ export class MudInfoBox {
   }
 
   render() {
+    const m = this.messages();
     const iconName = this.resolveIconName();
     const hasTitle = !!(this.titleText && this.titleText.trim().length > 0);
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon': !this.hideIcon,
@@ -144,7 +179,7 @@ export class MudInfoBox {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <div class="main">
           {!this.hideIcon ? (
             <span class="icon" aria-hidden="true">
@@ -173,7 +208,7 @@ export class MudInfoBox {
           <button
             class="close"
             type="button"
-            aria-label={this.closeLabel}
+            aria-label={m.closeLabel}
             onClick={this.handleCloseClick}
             onKeyDown={this.handleCloseKeyDown}
           >

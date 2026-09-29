@@ -13,6 +13,7 @@ type BannerArgs = {
   linkHref: string;
   iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -24,12 +25,13 @@ const renderBanner = (args: BannerArgs) => /*html*/ `
     ${args.linkText ? `link-text="${args.linkText}"` : ''}
     ${args.linkHref ? `link-href="${args.linkHref}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-banner>
 `;
 
 const sectionStyle = 'display: flex; flex-direction: column; gap: var(--spacing-16); align-items: stretch;';
-const MESSAGE = 'Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.';
+const MESSAGE = 'Scheduled maintenance today. Some services may be temporarily unavailable.';
 
 const meta: Meta<BannerArgs> = {
   title: 'Components/Banner',
@@ -84,10 +86,15 @@ button; the consumer animates out and removes the element.
       description: 'Override the default per-variant icon. Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot message text.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
@@ -99,7 +106,8 @@ button; the consumer animates out and removes the element.
     linkHref: '#',
     iconName: '',
     body: MESSAGE,
-    closeLabel: 'Închide',
+    locale: '',
+    closeLabel: '',
   },
 };
 
@@ -131,8 +139,8 @@ export const AllVariants: Story = { render: renderAllVariants, parameters: { con
 // ---------------------------------------------------------------------------
 const renderWithLink = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-banner variant="info" emphasis="strong" dismissible link-text="Detalii" link-href="#">${MESSAGE}</mud-banner>
-    <mud-banner variant="warning" emphasis="subtle" dismissible link-text="Detalii" link-href="#">${MESSAGE}</mud-banner>
+    <mud-banner variant="info" emphasis="strong" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
+    <mud-banner variant="warning" emphasis="subtle" dismissible link-text="Details" link-href="#">${MESSAGE}</mud-banner>
   </div>
 `;
 export const WithLink: Story = { render: renderWithLink, parameters: { controls: { disable: true } } };

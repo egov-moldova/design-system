@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
 import type { FileInputSize, FileInputVariant } from './mud-file-input.types';
 
@@ -14,6 +15,7 @@ type FileInputArgs = {
   dropzoneActiveText: string;
   supportedFormatsText: string;
   maxSizeText: string;
+  locale: string;
   multiple: boolean;
   required: boolean;
   disabled: boolean;
@@ -37,6 +39,7 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
     dropzone-active-text="${args.dropzoneActiveText}"
     supported-formats-text="${args.supportedFormatsText}"
     max-size-text="${args.maxSizeText}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     accept="${args.accept}"
     max-size="${args.maxSize || ''}"
     max-files="${args.maxFiles || ''}"
@@ -63,6 +66,7 @@ const docsSourceDefault = (args: FileInputArgs) => {
       : '',
     args.supportedFormatsText ? `supported-formats-text="${args.supportedFormatsText}"` : '',
     args.maxSizeText ? `max-size-text="${args.maxSizeText}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.accept ? `accept="${args.accept}"` : '',
     args.maxSize ? `max-size="${args.maxSize}"` : '',
     args.maxFiles ? `max-files="${args.maxFiles}"` : '',
@@ -106,6 +110,11 @@ const meta: Meta<FileInputArgs> = {
       control: 'text',
       description: 'Top-right caption below the dropzone. Auto-derived from `max-size` (bytes) if unset.',
     },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description: 'Language of every built-in label. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     accept: { control: 'text', description: 'MIME / extension allow-list (`.pdf,image/*`).' },
     maxSize: { control: 'number', description: 'Max per-file size in bytes.' },
     maxFiles: { control: 'number', description: 'Max accepted file count (multiple only).' },
@@ -128,11 +137,12 @@ export const Default: Story = {
     label: '',
     helperText: '',
     errorText: '',
-    ctaText: 'Trage și plasează sau ',
-    chooseFilesText: 'Alege fișiere',
-    dropzoneActiveText: 'Eliberează pentru a încărca',
-    supportedFormatsText: 'Formate acceptate: jpg, png, pdf',
-    maxSizeText: 'Mărime maximă: 100 MB',
+    ctaText: '',
+    chooseFilesText: '',
+    dropzoneActiveText: '',
+    supportedFormatsText: 'Extensii permise: jpg, png, pdf',
+    maxSizeText: 'Limită încărcare: 100 MB',
+    locale: '',
     accept: '',
     maxSize: 0,
     maxFiles: 0,
@@ -180,15 +190,15 @@ export const AllStates: Story = {
           ['focus', { class: 'is-focus-demo' }],
           ['active', { class: 'is-active-demo' }],
           ['disabled', { disabled: '' }],
-          ['invalid + error', { 'invalid': '', 'error-text': 'Trebuie să atașați cel puțin un document' }],
+          ['invalid + error', { 'invalid': '', 'error-text': 'Attach at least one document' }],
         ] as [string, Record<string, string>][]
       ).map(([caption, attrs]) =>
         filesCell(
           caption,
           {
             'multiple': '',
-            'supported-formats-text': 'Formate acceptate: jpg, png, pdf',
-            'max-size-text': 'Mărime maximă: 100 MB',
+            'supported-formats-text': 'Allowed extensions: jpg, png, pdf',
+            'max-size-text': 'Upload limit: 100 MB',
             ...attrs,
           },
           [
@@ -203,7 +213,7 @@ export const AllStates: Story = {
     docs: {
       source: {
         code: [
-          '<mud-file-input supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
+          '<mud-file-input supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>',
           '<!-- hover: pointer over dropzone (blue dashed border) -->',
           '<!-- focus: Tab onto dropzone (blue solid border + ring) -->',
           '<!-- active: drag a file over the dropzone (blue fill + "Drop files to upload") -->',
@@ -222,7 +232,7 @@ export const AllSizes: Story = {
       FILE_INPUT_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<mud-file-input size="${size}" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="${size}" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>`,
         ),
       ).join(''),
     ),
@@ -232,7 +242,7 @@ export const AllSizes: Story = {
       source: {
         code: FILE_INPUT_SIZES.map(
           s =>
-            `<mud-file-input size="${s}" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+            `<mud-file-input size="${s}" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>`,
         ).join('\n'),
       },
     },
@@ -247,8 +257,8 @@ export const Active: Story = {
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <mud-file-input
         class="is-active-demo"
-        supported-formats-text="Formate acceptate: jpg, png, pdf"
-        max-size-text="Mărime maximă: 100 MB"
+        supported-formats-text="Allowed extensions: jpg, png, pdf"
+        max-size-text="Upload limit: 100 MB"
       ></mud-file-input>
     </div>
   `,
@@ -310,11 +320,11 @@ export const WithCustomCopy: Story = {
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <mud-file-input
         size="lg"
-        cta-text="Drag and drop or "
-        choose-files-text="choose files"
-        dropzone-active-text="Release to upload"
-        supported-formats-text="Supported formats: jpg, png, pdf"
-        max-size-text="Maximum size: 100 MB"
+        cta-text="Drag files here or "
+        choose-files-text="select files"
+        dropzone-active-text="Drop here to upload"
+        supported-formats-text="Accepted formats: jpg, png, pdf"
+        max-size-text="Max file size: 100 MB"
       ></mud-file-input>
     </div>
   `,
@@ -404,7 +414,7 @@ const preloadedHtml = (
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
       <span style="${cellLabelStyle}">${caption}</span>
-      <mud-file-input id="${id}" size="lg" label="Documente" multiple ${extraAttrs}></mud-file-input>
+      <mud-file-input id="${id}" size="lg" label="Documents" multiple ${extraAttrs}></mud-file-input>
       <div style="display: flex; flex-direction: column; gap: var(--spacing-8); margin-block-start: var(--spacing-12);">
         ${files
           .map(
@@ -425,17 +435,17 @@ export const SingleFile: Story = {
     grid(
       cell(
         'idle (single mode)',
-        /*html*/ `<mud-file-input label="Buletin de identitate" max-size="5242880" accept=".pdf"></mud-file-input>`,
+        /*html*/ `<mud-file-input label="Identity card" max-size="5242880" accept=".pdf"></mud-file-input>`,
       ),
-      filesCell('after upload', { 'label': 'Buletin de identitate', 'max-size': '5242880', 'accept': '.pdf' }, [
-        { name: 'buletin-identitate.pdf', size: 245320 },
+      filesCell('after upload', { 'label': 'Identity card', 'max-size': '5242880', 'accept': '.pdf' }, [
+        { name: 'identity-card.pdf', size: 245320 },
       ]),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-file-input size="lg" label="Buletin de identitate" max-size="5242880" accept=".pdf"></mud-file-input>',
+        code: '<mud-file-input size="lg" label="Identity card" max-size="5242880" accept=".pdf"></mud-file-input>',
       },
     },
   },
@@ -447,21 +457,21 @@ export const MultipleFiles: Story = {
     grid(
       cell(
         'idle (multiple)',
-        /*html*/ `<mud-file-input label="Documente" multiple max-files="5" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+        /*html*/ `<mud-file-input label="Documents" multiple max-files="5" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>`,
       ),
       filesCell(
         'after upload (3 files)',
         {
-          'label': 'Documente',
+          'label': 'Documents',
           'multiple': '',
           'max-files': '5',
-          'supported-formats-text': 'Formate acceptate: jpg, png, pdf',
-          'max-size-text': 'Mărime maximă: 100 MB',
+          'supported-formats-text': 'Allowed extensions: jpg, png, pdf',
+          'max-size-text': 'Upload limit: 100 MB',
         },
         [
           { name: 'declaratie-impozit-2025.pdf', size: 245320 },
           { name: 'contract-utilitati.pdf', size: 1840320 },
-          { name: 'buletin-identitate.jpg', size: 124000 },
+          { name: 'identity-card.jpg', size: 124000 },
         ],
       ),
     ),
@@ -469,7 +479,7 @@ export const MultipleFiles: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-file-input size="lg" label="Documente" multiple max-files="5"></mud-file-input>',
+        code: '<mud-file-input size="lg" label="Documents" multiple max-files="5"></mud-file-input>',
       },
     },
   },
@@ -482,17 +492,17 @@ export const WithMaxSize: Story = {
       [
         cell(
           '5 MB limit (auto-derived caption)',
-          /*html*/ `<mud-file-input size="lg" label="Documente" max-size="5242880"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="lg" label="Documents" max-size="5242880"></mud-file-input>`,
         ),
         preloadedHtml(
           'rejected oversize',
-          `max-size="5242880" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"`,
+          `max-size="5242880" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"`,
           [
             {
               name: 'declaratie-foarte-mare.pdf',
               size: 14_000_000,
               state: 'error',
-              error: 'Fișierul depășește limita de 5 MB',
+              error: 'The file exceeds the 5 MB limit',
             },
           ],
         ),
@@ -506,7 +516,7 @@ export const WithAcceptFilter: Story = {
   render: () =>
     wrap(
       [
-        cell('PDF only', /*html*/ `<mud-file-input size="lg" label="Documente" accept=".pdf"></mud-file-input>`),
+        cell('PDF only', /*html*/ `<mud-file-input size="lg" label="Documents" accept=".pdf"></mud-file-input>`),
         cell('images only', /*html*/ `<mud-file-input size="lg" label="Fotografii" accept="image/*"></mud-file-input>`),
       ].join(''),
     ),
@@ -520,7 +530,7 @@ export const WithMaxCount: Story = {
       [
         cell(
           '3 files limit',
-          /*html*/ `<mud-file-input size="lg" label="Documente" multiple max-files="3" supported-formats-text="Maximum 3 fișiere"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="lg" label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`,
         ),
       ].join(''),
     ),
@@ -534,11 +544,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-file-input size="lg" label="Documente" helper-text="Acceptăm PDF, JPG, PNG"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="lg" label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-file-input size="lg" label="Documente" required helper-text="Câmp obligatoriu"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="lg" label="Documents" required helper-text="This field is required"></mud-file-input>`,
         ),
       ].join(''),
     ),
@@ -550,10 +560,10 @@ export const WithError: Story = {
   render: () =>
     wrap(
       [
-        cell('invalid (no message)', /*html*/ `<mud-file-input size="lg" label="Documente" invalid></mud-file-input>`),
+        cell('invalid (no message)', /*html*/ `<mud-file-input size="lg" label="Documents" invalid></mud-file-input>`),
         cell(
           'invalid + error message',
-          /*html*/ `<mud-file-input size="lg" label="Documente" invalid error-text="Trebuie să atașați cel puțin un document"></mud-file-input>`,
+          /*html*/ `<mud-file-input size="lg" label="Documents" invalid error-text="Attach at least one document"></mud-file-input>`,
         ),
       ].join(''),
     ),
@@ -570,9 +580,9 @@ export const EdgeCases: Story = {
       ),
       cell(
         'long helper truncation (two lines)',
-        /*html*/ `<mud-file-input label="Documente" helper-text="Acceptăm fișiere PDF, JPG sau PNG, până la 5 MB per fișier, încărcate într-o singură sesiune; documentele scanate trebuie să fie lizibile și să includă semnătura"></mud-file-input>`,
+        /*html*/ `<mud-file-input label="Documents" helper-text="PDF, JPG or PNG files are accepted, up to 5 MB per file, uploaded in a single session; scanned documents must be legible and include the signature"></mud-file-input>`,
       ),
-      filesCell('long filenames in list', { label: 'Documente', multiple: '' }, [
+      filesCell('long filenames in list', { label: 'Documents', multiple: '' }, [
         {
           name: 'moldova-digital-transformation-strategy-2025-2030-final-version-approved-by-government.pdf',
           size: 2_400_000,
@@ -592,15 +602,15 @@ export const UploadButton: Story = {
     grid(
       cell(
         'single',
-        /*html*/ `<mud-file-input variant="button" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>`,
+        /*html*/ `<mud-file-input variant="button" label="Upload files" choose-files-text="Choose file" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>`,
       ),
       filesCell(
         'multiple + uploaded',
         {
           'variant': 'button',
-          'label': 'Încarcă fișiere',
+          'label': 'Upload files',
           'multiple': '',
-          'choose-files-text': 'Alege fișier',
+          'choose-files-text': 'Choose file',
           'accept': '.pdf,image/png,image/jpeg',
           'max-size': '104857600',
         },
@@ -614,7 +624,7 @@ export const UploadButton: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-file-input variant="button" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>',
+        code: '<mud-file-input variant="button" label="Upload files" choose-files-text="Choose file" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>',
       },
       description: {
         story:
@@ -715,5 +725,27 @@ export const LateNameSubmission: Story = {
       }
       await new Promise(resolve => setTimeout(resolve, 16));
     }
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the drop-zone call to action, file-picker text and the supported-format / size hints
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesFileInput = (locale: string) =>
+  `<mud-file-input locale="${locale}" label="Documents" accept=".pdf" max-size="5242880"></mud-file-input>`;
+
+export const Locales: Story = {
+  render: () => wrap(LOCALES.map(locale => cell(`locale="${locale}"`, localesFileInput(locale))).join('')),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesFileInput).join('\n') },
+    },
   },
 };

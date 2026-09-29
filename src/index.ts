@@ -70,3 +70,6 @@ export { MudSidebar } from './components/mud-sidebar/mud-sidebar';
 export { MudSidebarGroup } from './components/mud-sidebar/mud-sidebar-group';
 export { MudSidebarItem } from './components/mud-sidebar/mud-sidebar-item';
 export type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './components/mud-sidebar/mud-sidebar.types';
+
+export { MUD_LOCALES } from './utils/locale';
+export type { MudLocale, LocaleProp } from './utils/locale';

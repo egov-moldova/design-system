@@ -1,7 +1,11 @@
 import type { EventEmitter } from '@stencil/core';
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { STEPPER_MESSAGES } from './mud-stepper.messages';
+import type { StepperMessages } from './mud-stepper.messages';
 import type { IconName } from '../mud-icon/mud-icon.types';
 import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';
 
@@ -37,8 +41,8 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
  * Set the native `aria-label` attribute on the host for the list landmark's
- * accessible name; it defaults to `'Progress tracker'` (English) when absent —
- * Romanian consumers can pass `'Pași'`.
+ * accessible name; it defaults to `'Pași'` (ro-MD), following `locale`/`lang`
+ * like every other built-in string — see `navLabel`.
  *
  * @element mud-stepper
  *
@@ -100,6 +104,61 @@ export class MudStepper {
    */
   @Prop() currentStep?: number;
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible name of the `role="list"` host when no consumer `aria-label` is set.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Pași' (ro-MD)
+   */
+  @Prop() navLabel?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `completed`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', finalizat' (ro-MD)
+   */
+  @Prop() completedSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `current`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', curent' (ro-MD)
+   */
+  @Prop() currentSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `available`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', disponibil' (ro-MD)
+   */
+  @Prop() availableSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `error`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', eroare' (ro-MD)
+   */
+  @Prop() errorSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `pending`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', în așteptare' (ro-MD)
+   */
+  @Prop() pendingSuffix?: string;
+
+  /**
+   * Joins a step's `label` and `supportingText` in its accessible name. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ' — ' (ro-MD)
+   */
+  @Prop() supportingSeparator?: string;
+
   /** True when the container is narrower than the auto-compact breakpoint. */
   @State() private isNarrow: boolean = false;
 
@@ -114,6 +173,7 @@ export class MudStepper {
 
   private resizeObserver?: ResizeObserver;
   private hostLabel?: HostAriaLabel;
+  private stopLang?: () => void;
 
   connectedCallback() {
     // Auto-switch a horizontal tracker to the compact dot rail when its
@@ -130,13 +190,36 @@ export class MudStepper {
     // Default accessible name for the host `role="list"`. Consumer's own
     // `aria-label` (attribute or native `ariaLabel` property) wins and stays on
     // the host; while there is none, the host gets the fallback.
-    this.hostLabel = nameHostWithFallback(this.host, () => 'Progress tracker');
+    this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     this.hostLabel?.stop();
+    this.stopLang?.();
+  }
+
+  componentWillRender() {
+    this.hostLabel?.update();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): StepperMessages {
+    return localeMessages('mud-stepper', this.host, this.locale, STEPPER_MESSAGES, {
+      navLabel: this.navLabel,
+      completedSuffix: this.completedSuffix,
+      currentSuffix: this.currentSuffix,
+      availableSuffix: this.availableSuffix,
+      errorSuffix: this.errorSuffix,
+      pendingSuffix: this.pendingSuffix,
+      supportingSeparator: this.supportingSeparator,
+    });
   }
 
   /**
@@ -223,7 +306,7 @@ export class MudStepper {
     return [this.renderIndicator(step, status, index), this.renderLabelBlock(step)];
   }
 
-  private renderStep(step: StepperStep, index: number, total: number) {
+  private renderStep(step: StepperStep, index: number, total: number, m: StepperMessages) {
     const status = this.effectiveStatus(step, index);
     const actionable = this.isActionable(step, status);
     const isLast = index === total - 1;
@@ -241,17 +324,19 @@ export class MudStepper {
     const ariaDisabled = !actionable && this.interactive ? 'true' : undefined;
 
     // Accessible label: prefer supportingText for richer announcement.
-    const accessibleName = step.supportingText ? `${step.label} — ${step.supportingText}` : step.label;
+    const accessibleName = step.supportingText
+      ? `${step.label}${m.supportingSeparator}${step.supportingText}`
+      : step.label;
     const statusSuffix =
       status === 'completed'
-        ? ', finalizat'
+        ? m.completedSuffix
         : status === 'current'
-          ? ', curent'
+          ? m.currentSuffix
           : status === 'available'
-            ? ', disponibil'
+            ? m.availableSuffix
             : status === 'error'
-              ? ', eroare'
-              : ', în așteptare';
+              ? m.errorSuffix
+              : m.pendingSuffix;
 
     const body = this.renderStepBody(step, status, index);
     const connector = !isLast ? <span class="connector" aria-hidden="true" /> : null;
@@ -305,16 +390,18 @@ export class MudStepper {
     // The list semantics live on the Host so the consumer-supplied `aria-label`
     // (which lands on the host element) names a real `role="list"` — a bare
     // custom-element host with `aria-label` and no role trips axe
-    // `aria-prohibited-attr`. The name (consumer's own, or the 'Progress tracker'
+    // `aria-prohibited-attr`. The name (consumer's own, or the locale's `navLabel`
     // fallback) is applied imperatively by `nameHostWithFallback` in
     // `connectedCallback`, NOT here — binding `aria-label` through the vdom would
     // collide with its own attribute writes ("changed during rendering"). The
     // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
+    const m = this.messages();
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="list" class={{ 'is-compact': compactMode }}>
+      <Host role="list" class={{ 'is-compact': compactMode }} lang={lang}>
         <ol class="root" role="none">
-          {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length)) : <slot />}
+          {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length, m)) : <slot />}
         </ol>
       </Host>
     );

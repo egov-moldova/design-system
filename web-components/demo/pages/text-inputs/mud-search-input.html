@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,19 +15,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input placeholder="Căutați servicii…"></mud-search-input>
+                <mud-search-input placeholder="Search services…"></mud-search-input>
               </div>
               <span class="label">rectangular / sm / placeholder</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input shape="circular" value="buletin" label="Căutare"></mud-search-input>
+                <mud-search-input shape="circular" value="ID card" label="Lookup"></mud-search-input>
               </div>
               <span class="label">circular (value + clear)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input size="md" value="pașaport" label="Căutare (md)"></mud-search-input>
+                <mud-search-input size="md" value="passport" label="Lookup (md)"></mud-search-input>
               </div>
               <span class="label">md (48px)</span>
             </div>
@@ -39,13 +39,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="pașaport"></mud-search-input>
+                <mud-search-input value="passport"></mud-search-input>
               </div>
               <span class="label">value → built-in clear ×</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="pașaport">
+                <mud-search-input value="passport">
                   <mud-icon slot="icon-end" name="filter" size="20"></mud-icon>
                 </mud-search-input>
               </div>
@@ -53,7 +53,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="filtru activ" clearable="false"></mud-search-input>
+                <mud-search-input value="active filter" clearable="false"></mud-search-input>
               </div>
               <span class="label">clearable=false (no ×)</span>
             </div>
@@ -65,13 +65,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="dosar" icon-name="history"></mud-search-input>
+                <mud-search-input value="file" icon-name="history"></mud-search-input>
               </div>
               <span class="label">icon-name override</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="hotărâre" with-button="" submit-label="Caută"></mud-search-input>
+                <mud-search-input value="decision" with-button="" submit-label="Find"></mud-search-input>
               </div>
               <span class="label">with-button (rectangular submit)</span>
             </div>
@@ -79,16 +79,16 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-search-input
                   shape="circular"
-                  value="hotărâre"
+                  value="decision"
                   with-button=""
-                  submit-label="Caută"
+                  submit-label="Find"
                 ></mud-search-input>
               </div>
               <span class="label">with-button (circular submit)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="se caută" loading=""></mud-search-input>
+                <mud-search-input value="searching" loading=""></mud-search-input>
               </div>
               <span class="label">loading (clear × suppressed)</span>
             </div>
@@ -100,19 +100,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="blocat" disabled=""></mud-search-input>
+                <mud-search-input value="locked" disabled=""></mud-search-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input label="Căutare" required="" placeholder="Câmp obligatoriu"></mud-search-input>
+                <mud-search-input label="Lookup" required="" placeholder="Required field"></mud-search-input>
               </div>
               <span class="label">required (asterisk)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-search-input value="Chișinău ăâîșțĂÂÎȘȚ"></mud-search-input>
+                <mud-search-input value="Chișinău éüñ"></mud-search-input>
               </div>
               <span class="label">diacritics</span>
             </div>

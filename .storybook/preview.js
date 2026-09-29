@@ -29,10 +29,30 @@ setCustomElements(customElements);
 // page renders <Description of={AccordionStories} /> and needs the real text.
 const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 
-// Keep data-theme in sync with the mode global at the preview level.
-// The themeDecorator handles story canvas, but docs pages don't re-run
-// decorators on globals change — this channel listener covers that gap.
+// A Docs page wraps every inline story in `<div id="story--…-inner" lang="en">`
+// (`parameters.htmlLang`, default "en": @storybook/addon-docs dist/blocks.js), and the
+// locale model reads the CLOSEST ancestor `lang`, so without retagging those wrappers no
+// component on a Docs page follows the toolbar. `<html>` is set last: its mutation is what
+// the components observe, and they must find the wrappers already retagged. The
+// `.sbdocs-content` wrapper keeps `lang="en"`: the docs prose is English.
+// Baseline: `grep -n 'story.parameters?.htmlLang' node_modules/@storybook/addon-docs/dist/blocks.js`
+/** `el.setAttribute('lang', lang)`, skipped when `lang` already holds that value — an
+ * unchanged global must not trigger every component's lang observer. */
+function setLangIfChanged(el, lang) {
+  if (el.getAttribute('lang') !== lang) el.setAttribute('lang', lang);
+}
+
+export function applyLang(value, doc = document) {
+  const lang = value || 'ro-MD';
+  doc.querySelectorAll('[id^="story--"][id$="-inner"][lang]').forEach(el => setLangIfChanged(el, lang));
+  setLangIfChanged(doc.documentElement, lang);
+}
+
+// Keep data-theme and <html lang> in sync with the mode and lang globals at the preview
+// level. The decorators handle the story canvas, but docs pages don't re-run decorators
+// on globals change — this channel listener covers that gap.
 addons.getChannel().on(GLOBALS_UPDATED, ({ globals }) => {
+  applyLang(globals.lang);
   if (globals.mode === 'dark') {
     document.documentElement.dataset.theme = 'dark';
   } else {
@@ -118,7 +138,17 @@ const themeDecorator = (story, context) => {
   return story();
 };
 
-export const decorators = [cleanupDecorator, themeDecorator];
+// Issue #163: drives the component locale model's ancestor-`lang` fallback (see
+// `src/utils/locale.ts`'s `inheritedLang`). Sets `lang` on `<html>`, the closest ancestor
+// every story's components share, so any mud-* component with no explicit `locale` prop
+// follows this toolbar. `scripts/eslint/copy-probe.mjs` drives it via the `globals=lang:ru-MD`
+// query param rather than the toolbar UI.
+const langDecorator = (story, context) => {
+  applyLang(context.globals.lang);
+  return story();
+};
+
+export const decorators = [cleanupDecorator, themeDecorator, langDecorator];
 
 // Runs after the framework enhancer has merged the story's `argTypes` over the manifest
 // rows (see ./manifest-arg-types.mjs for why the labels need restoring).
@@ -147,6 +177,23 @@ export const globalTypes = {
       items: [
         { value: 'light', title: 'Light', icon: 'sun' },
         { value: 'dark', title: 'Dark', icon: 'moon' },
+      ],
+      showName: true,
+      dynamicTitle: true,
+    },
+  },
+  // Issue #163: ancestor `lang`, applied to `<html>` by `langDecorator` below. `'ro-MD'` is
+  // the library's own default locale (src/utils/locale.ts DEFAULT_LOCALE).
+  lang: {
+    name: 'Lang',
+    description: 'Built-in component copy only; story content stays in English',
+    defaultValue: 'ro-MD',
+    toolbar: {
+      icon: 'globe',
+      items: [
+        { value: 'ro-MD', title: 'Română' },
+        { value: 'en-US', title: 'English' },
+        { value: 'ru-MD', title: 'Русский' },
       ],
       showName: true,
       dynamicTitle: true,

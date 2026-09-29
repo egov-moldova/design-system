@@ -13,6 +13,7 @@ type PaginationArgs = {
   prevLabel: string;
   nextLabel: string;
   ariaLabel: string;
+  locale: string;
 };
 
 const renderPagination = (args: PaginationArgs) => /*html*/ `
@@ -23,9 +24,10 @@ const renderPagination = (args: PaginationArgs) => /*html*/ `
     sibling-count="${args.siblingCount}"
     boundary-count="${args.boundaryCount}"
     ${args.showPrevNext ? '' : 'show-prev-next="false"'}
-    prev-label="${args.prevLabel}"
-    next-label="${args.nextLabel}"
-    aria-label="${args.ariaLabel}"
+    ${args.prevLabel ? `prev-label="${args.prevLabel}"` : ''}
+    ${args.nextLabel ? `next-label="${args.nextLabel}"` : ''}
+    ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-pagination>
 `;
 
@@ -37,9 +39,9 @@ const docsSourceDefault = (args: PaginationArgs) => {
     args.siblingCount !== 1 ? `sibling-count="${args.siblingCount}"` : '',
     args.boundaryCount !== 1 ? `boundary-count="${args.boundaryCount}"` : '',
     args.showPrevNext ? '' : 'show-prev-next="false"',
-    args.prevLabel !== 'Anterior' ? `prev-label="${args.prevLabel}"` : '',
-    args.nextLabel !== 'Următor' ? `next-label="${args.nextLabel}"` : '',
-    args.ariaLabel !== 'Navigare pagini' ? `aria-label="${args.ariaLabel}"` : '',
+    args.prevLabel ? `prev-label="${args.prevLabel}"` : '',
+    args.nextLabel ? `next-label="${args.nextLabel}"` : '',
+    args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -102,7 +104,12 @@ const meta: Meta<PaginationArgs> = {
     ariaLabel: {
       control: 'text',
       name: 'aria-label',
-      description: 'Accessible name for the outer `<nav>` landmark.',
+      description: "Accessible name for the outer `<nav>` landmark. Overrides the locale's copy.",
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
   },
 };
@@ -122,9 +129,10 @@ export const Default: Story = {
     siblingCount: 1,
     boundaryCount: 1,
     showPrevNext: true,
-    prevLabel: 'Anterior',
-    nextLabel: 'Următor',
-    ariaLabel: 'Navigare pagini',
+    prevLabel: '',
+    nextLabel: '',
+    ariaLabel: '',
+    locale: '',
   },
   parameters: {
     docs: {
@@ -349,6 +357,39 @@ export const OverflowActive: Story = {
         code: /*html*/ `<mud-pagination current-page="10" total-pages="20"></mud-pagination>
 <!-- Large range: the … dropdown caps its height and scrolls inside -->
 <mud-pagination current-page="1" total-pages="40"></mud-pagination>`,
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in Previous / Next labels in ro-MD, en-US and ru-MD
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
+      ${LOCALES.map(
+        locale => /*html*/ `
+      <div>
+        <p style="${cellLabelStyle}">locale="${locale}"</p>
+        <mud-pagination locale="${locale}" current-page="3" total-pages="9"></mud-pagination>
+      </div>`,
+      ).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: {
+        code: LOCALES.map(
+          locale => `<mud-pagination locale="${locale}" current-page="3" total-pages="9"></mud-pagination>`,
+        ).join('\n'),
       },
     },
   },

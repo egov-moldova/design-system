@@ -1,9 +1,13 @@
-import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
+import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { AVATAR_MESSAGES } from './mud-avatar.messages';
+import type { AvatarMessages } from './mud-avatar.messages';
 import type { IconName } from '../mud-icon/mud-icon.types';
 import type { AvatarSize, AvatarType } from './mud-avatar.types';
 import { ICON_SIZE_FOR, deriveInitials } from './mud-avatar.utils';
-import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
 
 /**
  * Avatar — represents a user via a photo, initials, or a generic person icon.
@@ -75,6 +79,26 @@ export class MudAvatar {
    */
   @Prop() iconName: IconName = 'person';
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible-name fallback when only initials (no `name`) are set. Carries a `{initials}`
+   * placeholder. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Avatar pentru {initials}' (ro-MD)
+   */
+  @Prop() initialsLabel?: string;
+
+  /**
+   * Accessible-name fallback when neither `name` nor initials are set. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Avatar utilizator' (ro-MD)
+   */
+  @Prop() fallbackLabel?: string;
+
   @State() private imageFailed: boolean = false;
 
   @Element() host!: HTMLMudAvatarElement;
@@ -83,9 +107,11 @@ export class MudAvatar {
    * Names the host: keeps the consumer's native `aria-label` attribute when
    * set (the avatar is then exposed to AT as a single labelled element),
    * otherwise applies the computed fallback — `name`, then the initials, then
-   * "User avatar". See `nameHostWithFallback`.
+   * the locale's `fallbackLabelText`. See `nameHostWithFallback`.
    */
   private hostLabel?: HostAriaLabel;
+
+  private stopLang?: () => void;
 
   @Watch('src')
   onSrcChange() {
@@ -93,15 +119,29 @@ export class MudAvatar {
   }
 
   connectedCallback() {
-    this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
+    this.hostLabel = nameHostWithFallback(this.host, () => this.computeFallbackLabel());
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {
     this.hostLabel?.stop();
+    this.stopLang?.();
   }
 
   componentWillRender() {
     this.hostLabel?.update();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): AvatarMessages {
+    return localeMessages('mud-avatar', this.host, this.locale, AVATAR_MESSAGES, {
+      initialsLabel: this.initialsLabel,
+      fallbackLabel: this.fallbackLabel,
+    });
   }
 
   private handleImageError = () => {
@@ -129,10 +169,13 @@ export class MudAvatar {
     return 'icon';
   }
 
-  private fallbackLabel(): string {
+  private computeFallbackLabel(): string {
     if (this.name) return this.name;
-    if (this.resolvedInitials) return `Avatar for ${this.resolvedInitials}`;
-    return 'User avatar';
+    const m = this.messages();
+    if (this.resolvedInitials) {
+      return formatMessage(m.initialsLabel, this.host, this.locale, { initials: this.resolvedInitials });
+    }
+    return m.fallbackLabel;
   }
 
   render() {
@@ -141,9 +184,10 @@ export class MudAvatar {
 
     // `aria-label` is set imperatively by `hostLabel` (see `nameHostWithFallback`)
     // so the attribute is not declared on `<Host>` here.
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host role="img">
+      <Host role="img" lang={lang}>
         <span class={{ inner: true, [`type-${mode}`]: true }}>
           {mode === 'photo' && (
             <img

@@ -1,9 +1,13 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 import { setAssetPath } from '@stencil/core';
 
+import { formatMessage } from '../../../utils/locale';
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-avatar';
 import '../../mud-icon/mud-icon';
 
+import { AVATAR_MESSAGES } from '../mud-avatar.messages';
+import type { AvatarMessages } from '../mud-avatar.messages';
 import { AVATAR_SIZES, AVATAR_TYPES } from '../mud-avatar.types';
 import { deriveInitials, ICON_SIZE_FOR } from '../mud-avatar.utils';
 import { ICON_SIZES } from '../../mud-icon/mud-icon.types';
@@ -281,14 +285,16 @@ describe('mud-avatar', () => {
       expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
     });
 
-    it('falls back to "Avatar for XX" when only initials are set', async () => {
+    it('falls back to the locale initials label when only initials are set', async () => {
       const { root } = await render(<mud-avatar initials="AB"></mud-avatar>);
-      expect(root?.getAttribute('aria-label')).toBe('Avatar for AB');
+      expect(root?.getAttribute('aria-label')).toBe(
+        formatMessage(AVATAR_MESSAGES['ro-MD'].initialsLabel, root!, undefined, { initials: 'AB' }),
+      );
     });
 
-    it('falls back to "User avatar" when nothing is set', async () => {
+    it('falls back to the locale fallback label when nothing is set', async () => {
       const { root } = await render(<mud-avatar type="icon"></mud-avatar>);
-      expect(root?.getAttribute('aria-label')).toBe('User avatar');
+      expect(root?.getAttribute('aria-label')).toBe(AVATAR_MESSAGES['ro-MD'].fallbackLabel);
     });
   });
 
@@ -338,4 +344,42 @@ describe('mud-avatar', () => {
       expect(queryInner(root)?.classList.contains('type-icon')).toBe(true);
     });
   });
+});
+
+describe('mud-avatar — initialsLabel override', () => {
+  it('initialsLabel override beats the locale', async () => {
+    const { root } = await render(
+      <mud-avatar locale="en-US" initials="AB" initials-label="Profile {initials}"></mud-avatar>,
+    );
+    expect(root?.getAttribute('aria-label')).toBe('Profile AB');
+  });
+
+  it('empty initialsLabel falls back', async () => {
+    const { root } = await render(<mud-avatar locale="en-US" initials="AB" initials-label=""></mud-avatar>);
+    expect(root?.getAttribute('aria-label')).toBe(
+      formatMessage(AVATAR_MESSAGES['en-US'].initialsLabel, root!, 'en-US', { initials: 'AB' }),
+    );
+  });
+});
+
+describeLocales<AvatarMessages>('mud-avatar', AVATAR_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { type: 'icon' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.initialsLabel !== undefined) attrs['initials-label'] = String(props.initialsLabel);
+    if (props.fallbackLabel !== undefined) attrs['fallback-label'] = String(props.fallbackLabel);
+    const { root } = await render(
+      <mud-avatar {...attrs}></mud-avatar>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'fallbackLabel') return host.getAttribute('aria-label');
+    return null;
+  },
+  overrides: { fallbackLabel: 'fallbackLabel' },
+  unreachable: {
+    initialsLabel: 'carries an {initials} placeholder — asserted by `empty initialsLabel falls back` above',
+  },
 });

@@ -1,7 +1,11 @@
-import { Component, Element, Host, Prop, h } from '@stencil/core';
+import { Component, Element, Host, Prop, forceUpdate, h } from '@stencil/core';
 
-import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { BADGE_MESSAGES } from './mud-badge.messages';
+import type { BadgeMessages } from './mud-badge.messages';
+import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
 
 /**
  * Badge — small, non-interactive status / count indicator.
@@ -70,25 +74,53 @@ export class MudBadge {
    */
   @Prop() max: number = 99;
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible-name fallback when no count and no consumer `aria-label` are set. Overrides
+   * the `locale`'s copy when set to a non-empty string.
+   * @default 'Notificare' (ro-MD)
+   */
+  @Prop() notificationLabel?: string;
+
   @Element() host!: HTMLMudBadgeElement;
 
   /**
    * Names the host: keeps the consumer's native `aria-label` attribute when
    * set, otherwise applies the computed fallback (the visible count, or
-   * "Notification"). See `nameHostWithFallback`.
+   * the locale's `notificationLabel`). See `nameHostWithFallback`.
    */
   private hostLabel?: HostAriaLabel;
 
+  private stopLang?: () => void;
+
   connectedCallback() {
     this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {
     this.hostLabel?.stop();
+    this.stopLang?.();
   }
 
   componentWillRender() {
     this.hostLabel?.update();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): BadgeMessages {
+    return localeMessages('mud-badge', this.host, this.locale, BADGE_MESSAGES, {
+      notificationLabel: this.notificationLabel,
+    });
   }
 
   // `xs` is a dot-only rung in Figma (8 px can't hold a count), so a numbered
@@ -98,9 +130,10 @@ export class MudBadge {
   }
 
   private fallbackLabel(): string {
-    if (this.type === 'dot') return 'Notification';
+    const notificationLabel = this.messages().notificationLabel;
+    if (this.type === 'dot') return notificationLabel;
     const displayText = this.isDot ? '' : this.formatCount();
-    return displayText || 'Notification';
+    return displayText || notificationLabel;
   }
 
   private formatCount(): string {
@@ -118,9 +151,10 @@ export class MudBadge {
     const displayText = isDot ? '' : this.formatCount();
     // Per Figma 551:18330, md/lg/xl dots carry a centered inner pip; xs/sm are solid.
     const showInnerDot = isDot && (this.size === 'md' || this.size === 'lg' || this.size === 'xl');
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host role="status" aria-live="polite">
+      <Host role="status" aria-live="polite" lang={lang}>
         {!isDot && (
           <span class="badge-count" aria-hidden="true">
             {displayText}

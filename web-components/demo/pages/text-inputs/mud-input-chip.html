@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,8 +22,8 @@
                 <mud-input-chip
                   id="chip-default"
                   variant="default"
-                  label="Destinatari"
-                  placeholder="Adăugați email…"
+                  label="Recipients"
+                  placeholder="Add email…"
                 ></mud-input-chip>
               </div>
               <span class="label">default + prefilled</span>
@@ -34,8 +34,8 @@
                   id="chip-destructive"
                   variant="destructive"
                   invalid=""
-                  label="Etichete"
-                  error-text="Cel puțin o etichetă este nevalidă."
+                  label="Labels"
+                  error-text="At least one label is invalid."
                 ></mud-input-chip>
               </div>
               <span class="label">destructive + invalid + error-text</span>
@@ -69,8 +69,8 @@
                 <mud-input-chip
                   id="chip-max"
                   max-chips="3"
-                  label="Max 3 etichete"
-                  helper-text="Adăugarea peste 3 este respinsă"
+                  label="Max 3 labels"
+                  helper-text="Adding more than 3 is rejected"
                 ></mud-input-chip>
               </div>
               <span class="label">max-chips=3 (input disabled at limit)</span>
@@ -79,9 +79,9 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-input-chip
                   id="chip-pattern"
-                  label="Doar email-uri"
+                  label="Emails only"
                   validate-pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
-                  placeholder="nume@domeniu.md"
+                  placeholder="name@domain.md"
                   helper-text="Pattern: must match an email"
                 ></mud-input-chip>
               </div>
@@ -107,13 +107,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-disabled" disabled="" label="Dezactivat"></mud-input-chip>
+                <mud-input-chip id="chip-disabled" disabled="" label="Disabled"></mud-input-chip>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-readonly" readonly="" label="Doar citire"></mud-input-chip>
+                <mud-input-chip id="chip-readonly" readonly="" label="Read only"></mud-input-chip>
               </div>
               <span class="label">readonly</span>
             </div>
@@ -122,8 +122,8 @@
                 <mud-input-chip
                   id="chip-required"
                   required=""
-                  label="Obligatoriu"
-                  placeholder="Adăugați cel puțin una"
+                  label="Required"
+                  placeholder="Add at least one"
                 ></mud-input-chip>
               </div>
               <span class="label">required + empty</span>
@@ -136,25 +136,25 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-many" label="Multe etichete (15+ wrapping)"></mud-input-chip>
+                <mud-input-chip id="chip-many" label="Many labels (15+ wrapping)"></mud-input-chip>
               </div>
               <span class="label">15+ chips wrapping</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-long" label="O etichetă foarte lungă"></mud-input-chip>
+                <mud-input-chip id="chip-long" label="A very long label"></mud-input-chip>
               </div>
               <span class="label">single very long chip</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-special" label="Diacritice, special chars &amp; emoji"></mud-input-chip>
+                <mud-input-chip id="chip-special" label="Accents, special chars &amp; emoji"></mud-input-chip>
               </div>
               <span class="label">diacritics + special + emoji + RTL</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-input-chip id="chip-empty" label="Empty array []" placeholder="Niciun chip încă"></mud-input-chip>
+                <mud-input-chip id="chip-empty" label="Empty array []" placeholder="No chips yet"></mud-input-chip>
               </div>
               <span class="label">empty array</span>
             </div>
@@ -168,36 +168,36 @@
               if (el) el.chips = chips;
             };
             set('chip-default', ['ion@gov.md', 'maria@gov.md']);
-            set('chip-destructive', ['valid@gov.md', 'gresit']);
-            set('chip-md', ['Acasă', 'Servicii']);
-            set('chip-lg', ['Pașaport', 'Buletin', 'Permis']);
-            set('chip-max', ['unu', 'doi', 'trei']); // at the max-chips=3 limit
+            set('chip-destructive', ['valid@gov.md', 'wrong']);
+            set('chip-md', ['Home', 'Services']);
+            set('chip-lg', ['Passport', 'ID card', 'Licence']);
+            set('chip-max', ['one', 'two', 'three']); // at the max-chips=3 limit
             set('chip-pattern', ['ion@gov.md']);
             set('chip-sep', ['alfa', 'beta']);
-            set('chip-disabled', ['blocat', 'inactiv']);
-            set('chip-readonly', ['citire', 'fixă']);
+            set('chip-disabled', ['locked', 'inactive']);
+            set('chip-readonly', ['read', 'fixed']);
             set('chip-many', [
-              'Acasă',
-              'Servicii',
-              'Pașaport',
-              'Buletin',
-              'Permis',
-              'Adeverință',
-              'Certificat',
-              'Cerere',
-              'Dosar',
-              'Hotărâre',
-              'Decizie',
-              'Notă',
-              'Factură',
-              'Chitanță',
-              'Aviz',
+              'Home',
+              'Services',
+              'Passport',
+              'ID card',
+              'Licence',
+              'Certificate',
+              'Certificate',
+              'Request',
+              'File',
+              'Decision',
+              'Decision',
+              'Note',
+              'Invoice',
+              'Receipt',
+              'Notice',
               'Contract',
-              'Anexă',
-              'Raport',
+              'Annex',
+              'Report',
             ]);
             set('chip-long', ['supercalifragilisticexpialidocious-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']);
-            set('chip-special', ['Chișinău ăâîșțĂÂÎȘȚ', '& < > " \'', '🎉 emoji', 'مرحبا']);
+            set('chip-special', ['Chișinău éüñ', '& < > " \'', '🎉 emoji', 'مرحبا']);
             // chip-empty / chip-required deliberately left as [] (default).
           });
         </script>

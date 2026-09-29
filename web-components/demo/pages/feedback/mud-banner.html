@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,11 +20,11 @@
           <h3>Subtle</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
             <mud-banner variant="info" emphasis="subtle">
-              Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.
+              Scheduled maintenance today. Some services may be temporarily unavailable.
             </mud-banner>
-            <mud-banner variant="warning" emphasis="subtle"> Sesiunea dumneavoastră expiră în 5 minute. </mud-banner>
+            <mud-banner variant="warning" emphasis="subtle"> Your session expires in 5 minutes. </mud-banner>
             <mud-banner variant="error" emphasis="subtle">
-              Serviciul de semnare electronică este momentan indisponibil.
+              The electronic signing service is currently unavailable.
             </mud-banner>
           </div>
         </div>
@@ -33,11 +33,11 @@
           <h3>Strong</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
             <mud-banner variant="info" emphasis="strong">
-              Mentenanță programată astăzi. Unele servicii pot fi temporar indisponibile.
+              Scheduled maintenance today. Some services may be temporarily unavailable.
             </mud-banner>
-            <mud-banner variant="warning" emphasis="strong"> Sesiunea dumneavoastră expiră în 5 minute. </mud-banner>
+            <mud-banner variant="warning" emphasis="strong"> Your session expires in 5 minutes. </mud-banner>
             <mud-banner variant="error" emphasis="strong">
-              Serviciul de semnare electronică este momentan indisponibil.
+              The electronic signing service is currently unavailable.
             </mud-banner>
           </div>
         </div>
@@ -45,23 +45,17 @@
         <div class="subsection">
           <h3>Link and close</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
-            <mud-banner variant="info" emphasis="subtle" link-text="Detalii" link-href="#link-target">
-              Mentenanță programată astăzi.
+            <mud-banner variant="info" emphasis="subtle" link-text="Details" link-href="#link-target">
+              Scheduled maintenance today.
             </mud-banner>
-            <mud-banner variant="info" emphasis="strong" link-text="Detalii" link-href="#link-target">
-              Mentenanță programată astăzi.
+            <mud-banner variant="info" emphasis="strong" link-text="Details" link-href="#link-target">
+              Scheduled maintenance today.
             </mud-banner>
             <mud-banner variant="warning" emphasis="subtle" dismissible="">
-              Sesiunea dumneavoastră expiră în 5 minute.
+              Your session expires in 5 minutes.
             </mud-banner>
-            <mud-banner
-              variant="error"
-              emphasis="strong"
-              dismissible=""
-              link-text="Reîncercați"
-              link-href="#link-target"
-            >
-              Serviciul de semnare electronică este momentan indisponibil.
+            <mud-banner variant="error" emphasis="strong" dismissible="" link-text="Try again" link-href="#link-target">
+              The electronic signing service is currently unavailable.
             </mud-banner>
           </div>
           <span class="label">
@@ -73,7 +67,7 @@
           <h3>Icon</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
             <mud-banner variant="info" emphasis="subtle" icon-name="calendar">
-              Programarea dumneavoastră este confirmată pentru 15 aprilie.
+              Your appointment is confirmed for 15 April.
             </mud-banner>
             <mud-banner variant="info" emphasis="subtle">
               <mud-icon slot="icon-start" name="notification" size="24"></mud-icon>
@@ -86,13 +80,13 @@
         <div class="subsection">
           <h3>Edge cases</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%">
-            <mud-banner variant="warning" emphasis="subtle" dismissible="" link-text="Detalii" link-href="#link-target">
-              Mesaj foarte lung: începând cu data de 15 aprilie, depunerea cererilor pentru actele de identitate se
-              efectuează exclusiv prin programare online, iar ghișeele fizice vor deservi doar cazurile urgente.
+            <mud-banner variant="warning" emphasis="subtle" dismissible="" link-text="Details" link-href="#link-target">
+              Very long message: starting on 15 April, submitting applications for identity documents is done
+              exclusively by online appointment, and the physical counters will serve urgent cases only.
             </mud-banner>
             <div style="max-width: 420px">
               <mud-banner variant="info" emphasis="subtle" dismissible="">
-                Într-un container îngust textul se rupe pe mai multe rânduri.
+                In a narrow container the text breaks over several lines.
               </mud-banner>
             </div>
           </div>
@@ -107,12 +101,10 @@
             <div style="flex: 1 1 320px">
               <div id="demo-banner-slot">
                 <mud-banner variant="info" emphasis="strong" dismissible="">
-                  Închideți acest banner pentru a vedea evenimentul.
+                  Close this banner to see the event.
                 </mud-banner>
               </div>
-              <button id="demo-banner-restore" type="button" style="margin-top: var(--spacing-12)">
-                Afișează din nou
-              </button>
+              <button id="demo-banner-restore" type="button" style="margin-top: var(--spacing-12)">Show again</button>
             </div>
             <div class="cell">
               <pre id="banner-log" style="margin: 0; min-width: 260px; min-height: 100px">mudDismiss log</pre>

@@ -1,10 +1,22 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  Host,
+  Listen,
+  Prop,
+  State,
+  Watch,
+  forceUpdate,
+  h,
+} from '@stencil/core';
 
-import { PHONE_FLAGS } from './mud-phone-input.flags';
+import { COUNTRIES, DEFAULT_COUNTRY_ORDER } from './mud-phone-input.data';
+import type { PhoneCountry } from './mud-phone-input.data';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';
 import type {
-  PhoneCountry,
   PhoneInputChangeDetail,
   PhoneInputCountryChangeDetail,
   PhoneInputInputDetail,
@@ -13,175 +25,52 @@ import type {
   PhoneInputVariant,
 } from './mud-phone-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { childLocale, formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
+import type { PhoneInputMessages } from './mud-phone-input.messages';
 
 let phoneInputInstanceCounter = 0;
 
-/**
- * Curated list of countries relevant to the Moldovan e-Gov audience: the
- * home market plus the diaspora destinations seen in the registry data.
- * Order matches the Figma docs page (Moldova first, then alphabetical by
- * Romanian display name) so the default listbox layout stays predictable.
- *
- * The map is hand-rolled — `libphonenumber-js` would pull in ~140KB to
- * cover countries we don't serve. The `mask` uses `X` for required digits
- * and literal spaces as visual separators; the formatter respects each
- * country's local-segment length window (`minLen` / `maxLen`). Each row
- * carries an inline SVG `flag` glyph from `mud-phone-input.flags.ts`.
- */
-const COUNTRIES: Record<string, PhoneCountry> = {
-  MD: {
-    iso: 'MD',
-    code: '+373',
-    name: 'Moldova',
-    nameRo: 'Moldova',
-    mask: 'XXX XX XXX',
-    minLen: 8,
-    maxLen: 8,
-    flag: PHONE_FLAGS.MD,
-  },
-  RO: {
-    iso: 'RO',
-    code: '+40',
-    name: 'Romania',
-    nameRo: 'România',
-    mask: 'XXX XXX XXX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.RO,
-  },
-  RU: {
-    iso: 'RU',
-    code: '+7',
-    name: 'Russia',
-    nameRo: 'Rusia',
-    mask: 'XXX XXX XX XX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.RU,
-  },
-  UA: {
-    iso: 'UA',
-    code: '+380',
-    name: 'Ukraine',
-    nameRo: 'Ucraina',
-    mask: 'XX XXX XX XX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.UA,
-  },
-  US: {
-    iso: 'US',
-    code: '+1',
-    name: 'United States',
-    nameRo: 'Statele Unite',
-    mask: 'XXX XXX XXXX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.US,
-  },
-  GB: {
-    iso: 'GB',
-    code: '+44',
-    name: 'United Kingdom',
-    nameRo: 'Regatul Unit',
-    mask: 'XXXX XXX XXX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.GB,
-  },
-  DE: {
-    iso: 'DE',
-    code: '+49',
-    name: 'Germany',
-    nameRo: 'Germania',
-    mask: 'XXX XXXX XXXX',
-    minLen: 10,
-    maxLen: 11,
-    flag: PHONE_FLAGS.DE,
-  },
-  FR: {
-    iso: 'FR',
-    code: '+33',
-    name: 'France',
-    nameRo: 'Franța',
-    mask: 'X XX XX XX XX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.FR,
-  },
-  IT: {
-    iso: 'IT',
-    code: '+39',
-    name: 'Italy',
-    nameRo: 'Italia',
-    mask: 'XXX XXX XXXX',
-    minLen: 9,
-    maxLen: 10,
-    flag: PHONE_FLAGS.IT,
-  },
-  ES: {
-    iso: 'ES',
-    code: '+34',
-    name: 'Spain',
-    nameRo: 'Spania',
-    mask: 'XXX XXX XXX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.ES,
-  },
-  PT: {
-    iso: 'PT',
-    code: '+351',
-    name: 'Portugal',
-    nameRo: 'Portugalia',
-    mask: 'XXX XXX XXX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.PT,
-  },
-  IL: {
-    iso: 'IL',
-    code: '+972',
-    name: 'Israel',
-    nameRo: 'Israel',
-    mask: 'XX XXX XXXX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.IL,
-  },
-  TR: {
-    iso: 'TR',
-    code: '+90',
-    name: 'Turkey',
-    nameRo: 'Turcia',
-    mask: 'XXX XXX XX XX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.TR,
-  },
-  BG: {
-    iso: 'BG',
-    code: '+359',
-    name: 'Bulgaria',
-    nameRo: 'Bulgaria',
-    mask: 'XX XXX XXXX',
-    minLen: 8,
-    maxLen: 9,
-    flag: PHONE_FLAGS.BG,
-  },
-  GR: {
-    iso: 'GR',
-    code: '+30',
-    name: 'Greece',
-    nameRo: 'Grecia',
-    mask: 'XXX XXX XXXX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.GR,
-  },
+const displayNamesCache = new Map<string, Intl.DisplayNames>();
+
+/** `Intl.DisplayNames` for `tag`, cached — never re-constructed per country or per comparison. */
+const displayNamesFor = (tag: string): Intl.DisplayNames | undefined => {
+  if (typeof Intl.DisplayNames !== 'function') return undefined;
+  let names = displayNamesCache.get(tag);
+  if (!names) {
+    names = new Intl.DisplayNames([tag], { type: 'region' });
+    displayNamesCache.set(tag, names);
+  }
+  return names;
 };
 
-const DEFAULT_COUNTRY_ORDER = Object.keys(COUNTRIES);
+const collatorCache = new Map<string, Intl.Collator>();
+
+/** `Intl.Collator` for `tag`, cached — never re-constructed per sort. */
+const collatorFor = (tag: string): Intl.Collator => {
+  let collator = collatorCache.get(tag);
+  if (!collator) {
+    collator = new Intl.Collator(tag);
+    collatorCache.set(tag, collator);
+  }
+  return collator;
+};
+
+/**
+ * The country's display name in `tag`: `Intl.DisplayNames`'s region name, falling
+ * back to the curated English `name` when `Intl.DisplayNames` is unavailable or
+ * returns nothing (older engines, an unrecognised ISO code).
+ */
+const countryDisplayName = (country: PhoneCountry, tag: string): string => {
+  try {
+    const resolved = displayNamesFor(tag)?.of(country.iso);
+    if (resolved && resolved.trim().length > 0) return resolved;
+  } catch {
+    // Falls through to the static fallback below.
+  }
+  return country.name;
+};
 
 /**
  * Phone Input — phone-number entry molecule with country-code prefix and
@@ -321,6 +210,13 @@ export class MudPhoneInput {
   /** Placeholder shown when the local segment is empty. Defaults to the country's mask. */
   @Prop() placeholder?: string;
 
+  /**
+   * Language of the built-in copy and of the country names shown in the listbox
+   * (`Intl.DisplayNames`). Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -379,13 +275,38 @@ export class MudPhoneInput {
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale. This component has no override props —
+   * every key is a validity/announcement message or a listbox affordance label. */
+  private messages(): PhoneInputMessages {
+    return localeMessages('mud-phone-input', this.host, this.locale, PHONE_INPUT_MESSAGES, {});
+  }
+
+  /** The `Intl` tag whose dictionary/region names are shown — the resolved `MudLocale`, canonicalised. */
+  private displayTag(): string {
+    return formatLocale(this.host, this.locale);
+  }
+
+  private displayName(country: PhoneCountry): string {
+    return countryDisplayName(country, this.displayTag());
   }
 
   componentWillLoad() {
@@ -402,6 +323,12 @@ export class MudPhoneInput {
     this.syncValidity();
   }
 
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
+    this.syncValidity();
+  }
+
   private syncValidity() {
     if (!this.internals) return;
     const digits = this.localDigits(this.value).length;
@@ -411,11 +338,11 @@ export class MudPhoneInput {
 
     if (this.required && digits === 0) {
       flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().requiredText;
     } else if (digits > 0 && (digits < country.minLen || digits > country.maxLen)) {
       flags.tooShort = digits < country.minLen ? true : undefined;
       flags.tooLong = digits > country.maxLen ? true : undefined;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Numărul de telefon este incomplet';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().incompleteText;
     }
 
     const anchor = this.nativeEl ?? undefined;
@@ -531,18 +458,43 @@ export class MudPhoneInput {
     return 'MD';
   }
 
+  /**
+   * The active country list. An explicit `countries` whitelist keeps the caller's
+   * order verbatim; the default curated list keeps Moldova first and sorts the rest
+   * by `Intl.Collator` on the resolved display name.
+   */
   private activeCountries(): PhoneCountry[] {
-    const ordered = this.countries && this.countries.length > 0 ? this.countries : DEFAULT_COUNTRY_ORDER;
-    return ordered.map(iso => COUNTRIES[iso]).filter((c): c is PhoneCountry => Boolean(c));
+    if (this.countries && this.countries.length > 0) {
+      return this.countries.map(iso => COUNTRIES[iso]).filter((c): c is PhoneCountry => Boolean(c));
+    }
+    const tag = this.displayTag();
+    const collator = collatorFor(tag);
+    const [moldova, rest] = DEFAULT_COUNTRY_ORDER.reduce<[PhoneCountry[], PhoneCountry[]]>(
+      ([md, others], iso) => {
+        const country = COUNTRIES[iso];
+        if (!country) return [md, others];
+        if (iso === 'MD') return [[...md, country], others];
+        return [md, [...others, country]];
+      },
+      [[], []],
+    );
+    // One `countryDisplayName` call per country for the whole sort, not one per comparison.
+    const nameByIso = new Map(rest.map(country => [country.iso, countryDisplayName(country, tag)]));
+    rest.sort((a, b) => collator.compare(nameByIso.get(a.iso) ?? a.name, nameByIso.get(b.iso) ?? b.name));
+    return [...moldova, ...rest];
   }
 
-  /** Apply the search-query filter on top of the active list. Empty query → full list. */
+  /**
+   * Apply the search-query filter on top of the active list. Empty query → full list.
+   * Matches the displayed (localized) name and the data table's English `name` too, so
+   * "Germany" still finds Germany on a Romanian or Russian page.
+   */
   private filteredCountries(): PhoneCountry[] {
     const all = this.activeCountries();
     const q = this.searchQuery.trim().toLowerCase();
     if (q.length === 0) return all;
     return all.filter(c => {
-      const haystack = `${c.nameRo} ${c.name} ${c.code} ${c.iso}`.toLowerCase();
+      const haystack = `${this.displayName(c)} ${c.name} ${c.code} ${c.iso}`.toLowerCase();
       return haystack.includes(q);
     });
   }
@@ -744,7 +696,7 @@ export class MudPhoneInput {
     }
     this.mudCountryChange.emit({ countryCode: nextIso });
     if (!opts?.silentLive) {
-      this.liveAnnouncement = `${country.nameRo}, ${country.code}`;
+      this.liveAnnouncement = `${this.displayName(country)}, ${country.code}`;
     }
   }
 
@@ -886,7 +838,7 @@ export class MudPhoneInput {
 
   private resolvedErrorText(): string {
     if (this.errorText && this.errorText.trim().length > 0) return this.errorText.trim();
-    return 'Numărul de telefon este incomplet';
+    return this.messages().incompleteText;
   }
 
   private hasErrorMessage(): boolean {
@@ -920,6 +872,7 @@ export class MudPhoneInput {
   }
 
   render() {
+    const m = this.messages();
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
@@ -958,10 +911,11 @@ export class MudPhoneInput {
       part: 'country-trigger',
       id: this.triggerId,
     };
-    const triggerAriaLabel = `${country.nameRo}, ${country.code}`;
+    const triggerAriaLabel = `${this.displayName(country)}, ${country.code}`;
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -1037,7 +991,7 @@ export class MudPhoneInput {
 
             {this.loading ? (
               <span class="control-spinner" part="spinner" aria-hidden="true">
-                <mud-spinner size={spinnerSize} variant="brand" label="" />
+                <mud-spinner size={spinnerSize} variant="brand" label="" locale={childLocale(this.host, this.locale)} />
               </span>
             ) : null}
 
@@ -1057,7 +1011,7 @@ export class MudPhoneInput {
                 type="button"
                 class="clear-button"
                 part="clear-button"
-                aria-label="Șterge numărul"
+                aria-label={m.clearValueLabel}
                 // Prevent the input from losing focus on click so the focus
                 // ring + clear visibility don't flicker before the value is
                 // cleared.
@@ -1080,8 +1034,8 @@ export class MudPhoneInput {
                   type="text"
                   autocomplete="off"
                   spellcheck={false}
-                  placeholder="Search country"
-                  aria-label="Search country"
+                  placeholder={m.searchCountryText}
+                  aria-label={m.searchCountryText}
                   aria-controls={this.listboxId}
                   aria-activedescendant={activeDescendantId}
                   value={this.searchQuery}
@@ -1093,7 +1047,7 @@ export class MudPhoneInput {
                     type="button"
                     class="listbox-search-clear"
                     part="listbox-search-clear"
-                    aria-label="Șterge căutarea"
+                    aria-label={m.clearSearchLabel}
                     onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                     onClick={this.clearSearch}
                   >
@@ -1107,11 +1061,11 @@ export class MudPhoneInput {
                 part="listbox"
                 role="listbox"
                 aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-                aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Țară') : undefined}
+                aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? m.countryListLabel) : undefined}
               >
                 {opts.length === 0 ? (
                   <div class="listbox-empty" role="presentation">
-                    Nicio țară găsită
+                    {m.noCountryFoundText}
                   </div>
                 ) : (
                   opts.map((opt, index) => {
@@ -1135,7 +1089,7 @@ export class MudPhoneInput {
                         <span class="option-flag" aria-hidden="true">
                           {opt.flag()}
                         </span>
-                        <span class="option-name">{opt.nameRo}</span>
+                        <span class="option-name">{this.displayName(opt)}</span>
                         <span class="option-code">{opt.code}</span>
                         {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={16} /> : null}
                       </div>

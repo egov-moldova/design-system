@@ -2,6 +2,10 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-phone-input';
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
+import type { PhoneInputMessages } from '../mud-phone-input.messages';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../mud-phone-input.types';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
@@ -381,8 +385,10 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open onMudCountryChange={onCountryChange}></mud-phone-input>,
       );
+      // Sorted order (Moldova first, then Intl.Collator on the ro-MD display name):
+      // MD, BG, FR, DE, GR, IL, IT, PT, GB, RO, RU, ES, US, TR, UA — RO sits at index 9.
       const options = queryOptions(root);
-      options[1].click();
+      options[9].click();
       await flush();
       expect(onCountryChange).toHaveBeenCalledTimes(1);
       expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: 'RO' });
@@ -393,8 +399,9 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open value="+37362123456"></mud-phone-input>,
       );
+      // RO sits at index 9 in the sorted default list (see previous test's comment).
       const options = queryOptions(root);
-      options[1].click();
+      options[9].click();
       await flush();
       const native = queryNative(root);
       expect(native?.value).toBe('621 234 56');
@@ -420,7 +427,8 @@ describe('mud-phone-input', () => {
       await flush();
       pressKey(root, 'Enter');
       await flush();
-      expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: 'RO' });
+      // ArrowDown from MD (index 0) highlights index 1 — Bulgaria in the sorted default list.
+      expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: 'BG' });
       expect(root?.hasAttribute('open')).toBe(false);
     });
 
@@ -446,8 +454,9 @@ describe('mud-phone-input', () => {
 
     it('emits a live-region announcement when the country changes', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
+      // RO sits at index 9 in the sorted default list (see earlier comment in this block).
       const options = queryOptions(root);
-      options[1].click();
+      options[9].click();
       await flush();
       const live = queryLive(root);
       expect(live?.textContent).toContain('România');
@@ -793,6 +802,19 @@ describe('mud-phone-input', () => {
       expect(queryClearButton(root)?.hasAttribute('tabindex')).toBe(false);
     });
 
+    it('matches the English country name on a non-English page', async () => {
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" locale="ru-MD" open></mud-phone-input>,
+      );
+      const search = querySearchInput(root)!;
+      search.value = 'germany';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      const options = queryOptions(root);
+      expect(options).toHaveLength(1);
+      expect(options[0].textContent).toContain('+49');
+    });
+
     it('keeps the search clear button in the tab order when visible', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
       const search = querySearchInput(root)!;
@@ -859,4 +881,47 @@ describe('mud-phone-input', () => {
       spy.mockRestore();
     });
   });
+});
+
+/** Renders a phone input in the state that reports one validity message (each case names its own attributes). */
+function renderPhoneInput(attrs: Record<string, string>): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-phone-input {...all}></mud-phone-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  };
+}
+
+describeLocales<PhoneInputMessages>('mud-phone-input', PHONE_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { type: 'international', open: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-phone-input {...attrs}></mud-phone-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'searchCountryText')
+      return host.shadowRoot?.querySelector('.listbox-search-input')?.getAttribute('aria-label') ?? null;
+    if (key === 'countryListLabel')
+      return host.shadowRoot?.querySelector('.listbox')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  validity: [
+    { key: 'requiredText', render: renderPhoneInput({ required: 'true' }) },
+    { key: 'incompleteText', render: renderPhoneInput({ value: '+3736212' }) },
+  ],
+  unreachable: {
+    clearValueLabel:
+      'the clear button only renders while focused with a populated value — covered by the component’s own tests',
+    clearSearchLabel:
+      'the search clear button only renders once the search query is non-empty — covered by the component’s own tests',
+    noCountryFoundText:
+      'only renders once the search query filters out every country — covered by the component’s own tests',
+  },
 });

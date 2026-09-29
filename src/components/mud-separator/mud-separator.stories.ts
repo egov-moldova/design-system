@@ -94,11 +94,11 @@ export const Vertical: Story = {
   name: 'Vertical',
   render: () => /*html*/ `
     <div style="display: inline-flex; align-items: center; gap: var(--spacing-16); padding: var(--spacing-24); block-size: 56px;">
-      <span style="font-family: var(--font-family-primary);">Stânga</span>
+      <span style="font-family: var(--font-family-primary);">Left</span>
       <mud-separator orientation="vertical" size="thin" variant="subtle"></mud-separator>
-      <span style="font-family: var(--font-family-primary);">Mijloc</span>
+      <span style="font-family: var(--font-family-primary);">Middle</span>
       <mud-separator orientation="vertical" size="thin" variant="subtle"></mud-separator>
-      <span style="font-family: var(--font-family-primary);">Dreapta</span>
+      <span style="font-family: var(--font-family-primary);">Right</span>
     </div>
   `,
   parameters: {
@@ -190,8 +190,8 @@ export const WithLabel: Story = {
   render: () => /*html*/ `
     <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-24); padding: var(--spacing-24); inline-size: 480px;">
       <mud-separator label="sau"></mud-separator>
-      <mud-separator label="și"></mud-separator>
-      <mud-separator variant="mild" label="continuă cu"></mud-separator>
+      <mud-separator label="and"></mud-separator>
+      <mud-separator variant="mild" label="continue with"></mud-separator>
       <mud-separator variant="strong" size="medium" label="SAU"></mud-separator>
     </div>
   `,
@@ -200,8 +200,8 @@ export const WithLabel: Story = {
     docs: {
       source: {
         code: `<mud-separator label="sau"></mud-separator>
-<mud-separator label="și"></mud-separator>
-<mud-separator variant="mild" label="continuă cu"></mud-separator>
+<mud-separator label="and"></mud-separator>
+<mud-separator variant="mild" label="continue with"></mud-separator>
 <mud-separator variant="strong" size="medium" label="SAU"></mud-separator>`,
       },
     },
@@ -214,7 +214,7 @@ export const WithIcon: Story = {
     <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-24); padding: var(--spacing-24); inline-size: 480px;">
       <mud-separator>
         <mud-icon name="circle-info" size="16"></mud-icon>
-        <span>informație</span>
+        <span>information</span>
       </mud-separator>
       <mud-separator variant="mild">
         <mud-icon name="circle-checkmark" variant="filled" size="16"></mud-icon>
@@ -227,7 +227,7 @@ export const WithIcon: Story = {
       source: {
         code: `<mud-separator>
   <mud-icon name="circle-info" size="16"></mud-icon>
-  <span>informație</span>
+  <span>information</span>
 </mud-separator>`,
       },
     },
@@ -238,22 +238,22 @@ export const Inset: Story = {
   name: 'Inset (in lists)',
   render: () => /*html*/ `
     <div style="font-family: var(--font-family-primary); inline-size: 360px; padding: var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8);">
-      <div style="padding-block: var(--spacing-12);">Articol unu</div>
+      <div style="padding-block: var(--spacing-12);">Item one</div>
       <mud-separator inset></mud-separator>
-      <div style="padding-block: var(--spacing-12);">Articol doi</div>
+      <div style="padding-block: var(--spacing-12);">Item two</div>
       <mud-separator inset></mud-separator>
-      <div style="padding-block: var(--spacing-12);">Articol trei</div>
+      <div style="padding-block: var(--spacing-12);">Item three</div>
     </div>
   `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: `<div>Articol unu</div>
+        code: `<div>Item one</div>
 <mud-separator inset></mud-separator>
-<div>Articol doi</div>
+<div>Item two</div>
 <mud-separator inset></mud-separator>
-<div>Articol trei</div>`,
+<div>Item three</div>`,
       },
     },
   },
@@ -263,13 +263,13 @@ export const InList: Story = {
   name: 'In List (composed)',
   render: () => /*html*/ `
     <ul style="list-style: none; margin: 0; padding: 0; font-family: var(--font-family-primary); inline-size: 360px; border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); overflow: hidden;">
-      <li style="padding: var(--spacing-12) var(--spacing-16);">Profilul meu</li>
+      <li style="padding: var(--spacing-12) var(--spacing-16);">My profile</li>
       <li><mud-separator></mud-separator></li>
-      <li style="padding: var(--spacing-12) var(--spacing-16);">Setări</li>
+      <li style="padding: var(--spacing-12) var(--spacing-16);">Settings</li>
       <li><mud-separator></mud-separator></li>
-      <li style="padding: var(--spacing-12) var(--spacing-16);">Notificări</li>
+      <li style="padding: var(--spacing-12) var(--spacing-16);">Notifications</li>
       <li><mud-separator variant="mild"></mud-separator></li>
-      <li style="padding: var(--spacing-12) var(--spacing-16); color: var(--color-text-danger-default);">Deconectare</li>
+      <li style="padding: var(--spacing-12) var(--spacing-16); color: var(--color-text-danger-default);">Sign out</li>
     </ul>
   `,
   parameters: {
@@ -277,11 +277,11 @@ export const InList: Story = {
     docs: {
       source: {
         code: `<ul>
-  <li>Profilul meu</li>
+  <li>My profile</li>
   <li><mud-separator></mud-separator></li>
-  <li>Setări</li>
+  <li>Settings</li>
   <li><mud-separator></mud-separator></li>
-  <li>Notificări</li>
+  <li>Notifications</li>
 </ul>`,
       },
     },

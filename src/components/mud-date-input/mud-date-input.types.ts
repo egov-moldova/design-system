@@ -1,15 +1,19 @@
+import { MUD_LOCALES } from '../../utils/locale';
+import type { MudLocale } from '../../utils/locale';
+
 export const DATE_INPUT_SIZES = ['md', 'lg'] as const;
 export const DATE_INPUT_VARIANTS = ['default', 'destructive'] as const;
 export const DATE_INPUT_FORMATS = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'] as const;
 export const DATE_INPUT_BREAKPOINTS = ['auto', 'desktop', 'mobile'] as const;
 export const DATE_INPUT_TYPES = ['default', 'advanced', 'date-range'] as const;
-/** Locales with a built-in translation for every label / error message on this component. */
-export const DATE_INPUT_LOCALES = ['ro-RO', 'en-US', 'ru-RU'] as const;
+/** Locales with a built-in translation for every label / error message on this component. Alias of `MUD_LOCALES`. */
+export const DATE_INPUT_LOCALES = MUD_LOCALES;
 
 export type DateInputSize = (typeof DATE_INPUT_SIZES)[number];
 export type DateInputVariant = (typeof DATE_INPUT_VARIANTS)[number];
 export type DateInputFormat = (typeof DATE_INPUT_FORMATS)[number];
-export type DateInputLocale = (typeof DATE_INPUT_LOCALES)[number];
+/** Alias of `MudLocale`. */
+export type DateInputLocale = MudLocale;
 
 /**
  * The date-input types of the Figma Date Picker page (Types, 470:32035).
@@ -18,33 +22,6 @@ export type DateInputLocale = (typeof DATE_INPUT_LOCALES)[number];
  * - `date-range` — a start and an end date, e.g. `18/01/2025 - 22/01/2025`.
  */
 export type DateInputType = (typeof DATE_INPUT_TYPES)[number];
-
-/** All built-in, translatable strings on this component. */
-export interface DateInputMessages {
-  /** Accessible label for the clear (×) button. */
-  clearLabel: string;
-  /** Accessible name of the calendar dialog. */
-  pickerLabel: string;
-  /** Accessible name of the trailing button that opens the calendar. */
-  openPickerLabel: string;
-  /**
-   * Message for a day outside 01–31, or (once the month is known) past the
-   * number of days in that month. Supports a `{max}` placeholder.
-   */
-  dayErrorText: string;
-  /** Message for a month outside 01–12. */
-  monthErrorText: string;
-  /** Message for a year outside the allowed years. */
-  yearErrorText: string;
-  /** Message for a complete date that does not otherwise exist. */
-  dateErrorText: string;
-  /** Message for a complete date outside `min` / `max`. */
-  rangeErrorText: string;
-  /** `type="date-range"` only: message for an end date before the start date. */
-  orderErrorText: string;
-  /** Message shown when a required field is submitted empty. */
-  requiredErrorText: string;
-}
 
 /**
  * Calendar-popover placement.

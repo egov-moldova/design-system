@@ -11,6 +11,9 @@ import '../../mud-checkbox/mud-checkbox';
 // unupgraded `<mud-icon>` placeholder, which is sufficient for assertions
 // about table behaviour, aria-sort, and selection.
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { TABLE_MESSAGES } from '../mud-table.messages';
+import type { TableMessages } from '../mud-table.messages';
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES } from '../mud-table.types';
 import type { TableColumn, TableRowData } from '../mud-table.types';
 
@@ -404,4 +407,65 @@ describe('mud-table', () => {
       });
     });
   });
+
+  describe('selectRowLabel override', () => {
+    it('empty selectRowLabel falls back', async () => {
+      const { root, waitForChanges } = await render(<mud-table locale="en-US" select-row-label="" />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
+      expect(checkbox?.label).toBe(TABLE_MESSAGES['en-US'].selectRowLabel.replace('{row}', '1'));
+    });
+
+    it('fills the {row} placeholder with the 1-based row index', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
+      expect(checkbox?.label).toBe('Selectează rândul 1');
+    });
+
+    it('honors a custom select-row-label override', async () => {
+      const { root, waitForChanges } = await render(<mud-table select-row-label="Alege rândul {row}" />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      const checkbox = root?.shadowRoot?.querySelector('tbody mud-checkbox') as { label?: string } | null;
+      expect(checkbox?.label).toBe('Alege rândul 1');
+    });
+  });
+});
+
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+
+describeLocales<TableMessages>('mud-table', TABLE_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.emptyText !== undefined) attrs['empty-text'] = String(props.emptyText);
+    if (props.selectAllLabel !== undefined) attrs['select-all-label'] = String(props.selectAllLabel);
+    const { root, waitForChanges } = await render(
+      <mud-table {...attrs}></mud-table>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    setProps(root, { selectable: true });
+    await waitForChanges();
+    await flush();
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'emptyText') return host.shadowRoot?.querySelector('.empty-text')?.textContent ?? null;
+    if (key === 'selectAllLabel')
+      return (
+        host.shadowRoot
+          ?.querySelector('thead mud-checkbox')
+          ?.shadowRoot?.querySelector('input')
+          ?.getAttribute('aria-label') ?? null
+      );
+    return null;
+  },
+  overrides: { emptyText: 'emptyText', selectAllLabel: 'selectAllLabel' },
+  unreachable: {
+    selectRowLabel:
+      'carries a {row} placeholder filled per row, and needs rows where emptyText needs none — asserted by `empty selectRowLabel falls back` above',
+  },
 });

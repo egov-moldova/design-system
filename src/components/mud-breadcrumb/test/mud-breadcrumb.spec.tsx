@@ -1,11 +1,16 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 
+import { describeLocales, withLangObserver } from '../../../utils/locale.test-helpers';
 import '../mud-breadcrumb';
 import '../mud-breadcrumb-item';
 import '../../mud-spinner/mud-spinner';
 import '../../mud-tooltip/mud-tooltip';
 import '../../mud-icon/mud-icon';
 
+import { BREADCRUMB_ITEM_MESSAGES } from '../mud-breadcrumb-item.messages';
+import type { BreadcrumbItemMessages } from '../mud-breadcrumb-item.messages';
+import { BREADCRUMB_MESSAGES } from '../mud-breadcrumb.messages';
+import type { BreadcrumbMessages } from '../mud-breadcrumb.messages';
 import type { BreadcrumbItem } from '../mud-breadcrumb.types';
 
 const ROMANIAN_ITEMS: BreadcrumbItem[] = [
@@ -34,10 +39,10 @@ describe('mud-breadcrumb', () => {
     fetchSpy.mockRestore();
   });
 
-  it('renders nav landmark with default aria-label="Breadcrumb"', async () => {
+  it('renders nav landmark with the default locale aria-label', async () => {
     const { root } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
     expect(root?.getAttribute('role')).toBe('navigation');
-    expect(root?.getAttribute('aria-label')).toBe('Breadcrumb');
+    expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['ro-MD'].navLabel);
   });
 
   it('honors a custom aria-label', async () => {
@@ -171,6 +176,37 @@ describe('mud-breadcrumb', () => {
       );
       const slottedTrail = root?.shadowRoot?.querySelector('.trail--slot');
       expect(slottedTrail).toBeTruthy();
+    });
+
+    it('a slotted mud-breadcrumb-item with no locale of its own follows the breadcrumb explicit locale', async () => {
+      const { root } = await render(
+        <mud-breadcrumb locale="en-US">
+          <mud-breadcrumb-item loading>Loading item</mud-breadcrumb-item>
+        </mud-breadcrumb>,
+      );
+      const item = root?.querySelector('mud-breadcrumb-item');
+      const spinner = item?.shadowRoot?.querySelector('mud-spinner');
+      expect(spinner?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['en-US'].loadingLabel);
+    });
+
+    it('a slotted mud-breadcrumb-item follows the breadcrumb locale set AFTER mount', async () => {
+      await withLangObserver(async fire => {
+        const { root, waitForChanges } = await render(
+          <mud-breadcrumb>
+            <mud-breadcrumb-item loading>Loading item</mud-breadcrumb-item>
+          </mud-breadcrumb>,
+        );
+        const item = root?.querySelector('mud-breadcrumb-item');
+        const spinner = () => item?.shadowRoot?.querySelector('mud-spinner');
+        expect(spinner()?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['ro-MD'].loadingLabel);
+        (root as unknown as { locale: string }).locale = 'en-US';
+        await waitForChanges();
+        // The breadcrumb's own host `lang` write is what the `<html lang>` observer picks
+        // up — this stub delivers that notification without a real MutationObserver.
+        fire();
+        await waitForChanges();
+        expect(spinner()?.getAttribute('aria-label')).toBe(BREADCRUMB_ITEM_MESSAGES['en-US'].loadingLabel);
+      });
     });
   });
 
@@ -342,7 +378,7 @@ describe('mud-breadcrumb', () => {
   });
 
   describe('aria-label render-loop safety', () => {
-    it('strips host aria-label on connect and re-emits it from State', async () => {
+    it('keeps the consumer-supplied host aria-label (nameHostWithFallback)', async () => {
       const { root } = await render(
         <mud-breadcrumb items={ROMANIAN_ITEMS} aria-label="Drum de navigare"></mud-breadcrumb>,
       );
@@ -359,6 +395,19 @@ describe('mud-breadcrumb', () => {
       (root as unknown as { label: string }).label = 'Cale nouă';
       await waitForChanges();
       expect(root?.getAttribute('aria-label')).toBe('Cale nouă');
+    });
+
+    it('names the navigation landmark after first render (no consumer aria-label, no label prop)', async () => {
+      const { root } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
+      expect(root?.getAttribute('role')).toBe('navigation');
+      expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['ro-MD'].navLabel);
+    });
+
+    it('keeps the landmark named after a `locale` change', async () => {
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
+      (root as unknown as { locale: string }).locale = 'en-US';
+      await waitForChanges();
+      expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['en-US'].navLabel);
     });
   });
 
@@ -674,4 +723,55 @@ describe('mud-breadcrumb-item', () => {
     await waitForChanges();
     expect(ev.defaultPrevented).toBe(true);
   });
+});
+
+describeLocales<BreadcrumbMessages>('mud-breadcrumb', BREADCRUMB_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.label !== undefined) attrs.label = String(props.label);
+    if (props.overflowLabel !== undefined) attrs['overflow-label'] = String(props.overflowLabel);
+    if (props.loadingLabel !== undefined) attrs['loading-label'] = String(props.loadingLabel);
+    const items: BreadcrumbItem[] = [
+      { label: 'A', loading: true },
+      { label: 'B' },
+      { label: 'C' },
+      { label: 'D' },
+      { label: 'E' },
+      { label: 'F' },
+    ];
+    const { root } = await render(
+      <mud-breadcrumb items={items} {...attrs}></mud-breadcrumb>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'navLabel') return host.getAttribute('aria-label');
+    if (key === 'overflowLabel')
+      return host.shadowRoot?.querySelector('.overflow-trigger')?.getAttribute('aria-label') ?? null;
+    if (key === 'loadingLabel')
+      return host.shadowRoot?.querySelector('mud-spinner')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { navLabel: 'label', overflowLabel: 'overflowLabel', loadingLabel: 'loadingLabel' },
+});
+
+describeLocales<BreadcrumbItemMessages>('mud-breadcrumb-item', BREADCRUMB_ITEM_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { loading: '' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.loadingLabel !== undefined) attrs['loading-label'] = String(props.loadingLabel);
+    const { root } = await render(
+      <mud-breadcrumb-item {...attrs}></mud-breadcrumb-item>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'loadingLabel')
+      return host.shadowRoot?.querySelector('mud-spinner')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { loadingLabel: 'loadingLabel' },
 });

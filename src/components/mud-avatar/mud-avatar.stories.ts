@@ -15,6 +15,9 @@ type AvatarArgs = {
   iconName: IconName;
   ariaLabel: string;
   badge: 'none' | 'dot' | 'count';
+  locale: string;
+  initialsLabel: string;
+  fallbackLabel: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -45,7 +48,7 @@ const renderBadgeChild = (kind: AvatarArgs['badge'], size: AvatarSize): string =
   if (kind === 'count') {
     // The badge tracks the avatar's size rung; `xs` is dot-only in Figma, so a
     // count on an xs avatar degrades to a solid dot inside `mud-badge`.
-    return /*html*/ `<mud-badge slot="badge" type="numbered" variant="danger" size="${size}" count="3" aria-label="3 notificări noi"></mud-badge>`;
+    return /*html*/ `<mud-badge slot="badge" type="numbered" variant="danger" size="${size}" count="3" aria-label="3 new notifications"></mud-badge>`;
   }
   if (kind === 'dot') {
     return /*html*/ `<mud-badge slot="badge" type="dot" variant="danger" size="${size}" aria-label="Online"></mud-badge>`;
@@ -63,6 +66,9 @@ const renderAvatar = (args: AvatarArgs) => /*html*/ `
     ${args.initials ? `initials="${args.initials}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
     ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.initialsLabel ? `initials-label="${args.initialsLabel}"` : ''}
+    ${args.fallbackLabel ? `fallback-label="${args.fallbackLabel}"` : ''}
   >${renderBadgeChild(args.badge, args.size)}</mud-avatar>
 `;
 
@@ -230,7 +236,7 @@ const renderStack = () => /*html*/ `
 
     <div>
       <p style="${cellLabelStyle} text-align: start; margin-top: 0;">5 collaborators with overflow indicator</p>
-      <div class="avatar-stack" aria-label="5 colegi: Ion Popescu, Maria Pop, Andrei Ionescu și încă 2">
+      <div class="avatar-stack" aria-label="5 colleagues: Ion Popescu, Maria Pop, Andrei Ionescu and 2 more">
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ION}" name="Ion Popescu"></mud-avatar>
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_MARIA}" name="Maria Pop"></mud-avatar>
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ANDREI}" name="Andrei Ionescu"></mud-avatar>
@@ -243,7 +249,7 @@ const renderStack = () => /*html*/ `
       <div class="avatar-stack">
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ELENA}" name="Elena Dumitrescu"></mud-avatar>
         <mud-avatar type="initials" size="md" name="Vlad Georgescu"></mud-avatar>
-        <mud-avatar type="icon" size="md" aria-label="Invitație în așteptare"></mud-avatar>
+        <mud-avatar type="icon" size="md" aria-label="Pending invitation"></mud-avatar>
       </div>
     </div>
   </div>
@@ -257,7 +263,7 @@ const renderRomanianNames = () => /*html*/ `
         <mud-avatar type="photo" size="md" src="${person.photo}" name="${person.name}"></mud-avatar>
         <div style="display: flex; flex-direction: column;">
           <span style="font-family: var(--font-family-primary); font-weight: var(--font-weight-medium); font-size: var(--font-size-14); color: var(--color-text-base-default);">${person.name}</span>
-          <span style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary);">Colaborator</span>
+          <span style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary);">Collaborator</span>
         </div>
       </div>`,
     ).join('')}
@@ -268,7 +274,7 @@ const renderRomanianNames = () => /*html*/ `
         <mud-avatar type="initials" size="md" name="${person.name}"></mud-avatar>
         <div style="display: flex; flex-direction: column;">
           <span style="font-family: var(--font-family-primary); font-weight: var(--font-weight-medium); font-size: var(--font-size-14); color: var(--color-text-base-default);">${person.name}</span>
-          <span style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary);">Fără fotografie</span>
+          <span style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary);">No photo</span>
         </div>
       </div>`,
     ).join('')}
@@ -391,6 +397,21 @@ const meta: Meta<AvatarArgs> = {
       description: 'Demo helper — slots a notification badge child.',
       table: { defaultValue: { summary: 'none' } },
     },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
+    initialsLabel: {
+      control: 'text',
+      description: "Accessible name when only initials are set. Overrides the locale's copy.",
+      name: 'initials-label',
+    },
+    fallbackLabel: {
+      control: 'text',
+      description: "Accessible name when nothing is set. Overrides the locale's copy.",
+      name: 'fallback-label',
+    },
   },
 };
 export default meta;
@@ -412,6 +433,9 @@ export const Default: Story = {
     iconName: 'person',
     ariaLabel: '',
     badge: 'none',
+    locale: '',
+    initialsLabel: '',
+    fallbackLabel: '',
   },
   parameters: {
     docs: {

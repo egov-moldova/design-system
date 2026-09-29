@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +17,7 @@
               id="demo-accordion-data"
               mode="multiple"
               appearance="default"
-              label="Întrebări frecvente"
+              label="Frequently asked questions"
             ></mud-accordion>
           </div>
           <span class="label">items set as a JS property (arrays cannot be set via attribute)</span>
@@ -30,7 +30,7 @@
               id="demo-accordion-single"
               mode="single"
               appearance="trail-sites"
-              label="Servicii"
+              label="Services"
             ></mud-accordion>
           </div>
           <span class="label">mode="single" — opening one collapses the others</span>
@@ -39,23 +39,19 @@
         <div class="subsection">
           <h3>Slotted children (<code>&lt;mud-accordion-item&gt;</code>) with slots</h3>
           <div style="width: 100%; max-width: 640px">
-            <mud-accordion mode="multiple" appearance="default" label="Setări cont">
-              <mud-accordion-item heading="Date personale" supporting-text="Nume, prenume, IDNP" open="">
+            <mud-accordion mode="multiple" appearance="default" label="Account settings">
+              <mud-accordion-item heading="Personal data" supporting-text="Name, surname, IDNP" open="">
                 <mud-icon slot="icon-start" name="person" size="20"></mud-icon>
-                <mud-tag slot="trailing">Verificat</mud-tag>
-                <p style="margin: 0">Modificați datele din profilul dvs. de utilizator MCabinet.</p>
+                <mud-tag slot="trailing">Verified</mud-tag>
+                <p style="margin: 0">Change the details in your MCabinet user profile.</p>
               </mud-accordion-item>
-              <mud-accordion-item heading="Notificări" supporting-text="Email și SMS">
+              <mud-accordion-item heading="Notifications" supporting-text="Email and SMS">
                 <mud-icon slot="icon-start" name="notification" size="20"></mud-icon>
-                <p style="margin: 0">Gestionați canalele prin care primiți notificări de la stat.</p>
+                <p style="margin: 0">Manage the channels through which you receive notifications from the state.</p>
               </mud-accordion-item>
-              <mud-accordion-item
-                heading="Confidențialitate (dezactivat)"
-                supporting-text="Indisponibil momentan"
-                disabled=""
-              >
+              <mud-accordion-item heading="Privacy (disabled)" supporting-text="Temporarily unavailable" disabled="">
                 <mud-icon slot="icon-start" name="lock" size="20"></mud-icon>
-                <p style="margin: 0">Această secțiune nu este disponibilă.</p>
+                <p style="margin: 0">This section is not available.</p>
               </mud-accordion-item>
             </mud-accordion>
           </div>
@@ -67,14 +63,14 @@
           <div style="width: 100%; max-width: 640px">
             <mud-accordion mode="multiple" label="Edge cases">
               <mud-accordion-item
-                heading="Heading foarte lung fără spații: Supercalifragilisticexpialidocious_AAAAAAAAAAAAAAAAAAAAAAAAAA"
+                heading="Very long heading without spaces: Supercalifragilisticexpialidocious_AAAAAAAAAAAAAAAAAAAAAAAAAA"
                 supporting-text="Text suport lung pentru a verifica trunchierea — ăâîșțĂÂÎȘȚ și emoji 🎉 plus simboluri &amp; < > &quot; '"
                 open=""
               >
                 <p style="margin: 0">
-                  Corp foarte lung pentru a verifica scroll/wrap. Lorem ipsum dolor sit amet, consectetur adipiscing
-                  elit, sed do eiusmod tempor incididunt ut labore. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
-                  &amp; &lt; &gt; " '.
+                  Very long body to check scroll/wrap. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                  eiusmod tempor incididunt ut labore. Accented characters: éüñ. RTL: مرحبا بكم. Special: &amp; &lt;
+                  &gt; " '.
                 </p>
               </mud-accordion-item>
               <mud-accordion-item heading="Empty body (no panel content)"></mud-accordion-item>
@@ -90,21 +86,21 @@
               data.items = [
                 {
                   id: 'a1',
-                  heading: 'Cum îmi creez un cont?',
-                  supportingText: 'Autentificare MPass',
-                  content: 'Accesați portalul și autentificați-vă cu MPass.',
+                  heading: 'How do I create an account?',
+                  supportingText: 'MPass sign-in',
+                  content: 'Open the portal and sign in with MPass.',
                   open: true,
                 },
                 {
                   id: 'a2',
-                  heading: 'Cum recuperez parola?',
-                  content: 'Folosiți opțiunea de recuperare prin email sau SMS.',
+                  heading: 'How do I recover my password?',
+                  content: 'Use the recovery option by email or SMS.',
                 },
                 {
                   id: 'a3',
-                  heading: 'Cum contactez suportul?',
-                  supportingText: 'Linia 1234',
-                  content: 'Apelați linia verde sau scrieți pe email.',
+                  heading: 'How do I contact support?',
+                  supportingText: 'Hotline 1234',
+                  content: 'Call the hotline or write by email.',
                 },
               ];
             }
@@ -113,12 +109,12 @@
               single.items = [
                 {
                   id: 's1',
-                  heading: 'Buletin de identitate',
-                  content: 'Programare pentru eliberarea actelor.',
+                  heading: 'Identity card',
+                  content: 'Appointment for issuing the documents.',
                   open: true,
                 },
-                { id: 's2', heading: 'Pașaport biometric', content: 'Depunere cerere online.' },
-                { id: 's3', heading: 'Permis de conducere', content: 'Reînnoire și schimbare.' },
+                { id: 's2', heading: 'Biometric passport', content: 'Submit the request online.' },
+                { id: 's3', heading: 'Driving licence', content: 'Renewal and replacement.' },
               ];
             }
           });

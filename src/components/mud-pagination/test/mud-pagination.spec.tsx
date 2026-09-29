@@ -1,7 +1,10 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-pagination';
 
+import { PAGINATION_MESSAGES } from '../mud-pagination.messages';
+import type { PaginationMessages } from '../mud-pagination.messages';
 import { ELLIPSIS, PAGINATION_SIZES } from '../mud-pagination.types';
 
 // ---------------------------------------------------------------------------
@@ -490,4 +493,61 @@ describe('mud-pagination', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describe('mud-pagination — template overrides', () => {
+  const en = PAGINATION_MESSAGES['en-US'];
+
+  it('empty prevAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} prevAriaLabel="" />);
+    expect(queryPrev(root)?.getAttribute('aria-label')).toBe(en.prevAriaLabel.replace('{page}', '2'));
+  });
+
+  it('empty nextAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} nextAriaLabel="" />);
+    expect(queryNext(root)?.getAttribute('aria-label')).toBe(en.nextAriaLabel.replace('{page}', '4'));
+  });
+
+  it('empty pageAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={2} totalPages={5} pageAriaLabel="" />);
+    const second = queryPageButtons(root).find(button => button.textContent?.trim() === '2');
+    expect(second?.getAttribute('aria-label')).toBe(en.pageAriaLabel.replace('{page}', '2').replace('{total}', '5'));
+  });
+
+  it('empty overflowAriaLabel falls back', async () => {
+    const { root } = await render(
+      <mud-pagination locale="en-US" currentPage={10} totalPages={20} overflowAriaLabel="" />,
+    );
+    const leading = queryEllipses(root).find(trigger => trigger.getAttribute('data-key') === 'leading');
+    expect(leading?.getAttribute('aria-label')).toBe(en.overflowAriaLabel.replace('{from}', '2').replace('{to}', '8'));
+  });
+});
+
+describeLocales<PaginationMessages>('mud-pagination', PAGINATION_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'current-page': '3', 'total-pages': '5' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.label !== undefined) attrs.label = String(props.label);
+    if (props.prevLabel !== undefined) attrs['prev-label'] = String(props.prevLabel);
+    if (props.nextLabel !== undefined) attrs['next-label'] = String(props.nextLabel);
+    const { root } = await render(
+      <mud-pagination {...attrs}></mud-pagination>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'navLabel') return queryNav(host)?.getAttribute('aria-label') ?? null;
+    if (key === 'prevLabel') return queryPrev(host)?.querySelector('.nav-label')?.textContent ?? null;
+    if (key === 'nextLabel') return queryNext(host)?.querySelector('.nav-label')?.textContent ?? null;
+    return null;
+  },
+  overrides: { navLabel: 'label', prevLabel: 'prevLabel', nextLabel: 'nextLabel' },
+  captions: ['prevLabel', 'nextLabel'],
+  unreachable: {
+    prevAriaLabel: 'carries a {page} placeholder — asserted by `empty prevAriaLabel falls back` above',
+    nextAriaLabel: 'carries a {page} placeholder — asserted by `empty nextAriaLabel falls back` above',
+    pageAriaLabel: 'carries {page}/{total} placeholders — asserted by `empty pageAriaLabel falls back` above',
+    overflowAriaLabel: 'carries {from}/{to} placeholders — asserted by `empty overflowAriaLabel falls back` above',
+  },
 });

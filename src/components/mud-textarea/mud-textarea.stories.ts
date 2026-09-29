@@ -19,6 +19,7 @@ type TextareaArgs = {
   disabled: boolean;
   readonly: boolean;
   invalid: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -40,6 +41,7 @@ const renderTextarea = (args: TextareaArgs) => /*html*/ `
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-textarea>
 `;
 
@@ -60,6 +62,7 @@ const docsSourceDefault = (args: TextareaArgs) => {
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -100,6 +103,11 @@ const meta: Meta<TextareaArgs> = {
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
   },
 };
 
@@ -113,8 +121,8 @@ export const Default: Story = {
     variant: 'default',
     size: 'lg',
     resize: 'vertical',
-    label: 'Descriere',
-    placeholder: 'Adaugă o descriere…',
+    label: 'Description',
+    placeholder: 'Add a description…',
     value: '',
     helperText: '',
     errorText: '',
@@ -125,6 +133,7 @@ export const Default: Story = {
     disabled: false,
     readonly: false,
     invalid: false,
+    locale: '',
   },
   parameters: {
     docs: {
@@ -162,7 +171,7 @@ export const AllVariants: Story = {
       TEXTAREA_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<mud-textarea variant="${variant}" size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea variant="${variant}" size="lg" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
       ).join(''),
     ),
@@ -172,7 +181,7 @@ export const AllVariants: Story = {
       source: {
         code: TEXTAREA_VARIANTS.map(
           v =>
-            `<mud-textarea variant="${v}" size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+            `<mud-textarea variant="${v}" size="lg" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ).join('\n'),
       },
     },
@@ -186,7 +195,7 @@ export const AllSizes: Story = {
       TEXTAREA_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<mud-textarea size="${size}" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="${size}" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
       ).join(''),
     ),
@@ -195,7 +204,7 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: TEXTAREA_SIZES.map(
-          s => `<mud-textarea size="${s}" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          s => `<mud-textarea size="${s}" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ).join('\n'),
       },
     },
@@ -209,35 +218,35 @@ export const States: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
         cell(
           'hover (use mouse)',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
         cell(
           'focus (use Tab)',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
         cell(
           'filled',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" value="Rezolvarea problemei nu mai funcționează corect după ultima actualizare."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" value="The fix no longer works correctly after the latest update."></mud-textarea>`,
         ),
         cell(
           'read-only',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" value="Acest conținut este doar pentru citire." readonly></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" value="This content is read-only." readonly></mud-textarea>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" disabled></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" disabled></mud-textarea>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" required></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" required></mud-textarea>`,
         ),
         cell(
           'destructive',
-          /*html*/ `<mud-textarea size="lg" variant="destructive" label="Descriere" placeholder="Adaugă o descriere…" invalid error-text="Câmpul este obligatoriu"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" variant="destructive" label="Description" placeholder="Add a description…" invalid error-text="This field is required"></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -246,11 +255,11 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" value="…" readonly></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" disabled></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" required></mud-textarea>',
-          '<mud-textarea size="lg" variant="destructive" label="Descriere" invalid error-text="Câmpul este obligatoriu"></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" placeholder="Add a description…"></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" value="…" readonly></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" disabled></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" required></mud-textarea>',
+          '<mud-textarea size="lg" variant="destructive" label="Description" invalid error-text="This field is required"></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -264,12 +273,12 @@ export const WithLabel: Story = {
       [
         cell(
           'plain label',
-          /*html*/ `<mud-textarea size="lg" label="Motivul cererii" placeholder="Descrie motivul…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Reason for the request" placeholder="Describe the reason…"></mud-textarea>`,
         ),
         cell(
           'label slot (rich)',
-          /*html*/ `<mud-textarea size="lg" placeholder="Adaugă o descriere…">
-            <span slot="label">Comentarii <strong>(opțional)</strong></span>
+          /*html*/ `<mud-textarea size="lg" placeholder="Add a description…">
+            <span slot="label">Comments <strong>(optional)</strong></span>
           </mud-textarea>`,
         ),
       ].join(''),
@@ -279,8 +288,8 @@ export const WithLabel: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Motivul cererii" placeholder="Descrie motivul…"></mud-textarea>',
-          '<mud-textarea size="lg" placeholder="…"><span slot="label">Comentarii <strong>(opțional)</strong></span></mud-textarea>',
+          '<mud-textarea size="lg" label="Reason for the request" placeholder="Describe the reason…"></mud-textarea>',
+          '<mud-textarea size="lg" placeholder="…"><span slot="label">Comments <strong>(optional)</strong></span></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -294,11 +303,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" helper-text="Maxim 500 de caractere, fără date personale."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" helper-text="At most 500 characters, no personal data."></mud-textarea>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-textarea size="lg" label="Motivul cererii" placeholder="Descrie motivul…" helper-text="Câmp obligatoriu pentru continuare." required></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Reason for the request" placeholder="Describe the reason…" helper-text="This field is required to continue." required></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -307,8 +316,8 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Descriere" helper-text="Maxim 500 de caractere, fără date personale."></mud-textarea>',
-          '<mud-textarea size="lg" label="Motivul cererii" helper-text="Câmp obligatoriu pentru continuare." required></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" helper-text="At most 500 characters, no personal data."></mud-textarea>',
+          '<mud-textarea size="lg" label="Reason for the request" helper-text="This field is required to continue." required></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -322,11 +331,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="ok" invalid error-text="Mesajul trebuie să conțină cel puțin 20 de caractere."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="ok" invalid error-text="The message must contain at least 20 characters."></mud-textarea>`,
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<mud-textarea size="lg" variant="destructive" label="Descriere" placeholder="Adaugă o descriere…" error-text="Câmpul este obligatoriu" invalid></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" variant="destructive" label="Description" placeholder="Add a description…" error-text="This field is required" invalid></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -335,8 +344,8 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Comentarii" value="ok" invalid error-text="Mesajul trebuie să conțină cel puțin 20 de caractere."></mud-textarea>',
-          '<mud-textarea size="lg" variant="destructive" label="Descriere" placeholder="…" error-text="Câmpul este obligatoriu" invalid></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="ok" invalid error-text="The message must contain at least 20 characters."></mud-textarea>',
+          '<mud-textarea size="lg" variant="destructive" label="Description" placeholder="…" error-text="This field is required" invalid></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -350,19 +359,19 @@ export const WithCharacterCounter: Story = {
       [
         cell(
           'default + counter',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" maxlength="500"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" maxlength="500"></mud-textarea>`,
         ),
         cell(
           'with helper + counter',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" helper-text="Maxim 500 de caractere." maxlength="500"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" helper-text="At most 500 characters." maxlength="500"></mud-textarea>`,
         ),
         cell(
           'near limit',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Acesta este un comentariu care se apropie de limita maximă permisă pentru acest câmp." maxlength="100"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="This is a comment that is close to the maximum length allowed for this field." maxlength="100"></mud-textarea>`,
         ),
         cell(
           'over limit',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Acesta este un comentariu mult prea lung care depășește limita maximă permisă pentru acest câmp și ar trebui să afișeze un avertisment vizual." maxlength="50" invalid error-text="Mesajul depășește limita admisă."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="This is a comment far too long that exceeds the maximum length allowed for this field and should show a visual warning." maxlength="50" invalid error-text="The message exceeds the allowed limit."></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -371,10 +380,10 @@ export const WithCharacterCounter: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Descriere" placeholder="…" maxlength="500"></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" helper-text="…" maxlength="500"></mud-textarea>',
-          '<mud-textarea size="lg" label="Comentarii" value="…" maxlength="100"></mud-textarea>',
-          '<mud-textarea size="lg" label="Comentarii" value="…" maxlength="50" invalid error-text="Mesajul depășește limita admisă."></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" placeholder="…" maxlength="500"></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" helper-text="…" maxlength="500"></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…" maxlength="100"></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…" maxlength="50" invalid error-text="The message exceeds the allowed limit."></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -388,11 +397,11 @@ export const Mandatory: Story = {
       [
         cell(
           'mandatory (lg)',
-          /*html*/ `<mud-textarea size="lg" label="Motivul cererii" placeholder="Descrie motivul…" required></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Reason for the request" placeholder="Describe the reason…" required></mud-textarea>`,
         ),
         cell(
           'mandatory + helper',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" helper-text="Câmp obligatoriu." required></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" helper-text="This field cannot stay empty." required></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -401,8 +410,8 @@ export const Mandatory: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Motivul cererii" required></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" helper-text="Câmp obligatoriu." required></mud-textarea>',
+          '<mud-textarea size="lg" label="Reason for the request" required></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" helper-text="This field cannot stay empty." required></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -416,11 +425,11 @@ export const Readonly: Story = {
       [
         cell(
           'read-only (lg)',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Acest conținut este doar pentru citire și nu poate fi modificat." readonly helper-text="Câmp doar pentru citire."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="This content is read-only and cannot be modified." readonly helper-text="Read-only field."></mud-textarea>`,
         ),
         cell(
           'disabled (for comparison)',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Acest conținut este dezactivat și inaccesibil." disabled helper-text="Câmp dezactivat."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="This content is disabled and inaccessible." disabled helper-text="Disabled field."></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -429,8 +438,8 @@ export const Readonly: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Comentarii" value="…" readonly helper-text="Câmp doar pentru citire."></mud-textarea>',
-          '<mud-textarea size="lg" label="Comentarii" value="…" disabled helper-text="Câmp dezactivat."></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…" readonly helper-text="Read-only field."></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…" disabled helper-text="Disabled field."></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -444,11 +453,11 @@ export const Disabled: Story = {
       [
         cell(
           'disabled empty',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" disabled></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" disabled></mud-textarea>`,
         ),
         cell(
           'disabled filled',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Conținut existent care nu mai poate fi editat." disabled></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="Existing content that can no longer be edited." disabled></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -457,8 +466,8 @@ export const Disabled: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" label="Descriere" placeholder="…" disabled></mud-textarea>',
-          '<mud-textarea size="lg" label="Comentarii" value="…" disabled></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" placeholder="…" disabled></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…" disabled></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -472,11 +481,11 @@ export const NoResize: Story = {
       [
         cell(
           'resize="none"',
-          /*html*/ `<mud-textarea size="lg" resize="none" label="Descriere" placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" resize="none" label="Description" placeholder="Add a description…"></mud-textarea>`,
         ),
         cell(
           'resize="none" + filled',
-          /*html*/ `<mud-textarea size="lg" resize="none" label="Comentarii" value="Acest câmp are dimensiune fixă și nu poate fi redimensionat de utilizator."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" resize="none" label="Comments" value="This field has a fixed size and cannot be resized by the user."></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -485,8 +494,8 @@ export const NoResize: Story = {
     docs: {
       source: {
         code: [
-          '<mud-textarea size="lg" resize="none" label="Descriere" placeholder="…"></mud-textarea>',
-          '<mud-textarea size="lg" resize="none" label="Comentarii" value="…"></mud-textarea>',
+          '<mud-textarea size="lg" resize="none" label="Description" placeholder="…"></mud-textarea>',
+          '<mud-textarea size="lg" resize="none" label="Comments" value="…"></mud-textarea>',
         ].join('\n'),
       },
     },
@@ -500,15 +509,15 @@ export const EdgeCases: Story = {
       [
         cell(
           'label truncation (single line)',
-          /*html*/ `<mud-textarea size="lg" label="Evoluția digitală a Republicii Moldova este în centrul livrării fără cusur a serviciilor publice, oferind fiecărui rezident acces sigur, eficient și accesibil." placeholder="Adaugă o descriere…"></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient and accessible services." placeholder="Add a description…"></mud-textarea>`,
         ),
         cell(
           'helper truncation (two lines)',
-          /*html*/ `<mud-textarea size="lg" label="Descriere" placeholder="Adaugă o descriere…" helper-text="Evoluția digitală a Republicii Moldova este în centrul livrării fără cusur a serviciilor publice, oferind fiecărui rezident acces sigur, eficient și accesibil online."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Description" placeholder="Add a description…" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient and accessible online access."></mud-textarea>`,
         ),
         cell(
           'very long content (scroll)',
-          /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></mud-textarea>`,
+          /*html*/ `<mud-textarea size="lg" label="Comments" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></mud-textarea>`,
         ),
       ].join(''),
     ),
@@ -518,8 +527,8 @@ export const EdgeCases: Story = {
       source: {
         code: [
           '<mud-textarea size="lg" label="…long label…" placeholder="…"></mud-textarea>',
-          '<mud-textarea size="lg" label="Descriere" helper-text="…long helper…"></mud-textarea>',
-          '<mud-textarea size="lg" label="Comentarii" value="…long content…"></mud-textarea>',
+          '<mud-textarea size="lg" label="Description" helper-text="…long helper…"></mud-textarea>',
+          '<mud-textarea size="lg" label="Comments" value="…long content…"></mud-textarea>',
         ].join('\n'),
       },
     },

@@ -1,9 +1,13 @@
 import type { EventEmitter } from '@stencil/core';
-import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { CHECKBOX_MESSAGES } from './mud-checkbox.messages';
+import type { CheckboxMessages } from './mud-checkbox.messages';
 
 let checkboxInstanceCounter = 0;
 
@@ -114,6 +118,19 @@ export class MudCheckbox {
   /** Accessible name id reference. Forwarded to the internal control. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Validation message reported when the field is `required` and unchecked. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Bifați această casetă pentru a continua.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasSupportingSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -141,6 +158,7 @@ export class MudCheckbox {
   private initialChecked: boolean = false;
   private nativeRef?: HTMLInputElement;
   private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   // Validation lives at the @Prop boundary — bad enum values warn and fall back.
   @Watch('size')
@@ -177,12 +195,34 @@ export class MudCheckbox {
     this.updateValidity(this.checked);
   }
 
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
+    this.updateValidity(this.checked);
+  }
+
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidity(this.checked);
+        forceUpdate(this);
+      },
+    );
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): CheckboxMessages {
+    return localeMessages('mud-checkbox', this.host, this.locale, CHECKBOX_MESSAGES, {
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   componentWillLoad() {
@@ -224,11 +264,7 @@ export class MudCheckbox {
 
   private updateValidity(checked: boolean) {
     if (this.required && !checked) {
-      this.internals.setValidity(
-        { valueMissing: true },
-        'Please check this box if you want to proceed.',
-        this.nativeRef,
-      );
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.nativeRef);
     } else {
       this.internals.setValidity({});
     }
@@ -290,6 +326,7 @@ export class MudCheckbox {
 
   render() {
     const effectivelyDisabled = this.isInert();
+    const lang = hostLang(this.host, this.locale);
     // Slot-first content: the visible label / supporting text live ONLY in
     // their respective slots. The `label` / `supportingText` props are
     // accessible-name fallbacks (mirrors mud-button).
@@ -319,7 +356,7 @@ export class MudCheckbox {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="root" htmlFor={`checkbox-${this.instanceId}`} part="root">
           {/*
             No `aria-hidden` on .control: it contains the focusable
