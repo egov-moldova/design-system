@@ -39,10 +39,15 @@ import type {
  *
  * @slot header-cell-{key} - Custom rendering for a specific column header.
  *                            Replaces the auto-rendered label + sort affordance.
- * @slot cell-{key} - Custom rendering for cells in a specific column. Useful for
- *                    status tags, action buttons, or any non-text content. The
- *                    consumer is responsible for providing one slotted element
- *                    per row (matched in order to `rows`).
+ * @slot cell-{key}-{rowId} - Custom content for one cell: the column's `key` and the
+ *                            row's `rowIdField` value (its index when the row has
+ *                            none). Useful for status tags, action buttons, or any
+ *                            non-text content. The cell follows its row when `rows`
+ *                            is sorted or filtered.
+ * @slot cell-{key}-{rowIndex} - Deprecated: addresses a row by its position, so the
+ *                               content stays put when `rows` is reordered. Use
+ *                               `cell-{key}-{rowId}`; when a row id equals another
+ *                               row's index, the id wins.
  * @slot empty - Custom empty-state content when `rows` is empty or undefined.
  */
 @Component({
@@ -206,6 +211,8 @@ export class MudTable {
 
   private stopAriaLabel?: () => void;
   private stopLang?: () => void;
+  /** Legacy cell-slot shapes already warned about, one warning per shape per instance. */
+  private warnedCellSlots = new Set<'index' | 'bare'>();
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
@@ -219,6 +226,10 @@ export class MudTable {
   disconnectedCallback() {
     this.stopAriaLabel?.();
     this.stopLang?.();
+  }
+
+  componentDidRender() {
+    this.warnLegacyCellSlots();
   }
 
   /**
@@ -382,6 +393,40 @@ export class MudTable {
     ];
   }
 
+  /**
+   * Warns once about each legacy cell-slot shape among the host's children: a bare
+   * `cell-{key}`, which only the first row can receive (the DOM assigns a slot name to
+   * the first slot that carries it), and the deprecated `cell-{key}-{rowIndex}`.
+   */
+  private warnLegacyCellSlots(): void {
+    const columns = this.columns ?? [];
+    if (columns.length === 0 || this.warnedCellSlots.size === 2) {
+      return;
+    }
+    const rows = this.rows ?? [];
+    const rowIds = new Set(rows.map((row, index) => this.getRowId(row, index)));
+    for (const child of Array.from(this.host.children)) {
+      const name = child.getAttribute('slot') ?? '';
+      for (const column of columns) {
+        const prefix = `cell-${column.key}`;
+        if (name === prefix && !this.warnedCellSlots.has('bare')) {
+          this.warnedCellSlots.add('bare');
+          console.warn(
+            `[mud-table] slot="${name}" is not supported: only the first row would receive it. Use slot="${prefix}-{rowId}", where {rowId} is the row's "${this.rowIdField}".`,
+          );
+        } else if (name.startsWith(`${prefix}-`) && !this.warnedCellSlots.has('index')) {
+          const suffix = name.slice(prefix.length + 1);
+          if (!rowIds.has(suffix) && /^\d+$/.test(suffix) && Number(suffix) < rows.length) {
+            this.warnedCellSlots.add('index');
+            console.warn(
+              `[mud-table] slot="${name}" addresses a row by its index, which is deprecated: the content stays put when rows are reordered. Use slot="${prefix}-{rowId}", where {rowId} is the row's "${this.rowIdField}".`,
+            );
+          }
+        }
+      }
+    }
+  }
+
   /*
    * Per-cell rendering for a data table is fundamentally data-driven:
    * `row[column.key]` IS the content, and the slot is an override mechanism
@@ -394,17 +439,15 @@ export class MudTable {
    * inverted (data is primary, slot is override) and the regex check is a
    * known false positive — left as-is by design.
    */
-  private renderCellContent(column: TableColumn, row: TableRowData, rowIndex: number) {
-    const slotName = `cell-${column.key}`;
+  private renderCellContent(column: TableColumn, row: TableRowData, rowId: string, rowIndex: number) {
+    const byId = `cell-${column.key}-${rowId}`;
+    const byIndex = `cell-${column.key}-${rowIndex}`;
     const fallback = row?.[column.key];
     const displayValue = fallback === undefined || fallback === null ? '' : String(fallback);
-    return (
-      <slot name={`${slotName}-${rowIndex}`}>
-        <slot name={slotName}>
-          <span class="cell-text">{displayValue}</span>
-        </slot>
-      </slot>
-    );
+    const text = <span class="cell-text">{displayValue}</span>;
+    // Every row has its own slot names. The index form nests inside the id form, so a
+    // row id that equals another row's index reaches the id slot, which comes first.
+    return <slot name={byId}>{byIndex === byId ? text : <slot name={byIndex}>{text}</slot>}</slot>;
   }
 
   private renderEmptyState(colSpan: number, emptyText: string) {
@@ -534,7 +577,7 @@ export class MudTable {
                               [`td--align-${align}`]: true,
                             }}
                           >
-                            {this.renderCellContent(column, row, rowIndex)}
+                            {this.renderCellContent(column, row, rowId, rowIndex)}
                           </td>
                         );
                       })}

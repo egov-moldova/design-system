@@ -158,6 +158,94 @@ describe('mud-table', () => {
     });
   });
 
+  describe('cell slots', () => {
+    const cellSlots = (root: Element | null | undefined, rowIndex: number) =>
+      Array.from(queryBodyRows(root)[rowIndex]?.querySelectorAll('td slot') ?? []).map(slot =>
+        slot.getAttribute('name'),
+      );
+    const lettered: TableRowData[] = [
+      { id: 'a', name: 'Alexandra Pop' },
+      { id: 'b', name: 'Mihai Ionescu' },
+    ];
+
+    it('names each cell slot by column key and row id, the deprecated index form nested inside', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-a', 'cell-name-0']);
+      expect(cellSlots(root, 1)).toEqual(['cell-name-b', 'cell-name-1']);
+    });
+
+    it('renders one slot per cell when the row id is its index', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: [{ name: 'Alexandra Pop' }] });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-0']);
+    });
+
+    it('keeps the id slot with its row when rows are reordered', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered].reverse() });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-b', 'cell-name-0']);
+      expect(queryBodyRows(root)[0]?.textContent).toContain('Mihai Ionescu');
+    });
+
+    it('warns once that a bare cell-{key} slot is not supported', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="name">x</span>
+          <span slot="cell-name">A</span>
+          <span slot="cell-name">B</span>
+        </mud-table>,
+      );
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered] });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([message]) => String(message).includes('slot="cell-name"'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('slot="cell-name-{rowId}"');
+      warn.mockRestore();
+    });
+
+    it('warns once that a cell-{key}-{rowIndex} slot is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="cell-name-0">A</span>
+          <span slot="cell-name-1">B</span>
+        </mud-table>,
+      );
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered] });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([message]) => String(message).includes('deprecated'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('slot="cell-name-0"');
+      warn.mockRestore();
+    });
+
+    it('does not warn for slots that name a row id, including numeric ids', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="cell-name-1">A</span>
+          <span slot="cell-name-3">C</span>
+          <span slot="cell-name-9">not a row</span>
+        </mud-table>,
+      );
+      setProps(root, { columns, rows });
+      await waitForChanges();
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+  });
+
   describe('a11y — aria-sort + roles', () => {
     it('exposes role="columnheader" on every header', async () => {
       const { root, waitForChanges } = await render(<mud-table />);
