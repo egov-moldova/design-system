@@ -48,9 +48,10 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 import { withoutGitLocation } from '../git/env.mjs';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 
 // Assembled so this file and its spec never contain the literal, which rule
 // package-name scans every tracked file for — including these two.
@@ -1045,20 +1046,6 @@ function main() {
   process.exit(hits.length ? 1 : 0);
 }
 
-// Compared through realpath: `import.meta.url` is already resolved, and a script
-// reached through a symlinked path (macOS `/tmp`, a linked bin) would otherwise
-// skip main() and exit 0 having checked nothing.
-function isEntrypointPath(argvPath) {
-  let resolved;
-  try {
-    resolved = fs.realpathSync(argvPath);
-  } catch {
-    resolved = path.resolve(argvPath);
-  }
-  return import.meta.url === pathToFileURL(resolved).href;
-}
-const isEntrypoint = process.argv[1] !== undefined && isEntrypointPath(process.argv[1]);
-
-if (isEntrypoint) {
+if (isEntrypoint(import.meta.url)) {
   main();
 }

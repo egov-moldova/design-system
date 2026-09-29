@@ -25,7 +25,8 @@
 
 import { execFileSync } from 'child_process';
 import process from 'process';
-import { pathToFileURL } from 'url';
+
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 const colors = {
   reset: '\x1b[0m',
@@ -332,9 +333,9 @@ Platforms: macOS and Linux (via \`ps\`), and Windows (via Win32_Process).
  * the import. `process.argv` carries no `--dry-run` under `node --test`, so it
  * would be the full sweep, not the preview.
  */
-const isEntrypoint = process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
+const isEntrypointRun = isEntrypoint(import.meta.url);
 
-if (isEntrypoint) {
+if (isEntrypointRun) {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
     logAlways(HELP);
     process.exit(0);

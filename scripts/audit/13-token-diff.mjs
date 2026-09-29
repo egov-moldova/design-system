@@ -29,7 +29,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { normalizeComponentName, bareName, REPO_ROOT, resolveComponentPaths } from './lib/component-paths.mjs';
@@ -446,7 +446,7 @@ export function diffTokens(beforeTree, afterTree) {
   return { added, removed, changed, unchanged };
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

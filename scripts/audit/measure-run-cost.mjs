@@ -30,7 +30,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { platform } from 'node:os';
 import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 
@@ -254,7 +254,7 @@ function main() {
   return cells.every(c => c.verdictIdentical) ? 0 : 1;
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) process.exitCode = main();
 
 export { TOOL };
