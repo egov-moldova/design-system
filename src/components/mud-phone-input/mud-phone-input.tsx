@@ -25,12 +25,37 @@ import type {
   PhoneInputVariant,
 } from './mud-phone-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
 import type { PhoneInputMessages } from './mud-phone-input.messages';
 
 let phoneInputInstanceCounter = 0;
+
+const displayNamesCache = new Map<string, Intl.DisplayNames>();
+
+/** `Intl.DisplayNames` for `tag`, cached — never re-constructed per country or per comparison. */
+const displayNamesFor = (tag: string): Intl.DisplayNames | undefined => {
+  if (typeof Intl.DisplayNames !== 'function') return undefined;
+  let names = displayNamesCache.get(tag);
+  if (!names) {
+    names = new Intl.DisplayNames([tag], { type: 'region' });
+    displayNamesCache.set(tag, names);
+  }
+  return names;
+};
+
+const collatorCache = new Map<string, Intl.Collator>();
+
+/** `Intl.Collator` for `tag`, cached — never re-constructed per sort. */
+const collatorFor = (tag: string): Intl.Collator => {
+  let collator = collatorCache.get(tag);
+  if (!collator) {
+    collator = new Intl.Collator(tag);
+    collatorCache.set(tag, collator);
+  }
+  return collator;
+};
 
 /**
  * The country's display name in `tag`: `Intl.DisplayNames`'s region name, falling
@@ -39,10 +64,8 @@ let phoneInputInstanceCounter = 0;
  */
 const countryDisplayName = (country: PhoneCountry, tag: string): string => {
   try {
-    if (typeof Intl.DisplayNames === 'function') {
-      const resolved = new Intl.DisplayNames([tag], { type: 'region' }).of(country.iso);
-      if (resolved && resolved.trim().length > 0) return resolved;
-    }
+    const resolved = displayNamesFor(tag)?.of(country.iso);
+    if (resolved && resolved.trim().length > 0) return resolved;
   } catch {
     // Falls through to the static fallback below.
   }
@@ -256,7 +279,7 @@ export class MudPhoneInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity();
       forceUpdate(this);
     });
@@ -441,7 +464,7 @@ export class MudPhoneInput {
       return this.countries.map(iso => COUNTRIES[iso]).filter((c): c is PhoneCountry => Boolean(c));
     }
     const tag = this.displayTag();
-    const collator = new Intl.Collator(tag);
+    const collator = collatorFor(tag);
     const [moldova, rest] = DEFAULT_COUNTRY_ORDER.reduce<[PhoneCountry[], PhoneCountry[]]>(
       ([md, others], iso) => {
         const country = COUNTRIES[iso];
@@ -451,7 +474,9 @@ export class MudPhoneInput {
       },
       [[], []],
     );
-    rest.sort((a, b) => collator.compare(this.displayName(a), this.displayName(b)));
+    // One `countryDisplayName` call per country for the whole sort, not one per comparison.
+    const nameByIso = new Map(rest.map(country => [country.iso, countryDisplayName(country, tag)]));
+    rest.sort((a, b) => collator.compare(nameByIso.get(a.iso) ?? a.name, nameByIso.get(b.iso) ?? b.name));
     return [...moldova, ...rest];
   }
 
@@ -883,11 +908,11 @@ export class MudPhoneInput {
       id: this.triggerId,
     };
     const triggerAriaLabel = `${this.displayName(country)}, ${country.code}`;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     return (
-      <Host class={hostClasses} lang={hostLang} aria-busy={this.loading ? 'true' : null}>
-        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

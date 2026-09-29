@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h, readTask } from '@stencil/core';
 
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PAGINATION_MESSAGES } from './mud-pagination.messages';
 import type { PaginationMessages } from './mud-pagination.messages';
@@ -256,7 +256,7 @@ export class MudPagination {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   componentWillLoad() {
@@ -627,11 +627,11 @@ export class MudPagination {
     const m = this.messages();
     const navLabel = this.resolvedAriaLabel ?? m.navLabel;
     const slots = this.computeRange();
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     return (
-      <Host lang={hostLang}>
-        <nav class="root" aria-label={navLabel}>
+      <Host>
+        <nav class="root" aria-label={navLabel} lang={hostLang}>
           {this.renderPrev(m)}
           <ul class="pages" role="list">
             {slots.map(slot => (isOverflow(slot) ? this.renderOverflow(slot, m) : this.renderPageItem(slot, m)))}

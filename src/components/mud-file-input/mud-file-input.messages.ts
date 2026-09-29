@@ -43,8 +43,8 @@ export interface FileInputMessages {
   typeRejectionText: string;
   /** `mudError` message for a file whose type doesn't match `accept`, with no known name. */
   typeRejectionGenericText: string;
-  /** `mudError` message for a file rejected past `max-files`. Carries a `{max}` placeholder. */
-  countRejectionText: string;
+  /** `mudError` message for a file rejected past `max-files`. Carries a `{max}` placeholder, plural on its value. */
+  countRejectionText: Plural;
 }
 
 export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
@@ -76,7 +76,11 @@ export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
     sizeRejectionGenericText: 'Fișier prea mare.',
     typeRejectionText: 'Formatul fișierului "{name}" nu este acceptat.',
     typeRejectionGenericText: 'Format nepermis.',
-    countRejectionText: 'Maximum {max} fișiere permise.',
+    countRejectionText: {
+      one: 'Maximum {max} fișier permis.',
+      few: 'Maximum {max} fișiere permise.',
+      other: 'Maximum {max} de fișiere permise.',
+    },
   },
   'en-US': {
     ctaText: 'Drag and drop or ',
@@ -98,7 +102,7 @@ export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
     sizeRejectionGenericText: 'File too large.',
     typeRejectionText: 'The format of file "{name}" is not accepted.',
     typeRejectionGenericText: 'Format not allowed.',
-    countRejectionText: 'Maximum {max} files allowed.',
+    countRejectionText: { one: 'Maximum {max} file allowed.', other: 'Maximum {max} files allowed.' },
   },
   'ru-MD': {
     ctaText: 'Перетащите или ',
@@ -130,6 +134,11 @@ export const FILE_INPUT_MESSAGES: LocaleMessages<FileInputMessages> = {
     sizeRejectionGenericText: 'Файл слишком большой.',
     typeRejectionText: 'Формат файла «{name}» не поддерживается.',
     typeRejectionGenericText: 'Недопустимый формат.',
-    countRejectionText: 'Разрешено не более {max} файлов.',
+    countRejectionText: {
+      one: 'Разрешён максимум {max} файл.',
+      few: 'Разрешено максимум {max} файла.',
+      many: 'Разрешено не более {max} файлов.',
+      other: 'Разрешено не более {max} файла.',
+    },
   },
 };

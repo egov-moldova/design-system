@@ -128,6 +128,37 @@ const nearestJsxAttribute = ancestors => {
   return null;
 };
 
+const BUTTON_LIKE_INPUT_TYPES = new Set(['submit', 'button', 'reset']);
+
+/** Nearest enclosing JSXOpeningElement among `ancestors`, or `null`. */
+const nearestJsxOpeningElement = ancestors => {
+  for (let i = ancestors.length - 1; i >= 0; i--) {
+    if (ancestors[i].type === 'JSXOpeningElement') return ancestors[i];
+  }
+  return null;
+};
+
+/**
+ * Whether `attr` is the `value` attribute of an `<input type="submit"|"button"|"reset">` —
+ * rendered as the control's own label, not a form value, so it IS copy. The element's `type`
+ * must be a literal string on the same opening tag; a dynamic/spread `type` is left to the
+ * "form value" default (never a false positive from a type this rule cannot read).
+ */
+const isButtonLikeInputValue = (attr, ancestors) => {
+  if (attributeName(attr.name) !== 'value') return false;
+  const opening = nearestJsxOpeningElement(ancestors);
+  if (!opening || opening.name?.type !== 'JSXIdentifier' || opening.name.name !== 'input') return false;
+  const typeAttr = opening.attributes.find(a => a.type === 'JSXAttribute' && attributeName(a.name) === 'type');
+  const typeValue = typeAttr?.value;
+  const literalType =
+    typeValue?.type === 'Literal' && typeof typeValue.value === 'string'
+      ? typeValue.value
+      : typeValue?.type === 'JSXExpressionContainer' && typeValue.expression?.type === 'Literal'
+        ? typeValue.expression.value
+        : null;
+  return typeof literalType === 'string' && BUTTON_LIKE_INPUT_TYPES.has(literalType);
+};
+
 /**
  * Whether the literal reaches rendered JSX. Walking outward, a JSX container or attribute
  * reached first means yes. A function crossed on the way keeps the literal on the JSX path
@@ -223,7 +254,7 @@ export default {
       if (hasJsxContext(ancestors)) {
         const attr = nearestJsxAttribute(ancestors);
         const name = attr ? attributeName(attr.name) : null;
-        if (name && isNonCopyAttribute(name)) return;
+        if (name && isNonCopyAttribute(name) && !(attr && isButtonLikeInputValue(attr, ancestors))) return;
         if (!(name && EVENT_HANDLER_RE.test(name))) {
           if (isComparisonOperand(node, parent)) return;
           if (!LETTER_RE.test(text)) return;

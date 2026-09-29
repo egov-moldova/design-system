@@ -59,6 +59,21 @@ function restoreBadge() {
   writeFileSync(BADGE_TSX, badgeOriginal);
 }
 
+/**
+ * Runs `restore` and, on failure, prints a message that names the file to restore by hand —
+ * the same guarded shape as `cleanupSync`'s other steps (`signalGroup`, `killListeners`,
+ * closing `logFd`), so a broken filesystem write here can never abort the rest of cleanup or
+ * fail silently. Exported (and `restore`/`badgeTsxPath`/`log` are parameters, not module
+ * globals) so a test can exercise the catch branch without touching the real filesystem.
+ */
+export function safeRestoreBadge(restore, badgeTsxPath, log = console.error) {
+  try {
+    restore();
+  } catch (error) {
+    log(`\n[check-dev-all] FAILED TO RESTORE ${badgeTsxPath} — restore it by hand: ${error?.message ?? error}`);
+  }
+}
+
 function signalGroup(signal) {
   if (!child?.pid) return;
   try {
@@ -91,7 +106,7 @@ function killListeners() {
 function cleanupSync() {
   signalGroup('SIGKILL');
   killListeners();
-  restoreBadge();
+  safeRestoreBadge(restoreBadge, BADGE_TSX);
   if (logFd !== undefined) {
     try {
       closeSync(logFd);
@@ -290,19 +305,24 @@ async function main() {
   }
 }
 
-let failure;
-try {
-  await main();
-} catch (error) {
-  failure = error;
-}
-await cleanup();
+// Guarded so a test can `import` this module (for `safeRestoreBadge`) without starting real
+// dev servers and a browser — importing a script must never have a side effect only running
+// it should have.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  let failure;
+  try {
+    await main();
+  } catch (error) {
+    failure = error;
+  }
+  await cleanup();
 
-if (failure) {
-  console.error(`\n[check-dev-all] FAIL: ${failure.stack ?? failure}`);
-  const tail = existsSync(LOG_FILE) ? readFileSync(LOG_FILE, 'utf8').split('\n').slice(-40).join('\n') : '';
-  console.error(`\n[check-dev-all] last lines of ${LOG_FILE}:\n${tail}`);
-  process.exit(1);
+  if (failure) {
+    console.error(`\n[check-dev-all] FAIL: ${failure.stack ?? failure}`);
+    const tail = existsSync(LOG_FILE) ? readFileSync(LOG_FILE, 'utf8').split('\n').slice(-40).join('\n') : '';
+    console.error(`\n[check-dev-all] last lines of ${LOG_FILE}:\n${tail}`);
+    process.exit(1);
+  }
+  console.log('\n[check-dev-all] PASS');
+  process.exit(0);
 }
-console.log('\n[check-dev-all] PASS');
-process.exit(0);

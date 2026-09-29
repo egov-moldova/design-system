@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { TEXTAREA_MESSAGES } from './mud-textarea.messages';
 import type { TextareaMessages } from './mud-textarea.messages';
@@ -171,7 +171,7 @@ export class MudTextarea {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity();
       forceUpdate(this);
     });
@@ -367,7 +367,7 @@ export class MudTextarea {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     const counterCurrent = (this.value ?? '').length;
     const counterOver = this.isCounterOverLimit();
 
@@ -384,8 +384,8 @@ export class MudTextarea {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label">
+      <Host class={hostClasses}>
+        <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

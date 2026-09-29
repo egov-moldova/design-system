@@ -1,8 +1,9 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
-import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { nameHostWithFallback } from '../../utils/aria-label';
+import type { HostAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_MESSAGES } from './mud-breadcrumb.messages';
 import type { BreadcrumbMessages } from './mud-breadcrumb.messages';
@@ -96,11 +97,15 @@ export class MudBreadcrumb {
 
   @State() private menuOpen: boolean = false;
   @State() private focusedMenuIndex: number = -1;
-  /** The consumer's own `aria-label` on the host, `undefined` while unset — see `observeAriaLabel`. */
-  @State() private resolvedAriaLabel?: string;
   /** Cached clone source captured from `slot="separator"` on connect. */
   private customSeparatorTemplate?: Element;
-  private stopAriaLabel?: () => void;
+  /**
+   * Names the `navigation` landmark: the consumer's own host `aria-label` when set,
+   * otherwise the resolved-locale `navLabel` — imperative because `role="navigation"`
+   * stays on the host itself (`observeAriaLabel` would strip and relabel the landmark
+   * it names). See `nameHostWithFallback`.
+   */
+  private hostLabel?: HostAriaLabel;
   private stopLang?: () => void;
 
   @Watch('maxVisible')
@@ -185,13 +190,17 @@ export class MudBreadcrumb {
   }
 
   connectedCallback(): void {
-    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback(): void {
-    this.stopAriaLabel?.();
+    this.hostLabel?.stop();
     this.stopLang?.();
+  }
+
+  componentWillRender(): void {
+    this.hostLabel?.update();
   }
 
   /**
@@ -472,17 +481,16 @@ export class MudBreadcrumb {
     const items = this.items;
     const useItems = Array.isArray(items) && items.length > 0;
     const m = this.messages();
-    const navLabel = this.resolvedAriaLabel ?? m.navLabel;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     return (
-      <Host role="navigation" aria-label={navLabel} lang={hostLang}>
+      <Host role="navigation">
         {useItems ? (
-          <div class="root" data-responsive={this.responsive ? 'true' : 'false'}>
+          <div class="root" data-responsive={this.responsive ? 'true' : 'false'} lang={hostLang}>
             <div class="desktop">{this.renderDesktop(items!, m.overflowLabel)}</div>
             {this.responsive && <div class="mobile">{this.renderMobile(items!)}</div>}
           </div>
         ) : (
-          <ol class="trail trail--slot">
+          <ol class="trail trail--slot" lang={hostLang}>
             <slot />
           </ol>
         )}

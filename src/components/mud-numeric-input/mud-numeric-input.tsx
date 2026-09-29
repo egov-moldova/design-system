@@ -11,7 +11,8 @@ import type {
   NumericInputVariant,
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
 import { NUMERIC_INPUT_MESSAGES } from './mud-numeric-input.messages';
 import type { NumericInputMessages } from './mud-numeric-input.messages';
 
@@ -243,7 +244,7 @@ export class MudNumericInput {
    * included), else `ro-MD`. Number grouping is unaffected by that fallback — it stays off
    * unless `locale` itself is set.
    */
-  @Prop() locale?: string;
+  @Prop() locale?: LocaleProp;
 
   /**
    * When `true`, renders a trailing clear (×) button while the field holds a
@@ -281,6 +282,12 @@ export class MudNumericInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private displayValue: string = '';
+  /**
+   * The raw text of the last ambiguous commit reported through `mudError`/`mudChange` — both
+   * the native `change` handler and `blur` call `commitFromDisplay` for the same user commit,
+   * so a repeat with unchanged text is a duplicate report, not a second commit.
+   */
+  private lastAmbiguousCommit?: string;
   /**
    * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
    * internal control when no visible label is present.
@@ -387,17 +394,19 @@ export class MudNumericInput {
   @Watch('value')
   handleValueChange(next: number | undefined) {
     this.syncFormValue(next);
-    this.syncValidity();
     // Keep the visible field in sync when the prop is changed externally and
-    // the user isn't actively editing.
+    // the user isn't actively editing — before `syncValidity`, which reads
+    // `displayValue` for its ambiguous-text check: syncing after it would grade
+    // validity against the stale text a fresh `value` just replaced.
     if (!this.isFocused) {
       this.displayValue = this.formatForDisplay(next);
     }
+    this.syncValidity();
   }
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity();
       forceUpdate(this);
     });
@@ -773,12 +782,17 @@ export class MudNumericInput {
   private commitFromDisplay(): void {
     const entry = this.parseRaw(this.displayValue);
     if (entry.kind === 'ambiguous') {
+      // `change` and `blur` both call this for the same user commit; a repeat with the exact
+      // same still-ambiguous text is that duplicate call, not a second commit.
+      if (this.lastAmbiguousCommit === this.displayValue) return;
+      this.lastAmbiguousCommit = this.displayValue;
       this.value = undefined;
       this.emitAmbiguous(this.displayValue);
       this.syncValidity();
       this.mudChange.emit({ value: null });
       return;
     }
+    this.lastAmbiguousCommit = undefined;
     if (entry.kind === 'invalid') {
       // The field is empty or contains an unparseable string.
       if (this.displayValue.trim() === '') {
@@ -882,7 +896,7 @@ export class MudNumericInput {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');
@@ -910,8 +924,14 @@ export class MudNumericInput {
     const ariaValueNow = this.value !== undefined && Number.isFinite(this.value) ? String(this.value) : undefined;
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={hostLang}>
-        <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+        <label
+          class="label"
+          htmlFor={`numeric-input-${this.instanceId}`}
+          id={this.labelId}
+          part="label"
+          lang={hostLang}
+        >
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

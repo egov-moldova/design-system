@@ -48,7 +48,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { extname, join } from 'node:path';
+import { extname, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { launchBrowser, mapLimit } from '../audit/lib/browser-context.mjs';
@@ -90,14 +90,27 @@ const COPY_ATTRS = [
 
 // ── Static server over storybook-static/ (no dependency on an installed `serve`) ──
 
+/**
+ * Resolves a request path under `dir`, refusing anything that escapes it. `path.relative`
+ * (not `startsWith`) is what catches a sibling directory sharing `dir`'s prefix
+ * (`storybook-static-x/` against `storybook-static/`) — a bare prefix check has no separator
+ * boundary and passes it.
+ */
+export function resolveStaticPath(dir, urlPath) {
+  const filePath = join(dir, urlPath === '/' ? 'index.html' : urlPath);
+  const rel = relative(dir, filePath);
+  const escapes = rel.startsWith('..') || rel.startsWith('/');
+  if (escapes || !existsSync(filePath) || statSync(filePath).isDirectory()) {
+    return join(dir, 'index.html');
+  }
+  return filePath;
+}
+
 function serveStatic(dir, port) {
   return new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
       const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0]);
-      let filePath = join(dir, urlPath === '/' ? 'index.html' : urlPath);
-      if (!filePath.startsWith(dir) || !existsSync(filePath) || statSync(filePath).isDirectory()) {
-        filePath = join(dir, 'index.html');
-      }
+      const filePath = resolveStaticPath(dir, urlPath);
       try {
         const body = readFileSync(filePath);
         res.writeHead(200, { 'Content-Type': MIME[extname(filePath)] ?? 'application/octet-stream' });
@@ -755,7 +768,11 @@ async function main() {
   process.exit(hits.length > 0 ? 1 : 0);
 }
 
-main().catch(err => {
-  console.error('[copy-probe] failed:', err);
-  process.exit(1);
-});
+// Guarded so a test can `import` this module (for `resolveStaticPath`) without triggering the
+// full probe run — importing a script must never have a side effect only running it should have.
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch(err => {
+    console.error('[copy-probe] failed:', err);
+    process.exit(1);
+  });
+}

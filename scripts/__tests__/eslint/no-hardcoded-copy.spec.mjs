@@ -156,6 +156,64 @@ describe('mud/no-hardcoded-copy — JSX half', () => {
     assert.deepEqual(messages, []);
   });
 
+  it('reports the value of an <input type="submit"> as copy', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <input type="submit" value="Trimite formularul" />; } }
+    `);
+    assert.equal(messages.length, 1);
+    assert.match(messages[0], /Trimite formularul/);
+  });
+
+  it('reports the value of <input type="button"> and <input type="reset">', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <div>
+        <input type="button" value="Apasă" />
+        <input type="reset" value="Resetează" />
+      </div>; } }
+    `);
+    assert.equal(messages.length, 2);
+  });
+
+  it('does not report the value of an <input type="text"> (a form value, not copy)', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <input type="text" value="default-value" />; } }
+    `);
+    assert.deepEqual(messages, []);
+  });
+
+  it('does not report the value of an <input> with no type attribute', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <input value="on" />; } }
+    `);
+    assert.deepEqual(messages, []);
+  });
+
+  it('does not report a plain button-like value on a non-input element', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { return <mud-tag value="submit"></mud-tag>; } }
+    `);
+    assert.deepEqual(messages, []);
+  });
+
+  it('does not report an input value when type is a dynamic expression (cannot be read statically)', async () => {
+    const messages = await lint(`
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-x' })
+      export class MudX { render() { const t = 'submit'; return <input type={t} value="Trimite formularul" />; } }
+    `);
+    assert.deepEqual(messages, []);
+  });
+
   it('reads an event handler through the heuristic half only', async () => {
     const messages = await lint(`
       import { Component, h } from '@stencil/core';

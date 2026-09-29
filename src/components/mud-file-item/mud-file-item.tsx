@@ -4,7 +4,7 @@ import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } f
 import { FILE_ITEM_STATES } from './mud-file-item.types';
 import { FILE_GLYPH_SRC } from './mud-file-item.glyph';
 import type { FileItemRemoveDetail, FileItemState } from './mud-file-item.types';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { FILE_ITEM_MESSAGES } from './mud-file-item.messages';
 import type { FileItemMessages } from './mud-file-item.messages';
@@ -86,7 +86,7 @@ export class MudFileItem {
   private stopLang?: () => void;
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   componentDidLoad() {
@@ -158,10 +158,12 @@ export class MudFileItem {
 
   private formatSize(bytes: number | undefined, m: FileItemMessages): string {
     if (bytes === undefined || bytes === null) return '';
+    const formatNumber = (value: number): string =>
+      new Intl.NumberFormat(formatLocale(this.host, this.locale), { maximumFractionDigits: 1 }).format(value);
     if (bytes < 1024) return `${bytes} ${m.sizeUnitBytes}`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} ${m.sizeUnitKB}`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} ${m.sizeUnitMB}`;
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} ${m.sizeUnitGB}`;
+    if (bytes < 1024 * 1024) return `${formatNumber(bytes / 1024)} ${m.sizeUnitKB}`;
+    if (bytes < 1024 * 1024 * 1024) return `${formatNumber(bytes / (1024 * 1024))} ${m.sizeUnitMB}`;
+    return `${formatNumber(bytes / (1024 * 1024 * 1024))} ${m.sizeUnitGB}`;
   }
 
   render() {
@@ -177,7 +179,7 @@ export class MudFileItem {
     // Resting (uploaded) and error rows are removable; uploading shows a spinner
     // and success shows a confirmation tick instead (per Figma).
     const showRemove = !this.noRemove && (this.state === 'uploaded' || isError);
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     return (
       <Host
@@ -185,9 +187,8 @@ export class MudFileItem {
           [`state-${this.state}`]: true,
           'is-disabled': this.disabled,
         }}
-        lang={hostLang}
       >
-        <div class="row" part="row">
+        <div class="row" part="row" lang={hostLang}>
           {showLeadingIcon ? (
             <span class="leading-icon" part="leading-icon" aria-hidden="true">
               {this.previewSrc && !this.previewFailed ? (

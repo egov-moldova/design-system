@@ -21,7 +21,7 @@ import {
   readSegments,
   segmentIndexAt,
 } from '../../utils/segment-mask';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type { TimePickerChangeDetail } from '../mud-time-picker/mud-time-picker.types';
 import { TIME_INPUT_MESSAGES } from './mud-time-input.messages';
@@ -367,7 +367,7 @@ export class MudTimeInput {
 
   connectedCallback() {
     this.captureAriaLabel();
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.updateValidation(this.value);
       forceUpdate(this);
     });
@@ -710,7 +710,7 @@ export class MudTimeInput {
     // Truthy check, not `??`: an explicit empty placeholder still shows the format hint.
     const placeholder = this.placeholder?.trim() ? this.placeholder : TIME_MASK.pattern;
     const ghost = ghostParts(TIME_MASK, this.value);
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': inert,
@@ -725,8 +725,8 @@ export class MudTimeInput {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
+      <Host class={hostClasses}>
+        <label class="label" htmlFor={this.inputId} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             {this.hasLabelSlot ? null : this.label?.trim()}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

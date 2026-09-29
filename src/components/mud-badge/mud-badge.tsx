@@ -1,7 +1,7 @@
 import { Component, Element, Host, Prop, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BADGE_MESSAGES } from './mud-badge.messages';
 import type { BadgeMessages } from './mud-badge.messages';
@@ -100,7 +100,7 @@ export class MudBadge {
 
   connectedCallback() {
     this.hostLabel = nameHostWithFallback(this.host, () => this.fallbackLabel());
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -147,16 +147,16 @@ export class MudBadge {
     const displayText = isDot ? '' : this.formatCount();
     // Per Figma 551:18330, md/lg/xl dots carry a centered inner pip; xs/sm are solid.
     const showInnerDot = isDot && (this.size === 'md' || this.size === 'lg' || this.size === 'xl');
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     return (
-      <Host role="status" aria-live="polite" lang={hostLang}>
+      <Host role="status" aria-live="polite">
         {!isDot && (
-          <span class="badge-count" aria-hidden="true">
+          <span class="badge-count" aria-hidden="true" lang={hostLang}>
             {displayText}
           </span>
         )}
-        {showInnerDot && <span class="badge-dot" aria-hidden="true"></span>}
+        {showInnerDot && <span class="badge-dot" aria-hidden="true" lang={hostLang}></span>}
       </Host>
     );
   }

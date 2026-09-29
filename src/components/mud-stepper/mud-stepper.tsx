@@ -2,7 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { STEPPER_MESSAGES } from './mud-stepper.messages';
 import type { StepperMessages } from './mud-stepper.messages';
@@ -191,7 +191,7 @@ export class MudStepper {
     // `aria-label` (attribute or native `ariaLabel` property) wins and stays on
     // the host; while there is none, the host gets the fallback.
     this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -393,10 +393,10 @@ export class MudStepper {
     // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
     const m = this.messages();
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     return (
-      <Host role="list" class={{ 'is-compact': compactMode }} lang={hostLang}>
-        <ol class="root" role="none">
+      <Host role="list" class={{ 'is-compact': compactMode }}>
+        <ol class="root" role="none" lang={hostLang}>
           {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length, m)) : <slot />}
         </ol>
       </Host>

@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { CHIP_MESSAGES } from './mud-chip.messages';
 import type { ChipMessages } from './mud-chip.messages';
@@ -130,7 +130,7 @@ export class MudChip {
   private stopLang?: () => void;
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -260,7 +260,7 @@ export class MudChip {
   render() {
     const m = this.messages();
     const labelText = this.resolveLabelText();
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     const isFilter = this.type === 'filter';
     const isInput = this.type === 'input';
     const showRemove = isInput && this.removable;
@@ -285,10 +285,11 @@ export class MudChip {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
+      <Host class={hostClasses}>
         <button
           class="control"
           type="button"
+          lang={hostLang}
           role={isFilter ? 'button' : undefined}
           disabled={this.disabled}
           aria-pressed={ariaPressed}

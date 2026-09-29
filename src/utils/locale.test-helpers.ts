@@ -262,6 +262,27 @@ export const describeLocales = <M extends { [K in keyof M]: string | Plural }>(
       await expectMessages(host, 'ru-MD');
     });
 
+    it('clears back to ro-MD when locale is unset again, with no ancestor lang', async () => {
+      const host = await render({ locale: 'en-US' });
+      await expectMessages(host, 'en-US');
+      (host as unknown as Record<string, unknown>).locale = undefined;
+      await flush();
+      await expectMessages(host, 'ro-MD');
+      for (const { key, render: renderInvalid, vars = {} } of validityCases) {
+        const invalidHost = await renderInvalid({ locale: 'en-US' });
+        (invalidHost as unknown as Record<string, unknown>).locale = undefined;
+        await flush();
+        expect(lastValidity(invalidHost)?.message).toBe(
+          formatMessage(table['ro-MD'][key], invalidHost, undefined, vars),
+        );
+      }
+    });
+
+    it('writes no lang attribute on the host itself', async () => {
+      const host = await render({ locale: 'en-US' });
+      expect(host.getAttribute('lang')).toBeNull();
+    });
+
     it('shows no ro-MD or en-US dictionary value under ru-MD', async () => {
       const host = await render({ locale: 'ru-MD' });
       for (const key of stringKeys) {

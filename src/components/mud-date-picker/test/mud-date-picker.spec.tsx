@@ -112,13 +112,15 @@ describe('mud-date-picker', () => {
       expect(labels[4]?.getAttribute('aria-label')?.toLowerCase()).toBe('vineri');
     });
 
-    it('sets the host lang to the format locale of an explicit locale', async () => {
+    it('sets the shadow header lang to the format locale of an explicit locale, never on the host', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       const unsupported = await render(<mud-date-picker locale="de-DE"></mud-date-picker>);
-      expect(unsupported.root?.getAttribute('lang')).toBe('ro-MD');
+      expect(unsupported.root?.getAttribute('lang')).toBeNull();
+      expect(unsupported.root?.shadowRoot?.querySelector('.header')?.getAttribute('lang')).toBe('ro-MD');
       warn.mockRestore();
       const regional = await render(<mud-date-picker locale="en-GB"></mud-date-picker>);
-      expect(regional.root?.getAttribute('lang')).toBe('en-GB');
+      expect(regional.root?.getAttribute('lang')).toBeNull();
+      expect(regional.root?.shadowRoot?.querySelector('.header')?.getAttribute('lang')).toBe('en-GB');
     });
 
     it('first day of week becomes Sunday when firstDayOfWeek=0', async () => {

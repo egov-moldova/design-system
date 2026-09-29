@@ -56,7 +56,14 @@ describe('mud-file-item', () => {
 
     it('renders human-readable size in KB', async () => {
       const { root } = await render(<mud-file-item filename="x.pdf" size={2048}></mud-file-item>);
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
+    });
+
+    it('formats a fractional size with the locale decimal separator, not always "."', async () => {
+      const { root: ro } = await render(<mud-file-item filename="x.pdf" size={1536} locale="ro-MD"></mud-file-item>);
+      expect(queryMeta(ro)?.textContent).toBe('1,5 KB');
+      const { root: en } = await render(<mud-file-item filename="x.pdf" size={1536} locale="en-US"></mud-file-item>);
+      expect(queryMeta(en)?.textContent).toBe('1.5 KB');
     });
 
     it('renders human-readable size in MB', async () => {
@@ -79,14 +86,14 @@ describe('mud-file-item', () => {
         <mud-file-item state="error" filename="x.pdf" size={2048} error-text="Fișier prea mare"></mud-file-item>,
       );
       // Size stays in the meta line; the message renders below the divider.
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
       const msg = root?.shadowRoot?.querySelector('.error-message');
       expect(msg?.textContent).toBe('Fișier prea mare');
     });
 
     it('renders the size and no message when state="error" but error-text is empty', async () => {
       const { root } = await render(<mud-file-item state="error" filename="x.pdf" size={2048}></mud-file-item>);
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
       expect(root?.shadowRoot?.querySelector('.error-message')).toBeNull();
     });
 

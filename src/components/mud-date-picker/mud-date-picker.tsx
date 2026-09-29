@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { DATE_PICKER_MESSAGES } from './mud-date-picker.messages';
 import type { DatePickerMessages } from './mud-date-picker.messages';
@@ -131,9 +131,10 @@ export class MudDatePicker {
   @Prop() disabledDates?: string[];
 
   /**
-   * BCP-47 locale tag for weekday/month rendering (never rewritten — any valid tag reaches
-   * `Intl` as given) and language of the "jump to today" footer shortcut. Unset, both follow
-   * the closest ancestor `lang` (`<html lang>` included), else `ro-MD`.
+   * BCP-47 locale tag for weekday/month rendering and language of the "jump to today" footer
+   * shortcut. Unset, both follow the closest ancestor `lang` (`<html lang>` included), else
+   * `ro-MD`. A tag whose language has no built-in dictionary (`de-DE`) reaches `Intl` as the
+   * shown dictionary's locale instead, with one `console.warn` — see `formatLocale`.
    */
   @Prop() locale?: LocaleProp;
 
@@ -290,7 +291,7 @@ export class MudDatePicker {
   }
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -317,7 +318,11 @@ export class MudDatePicker {
     });
   }
 
-  /** The BCP-47 tag handed to every `Intl` call — never rewritten, unlike the resolved `MudLocale`. */
+  /**
+   * The BCP-47 tag handed to every `Intl` call — `formatLocale`'s result: a tag whose language
+   * has a built-in dictionary reaches `Intl` as given (region added when absent, `ro` → `ro-MD`);
+   * a tag whose language has none (`de-DE`) is rewritten to the shown dictionary's own locale.
+   */
   private resolvedIntlTag(): string {
     return formatLocale(this.host, this.locale);
   }
@@ -657,7 +662,7 @@ export class MudDatePicker {
     const prevAria = navAria(-1);
     const nextAria = navAria(1);
     return (
-      <div class="header" part="header">
+      <div class="header" part="header" lang={shadowLang(this.host, this.locale)}>
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
           <mud-icon name="chevron-left" size={20}></mud-icon>
         </button>
@@ -879,9 +884,8 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
-      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId} lang={hostLang}>
+      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
         {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}

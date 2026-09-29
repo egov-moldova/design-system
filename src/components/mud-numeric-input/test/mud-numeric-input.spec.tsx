@@ -973,7 +973,8 @@ describe('mud-numeric-input typed entry', () => {
       native.value = '1,234';
       native.dispatchEvent(new Event('input', { bubbles: true }));
       await flush();
-      return raised[0]?.message;
+      const detail = raised[0];
+      return detail?.reason === 'ambiguous' ? detail.message : undefined;
     };
 
     it('ambiguousMessage override beats the locale', async () => {
@@ -1038,6 +1039,37 @@ describe('mud-numeric-input typed entry', () => {
         await flush();
         expect(changes).toEqual([null]);
       });
+
+      it('emits mudError/mudChange once per distinct ambiguous commit, not once per event', async () => {
+        const errors: unknown[] = [];
+        const { root } = await render(
+          <mud-numeric-input
+            label="x"
+            locale="ro-MD"
+            value={50}
+            onMudError={(event: CustomEvent) => errors.push(event.detail)}
+          ></mud-numeric-input>,
+        );
+        const native = queryNative(root) as HTMLInputElement;
+        native.dispatchEvent(new FocusEvent('focus'));
+        native.value = '1.234';
+        native.dispatchEvent(new Event('input', { bubbles: true }));
+        await flush();
+        errors.length = 0; // only the commit-path emissions below are under test
+        // Native `change` fires before `blur` on the same user commit — both call
+        // `commitFromDisplay` with the same still-ambiguous text.
+        native.dispatchEvent(new Event('change', { bubbles: true }));
+        native.dispatchEvent(new FocusEvent('blur'));
+        await flush();
+        expect(errors.length).toBe(1);
+      });
+    });
+
+    it('clearing value back to undefined reports valid, never a stale badInput from the pre-clear display', async () => {
+      const { root } = await render(<mud-numeric-input label="x" locale="ro-MD" value={1234}></mud-numeric-input>);
+      (root as unknown as { value: number | undefined }).value = undefined;
+      await flush();
+      expect(lastValidity(root)?.flags).toEqual({});
     });
 
     describe('{min} / {max} in the range messages', () => {

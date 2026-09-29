@@ -4,7 +4,7 @@ import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, f
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { CHECKBOX_MESSAGES } from './mud-checkbox.messages';
 import type { CheckboxMessages } from './mud-checkbox.messages';
@@ -203,7 +203,7 @@ export class MudCheckbox {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.updateValidity(this.checked);
       forceUpdate(this);
     });
@@ -322,7 +322,7 @@ export class MudCheckbox {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     // Slot-first content: the visible label / supporting text live ONLY in
     // their respective slots. The `label` / `supportingText` props are
     // accessible-name fallbacks (mirrors mud-button).
@@ -352,8 +352,8 @@ export class MudCheckbox {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="root" htmlFor={`checkbox-${this.instanceId}`} part="root">
+      <Host class={hostClasses}>
+        <label class="root" htmlFor={`checkbox-${this.instanceId}`} part="root" lang={hostLang}>
           {/*
             No `aria-hidden` on .control: it contains the focusable
             native <input>, which would violate axe `aria-hidden-focus`

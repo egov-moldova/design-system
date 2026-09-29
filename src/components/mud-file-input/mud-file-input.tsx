@@ -12,7 +12,7 @@ import type {
   FileInputSize,
   FileInputVariant,
 } from './mud-file-input.types';
-import { formatLocale, formatMessage, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { formatLocale, formatMessage, localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { FILE_INPUT_MESSAGES } from './mud-file-input.messages';
 import type { FileInputMessages } from './mud-file-input.messages';
@@ -201,7 +201,7 @@ export class MudFileInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity(this.files);
       forceUpdate(this);
     });
@@ -461,7 +461,10 @@ export class MudFileInput {
           ? formatMessage(m.typeRejectionText, this.host, this.locale, { name: file.name })
           : m.typeRejectionGenericText;
       case 'count':
-        return formatMessage(m.countRejectionText, this.host, this.locale, { max: this.maxFiles ?? '' });
+        return formatMessage(m.countRejectionText, this.host, this.locale, {
+          max: this.maxFiles ?? '',
+          count: this.maxFiles ?? 0,
+        });
     }
   }
 
@@ -639,8 +642,12 @@ export class MudFileInput {
       value /= 1024;
       unit += 1;
     }
-    const rounded = value >= 100 || Number.isInteger(value) ? Math.round(value) : Math.round(value * 10) / 10;
-    return `${rounded} ${units[unit]}`;
+    // `Intl.NumberFormat` (never `toFixed`, always `.`) so the decimal separator follows the
+    // resolved locale: `1,5 MB` under `ro-MD`, `1.5 MB` under `en-US`.
+    const formatted = new Intl.NumberFormat(formatLocale(this.host, this.locale), {
+      maximumFractionDigits: 1,
+    }).format(value);
+    return `${formatted} ${units[unit]}`;
   }
 
   private resolvedSupportedFormatsText(): string | undefined {
@@ -684,7 +691,7 @@ export class MudFileInput {
     const maxSizeCaption = this.resolvedMaxSizeText();
     const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
     const isButton = this.variant === 'button';
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -696,8 +703,8 @@ export class MudFileInput {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="label" htmlFor={this.dropzoneId} id={this.labelId} part="label">
+      <Host class={hostClasses}>
+        <label class="label" htmlFor={this.dropzoneId} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
               {labelText}

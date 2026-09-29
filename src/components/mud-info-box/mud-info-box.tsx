@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { INFO_BOX_MESSAGES } from './mud-info-box.messages';
 import type { InfoBoxMessages } from './mud-info-box.messages';
@@ -107,7 +107,7 @@ export class MudInfoBox {
   private stopLang?: () => void;
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -165,7 +165,7 @@ export class MudInfoBox {
     const m = this.messages();
     const iconName = this.resolveIconName();
     const hasTitle = !!(this.titleText && this.titleText.trim().length > 0);
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon': !this.hideIcon,
@@ -175,8 +175,8 @@ export class MudInfoBox {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <div class="main">
+      <Host class={hostClasses}>
+        <div class="main" lang={hostLang}>
           {!this.hideIcon ? (
             <span class="icon" aria-hidden="true">
               <slot name="icon-start">

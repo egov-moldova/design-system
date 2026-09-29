@@ -54,8 +54,11 @@ class MudLocaleFixture extends HTMLElement {
     return this.getAttribute('locale');
   }
 
-  set locale(value: string | null) {
-    if (value === null) this.removeAttribute('locale');
+  set locale(value: string | null | undefined) {
+    // A real Stencil component removes the attribute on `undefined` too (its generated setter
+    // never stringifies a nullish prop); this hand-rolled fixture must match, or clearing
+    // `locale` here writes the literal string `"undefined"` instead of unsetting it.
+    if (value === null || value === undefined) this.removeAttribute('locale');
     else this.setAttribute('locale', value);
   }
 
@@ -72,7 +75,15 @@ class MudLocaleFixture extends HTMLElement {
         count,
       },
     );
-    shadow.innerHTML = `<span class="close-label">${m.closeLabel}</span><span class="rejected">${announcement}</span>`;
+    shadow.textContent = '';
+    const closeSpan = document.createElement('span');
+    closeSpan.className = 'close-label';
+    closeSpan.appendChild(document.createTextNode(m.closeLabel));
+    const rejectedSpan = document.createElement('span');
+    rejectedSpan.className = 'rejected';
+    rejectedSpan.appendChild(document.createTextNode(announcement));
+    shadow.appendChild(closeSpan);
+    shadow.appendChild(rejectedSpan);
   }
 }
 

@@ -347,7 +347,7 @@ describe('mud-breadcrumb', () => {
   });
 
   describe('aria-label render-loop safety', () => {
-    it('strips host aria-label on connect and re-emits it from State', async () => {
+    it('keeps the consumer-supplied host aria-label (nameHostWithFallback)', async () => {
       const { root } = await render(
         <mud-breadcrumb items={ROMANIAN_ITEMS} aria-label="Drum de navigare"></mud-breadcrumb>,
       );
@@ -364,6 +364,19 @@ describe('mud-breadcrumb', () => {
       (root as unknown as { label: string }).label = 'Cale nouă';
       await waitForChanges();
       expect(root?.getAttribute('aria-label')).toBe('Cale nouă');
+    });
+
+    it('names the navigation landmark after first render (no consumer aria-label, no label prop)', async () => {
+      const { root } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
+      expect(root?.getAttribute('role')).toBe('navigation');
+      expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['ro-MD'].navLabel);
+    });
+
+    it('keeps the landmark named after a `locale` change', async () => {
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={ROMANIAN_ITEMS}></mud-breadcrumb>);
+      (root as unknown as { locale: string }).locale = 'en-US';
+      await waitForChanges();
+      expect(root?.getAttribute('aria-label')).toBe(BREADCRUMB_MESSAGES['en-US'].navLabel);
     });
   });
 

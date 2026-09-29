@@ -10,9 +10,17 @@ title: numeric parsing, validation messages after a locale change, and locale-fo
   U+202F) and `'` are ignored, `−` (U+2212) is a minus, with both `.` and `,` the last one is
   the decimal, a separator that repeats is grouping (`1.234.567`), and a single one is the
   decimal. The one ambiguous shape, the locale's own group character followed by exactly three
-  digits (`1.234` under `ro-MD`, `1,234` under `en-US`), yields no value and a `mudError` with
-  `reason: 'ambiguous'` and the new `ambiguousMessage` text (override prop `ambiguous-message`).
-  `formStateRestoreCallback` restores exactly the serialized value.
+  digits (`1.234` under `ro-MD`, `1,234` under `en-US`), yields no value: the field reports
+  `badInput` with the new `ambiguousMessage` text (override prop `ambiguous-message`), so a form
+  does not submit it silently, and committing it emits one `mudError` with `reason:
+  'ambiguous'` and one `mudChange` with `value: null`. `formStateRestoreCallback` restores
+  exactly the serialized value.
+- File sizes in `mud-file-input` and `mud-file-item` use the locale's decimal (`1,5 MB` under
+  `ro-MD`); they used a dot, which reads as a thousands separator in Romanian and Russian. They
+  now show at most one decimal and drop a trailing zero (`2 KB`, not `2.0 KB`; GB sizes keep
+  one decimal instead of two).
+- `mud-file-input`'s file-count rejection and `mud-input-chip`'s maximum-chips rejection pick
+  the grammatical plural for the count (`1 fișier`, `20 de fișiere`) instead of one fixed form.
 - A validation message set through `setValidity` is refreshed when the locale changes, through
   the `locale` property and through `<html lang>`, in the 11 components that set one. It used
   to stay in the previous language until the next validation.

@@ -8,8 +8,8 @@ export interface InputChipMessages {
   patternRejectionText: string;
   /** `mudError` message for a value already present in `chips`. Carries a `{value}` placeholder. */
   duplicateRejectionText: string;
-  /** `mudError` message for a value rejected past `max-chips`. Carries a `{max}` placeholder. */
-  maxRejectionText: string;
+  /** `mudError` message for a value rejected past `max-chips`. Carries a `{max}` placeholder, plural on its value. */
+  maxRejectionText: Plural;
   /** Live-region announcement when one chip is confirmed. Carries a `{value}` placeholder. */
   addedAnnouncement: string;
   /** Live-region announcement when a chip is removed. Carries a `{value}` placeholder. */
@@ -25,7 +25,11 @@ export const INPUT_CHIP_MESSAGES: LocaleMessages<InputChipMessages> = {
     requiredText: 'Acest câmp este obligatoriu.',
     patternRejectionText: 'Valoarea "{value}" nu este în formatul așteptat.',
     duplicateRejectionText: 'Valoarea "{value}" este deja adăugată.',
-    maxRejectionText: 'Maximum {max} valori permise.',
+    maxRejectionText: {
+      one: 'Maximum {max} valoare permisă.',
+      few: 'Maximum {max} valori permise.',
+      other: 'Maximum {max} de valori permise.',
+    },
     addedAnnouncement: 'Valoarea {value} a fost adăugată.',
     removedAnnouncement: 'Valoarea {value} a fost eliminată.',
     pastedAnnouncement: {
@@ -39,7 +43,7 @@ export const INPUT_CHIP_MESSAGES: LocaleMessages<InputChipMessages> = {
     requiredText: 'This field is required.',
     patternRejectionText: 'The value "{value}" is not in the expected format.',
     duplicateRejectionText: 'The value "{value}" is already added.',
-    maxRejectionText: 'Maximum {max} values allowed.',
+    maxRejectionText: { one: 'Maximum {max} value allowed.', other: 'Maximum {max} values allowed.' },
     addedAnnouncement: 'The value {value} was added.',
     removedAnnouncement: 'The value {value} was removed.',
     pastedAnnouncement: { one: '{count} value added', other: '{count} values added' },
@@ -49,7 +53,12 @@ export const INPUT_CHIP_MESSAGES: LocaleMessages<InputChipMessages> = {
     requiredText: 'Это поле обязательно для заполнения.',
     patternRejectionText: 'Значение «{value}» не соответствует ожидаемому формату.',
     duplicateRejectionText: 'Значение «{value}» уже добавлено.',
-    maxRejectionText: 'Разрешено не более {max} значений.',
+    maxRejectionText: {
+      one: 'Разрешено максимум {max} значение.',
+      few: 'Разрешено максимум {max} значения.',
+      many: 'Разрешено не более {max} значений.',
+      other: 'Разрешено не более {max} значения.',
+    },
     addedAnnouncement: 'Значение {value} добавлено.',
     removedAnnouncement: 'Значение {value} удалено.',
     pastedAnnouncement: {

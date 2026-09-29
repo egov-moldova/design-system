@@ -19,7 +19,7 @@ import type { SelectChangeDetail, SelectEntry, SelectOptionEntry, SelectSize, Se
 import { filterEntries, foldForSearch, markupSelectedValue, readEntriesFromLightDom, toRows } from './mud-select.utils';
 import type { SelectRowOption } from './mud-select.utils';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SELECT_MESSAGES } from './mud-select.messages';
 import type { SelectMessages } from './mud-select.messages';
@@ -224,7 +224,7 @@ export class MudSelect {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity();
       forceUpdate(this);
     });
@@ -814,7 +814,7 @@ export class MudSelect {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     const opts = this.resolvedOptions();
     // From the whole model, not the filtered view: a query that matches nothing
     // must not make the current selection look as though it had been cleared.
@@ -849,8 +849,8 @@ export class MudSelect {
     };
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="label" htmlFor={this.triggerId} id={this.labelId} part="label">
+      <Host class={hostClasses}>
+        <label class="label" htmlFor={this.triggerId} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

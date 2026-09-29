@@ -2,7 +2,7 @@ import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@s
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BANNER_MESSAGES } from './mud-banner.messages';
 import type { BannerMessages } from './mud-banner.messages';
@@ -107,7 +107,7 @@ export class MudBanner {
   private stopLang?: () => void;
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -178,7 +178,7 @@ export class MudBanner {
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
@@ -187,8 +187,8 @@ export class MudBanner {
     };
 
     return (
-      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true" lang={hostLang}>
-        <div class="content">
+      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
+        <div class="content" lang={hostLang}>
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
               <mud-icon

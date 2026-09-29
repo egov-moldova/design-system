@@ -180,6 +180,18 @@ const pluralRulesFor = (locale: MudLocale): Intl.PluralRules => {
   return rules;
 };
 
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+
+/** A grouping-off `Intl.NumberFormat` for `tag`, cached per resolved tag (never per call). */
+const numberFormatFor = (tag: string): Intl.NumberFormat => {
+  let formatter = numberFormatCache.get(tag);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(tag, { useGrouping: false, maximumFractionDigits: 20 });
+    numberFormatCache.set(tag, formatter);
+  }
+  return formatter;
+};
+
 const isPlural = (value: string | Plural): value is Plural => typeof value === 'object' && value !== null;
 
 /**
@@ -193,13 +205,11 @@ const fillPlaceholders = (
   locale: string | null | undefined,
   vars: Record<string, string | number>,
 ): string => {
-  let formatter: Intl.NumberFormat | undefined;
   return text.replace(/\{(\w+)\}/g, (match, name: string) => {
     if (!(name in vars)) return match;
     const value = vars[name];
     if (typeof value !== 'number' || !Number.isFinite(value)) return String(value);
-    formatter ??= new Intl.NumberFormat(formatLocale(host, locale), { useGrouping: false, maximumFractionDigits: 20 });
-    return formatter.format(value);
+    return numberFormatFor(formatLocale(host, locale)).format(value);
   });
 };
 
@@ -219,7 +229,10 @@ export const formatMessage = (
   const resolved = resolveLocaleQuiet(host, locale);
   const count = Number(vars.count);
   const category = Number.isFinite(count) ? pluralRulesFor(resolved).select(count) : 'other';
-  const text = value[category as keyof Plural] ?? value.other;
+  // `Intl.PluralRules.select` can also return 'zero' / 'two', which `Plural` has no form for —
+  // only look up a category the interface actually declares, falling back to `other` otherwise.
+  const text =
+    (category === 'one' || category === 'few' || category === 'many' ? value[category] : undefined) ?? value.other;
   return fillPlaceholders(text, host, locale, vars);
 };
 
@@ -258,3 +271,29 @@ export const observeDocumentLang = (onChange: () => void): (() => void) => {
     }
   };
 };
+
+/**
+ * The `lang` a component with an explicit `locale` puts on the outermost element inside its
+ * shadow root (WCAG 3.1.2, `_agents/localization.md` §7) — never on the host itself, whose
+ * attribute is visible to `inheritedLang` on every descendant, including slotted light-DOM
+ * content and a nested `mud-*` component reading an ancestor `lang`. `undefined` when `locale`
+ * is unset, so the shadow element inherits normally.
+ */
+export const shadowLang = (host: Element, locale: string | null | undefined): string | undefined =>
+  locale ? formatLocale(host, locale) : undefined;
+
+/**
+ * `observeDocumentLang`, labeled with the host's own tag so a throwing listener is traceable to
+ * its component: `console.error('[<tag>] lang-change listener threw', err)`. `onChange` typically
+ * calls `forceUpdate(this)`.
+ *
+ * @returns A function that stops listening; call it from `disconnectedCallback`.
+ */
+export const watchDocumentLang = (host: Element, onChange: () => void): (() => void) =>
+  observeDocumentLang(() => {
+    try {
+      onChange();
+    } catch (err) {
+      console.error(`[${host.localName}] lang-change listener threw`, err);
+    }
+  });

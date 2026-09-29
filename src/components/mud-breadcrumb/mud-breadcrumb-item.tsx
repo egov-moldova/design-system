@@ -1,7 +1,7 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { BREADCRUMB_ITEM_MESSAGES } from './mud-breadcrumb-item.messages';
 import type { BreadcrumbItemMessages } from './mud-breadcrumb-item.messages';
@@ -94,7 +94,7 @@ export class MudBreadcrumbItem {
   mudSelect!: EventEmitter<{ label: string; href?: string }>;
 
   connectedCallback() {
-    this.stopLang = observeDocumentLang(() => forceUpdate(this));
+    this.stopLang = watchDocumentLang(this.host, () => forceUpdate(this));
   }
 
   disconnectedCallback() {
@@ -154,11 +154,13 @@ export class MudBreadcrumbItem {
       </span>
     );
 
+    const hostLang = shadowLang(this.host, this.locale);
     const crumbBody = renderAsLink ? (
       <a
         slot={needsTooltip ? 'trigger' : undefined}
         class="crumb crumb--link"
         href={this.href}
+        lang={hostLang}
         onClick={this.handleClick}
         onKeyDown={this.handleKeyDown}
       >
@@ -174,6 +176,7 @@ export class MudBreadcrumbItem {
           'crumb--disabled': this.disabled,
           'crumb--loading': this.loading,
         }}
+        lang={hostLang}
         onClick={this.handleClick}
         onKeyDown={this.handleKeyDown}
       >
@@ -181,13 +184,11 @@ export class MudBreadcrumbItem {
       </span>
     );
 
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
     return (
       <Host
         aria-current={this.active ? 'page' : null}
         aria-disabled={this.disabled ? 'true' : null}
         aria-busy={this.loading ? 'true' : null}
-        lang={hostLang}
       >
         {needsTooltip ? (
           <mud-tooltip content={this.label} position="top">

@@ -43,6 +43,11 @@ function parsePropertiesTable(markdown) {
   return names;
 }
 
+/** Throws if `ref` does not resolve to a commit — distinct from "path absent at a valid ref". */
+function assertBaseRefResolves(ref) {
+  execFileSync('git', ['rev-parse', '--verify', `${ref}^{commit}`], { cwd: ROOT, stdio: 'pipe' });
+}
+
 function readAtBase(relPath) {
   try {
     return execFileSync('git', ['show', `${BASE_REF}:${relPath}`], { encoding: 'utf8', cwd: ROOT });
@@ -52,6 +57,13 @@ function readAtBase(relPath) {
 }
 
 function main() {
+  try {
+    assertBaseRefResolves(BASE_REF);
+  } catch {
+    console.error(`[check-props-kept] "${BASE_REF}" does not resolve to a commit — check the --base ref.`);
+    process.exit(1);
+  }
+
   if (!fs.existsSync(COMPONENTS_DIR)) {
     console.error(`[check-props-kept] ${COMPONENTS_DIR} does not exist.`);
     process.exit(1);

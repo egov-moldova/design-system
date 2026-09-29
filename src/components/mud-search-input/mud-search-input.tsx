@@ -10,7 +10,7 @@ import type {
   SearchInputSize,
 } from './mud-search-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, observeDocumentLang } from '../../utils/locale';
+import { localeMessages, watchDocumentLang, shadowLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SEARCH_INPUT_MESSAGES } from './mud-search-input.messages';
 import type { SearchInputMessages } from './mud-search-input.messages';
@@ -255,7 +255,7 @@ export class MudSearchInput {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
-    this.stopLang = observeDocumentLang(() => {
+    this.stopLang = watchDocumentLang(this.host, () => {
       this.syncValidity();
       forceUpdate(this);
     });
@@ -426,7 +426,7 @@ export class MudSearchInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const hostLang = this.locale ? formatLocale(this.host, this.locale) : undefined;
+    const hostLang = shadowLang(this.host, this.locale);
     const iconSize = this.size === 'lg' ? 24 : 20;
     // The clear affordance is a constant 20px pill with a 16px `cross-small`
     // glyph in Figma, regardless of field size (unlike the leading icon).
@@ -452,8 +452,8 @@ export class MudSearchInput {
     const submitDisabled = effectivelyDisabled || this.value === '';
 
     return (
-      <Host class={hostClasses} lang={hostLang}>
-        <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label">
+      <Host class={hostClasses}>
+        <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label" lang={hostLang}>
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
             <slot name="label" onSlotchange={this.onLabelSlotChange} />

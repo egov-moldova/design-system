@@ -36,10 +36,16 @@ const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 // the components observe, and they must find the wrappers already retagged. The
 // `.sbdocs-content` wrapper keeps `lang="en"`: the docs prose is English.
 // Baseline: `grep -n 'story.parameters?.htmlLang' node_modules/@storybook/addon-docs/dist/blocks.js`
-function applyLang(value) {
+/** `el.setAttribute('lang', lang)`, skipped when `lang` already holds that value — an
+ * unchanged global must not trigger every component's lang observer. */
+function setLangIfChanged(el, lang) {
+  if (el.getAttribute('lang') !== lang) el.setAttribute('lang', lang);
+}
+
+export function applyLang(value, doc = document) {
   const lang = value || 'ro-MD';
-  document.querySelectorAll('[id^="story--"][id$="-inner"][lang]').forEach(el => el.setAttribute('lang', lang));
-  document.documentElement.setAttribute('lang', lang);
+  doc.querySelectorAll('[id^="story--"][id$="-inner"][lang]').forEach(el => setLangIfChanged(el, lang));
+  setLangIfChanged(doc.documentElement, lang);
 }
 
 // Keep data-theme and <html lang> in sync with the mode and lang globals at the preview
