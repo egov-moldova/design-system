@@ -2,6 +2,7 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { nameHostWithFallback } from '../../utils/aria-label';
+import { usesItemsProp, warnIfBothSources } from '../../utils/collection-source';
 import type { HostAriaLabel } from '../../utils/aria-label';
 import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
@@ -18,7 +19,7 @@ import { BREADCRUMB_TRUNCATE_AT } from './mud-breadcrumb.types';
  * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
  * 2. **Slot-driven** (preferred for static markup): nest `<mud-breadcrumb-item>` children.
  *
- * When both are present, the `items` prop wins.
+ * When both are present, the `items` prop wins and the component warns once.
  *
  * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
  * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
@@ -214,6 +215,10 @@ export class MudBreadcrumb {
    */
   componentWillLoad(): void {
     this.captureSeparatorSlot();
+  }
+
+  componentDidRender(): void {
+    warnIfBothSources(this.host, this.items, 'items', 'mud-breadcrumb-item');
   }
 
   /** Built-in strings in the resolved locale, with the override props on top. */
@@ -488,7 +493,7 @@ export class MudBreadcrumb {
 
   render() {
     const items = this.items;
-    const useItems = Array.isArray(items) && items.length > 0;
+    const useItems = usesItemsProp(items);
     const m = this.messages();
     const lang = hostLang(this.host, this.locale);
     const desktop = useItems ? this.renderDesktop(items!, m.overflowLabel) : null;

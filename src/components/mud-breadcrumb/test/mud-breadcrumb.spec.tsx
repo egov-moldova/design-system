@@ -167,6 +167,31 @@ describe('mud-breadcrumb', () => {
   });
 
   describe('slot fallback', () => {
+    it('lets items win over children and warns once that both are set', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-breadcrumb>
+          <mud-breadcrumb-item href="/">Acasă</mud-breadcrumb-item>
+        </mud-breadcrumb>,
+      );
+      Object.assign(root as object, { items: ROMANIAN_ITEMS });
+      await waitForChanges();
+      Object.assign(root as object, { items: [...ROMANIAN_ITEMS] });
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelector('.trail--slot')).toBeNull();
+      expect(
+        warnSpy.mock.calls.filter(([m]: unknown[]) =>
+          String(m).includes('Both `items` and <mud-breadcrumb-item> children'),
+        ),
+      ).toHaveLength(1);
+    });
+
+    it('does not warn with items only', async () => {
+      const { root, waitForChanges } = await render(<mud-breadcrumb />);
+      Object.assign(root as object, { items: ROMANIAN_ITEMS });
+      await waitForChanges();
+      expect(warnSpy.mock.calls.filter(([m]: unknown[]) => String(m).includes('Both'))).toHaveLength(0);
+    });
+
     it('uses default slot when items prop is omitted', async () => {
       const { root } = await render(
         <mud-breadcrumb>
