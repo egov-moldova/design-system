@@ -311,8 +311,9 @@ export const KeyboardAndPointer: Story = {
     // ArrowDown skips the disabled option and selects the last one.
     await userEvent.keyboard('{ArrowDown}');
     await waitFor(() => expect(groupEl.value).toBe('office'));
-    expect(document.activeElement).toBe(radios[2]);
-    expect(radios.map(r => r.checked)).toEqual([false, false, true]);
+    // Focus and the radios' checked state land after the value, so wait for them too.
+    await waitFor(() => expect(document.activeElement).toBe(radios[2]));
+    await waitFor(() => expect(radios.map(r => r.checked)).toEqual([false, false, true]));
 
     // ArrowDown wraps to the first.
     await userEvent.keyboard('{ArrowDown}');
@@ -320,8 +321,11 @@ export const KeyboardAndPointer: Story = {
 
     // A click on another radio: one group event, no radio event outside the group.
     const input = radios[2].shadowRoot?.querySelector('input') as HTMLInputElement;
-    await userEvent.click(input);
+    // The radio re-renders asynchronously after the group unchecks it; a click on
+    // an input that is still checked changes nothing and fires no change event.
+    await waitFor(() => expect(input.checked).toBe(false));
+    input.click();
     await waitFor(() => expect(groupEl.value).toBe('office'));
-    expect(events).toEqual([{ value: 'office' }, { value: 'standard' }, { value: 'office' }]);
+    await waitFor(() => expect(events).toEqual([{ value: 'office' }, { value: 'standard' }, { value: 'office' }]));
   },
 };
