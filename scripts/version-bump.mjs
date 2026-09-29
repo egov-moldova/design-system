@@ -32,7 +32,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 export const STRATEGIES = ['dev', 'patch', 'minor', 'major'];
 
@@ -140,7 +140,7 @@ function main(argv) {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isEntrypoint(import.meta.url)) {
   try {
     main(process.argv.slice(2));
   } catch (error) {
