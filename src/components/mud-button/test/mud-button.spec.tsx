@@ -326,9 +326,11 @@ describe('mud-button', () => {
 
   describe('accessible label', () => {
     it('forwards the label prop to aria-label on the internal control', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-button label="Confirm action"></mud-button>);
       const control = queryControl(root);
       expect(control?.getAttribute('aria-label')).toBe('Confirm action');
+      warn.mockRestore();
     });
   });
 
@@ -348,6 +350,7 @@ describe('mud-button', () => {
 
   describe('optional prop setters', () => {
     it('initialises every optional prop at construction', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <mud-button
           href="https://example.com"
@@ -365,6 +368,7 @@ describe('mud-button', () => {
       expect(control?.getAttribute('target')).toBe('_blank');
       expect(control?.getAttribute('rel')).toBe('noopener');
       expect(control?.getAttribute('aria-label')).toBe('Confirm action');
+      warn.mockRestore();
     });
 
     it('trims an all-whitespace label down to nothing on the inner control', async () => {

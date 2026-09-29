@@ -171,6 +171,7 @@ describe('mud-accordion', () => {
   });
 
   it('renders declarative items from the `items` prop and ignores the default slot', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const items = [
       { id: 'x', heading: 'X', supportingText: 's-x', content: 'cx' },
       { id: 'y', heading: 'Y', open: true, content: 'cy' },
@@ -187,6 +188,7 @@ describe('mud-accordion', () => {
     expect(rendered?.[0]?.getAttribute('item-id')).toBe('x');
     expect(rendered?.[1]?.getAttribute('item-id')).toBe('y');
     expect(rendered?.[1]?.hasAttribute('open')).toBe(true);
+    warn.mockRestore();
   });
 
   it('constructs without registering a host when registerHost=false', () => {

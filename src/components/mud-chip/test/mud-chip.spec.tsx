@@ -300,18 +300,22 @@ describe('mud-chip', () => {
 
   describe('label rendering (slot-first)', () => {
     it('uses the label prop as aria-label on the internal button when no slot content', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip label="Apartament din prop"></mud-chip>);
       expect(queryControl(root)?.getAttribute('aria-label')).toBe('Apartament din prop');
       // .label span is empty when there is no slot content
       const labelSpan = root?.shadowRoot?.querySelector('.label');
       expect((labelSpan?.textContent ?? '').trim()).toBe('');
+      warn.mockRestore();
     });
 
     it('omits button aria-label when the slot provides visible content', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip label="ignored">Apartament</mud-chip>);
       // Light DOM holds the slotted text; AT reads the slotted content via the button's accessible name from its children.
       expect((root?.textContent ?? '').trim()).toBe('Apartament');
       expect(queryControl(root)?.getAttribute('aria-label')).toBeNull();
+      warn.mockRestore();
     });
 
     it('supports Romanian diacritics in slotted content', async () => {

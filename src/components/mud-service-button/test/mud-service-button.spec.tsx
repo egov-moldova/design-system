@@ -137,6 +137,7 @@ describe('mud-service-button', () => {
   });
 
   it('forwards label prop as aria-label on the internal control', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const { root, waitForChanges } = await render(
       <mud-service-button label="Pay with MPay">Plătește cu mpay</mud-service-button>,
     );
@@ -144,6 +145,7 @@ describe('mud-service-button', () => {
 
     const btn = root?.shadowRoot?.querySelector('button.control') as HTMLButtonElement | null;
     expect(btn?.getAttribute('aria-label')).toBe('Pay with MPay');
+    warn.mockRestore();
   });
 
   it('inert click is blocked: handleClick preventDefault when disabled/loading', async () => {

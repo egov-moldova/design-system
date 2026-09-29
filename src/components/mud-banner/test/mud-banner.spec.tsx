@@ -166,6 +166,7 @@ describe('mud-banner', () => {
 
   describe('inline link', () => {
     it('renders the link with href + text when linkText is set', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <mud-banner link-text="Click here" link-href="/status">
           M
@@ -175,11 +176,14 @@ describe('mud-banner', () => {
       expect(link).not.toBeNull();
       expect(link?.getAttribute('href')).toBe('/status');
       expect(link?.textContent).toBe('Click here');
+      warn.mockRestore();
     });
 
     it('defaults the link href to #', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-banner link-text="Detalii">M</mud-banner>);
       expect(queryLink(root)?.getAttribute('href')).toBe('#');
+      warn.mockRestore();
     });
   });
 
@@ -201,6 +205,7 @@ describe('mud-banner', () => {
     });
 
     it('replaces the deprecated link props when filled', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <mud-banner link-text="Vechi" link-href="/old">
           M
@@ -211,6 +216,7 @@ describe('mud-banner', () => {
       );
       expect(queryLink(root)).toBeNull();
       expect(root?.classList.contains('has-link')).toBe(false);
+      warn.mockRestore();
     });
 
     it('warns once that linkText is deprecated', async () => {
