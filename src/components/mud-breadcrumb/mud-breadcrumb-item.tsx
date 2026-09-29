@@ -199,7 +199,7 @@ export class MudBreadcrumbItem {
         lang={lang}
       >
         {needsTooltip ? (
-          <mud-tooltip content={this.label} position="top">
+          <mud-tooltip content={this.label} position="top" locale={childLocale(this.host, this.locale)}>
             {crumbBody}
           </mud-tooltip>
         ) : (

@@ -25,7 +25,7 @@ import type {
   PhoneInputVariant,
 } from './mud-phone-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
 import type { PhoneInputMessages } from './mud-phone-input.messages';
@@ -991,7 +991,7 @@ export class MudPhoneInput {
 
             {this.loading ? (
               <span class="control-spinner" part="spinner" aria-hidden="true">
-                <mud-spinner size={spinnerSize} variant="brand" label="" />
+                <mud-spinner size={spinnerSize} variant="brand" label="" locale={childLocale(this.host, this.locale)} />
               </span>
             ) : null}
 

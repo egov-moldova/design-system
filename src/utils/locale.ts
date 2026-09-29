@@ -375,7 +375,13 @@ export const watchDocumentLang = (
   locale: () => string | null | undefined,
   onChange: () => void,
 ): (() => void) => {
-  const resolvedKey = () => `${resolveLocaleQuiet(host, locale())}|${formatLocale(host, locale())}`;
+  // The raw `locale` is part of the key: a prop change re-renders without a lang mutation, so a
+  // key of the resolved locale alone could still hold the pre-change value and swallow the next
+  // page lang change that happens to resolve to it.
+  const resolvedKey = () => {
+    const current = locale();
+    return `${current ?? ''}|${resolveLocaleQuiet(host, current)}|${formatLocale(host, current)}`;
+  };
   let lastKey = resolvedKey();
   return observeDocumentLang(() => {
     const key = resolvedKey();

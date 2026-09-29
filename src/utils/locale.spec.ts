@@ -12,6 +12,7 @@ import {
   resetLocaleWarnings,
   resolveLocale,
   MUD_LOCALES,
+  watchDocumentLang,
 } from './locale';
 import type { LocaleMessages, Plural } from './locale';
 
@@ -424,5 +425,27 @@ describe('observeDocumentLang', () => {
     expect(observer.disconnected).toBe(false);
     stop2();
     expect(observer.disconnected).toBe(true);
+  });
+
+  it('watchDocumentLang notifies after locale was cleared, even when the page lang lands on the old value', () => {
+    const host = inLang('ro');
+    let locale: string | undefined = 'en-US';
+    const onChange = vi.fn();
+    const stop = watchDocumentLang(host, () => locale, onChange);
+    // The prop is cleared (Stencil re-renders; no lang mutation), then the page switches to en-US.
+    locale = undefined;
+    (host.parentElement as HTMLElement).setAttribute('lang', 'en-US');
+    StubMutationObserver.instances[0].fire();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    stop();
+  });
+
+  it('watchDocumentLang stays quiet when nothing about the component changed', () => {
+    const host = inLang('ro');
+    const onChange = vi.fn();
+    const stop = watchDocumentLang(host, () => undefined, onChange);
+    StubMutationObserver.instances[0].fire();
+    expect(onChange).not.toHaveBeenCalled();
+    stop();
   });
 });

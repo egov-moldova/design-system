@@ -12,6 +12,7 @@ import type {
 } from './mud-numeric-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
 import {
+  childLocale,
   formatLocale,
   formatMessage,
   formatNumber as formatLocaleNumber,
@@ -990,7 +991,12 @@ export class MudNumericInput {
               to the right edge across every state — matching the Figma master. */}
           {this.loading ? (
             <span class="control-spinner" part="spinner" aria-hidden="true">
-              <mud-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
+              <mud-spinner
+                size={this.size === 'lg' ? 'sm' : 'xs'}
+                variant="brand"
+                label=""
+                locale={childLocale(this.host, this.locale)}
+              />
             </span>
           ) : null}
 

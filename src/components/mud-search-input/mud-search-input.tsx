@@ -10,7 +10,7 @@ import type {
   SearchInputSize,
 } from './mud-search-input.types';
 import { observeAriaLabel } from '../../utils/aria-label';
-import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import { childLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { SEARCH_INPUT_MESSAGES } from './mud-search-input.messages';
 import type { SearchInputMessages } from './mud-search-input.messages';
@@ -503,7 +503,11 @@ export class MudSearchInput {
 
           {this.loading ? (
             <span class="control-spinner" part="spinner" aria-hidden="true">
-              <mud-spinner size={spinnerSize} variant={effectivelyDisabled ? 'dark' : 'brand'} />
+              <mud-spinner
+                size={spinnerSize}
+                variant={effectivelyDisabled ? 'dark' : 'brand'}
+                locale={childLocale(this.host, this.locale)}
+              />
             </span>
           ) : null}
 
