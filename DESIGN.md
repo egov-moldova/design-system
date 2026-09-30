@@ -268,11 +268,12 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 - **Variants:** `logomark-only`, `with-name`, `with-long-name-medium`, `with-long-name-large`, `with-verb`. The `with-verb` variant pairs the wordmark with its Romanian-language service verb (`plătește`, `loghează-te`, `semnează`, `împuternicește`, `solicită și primește`).
 - **Color:** the institutional blue is baked into the SVG path; the logo is not recolorable.
 
-### Service Button (`mud-service-button`)
+### Service button (`mud-button` with a `badge`)
 
-- **Purpose:** entry-point tile for one of the five `mpay`/`mpass`/`msign`/`mpower`/`mdelivery` services from a portal landing page.
-- **Composition:** logo + verb + optional description, on a tinted-brand surface (`primary-brand-tint` background, `primary-brand` typography).
-- **Appearance:** larger than a button, smaller than a card; sits between the two in the hierarchy.
+- **Purpose:** the call to action for one of the M-services (`mpay`, `mpass`, `msign`, `mpower`, `mdelivery`, …), e.g. "Plătește cu mpay".
+- **Composition:** a `size="lg"` button, `variant="primary"` or `"neutral"`, with `badge="<service>"`: the service logomark, 24×24 before the label (Figma button-badge-filled, 2925:4606). The `badge` slot takes any other logo.
+- **States:** the logo keeps its colours; it dims to 30% when disabled and hides while loading. A neutral badge button sits on `background.base.secondary`, lighter than a plain neutral button.
+- `mud-service-button` did this before and is deprecated.
 
 ### Spinner (`mud-spinner`)
 

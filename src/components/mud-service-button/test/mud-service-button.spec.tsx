@@ -3,6 +3,21 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 import '../mud-service-button';
 
 describe('mud-service-button', () => {
+  // First in the file: the deprecation warning fires once per page (module state).
+  it('warns once per page that it is deprecated', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    await render(
+      <div>
+        <mud-service-button>A</mud-service-button>
+        <mud-service-button>B</mud-service-button>
+      </div>,
+    );
+    const calls = warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('[mud-service-button] is deprecated'));
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.[0]).toContain('badge="mpay"');
+    warn.mockRestore();
+  });
+
   describe('native aria-label', () => {
     it('moves the host aria-label onto the internal control', async () => {
       const { root } = await render(<mud-service-button aria-label="Închide">X</mud-service-button>);
