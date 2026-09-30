@@ -16,37 +16,60 @@ import { composeStory } from 'storybook/preview-api';
 // So each visible story sets one of:
 //   - `docs.source.code`, hand-written consumer markup; or
 //   - `docs.source.type: 'dynamic'` plus a `transform` that builds the markup from args.
-// A transform without `type: 'dynamic'` never runs under the global `'code'`.
+// Without `type: 'dynamic'` the Code panel ignores the transform under the global `'code'`, and
+// the transform must return unescaped `<mud-…>` markup for the story's args.
 
 type StoriesModule = Record<string, unknown> & { default: Record<string, unknown> };
 type DocsSource = { code?: unknown; type?: unknown; transform?: unknown };
 
 const COMPONENTS_ROOT = import.meta.dirname;
 
-const storyFiles = readdirSync(COMPONENTS_ROOT, { withFileTypes: true })
-  .filter(entry => entry.isDirectory())
-  .flatMap(dir =>
-    readdirSync(path.join(COMPONENTS_ROOT, dir.name))
-      .filter(name => name.endsWith('.stories.ts'))
-      .map(name => path.join(COMPONENTS_ROOT, dir.name, name)),
-  );
+// The same files `.storybook/main.mjs` loads: `../src/components/**/*.stories.@(js|jsx|ts|tsx)`.
+const storyFiles = readdirSync(COMPONENTS_ROOT, { recursive: true, encoding: 'utf8' })
+  .filter(name => /\.stories\.(js|jsx|ts|tsx)$/.test(name))
+  .map(name => path.join(COMPONENTS_ROOT, name));
 
-async function missingSources(): Promise<string[]> {
+// `.storybook/preview.js` tags every story `autodocs`, so a story hidden from the sidebar
+// (`!dev`) still reaches the Docs page's "Show code" unless it also sets `!autodocs`.
+const PROJECT_ANNOTATIONS = { render: () => '', tags: ['autodocs'] };
+
+/** A snippet a consumer can copy: names a `mud-*` element and is not HTML-escaped. */
+function isMarkup(snippet: unknown): boolean {
+  return typeof snippet === 'string' && snippet.includes('<mud-') && !snippet.includes('&lt;');
+}
+
+function transformOutput(transform: (code: string, context: { args: unknown }) => unknown, args: unknown): unknown {
+  try {
+    return transform('', { args });
+  } catch {
+    return undefined;
+  }
+}
+
+async function checkSources(): Promise<{ checked: number; missing: string[] }> {
   const modules = await Promise.all(storyFiles.map(file => import(file) as Promise<StoriesModule>));
-  return modules.flatMap(module => {
+  let checked = 0;
+  const missing = modules.flatMap(module => {
     const meta = module.default;
     return Object.keys(module)
       .filter(name => name !== 'default' && isExportStory(name, meta))
       .flatMap(name => {
         // The stub `render` only satisfies `prepareStory`; nothing is rendered here.
-        const story = composeStory(module[name] as never, meta as never, { render: () => '' }, {}, name);
-        if (!story.tags.includes('dev')) return [];
+        const story = composeStory(module[name] as never, meta as never, PROJECT_ANNOTATIONS, {}, name);
+        if (!story.tags.includes('dev') && !story.tags.includes('autodocs')) return [];
+        checked += 1;
         const source = (story.parameters.docs as { source?: DocsSource } | undefined)?.source ?? {};
         const hasCode = typeof source.code === 'string' && source.code.trim() !== '';
-        const hasTransform = source.type === 'dynamic' && typeof source.transform === 'function';
+        // Storybook calls the transform with the story's args; one that throws, returns
+        // nothing or escapes the markup leaves the panel as useless as the story object.
+        const hasTransform =
+          source.type === 'dynamic' &&
+          typeof source.transform === 'function' &&
+          isMarkup(transformOutput(source.transform as never, story.args));
         return hasCode || hasTransform ? [] : [`${String(meta.title)} › ${name}`];
       });
   });
+  return { checked, missing };
 }
 
 describe('stories docs source', () => {
@@ -55,6 +78,10 @@ describe('stories docs source', () => {
   });
 
   it('gives every sidebar-visible story an explicit docs source', async () => {
-    expect(await missingSources()).toEqual([]);
+    const { checked, missing } = await checkSources();
+    // Visibility comes from Storybook's default `dev` tag. If an upgrade stopped adding
+    // it, every story would be skipped and the list below would pass empty.
+    expect(checked).toBeGreaterThan(0);
+    expect(missing).toEqual([]);
   });
 });
