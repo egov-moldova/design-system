@@ -41,17 +41,17 @@ jobs:
           : "${HELM_RELEASE:?Set the HELM_RELEASE variable on the development environment.}"
 
       - name: Log in to Harbor
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build and push Storybook image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: Dockerfile
@@ -61,16 +61,16 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:latest
 
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
 
       - name: Set Kubernetes context
-        uses: azure/k8s-set-context@v4
+        uses: azure/k8s-set-context@ae59a723ba9abe7a9655538854a025448dbab4aa # v4
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG_DEV }}
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
           version: v3.18.6
 
