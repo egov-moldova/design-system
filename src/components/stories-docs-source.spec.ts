@@ -33,10 +33,10 @@ const storyFiles = readdirSync(COMPONENTS_ROOT, { recursive: true, encoding: 'ut
 // sidebar (`!dev`) still reaches the Docs page's "Show code" unless it also sets `!autodocs`.
 // Read from the file rather than imported: preview.js pulls in the browser-only preview setup.
 const PREVIEW_PATH = path.resolve(COMPONENTS_ROOT, '../../.storybook/preview.js');
-const PREVIEW_TAGS = readFileSync(PREVIEW_PATH, 'utf8').match(/^export const tags = \[([^\]]*)\];$/m);
+const PREVIEW_TAGS = readFileSync(PREVIEW_PATH, 'utf8').match(/export const tags\b[^=]*=\s*\[([^\]]*)\]/);
 const PROJECT_ANNOTATIONS = {
   render: () => '',
-  tags: [...(PREVIEW_TAGS?.[1] ?? '').matchAll(/'([^']+)'/g)].map(match => match[1]),
+  tags: [...(PREVIEW_TAGS?.[1] ?? '').matchAll(/(['"`])([^'"`]+)\1/g)].map(match => match[2]),
 };
 
 /** Why a transform's output is not copyable markup, or `null` when it is. */
