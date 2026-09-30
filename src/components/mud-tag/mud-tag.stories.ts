@@ -495,6 +495,8 @@ export const Group: Story = {
   },
 };
 
+const docsSourceAccessibleName = /*html*/ `<mud-tag>Processing</mud-tag>`;
+
 /**
  * The host carries the role, so the native `aria-label` stays on it; setting one after load turns
  * the tag into a polite `status` region, and clearing it turns that off again.
@@ -504,6 +506,7 @@ export const AccessibleName: Story = {
   render: () => /*html*/ `<mud-tag>Processing</mud-tag>`,
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceAccessibleName } },
   },
   play: async ({ canvasElement }) => {
     const host = canvasElement.querySelector('mud-tag') as HTMLElement;

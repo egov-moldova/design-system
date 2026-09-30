@@ -580,6 +580,8 @@ export const EdgeCases: Story = {
   },
 };
 
+const docsSourceAccessibleName = /*html*/ `<mud-text-input aria-label="Lookup" placeholder="Search services"></mud-text-input>`;
+
 /**
  * No visible label: the accessible name comes from the native `aria-label` on the host, which
  * the component moves onto its inner input. Setting the native `ariaLabel` property later
@@ -590,6 +592,7 @@ export const AccessibleName: Story = {
   render: () => /*html*/ `<mud-text-input aria-label="Lookup" placeholder="Search services"></mud-text-input>`,
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceAccessibleName } },
   },
   play: async ({ canvasElement }) => {
     const host = canvasElement.querySelector('mud-text-input') as HTMLElement;

@@ -164,23 +164,25 @@ Full catalog of available tokens: `dist/mud/tokens/core.tokens.css`. When showca
 
 ### Step 5b — Docs source snippet
 
+**Every story you write that is visible in the sidebar (not tagged `!dev`) sets `parameters.docs.source.code`, or `type: 'dynamic'` plus a `transform`.** The global `type: 'code'` in `.storybook/preview.js` shows the story's own source text (`originalSource`, the story object), never rendered markup, so a story with neither shows `render: …, args: {…}` in the Code panel. `src/components/stories-docs-source.spec.ts` fails `yarn test` on it. Full rule: `src/components/_agents/storybook-stories.md` § Documentation Code Generator.
+
 If the story sets a per-story `parameters.docs.source.transform`, it MUST also set `type: 'dynamic'`:
 
 ```ts
 parameters: {
   docs: {
     source: {
-      type: 'dynamic',  // overrides global 'code' from .storybook/preview.js:113
-      transform: (_code: string, { args }: { args: ComponentArgs }) =>
-        `<mud-component prop="${args.prop}">...</mud-component>`,
+      type: 'dynamic',  // overrides the global 'code' from .storybook/preview.js
+      // docsSourceDefault(args) omits every attribute left at its @Prop default.
+      transform: (_code: string, { args }: { args: ComponentArgs }) => docsSourceDefault(args),
     },
   },
 },
 ```
 
-The global `parameters.docs.source.type: 'code'` from `.storybook/preview.js` caches the rendered snippet at story registration time and ignores Controls panel changes. `type: 'dynamic'` per-story overrides this so the transform re-runs on each args change. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/mud-spinner/mud-spinner.stories.ts:59-70`.
+Under the global `'code'` the Code panel ignores the transform and shows the story object, while the Docs page's "Show code" applies it, so the two disagree. `type: 'dynamic'` per story makes both show the transform's output, re-run on each args change. Build the markup in a `docsSourceDefault(args)` helper that omits attributes left at their `@Prop` default. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Escape Controls text with `attr()` from `src/utils/story-docs-source.ts`. Reference: `docsSourceDefault` and the `Default` story in `src/components/mud-banner/mud-banner.stories.ts`.
 
-For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), DO NOT omit `parameters.docs.source`. The global `'code'` mode captures the render function output verbatim — including wrapper divs, demo chrome, and helper interpolations — which is unusable to consumers. Provide a static `code` containing one clean `<mud-component …></mud-component>` per variation:
+For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), a `transform` would receive the rendered demo (wrapper divs, inline styles, labels), and the global `'code'` shows the story object. Provide a static `code` containing one clean `<mud-component …></mud-component>` per variation:
 
 ```ts
 const docsSourceAllVariants = VARIANTS.map(
@@ -196,7 +198,7 @@ export const AllVariants: Story = {
 };
 ```
 
-Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`. Omit `docs.source` only when the render function is already a single clean `<mud-component …></mud-component>` line with no helpers.
+Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`. No story omits `docs.source`: even a single clean `<mud-component …>` render shows the story object under `'code'`. A property that is not an attribute goes in a `<script>` block on an element `id` (`mud-breadcrumb.stories.ts`).
 
 ### Step 6 — Write or draft
 

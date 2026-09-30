@@ -34,6 +34,7 @@ Don't pad coverage with tests that re-assert what TypeScript already enforces. A
 - **Co-located.** `mud-button.spec.tsx` lives next to `mud-button.tsx` inside `src/components/mud-button/`. No parallel `tests/` tree.
 - **Specs**: `mud-{name}.spec.tsx` — drives Stencil render, asserts DOM/shadow/events.
 - **Stories project**: `*.stories.ts` files are executed by the Storybook Vitest project (`yarn test.storybook`) for browser-rendered visual / interaction coverage (see § Runners & commands for what that lane needs).
+- **Repo-wide spec guards**: `src/components/stories-docs-source.spec.ts` fails when a sidebar-visible story has no explicit `docs.source` (`code`, or `type: 'dynamic'` with a `transform` that returns `<mud-…>` markup), which would show the story object in the Code panel (issue #176).
 - **Scripts**: `scripts/__tests__/**/*.spec.mjs` via `node --test` (different runner — these test build / token tooling, not components).
 - **Test case names**: describe behavior, not implementation. `"reflects variant to host attribute when variant changes"` not `"calls componentWillUpdate"`.
 
