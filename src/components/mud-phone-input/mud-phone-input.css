@@ -434,14 +434,9 @@ button.country-trigger:disabled {
  */
 .valid-icon {
   flex-shrink: 0;
-  inline-size: var(--phone-input-valid-icon-size-md);
-  block-size: var(--phone-input-valid-icon-size-md);
+  inline-size: var(--phone-input-valid-icon-size);
+  block-size: var(--phone-input-valid-icon-size);
   color: var(--phone-input-valid-icon-color);
-}
-
-:host([size='lg']) .valid-icon {
-  inline-size: var(--phone-input-valid-icon-size-lg);
-  block-size: var(--phone-input-valid-icon-size-lg);
 }
 
 /* ---------- Listbox popover ---------- */

@@ -69,22 +69,6 @@
         "reason": "Default/Filled/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
       },
       {
-        "node": "3318:18224",
-        "reason": "Default/ReadOnly/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "7854:6781",
-        "reason": "Default/ReadOnly/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "6173:6074",
-        "reason": "Default/ReadOnly/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "7854:6794",
-        "reason": "Default/ReadOnly/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
         "node": "3318:18236",
         "reason": "Default/Disabled/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
       },
@@ -616,6 +600,122 @@
           "note": "The search field is search-input-rectangular in State=Focus (933:29631), with the caret drawn in its placeholder: a 2px #0058D2 stroke and Focus Ring/Large/Default, 0 0 0 4px #CCDEF6. The 1px border plus a 1px inset shadow make the 2px stroke, so the content does not move."
         }
       ]
+    },
+    {
+      "name": "readonly-medium-international",
+      "node": "7854:6794",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"md\" type=\"international\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6805",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma 24/checkmark-small at 24x24 in the Medium frame (7854:6805); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6794",
+          "styles": {
+            "paddingRight": "12px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "40px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "readonly-large-international",
+      "node": "7854:6781",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6792",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma 24/checkmark-small at 24x24 in the Large frame (7854:6792); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6781",
+          "styles": {
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "48px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "readonly-medium-local",
+      "node": "6173:6074",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"md\" type=\"local\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6805",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma the same 24x24 checkmark, as in the Medium International frame (7854:6805); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "6173:6074",
+          "styles": {
+            "paddingRight": "12px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "40px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "readonly-large-local",
+      "node": "3318:18224",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"local\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6792",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma the same 24x24 checkmark, as in the Large International frame (7854:6792); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18224",
+          "styles": {
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "48px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        }
+      ],
+      "pixel": false
     }
   ]
 }
