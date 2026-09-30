@@ -1,7 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { BUTTON_APPEARANCES, BUTTON_SHAPES, BUTTON_SIZES, BUTTON_TYPES, BUTTON_VARIANTS } from './mud-button.types';
-import type { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './mud-button.types';
+import {
+  BUTTON_APPEARANCES,
+  BUTTON_BADGES,
+  BUTTON_SHAPES,
+  BUTTON_SIZES,
+  BUTTON_TYPES,
+  BUTTON_VARIANTS,
+} from './mud-button.types';
+import type {
+  ButtonAppearance,
+  ButtonBadge,
+  ButtonShape,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from './mud-button.types';
 
 type ButtonArgs = {
   variant: ButtonVariant;
@@ -13,6 +27,7 @@ type ButtonArgs = {
   loading: boolean;
   fullWidth: boolean;
   href: string;
+  badge: ButtonBadge | '';
   label: string;
 };
 
@@ -27,6 +42,7 @@ const renderButton = (args: ButtonArgs) => /*html*/ `
     ${args.loading ? 'loading' : ''}
     ${args.fullWidth ? 'full-width' : ''}
     ${args.href ? `href="${args.href}"` : ''}
+    ${args.badge ? `badge="${args.badge}"` : ''}
   >${args.label}</mud-button>
 `;
 
@@ -47,6 +63,7 @@ const docsSourceDefault = (args: ButtonArgs) => {
     args.loading ? 'loading' : '',
     args.fullWidth ? 'full-width' : '',
     args.href ? `href="${args.href}"` : '',
+    args.badge ? `badge="${args.badge}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -626,6 +643,12 @@ const meta: Meta<ButtonArgs> = {
       control: 'text',
       description: 'When set, the button renders as `<a href>`.',
     },
+    badge: {
+      control: 'select',
+      options: ['', ...BUTTON_BADGES],
+      description:
+        'M-service logomark drawn 24×24 before the label (the service button: use `size="lg"`, `primary` or `neutral`). The `badge` slot replaces it with any other logo.',
+    },
     label: {
       control: 'text',
       description: 'Button text content.',
@@ -652,6 +675,7 @@ export const Default: Story = {
     loading: false,
     fullWidth: false,
     href: '',
+    badge: '',
     label: 'Button',
   },
   parameters: {
@@ -830,6 +854,66 @@ export const SlotVariations: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: docsSourceSlotVariations } },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// WithBadge — service buttons: a logomark in the `badge` slot (Figma 2925:4606)
+// ---------------------------------------------------------------------------
+const BADGE_SERVICES: Array<[string, string]> = [
+  ['mpay', 'Pay with mpay'],
+  ['mpass', 'Sign in with mpass'],
+  ['msign', 'Sign with msign'],
+  ['mpower', 'Delegate with mpower'],
+  ['mdelivery', 'Deliver through mdelivery'],
+];
+
+const badgeButton = (service: string, label: string, attrs = '') =>
+  `<mud-button size="lg" badge="${service}"${attrs ? ` ${attrs}` : ''}>${label}</mud-button>`;
+
+const badgeRow = (attrs: string) =>
+  `<div style="display: flex; flex-wrap: wrap; gap: var(--spacing-16);">${BADGE_SERVICES.map(([service, label]) =>
+    badgeButton(service, label, attrs),
+  ).join('')}</div>`;
+
+export const WithBadge: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
+      ${badgeRow('variant="primary"')}
+      ${badgeRow('variant="neutral"')}
+      <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-16);">
+        ${badgeButton('mpay', 'Pay with mpay', 'disabled')}
+        ${badgeButton('mpay', 'Pay with mpay', 'variant="neutral" disabled')}
+        ${badgeButton('mpay', 'Pay with mpay', 'loading')}
+        ${badgeButton('mpay', 'Pay with mpay', 'variant="neutral" loading')}
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-16);">
+        <mud-button size="lg" variant="neutral">
+          <mud-logo slot="badge" name="mconnect-logo-logomark-only"></mud-logo>
+          Any logo through the badge slot
+        </mud-button>
+      </div>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Pick the M-service with the `badge` prop (`badge="mpay"`) on a `size="lg"` button in `primary` or `neutral` (Figma button-badge-filled, 2925:4606); the `badge` slot takes any other logo instead. This replaces `mud-service-button`, which is deprecated. The logo dims to 30% when disabled and hides while loading.',
+      },
+      source: {
+        code: [
+          badgeButton('mpay', 'Pay with mpay'),
+          badgeButton('mpass', 'Sign in with mpass', 'variant="neutral"'),
+          badgeButton('msign', 'Sign with msign', 'disabled'),
+          `<mud-button size="lg" variant="neutral">
+  <mud-logo slot="badge" name="mconnect-logo-logomark-only"></mud-logo>
+  Any logo through the badge slot
+</mud-button>`,
+        ].join('\n'),
+      },
+    },
   },
 };
 

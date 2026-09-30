@@ -1,0 +1,491 @@
+{
+  "component": "mud-button",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "note": "Covers only the badge (service logomark) states, Figma button-badge-filled 2925:4606 on the Service Button page 2925:3568. The plain button's own design has no states here yet.",
+    "skip": [
+      {
+        "node": "6754:9923",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9917",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9926",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9929",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9920",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9947",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4814",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4605",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:5116",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4913",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4692",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:5437",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9975",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9938",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9957",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9966",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9945",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6431",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6420",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6425",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6434",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6428",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6423",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9908",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9902",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9911",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9914",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9905",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9949",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4811",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4604",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:5150",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4947",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:4726",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:5447",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9972",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9935",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9954",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9981",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9963",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "6754:9943",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6104",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6093",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6098",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6107",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6101",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      },
+      {
+        "node": "2925:6096",
+        "reason": "Same geometry and colours as the MPay variant of this style and state; only the logo differs (the badge slot takes any logo)."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-button--default",
+    "capture": {
+      "selector": "mud-button",
+      "bleed": "auto"
+    }
+  },
+  "shared": {
+    "geometry": [
+      {
+        "target": "mud-button .control",
+        "styles": {
+          "boxHeight": "48px",
+          "paddingLeft": "16px",
+          "paddingRight": "20px",
+          "columnGap": "6px",
+          "borderTopLeftRadius": "8px",
+          "fontFamily": "Onest",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "fontWeight": "500"
+        },
+        "note": "Figma 2925:4603: a 48px row, padding 0 20 0 16, gap 6, radius 8, label Desktop/Body/Default 500."
+      },
+      {
+        "target": "mud-button .badge",
+        "styles": {
+          "boxWidth": "24px",
+          "boxHeight": "24px"
+        },
+        "note": "Figma 2925:4603: the logo frame is 24x24."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "primary-default",
+      "node": "2925:4603",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "use": "geometry"
+        },
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF"
+          }
+        }
+      ]
+    },
+    {
+      "name": "primary-default-slot",
+      "node": "2925:4603",
+      "html": "<mud-button size=\"lg\" variant=\"primary\"><mud-logo slot=\"badge\" name=\"mpay-logo-logomark-only\"></mud-logo>Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "use": "geometry"
+        },
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF"
+          },
+          "note": "The same logo through the badge slot instead of the badge prop."
+        }
+      ]
+    },
+    {
+      "name": "primary-hover",
+      "node": "2925:4658",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#0046A8"
+          }
+        }
+      ],
+      "interaction": {
+        "type": "hover",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "primary-active",
+      "node": "2925:4817",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#00357E"
+          }
+        }
+      ],
+      "interaction": {
+        "type": "press",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "primary-focus",
+      "node": "2925:4879",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "Figma lists Focus Ring/Medium as 0 0 0 5px #3379DB, 0 0 0 2px #FFF: a 2px white halo inside a blue band ending 5px out."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "primary-loading",
+      "node": "2925:5410",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\" loading>Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#0058D2"
+          },
+          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts, as mud-service-button did. The pixel diff reports that width."
+        },
+        {
+          "target": "mud-button .badge",
+          "styles": {
+            "visibility": "hidden"
+          },
+          "note": "Figma 2925:5410 shows only the spinner; the logo keeps its width."
+        },
+        {
+          "target": "mud-button mud-spinner",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma loading variants center the spinner component 44:430 (Size=Small), 20x20."
+        }
+      ]
+    },
+    {
+      "name": "primary-disabled",
+      "node": "2925:5015",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"primary\" disabled>Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-button .badge",
+          "styles": {
+            "opacity": "0.3"
+          },
+          "note": "Figma 2925:5015 sets the logo to 30% opacity."
+        }
+      ]
+    },
+    {
+      "name": "neutral-default",
+      "node": "6754:9932",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"neutral\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "use": "geometry"
+        },
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "color": "#121212"
+          },
+          "note": "Figma 6754:9932 fills the neutral badge button #F5F5F5, lighter than a plain neutral button."
+        }
+      ]
+    },
+    {
+      "name": "neutral-hover",
+      "node": "6754:9960",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"neutral\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#D9D9D9"
+          }
+        }
+      ],
+      "interaction": {
+        "type": "hover",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "neutral-active",
+      "node": "6754:9969",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"neutral\">Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#B2B2B2"
+          }
+        }
+      ],
+      "interaction": {
+        "type": "press",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "neutral-focus",
+      "node": "6754:9984",
+      "html": "<mud-button size=\"lg\" badge=\"mpass\" variant=\"neutral\">Autentifică-te prin mpass</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "boxShadow": "0 0 0 2px #FFFFFF, 0 0 0 5px #3379DB"
+          },
+          "note": "MPay has no Neutral Focus variant; MPass's (6754:9984) has the same geometry, only the logo differs."
+        }
+      ],
+      "interaction": {
+        "type": "focus",
+        "target": "mud-button .control"
+      }
+    },
+    {
+      "name": "neutral-loading",
+      "node": "6754:9941",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"neutral\" loading>Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          },
+          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts, as mud-service-button did. The pixel diff reports that width."
+        },
+        {
+          "target": "mud-button .badge",
+          "styles": {
+            "visibility": "hidden"
+          }
+        },
+        {
+          "target": "mud-button mud-spinner",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma loading variants center the spinner component 44:430 (Size=Small), 20x20."
+        }
+      ]
+    },
+    {
+      "name": "neutral-disabled",
+      "node": "6754:9951",
+      "html": "<mud-button size=\"lg\" badge=\"mpay\" variant=\"neutral\" disabled>Plătește cu mpay</mud-button>",
+      "expect": [
+        {
+          "target": "mud-button .control",
+          "styles": {
+            "backgroundColor": "#F1F1F1",
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-button .badge",
+          "styles": {
+            "opacity": "0.3"
+          }
+        }
+      ]
+    }
+  ]
+}

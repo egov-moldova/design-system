@@ -160,6 +160,14 @@ const meta: Meta<ServiceButtonArgs> = {
     fullWidth: { control: 'boolean', table: { defaultValue: { summary: 'false' } } },
     href: { control: 'text', description: 'When set, renders as `<a>` instead of `<button>`.' },
   },
+  parameters: {
+    docs: {
+      description: {
+        component:
+          '**Deprecated.** Use `mud-button` with the service in its `badge` prop: `<mud-button size="lg" variant="primary" badge="mpay">Plătește cu mpay</mud-button>` (Components/Button, WithBadge). `appearance` becomes `variant`; the `badge` slot takes any other logo. `mud-service-button` goes away in the next major.',
+      },
+    },
+  },
 };
 export default meta;
 

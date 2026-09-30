@@ -16,11 +16,19 @@ import type { ServiceButtonAppearance, ServiceButtonType } from './mud-service-b
  * `*-logo-logomark-only` asset (or any other element rendered at that size).
  * The default slot carries the label text.
  *
+ * @deprecated Use `mud-button` with the service in its `badge` prop:
+ * `<mud-button size="lg" variant="primary" badge="mpay">Plătește cu mpay</mud-button>`
+ * (`appearance="neutral"` becomes `variant="neutral"`; the `badge` slot takes any other
+ * logo). `mud-service-button` goes away in the next major.
+ *
  * @element mud-service-button
  *
  * @slot badge - The service logomark, sized 24×24. Typically `<mud-logo slot="badge" name="mpay-logo-logomark-only" />`.
  * @slot - (default) The label text (e.g. "Plătește cu mpay").
  */
+/** One deprecation warning per page, however many service buttons it renders. */
+let warnedDeprecated = false;
+
 @Component({
   tag: 'mud-service-button',
   styleUrl: 'mud-service-button.css',
@@ -110,6 +118,12 @@ export class MudServiceButton {
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    if (!warnedDeprecated) {
+      warnedDeprecated = true;
+      console.warn(
+        '[mud-service-button] is deprecated: use <mud-button size="lg" badge="mpay"> (`appearance` becomes `variant`; the `badge` slot takes any other logo). It goes away in the next major.',
+      );
+    }
   }
 
   disconnectedCallback() {

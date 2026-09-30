@@ -106,6 +106,7 @@ graph TD;
   mud-file-input --> mud-button
   mud-file-input --> mud-icon
   mud-file-input --> mud-file-item
+  mud-button --> mud-logo
   mud-button --> mud-spinner
   mud-file-item --> mud-spinner
   mud-file-item --> mud-icon

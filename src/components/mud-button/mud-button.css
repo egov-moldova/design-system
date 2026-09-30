@@ -297,6 +297,7 @@
 
 /* ---------- Asymmetric padding when icons sit on a side ---------- */
 
+:host(.has-badge) .control,
 :host(.has-icon-start) .control {
   padding-inline-start: var(--_padding-inline-icon);
 }
@@ -363,6 +364,52 @@
   color: var(--button-text-primary-label-disabled);
 }
 
+/* ---------- Badge (service logomark) ----------
+   Figma button-badge-filled (2925:4606): a 24x24 logo before the label. */
+
+.badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--button-badge-size);
+  block-size: var(--button-badge-size);
+}
+
+:host(:not(.has-badge)) .badge {
+  display: none;
+}
+
+/* The logo the `badge` prop draws. An outer rule beats mud-logo's own :host sizing. */
+.badge mud-logo {
+  display: block;
+  inline-size: var(--button-badge-size);
+  block-size: var(--button-badge-size);
+}
+
+/* `!important` is load-bearing: a ::slotted rule loses to the slotted element's
+   own :host styles, and `<mud-logo>` sizes its :host to the SVG's intrinsic
+   width. Without it the logo ignores the 24x24 box. */
+::slotted([slot='badge']) {
+  display: block;
+  /* stylelint-disable-next-line declaration-no-important */
+  inline-size: var(--button-badge-size) !important;
+  /* stylelint-disable-next-line declaration-no-important */
+  block-size: var(--button-badge-size) !important;
+}
+
+/* Figma 6754:9932: the neutral badge button sits on base.secondary, lighter than
+   a plain neutral button. Hover and active are the same. */
+:host([variant='neutral'].has-badge) {
+  --_bg: var(--button-badge-neutral-background-default);
+}
+
+/* Figma 2925:5015: the logo dims to 30%; a multicolour logo takes no disabled colour. */
+:host([disabled]) .badge,
+:host(.is-fieldset-disabled) .badge {
+  opacity: var(--button-badge-disabled-opacity);
+}
+
 /* ---------- Loading ---------- */
 
 :host([loading]) .control {
@@ -371,6 +418,12 @@
   color: transparent;
   cursor: progress;
   pointer-events: none;
+}
+
+/* A multicolour logo ignores `color: transparent`, so the badge is hidden the
+   same way while keeping its width. */
+:host([loading]) .badge {
+  visibility: hidden;
 }
 
 .spinner-overlay {

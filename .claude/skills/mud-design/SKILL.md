@@ -45,9 +45,9 @@ Each row lists the React export, what it represents, and when to reach for it. *
 
 | Component | What it is | When to use |
 |---|---|---|
-| `MudButton` | Primary action button. Variants `primary`/`secondary`/`strict`/`neutral`/`destructive` × `sm`/`md`/`lg` × `rectangular`/`circular`. Slots for icon-start / icon-end. Supports `loading` state. | Every clickable action. CTAs, form submits, dialog actions, toolbar items. **Never** roll a `<button class="primary">` from scratch. |
+| `MudButton` | Primary action button. Variants `primary`/`secondary`/`strict`/`neutral`/`destructive` × `sm`/`md`/`lg` × `rectangular`/`circular`. Slots for icon-start / icon-end, and a `badge` prop (`badge="mpay"`) or slot for an M-service logomark (the service button: `size="lg"`, `primary` or `neutral`). Supports `loading` state. | Every clickable action. CTAs, form submits, dialog actions, toolbar items. **Never** roll a `<button class="primary">` from scratch. |
 | `MudButtonGroup` | Container for related buttons, horizontal or vertical. | Toolbars where buttons are siblings (e.g. Save / Cancel), not for mutually-exclusive choices (use `MudSegmentedControl` or radios). |
-| `MudServiceButton` | Large "open service" tile with optional badge slot. Appearance `primary`/`neutral`. | Home-screen action tiles on service portals. **Has semantic weight** — don't use it as a generic card. |
+| `MudServiceButton` | **Deprecated** — use `MudButton` with `badge="<service>"`. | Nothing new; migrate existing uses. |
 | `MudLink` | Inline or standalone link. Variants, underline rules, external-indicator. | Every `<a>` that isn't a button. Internal nav, external references, "learn more". |
 
 ### Form input
@@ -127,7 +127,7 @@ Live Storybook: `yarn storybook` in age-design (port 6007). Look at stories befo
 6. **Bypassing `defineCustomElements`.** Every AGE component depends on the registration call.
 7. **Styling AGE component internals from outside.** Beyond what `::part(…)` exposes, you can't. If you can't theme it, ask AGE to expose the part — don't `!important` your way in.
 8. **ICU plurals in i18n strings.** AGE-consuming apps typically use `FormatSimple`. Use two keys (`*_none` + `*_count`) until consumers explicitly enable `FormatIcu`.
-9. **Inventing a "card" with `MudServiceButton`.** ServiceButton has semantic weight (it's a service-tile). For neutral content cards, build a local composite and propose `MudCard` upstream.
+9. **Inventing a "card" with a service button.** A `MudButton` with a service `badge` has semantic weight (it starts that service). For neutral content cards, build a local composite and propose `MudCard` upstream.
 10. **Using `MudLogo` for non-AGE-family brands.** It only resolves `mpass`/`mpay`/`mconnect`/`mdelivery`/`mdocs`/`mlearn`/`mlog`/`mnotify`/`mpower`/`msign`/`mcloud`. For your own brand, use `<img>` to a project-local SVG/PNG.
 
 ## Adding a missing component

@@ -5,19 +5,6 @@
 <!-- Auto Generated Below -->
 
 
-## Overview
-
-Service Button — interactive control for Moldovan M-products (mpay, mpass,
-msign, mpower, mdelivery).
-
-A specialised filled button with a logo badge embedded on the inline-start
-edge of the geometry. Fixed 48 px height (= minimum touch target) and
-asymmetric padding (16 start / 20 end) per Figma spec.
-
-Slot `badge` reserves a 24×24 box for a `<mud-logo>` rendering a
-`*-logo-logomark-only` asset (or any other element rendered at that size).
-The default slot carries the label text.
-
 ## Properties
 
 | Property     | Attribute    | Description                                                                                                                                                                                                                                                                                                                                                                       | Type                              | Default     |
@@ -37,10 +24,10 @@ The default slot carries the label text.
 
 ## Slots
 
-| Slot      | Description                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------- |
-|           | (default) The label text (e.g. "Plătește cu mpay").                                                      |
-| `"badge"` | The service logomark, sized 24×24. Typically `<mud-logo slot="badge" name="mpay-logo-logomark-only" />`. |
+| Slot      | Description      |
+| --------- | ---------------- |
+|           | The default slot |
+| `"badge"` |                  |
 
 
 ## Dependencies
