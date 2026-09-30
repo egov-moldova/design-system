@@ -221,6 +221,12 @@ describe('mud-phone-input', () => {
       expect(trigger?.querySelector('.flag svg')).toBeTruthy();
     });
 
+    it('draws no chevron on a read-only international chip', async () => {
+      const { root } = await render(<mud-phone-input type="international" readonly></mud-phone-input>);
+      expect(root?.shadowRoot?.querySelector('.country-trigger')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.country-trigger-chevron')).toBeNull();
+    });
+
     it('renders chevron icon ONLY in international mode', async () => {
       const { root: intl } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
       const { root: local } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
