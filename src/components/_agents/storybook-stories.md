@@ -179,30 +179,55 @@ export const AllStatesTable: Story = {
 
 ## Documentation Code Generator
 
+**Every sidebar-visible story sets `parameters.docs.source.code`, or `type: 'dynamic'` plus a
+`transform`.** `.storybook/preview.js` sets a global `parameters.docs.source.type: 'code'`, and
+`'code'` shows the story's own **source text** (`originalSource`, the story object from the
+`.stories.ts` file: `render: …, args: {…}`), never rendered markup. A story with neither shows
+that object in the Code panel and in the Docs page's "Show code" (issue #176).
+`src/components/stories-docs-source.spec.ts` fails `yarn test` on any such story; a story tagged
+`!dev` (hidden from the sidebar) is exempt.
+
+Why not flip the global to `'dynamic'`: `render` returns HTML strings, and the web-components
+source decorator serialises a string result as escaped text (`&lt;mud-…&gt;`).
+
 For components where the docs panel snippet should reflect live Controls changes, provide a `transform` AND set `type: 'dynamic'`:
 
 ```typescript
+// Omits every attribute left at its `@Prop` default (`size="md"`, `variant="brand"`), so the
+// snippet is what a consumer would write.
+const docsSourceDefault = (args: SpinnerArgs) => {
+  const attrs = [
+    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.variant !== 'brand' ? `variant="${args.variant}"` : '',
+    args.label ? `label="${attr(args.label)}"` : '', // attr: src/utils/story-docs-source.ts
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return attrs ? `<mud-spinner ${attrs}></mud-spinner>` : '<mud-spinner></mud-spinner>';
+};
+
 parameters: {
   docs: {
     source: {
-      // Override global `type: 'code'` (set in .storybook/preview.js:113) — that mode
-      // caches the snippet at story registration and ignores args changes. `'dynamic'`
-      // re-runs the transform whenever Controls change, so the snippet stays in sync.
+      // Override the global `type: 'code'` (.storybook/preview.js): under it the Code panel
+      // shows this story object and ignores the transform. `'dynamic'` makes the Code panel
+      // and the Docs page both show the transform's output, re-run on every Controls change.
       type: 'dynamic',
-      transform: (_code: string, { args }: { args: SpinnerArgs }) =>
-        `<mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>`,
+      transform: (_code: string, { args }: { args: SpinnerArgs }) => docsSourceDefault(args),
     },
   },
 },
 ```
 
-**Why `type: 'dynamic'` is required**: `.storybook/preview.js` sets a global `parameters.docs.source.type: 'code'` (around line 113). The `'code'` mode snapshots the rendered output at story registration and never re-runs. Setting `type: 'dynamic'` per-story overrides the global so the `transform` is called on every args change.
+**Why `type: 'dynamic'` is required**: under the global `'code'` the Code panel ignores the `transform` and shows the story object (`@storybook/addon-docs` `manager.js`), while the Docs page's "Show code" applies it to that object (`blocks.js`, `useCode`), so the two disagree. Setting `type: 'dynamic'` per story makes both show the `transform`'s output and re-run it on every args change.
+
+Build the markup in a `docsSourceDefault(args)` helper that omits every attribute left at the component's `@Prop` default, as `mud-button.stories.ts` does, so the snippet is what a consumer would write.
 
 **Type the destructure**: `{ args }: { args: ComponentArgs }` — never `{ args }: any` or untyped. The transform is the most common spot for `any` to creep back in.
 
 ### Composite stories (grids, `controls: { disable: true }`)
 
-For composite stories that use template-string helpers, `.map(...)` loops, or local style constants in their `render` (e.g. `cellStyle`, `${SERVICES.flatMap(...)}`), the global `'code'` mode captures the **render-function output verbatim** — including the demo chrome (wrapper divs, label spans, inline styles, helper interpolations). That's terrible UX in the "Show code" panel: a consumer who copies it gets the demo, not a usable example.
+For composite stories that use template-string helpers, `.map(...)` loops, or local style constants in their `render` (e.g. `cellStyle`, `${SERVICES.flatMap(...)}`), a `transform` would receive the rendered demo (wrapper divs, label spans, inline styles), and the global `'code'` shows the story object. Neither is something a consumer can copy.
 
 Override with a static `parameters.docs.source.code` containing the **minimal consumer-ready markup** — one element per line, no wrapper divs, no inline styles:
 
@@ -222,7 +247,9 @@ export const AllVariants: Story = {
 
 Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`.
 
-**When you CAN omit `docs.source`**: the render function is already a single clean `<mud-component …></mud-component>` line with no helpers or demo wrappers. In practice this happens only for `Default` — and even Default usually benefits from a `transform` so the snippet reflects live Controls changes.
+A property that is not an attribute (an array or object) goes in a `<script>` block on an element `id`, as in `mud-breadcrumb.stories.ts`. A form or contract story shows what a consumer would write (the `<form>` with the field), not the probe scaffolding.
+
+**There is no story that may omit `docs.source`**, even one whose `render` is a single clean `<mud-component …>` line: under `'code'` it shows the story object, not that line.
 
 ---
 
@@ -245,7 +272,8 @@ Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `sr
 | `<Component {...args} />` JSX spread | `variant="${args.variant}"` (explicit attributes) | Web components consume attribute strings, not React props |
 | Inline `padding: 16px` | `padding: var(--spacing-16)` | See "Story Styling" — semantic tokens preferred |
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |
-| `parameters.docs.source.transform` without `type: 'dynamic'` | Add `type: 'dynamic'` | Otherwise the global `type: 'code'` caches the snippet at registration |
+| `parameters.docs.source.transform` without `type: 'dynamic'` | Add `type: 'dynamic'` | Otherwise the Code panel ignores the transform and shows the story object, and disagrees with the Docs page |
+| A story with no `parameters.docs.source` at all | `code: docsSource<Story>`, or `type: 'dynamic'` + `transform` for an args-driven story | Otherwise the Code panel shows the story object; `stories-docs-source.spec.ts` fails |
 | `({ args }: any) =>` in transform | `({ args }: { args: ComponentArgs }) =>` | Type the destructure |
-| Grid/composite story with helper-laden render and no `docs.source.code` override | Add `parameters.docs.source.code = <curated multi-line consumer markup>` | Otherwise the "Show code" panel exposes wrapper divs, inline styles, and `${SERVICES.flatMap(…)}` template guts — useless to consumers |
+| Grid/composite story with helper-laden render and no `docs.source.code` override | Add `parameters.docs.source.code = <curated multi-line consumer markup>` | Otherwise the "Show code" panel shows the story object (`render: () => …`, helper calls) — useless to consumers |
 | Missing grid stories | Always: Default, AllVariants, AllSizes (+ States if interactive) | audit-component's `05-story-exports` enforces presence |

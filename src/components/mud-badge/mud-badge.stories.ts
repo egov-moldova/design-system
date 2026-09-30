@@ -375,6 +375,8 @@ export const ComposedWithIcon: Story = {
   },
 };
 
+const docsSourceAccessibleName = /*html*/ `<mud-badge count="3"></mud-badge>`;
+
 /**
  * The host carries the `status` role, so it keeps the accessible name. With no `aria-label` the
  * badge names itself from its count; the consumer's `aria-label` wins, even when it matches the
@@ -385,6 +387,7 @@ export const AccessibleName: Story = {
   render: () => /*html*/ `<mud-badge count="3"></mud-badge>`,
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceAccessibleName } },
   },
   play: async ({ canvasElement }) => {
     const host = canvasElement.querySelector('mud-badge') as HTMLElement;

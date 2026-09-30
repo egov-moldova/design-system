@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import type { StepperStep } from './mud-stepper.types';
+import { attr, jsValue } from '../../utils/story-docs-source';
 
 type StepperArgs = {
   steps: StepperStep[];
@@ -154,12 +155,25 @@ const renderDefault = (args: StepperArgs) => /*html*/ `
   </div>
 `;
 
-const docsSourceDefault = (args: StepperArgs) => `<mud-stepper id="my-tracker"
-  orientation="${args.orientation}"
-  ${args.interactive ? 'interactive' : ''}></mud-stepper>
+// Consumer markup for the "Show code" panel. `steps` is a property, not an attribute,
+// so it is set from a script; attributes at their component default are omitted.
+const docsSourceDefault = (args: StepperArgs, id = 'stepper-default') => {
+  const attrs = [
+    `id="${id}"`,
+    args.orientation !== 'horizontal' ? `orientation="${args.orientation}"` : '',
+    args.interactive ? 'interactive' : '',
+    args.compact ? 'compact' : '',
+    typeof args.currentStep === 'number' ? `current-step="${args.currentStep}"` : '',
+    args.ariaLabel ? `aria-label="${attr(args.ariaLabel)}"` : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return `<mud-stepper ${attrs}></mud-stepper>
 <script>
-  document.getElementById('my-tracker').steps = ${JSON.stringify(args.steps, null, 2)};
+  document.getElementById('${id}').steps = ${jsValue(args.steps, 2)};
 </script>`;
+};
 
 const meta: Meta<StepperArgs> = {
   title: 'Components/Stepper',
@@ -247,12 +261,15 @@ export const Vertical: Story = {
     controls: { disable: false },
     docs: {
       source: {
-        code: docsSourceDefault({
-          steps: verticalSteps,
-          orientation: 'vertical',
-          interactive: false,
-          ariaLabel: 'Pași',
-        }),
+        code: docsSourceDefault(
+          {
+            steps: verticalSteps,
+            orientation: 'vertical',
+            interactive: false,
+            ariaLabel: 'Pași',
+          },
+          'stepper-vertical',
+        ),
       },
     },
   },
@@ -297,12 +314,15 @@ export const Interactive: Story = {
   parameters: {
     docs: {
       source: {
-        code: docsSourceDefault({
-          steps: interactiveSteps,
-          orientation: 'horizontal',
-          interactive: true,
-          ariaLabel: 'Registration steps',
-        }),
+        code: docsSourceDefault(
+          {
+            steps: interactiveSteps,
+            orientation: 'horizontal',
+            interactive: true,
+            ariaLabel: 'Registration steps',
+          },
+          'stepper-interactive',
+        ),
       },
     },
   },
@@ -324,12 +344,33 @@ export const NonInteractive: Story = {
     interactive: false,
     ariaLabel: 'Registration steps',
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: StepperArgs }) =>
+          docsSourceDefault(args, 'stepper-non-interactive'),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
 // AllStates — pending / current / completed / error side-by-side.
 // ---------------------------------------------------------------------------
+const docsSourceAllStates = /*html*/ `<!-- horizontal -->
+${docsSourceDefault(
+  { steps: allStatesSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'All states' },
+  'stepper-states-horizontal',
+)}
+
+<!-- vertical -->
+${docsSourceDefault(
+  { steps: allStatesSteps, orientation: 'vertical', interactive: false, ariaLabel: 'All states' },
+  'stepper-states-vertical',
+)}`;
+
 export const AllStates: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 996px;">
@@ -356,7 +397,7 @@ export const AllStates: Story = {
       </div>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceAllStates } } },
 };
 
 // ---------------------------------------------------------------------------
@@ -374,7 +415,22 @@ export const WithSupportingText: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          {
+            steps: withSupportingTextSteps,
+            orientation: 'vertical',
+            interactive: false,
+            ariaLabel: 'Steps with details',
+          },
+          'stepper-supporting-text',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -392,7 +448,17 @@ export const NumberedIndicators: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          { steps: numberedSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Numbered steps' },
+          'stepper-numbered',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -410,7 +476,17 @@ export const IconIndicators: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          { steps: iconSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Steps with icons' },
+          'stepper-icons',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -429,7 +505,23 @@ export const StepIndicatorOnly: Story = {
         })}
       </div>
     `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          {
+            steps: defaultSteps,
+            orientation: 'horizontal',
+            interactive: false,
+            compact: true,
+            ariaLabel: 'Step indicator',
+          },
+          'stepper-indicator-only',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -484,6 +576,23 @@ export const Mobile: Story = {
 // ---------------------------------------------------------------------------
 // EdgeCases — many steps (8), overflow / wrap behaviour.
 // ---------------------------------------------------------------------------
+const docsSourceEdgeCases = /*html*/ `<!-- 8 steps -->
+${docsSourceDefault(
+  { steps: manySteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Multiple steps' },
+  'stepper-many-steps',
+)}
+
+<!-- single step -->
+${docsSourceDefault(
+  {
+    steps: [{ label: 'Only one step', status: 'current' }],
+    orientation: 'horizontal',
+    interactive: false,
+    ariaLabel: 'A single step',
+  },
+  'stepper-single-step',
+)}`;
+
 export const EdgeCases: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
@@ -521,7 +630,7 @@ export const EdgeCases: Story = {
       </div>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
 };
 
 // ---------------------------------------------------------------------------

@@ -4,6 +4,7 @@ import { BANNER_EMPHASES, BANNER_VARIANTS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
 import { ICON_NAMES } from '../mud-icon/mud-icon.types';
 import type { IconName } from '../mud-icon/mud-icon.types';
+import { attr, text } from '../../utils/story-docs-source';
 
 type BannerArgs = {
   variant: BannerVariant;
@@ -28,6 +29,42 @@ const renderBanner = (args: BannerArgs) => /*html*/ `
 
 const sectionStyle = 'display: flex; flex-direction: column; gap: var(--spacing-16); align-items: stretch;';
 const MESSAGE = 'Scheduled maintenance today. Some services may be temporarily unavailable.';
+
+// ---------------------------------------------------------------------------
+// Docs-source helpers — consumer markup for the "Show code" panel: no wrapper
+// div, no inline styles, attributes at their component default omitted.
+// ---------------------------------------------------------------------------
+
+const docsSourceDefault = (args: BannerArgs) => {
+  const attrs = [
+    args.variant !== 'info' ? `variant="${args.variant}"` : '',
+    args.emphasis !== 'subtle' ? `emphasis="${args.emphasis}"` : '',
+    args.dismissible ? 'dismissible' : '',
+    args.iconName ? `icon-name="${attr(args.iconName)}"` : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+    args.closeLabel ? `close-label="${attr(args.closeLabel)}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const open = attrs ? `<mud-banner ${attrs}>` : '<mud-banner>';
+  return `${open}${text(args.body)}</mud-banner>`;
+};
+
+const docsSourceAllVariants = /*html*/ `<mud-banner variant="info" emphasis="strong" dismissible>${MESSAGE}</mud-banner>
+<mud-banner variant="warning" emphasis="strong" dismissible>${MESSAGE}</mud-banner>
+<mud-banner variant="error" emphasis="strong" dismissible>${MESSAGE}</mud-banner>
+<mud-banner variant="info" emphasis="subtle" dismissible>${MESSAGE}</mud-banner>
+<mud-banner variant="warning" emphasis="subtle" dismissible>${MESSAGE}</mud-banner>
+<mud-banner variant="error" emphasis="subtle" dismissible>${MESSAGE}</mud-banner>`;
+
+const docsSourceWithActions = /*html*/ `<mud-banner variant="info" emphasis="strong" dismissible>
+  ${MESSAGE}
+  <mud-link slot="actions" href="#" size="md" variant="white">Details</mud-link>
+</mud-banner>
+<mud-banner variant="warning" emphasis="subtle" dismissible>
+  ${MESSAGE}
+  <mud-link slot="actions" href="#" size="md">Details</mud-link>
+</mud-banner>`;
 
 const meta: Meta<BannerArgs> = {
   title: 'Components/Banner',
@@ -109,7 +146,17 @@ type Story = StoryObj<BannerArgs>;
 // ---------------------------------------------------------------------------
 // Default — interactive playground
 // ---------------------------------------------------------------------------
-export const Default: Story = { render: renderBanner };
+export const Default: Story = {
+  render: renderBanner,
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: BannerArgs }) => docsSourceDefault(args),
+      },
+    },
+  },
+};
 
 // ---------------------------------------------------------------------------
 // AllVariants — info / warning / error × strong / subtle
@@ -124,7 +171,10 @@ const renderAllVariants = () => /*html*/ `
     <mud-banner variant="error" emphasis="subtle" dismissible>${MESSAGE}</mud-banner>
   </div>
 `;
-export const AllVariants: Story = { render: renderAllVariants, parameters: { controls: { disable: true } } };
+export const AllVariants: Story = {
+  render: renderAllVariants,
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceAllVariants } } },
+};
 
 // ---------------------------------------------------------------------------
 // WithActions — the inline "Click here" affordance, a mud-link in the actions slot
@@ -150,6 +200,7 @@ export const WithActions: Story = {
         story:
           'Figma\'s "Click here" is the link component (Primary, 16). Put a `mud-link` in the `actions` slot; on `emphasis="strong"` use `variant="white"`. The `link-text` / `link-href` props are deprecated.',
       },
+      source: { code: docsSourceWithActions },
     },
   },
 };

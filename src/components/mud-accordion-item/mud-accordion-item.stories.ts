@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { ACCORDION_ICON_POSITIONS, ACCORDION_SIZES } from '../mud-accordion/mud-accordion.types';
 import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
+import { attr } from '../../utils/story-docs-source';
 
 type AccordionItemArgs = {
   heading: string;
@@ -13,13 +14,6 @@ type AccordionItemArgs = {
 };
 
 const wrapperStyle = 'display: block; padding: var(--spacing-24); max-width: 996px;';
-
-/** Escapes a control value for interpolation into a double-quoted HTML attribute. */
-const attr = (value: string) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;');
 
 // `size` and `icon-position` go on the container, not on the item: `mud-accordion`
 // assigns both onto every child in `propagateToItems()` (mud-accordion.tsx:176) from
@@ -39,6 +33,30 @@ const renderItem = (args: AccordionItemArgs) => /*html*/ `
     </mud-accordion>
   </div>
 `;
+
+// `size` and `icon-position` sit on the container, as in the render; attributes left at the
+// component default are omitted, and the item is shown as a consumer would write it.
+const docsSourceDefault = (args: AccordionItemArgs) => {
+  const containerAttrs = [
+    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.iconPosition !== 'right' ? `icon-position="${args.iconPosition}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const itemAttrs = [
+    args.heading ? `heading="${attr(args.heading)}"` : '',
+    args.supportingText ? `supporting-text="${attr(args.supportingText)}"` : '',
+    args.open ? 'open' : '',
+    args.disabled ? 'disabled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const container = containerAttrs ? `<mud-accordion ${containerAttrs}>` : '<mud-accordion>';
+  const item = itemAttrs ? `<mud-accordion-item ${itemAttrs}>` : '<mud-accordion-item>';
+  return `${container}
+  ${item}Panel body content. Always in the DOM; hidden while the item is closed.</mud-accordion-item>
+</mud-accordion>`;
+};
 
 const docsSourceAllSizes = /*html*/ `<mud-accordion mode="multiple" size="sm">
   <mud-accordion-item heading="size=&quot;sm&quot;" supporting-text="Compact header">Panel body.</mud-accordion-item>
@@ -86,6 +104,14 @@ export const Default: Story = {
     disabled: false,
     size: 'md',
     iconPosition: 'right',
+  },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: AccordionItemArgs }) => docsSourceDefault(args),
+      },
+    },
   },
 };
 

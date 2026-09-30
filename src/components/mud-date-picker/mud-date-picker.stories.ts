@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type { DatePickerBreakpoint, DatePickerHeaderStyle, DatePickerMode } from './mud-date-picker.types';
+import { attr, jsValue } from '../../utils/story-docs-source';
 
 type DatePickerArgs = {
   mode: DatePickerMode;
@@ -36,6 +37,89 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
     ${args.todayShortcut ? 'today-shortcut' : ''}
   ></mud-date-picker>
 `;
+
+// ---------------------------------------------------------------------------
+// Docs-source helpers — return clean web-component markup (no demo chrome,
+// no wrapper divs, no inline styles) so the Storybook docs "Show code" panel
+// shows what a consumer would actually paste into their HTML.
+// ---------------------------------------------------------------------------
+
+// The `disabledDates` control is free text; only a JSON array of strings reaches the snippet.
+const parseDisabledDates = (value: string): string[] | null => {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) && parsed.length && parsed.every(d => typeof d === 'string') ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const docsSourceDefault = (args: DatePickerArgs) => {
+  const disabledDates = args.disabledDates ? parseDisabledDates(args.disabledDates) : null;
+  const attrs = [
+    args.mode !== 'single' ? `mode="${args.mode}"` : '',
+    args.breakpoint !== 'desktop' ? `breakpoint="${args.breakpoint}"` : '',
+    args.headerStyle !== 'title' ? `header-style="${args.headerStyle}"` : '',
+    args.value ? `value="${attr(args.value)}"` : '',
+    args.rangeStart ? `range-start="${attr(args.rangeStart)}"` : '',
+    args.rangeEnd ? `range-end="${attr(args.rangeEnd)}"` : '',
+    args.min ? `min="${attr(args.min)}"` : '',
+    args.max ? `max="${attr(args.max)}"` : '',
+    disabledDates ? 'id="default-date-picker"' : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+    Number.isFinite(args.firstDayOfWeek) && args.firstDayOfWeek !== 1
+      ? `first-day-of-week="${args.firstDayOfWeek}"`
+      : '',
+    args.todayShortcut ? 'today-shortcut' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const picker = attrs ? `<mud-date-picker ${attrs}></mud-date-picker>` : '<mud-date-picker></mud-date-picker>';
+  // `disabledDates` is a property, not an attribute (readme props table), so it is set from a script.
+  return disabledDates
+    ? `${picker}
+<script>
+  document.getElementById('default-date-picker').disabledDates = ${jsValue(disabledDates)};
+</script>`
+    : picker;
+};
+
+const docsSourceSingle = /*html*/ `<mud-date-picker mode="single" value="2026-05-23"></mud-date-picker>`;
+
+const docsSourceRange = /*html*/ `<mud-date-picker mode="range" range-start="2026-05-10" range-end="2026-05-18"></mud-date-picker>`;
+
+const docsSourceMulti = /*html*/ `<mud-date-picker mode="multi" value='["2026-05-02","2026-05-09","2026-05-16","2026-05-23"]'></mud-date-picker>`;
+
+const docsSourceWithMinMax = /*html*/ `<mud-date-picker mode="single" value="2026-05-15" min="2026-05-10" max="2026-05-25"></mud-date-picker>`;
+
+// `disabledDates` is a property, not an attribute (readme props table), so it is set from a script.
+const docsSourceWithDisabledDates = /*html*/ `<mud-date-picker id="disabled-dates-picker" mode="single" value="2026-05-15"></mud-date-picker>
+<script>
+  document.getElementById('disabled-dates-picker').disabledDates = [
+    '2026-05-09',
+    '2026-05-10',
+    '2026-05-16',
+    '2026-05-17',
+    '2026-05-23',
+    '2026-05-24',
+  ];
+</script>`;
+
+const docsSourceMobile = /*html*/ `<mud-date-picker mode="single" breakpoint="mobile" header-style="dropdown" value="2026-05-23"></mud-date-picker>`;
+
+const docsSourceDocked = /*html*/ `<mud-date-input label="Appointment date" value="23/05/2026"></mud-date-input>
+<mud-date-picker mode="single" breakpoint="docked" value="2026-05-23"></mud-date-picker>`;
+
+const docsSourceComposedWithDateInput = /*html*/ `<mud-date-input id="composed-input" label="Appointment date" placeholder="DD/MM/YYYY"></mud-date-input>
+<mud-date-picker id="composed-picker" mode="single" breakpoint="desktop"></mud-date-picker>
+<script>
+  document.getElementById('composed-picker').addEventListener('mudChange', ev => {
+    const iso = ev.detail.value;
+    if (typeof iso !== 'string') return;
+    const [y, m, d] = iso.split('-');
+    document.getElementById('composed-input').value = d + '/' + m + '/' + y;
+  });
+</script>`;
 
 const meta: Meta<DatePickerArgs> = {
   title: 'Components/Date Picker',
@@ -100,6 +184,15 @@ export const Default: Story = {
     firstDayOfWeek: 1,
     todayShortcut: false,
   },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        // Omits attributes left at the component default so the snippet stays minimal as controls move.
+        transform: (_code: string, { args }: { args: DatePickerArgs }) => docsSourceDefault(args),
+      },
+    },
+  },
 };
 
 const cell = (caption: string, body: string) => /*html*/ `
@@ -140,6 +233,7 @@ export const Single: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceSingle },
       description: { story: 'Single-date selection — Romanian locale by default. Click any day to select.' },
     },
   },
@@ -155,6 +249,7 @@ export const Range: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceRange },
       description: {
         story:
           'Range mode renders the two endpoints solid and the in-range days with the brand-secondary background. Click a date to start a new range, click again to set the end.',
@@ -172,7 +267,10 @@ export const Multi: Story = {
   `,
   parameters: {
     controls: { disable: true },
-    docs: { description: { story: 'Multi-date selection — click any day to toggle. Value is a JSON array.' } },
+    docs: {
+      source: { code: docsSourceMulti },
+      description: { story: 'Multi-date selection — click any day to toggle. Value is a JSON array.' },
+    },
   },
 };
 
@@ -192,6 +290,7 @@ export const WithMinMax: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceWithMinMax },
       description: {
         story:
           'Bounded picker. All dates outside `min` (May 10) and `max` (May 25) are disabled and unfocusable via keyboard.',
@@ -215,6 +314,7 @@ export const WithDisabledDates: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceWithDisabledDates },
       description: {
         story:
           'Arbitrary disabled dates (e.g. holidays, blackout dates). The `disabled-dates` prop accepts a JSON array of ISO strings.',
@@ -235,6 +335,7 @@ export const Mobile: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceMobile },
       description: {
         story:
           'Full-width bottom-sheet variant with a drag handle. Use inside a sheet/dialog and pin to the bottom of the viewport on mobile.',
@@ -256,6 +357,7 @@ export const Docked: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceDocked },
       description: {
         story:
           'Compact docked variant intended to attach beneath a `mud-date-input`. No drop shadow — the input + picker share a single visual surface.',
@@ -292,6 +394,7 @@ export const ComposedWithDateInput: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceComposedWithDateInput },
       description: {
         story:
           'Composition with `mud-date-input` — the picker emits `mudChange` with the canonical ISO date, the host wires that back into the input as a `DD/MM/YYYY` display value.',

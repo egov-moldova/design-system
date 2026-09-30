@@ -308,6 +308,23 @@ const docsSourceAllVariants = /*html*/ `<mud-avatar type="photo" src="…" name=
 
 const docsSourceAllSizes = AVATAR_SIZES.map(s => `<mud-avatar size="${s}" name="Ion Popescu"></mud-avatar>`).join('\n');
 
+const docsSourceStates = /*html*/ `<!-- default -->
+<mud-avatar type="photo" size="md" src="…" name="Ion Popescu"></mud-avatar>
+<mud-avatar type="initials" size="md" name="Maria Pop"></mud-avatar>
+<mud-avatar type="icon" size="md" aria-label="User"></mud-avatar>
+
+<!-- focusable: the avatar is not interactive itself, so wrap it in a mud-button;
+     the ring shows on keyboard :focus-visible -->
+<mud-button appearance="text" aria-label="Open profile: Ion Popescu">
+  <mud-avatar type="photo" size="md" src="…" name="Ion Popescu"></mud-avatar>
+</mud-button>
+<mud-button appearance="text" aria-label="Open profile: Maria Pop">
+  <mud-avatar type="initials" size="md" name="Maria Pop"></mud-avatar>
+</mud-button>
+<mud-button appearance="text" aria-label="Open profile">
+  <mud-avatar type="icon" size="md" aria-label="User"></mud-avatar>
+</mud-button>`;
+
 const docsSourceWithBadge = /*html*/ `<!-- Compose mud-badge in the badge slot; match its size rung to the avatar's -->
 <mud-avatar type="photo" src="…" name="Ion Popescu" size="md">
   <mud-badge slot="badge" type="numbered" variant="danger" size="md" count="3"></mud-badge>
@@ -477,6 +494,7 @@ export const States: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
+      source: { code: docsSourceStates },
       description: {
         story:
           'Two-row matrix mirroring Figma 203:2111. Avatars are non-interactive by default; the `focus` row demonstrates the ring that appears when a consumer makes the avatar focusable (e.g. wraps it in a `<mud-button>`).',

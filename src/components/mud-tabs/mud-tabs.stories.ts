@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { TABS_SIZES } from './mud-tabs.types';
 import type { TabDescriptor, TabsSize } from './mud-tabs.types';
+import { jsLiteral } from '../../utils/story-docs-source';
 
 type StoryArgs = {
   size: TabsSize;
@@ -50,6 +51,23 @@ const renderTabsHtml = (
     ${renderTabsScript(id, tabs)}
   </div>
 `;
+
+// ---------------------------------------------------------------------------
+// Code-panel snippets — the consumer markup, without the demo chrome
+// ---------------------------------------------------------------------------
+
+// `tabs` is a property, not an attribute, so a snippet hands it over in a script, one
+// `[id, tabs]` pair per element, addressed by id. No top-level binding, so snippets pasted
+// onto one page do not collide.
+const docsSourceScript = (assignments: Array<[id: string, tabs: TabDescriptor[]]>) => `<script>
+${assignments
+  .map(
+    ([id, tabs]) => `  document.getElementById('${id}').tabs = [
+${tabs.map(tab => `    ${jsLiteral(tab)},`).join('\n')}
+  ];`,
+  )
+  .join('\n')}
+</script>`;
 
 const defaultTabs: TabDescriptor[] = [
   { value: 'profil', label: 'Profil' },
@@ -122,6 +140,53 @@ export const Default: Story = {
 
 const sectionHeading = (text: string) =>
   `<p style="font-size: var(--font-size-14); font-weight: 500; color: var(--color-text-base-default); margin: 0; padding-block-start: var(--spacing-8);">${text}</p>`;
+
+const variationTabs: Record<string, TabDescriptor[]> = {
+  'regular': [
+    { value: 'profil', label: 'Label' },
+    { value: 'documente', label: 'Label' },
+    { value: 'notificari', label: 'Label' },
+    { value: 'setari', label: 'Label' },
+  ],
+  'icon': [
+    { value: 'profil', label: 'Label', iconName: 'person' },
+    { value: 'documente', label: 'Label', iconName: 'document' },
+    { value: 'notificari', label: 'Label', iconName: 'notification' },
+    { value: 'setari', label: 'Label', iconName: 'settings' },
+  ],
+  'badge': [
+    { value: 'profil', label: 'Label' },
+    { value: 'documente', label: 'Label', badgeCount: 18 },
+    { value: 'notificari', label: 'Label' },
+    { value: 'setari', label: 'Label' },
+  ],
+  'icon-badge': [
+    { value: 'profil', label: 'Label', iconName: 'person' },
+    { value: 'notificari', label: 'Label', iconName: 'notification', badgeCount: 18 },
+    { value: 'plati', label: 'Label', iconName: 'credit-card' },
+    { value: 'istoric', label: 'Label', iconName: 'clock' },
+  ],
+};
+
+const docsSourceAllVariations = /*html*/ `<!-- Desktop (md) -->
+<mud-tabs id="tabs-variation-regular" aria-label="Label variation" value="profil"></mud-tabs>
+<mud-tabs id="tabs-variation-icon" aria-label="Icon variation" value="profil"></mud-tabs>
+<mud-tabs id="tabs-variation-badge" aria-label="Counter variation" value="profil"></mud-tabs>
+<mud-tabs id="tabs-variation-icon-badge" aria-label="Full variation" value="profil"></mud-tabs>
+
+<!-- Mobile (sm) -->
+<mud-tabs id="tabs-variation-regular-sm" aria-label="Label variation sm" value="profil" size="sm"></mud-tabs>
+<mud-tabs id="tabs-variation-icon-sm" aria-label="Icon variation sm" value="profil" size="sm"></mud-tabs>
+<mud-tabs id="tabs-variation-badge-sm" aria-label="Counter variation sm" value="profil" size="sm"></mud-tabs>
+<mud-tabs id="tabs-variation-icon-badge-sm" aria-label="Full variation sm" value="profil" size="sm"></mud-tabs>
+${docsSourceScript(
+  ['', '-sm'].flatMap(suffix =>
+    Object.entries(variationTabs).map(([id, tabs]): [string, TabDescriptor[]] => [
+      `tabs-variation-${id}${suffix}`,
+      tabs,
+    ]),
+  ),
+)}`;
 
 export const AllVariations: Story = {
   name: 'AllVariations',
@@ -244,6 +309,7 @@ export const AllVariations: Story = {
           'The four Figma variations (label-only, leading icon, trailing badge, both ornaments) ' +
           'shown at Desktop (md — 48 px) and Mobile (sm — 40 px) sizes.',
       },
+      source: { code: docsSourceAllVariations },
     },
   },
 };
@@ -266,6 +332,31 @@ const focusTabHtml = (id: string, selectedValue: string, focusValue: string, ari
     });
   </script>
 `;
+
+const statesTabs: TabDescriptor[] = [
+  { value: 'a', label: 'Label' },
+  { value: 'b', label: 'Label' },
+  { value: 'c', label: 'Label' },
+];
+
+const docsSourceStates = /*html*/ `<mud-tabs id="tabs-state-selected" aria-label="Selected state" value="a"></mud-tabs>
+<mud-tabs id="tabs-state-unselected" aria-label="Unselected state" value="a"></mud-tabs>
+
+<mud-tabs aria-label="Stare selected-focus" value="b">
+  <mud-tab value="a" label="Label"></mud-tab>
+  <mud-tab value="b" label="Label"></mud-tab>
+  <mud-tab value="c" label="Label"></mud-tab>
+</mud-tabs>
+
+<mud-tabs aria-label="Stare unselected-focus" value="a">
+  <mud-tab value="a" label="Label"></mud-tab>
+  <mud-tab value="b" label="Label"></mud-tab>
+  <mud-tab value="c" label="Label"></mud-tab>
+</mud-tabs>
+${docsSourceScript([
+  ['tabs-state-selected', statesTabs],
+  ['tabs-state-unselected', statesTabs],
+])}`;
 
 export const States: Story = {
   name: 'States',
@@ -315,9 +406,31 @@ export const States: Story = {
           'Tab into the tablist to see the keyboard focus ring; arrow keys move ' +
           'between enabled tabs (automatic activation mode — focus = selection).',
       },
+      source: { code: docsSourceStates },
     },
   },
 };
+
+const overflowTabs: TabDescriptor[] = [
+  { value: 'profil', label: 'Profile' },
+  { value: 'documente', label: 'Documents' },
+  { value: 'notificari', label: 'Notifications' },
+  { value: 'setari', label: 'Settings' },
+  { value: 'plati', label: 'Payments' },
+  { value: 'istoric', label: 'History' },
+  { value: 'preferinte', label: 'Preferences' },
+  { value: 'securitate', label: 'Security' },
+];
+
+const docsSourceOverflow = /*html*/ `<!-- Many tabs in a narrow container: a chevron appears at the trailing edge. -->
+<mud-tabs id="tabs-overflow-right" aria-label="Overflow trailing" value="profil"></mud-tabs>
+
+<!-- Selection in the middle: chevrons on both edges once the strip is scrolled. -->
+<mud-tabs id="tabs-overflow-left" aria-label="Overflow leading" value="setari"></mud-tabs>
+${docsSourceScript([
+  ['tabs-overflow-right', overflowTabs],
+  ['tabs-overflow-left', overflowTabs],
+])}`;
 
 export const Overflow: Story = {
   name: 'Overflow',
@@ -382,9 +495,33 @@ export const Overflow: Story = {
           'edge (right) and, after scrolling, the leading edge (left) as well. Click a ' +
           'chevron to scroll the strip by 75 % of its width.',
       },
+      source: { code: docsSourceOverflow },
     },
   },
 };
+
+const docsSourceMobile = /*html*/ `<mud-tabs id="tabs-mobile-label" aria-label="Mobile — label" value="profil" size="sm"></mud-tabs>
+<mud-tabs id="tabs-mobile-overflow" aria-label="Mobile — overflow" value="profil" size="sm"></mud-tabs>
+${docsSourceScript([
+  [
+    'tabs-mobile-label',
+    [
+      { value: 'profil', label: 'Profile' },
+      { value: 'documente', label: 'Documents' },
+      { value: 'notificari', label: 'Notifications' },
+    ],
+  ],
+  [
+    'tabs-mobile-overflow',
+    [
+      { value: 'profil', label: 'Profile', iconName: 'person' },
+      { value: 'documente', label: 'Documents', iconName: 'document' },
+      { value: 'notificari', label: 'Notifications', iconName: 'notification', badgeCount: 4 },
+      { value: 'setari', label: 'Settings', iconName: 'settings' },
+      { value: 'plati', label: 'Payments', iconName: 'credit-card' },
+    ],
+  ],
+])}`;
 
 export const Mobile: Story = {
   name: 'Mobile',
@@ -435,9 +572,33 @@ export const Mobile: Story = {
           'Mobile breakpoint uses `size="sm"`: 40 px tall, 12 px horizontal padding, ' +
           '14 px label font size. Touch targets are kept ≥ 24×24 per WCAG 2.1 AA.',
       },
+      source: { code: docsSourceMobile },
     },
   },
 };
+
+const docsSourceWithDisabled = /*html*/ `<mud-tabs id="tabs-disabled-one" aria-label="With a disabled tab" value="profil"></mud-tabs>
+<mud-tabs id="tabs-disabled-many" aria-label="Several disabled tabs" value="profil"></mud-tabs>
+${docsSourceScript([
+  [
+    'tabs-disabled-one',
+    [
+      { value: 'profil', label: 'Profile' },
+      { value: 'documente', label: 'Documents', disabled: true },
+      { value: 'notificari', label: 'Notifications' },
+      { value: 'setari', label: 'Settings' },
+    ],
+  ],
+  [
+    'tabs-disabled-many',
+    [
+      { value: 'profil', label: 'Profile' },
+      { value: 'documente', label: 'Documents', disabled: true },
+      { value: 'notificari', label: 'Notifications', badgeCount: 7, disabled: true },
+      { value: 'setari', label: 'Settings' },
+    ],
+  ],
+])}`;
 
 export const WithDisabled: Story = {
   name: 'WithDisabled',
@@ -474,8 +635,28 @@ export const WithDisabled: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceWithDisabled } },
   },
 };
+
+const docsSourceWithPanels = /*html*/ `<mud-tabs aria-label="User account" value="profil">
+  <mud-tab value="profil" label="Profile"></mud-tab>
+  <mud-tab value="documente" label="Documents"></mud-tab>
+  <mud-tab value="notificari" label="Notifications"></mud-tab>
+  <mud-tab value="setari" label="Settings"></mud-tab>
+  <div slot="panel-profil">
+    <strong>User profile.</strong> Here you see your personal data, profile photo and the preferences shown to other members.
+  </div>
+  <div slot="panel-documente">
+    <strong>Documents.</strong> Your ID card, contracts and identity documents stored safely.
+  </div>
+  <div slot="panel-notificari">
+    <strong>Notifications.</strong> Recent messages about your account activity.
+  </div>
+  <div slot="panel-setari">
+    <strong>Settings.</strong> Language, time zone, email alerts and two-step authentication.
+  </div>
+</mud-tabs>`;
 
 export const WithPanels: Story = {
   name: 'WithPanels',
@@ -511,9 +692,40 @@ export const WithPanels: Story = {
           'and `aria-labelledby` automatically and hides inactive panels via the ' +
           '`hidden` attribute.',
       },
+      source: { code: docsSourceWithPanels },
     },
   },
 };
+
+const docsSourceEdgeCases = /*html*/ `<mud-tabs id="tabs-edge-two" aria-label="Two tabs" value="a"></mud-tabs>
+<mud-tabs id="tabs-edge-long" aria-label="Long labels" value="a"></mud-tabs>
+<mud-tabs id="tabs-edge-badges" aria-label="Contoare mari" value="a"></mud-tabs>
+<mud-tabs aria-label="Empty list"></mud-tabs>
+${docsSourceScript([
+  [
+    'tabs-edge-two',
+    [
+      { value: 'a', label: 'List' },
+      { value: 'b', label: 'Map' },
+    ],
+  ],
+  [
+    'tabs-edge-long',
+    [
+      { value: 'a', label: 'Detailed user profile' },
+      { value: 'b', label: 'Recently uploaded documents' },
+      { value: 'c', label: 'Non-linguistic notifications' },
+    ],
+  ],
+  [
+    'tabs-edge-badges',
+    [
+      { value: 'a', label: 'Messages', badgeCount: 99 },
+      { value: 'b', label: 'Requests', badgeCount: 256 },
+      { value: 'c', label: 'Archive', badgeCount: 0 },
+    ],
+  ],
+])}`;
 
 export const EdgeCases: Story = {
   name: 'EdgeCases',
@@ -569,5 +781,6 @@ export const EdgeCases: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceEdgeCases } },
   },
 };

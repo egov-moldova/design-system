@@ -172,6 +172,15 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
+/** `chips` is a `string[]` property, so the docs snippet assigns it in a script on the element's `id`. */
+const docsChips = (...assignments: [id: string, chips: string[]][]) =>
+  `<script>\n${assignments
+    .map(([id, chips]) => `  document.getElementById('${id}').chips = ${JSON.stringify(chips)};`)
+    .join('\n')}\n</script>`;
+
+const docsSourceWithChips = /*html*/ `<mud-input-chip id="recipients" size="lg" label="Recipients" placeholder="Add another address" helper-text="Press Enter to confirm."></mud-input-chip>
+${docsChips(['recipients', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md']])}`;
+
 export const WithChips: Story = {
   name: 'With Chips',
   render: () => /*html*/ `
@@ -186,8 +195,14 @@ export const WithChips: Story = {
         ${preloadChips('#story-with-chips', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md'])}
       </div>
     `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithChips } } },
 };
+
+const docsSourceAllVariants = /*html*/ `${INPUT_CHIP_VARIANTS.map(
+  v =>
+    `<mud-input-chip id="recipients-${v}" variant="${v}" size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>`,
+).join('\n')}
+${docsChips(...INPUT_CHIP_VARIANTS.map((v): [string, string[]] => [`recipients-${v}`, ['ana@gov.md', 'ion@gov.md']]))}`;
 
 export const AllVariants: Story = {
   name: 'All Variants',
@@ -204,8 +219,14 @@ export const AllVariants: Story = {
         );
       }).join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceAllVariants } } },
 };
+
+const docsSourceAllSizes = /*html*/ `${INPUT_CHIP_SIZES.map(
+  s =>
+    `<mud-input-chip id="recipients-${s}" size="${s}" label="Recipients" placeholder="Add address"></mud-input-chip>`,
+).join('\n')}
+${docsChips(...INPUT_CHIP_SIZES.map((s): [string, string[]] => [`recipients-${s}`, ['ana@gov.md', 'ion@gov.md']]))}`;
 
 export const AllSizes: Story = {
   name: 'All Sizes',
@@ -222,8 +243,19 @@ export const AllSizes: Story = {
         );
       }).join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceAllSizes } } },
 };
+
+const docsSourceStates = /*html*/ `<mud-input-chip size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>
+<mud-input-chip id="recipients-filled" size="lg" label="Recipients" placeholder="Add another address"></mud-input-chip>
+<mud-input-chip size="lg" label="Recipients" required placeholder="This field is required"></mud-input-chip>
+<mud-input-chip size="lg" label="Recipients" disabled placeholder="Add address"></mud-input-chip>
+<mud-input-chip id="recipients-disabled-filled" size="lg" label="Recipients" disabled></mud-input-chip>
+<mud-input-chip variant="destructive" size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>
+${docsChips(
+  ['recipients-filled', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md']],
+  ['recipients-disabled-filled', ['ana@gov.md', 'ion@gov.md']],
+)}`;
 
 export const States: Story = {
   name: 'States',
@@ -268,8 +300,11 @@ export const States: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceStates } } },
 };
+
+const docsSourceWithEmailValidation = /*html*/ `<mud-input-chip id="email-recipients" size="lg" label="Recipients (e-mail)" placeholder="ex: ana@gov.md, ion@gov.md" helper-text="Only valid addresses are accepted." validate-pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"></mud-input-chip>
+${docsChips(['email-recipients', ['ana@gov.md']])}`;
 
 export const WithEmailValidation: Story = {
   name: 'With Email Validation',
@@ -286,8 +321,15 @@ export const WithEmailValidation: Story = {
       ${preloadChips('#story-email', ['ana@gov.md'])}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithEmailValidation } } },
 };
+
+const docsSourceWithMaxChips = /*html*/ `<mud-input-chip id="recipients-max" size="lg" label="Recipients (max 3)" placeholder="Press Enter to add" helper-text="At most 3 recipients." max-chips="3"></mud-input-chip>
+<mud-input-chip id="recipients-max-reached" size="lg" label="Recipients (limit reached)" helper-text="The limit of 3 recipients is reached — the field is locked." max-chips="3"></mud-input-chip>
+${docsChips(
+  ['recipients-max', ['ana@gov.md', 'ion@gov.md']],
+  ['recipients-max-reached', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md']],
+)}`;
 
 export const WithMaxChips: Story = {
   name: 'With Max Chips',
@@ -312,8 +354,11 @@ export const WithMaxChips: Story = {
       ${preloadChips('#story-max-reached', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md'])}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithMaxChips } } },
 };
+
+const docsSourceWithSeparators = /*html*/ `<mud-input-chip size="lg" label="Labels" placeholder="Press , or ; or Enter" helper-text="Comma and semicolon are accepted." separators=",;"></mud-input-chip>
+<mud-input-chip size="lg" label="Keywords" placeholder="Press Space between words" helper-text="Press Space or Enter." separators=" "></mud-input-chip>`;
 
 export const WithSeparators: Story = {
   name: 'With Separators',
@@ -342,8 +387,11 @@ export const WithSeparators: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithSeparators } } },
 };
+
+const docsSourceDuplicateRejection = /*html*/ `<mud-input-chip id="unique-labels" size="lg" label="Unique labels" placeholder="Try adding ‘moldova’ again" helper-text="Duplicate values are ignored."></mud-input-chip>
+${docsChips(['unique-labels', ['moldova', 'citizenship', 'identity']])}`;
 
 export const DuplicateRejection: Story = {
   name: 'Duplicate Rejection',
@@ -359,8 +407,11 @@ export const DuplicateRejection: Story = {
       ${preloadChips('#story-dup', ['moldova', 'citizenship', 'identity'])}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceDuplicateRejection } } },
 };
+
+const docsSourceWithHelperText = /*html*/ `<mud-input-chip size="lg" label="Recipients" helper-text="Press Enter after each address." placeholder="Address"></mud-input-chip>
+<mud-input-chip size="lg" label="Recipients" required helper-text="This field is required — at least one recipient." placeholder="Address"></mud-input-chip>`;
 
 export const WithHelperText: Story = {
   name: 'With Helper Text',
@@ -388,8 +439,12 @@ export const WithHelperText: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithHelperText } } },
 };
+
+const docsSourceWithError = /*html*/ `<mud-input-chip size="lg" label="Recipients" invalid error-text="Add at least one recipient" placeholder="Address"></mud-input-chip>
+<mud-input-chip id="recipients-destructive" variant="destructive" size="lg" label="Recipients" invalid error-text="The format is not correct"></mud-input-chip>
+${docsChips(['recipients-destructive', ['ana@gov.md']])}`;
 
 export const WithError: Story = {
   name: 'With Error',
@@ -425,8 +480,22 @@ export const WithError: Story = {
         })(),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithError } } },
 };
+
+const docsSourceWrapping = /*html*/ `<mud-input-chip id="recipients-many" size="lg" label="Recipients (many)" helper-text="Chips wrap onto several rows." placeholder="Add another address"></mud-input-chip>
+${docsChips([
+  'recipients-many',
+  [
+    'ana@gov.md',
+    'ion.popescu@minfin.md',
+    'maria.dumitru@miop.md',
+    'andrei.ciobanu@mai.md',
+    'elena.rusu@minfin.md',
+    'victor.gurzu@mfa.md',
+    'cristina.lupu@msmps.md',
+  ],
+])}`;
 
 export const Wrapping: Story = {
   name: 'Wrapping',
@@ -450,8 +519,13 @@ export const Wrapping: Story = {
       ])}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWrapping } } },
 };
+
+const docsSourceEdgeCases = /*html*/ `<mud-input-chip id="long-chip" size="lg" label="Long label" placeholder="Add another value"></mud-input-chip>
+<mud-input-chip size="lg" label="Moldova's digital evolution requires that you list every authorised representative in this submission" placeholder="Add"></mud-input-chip>
+<mud-input-chip size="lg" label="Recipients" helper-text="Only valid e-mail addresses with a Moldovan institutional domain are accepted; enter one address at a time, then press Enter or comma to confirm; duplicate values are ignored" placeholder="Address"></mud-input-chip>
+${docsChips(['long-chip', ['moldova-digital-transformation-strategy-2025-2030-final-version-approved']])}`;
 
 export const EdgeCases: Story = {
   name: 'Edge Cases',
@@ -487,7 +561,7 @@ export const EdgeCases: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
 };
 
 // Regression test, not documentation — hidden from the sidebar and autodocs.
