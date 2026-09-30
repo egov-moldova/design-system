@@ -17,8 +17,8 @@ exported from Figma — so a future asset with non-standard dimensions
 
 Consumers that need to reserve layout space before the async fetch
 resolves (e.g. above-the-fold marketing, dense grids) should wrap the
-logo in a sized container — `mud-service-button` does this for its
-`badge` slot (24 × 24).
+logo in a sized container — `mud-button` does this for its `badge`
+slot (24 × 24).
 
 ## Properties
 
@@ -33,6 +33,19 @@ logo in a sized container — `mud-service-button` does this for its
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `mudLogoError` | Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures. | `CustomEvent<{ name: string; reason: "unknown" \| "fetch-failed"; }>` |
 
+
+## Dependencies
+
+### Used by
+
+ - [mud-button](../mud-button)
+
+### Graph
+```mermaid
+graph TD;
+  mud-button --> mud-logo
+  style mud-logo fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

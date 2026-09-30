@@ -6,8 +6,8 @@
      attributes from Figma). `max-content` opts the host out of a flex/grid
      parent's `align-items: stretch`, so the logo never gets blown up to
      fill an unrelated container. Consumers that constrain the host
-     explicitly (e.g. mud-service-button's `::slotted([slot='badge'])`
-     rule) override these values and the inner SVG scales to match. */
+     explicitly (e.g. mud-button's `::slotted([slot='badge'])` rule)
+     override these values and the inner SVG scales to match. */
   inline-size: max-content;
   block-size: max-content;
 }

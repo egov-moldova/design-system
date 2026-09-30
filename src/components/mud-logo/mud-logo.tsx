@@ -16,8 +16,8 @@ import { observeAriaLabel } from '../../utils/aria-label';
  *
  * Consumers that need to reserve layout space before the async fetch
  * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
- * logo in a sized container — `mud-service-button` does this for its
- * `badge` slot (24 × 24).
+ * logo in a sized container — `mud-button` does this for its `badge`
+ * slot (24 × 24).
  *
  * @element mud-logo
  */

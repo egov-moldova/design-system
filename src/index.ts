@@ -4,8 +4,20 @@ export { MudSpinner } from './components/mud-spinner/mud-spinner';
 export type { SpinnerSize, SpinnerVariant } from './components/mud-spinner/mud-spinner.types';
 
 export { MudButton } from './components/mud-button/mud-button';
-export { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES, BUTTON_TYPES } from './components/mud-button/mud-button.types';
-export type { ButtonSize, ButtonVariant, ButtonShape, ButtonType } from './components/mud-button/mud-button.types';
+export {
+  BUTTON_BADGES,
+  BUTTON_SIZES,
+  BUTTON_VARIANTS,
+  BUTTON_SHAPES,
+  BUTTON_TYPES,
+} from './components/mud-button/mud-button.types';
+export type {
+  ButtonBadge,
+  ButtonSize,
+  ButtonVariant,
+  ButtonShape,
+  ButtonType,
+} from './components/mud-button/mud-button.types';
 
 export { MudButtonGroup } from './components/mud-button-group/mud-button-group';
 export { BUTTON_GROUP_ORIENTATIONS } from './components/mud-button-group/mud-button-group.types';

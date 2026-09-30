@@ -2,7 +2,15 @@ import { AttachInternals, Component, Element, Host, Prop, State, h } from '@sten
 
 import { observeAriaLabel } from '../../utils/aria-label';
 import type { SpinnerSize, SpinnerVariant } from '../mud-spinner/mud-spinner.types';
-import type { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './mud-button.types';
+import { BUTTON_BADGES } from './mud-button.types';
+import type {
+  ButtonAppearance,
+  ButtonBadge,
+  ButtonShape,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from './mud-button.types';
 
 type SpinnerSizeForButton = Extract<SpinnerSize, 'xs' | 'sm'>;
 
@@ -16,6 +24,8 @@ type SpinnerSizeForButton = Extract<SpinnerSize, 'xs' | 'sm'>;
  * @element mud-button
  *
  * @slot - (default) The label content. Plain text or rich inline content.
+ * @slot badge - A logo before the label, sized 24×24; replaces the one the `badge`
+ *               prop draws. For an M-service, set the `badge` prop instead.
  * @slot icon-start - Optional `mud-icon` rendered before the label.
  * @slot icon-end - Optional `mud-icon` rendered after the label.
  * @slot icon - When filled, switches the button into icon-only mode: the
@@ -136,6 +146,15 @@ export class MudButton {
    */
   @Prop() label?: string;
 
+  /**
+   * An M-service whose logomark sits 24×24 before the label: the service button (Figma
+   * button-badge-filled, 2925:4606), drawn on `size="lg"`, `variant="primary"` or
+   * `"neutral"`. The logo dims to 30% when disabled and hides while loading. A filled
+   * `badge` slot replaces it with any other logo.
+   */
+  @Prop({ reflect: true }) badge?: ButtonBadge;
+
+  @State() private hasBadgeSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
   @State() private hasIconEnd: boolean = false;
   @State() private hasIcon: boolean = false;
@@ -148,6 +167,7 @@ export class MudButton {
   @AttachInternals() internals!: ElementInternals;
 
   private stopAriaLabel?: () => void;
+  private warnedBadge = false;
   private warnedLabelDeprecated = false;
 
   connectedCallback() {
@@ -207,6 +227,10 @@ export class MudButton {
     this.internals.setFormValue(null, null);
   }
 
+  private onBadgeSlotChange = (ev: Event) => {
+    this.hasBadgeSlot = this.slotHasContent(ev);
+  };
+
   private onIconStartSlotChange = (ev: Event) => {
     this.hasIconStart = this.slotHasContent(ev);
   };
@@ -233,6 +257,20 @@ export class MudButton {
   /** The control's accessible name: the host's native `aria-label`, else the deprecated `label`. */
   private accessibleName(): string | undefined {
     return this.resolvedAriaLabel ?? (this.label?.trim() || undefined);
+  }
+
+  /** `badge` when it names a known service, else undefined (warns once). */
+  private resolvedBadge(): ButtonBadge | undefined {
+    const badge = this.badge;
+    if (badge === undefined || badge === null || (badge as string) === '') return undefined;
+    if ((BUTTON_BADGES as readonly string[]).includes(badge)) return badge;
+    if (!this.warnedBadge) {
+      this.warnedBadge = true;
+      console.warn(
+        `[mud-button] badge="${String(badge)}" is not a known service. Supported: ${BUTTON_BADGES.join(', ')}.`,
+      );
+    }
+    return undefined;
   }
 
   private isInert(): boolean {
@@ -281,7 +319,9 @@ export class MudButton {
     const inert = this.isInert();
     const effectivelyDisabled = this.disabled || this.fieldsetDisabled;
 
+    const badge = this.resolvedBadge();
     const hostClasses = {
+      'has-badge': (this.hasBadgeSlot || badge !== undefined) && !this.iconOnly,
       'has-icon-start': this.hasIconStart && !this.iconOnly,
       'has-icon-end': this.hasIconEnd && !this.iconOnly,
       'is-fieldset-disabled': this.fieldsetDisabled && !this.disabled,
@@ -293,6 +333,11 @@ export class MudButton {
     const tabIndexAttr = effectivelyDisabled ? -1 : 0;
 
     const slots = [
+      <span class="badge" aria-hidden="true">
+        <slot name="badge" onSlotchange={this.onBadgeSlotChange}>
+          {badge ? <mud-logo name={`${badge}-logo-logomark-only`} /> : null}
+        </slot>
+      </span>,
       <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />,
       <span class="label">
         <slot />

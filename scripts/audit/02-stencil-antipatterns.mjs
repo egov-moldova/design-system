@@ -69,6 +69,7 @@ export const HYBRID_CONTENT_COMPONENTS = new Map([
   // Short plain text with a rich override.
   ['mud-accordion-item', 'heading and supporting text'],
   ['mud-breadcrumb-item', 'item label'],
+  ['mud-button', 'the `badge` prop draws a service logomark; the `badge` slot replaces it'],
   ['mud-menu-item', 'item label'],
   ['mud-modal', 'title (wired to aria-labelledby) and image'],
   ['mud-separator', 'separator label'],

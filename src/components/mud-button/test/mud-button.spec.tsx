@@ -340,11 +340,11 @@ describe('mud-button', () => {
   // What we *can* assert is the structural contract — the named slots exist in
   // shadow DOM in the right order, ready to receive content at runtime.
   describe('slot structure (shadow DOM contract)', () => {
-    it('exposes icon-start, default, and icon-end slots in order', async () => {
+    it('exposes badge, icon-start, default, and icon-end slots in order', async () => {
       const { root } = await render(<mud-button>Click</mud-button>);
       const slots = Array.from(root?.shadowRoot?.querySelectorAll('slot') ?? []);
       const names = slots.map(s => s.getAttribute('name') ?? '(default)');
-      expect(names).toEqual(['icon-start', '(default)', 'icon-end', 'icon']);
+      expect(names).toEqual(['badge', 'icon-start', '(default)', 'icon-end', 'icon']);
     });
   });
 
@@ -603,7 +603,68 @@ describe('mud-button', () => {
     });
   });
 
+  describe('badge prop', () => {
+    it('draws the service logomark as the badge slot fallback and reflects the prop', async () => {
+      const { root } = await render(
+        <mud-button size="lg" badge="mpay">
+          Plătește cu mpay
+        </mud-button>,
+      );
+      const logo = root?.shadowRoot?.querySelector('.badge slot[name="badge"] mud-logo');
+      expect(logo?.getAttribute('name')).toBe('mpay-logo-logomark-only');
+      expect(root?.getAttribute('badge')).toBe('mpay');
+      expect(root?.classList.contains('has-badge')).toBe(true);
+    });
+
+    it('draws nothing and has no has-badge class without the prop or the slot', async () => {
+      const { root } = await render(<mud-button>Save</mud-button>);
+      expect(root?.shadowRoot?.querySelector('.badge mud-logo')).toBeNull();
+      expect(root?.classList.contains('has-badge')).toBe(false);
+    });
+
+    it('warns once and draws nothing for an unknown service', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-button badge={'mfoo' as unknown as 'mpay'}>Save</mud-button>);
+      Object.assign(root as object, { variant: 'neutral' });
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelector('.badge mud-logo')).toBeNull();
+      expect(root?.classList.contains('has-badge')).toBe(false);
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('badge="mfoo"'))).toHaveLength(1);
+      warn.mockRestore();
+    });
+  });
+
   describe('slot content reactivity', () => {
+    it('reflects the has-badge class on the host after slotchange', async () => {
+      const { root } = await render(
+        <mud-button size="lg">
+          <span slot="badge">logo</span>
+          Plătește cu mpay
+        </mud-button>,
+      );
+      const slot = root?.shadowRoot?.querySelector('.badge slot[name="badge"]') as HTMLSlotElement | null;
+      expect(slot?.parentElement?.getAttribute('aria-hidden')).toBe('true');
+      slot?.dispatchEvent(new Event('slotchange'));
+      await new Promise(r => setTimeout(r, 0));
+      expect(root?.classList.contains('has-badge')).toBe(true);
+    });
+
+    it('drops has-badge in icon-only mode', async () => {
+      // mock-doc fires no slotchange, so the button warns that its icon slot looks empty.
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-button icon-only aria-label="Plătește">
+          <span slot="badge">logo</span>
+          <span slot="icon">i</span>
+        </mud-button>,
+      );
+      const slot = root?.shadowRoot?.querySelector('slot[name="badge"]') as HTMLSlotElement | null;
+      slot?.dispatchEvent(new Event('slotchange'));
+      await new Promise(r => setTimeout(r, 0));
+      expect(root?.classList.contains('has-badge')).toBe(false);
+      warn.mockRestore();
+    });
+
     it('reflects the has-icon-start class on the host after slotchange', async () => {
       const { root } = await render(
         <mud-button>
