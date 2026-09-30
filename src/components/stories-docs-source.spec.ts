@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from '@stencil/vitest';
@@ -17,7 +17,7 @@ import { composeStory } from 'storybook/preview-api';
 //   - `docs.source.code`, hand-written consumer markup; or
 //   - `docs.source.type: 'dynamic'` plus a `transform` that builds the markup from args.
 // Without `type: 'dynamic'` the Code panel ignores the transform under the global `'code'`, and
-// the transform must return unescaped `<mud-…>` markup for the story's args.
+// the transform must return `<mud-…>` markup for the story's args (escaped markup has none).
 
 type StoriesModule = Record<string, unknown> & { default: Record<string, unknown> };
 type DocsSource = { code?: unknown; type?: unknown; transform?: unknown };
@@ -29,26 +29,29 @@ const storyFiles = readdirSync(COMPONENTS_ROOT, { recursive: true, encoding: 'ut
   .filter(name => /\.stories\.(js|jsx|ts|tsx)$/.test(name))
   .map(name => path.join(COMPONENTS_ROOT, name));
 
-// `.storybook/preview.js` tags every story `autodocs`, so a story hidden from the sidebar
-// (`!dev`) still reaches the Docs page's "Show code" unless it also sets `!autodocs`.
-const PROJECT_ANNOTATIONS = { render: () => '', tags: ['autodocs'] };
+// The project-level tags of `.storybook/preview.js` (`autodocs` today): a story hidden from the
+// sidebar (`!dev`) still reaches the Docs page's "Show code" unless it also sets `!autodocs`.
+// Read from the file rather than imported: preview.js pulls in the browser-only preview setup.
+const PREVIEW_PATH = path.resolve(COMPONENTS_ROOT, '../../.storybook/preview.js');
+const PREVIEW_TAGS = readFileSync(PREVIEW_PATH, 'utf8').match(/^export const tags = \[([^\]]*)\];$/m);
+const PROJECT_ANNOTATIONS = {
+  render: () => '',
+  tags: [...(PREVIEW_TAGS?.[1] ?? '').matchAll(/'([^']+)'/g)].map(match => match[1]),
+};
 
-/** A snippet a consumer can copy: names a `mud-*` element and is not HTML-escaped. */
-function isMarkup(snippet: unknown): boolean {
-  return typeof snippet === 'string' && snippet.includes('<mud-') && !snippet.includes('&lt;');
-}
-
-function transformOutput(transform: (code: string, context: { args: unknown }) => unknown, args: unknown): unknown {
+/** Why a transform's output is not copyable markup, or `null` when it is. */
+function transformProblem(transform: (code: string, context: { args: unknown }) => unknown, args: unknown) {
   try {
-    return transform('', { args });
-  } catch {
-    return undefined;
+    const output = transform('', { args });
+    return typeof output === 'string' && output.includes('<mud-') ? null : 'transform returned no <mud-…> markup';
+  } catch (error) {
+    return `transform threw: ${error instanceof Error ? error.message : String(error)}`;
   }
 }
 
-async function checkSources(): Promise<{ checked: number; missing: string[] }> {
+async function checkSources(): Promise<{ sidebarStories: number; missing: string[] }> {
   const modules = await Promise.all(storyFiles.map(file => import(file) as Promise<StoriesModule>));
-  let checked = 0;
+  let sidebarStories = 0;
   const missing = modules.flatMap(module => {
     const meta = module.default;
     return Object.keys(module)
@@ -56,32 +59,32 @@ async function checkSources(): Promise<{ checked: number; missing: string[] }> {
       .flatMap(name => {
         // The stub `render` only satisfies `prepareStory`; nothing is rendered here.
         const story = composeStory(module[name] as never, meta as never, PROJECT_ANNOTATIONS, {}, name);
+        if (story.tags.includes('dev')) sidebarStories += 1;
         if (!story.tags.includes('dev') && !story.tags.includes('autodocs')) return [];
-        checked += 1;
+        const label = `${String(meta.title)} › ${name}`;
         const source = (story.parameters.docs as { source?: DocsSource } | undefined)?.source ?? {};
-        const hasCode = typeof source.code === 'string' && source.code.trim() !== '';
+        if (typeof source.code === 'string' && source.code.trim() !== '') return [];
+        if (source.type !== 'dynamic' || typeof source.transform !== 'function') return [label];
         // Storybook calls the transform with the story's args; one that throws, returns
         // nothing or escapes the markup leaves the panel as useless as the story object.
-        const hasTransform =
-          source.type === 'dynamic' &&
-          typeof source.transform === 'function' &&
-          isMarkup(transformOutput(source.transform as never, story.args));
-        return hasCode || hasTransform ? [] : [`${String(meta.title)} › ${name}`];
+        const problem = transformProblem(source.transform as never, story.args);
+        return problem ? [`${label} (${problem})`] : [];
       });
   });
-  return { checked, missing };
+  return { sidebarStories, missing };
 }
 
 describe('stories docs source', () => {
-  it('finds the story files', () => {
+  it('finds the story files and the preview tags', () => {
     expect(storyFiles.length).toBeGreaterThan(0);
+    expect(PROJECT_ANNOTATIONS.tags).toContain('autodocs');
   });
 
   it('gives every sidebar-visible story an explicit docs source', async () => {
-    const { checked, missing } = await checkSources();
-    // Visibility comes from Storybook's default `dev` tag. If an upgrade stopped adding
-    // it, every story would be skipped and the list below would pass empty.
-    expect(checked).toBeGreaterThan(0);
+    const { sidebarStories, missing } = await checkSources();
+    // Sidebar visibility comes from Storybook's default `dev` tag. If an upgrade stopped
+    // adding it, no story would count as visible and this guard would check far less.
+    expect(sidebarStories).toBeGreaterThan(0);
     expect(missing).toEqual([]);
   });
 });
