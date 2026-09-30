@@ -1,0 +1,52 @@
+imagePullSecrets:
+  - name: harbor
+
+deployment:
+  webui:
+    labels:
+      app.kubernetes.io/component: webui
+    replicas: 2
+    image:
+      repository: harbor.egov.md/design/mud-storybook
+      pullPolicy: IfNotPresent
+    service:
+      portName: http
+      ports:
+      - name: http
+        port: 6006
+        targetPort: http
+    ports:
+    - name: http
+      containerPort: 6006
+      protocol: TCP
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 3
+      periodSeconds: 10
+      timeoutSeconds: 3
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 30
+      timeoutSeconds: 3
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 250m
+    networkPolicy:
+      enabled: false
+
+ingress:
+  webui:
+    enabled: true
+    className: nginx
+    paths:
+      - path: /
+    host: mud.egov.md

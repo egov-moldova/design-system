@@ -1,0 +1,74 @@
+{{- $fullName := include "app.fullname" . -}}
+{{- range $workloadKey, $workload := .Values.deployment -}}
+{{- if hasKey $workload "enabled" | ternary $workload.enabled true -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-%s" $fullName $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+{{- with $workload.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  replicas: {{ required "deployment replicas are required" $workload.replicas }}
+{{- with $workload.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "app.selector" $ | nindent 6 }}
+      {{- toYaml $workload.labels | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selector" $ | nindent 8 }}
+        {{- toYaml $workload.labels | nindent 8 }}
+      {{- with $workload.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with $workload.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+    {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ printf "%s-%s" $.Chart.Name $workloadKey | quote }}
+          image: {{ printf "%s:%s" (required "image repository is required" $workload.image.repository) (required "image tag or chart appVersion is required" (default $.Chart.AppVersion $workload.image.tag)) | quote }}
+          imagePullPolicy: {{ default "IfNotPresent" $workload.image.pullPolicy }}
+          ports:
+            {{- required "container ports are required" $workload.ports | toYaml | nindent 12 }}
+        {{- with $workload.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with $workload.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with $workload.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      terminationGracePeriodSeconds: {{ default 30 $workload.terminationGracePeriodSeconds }}
+---
+{{- end }}
+{{- end }}
+

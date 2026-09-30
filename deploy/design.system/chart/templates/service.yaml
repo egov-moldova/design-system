@@ -1,0 +1,25 @@
+{{- $fullName := include "app.fullname" . -}}
+{{- range $workloadKey, $workload := .Values.deployment -}}
+{{- if and (hasKey $workload "enabled" | ternary $workload.enabled true) $workload.service -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "%s-%s" $fullName $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+{{- with $workload.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  type: {{ default "ClusterIP" $workload.service.type }}
+  selector:
+    {{- include "app.selector" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+  ports:
+    {{- required "service ports are required" $workload.service.ports | toYaml | nindent 4 }}
+---
+{{- end }}
+{{- end }}
+

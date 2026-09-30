@@ -18,7 +18,7 @@ COPY scripts/git ./scripts/git
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner
 RUN --mount=type=cache,target=/root/.yarn/berry/cache \
     corepack enable \
- && corepack prepare yarn@4.9.4 --activate \
+ && corepack prepare yarn@4.12.0 --activate \
  && yarn install --immutable --inline-builds --network-timeout 600000
 
 # Copy the rest of the application
