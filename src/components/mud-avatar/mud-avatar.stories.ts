@@ -313,10 +313,17 @@ const docsSourceStates = /*html*/ `<!-- default -->
 <mud-avatar type="initials" size="md" name="Maria Pop"></mud-avatar>
 <mud-avatar type="icon" size="md" aria-label="User"></mud-avatar>
 
-<!-- focusable: the ring shows on keyboard :focus-visible -->
-<mud-avatar type="photo" size="md" src="…" name="Ion Popescu" tabindex="0"></mud-avatar>
-<mud-avatar type="initials" size="md" name="Maria Pop" tabindex="0"></mud-avatar>
-<mud-avatar type="icon" size="md" aria-label="User" tabindex="0"></mud-avatar>`;
+<!-- focusable: the avatar is not interactive itself, so wrap it in a mud-button;
+     the ring shows on keyboard :focus-visible -->
+<mud-button appearance="text" aria-label="Open profile: Ion Popescu">
+  <mud-avatar type="photo" size="md" src="…" name="Ion Popescu"></mud-avatar>
+</mud-button>
+<mud-button appearance="text" aria-label="Open profile: Maria Pop">
+  <mud-avatar type="initials" size="md" name="Maria Pop"></mud-avatar>
+</mud-button>
+<mud-button appearance="text" aria-label="Open profile">
+  <mud-avatar type="icon" size="md" aria-label="User"></mud-avatar>
+</mud-button>`;
 
 const docsSourceWithBadge = /*html*/ `<!-- Compose mud-badge in the badge slot; match its size rung to the avatar's -->
 <mud-avatar type="photo" src="…" name="Ion Popescu" size="md">

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { SEGMENTED_CONTROL_SIZES } from './mud-segmented-control.types';
 import type { SegmentedControlSegment, SegmentedControlSize } from './mud-segmented-control.types';
+import { jsLiteral } from '../../utils/story-docs-source';
 
 type StoryArgs = {
   size: SegmentedControlSize;
@@ -60,19 +61,14 @@ const renderControlHtml = (
 // Code-panel snippets — the consumer markup, without the demo chrome
 // ---------------------------------------------------------------------------
 
-// One segment as a one-line JS object literal.
-const jsSegment = (segment: SegmentedControlSegment) =>
-  `{ ${Object.entries(segment)
-    .map(([key, v]) => `${key}: ${typeof v === 'string' ? `'${v}'` : String(v)}`)
-    .join(', ')} }`;
-
 // `segments` is a property, not an attribute, so a snippet hands it over in a script, one
-// `[selector, segments]` pair per element.
-const docsSourceScript = (assignments: Array<[selector: string, segments: SegmentedControlSegment[]]>) => `<script>
+// `[id, segments]` pair per element, addressed by id. No top-level binding, so snippets
+// pasted onto one page do not collide.
+const docsSourceScript = (assignments: Array<[id: string, segments: SegmentedControlSegment[]]>) => `<script>
 ${assignments
   .map(
-    ([selector, segments]) => `  document.querySelector('${selector}').segments = [
-${segments.map(segment => `    ${jsSegment(segment)},`).join('\n')}
+    ([id, segments]) => `  document.getElementById('${id}').segments = [
+${segments.map(segment => `    ${jsLiteral(segment)},`).join('\n')}
   ];`,
   )
   .join('\n')}
@@ -189,10 +185,10 @@ export const Two: Story = {
   },
 };
 
-const docsSourceThree = /*html*/ `<mud-segmented-control aria-label="Status filter" value="active"></mud-segmented-control>
+const docsSourceThree = /*html*/ `<mud-segmented-control id="segmented-status-filter" aria-label="Status filter" value="active"></mud-segmented-control>
 ${docsSourceScript([
   [
-    'mud-segmented-control',
+    'segmented-status-filter',
     [
       { value: 'toate', label: 'Toate' },
       { value: 'active', label: 'Active' },
@@ -224,10 +220,10 @@ export const Three: Story = {
   },
 };
 
-const docsSourceFour = /*html*/ `<mud-segmented-control aria-label="Range" value="saptamana"></mud-segmented-control>
+const docsSourceFour = /*html*/ `<mud-segmented-control id="segmented-range" aria-label="Range" value="saptamana"></mud-segmented-control>
 ${docsSourceScript([
   [
-    'mud-segmented-control',
+    'segmented-range',
     [
       { value: 'zi', label: 'Zi' },
       { value: 'saptamana', label: 'Week' },
@@ -262,13 +258,13 @@ export const Four: Story = {
 };
 
 const docsSourceFivePlus = /*html*/ `<!-- 5 segments: the recommended ceiling. -->
-<mud-segmented-control id="five" aria-label="Request filter" value="noi"></mud-segmented-control>
+<mud-segmented-control id="segmented-five" aria-label="Request filter" value="noi"></mud-segmented-control>
 
 <!-- 6 segments: use sparingly. -->
-<mud-segmented-control id="six" aria-label="Pas" value="3"></mud-segmented-control>
+<mud-segmented-control id="segmented-six" aria-label="Pas" value="3"></mud-segmented-control>
 ${docsSourceScript([
   [
-    '#five',
+    'segmented-five',
     [
       { value: 'toate', label: 'Toate' },
       { value: 'noi', label: 'Noi' },
@@ -278,7 +274,7 @@ ${docsSourceScript([
     ],
   ],
   [
-    '#six',
+    'segmented-six',
     [
       { value: '1', label: '1' },
       { value: '2', label: '2' },
@@ -389,10 +385,10 @@ export const Breakpoints: Story = {
   },
 };
 
-const docsSourceEqualSizes = /*html*/ `<mud-segmented-control aria-label="Dimensiuni egale" value="a"></mud-segmented-control>
+const docsSourceEqualSizes = /*html*/ `<mud-segmented-control id="segmented-equal-sizes" aria-label="Dimensiuni egale" value="a"></mud-segmented-control>
 ${docsSourceScript([
   [
-    'mud-segmented-control',
+    'segmented-equal-sizes',
     [
       { value: 'a', label: 'Other Label' },
       { value: 'b', label: 'Label' },
@@ -477,17 +473,17 @@ const stateSegments: SegmentedControlSegment[] = [
 ];
 
 const docsSourceStates = /*html*/ `<!-- default -->
-<mud-segmented-control id="state-default" aria-label="Stare default" value="a"></mud-segmented-control>
+<mud-segmented-control id="segmented-state-default" aria-label="Stare default" value="a"></mud-segmented-control>
 
 <!-- unselected: no selection -->
-<mud-segmented-control id="state-unselected" aria-label="No selection"></mud-segmented-control>
+<mud-segmented-control id="segmented-state-unselected" aria-label="No selection"></mud-segmented-control>
 
 <!-- focus: use Tab to focus -->
-<mud-segmented-control id="state-focus" aria-label="Stare focus" value="a"></mud-segmented-control>
+<mud-segmented-control id="segmented-state-focus" aria-label="Stare focus" value="a"></mud-segmented-control>
 ${docsSourceScript([
-  ['#state-default', stateSegments],
-  ['#state-unselected', stateSegments],
-  ['#state-focus', stateSegments],
+  ['segmented-state-default', stateSegments],
+  ['segmented-state-unselected', stateSegments],
+  ['segmented-state-focus', stateSegments],
 ])}`;
 
 export const States: Story = {
@@ -543,13 +539,13 @@ export const States: Story = {
 };
 
 const docsSourceDisabled = /*html*/ `<!-- The whole control disabled. -->
-<mud-segmented-control id="disabled-all" aria-label="Interval (disabled)" value="saptamana" disabled></mud-segmented-control>
+<mud-segmented-control id="segmented-disabled-all" aria-label="Interval (disabled)" value="saptamana" disabled></mud-segmented-control>
 
 <!-- A single segment disabled. -->
-<mud-segmented-control id="disabled-one" aria-label="Range with a disabled segment" value="zi"></mud-segmented-control>
+<mud-segmented-control id="segmented-disabled-one" aria-label="Range with a disabled segment" value="zi"></mud-segmented-control>
 ${docsSourceScript([
   [
-    '#disabled-all',
+    'segmented-disabled-all',
     [
       { value: 'zi', label: 'Zi' },
       { value: 'saptamana', label: 'Week' },
@@ -557,7 +553,7 @@ ${docsSourceScript([
     ],
   ],
   [
-    '#disabled-one',
+    'segmented-disabled-one',
     [
       { value: 'zi', label: 'Zi' },
       { value: 'saptamana', label: 'Week', disabled: true },
@@ -603,11 +599,11 @@ export const Disabled: Story = {
   },
 };
 
-const docsSourceWithIcons = /*html*/ `<mud-segmented-control id="icons-three" aria-label="Display mode" value="lista"></mud-segmented-control>
-<mud-segmented-control id="icons-sm" aria-label="Display mode (compact)" value="harta" size="sm"></mud-segmented-control>
+const docsSourceWithIcons = /*html*/ `<mud-segmented-control id="segmented-icons-three" aria-label="Display mode" value="lista"></mud-segmented-control>
+<mud-segmented-control id="segmented-icons-sm" aria-label="Display mode (compact)" value="harta" size="sm"></mud-segmented-control>
 ${docsSourceScript([
   [
-    '#icons-three',
+    'segmented-icons-three',
     [
       { value: 'lista', label: 'List', iconName: 'bullet-list' },
       { value: 'harta', label: 'Map', iconName: 'map-pin' },
@@ -615,7 +611,7 @@ ${docsSourceScript([
     ],
   ],
   [
-    '#icons-sm',
+    'segmented-icons-sm',
     [
       { value: 'lista', label: 'List', iconName: 'bullet-list' },
       { value: 'harta', label: 'Map', iconName: 'map-pin' },
@@ -666,13 +662,13 @@ export const WithIcons: Story = {
 };
 
 const docsSourceStacked = /*html*/ `<!-- Stacks itself when a row will not fit; the stacked attribute pins the layout. -->
-<mud-segmented-control id="stacked" aria-label="Type (stacked)" value="cetatean" stacked fluid></mud-segmented-control>
+<mud-segmented-control id="segmented-stacked" aria-label="Type (stacked)" value="cetatean" stacked fluid></mud-segmented-control>
 
 <!-- The same segments as a row. -->
-<mud-segmented-control id="stacked-row" aria-label="Type (row)" value="cetatean" fluid></mud-segmented-control>
+<mud-segmented-control id="segmented-stacked-row" aria-label="Type (row)" value="cetatean" fluid></mud-segmented-control>
 ${docsSourceScript(
-  ['#stacked', '#stacked-row'].map((selector): [string, SegmentedControlSegment[]] => [
-    selector,
+  ['segmented-stacked', 'segmented-stacked-row'].map((id): [string, SegmentedControlSegment[]] => [
+    id,
     [
       { value: 'cetatean', label: 'Citizen', iconName: 'bullet-list' },
       { value: 'afacere', label: 'Business', iconName: 'map-pin' },

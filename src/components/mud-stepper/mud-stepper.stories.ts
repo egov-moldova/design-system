@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import type { StepperStep } from './mud-stepper.types';
+import { attr } from '../../utils/story-docs-source';
 
 type StepperArgs = {
   steps: StepperStep[];
@@ -163,14 +164,14 @@ const docsSourceDefault = (args: StepperArgs, id = 'my-tracker') => {
     args.interactive ? 'interactive' : '',
     args.compact ? 'compact' : '',
     typeof args.currentStep === 'number' ? `current-step="${args.currentStep}"` : '',
-    args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
-    args.locale ? `locale="${args.locale}"` : '',
+    args.ariaLabel ? `aria-label="${attr(args.ariaLabel)}"` : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
   return `<mud-stepper ${attrs}></mud-stepper>
 <script>
-  document.getElementById('${id}').steps = ${JSON.stringify(args.steps, null, 2)};
+  document.getElementById('${id}').steps = ${JSON.stringify(args.steps, null, 2).replace(/<\//g, '<\\/')};
 </script>`;
 };
 
@@ -260,12 +261,15 @@ export const Vertical: Story = {
     controls: { disable: false },
     docs: {
       source: {
-        code: docsSourceDefault({
-          steps: verticalSteps,
-          orientation: 'vertical',
-          interactive: false,
-          ariaLabel: 'Pași',
-        }),
+        code: docsSourceDefault(
+          {
+            steps: verticalSteps,
+            orientation: 'vertical',
+            interactive: false,
+            ariaLabel: 'Pași',
+          },
+          'stepper-vertical',
+        ),
       },
     },
   },
@@ -310,12 +314,15 @@ export const Interactive: Story = {
   parameters: {
     docs: {
       source: {
-        code: docsSourceDefault({
-          steps: interactiveSteps,
-          orientation: 'horizontal',
-          interactive: true,
-          ariaLabel: 'Registration steps',
-        }),
+        code: docsSourceDefault(
+          {
+            steps: interactiveSteps,
+            orientation: 'horizontal',
+            interactive: true,
+            ariaLabel: 'Registration steps',
+          },
+          'stepper-interactive',
+        ),
       },
     },
   },
@@ -342,7 +349,8 @@ export const NonInteractive: Story = {
     docs: {
       source: {
         type: 'dynamic',
-        transform: (_code: string, { args }: { args: StepperArgs }) => docsSourceDefault(args),
+        transform: (_code: string, { args }: { args: StepperArgs }) =>
+          docsSourceDefault(args, 'stepper-non-interactive'),
       },
     },
   },

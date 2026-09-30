@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { MODAL_SIZES, MODAL_VARIANTS } from './mud-modal.types';
 import type { ModalSize, ModalVariant } from './mud-modal.types';
+import { attr, text } from '../../utils/story-docs-source';
 
 type ModalArgs = {
   open: boolean;
@@ -86,40 +87,48 @@ const renderModal = (args: ModalArgs) => /*html*/ `
 // wrapper, no inline styles, footer buttons slotted directly into `actions`.
 // ---------------------------------------------------------------------------
 
-// Opens each modal from its trigger and closes it from any footer button.
+// Opens each modal from its trigger and closes it from any footer button. Every story names
+// its own trigger and modal ids and the script binds nothing at the top level, so snippets
+// pasted onto one page do not collide.
 const docsSourceScript = (pairs: [trigger: string, modal: string][]) => /*html*/ `<script>
-  ${JSON.stringify(pairs).replace(/"/g, "'")}.forEach(([trigger, id]) => {
-    const modal = document.getElementById(id);
-    document.getElementById(trigger).addEventListener('click', () => (modal.open = true));
-    modal.querySelectorAll('[slot="actions"]').forEach(button => button.addEventListener('click', () => modal.closeModal()));
-  });
+${pairs
+  .map(
+    ([
+      trigger,
+      id,
+    ]) => `  document.getElementById('${trigger}').addEventListener('click', () => (document.getElementById('${id}').open = true));
+  document.querySelectorAll('#${id} [slot="actions"]').forEach(button =>
+    button.addEventListener('click', () => document.getElementById('${id}').closeModal()),
+  );`,
+  )
+  .join('\n')}
 </script>`;
 
 const docsSourceDefault = (args: ModalArgs) => {
   const attrs = [
-    'id="my-modal"',
+    'id="default-modal"',
     args.open ? 'open' : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.variant !== 'default' ? `variant="${args.variant}"` : '',
-    args.titleText ? `title-text="${args.titleText}"` : '',
-    args.imageSrc ? `image-src="${args.imageSrc}"` : '',
-    args.imageAlt ? `image-alt="${args.imageAlt}"` : '',
+    args.titleText ? `title-text="${attr(args.titleText)}"` : '',
+    args.imageSrc ? `image-src="${attr(args.imageSrc)}"` : '',
+    args.imageAlt ? `image-alt="${attr(args.imageAlt)}"` : '',
     args.closable ? '' : 'closable="false"',
     args.closeOnBackdrop ? '' : 'close-on-backdrop="false"',
     args.closeOnEscape ? '' : 'close-on-escape="false"',
     args.destructive ? 'destructive' : '',
-    args.locale ? `locale="${args.locale}"` : '',
-    args.closeLabel ? `close-label="${args.closeLabel}"` : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+    args.closeLabel ? `close-label="${attr(args.closeLabel)}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
-  return /*html*/ `<mud-button id="open-modal">Deschide modal</mud-button>
+  return /*html*/ `<mud-button id="open-default-modal">Deschide modal</mud-button>
 <mud-modal ${attrs}>
-  ${args.body}
+  ${text(args.body)}
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Anulează</mud-button>
   <mud-button slot="actions" variant="${args.destructive ? 'destructive' : 'primary'}" shape="circular">Confirmă</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-default-modal', 'default-modal']])}`;
 };
 
 const meta: Meta<ModalArgs> = {
@@ -267,29 +276,29 @@ export const Default: Story = {
 // buttons; clicking each opens the matching-sized modal. The Default story
 // already shows the md baseline; this story is the per-size deep-dive.
 // ---------------------------------------------------------------------------
-const docsSourceAllSizes = /*html*/ `<mud-button id="open-sm" shape="circular" size="sm">Open Small</mud-button>
-<mud-button id="open-md" shape="circular">Open Medium</mud-button>
-<mud-button id="open-lg" shape="circular">Open Large</mud-button>
+const docsSourceAllSizes = /*html*/ `<mud-button id="open-sm-size-modal" shape="circular" size="sm">Open Small</mud-button>
+<mud-button id="open-md-size-modal" shape="circular">Open Medium</mud-button>
+<mud-button id="open-lg-size-modal" shape="circular">Open Large</mud-button>
 
-<mud-modal id="modal-sm" size="sm" title-text="Confirm payment">
+<mud-modal id="sm-size-modal" size="sm" title-text="Confirm payment">
   The amount of 250.00 MDL will be charged to the card ending in ****4521.
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm">Cancel</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular" size="sm">Confirm</mud-button>
 </mud-modal>
-<mud-modal id="modal-md" size="md" title-text="Confirm payment">
+<mud-modal id="md-size-modal" size="md" title-text="Confirm payment">
   The amount of 250.00 MDL will be charged to the card ending in ****4521. You will receive a confirmation by email within a few minutes.
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Cancel</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Confirm</mud-button>
 </mud-modal>
-<mud-modal id="modal-lg" size="lg" title-text="Confirm the combined payment">
+<mud-modal id="lg-size-modal" size="lg" title-text="Confirm the combined payment">
   You are about to confirm payment for 4 combined invoices totalling 1,250.00 MDL. The transaction is final and cannot be cancelled after confirmation.
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Cancel</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Confirm</mud-button>
 </mud-modal>
 ${docsSourceScript([
-  ['open-sm', 'modal-sm'],
-  ['open-md', 'modal-md'],
-  ['open-lg', 'modal-lg'],
+  ['open-sm-size-modal', 'sm-size-modal'],
+  ['open-md-size-modal', 'md-size-modal'],
+  ['open-lg-size-modal', 'lg-size-modal'],
 ])}`;
 
 const renderAllSizes = () => /*html*/ `
@@ -331,8 +340,8 @@ export const AllSizes: Story = {
 // ---------------------------------------------------------------------------
 // WithImage — full-bleed hero image header
 // ---------------------------------------------------------------------------
-const docsSourceWithImage = /*html*/ `<mud-button id="open-modal">Open modal with image</mud-button>
-<mud-modal id="my-modal" variant="with-image" title-text="Congratulations">
+const docsSourceWithImage = /*html*/ `<mud-button id="open-image-modal">Open modal with image</mud-button>
+<mud-modal id="image-modal" variant="with-image" title-text="Congratulations">
   <img
     slot="image"
     src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&auto=format&fit=crop&q=80"
@@ -341,7 +350,7 @@ const docsSourceWithImage = /*html*/ `<mud-button id="open-modal">Open modal wit
   Your account has been confirmed. You can now access the state electronic services.
   <mud-button slot="actions" variant="primary" shape="circular">Continue</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-image-modal', 'image-modal']])}`;
 
 const renderWithImage = () => /*html*/ `
   <div style="${stageStyle}">
@@ -375,13 +384,13 @@ export const WithImage: Story = {
 // ---------------------------------------------------------------------------
 // WithIcon — leading 48px icon variant
 // ---------------------------------------------------------------------------
-const docsSourceWithIcon = /*html*/ `<mud-button id="open-modal">Open modal with icon</mud-button>
-<mud-modal id="my-modal" variant="with-icon" title-text="Session expired">
+const docsSourceWithIcon = /*html*/ `<mud-button id="open-icon-modal">Open modal with icon</mud-button>
+<mud-modal id="icon-modal" variant="with-icon" title-text="Session expired">
   <mud-icon slot="icon" name="circle-info" variant="filled" size="32"></mud-icon>
   Sign in again to continue. Unsaved changes were lost.
   <mud-button slot="actions" variant="primary" shape="circular">Sign in again</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-icon-modal', 'icon-modal']])}`;
 
 const renderWithIcon = () => /*html*/ `
   <div style="${stageStyle}">
@@ -411,13 +420,13 @@ export const WithIcon: Story = {
 // ---------------------------------------------------------------------------
 // Confirmation — typical two-action confirmation modal
 // ---------------------------------------------------------------------------
-const docsSourceConfirmation = /*html*/ `<mud-button id="open-modal">Save changes</mud-button>
-<mud-modal id="my-modal" title-text="Save changes">
+const docsSourceConfirmation = /*html*/ `<mud-button id="open-confirmation-modal">Save changes</mud-button>
+<mud-modal id="confirmation-modal" title-text="Save changes">
   The changes will be saved and applied immediately. Do you want to continue?
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Cancel</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Save</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-confirmation-modal', 'confirmation-modal']])}`;
 
 const renderConfirmation = () => /*html*/ `
   <div style="${stageStyle}">
@@ -446,13 +455,13 @@ export const Confirmation: Story = {
 // ---------------------------------------------------------------------------
 // Destructive — irreversible action confirmation
 // ---------------------------------------------------------------------------
-const docsSourceDestructive = /*html*/ `<mud-button id="open-modal" variant="destructive">Delete account</mud-button>
-<mud-modal id="my-modal" destructive title-text="Delete account permanently" close-on-backdrop="false">
+const docsSourceDestructive = /*html*/ `<mud-button id="open-destructive-modal" variant="destructive">Delete account</mud-button>
+<mud-modal id="destructive-modal" destructive title-text="Delete account permanently" close-on-backdrop="false">
   This action cannot be undone. All data associated with the account will be permanently deleted and cannot be recovered.
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Cancel</mud-button>
   <mud-button slot="actions" variant="destructive" shape="circular">Delete permanently</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-destructive-modal', 'destructive-modal']])}`;
 
 const renderDestructive = () => /*html*/ `
   <div style="${stageStyle}">
@@ -483,9 +492,9 @@ export const Destructive: Story = {
 // ---------------------------------------------------------------------------
 // DisableEscape — required confirmation flow (no backdrop / ESC dismissal)
 // ---------------------------------------------------------------------------
-const docsSourceDisableEscape = /*html*/ `<mud-button id="open-modal">Mandatory confirmation</mud-button>
+const docsSourceDisableEscape = /*html*/ `<mud-button id="open-mandatory-modal">Mandatory confirmation</mud-button>
 <mud-modal
-  id="my-modal"
+  id="mandatory-modal"
   title-text="Accept the terms and conditions"
   close-on-backdrop="false"
   close-on-escape="false"
@@ -495,7 +504,7 @@ const docsSourceDisableEscape = /*html*/ `<mud-button id="open-modal">Mandatory 
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Decline</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Accept</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-mandatory-modal', 'mandatory-modal']])}`;
 
 const renderDisableEscape = () => /*html*/ `
   <div style="${stageStyle}">
@@ -527,8 +536,8 @@ export const DisableEscape: Story = {
 // ---------------------------------------------------------------------------
 // CustomContent — rich body content (form fields, lists)
 // ---------------------------------------------------------------------------
-const docsSourceCustomContent = /*html*/ `<mud-button id="open-modal">Edit profile</mud-button>
-<mud-modal id="my-modal" title-text="Edit profile">
+const docsSourceCustomContent = /*html*/ `<mud-button id="open-profile-modal">Edit profile</mud-button>
+<mud-modal id="profile-modal" title-text="Edit profile">
   <p>Update your personal information before continuing.</p>
   <ul>
     <li>Full name</li>
@@ -539,7 +548,7 @@ const docsSourceCustomContent = /*html*/ `<mud-button id="open-modal">Edit profi
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Cancel</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Save</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-profile-modal', 'profile-modal']])}`;
 
 const renderCustomContent = () => /*html*/ `
   <div style="${stageStyle}">
@@ -574,13 +583,13 @@ export const CustomContent: Story = {
 // ---------------------------------------------------------------------------
 // Mobile — narrow viewport (350px stage simulates mobile)
 // ---------------------------------------------------------------------------
-const docsSourceMobile = /*html*/ `<mud-button id="open-modal" size="sm">Confirm payment</mud-button>
-<mud-modal id="my-modal" size="sm" title-text="Confirm payment" actions-layout="stacked">
+const docsSourceMobile = /*html*/ `<mud-button id="open-mobile-modal" size="sm">Confirm payment</mud-button>
+<mud-modal id="mobile-modal" size="sm" title-text="Confirm payment" actions-layout="stacked">
   The amount of 125.00 MDL will be charged now. Confirm the transaction?
   <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width>Confirm</mud-button>
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width>Cancel</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-mobile-modal', 'mobile-modal']])}`;
 
 const renderMobile = () => /*html*/ `
   <div style="${stageStyle}">
@@ -624,9 +633,9 @@ export const Mobile: Story = {
 // image, stacked full-width buttons. Same actions-layout="stacked" pattern as
 // the plain Mobile story but with variant="with-image".
 // ---------------------------------------------------------------------------
-const docsSourceMobileWithImage = /*html*/ `<mud-button id="open-modal" size="sm">Open</mud-button>
+const docsSourceMobileWithImage = /*html*/ `<mud-button id="open-mobile-image-modal" size="sm">Open</mud-button>
 <mud-modal
-  id="my-modal"
+  id="mobile-image-modal"
   size="sm"
   variant="with-image"
   title-text="Congratulations"
@@ -637,7 +646,7 @@ const docsSourceMobileWithImage = /*html*/ `<mud-button id="open-modal" size="sm
   <mud-button slot="actions" variant="primary" shape="circular" size="sm" full-width>Continue</mud-button>
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width>Later</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-mobile-image-modal', 'mobile-image-modal']])}`;
 
 const renderMobileWithImage = () => /*html*/ `
   <div style="${stageStyle}">
@@ -680,8 +689,8 @@ export const MobileWithImage: Story = {
 // ---------------------------------------------------------------------------
 // EdgeCases — very long content scrolls inside modal, diacritics preserved
 // ---------------------------------------------------------------------------
-const docsSourceEdgeCases = /*html*/ `<mud-button id="open-modal">Long content — internal scroll</mud-button>
-<mud-modal id="my-modal" title-text="Updated terms and conditions">
+const docsSourceEdgeCases = /*html*/ `<mud-button id="open-terms-modal">Long content — internal scroll</mud-button>
+<mud-modal id="terms-modal" title-text="Updated terms and conditions">
   <p>We have updated the platform terms and conditions. The changes take effect on 1 June 2026 and include the following:</p>
   <ol>
     <li>Updates on the processing of electronic payments and refunds.</li>
@@ -700,7 +709,7 @@ const docsSourceEdgeCases = /*html*/ `<mud-button id="open-modal">Long content �
   <mud-button slot="actions" variant="strict" appearance="outlined" shape="circular">Decline</mud-button>
   <mud-button slot="actions" variant="primary" shape="circular">Accept the terms</mud-button>
 </mud-modal>
-${docsSourceScript([['open-modal', 'my-modal']])}`;
+${docsSourceScript([['open-terms-modal', 'terms-modal']])}`;
 
 const renderEdgeCases = () => /*html*/ `
   <div style="${stageStyle} min-block-size: 720px;">

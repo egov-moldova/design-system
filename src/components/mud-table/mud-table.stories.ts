@@ -3,6 +3,7 @@ import { expect, waitFor } from 'storybook/test';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES } from './mud-table.types';
 import type { TableColumn, TableHeaderStyle, TableRowData, TableRowStyle } from './mud-table.types';
+import { jsLiteral } from '../../utils/story-docs-source';
 
 type StoryArgs = {
   headerStyle: TableHeaderStyle;
@@ -90,27 +91,25 @@ const stringify = (value: unknown) => JSON.stringify(value).replace(/<\//g, '<\\
 // Code-panel snippets — the consumer markup, without the demo chrome
 // ---------------------------------------------------------------------------
 
-// One column or row as a one-line JS object literal.
-const jsObject = (value: object) =>
-  `{ ${Object.entries(value)
-    .map(([key, v]) => `${key}: ${typeof v === 'string' ? `'${v.replace(/'/g, "\\'")}'` : String(v)}`)
-    .join(', ')} }`;
-
 const jsArray = (items: object[], pad: string) =>
-  items.length ? `[\n${items.map(item => `${pad}  ${jsObject(item)},`).join('\n')}\n${pad}]` : '[]';
+  items.length ? `[\n${items.map(item => `${pad}  ${jsLiteral(item)},`).join('\n')}\n${pad}]` : '[]';
 
 // `columns` and `rows` are properties, not attributes, so a snippet hands them over in a
-// script: to the one table in the snippet, or to every table in it.
-const docsSourceScript = (columns: TableColumn[], rows: TableRowData[]) => `<script>
-  const table = document.querySelector('mud-table');
-  table.columns = ${jsArray(columns, '  ')};
-  table.rows = ${jsArray(rows, '  ')};
+// script: to the one table in the snippet by its id, or to each of several. No top-level
+// binding, so snippets pasted onto one page do not collide.
+const docsSourceScript = (id: string, columns: TableColumn[], rows: TableRowData[]) => `<script>
+  Object.assign(document.getElementById('${id}'), {
+    columns: ${jsArray(columns, '    ')},
+    rows: ${jsArray(rows, '    ')},
+  });
 </script>`;
 
-const docsSourceScriptAll = (columns: TableColumn[], rows: TableRowData[]) => `<script>
-  for (const table of document.querySelectorAll('mud-table')) {
-    table.columns = ${jsArray(columns, '    ')};
-    table.rows = ${jsArray(rows, '    ')};
+const docsSourceScriptAll = (ids: string[], columns: TableColumn[], rows: TableRowData[]) => `<script>
+  for (const id of [${ids.map(id => `'${id}'`).join(', ')}]) {
+    Object.assign(document.getElementById(id), {
+      columns: ${jsArray(columns, '      ')},
+      rows: ${jsArray(rows, '      ')},
+    });
   }
 </script>`;
 
@@ -252,10 +251,10 @@ export const Default: Story = {
   },
 };
 
-const docsSourceAllRowStyles = /*html*/ `<mud-table row-style="divided"></mud-table>
-<mud-table row-style="zebra"></mud-table>
-<mud-table row-style="borderless"></mud-table>
-${docsSourceScriptAll(demoColumns, baseRows)}`;
+const docsSourceAllRowStyles = /*html*/ `<mud-table id="table-row-divided" row-style="divided"></mud-table>
+<mud-table id="table-row-zebra" row-style="zebra"></mud-table>
+<mud-table id="table-row-borderless" row-style="borderless"></mud-table>
+${docsSourceScriptAll(['table-row-divided', 'table-row-zebra', 'table-row-borderless'], demoColumns, baseRows)}`;
 
 export const AllRowStyles: Story = {
   name: 'AllRowStyles',
@@ -272,10 +271,10 @@ export const AllRowStyles: Story = {
   },
 };
 
-const docsSourceAllHeaderStyles = /*html*/ `<mud-table header-style="default"></mud-table>
-<mud-table header-style="inverted"></mud-table>
-<mud-table header-style="white"></mud-table>
-${docsSourceScriptAll(demoColumns, baseRows)}`;
+const docsSourceAllHeaderStyles = /*html*/ `<mud-table id="table-header-default" header-style="default"></mud-table>
+<mud-table id="table-header-inverted" header-style="inverted"></mud-table>
+<mud-table id="table-header-white" header-style="white"></mud-table>
+${docsSourceScriptAll(['table-header-default', 'table-header-inverted', 'table-header-white'], demoColumns, baseRows)}`;
 
 export const AllHeaderStyles: Story = {
   name: 'AllHeaderStyles',
@@ -292,8 +291,8 @@ export const AllHeaderStyles: Story = {
   },
 };
 
-const docsSourceSortable = /*html*/ `<mud-table aria-label="Sortable table"></mud-table>
-${docsSourceScript(demoColumns, baseRows)}`;
+const docsSourceSortable = /*html*/ `<mud-table id="table-sortable" aria-label="Sortable table"></mud-table>
+${docsSourceScript('table-sortable', demoColumns, baseRows)}`;
 
 export const Sortable: Story = {
   name: 'Sortable',
@@ -323,11 +322,11 @@ export const Sortable: Story = {
 };
 
 const docsSourceDisableSort = /*html*/ `<!-- Sorting enabled: each column's sortable flag applies. -->
-<mud-table aria-label="Sortable table"></mud-table>
+<mud-table id="table-sort-enabled" aria-label="Sortable table"></mud-table>
 
 <!-- Sorting disabled: disable-sort overrides every column. -->
-<mud-table aria-label="Table with sorting disabled" disable-sort></mud-table>
-${docsSourceScriptAll(demoColumns, baseRows)}`;
+<mud-table id="table-sort-disabled" aria-label="Table with sorting disabled" disable-sort></mud-table>
+${docsSourceScriptAll(['table-sort-enabled', 'table-sort-disabled'], demoColumns, baseRows)}`;
 
 export const DisableSort: Story = {
   name: 'DisableSort',
@@ -363,8 +362,8 @@ export const DisableSort: Story = {
   },
 };
 
-const docsSourceSelectable = /*html*/ `<mud-table aria-label="Table with selection" selectable hoverable></mud-table>
-${docsSourceScript(demoColumns, baseRows)}`;
+const docsSourceSelectable = /*html*/ `<mud-table id="table-selectable" aria-label="Table with selection" selectable hoverable></mud-table>
+${docsSourceScript('table-selectable', demoColumns, baseRows)}`;
 
 export const Selectable: Story = {
   name: 'Selectable',
@@ -387,10 +386,10 @@ export const Selectable: Story = {
   },
 };
 
-const docsSourceWithStatusBadges = /*html*/ `<mud-table>
+const docsSourceWithStatusBadges = /*html*/ `<mud-table id="table-status-badges">
 ${baseRows.map(row => `  ${renderStatusSlot(String(row.id), String(row.status))}`).join('\n')}
 </mud-table>
-${docsSourceScript(demoColumns, baseRows)}`;
+${docsSourceScript('table-status-badges', demoColumns, baseRows)}`;
 
 export const WithStatusBadges: Story = {
   name: 'WithStatusBadges',
@@ -409,7 +408,7 @@ export const WithStatusBadges: Story = {
   },
 };
 
-const docsSourceWithActions = /*html*/ `<mud-table>
+const docsSourceWithActions = /*html*/ `<mud-table id="table-actions">
 ${baseRows
   .map(
     row => `  <span slot="cell-actions-${row.id}">
@@ -419,7 +418,7 @@ ${baseRows
   )
   .join('\n')}
 </mud-table>
-${docsSourceScript([...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }], baseRows)}`;
+${docsSourceScript('table-actions', [...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }], baseRows)}`;
 
 export const WithActions: Story = {
   name: 'WithActions',
@@ -438,8 +437,8 @@ export const WithActions: Story = {
   },
 };
 
-const docsSourceHoverable = /*html*/ `<mud-table hoverable></mud-table>
-${docsSourceScript(demoColumns, baseRows)}`;
+const docsSourceHoverable = /*html*/ `<mud-table id="table-hoverable" hoverable></mud-table>
+${docsSourceScript('table-hoverable', demoColumns, baseRows)}`;
 
 export const Hoverable: Story = {
   name: 'Hoverable',
@@ -456,7 +455,7 @@ export const Hoverable: Story = {
   },
 };
 
-const docsSourceAllDataTypes = /*html*/ `<mud-table>
+const docsSourceAllDataTypes = /*html*/ `<mud-table id="table-data-types">
 ${baseRows
   .slice(0, 3)
   .map((row, idx) => {
@@ -470,6 +469,7 @@ ${baseRows
   .join('\n')}
 </mud-table>
 ${docsSourceScript(
+  'table-data-types',
   [
     { key: 'name', label: 'Text' },
     { key: 'amount', label: 'Number', align: 'end' },
@@ -531,17 +531,17 @@ export const AllDataTypes: Story = {
 };
 
 const docsSourceEmptyState = /*html*/ `<!-- Default message -->
-<mud-table aria-label="Empty table"></mud-table>
+<mud-table id="table-empty-default" aria-label="Empty table"></mud-table>
 
 <!-- Custom slot content -->
-<mud-table aria-label="Empty table with a custom message">
+<mud-table id="table-empty-custom" aria-label="Empty table with a custom message">
   <span slot="empty">
     <mud-icon name="document" size="24" color="icon-base-tertiary"></mud-icon>
     <strong>No payments recorded.</strong>
     <span>Add a new payment to get started.</span>
   </span>
 </mud-table>
-${docsSourceScriptAll(demoColumns, [])}`;
+${docsSourceScriptAll(['table-empty-default', 'table-empty-custom'], demoColumns, [])}`;
 
 export const EmptyState: Story = {
   name: 'EmptyState',
@@ -578,13 +578,13 @@ export const EmptyState: Story = {
   },
 };
 
-const docsSourceLoading = /*html*/ `<mud-table aria-label="Table loading">
+const docsSourceLoading = /*html*/ `<mud-table id="table-loading" aria-label="Table loading">
   <span slot="empty">
     <mud-spinner size="md"></mud-spinner>
     <span>Loading data…</span>
   </span>
 </mud-table>
-${docsSourceScript(demoColumns, [])}`;
+${docsSourceScript('table-loading', demoColumns, [])}`;
 
 export const Loading: Story = {
   name: 'Loading',
@@ -615,8 +615,8 @@ export const Loading: Story = {
   },
 };
 
-const docsSourceMobile = /*html*/ `<mud-table aria-label="Mobile table"></mud-table>
-${docsSourceScript(demoColumns, baseRows)}`;
+const docsSourceMobile = /*html*/ `<mud-table id="table-mobile" aria-label="Mobile table"></mud-table>
+${docsSourceScript('table-mobile', demoColumns, baseRows)}`;
 
 export const Mobile: Story = {
   name: 'Mobile',
@@ -636,8 +636,9 @@ export const Mobile: Story = {
   },
 };
 
-const docsSourceEdgeCases = /*html*/ `<mud-table row-style="zebra" aria-label="Table with many columns"></mud-table>
+const docsSourceEdgeCases = /*html*/ `<mud-table id="table-many-columns" row-style="zebra" aria-label="Table with many columns"></mud-table>
 ${docsSourceScript(
+  'table-many-columns',
   [
     { key: 'id', label: 'ID' },
     { key: 'name', label: 'Full name' },

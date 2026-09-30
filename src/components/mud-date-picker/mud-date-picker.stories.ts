@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type { DatePickerBreakpoint, DatePickerHeaderStyle, DatePickerMode } from './mud-date-picker.types';
+import { attr } from '../../utils/story-docs-source';
 
 type DatePickerArgs = {
   mode: DatePickerMode;
@@ -48,14 +49,16 @@ const docsSourceDefault = (args: DatePickerArgs) => {
     args.mode !== 'single' ? `mode="${args.mode}"` : '',
     args.breakpoint !== 'desktop' ? `breakpoint="${args.breakpoint}"` : '',
     args.headerStyle !== 'title' ? `header-style="${args.headerStyle}"` : '',
-    args.value ? `value="${args.value}"` : '',
-    args.rangeStart ? `range-start="${args.rangeStart}"` : '',
-    args.rangeEnd ? `range-end="${args.rangeEnd}"` : '',
-    args.min ? `min="${args.min}"` : '',
-    args.max ? `max="${args.max}"` : '',
-    args.disabledDates ? 'id="my-date-picker"' : '',
-    args.locale ? `locale="${args.locale}"` : '',
-    args.firstDayOfWeek !== 1 ? `first-day-of-week="${args.firstDayOfWeek}"` : '',
+    args.value ? `value="${attr(args.value)}"` : '',
+    args.rangeStart ? `range-start="${attr(args.rangeStart)}"` : '',
+    args.rangeEnd ? `range-end="${attr(args.rangeEnd)}"` : '',
+    args.min ? `min="${attr(args.min)}"` : '',
+    args.max ? `max="${attr(args.max)}"` : '',
+    args.disabledDates ? 'id="default-date-picker"' : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+    Number.isFinite(args.firstDayOfWeek) && args.firstDayOfWeek !== 1
+      ? `first-day-of-week="${args.firstDayOfWeek}"`
+      : '',
     args.todayShortcut ? 'today-shortcut' : '',
   ]
     .filter(Boolean)
@@ -65,7 +68,7 @@ const docsSourceDefault = (args: DatePickerArgs) => {
   return args.disabledDates
     ? `${picker}
 <script>
-  document.getElementById('my-date-picker').disabledDates = ${args.disabledDates};
+  document.getElementById('default-date-picker').disabledDates = ${args.disabledDates.replace(/<\//g, '<\\/')};
 </script>`
     : picker;
 };
@@ -79,9 +82,9 @@ const docsSourceMulti = /*html*/ `<mud-date-picker mode="multi" value='["2026-05
 const docsSourceWithMinMax = /*html*/ `<mud-date-picker mode="single" value="2026-05-15" min="2026-05-10" max="2026-05-25"></mud-date-picker>`;
 
 // `disabledDates` is a property, not an attribute (readme props table), so it is set from a script.
-const docsSourceWithDisabledDates = /*html*/ `<mud-date-picker id="my-date-picker" mode="single" value="2026-05-15"></mud-date-picker>
+const docsSourceWithDisabledDates = /*html*/ `<mud-date-picker id="disabled-dates-picker" mode="single" value="2026-05-15"></mud-date-picker>
 <script>
-  document.getElementById('my-date-picker').disabledDates = [
+  document.getElementById('disabled-dates-picker').disabledDates = [
     '2026-05-09',
     '2026-05-10',
     '2026-05-16',
@@ -99,13 +102,11 @@ const docsSourceDocked = /*html*/ `<mud-date-input label="Appointment date" valu
 const docsSourceComposedWithDateInput = /*html*/ `<mud-date-input id="composed-input" label="Appointment date" placeholder="DD/MM/YYYY"></mud-date-input>
 <mud-date-picker id="composed-picker" mode="single" breakpoint="desktop"></mud-date-picker>
 <script>
-  const input = document.getElementById('composed-input');
-  const picker = document.getElementById('composed-picker');
-  picker.addEventListener('mudChange', ev => {
+  document.getElementById('composed-picker').addEventListener('mudChange', ev => {
     const iso = ev.detail.value;
     if (typeof iso !== 'string') return;
     const [y, m, d] = iso.split('-');
-    input.value = d + '/' + m + '/' + y;
+    document.getElementById('composed-input').value = d + '/' + m + '/' + y;
   });
 </script>`;
 

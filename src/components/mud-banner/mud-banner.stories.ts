@@ -4,6 +4,7 @@ import { BANNER_EMPHASES, BANNER_VARIANTS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
 import { ICON_NAMES } from '../mud-icon/mud-icon.types';
 import type { IconName } from '../mud-icon/mud-icon.types';
+import { attr, text } from '../../utils/story-docs-source';
 
 type BannerArgs = {
   variant: BannerVariant;
@@ -39,14 +40,14 @@ const docsSourceDefault = (args: BannerArgs) => {
     args.variant !== 'info' ? `variant="${args.variant}"` : '',
     args.emphasis !== 'subtle' ? `emphasis="${args.emphasis}"` : '',
     args.dismissible ? 'dismissible' : '',
-    args.iconName ? `icon-name="${args.iconName}"` : '',
-    args.locale ? `locale="${args.locale}"` : '',
-    args.closeLabel ? `close-label="${args.closeLabel}"` : '',
+    args.iconName ? `icon-name="${attr(args.iconName)}"` : '',
+    args.locale ? `locale="${attr(args.locale)}"` : '',
+    args.closeLabel ? `close-label="${attr(args.closeLabel)}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
   const open = attrs ? `<mud-banner ${attrs}>` : '<mud-banner>';
-  return `${open}${args.body}</mud-banner>`;
+  return `${open}${text(args.body)}</mud-banner>`;
 };
 
 const docsSourceAllVariants = /*html*/ `<mud-banner variant="info" emphasis="strong" dismissible>${MESSAGE}</mud-banner>
