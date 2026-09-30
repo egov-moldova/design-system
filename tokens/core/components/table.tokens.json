@@ -1,5 +1,12 @@
 {
   "table": {
+    "divider": {
+      "width": {
+        "$value": "{borderWidth.0-5}",
+        "$type": "dimension",
+        "$comment": "Per Figma table-cell (649:4296) and table-header White (787:36552): 0.5px bottom stroke. Applied as an inset box-shadow, because Chromium rounds a 0.5px border up to 1px."
+      }
+    },
     "container": {
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.0}", "$type": "dimension" },
@@ -26,13 +33,11 @@
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
       "default": {
         "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-        "color": { "$value": "{color.text.base.default}", "$type": "color" },
-        "borderBottom": { "$value": "{color.border.base.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
       },
       "inverted": {
         "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
-        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
-        "borderBottom": { "$value": "{color.background.base-inverse.default}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
       },
       "white": {
         "background": {
@@ -80,7 +85,11 @@
     "sortIcon": {
       "size": { "$value": "{spacing.16}", "$type": "dimension" },
       "color": {
-        "inactive": { "$value": "{color.icon.base.tertiary}", "$type": "color" },
+        "inactive": {
+          "$value": "{color.icon.base.default}",
+          "$type": "color",
+          "$comment": "Per Figma 16/chevron-grabber in table-header (648:3137): #121212. Figma has one sort icon colour; the sorted column is told apart by the chevron shape."
+        },
         "active": { "$value": "{color.icon.base.default}", "$type": "color" },
         "inverted": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
       }
@@ -91,17 +100,29 @@
       "color": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
     },
     "selection": {
-      "columnWidth": {
-        "$value": "{spacing.56}",
+      "paddingInline": {
+        "desktop": {
+          "$value": "{spacing.24}",
+          "$type": "dimension",
+          "$comment": "Per Figma table-cell Checkbox, Desktop (649:4329): Cell Container padding 0 24px."
+        },
+        "mobile": {
+          "$value": "{spacing.16}",
+          "$type": "dimension",
+          "$comment": "Per Figma table-cell Checkbox, Mobile (649:4333): Cell Container padding 0 16px."
+        }
+      },
+      "checkboxSize": {
+        "$value": "{spacing.20}",
         "$type": "dimension",
-        "$comment": "Fixed width of the leading checkbox column when `selectable` is set. 56px = 16+24+16 (paddingInline + checkbox box + paddingInline)."
+        "$comment": "Per Figma checkbox instance in the table cell (649:4344): 20x20 — mud-checkbox size=\"sm\". The column is paddingInline + checkboxSize + paddingInline wide."
       }
     },
     "mobile": {
       "breakpoint": {
         "$value": "640px",
         "$type": "dimension",
-        "$comment": "Below this container-query width the table inline padding shrinks per Figma's Mobile breakpoint (24 → 16). Documented as a token for single-source-of-truth; container queries can't read CSS variables, so the literal lives in the CSS file as well."
+        "$comment": "At or below this viewport width the table inline padding shrinks per Figma's Mobile breakpoint (24 → 16). It follows the viewport, not the table's own width: Figma draws a 547px desktop table (4946:24641) with desktop padding. Media queries can't read CSS variables, so the literal lives in the CSS file as well."
       }
     },
     "empty": {

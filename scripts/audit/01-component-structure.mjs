@@ -11,7 +11,7 @@
  * know whether it's graduated to production.
  *
  * Replaces AI work in:
- *   - `.claude/skills/audit-component/SKILL.md` Wave 2.1
+ *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.1
  *   - `.claude/agents/audit-production.md` Phase 1.1
  *
  * Usage:
@@ -19,9 +19,10 @@
  *   node scripts/audit/01-component-structure.mjs --all --json
  */
 import { statSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 
@@ -210,33 +211,14 @@ async function resolveTargets(args) {
     return listAllComponents().map(c => resolveComponentPaths(c.name));
   }
   if (args.changed) {
-    const names = await listChangedComponents();
+    const names = listChangedComponents();
     return names.map(n => resolveComponentPaths(n));
   }
   return [resolveComponentPaths(args.component)];
 }
 
-/**
- * Find components touched by `git diff --name-only main...HEAD`.
- * If git fails or main is missing, returns []. Tools default to "no work" rather than crashing.
- */
-async function listChangedComponents() {
-  try {
-    const { execFileSync } = await import('node:child_process');
-    const raw = execFileSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-    const names = new Set();
-    for (const line of raw.split('\n')) {
-      const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-      if (m) names.add(m[2]);
-    }
-    return [...names].sort();
-  } catch {
-    return [];
-  }
-}
-
 // Only run when invoked directly — tests import analyzeComponent without triggering main.
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

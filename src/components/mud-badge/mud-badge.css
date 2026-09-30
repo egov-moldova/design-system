@@ -99,6 +99,14 @@
   --_color: var(--badge-text-danger);
 }
 
+/* Disabled — replaces every variant color. Declared after the variants and at
+   least as specific, so it wins. `[disabled='false']` is excluded because
+   Stencil reads that attribute as `disabled = false` but leaves it on the host. */
+:host([disabled]:not([disabled='false'])) {
+  --_background: var(--badge-background-disabled);
+  --_color: var(--badge-text-disabled);
+}
+
 /* Dot variant: padding collapses, width matches height (a circle). xs/sm are
    solid pips; md/lg/xl carry a small centered inner dot per Figma 551:18330.
    `xs` is dot-only — it renders as a circle even when type='numbered'. */

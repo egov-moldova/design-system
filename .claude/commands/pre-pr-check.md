@@ -6,7 +6,7 @@ description: Full pre-PR validation pipeline with parallel waves — lint, test,
 
 Run the full pre-PR validation pipeline on the current branch using **parallel waves** where commands are independent. Report pass/fail summary. Do NOT auto-fix.
 
-Invoke the `verification-before-completion` skill before presenting the final report — must confirm all commands ran AND output was read.
+Invoke the `superpowers:verification-before-completion` skill before presenting the final report — must confirm all commands ran AND output was read.
 
 ## Execution Model
 
@@ -33,25 +33,32 @@ Wave 5 (parallel):       console check  +  storybook a11y panel  +  commit messa
 
 ## Fast Path — replaces Wave 1 grep gates (preferred)
 
-Instead of running 6 individual `rg` calls and parsing each result, dispatch
-the local audit orchestrator. It runs every static check in parallel and
-returns ONE JSON envelope you can read in a single tool call:
+Run the audit gate ONCE — never the raw orchestrator separately, and never
+both judged against different criteria (the gate's exit status is the only
+verdict; a second, independent read of the envelope invites disagreement):
 
 ```bash
 # Covers structure, anti-patterns, git hygiene, jsdoc, story exports,
 # integration usage, component contract, token diff — across the components
-# touched in this branch's git diff vs main.
-node scripts/audit/run-all.mjs --changed --no-browser --json
+# touched in this branch's git diff vs main. Also writes audit/_run/envelope.json.
+yarn audit:component --changed --depth quick --no-browser --json
 ```
 
-Read the result. The `blockers` array lists every error-severity finding;
-each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`).
-If `blockers` is non-empty, STOP and report — do not proceed to Wave 2.
+`yarn audit:component` (`scripts/audit/verdict.mjs`) runs `run-all.mjs --depth
+quick --changed --no-browser` and computes a `state`; `--json` also writes the
+raw envelope to `audit/_run/envelope.json`. Branch on this command's exit
+status only: `0` `PASS`; STOP on anything else — `1` `FAIL`, `3` `INCOMPLETE`
+(a row crashed, hit a missing prerequisite, or a required `quick` check did
+not run), `4` `NEEDS-DECISION`. Read `audit/<component>/fix-brief.md` for the
+located failure. The envelope at `audit/_run/envelope.json` is read only to
+display the `blockers` array (each entry `tool/CODE`, e.g.
+`antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`, `name/status` for a crashed
+row, or `name/no-target:CODE` for a required, unexcused row that found nothing to check)
+alongside the fix brief — it never overrides the exit-status branch
+above.
 
 If you also want git + branch + commit hygiene as part of Wave 1, you already
 have it: the orchestrator includes `03-git-hygiene` automatically.
-
-The fallback grep gates below remain valid when the orchestrator is unavailable.
 
 ## Wave 1: Static Analysis & Test (parallel)
 
@@ -79,25 +86,21 @@ git diff --stat HEAD~1
 
 ### Wave 1 — Stencil anti-pattern + git hygiene gates
 
-Already covered by the Fast Path orchestrator above (`run-all --changed --no-browser`)
-via scripts `02-stencil-antipatterns` (14+ patterns paralelle) and
-`03-git-hygiene` (branch + commits + forbidden staged paths). If for any
-reason you skip Fast Path, individual scripts are still callable:
+Already covered by the Fast Path orchestrator above (`run-all --depth quick
+--changed --no-browser`) via scripts `02-stencil-antipatterns` (14+ patterns
+parallel) and `03-git-hygiene` (branch + commits + forbidden staged paths).
 
-```bash
-node scripts/audit/02-stencil-antipatterns.mjs --changed --json
-node scripts/audit/03-git-hygiene.mjs --json
-```
-
-For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
+Stencil anti-pattern codes and fixes: [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md); project codes (tokens, colours, icons, `innerHTML`, `any`): [`_agents/anti-patterns.md`](../../_agents/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --depth deep` after Wave 5.
 
 **Verify after Wave 1 results land**:
 
 - Lint: zero violations
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
-- Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` immediately)
-- Merge driver + pre-commit hook still in place — `git check-attr merge -- src/components.d.ts` returns `merge: ours`; if not, run `node scripts/git/setup-merge-drivers.mjs`
+- Gate: `yarn audit:component --changed --depth quick --no-browser --json` (§ Fast Path) exits 0 —
+  the single run this wave depends on. On a non-zero exit, escalate its `audit/_run/envelope.json`
+  `blockers` (each `tool/CODE` / `name/status` / `name/no-target:CODE`) alongside the fix brief.
+- Merge driver still registered — `git config --get merge.ours.driver` returns `true`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)
 
@@ -186,7 +189,7 @@ Navigate to each modified component's story and verify no runtime errors or warn
 
 For each modified component:
 
-1. Open `http://localhost:6007/?path=/story/atoms-mud-<name>--default`.
+1. Open `http://localhost:6007/?path=/story/components-<title-slug>--default` (slug from the stories file's `title`).
 2. Open the "Accessibility" panel.
 3. Verify zero **Violations** in light mode.
 4. Switch global `Mode → Dark` (top toolbar).
@@ -207,7 +210,7 @@ From the `git log --oneline -10` output captured in Wave 1, verify:
 
 ## Final Report
 
-Invoke `verification-before-completion` skill, then present:
+Invoke `superpowers:verification-before-completion` skill, then present:
 
 ```text
 ## Pre-PR Check Report

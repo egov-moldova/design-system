@@ -145,13 +145,12 @@ describe('mud-radio', () => {
         },
       }) as unknown as Event;
 
-    it('uses the label prop as input aria-label when no slot content', async () => {
+    it('renders the label prop as visible text that names the input', async () => {
       const { root } = await render(<mud-radio label="Acord termeni"></mud-radio>);
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Acord termeni');
-      // Label container exists (always rendered for slot projection) but is empty
-      // and hidden via `:host(:not(.has-label)) .label-text { display: none }`.
-      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('');
-      expect(root?.classList.contains('has-label')).toBe(false);
+      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('Acord termeni');
+      expect(root?.classList.contains('has-label')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBe(queryLabelEl(root)?.id);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
     it('flips has-label class via the onLabelSlotChange handler', async () => {
@@ -163,11 +162,10 @@ describe('mud-radio', () => {
       );
       await flush();
       expect(root?.classList.contains('has-label')).toBe(true);
-      // aria-labelledby points at the (slot-projected) label container, and
-      // aria-label mirrors the flattened slot text so axe/AT that can't walk
-      // slots still see the accessible name (belt-and-suspenders).
+      // aria-labelledby points at the (slot-projected) label container; the
+      // slotted text is no longer mirrored onto aria-label.
       expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeTruthy();
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Slotted label');
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
     it('flips has-supporting-text class via the onSupportingTextSlotChange handler', async () => {
@@ -179,12 +177,11 @@ describe('mud-radio', () => {
       expect(root?.classList.contains('has-supporting-text')).toBe(true);
     });
 
-    it('omits the visible supporting text when no slot is set (even if prop is set)', async () => {
-      // Slot-first contract: prop alone does NOT toggle the visible supporting text or has-supporting-text class.
-      const { root } = await render(<mud-radio aria-label="x" supporting-text="not-rendered"></mud-radio>);
-      // Element exists (always rendered) but empty + host class absent.
-      expect((querySupportingEl(root)?.textContent ?? '').trim()).toBe('');
-      expect(root?.classList.contains('has-supporting-text')).toBe(false);
+    it('renders the supportingText prop and describes the input with it', async () => {
+      const { root } = await render(<mud-radio label="Standard" supporting-text="3–5 zile lucrătoare"></mud-radio>);
+      expect((querySupportingEl(root)?.textContent ?? '').trim()).toBe('3–5 zile lucrătoare');
+      expect(root?.classList.contains('has-supporting-text')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toContain(querySupportingEl(root)?.id ?? '');
     });
 
     it('whitespace-only slot text does NOT trigger has-label', async () => {
@@ -230,7 +227,7 @@ describe('mud-radio', () => {
 
   describe('ARIA contract', () => {
     it('links the slotted label via aria-labelledby', async () => {
-      const { root } = await render(<mud-radio aria-label="x"></mud-radio>);
+      const { root } = await render(<mud-radio></mud-radio>);
       // Force has-label state (mock-doc doesn't fire slotchange on initial render).
       (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange({
         target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE }] },
@@ -248,11 +245,13 @@ describe('mud-radio', () => {
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Opțiunea A');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
-    it('falls back to the label prop as input aria-label when neither slot nor aria-label is set', async () => {
-      const { root } = await render(<mud-radio label="Etichetă din prop"></mud-radio>);
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Etichetă din prop');
+    it('explicit aria-label overrides the visible label as the accessible name', async () => {
+      const { root } = await render(<mud-radio label="Etichetă vizibilă" aria-label="Nume"></mud-radio>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Nume');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeNull();
     });
 
     it('explicit aria-label wins over the label prop', async () => {
@@ -289,6 +288,52 @@ describe('mud-radio', () => {
     it('renders the touch-target overlay element', async () => {
       const { root } = await render(<mud-radio label="x"></mud-radio>);
       expect(root?.shadowRoot?.querySelector('.touch-target')).toBeTruthy();
+    });
+  });
+
+  describe('error message (Figma radio-label Error)', () => {
+    const queryError = (root: Element | null | undefined): HTMLElement | null =>
+      (root?.shadowRoot?.querySelector('.error') ?? null) as HTMLElement | null;
+
+    it('renders a small error inline-message when invalid + error-text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>);
+      const error = queryError(root);
+      expect(error?.tagName.toLowerCase()).toBe('mud-inline-message');
+      expect(error?.getAttribute('variant')).toBe('error');
+      expect(error?.getAttribute('size')).toBe('small');
+      expect(error?.textContent).toBe('Alegeți o opțiune.');
+      expect(root?.classList.contains('has-error-message')).toBe(true);
+    });
+
+    it('renders no message when error-text is set but the radio is valid', async () => {
+      const { root } = await render(<mud-radio aria-label="x" error-text="Alegeți o opțiune."></mud-radio>);
+      expect(queryError(root)).toBeNull();
+      expect(root?.classList.contains('has-error-message')).toBe(false);
+      expect(queryNative(root)?.hasAttribute('aria-describedby')).toBe(false);
+    });
+
+    it('renders no message for whitespace-only error-text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="   "></mud-radio>);
+      expect(queryError(root)).toBeNull();
+    });
+
+    it('describes the input by the message, after the supporting text', async () => {
+      const { root } = await render(<mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>);
+      (root as unknown as { onSupportingTextSlotChange: (ev: Event) => void }).onSupportingTextSlotChange({
+        target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE }] },
+      } as unknown as Event);
+      await flush();
+      const ids = queryNative(root)?.getAttribute('aria-describedby')?.split(' ');
+      expect(ids).toEqual([querySupportingEl(root)?.id, queryError(root)?.id]);
+    });
+
+    it('removes the message when the radio becomes valid again', async () => {
+      const { root, setProps } = await render(
+        <mud-radio aria-label="x" invalid error-text="Alegeți o opțiune."></mud-radio>,
+      );
+      await setProps({ invalid: false });
+      expect(queryError(root)).toBeNull();
+      expect(queryNative(root)?.hasAttribute('aria-describedby')).toBe(false);
     });
   });
 

@@ -1,7 +1,13 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { CHECKBOX_SIZES } from './mud-checkbox.types';
 import type { CheckboxChangeDetail, CheckboxSize } from './mud-checkbox.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { CHECKBOX_MESSAGES } from './mud-checkbox.messages';
+import type { CheckboxMessages } from './mud-checkbox.messages';
 
 let checkboxInstanceCounter = 0;
 
@@ -22,7 +28,8 @@ let checkboxInstanceCounter = 0;
  * @element mud-checkbox
  *
  * @slot label - Rich label content. Replaces the `label` prop when present.
- * @slot supporting-text - Rich supporting/helper text below the label.
+ * @slot supporting-text - Rich supporting/helper text below the label. Replaces the
+ *                         `supportingText` prop when present.
  */
 @Component({
   tag: 'mud-checkbox',
@@ -88,37 +95,48 @@ export class MudCheckbox {
   @Prop() value?: string;
 
   /**
-   * Accessible-name fallback. Used as `aria-label` on the internal input
-   * when no `label` slot is provided. Does NOT render visible text — use
-   * the `label` slot for that. Matches the `mud-button` convention.
+   * Visible label text, which also names the input. The `label` slot replaces it
+   * for rich content. For an accessible name with no visible text, set the native
+   * `aria-label` attribute instead.
    */
   @Prop() label?: string;
 
   /**
-   * Accessible-description fallback. Reserved for future use as
-   * `aria-describedby` source when no `supporting-text` slot is provided.
-   * Does NOT render visible text — use the `supporting-text` slot for that.
+   * Visible supporting text below the label, wired to the input through
+   * `aria-describedby`. The `supporting-text` slot replaces it for rich content.
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
   /**
    * Plain-text error message shown below the label when `invalid` is set.
-   * Pairs with the `circle-error-filled` icon and is wired to the control via
+   * Pairs with the filled `circle-error` icon and is wired to the control via
    * `aria-describedby`. When present (and `invalid`) it replaces the supporting
    * text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
    */
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
-  /** Accessible name override. Used when no visible label is present. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
   /** Accessible name id reference. Forwarded to the internal control. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
+
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Validation message reported when the field is `required` and unchecked. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Bifați această casetă pentru a continua.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasSupportingSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), used as the accessible-name override. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudCheckboxElement;
 
@@ -139,6 +157,8 @@ export class MudCheckbox {
   private readonly errorId = `mud-checkbox-error-${this.instanceId}`;
   private initialChecked: boolean = false;
   private nativeRef?: HTMLInputElement;
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   // Validation lives at the @Prop boundary — bad enum values warn and fall back.
   @Watch('size')
@@ -173,6 +193,36 @@ export class MudCheckbox {
   @Watch('required')
   handleRequiredChange() {
     this.updateValidity(this.checked);
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
+    this.updateValidity(this.checked);
+  }
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.updateValidity(this.checked);
+        forceUpdate(this);
+      },
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): CheckboxMessages {
+    return localeMessages('mud-checkbox', this.host, this.locale, CHECKBOX_MESSAGES, {
+      requiredMessage: this.requiredMessage,
+    });
   }
 
   componentWillLoad() {
@@ -214,11 +264,7 @@ export class MudCheckbox {
 
   private updateValidity(checked: boolean) {
     if (this.required && !checked) {
-      this.internals.setValidity(
-        { valueMissing: true },
-        'Please check this box if you want to proceed.',
-        this.nativeRef,
-      );
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.nativeRef);
     } else {
       this.internals.setValidity({});
     }
@@ -280,20 +326,19 @@ export class MudCheckbox {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    // Slot-first content: the visible label / supporting text live ONLY in
-    // their respective slots. The `label` / `supportingText` props are
-    // accessible-name fallbacks (mirrors mud-button).
-    const showLabel = this.hasLabelSlot;
+    const lang = hostLang(this.host, this.locale);
+    // Hybrid content: the `label` / `supportingText` props render as their
+    // slots' fallback text, and a filled slot replaces them.
+    const labelText = this.label?.trim() || undefined;
+    const supportingText = this.supportingText?.trim() || undefined;
+    const showLabel = this.hasLabelSlot || labelText !== undefined;
     const showError = this.hasErrorMessage();
-    // An error message takes the supporting slot's place when the field is invalid.
-    const showSupporting = this.hasSupportingSlot && !showError;
-    // aria-label resolution priority:
-    //   slot present                 → omit (aria-labelledby points at slot)
-    //   explicit ariaLabel override → ariaLabel
-    //   label prop fallback         → label
-    //   nothing                      → undefined
-    const ariaLabelAttr = showLabel ? undefined : (this.ariaLabel ?? this.label?.trim() ?? undefined);
-    const ariaLabelledbyAttr = showLabel ? this.labelId : this.ariaLabelledby;
+    // An error message takes the supporting text's place when the field is invalid.
+    const showSupporting = (this.hasSupportingSlot || supportingText !== undefined) && !showError;
+    // The host's native aria-label overrides the accessible name; otherwise a
+    // visible label names the input through aria-labelledby.
+    const ariaLabelAttr = this.resolvedAriaLabel;
+    const ariaLabelledbyAttr = ariaLabelAttr ? undefined : showLabel ? this.labelId : this.ariaLabelledby;
     const ariaDescribedbyAttr = showError ? this.errorId : showSupporting ? this.supportingId : undefined;
 
     const hostClasses = {
@@ -309,7 +354,7 @@ export class MudCheckbox {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="root" htmlFor={`checkbox-${this.instanceId}`} part="root">
           {/*
             No `aria-hidden` on .control: it contains the focusable
@@ -348,16 +393,21 @@ export class MudCheckbox {
 
           <span class="text" part="text">
             <span class="label" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange} />
+              <slot name="label" onSlotchange={this.onLabelSlotChange}>
+                {labelText}
+              </slot>
             </span>
             <span class="supporting" id={this.supportingId} part="supporting">
-              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange} />
+              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange}>
+                {supportingText}
+              </slot>
             </span>
             {showError ? (
               <span class="error" id={this.errorId} part="error">
                 <mud-icon
                   class="error-icon"
-                  name="circle-error-filled"
+                  name="circle-error"
+                  variant="filled"
                   size={16}
                   color="icon-danger-default"
                   aria-hidden="true"
@@ -380,20 +430,30 @@ export class MudCheckbox {
     // CSS-drawn `.arc`.
     if (this.indeterminate) {
       return (
-        <svg class="glyph glyph-indeterminate" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-          <path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
+        // `minus-small` from the icon set, for the reason the tick below carries:
+        // Figma draws this one with 20/minus-small (13:128).
+        <svg class="glyph glyph-indeterminate" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M6.1 12a.9.9 0 0 1 .9-.9h10a.9.9 0 1 1 0 1.8H7a.9.9 0 0 1-.9-.9z"
+          />
         </svg>
       );
     }
     return (
-      <svg class="glyph glyph-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      // The path is `checkmark-small` from the icon set, copied rather than
+      // routed through `mud-icon`: Figma draws the tick with that very glyph
+      // (13:123 uses 20/checkmark-small), and a hand-rolled stroke sat a pixel
+      // short of it. Copying keeps the tick synchronous, which is why it was
+      // inline to begin with.
+      <svg class="glyph glyph-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
-          d="M3.5 8.5l3 3 6-6"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          fill="none"
+          fill="currentColor"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M18.593 6.523a.9.9 0 0 1 .084 1.27l-8.4 9.6a.9.9 0 0 1-1.313.043l-3.6-3.6a.9.9 0 1 1 1.272-1.272l2.92 2.92 7.767-8.877a.9.9 0 0 1 1.27-.084z"
         />
       </svg>
     );

@@ -55,7 +55,7 @@ const docsSourceStates = /*html*/ `<mud-accordion mode="multiple">
 </mud-accordion>`;
 
 const meta: Meta<AccordionItemArgs> = {
-  title: 'Molecules/Accordion Item',
+  title: 'Components/Accordion Item',
   component: 'mud-accordion-item',
   // The item's API table is rendered on the Accordion docs page (mud-accordion.mdx),
   // because the item is not usable outside a `mud-accordion`. A second autodocs page
@@ -71,11 +71,6 @@ const meta: Meta<AccordionItemArgs> = {
   },
   parameters: {
     layout: 'fullscreen',
-    // The manifest feeds this component's argTypes (see .storybook/preview.js), and
-    // `wca` lists every public class field as a property — so `@Element() host`
-    // arrives as a control over a live DOM node. The docs blocks exclude it too;
-    // this key is what keeps it out of the Canvas Controls panel.
-    controls: { exclude: ['host'] },
   },
 };
 export default meta;
@@ -167,6 +162,20 @@ export const SlottedDisabledContract: Story = {
     const settle = async () => {
       for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
     };
+    const hitTest = (el: HTMLElement) => {
+      // `scrollIntoView` first and the null check at the call site second, both
+      // load-bearing: `elementFromPoint` returns null for any point outside the
+      // viewport, so a bare `hit !== el` passes vacuously below the fold. The empty-box
+      // check is the same hole from the other side: an element that is not laid out
+      // (e.g. its slot wrapper lost `.has-content`) has a zero rect, and the point at
+      // its origin hits some unrelated element that is also "not el".
+      el.scrollIntoView({ block: 'center' });
+      const box = el.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0) {
+        throw new Error(`#${el.id} has an empty box — a hit-test on it would pass vacuously`);
+      }
+      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+    };
 
     await customElements.whenDefined('mud-accordion-item');
     await customElements.whenDefined('mud-button');
@@ -189,33 +198,56 @@ export const SlottedDisabledContract: Story = {
       throw new Error('`disabled` reached a control nested inside a slotted wrapper');
     }
 
-    // Everything this lane CAN see is asserted below. What it cannot: anything
-    // resting on the component's stylesheet.
-    //
-    // Measured from inside this runner — `item.shadowRoot` exists but carries
-    // `adoptedStyleSheets.length === 0` and no `<style>` tag, so components render
-    // UNSTYLED here. `.storybook/vitest-component-loader.ts` replaces the compiled
-    // `dist/mud/mud.esm.js` with an on-the-fly `customelement` compile so coverage
-    // can see the source, and the CSS does not come with it. This story was the
-    // first in the repo to assert a computed style, which is why nobody had hit it.
-    //
-    // The pointer guard IS in both shipped builds — `dist/mud/p-c908b8c2.entry.js`
-    // and `dist/components/p-C7uEtyEA.js` both carry
-    // `:host([disabled]) slot[name='heading']::slotted(*) … {pointer-events:none !important}`
-    // verbatim — and was measured applying to all three slots in a real page
-    // against `dist/`. Asserting it here would test the loader, not the component.
+    // 1b. The pointer guard is a THREE-clause selector list. Drive every clause:
+    //     a typo in the `heading` or `supporting` arm would otherwise ship green,
+    //     and mock-doc computes no styles, so only this lane can see it. One list for
+    //     this check and its re-enable mirror below, so the two cannot drift apart.
+    const pointerGuardedSlots = [
+      ['heading', find('head-slot')],
+      ['supporting', find('sup-slot')],
+      ['trailing', ours],
+    ] as const;
+    for (const [name, el] of pointerGuardedSlots) {
+      if (getComputedStyle(el).pointerEvents !== 'none') {
+        throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
+      }
+    }
+
+    // 1c. `!important` is load-bearing and this is its only proof: an inline
+    //     declaration on the slotted element must not defeat the guard. Measured
+    //     to hold because for `!important` the INNER (shadow) tree wins.
+    ours.style.setProperty('pointer-events', 'auto', 'important');
+    if (getComputedStyle(ours).pointerEvents !== 'none') {
+      throw new Error('an inline `pointer-events !important` on the slotted control defeated the guard');
+    }
+    ours.style.removeProperty('pointer-events');
 
     // 1d. The keyboard mirror. `disabled` does nothing to an <a href>, so without
-    //     `tabindex="-1"` this element is Tab-reachable while the accessibility
-    //     tree reports it disabled — WCAG 2.1 SC 4.1.2.
+    //     `tabindex="-1"` this element is Tab-reachable inside an item that is
+    //     disabled.
     const link = find('link');
     if (link.getAttribute('tabindex') !== '-1') {
       throw new Error('a slotted <a href> is still in the tab order while the item is disabled');
     }
 
+    // 2. The nested control gets no attribute, so the stylesheet is all that stands
+    //    between it and the mouse — it inherits `pointer-events: none` from the
+    //    wrapper the rule matches. Deliberately a plain button: one that sets its
+    //    own `pointer-events: auto` is hit-testable regardless, since importance
+    //    does not strengthen inheritance and `::slotted` takes no descendant
+    //    combinator. That limit is documented, not asserted away here.
+    const blocked = hitTest(nested);
+    if (blocked === null) {
+      throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');
+    }
+    if (blocked === nested) {
+      throw new Error('a control nested in a slotted wrapper is still the hit-test target while disabled');
+    }
+
     // 3. KEYBOARD, for a DIRECTLY slotted control. The attribute is what closes this:
-    //    measured, a disabled native <button> ancestor does not refuse focus to its
-    //    flat-tree slotted descendants, so this fails if the attribute is not written.
+    //    `trailing` renders beside the header button (issue #22), so no disabled
+    //    ancestor stands between the control and focus — and measured, one would not
+    //    refuse it anyway. This fails if the attribute is not written.
     //    Focus is parked on a real element outside the accordion first — the item
     //    carries no tabindex, so `activeElement` would otherwise fall to <body> and
     //    the check would pass without proving focus was REFUSED rather than moved.
@@ -262,8 +294,78 @@ export const SlottedDisabledContract: Story = {
     if (document.activeElement !== ours) {
       throw new Error('a slotted control stayed keyboard-unreachable after the item was enabled');
     }
+    if (hitTest(nested) !== nested) {
+      throw new Error('a nested slotted control stayed hit-test-blocked after the item was enabled');
+    }
+    // The mirror of 1b, clause by clause: an arm that lost its `:host([disabled])`
+    // qualifier blocks the pointer in every ENABLED item too, and only this sees it.
+    for (const [name, el] of pointerGuardedSlots) {
+      if (getComputedStyle(el).pointerEvents === 'none') {
+        throw new Error(`slot="${name}" content stayed pointer-blocked after the item was enabled`);
+      }
+    }
     if (link.hasAttribute('tabindex')) {
       throw new Error('the tabindex mirror was not removed when the item was enabled');
+    }
+  },
+};
+
+// Regression test for issue #22, hidden like the one above. It needs real event
+// propagation through the flat tree, which mock-doc does not model: while
+// `trailing` rendered inside the header <button>, a click or an Arrow key on a
+// slotted control bubbled through the slot into the button's own handlers, toggled
+// the item and moved focus between items. Rendered beside the button, it must not.
+export const TrailingOutsideHeader: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <div style="${wrapperStyle}">
+      <mud-accordion mode="multiple">
+        <mud-accordion-item id="item" heading="Payment">
+          <mud-button id="action" slot="trailing" variant="secondary" size="sm">Track</mud-button>
+          Panel body.
+        </mud-accordion-item>
+      </mud-accordion>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const settle = async () => {
+      for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
+    };
+    await customElements.whenDefined('mud-accordion-item');
+    await customElements.whenDefined('mud-button');
+    await settle();
+
+    const item = canvasElement.querySelector<HTMLMudAccordionItemElement>('#item');
+    const action = canvasElement.querySelector<HTMLElement>('#action');
+    if (!item || !action) throw new Error('the story did not render');
+
+    const toggles: Event[] = [];
+    const keys: Event[] = [];
+    item.addEventListener('mudToggle', ev => toggles.push(ev));
+    item.addEventListener('mudAccordionItemKey', ev => keys.push(ev));
+
+    action.click();
+    await settle();
+    if (item.open || toggles.length > 0) {
+      throw new Error('clicking a trailing control toggled the item');
+    }
+
+    action.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
+    await settle();
+    if (keys.length > 0) {
+      throw new Error('an Arrow key on a trailing control reached the header');
+    }
+
+    // The mirror: the header itself still toggles, so the checks above are not
+    // passing on an item that cannot toggle at all.
+    item.shadowRoot?.querySelector<HTMLButtonElement>('button.header')?.click();
+    await settle();
+    if (!item.open || toggles.length !== 1) {
+      throw new Error('the header button no longer toggles the item');
     }
   },
 };

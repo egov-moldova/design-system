@@ -1,6 +1,10 @@
-import { Component, Element, Event, Host, Method, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Method, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { MODAL_MESSAGES } from './mud-modal.messages';
+import type { ModalMessages } from './mud-modal.messages';
 import type { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from './mud-modal.types';
 
 let modalIdCounter = 0;
@@ -145,11 +149,17 @@ export class MudModal {
   @Prop() label?: string;
 
   /**
-   * Accessible label for the close × button. Defaults to the Romanian
-   * "Închide".
-   * @default 'Închide'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop() closeLabel: string = 'Închide';
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Accessible label for the close × button. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Închide' (ro-MD)
+   */
+  @Prop() closeLabel?: string;
 
   @State() private hasTitleSlot: boolean = false;
   @State() private hasIconSlot: boolean = false;
@@ -176,10 +186,28 @@ export class MudModal {
   private readonly titleId = `modal-title-${(modalIdCounter += 1)}`;
   private readonly bodyId = `modal-body-${modalIdCounter}`;
   private suppressNativeClose: boolean = false;
+  private stopLang?: () => void;
+
+  connectedCallback(): void {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
 
   componentWillLoad(): void {
     this.captureAriaLabel();
     this.detectSlots();
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): ModalMessages {
+    return localeMessages('mud-modal', this.host, this.locale, MODAL_MESSAGES, {
+      closeLabel: this.closeLabel,
+    });
   }
 
   private captureAriaLabel(): void {
@@ -202,6 +230,7 @@ export class MudModal {
   }
 
   disconnectedCallback(): void {
+    this.stopLang?.();
     if (this.dialogRef?.open) {
       this.suppressNativeClose = true;
       this.dialogRef.close();
@@ -358,13 +387,13 @@ export class MudModal {
     }
   };
 
-  private renderCloseButton() {
+  private renderCloseButton(closeLabel: string) {
     if (!this.closable) return null;
     return (
       <button
         class="close"
         type="button"
-        aria-label={this.closeLabel}
+        aria-label={closeLabel}
         onClick={this.handleCloseButtonClick}
         onKeyDown={this.handleCloseButtonKeyDown}
       >
@@ -375,20 +404,20 @@ export class MudModal {
     );
   }
 
-  private renderHeader() {
+  private renderHeader(closeLabel: string) {
     if (this.variant === 'with-image') {
       // The image is the actual header bar; the title (when provided) is rendered
       // below the image inside renderBody (per Figma 358:16247 — image variants
       // show the title underneath the hero, not in a separate header bar).
-      // Slot-first content rule: when consumers project their own `<img>` or
-      // `<picture>` it wins; otherwise the `imageSrc` prop renders an `<img>`
-      // as the slot's fallback content.
+      // Hybrid content (slot-patterns.md): when consumers project their own
+      // `<img>` or `<picture>` it wins; otherwise the `imageSrc` prop renders an
+      // `<img>` as the slot's fallback content.
       return (
         <div class="header header-image">
           <slot name="image" onSlotchange={this.onImageSlotChange}>
             {this.imageSrc ? <img src={this.imageSrc} alt={this.imageAlt} /> : null}
           </slot>
-          {this.renderCloseButton()}
+          {this.renderCloseButton(closeLabel)}
         </div>
       );
     }
@@ -396,7 +425,7 @@ export class MudModal {
     if (this.variant === 'with-icon') {
       // The icon variant has no top header bar — the close button (if any)
       // floats in the top-right corner. The icon itself sits above the body.
-      return this.closable ? <div class="header-icon-close">{this.renderCloseButton()}</div> : null;
+      return this.closable ? <div class="header-icon-close">{this.renderCloseButton(closeLabel)}</div> : null;
     }
 
     const showTitle = this.hasTitleSlot || (this.titleText && this.titleText.trim().length > 0);
@@ -406,13 +435,13 @@ export class MudModal {
           <div class="heading" id={this.titleId}>
             {/* Single slot path — when consumers provide a `slot="title"` child it
                 wins; otherwise the slot fallback renders the `titleText` prop as
-                an h2 (slot-first content rule, ANTIPATTERN-026 compliant). */}
+                an h2 (a hybrid, listed in ANTIPATTERN-026's allow-list). */}
             <slot name="title" onSlotchange={this.onTitleSlotChange}>
               <h2 class="title">{this.titleText}</h2>
             </slot>
           </div>
         ) : null}
-        {this.renderCloseButton()}
+        {this.renderCloseButton(closeLabel)}
       </div>
     );
   }
@@ -453,6 +482,8 @@ export class MudModal {
   }
 
   render() {
+    const m = this.messages();
+    const lang = hostLang(this.host, this.locale);
     const hostClasses = {
       'has-title': this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0),
       'has-icon': this.hasIconSlot,
@@ -470,7 +501,7 @@ export class MudModal {
     const ariaLabel = !hasTitle ? this.resolvedAriaLabel : undefined;
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <dialog
           ref={el => (this.dialogRef = el as HTMLDialogElement)}
           class="dialog"
@@ -483,7 +514,7 @@ export class MudModal {
           onClose={this.handleDialogClose}
         >
           <div class="surface" role="document">
-            {this.renderHeader()}
+            {this.renderHeader(m.closeLabel)}
             {this.renderBody()}
             {this.renderFooter()}
           </div>

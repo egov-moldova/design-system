@@ -13,8 +13,8 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 // ---------- Slot-first markup helper ----------
 //
-// `label` prop is ARIA-only (see component JSDoc); visible content lives
-// exclusively in the `label` slot.
+// The `label` prop renders visible text; the `label` slot replaces it for rich
+// content. The stories use the slot.
 
 type CbOpts = {
   label?: string;
@@ -58,7 +58,7 @@ const docsSourceDefault = (args: SwitchArgs) =>
     .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<SwitchArgs> = {
-  title: 'Atoms/Switch',
+  title: 'Components/Switch',
   component: 'mud-switch',
   argTypes: {
     checked: {
@@ -78,7 +78,8 @@ const meta: Meta<SwitchArgs> = {
     },
     label: {
       control: 'text',
-      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+      description:
+        'Visible label. The story slots it (`<span slot="label">…</span>`); the `label` prop renders the same text.',
     },
     name: { control: 'text', description: 'Form-control `name`.' },
     value: { control: 'text', description: 'Value submitted with the form when on.' },
@@ -111,7 +112,7 @@ export const Default: Story = {
 
 export const Checked: Story = {
   render: renderSwitch,
-  args: { ...Default.args, checked: true, label: 'Mod întunecat' } as SwitchArgs,
+  args: { ...Default.args, checked: true, label: 'Dark mode' } as SwitchArgs,
   parameters: Default.parameters,
 };
 
@@ -164,10 +165,10 @@ export const WithLabel: Story = {
   name: 'With Label',
   render: () => /*html*/ `
       <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px;">
-        ${cb({ label: 'Notificări push' })}
-        ${cb({ label: 'Mod întunecat', flags: 'checked' })}
-        ${cb({ label: 'Sincronizare automată', flags: 'checked' })}
-        ${cb({ label: 'Anunțuri de marketing', flags: 'disabled' })}
+        ${cb({ label: 'Push notifications' })}
+        ${cb({ label: 'Dark mode', flags: 'checked' })}
+        ${cb({ label: 'Automatic sync', flags: 'checked' })}
+        ${cb({ label: 'Marketing announcements', flags: 'disabled' })}
       </div>
     `,
   parameters: {
@@ -175,10 +176,10 @@ export const WithLabel: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Notificări push' }),
-          cb({ label: 'Mod întunecat', flags: 'checked' }),
-          cb({ label: 'Sincronizare automată', flags: 'checked' }),
-          cb({ label: 'Anunțuri de marketing', flags: 'disabled' }),
+          cb({ label: 'Push notifications' }),
+          cb({ label: 'Dark mode', flags: 'checked' }),
+          cb({ label: 'Automatic sync', flags: 'checked' }),
+          cb({ label: 'Marketing announcements', flags: 'disabled' }),
         ),
       },
     },
@@ -190,8 +191,8 @@ export const Disabled: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 560px;">
         ${[
-          cell('off · disabled', cb({ label: 'Notificări push', flags: 'disabled' })),
-          cell('on · disabled', cb({ label: 'Mod întunecat', flags: 'checked disabled' })),
+          cell('off · disabled', cb({ label: 'Push notifications', flags: 'disabled' })),
+          cell('on · disabled', cb({ label: 'Dark mode', flags: 'checked disabled' })),
         ].join('')}
       </div>
     `,
@@ -200,8 +201,8 @@ export const Disabled: Story = {
     docs: {
       source: {
         code: docsCode(
-          cb({ label: 'Notificări push', flags: 'disabled' }),
-          cb({ label: 'Mod întunecat', flags: 'checked disabled' }),
+          cb({ label: 'Push notifications', flags: 'disabled' }),
+          cb({ label: 'Dark mode', flags: 'checked disabled' }),
         ),
       },
     },
@@ -217,15 +218,15 @@ export const InForm: Story = {
         onsubmit="event.preventDefault(); const data = new FormData(event.target); const out = document.getElementById('settings-form-output'); out.textContent = JSON.stringify(Object.fromEntries(data.entries()), null, 2);"
       >
         <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); margin: 0;">
-          Preferințe notificări
+          Notification preferences
         </legend>
-        ${cb({ name: 'push', value: 'da', label: 'Notificări push', flags: 'checked' })}
-        ${cb({ name: 'email', value: 'da', label: 'Notificări prin e-mail' })}
-        ${cb({ name: 'sms', value: 'da', label: 'Notificări prin SMS' })}
-        ${cb({ name: 'marketing', value: 'da', label: 'Mesaje de marketing' })}
+        ${cb({ name: 'push', value: 'yes', label: 'Push notifications', flags: 'checked' })}
+        ${cb({ name: 'email', value: 'yes', label: 'Email notifications' })}
+        ${cb({ name: 'sms', value: 'yes', label: 'SMS notifications' })}
+        ${cb({ name: 'marketing', value: 'yes', label: 'Marketing messages' })}
         <div style="display: flex; gap: var(--spacing-12); margin-top: var(--spacing-8);">
-          <mud-button variant="primary" size="md" type="submit">Salvează</mud-button>
-          <mud-button variant="secondary" size="md" type="reset">Resetează</mud-button>
+          <mud-button variant="primary" size="md" type="submit">Save</mud-button>
+          <mud-button variant="secondary" size="md" type="reset">Reset</mud-button>
         </div>
         <pre id="settings-form-output" style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary); margin: 0;"></pre>
       </form>
@@ -240,9 +241,9 @@ export const InForm: Story = {
       source: {
         code: docsCode(
           '<form>',
-          `  ${cb({ name: 'push', value: 'da', label: 'Notificări push', flags: 'checked' })}`,
-          `  ${cb({ name: 'email', value: 'da', label: 'Notificări prin e-mail' })}`,
-          '  <mud-button variant="primary" type="submit">Salvează</mud-button>',
+          `  ${cb({ name: 'push', value: 'yes', label: 'Push notifications', flags: 'checked' })}`,
+          `  ${cb({ name: 'email', value: 'yes', label: 'Email notifications' })}`,
+          '  <mud-button variant="primary" type="submit">Save</mud-button>',
           '</form>',
         ),
       },

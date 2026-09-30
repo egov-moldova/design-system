@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-file-input · @egovmd/mud-web-components</title>
+    <title>mud-file-input · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-file-input">
     <main class="demo-main">
@@ -14,11 +14,11 @@
           <h3>Sizes</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <mud-file-input size="md" label="Încarcă documentul"></mud-file-input>
+              <mud-file-input size="md" label="Upload the document"></mud-file-input>
               <span class="label">md (default)</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <mud-file-input size="lg" label="Încarcă documentul"></mud-file-input>
+              <mud-file-input size="lg" label="Upload the document"></mud-file-input>
               <span class="label">lg</span>
             </div>
           </div>
@@ -29,8 +29,8 @@
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
               <mud-file-input
-                label="Document de identitate"
-                helper-text="Acceptăm copii scanate ale buletinului."
+                label="Identity document"
+                helper-text="Scanned copies of the ID card are accepted."
                 accept="image/jpeg,image/png,application/pdf"
                 max-size="5242880"
               ></mud-file-input>
@@ -39,20 +39,20 @@
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
               <mud-file-input
                 required=""
-                label="Câmp obligatoriu"
-                helper-text="Marcat cu asterisc roșu."
+                label="Required field"
+                helper-text="Marked with a red asterisk."
               ></mud-file-input>
               <span class="label">required</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <mud-file-input disabled="" label="Indisponibil" helper-text="Drop zone inert."></mud-file-input>
+              <mud-file-input disabled="" label="Unavailable" helper-text="Drop zone inert."></mud-file-input>
               <span class="label">disabled</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
               <mud-file-input
                 invalid=""
-                label="Eroare de validare"
-                error-text="Fișierul depășește limita de 5 MB."
+                label="Validation error"
+                error-text="The file exceeds the 5 MB limit."
               ></mud-file-input>
               <span class="label">invalid + error-text</span>
             </div>
@@ -63,8 +63,8 @@
           <h3>Slots &amp; multiple</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <mud-file-input multiple="" max-files="5" label="Atașamente (max 5)">
-                <span slot="helper">Poți încărca până la <strong>5</strong> fișiere.</span>
+              <mud-file-input multiple="" max-files="5" label="Attachments (max 5)">
+                <span slot="helper">You can upload up to <strong>5</strong> files.</span>
                 <mud-icon slot="icon" name="bookmark" size="24"></mud-icon>
               </mud-file-input>
               <span class="label">multiple + helper slot + icon slot</span>
@@ -77,14 +77,14 @@
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
               <mud-file-input
-                label="Helper foarte lung"
-                helper-text="Acceptăm doar documente oficiale emise de autoritățile publice din Republica Moldova, în format PDF sau imagine, cu o mărime maximă de 5 MB per fișier; orice altceva va fi respins automat la validare."
+                label="Very long helper"
+                helper-text="Only official documents issued by public authorities of the Republic of Moldova are accepted, in PDF or image format, with a maximum size of 5 MB per file; anything else will be rejected automatically during validation."
               ></mud-file-input>
               <span class="label">long helper text (wrap)</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
               <mud-file-input
-                label="Caractere &amp; diacritice: ăâîșțĂÂÎȘȚ <> &quot; ' 🗂️"
+                label="Characters &amp; accents: éüñ <> &quot; ' 🗂️"
                 helper-text="Test escaping &amp; i18n."
               ></mud-file-input>
               <span class="label">special chars + diacritics in label</span>

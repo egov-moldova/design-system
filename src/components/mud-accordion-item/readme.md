@@ -36,14 +36,15 @@ force field:
    slot distributes is what gets written — measured. That is still content you
    handed to the slot, one component further out.)
 2. `disabled` does what the element makes of it, and that is not universal —
-   27 of this library's 56 components implement it at the time of writing;
+   28 of this library's 49 components implement it at the time of writing;
    contributors can recount with `node scripts/count-disabled-props.mjs`, which
-   lives in the repo rather than in the published package. The load-bearing
-   half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
-   so the attribute is inert on them, and they render
-   identically whether the item is disabled or not. An `<a href>`, a
-   `<div tabindex>` or any custom element without `disabled` behaviour is the
-   same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+   lives in the repo rather than in the published package. `mud-tag` and
+   `mud-badge` implement it as a visual state only: in `trailing` they render
+   their disabled design, but in `heading` or `supporting` they receive no
+   attribute and keep their colors, because they paint their own surface
+   instead of inheriting the header's disabled color. An `<a href>`, a
+   `<div tabindex>` or any custom element without `disabled` behaviour ignores
+   the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
    keyboard at least matches what assistive technology is told; the element is
    still clickable by script and still activates programmatically.
 
@@ -109,13 +110,13 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot           | Description                                                                                                                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed.                                                            |
-| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                                                                                          |
-| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                                                                                       |
-| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                                                                                        |
-| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.             Disabled along with the item while directly slotted. |
+| Slot           | Description                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed.                                                                                                                                                                                                                                                                                              |
+| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                                                                                                                                                                                                                                                                                                                            |
+| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                                                                                                                                                                                                                                                                                                                         |
+| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                                                                                                                                                                                                                                                                                                                          |
+| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.             Rendered beside the header button, not inside it: a control             here is its own tab stop after the header, is not part of the             header's accessible name, and clicking it does not toggle the             item. Disabled along with the item while directly slotted. |
 
 
 ## Shadow Parts

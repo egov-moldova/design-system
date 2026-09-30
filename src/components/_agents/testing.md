@@ -1,5 +1,11 @@
 # Spec Testing & Coverage — Vitest + @stencil/vitest
 
+## Scope
+Governs unit/spec testing of `mud-*` components with Vitest + `@stencil/vitest`. **Read before
+writing any `*.spec.tsx`.**
+
+---
+
 **Canonical reference for unit/spec testing of `mud-*` components.** Read this before writing any `*.spec.tsx`.
 
 The project migrated from Jest + `newSpecPage` (`@stencil/core/testing`) to **Vitest + `@stencil/vitest`**. The harness, helpers, and coverage semantics differ — patterns below are mandatory.
@@ -84,7 +90,6 @@ The summary table at the end MUST show your component file with non-zero stateme
 
 Configured at the root of `vitest.config.mts` (`test.coverage.exclude`):
 
-- `src/legacy/**` — components mid-redesign (memory `legacy-components-migration`); excluded so they don't drag the headline number down.
 - `src/**/*.spec.{ts,tsx}` / `*.test.{ts,tsx}` / `*.e2e.{ts,tsx}` — test code, not unit-under-test.
 - `src/**/*.stories.{ts,tsx}` — documentation, not production code.
 - `src/**/test/**` — test helpers.

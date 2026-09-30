@@ -13,25 +13,25 @@ Pattern B (atom-interactive, form-associated): renders its own
 `<input type="radio">` inside shadow DOM and paints the visual circle
 with CSS. Form participation works via `formAssociated` +
 `ElementInternals.setFormValue`. The component is the standalone radio
-primitive; a future `mud-radio-group` molecule will manage roving focus
-and `name`-based exclusivity across siblings.
+primitive; `mud-radio-group` groups radios into one Tab stop with
+arrow-key selection and gives them one `name`.
 
 ## Properties
 
-| Property         | Attribute         | Description                                                                                                                                                                                                                | Type                  | Default     |
-| ---------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `ariaLabel`      | `aria-label`      | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                                                                                          | `string \| undefined` | `undefined` |
-| `ariaLabelledby` | `aria-labelledby` | ID of the element labelling the radio. Used when label content lives outside the component.                                                                                                                                | `string \| undefined` | `undefined` |
-| `checked`        | `checked`         | Whether the radio is currently selected.                                                                                                                                                                                   | `boolean`             | `false`     |
-| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                 | `boolean`             | `false`     |
-| `invalid`        | `invalid`         | Maps to Figma's "Error" state — border and selected dot turn red. Sets `aria-invalid` on the internal control.                                                                                                             | `boolean`             | `false`     |
-| `label`          | `label`           | Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` / `mud-checkbox` convention. | `string \| undefined` | `undefined` |
-| `name`           | `name`            | Form-control `name`. Used during form submission and for grouping radios.                                                                                                                                                  | `string \| undefined` | `undefined` |
-| `readonly`       | `readonly`        | Renders the control read-only. It remains focusable but cannot be toggled.                                                                                                                                                 | `boolean`             | `false`     |
-| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                                                                                                                                | `boolean`             | `false`     |
-| `size`           | `size`            | Visual size rung.                                                                                                                                                                                                          | `"md" \| "sm"`        | `'md'`      |
-| `supportingText` | `supporting-text` | Accessible-description fallback. Reserved for future use as `aria-describedby` source when no `supporting-text` slot is provided. Does NOT render visible text — use the `supporting-text` slot for that.                  | `string \| undefined` | `undefined` |
-| `value`          | `value`           | Value submitted with the form when this radio is checked.                                                                                                                                                                  | `string \| undefined` | `undefined` |
+| Property         | Attribute         | Description                                                                                                                                                                                | Type                  | Default     |
+| ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ----------- |
+| `ariaLabelledby` | `aria-labelledby` | ID of the element labelling the radio. Used when label content lives outside the component.                                                                                                | `string \| undefined` | `undefined` |
+| `checked`        | `checked`         | Whether the radio is currently selected.                                                                                                                                                   | `boolean`             | `false`     |
+| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                 | `boolean`             | `false`     |
+| `errorText`      | `error-text`      | Plain-text error message shown under the label and supporting text when `invalid` is set (Figma radio-label Error, 585:35232). Linked to the internal control through `aria-describedby`.  | `string \| undefined` | `undefined` |
+| `invalid`        | `invalid`         | Maps to Figma's "Error" state — border and selected dot turn red. Sets `aria-invalid` on the internal control.                                                                             | `boolean`             | `false`     |
+| `label`          | `label`           | Visible label text, which also names the input. The `label` slot replaces it for rich content. For an accessible name with no visible text, set the native `aria-label` attribute instead. | `string \| undefined` | `undefined` |
+| `name`           | `name`            | Form-control `name`. Used during form submission and for grouping radios.                                                                                                                  | `string \| undefined` | `undefined` |
+| `readonly`       | `readonly`        | Renders the control read-only. It remains focusable but cannot be toggled.                                                                                                                 | `boolean`             | `false`     |
+| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                                                                                                | `boolean`             | `false`     |
+| `size`           | `size`            | Visual size rung.                                                                                                                                                                          | `"md" \| "sm"`        | `'md'`      |
+| `supportingText` | `supporting-text` | Visible supporting text below the label, wired to the input through `aria-describedby`. The `supporting-text` slot replaces it for rich content.                                           | `string \| undefined` | `undefined` |
+| `value`          | `value`           | Value submitted with the form when this radio is checked.                                                                                                                                  | `string \| undefined` | `undefined` |
 
 
 ## Events
@@ -57,6 +57,7 @@ and `name`-based exclusivity across siblings.
 | ------------------- | ----------- |
 | `"control"`         |             |
 | `"dot"`             |             |
+| `"error"`           |             |
 | `"label"`           |             |
 | `"layout"`          |             |
 | `"native"`          |             |
@@ -71,9 +72,15 @@ and `name`-based exclusivity across siblings.
 
  - [mud-menu-item](../mud-menu)
 
+### Depends on
+
+- [mud-inline-message](../mud-inline-message)
+
 ### Graph
 ```mermaid
 graph TD;
+  mud-radio --> mud-inline-message
+  mud-inline-message --> mud-icon
   mud-menu-item --> mud-radio
   style mud-radio fill:#f9f,stroke:#333,stroke-width:4px
 ```

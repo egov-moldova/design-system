@@ -1,1144 +1,894 @@
 {
   "add-cart": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "alarm": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "arrow-down": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "arrow-left": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "arrow-right": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "arrow-up": {
-    "sizes": [
-      20
+    "variants": [
+      "outlined"
     ]
   },
   "arrow-up-right": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "asterisk": {
-    "sizes": [
-      12
+    "variants": [
+      "outlined"
     ]
   },
   "attachment": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "award": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "backspace": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "barcode": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "barrier": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "book": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "bookmark": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "bubble-alert": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "bubble-heart": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "bubble-question": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "building": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "bullet-list": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "business": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "business-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "calculator": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "calendar": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "calendar-add": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "calendar-edit": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "calendar-filled": {
-    "sizes": [
-      16,
-      20
+    "variants": [
+      "outlined"
     ]
   },
   "calendar-remove": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "calendar-remove-filled": {
-    "sizes": [
-      16,
-      20
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "car": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "card-link": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "carousel": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "cart": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chart": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "check-all": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "checklist": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "checkmark-large": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "checkmark-small": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-bottom": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "chevron-bottom-filled": {
-    "sizes": [
-      16
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "chevron-bottom-medium": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-bottom-small": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-grabber": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-left": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-left-small": {
-    "sizes": [
-      20
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-right": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-right-small": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-top": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "chevron-top-small": {
-    "sizes": [
-      16
+    "variants": [
+      "outlined"
     ]
   },
   "child": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "circle-checkmark-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+  "circle-checkmark": {
+    "variants": [
+      "filled"
     ]
   },
   "circle-download": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "circle-error": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "circle-error-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "circle-info": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "circle-info-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "clock": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "cloud-upload": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "coins": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "contacts": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "copy": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "credit-card": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "cross-large": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "cross-small": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "data-access": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "delete": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "delete-filled": {
-    "sizes": [
-      16,
-      20
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "direction": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "dislike": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "document": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
-  "document-filled": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "document-info-filled": {
-    "sizes": [
-      24
+  "document-info": {
+    "variants": [
+      "filled"
     ]
   },
   "dot": {
-    "sizes": [
-      16
+    "variants": [
+      "outlined"
     ]
   },
   "dot-grid": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "download": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "drag": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "edit": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "education": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "electronic-signature": {
-    "sizes": [
-      16
+    "variants": [
+      "outlined"
     ]
   },
   "empty-bin": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "envelope": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "envelope-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "exclamation": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "external-link": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "eye-open": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "face-id": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "facebook-filled": {
-    "sizes": [
-      24
+  "facebook": {
+    "variants": [
+      "filled"
     ]
   },
   "faq": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "feedback": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "file-download": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "filter": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "flag": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "flash-filled": {
-    "sizes": [
-      24
+  "flash": {
+    "variants": [
+      "filled"
     ]
   },
-  "flash-off-filled": {
-    "sizes": [
-      24
+  "flash-off": {
+    "variants": [
+      "filled"
     ]
   },
   "globe": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "group": {
-    "sizes": [
-      16,
-      20,
-      24
-    ]
-  },
-  "group-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "hashtag": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "health": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "help": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "history": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "home-line": {
-    "sizes": [
-      24
-    ]
-  },
-  "home-line-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "home-round-door": {
-    "sizes": [
-      16
+    "variants": [
+      "outlined"
     ]
   },
   "house": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "id-card": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "id-card-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "identity": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "image": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "instagram-filled": {
-    "sizes": [
-      24
+  "instagram": {
+    "variants": [
+      "filled"
     ]
   },
   "judge-gavel": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "light-bulb": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "like": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "linkedin-filled": {
-    "sizes": [
-      24
+  "linkedin": {
+    "variants": [
+      "filled"
     ]
   },
   "lock": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "logout": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "map-pin": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "map-pin-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "mark-all": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "menu": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "minus-small": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "mobile-phone": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "moon": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "more-horizontal": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "more-vertical": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "notification": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "old-man": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "organisation": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-add": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-child": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-download": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "page-download-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "page-house": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-text": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-text-lock": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "page-upload": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "page-upload-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "passport": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "pdf-file": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "people": {
-    "sizes": [
-      16,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "people-like": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "permission": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "person": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "phone": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "phone-filled": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "pin": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "plus-large": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "plus-small": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "qr-code": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "receipt-bill": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "receipt-check": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "receipt-check-filled": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "reorder": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "reschedule": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "resize": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "rotate-arrow": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "scan": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "search": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "services": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "settings": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "share-android": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "share-ios": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "shield": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "shield-keyhole": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "shield-user": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "sidebar": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "sidebar-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "signal": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "signature": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "sort": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "sparkles-filled": {
-    "sizes": [
-      20,
-      24
+  "sparkles": {
+    "variants": [
+      "filled"
     ]
   },
   "stamp": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "store": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "suitcase": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "suitcase-2": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "sun": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "support": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "templates": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "tiktok": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "time": {
-    "sizes": [
-      16
-    ]
-  },
-  "time-filled": {
-    "sizes": [
-      16,
-      20
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "tree": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "umbrella": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "unlocked-filled": {
-    "sizes": [
-      20
+  "unlocked": {
+    "variants": [
+      "filled"
     ]
   },
   "upload": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "user-account": {
-    "sizes": [
-      24
-    ]
-  },
-  "user-account-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "vacation": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "visiting-card": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "voucher": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
   "wallet": {
-    "sizes": [
-      24
-    ]
-  },
-  "wallet-filled": {
-    "sizes": [
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "warning": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "warning-filled": {
-    "sizes": [
-      16,
-      20,
-      24
+    "variants": [
+      "outlined",
+      "filled"
     ]
   },
   "wheelchair": {
-    "sizes": [
-      20,
-      24
+    "variants": [
+      "outlined"
     ]
   },
-  "youtube-filled": {
-    "sizes": [
-      24
+  "youtube": {
+    "variants": [
+      "filled"
     ]
   }
 }

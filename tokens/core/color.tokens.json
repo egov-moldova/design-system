@@ -184,6 +184,13 @@
           "$value": "{palette.alpha.gray.alpha-100}",
           "$type": "color"
         }
+      },
+      "transparent": {
+        "inactive": {
+          "$value": "{palette.alpha.black.200-alpha}",
+          "$type": "color",
+          "$comment": "Figma 'Search Input' clear-button background (rest/filled state) — a subtle, low-emphasis transparent surface for inactive affordances."
+        }
       }
     },
     "border": {

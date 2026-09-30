@@ -20,6 +20,53 @@ describe('mud-accordion', () => {
     expect(root?.getAttribute('role')).toBe('group');
   });
 
+  describe('items (deprecated)', () => {
+    const items = [
+      { id: 'a', heading: 'Prima', content: 'Unu' },
+      { id: 'b', heading: 'A doua', content: 'Doi' },
+    ];
+
+    it('renders the items and warns once that items is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-accordion />);
+      Object.assign(root as object, { items });
+      await waitForChanges();
+      Object.assign(root as object, { items: [...items] });
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelectorAll('mud-accordion-item')).toHaveLength(2);
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('`items` is deprecated'))).toHaveLength(1);
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('Both'))).toHaveLength(0);
+      warn.mockRestore();
+    });
+
+    it('lets items win over children and warns once that both are set', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-accordion>
+          <mud-accordion-item heading="Copil"></mud-accordion-item>
+        </mud-accordion>,
+      );
+      Object.assign(root as object, { items });
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelector('slot')).toBeNull();
+      expect(
+        warn.mock.calls.filter(([m]) => String(m).includes('Both `items` and <mud-accordion-item> children')),
+      ).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it('does not warn with children only', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(
+        <mud-accordion>
+          <mud-accordion-item heading="Copil"></mud-accordion-item>
+        </mud-accordion>,
+      );
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+  });
+
   describe('mode prop', () => {
     it.each(ACCORDION_MODES)('reflects mode="%s" to the host attribute', async mode => {
       const { root } = await render(
@@ -124,6 +171,7 @@ describe('mud-accordion', () => {
   });
 
   it('renders declarative items from the `items` prop and ignores the default slot', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const items = [
       { id: 'x', heading: 'X', supportingText: 's-x', content: 'cx' },
       { id: 'y', heading: 'Y', open: true, content: 'cy' },
@@ -140,6 +188,7 @@ describe('mud-accordion', () => {
     expect(rendered?.[0]?.getAttribute('item-id')).toBe('x');
     expect(rendered?.[1]?.getAttribute('item-id')).toBe('y');
     expect(rendered?.[1]?.hasAttribute('open')).toBe(true);
+    warn.mockRestore();
   });
 
   it('constructs without registering a host when registerHost=false', () => {

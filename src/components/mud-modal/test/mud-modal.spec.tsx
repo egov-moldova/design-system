@@ -1,6 +1,9 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-modal';
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { MODAL_MESSAGES } from '../mud-modal.messages';
+import type { ModalMessages } from '../mud-modal.messages';
 import { MODAL_CLOSE_REASONS, MODAL_SIZES, MODAL_VARIANTS } from '../mud-modal.types';
 import type { ModalCloseEvent, ModalCloseReason } from '../mud-modal.types';
 
@@ -500,4 +503,22 @@ describe('mud-modal', () => {
       expect(instance).toBeTruthy();
     });
   });
+});
+
+describeLocales<ModalMessages>('mud-modal', MODAL_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'title-text': 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    const { root } = await render(
+      <mud-modal {...attrs}></mud-modal>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel' },
 });

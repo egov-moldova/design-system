@@ -24,7 +24,7 @@ const COMPONENTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)
 
 /**
  * Every component `.tsx` under `src/components`, found by walking files rather
- * than directories: `mud-header-nav-item.tsx` lives inside `mud-header/`, so
+ * than directories: `mud-sidebar-item.tsx` lives inside `mud-sidebar/`, so
  * a directory-per-component listing would silently skip it — and skipping is
  * the one failure mode a ratchet must not have.
  */
@@ -95,8 +95,8 @@ describe('form-associated components', () => {
     // expected to fail here once, and the fix is to lower the number in the
     // same commit that removes the component.
     assert.ok(
-      formAssociated.length >= 16,
-      `expected at least 16 form-associated components, found ${formAssociated.length}. ` +
+      formAssociated.length >= 15,
+      `expected at least 15 form-associated components, found ${formAssociated.length}. ` +
         'Either a component was legitimately removed — lower this floor in that same commit — ' +
         'or the scan stopped seeing them, in which case every assertion below is grading a subset.',
     );

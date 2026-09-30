@@ -1,6 +1,6 @@
 ---
 name: a11y-verifier
-description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. When dispatched as the advisory WCAG / media leg of `--depth deep`, writes `ai-findings.json` for the run it is given; it never invokes `verdict.mjs` / `yarn audit:component` and never stops on its exit code. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, Skill
 model: sonnet
 ---
@@ -20,8 +20,54 @@ Required:
 Optional:
 
 - `storybookBaseUrl` — default `http://localhost:6007`
-- `storyId` — default `atoms-<componentName>--default`
+- `storyId` — default `components-<title-slug>--default` (slug from the stories file's `title`)
 - `interactiveStates` — default inferred from component type
+
+When the audit dispatches this agent, Storybook belongs to the audit's worktree: read the port
+from `.audit-storybook.json` (repo root, `{ port, pid }` — `scripts/audit/lib/storybook-helpers.mjs`) and use
+it instead of the 6007 default, both for `storybookBaseUrl` and for `--port` on every script
+below.
+
+## AI-leg contract (when dispatched at `--depth deep`)
+
+This leg is advisory (Decision 12, `2026-09-22-audit-depths-sentinel-fixes.md`): no row waits
+on it and its findings never move the state. This agent NEVER runs `verdict.mjs` or `yarn
+audit:component`, and never stops on either's exit code — only `verdict.mjs` computes
+`state`. Its job is to write its findings for the run the dispatcher names (`<runDir>`:
+`components[].runDir` in `audit/_run/summary.json`):
+
+```
+<runDir>/ai/a11y-verifier/ai-findings.json
+```
+
+in this shape:
+
+```json
+{
+  "schemaVersion": "1.0.0",
+  "leg": "a11y-verifier",
+  "idsJudged": ["DX-wcag", "DX-media"],
+  "findings": [
+    { "severity": "error", "code": "A11Y-...", "file": "...", "line": 12, "message": "...", "fix": "..." },
+    { "question": "...", "options": ["...", "..."] }
+  ]
+}
+```
+
+Write it with `Bash` using a quoted heredoc delimiter, so no `$`/backtick in a finding's text is
+interpolated by the shell. The body must be one valid JSON document — strings escape their own
+newlines, so no line inside it can equal the delimiter:
+
+```bash
+mkdir -p <runDir>/ai/a11y-verifier
+cat <<'AI_FINDINGS_JSON_END' > <runDir>/ai/a11y-verifier/ai-findings.json
+{ ... the JSON above ... }
+AI_FINDINGS_JSON_END
+```
+
+`idsJudged` lists the ids this dispatch judged (`DX-wcag`, `DX-media`, or both). Every
+valid finding — an error, a `question` + `options`, anything — is listed under "Advisory"
+once the dispatcher re-renders the brief; a malformed one is named in the verdict's notes.
 
 ## Procedure
 
@@ -41,12 +87,14 @@ in parallel:
 node scripts/audit/run-all.mjs mud-<name> --only 09,10,12 --json
 ```
 
-Or individually if you only need one:
+`run-all.mjs` reads `.audit-storybook.json` itself and passes `--port` to every browser script it
+spawns. Running a script individually does not: pass `--port <the port from .audit-storybook.json>`
+yourself.
 
 ```bash
-node scripts/audit/09-a11y-tree.mjs mud-<name> --json     # a11y tree + element census
-node scripts/audit/10-contrast-pairs.mjs mud-<name> --json # WCAG contrast pairs (light + dark)
-node scripts/audit/12-console-errors.mjs mud-<name> --json # runtime errors that affect a11y
+node scripts/audit/09-a11y-tree.mjs mud-<name> --port <port> --json     # a11y tree + element census
+node scripts/audit/10-contrast-pairs.mjs mud-<name> --port <port> --json # WCAG contrast pairs (light + dark)
+node scripts/audit/12-console-errors.mjs mud-<name> --port <port> --json # runtime errors that affect a11y
 ```
 
 Also run the token-level pair:
@@ -62,8 +110,41 @@ What you get back per envelope:
   `outlineWidth`, `outlineStyle`, `outlineColor`); same shape under `dark`
   unless `--skip-dark` was passed.
 - **10 (contrast-pairs)** → `meta.pairs[]` with
-  `{ tag, theme, fg, bg, ratio, threshold, pass, exempt }` for every
-  interactive element.
+  `{ tag, theme, fg, bg, bgOwn, bgStack, canvas, error, ratio, threshold, pass,
+  exempt }` for every interactive element. `bg` is the COMPOSITED background —
+  the layers behind the element, walked across shadow boundaries up to the story
+  canvas — and is what the ratio is computed against. `bgOwn` is the element's
+  own `backgroundColor`, often `rgba(0, 0, 0, 0)`; `bgStack` is the layer stack
+  `bg` was folded from; `canvas` is the surface the fold lands on when no layer
+  paints anything. All three are for debugging a surprising ratio, never for
+  judging contrast.
+  `ratio` is `null` with `error: 'unmeasurable'` when a color spelling the
+  parser cannot read reached the measurement. Which layer it was decides the
+  code, and `bg` is what tells them apart: `bg === null` means the BACKDROP is
+  unresolved (`CONTRAST-BACKDROP-UNREADABLE`), while a non-null `bg` with a
+  null `ratio` means the FOREGROUND is (`CONTRAST-FOREGROUND-UNREADABLE`).
+  Both are tool defects, not contrast defects — they point at a color spelling,
+  never at the token mapping — and neither is exempted by `disabled`.
+  A `background-image` (gradient or image) on the element, or on an ancestor
+  NEARER than the first opaque background color, is recorded in `bgStack` as
+  `'background-image'` and the row comes back unresolved — `bg: null`,
+  `CONTRAST-BACKDROP-UNREADABLE` — because it cannot be folded to one color. One
+  behind an opaque layer is correctly ignored, since nothing behind an opaque
+  layer shows. It is a refusal to guess, not a contrast failure, and it also
+  fires for a small decorative image (a chevron) over an otherwise opaque fill:
+  judge that pair by eye.
+  `bgStack` is the FLATTENED-ancestor chain of background COLORS, so these
+  paint mechanisms are not in the model and DO yield a ratio, which may be
+  wrong: `opacity` — on the element itself or on an ancestor — and anything out
+  of flow — a `position: fixed` overlay such as `mud-modal` or `mud-toast`
+  paints over whatever is beneath it on screen, which its DOM ancestors do not
+  describe, as do transformed subtrees, overlapping siblings and pseudo-element
+  fills. Where a component's text sits on any of those, do not trust its
+  `ratio`; judge it by eye.
+  Which element a pair is READ OFF is heuristic: an element with no text of its
+  own — a checkbox box, a switch track, a separator rule, a visually hidden
+  native `<input>` — can produce a row pairing an inherited `color` with a fill.
+  Such a row describes no glyphs and is not a contrast finding.
 - **12 (console-errors)** → `meta.perStory[]` with errors / warnings per story id.
 
 ### Step 2 — Apply WCAG judgment over the captured data
@@ -84,23 +165,40 @@ This is where the agent's value lands. For each script finding, decide:
 
 **Contrast judgment** (script reports raw ratios + pass/fail per WCAG threshold):
 
-- For every `pass: false` non-`exempt` pair: what's the remediation? Adjust
-  the token mapping (preferred), add a new semantic token, or document a
-  design exception?
-- Cross-reference with `yarn audit:contrast` — does a runtime FAIL line up
-  with a token-level FAIL? If yes → token issue (fix `tokens/core/`).
-  If runtime FAILs but tokens PASS → component CSS picked the wrong token.
+- Only `CONTRAST-BELOW-THRESHOLD` is a contrast finding. A row with
+  `error: 'unmeasurable'` (`CONTRAST-BACKDROP-UNREADABLE`,
+  `CONTRAST-FOREGROUND-UNREADABLE`) also has `pass: false`, but it is a tool
+  limit: judge that pair by eye and never propose a color change for it. A row
+  read off a surface with no text of its own is not a finding either (Step 1).
+- For a genuine `CONTRAST-BELOW-THRESHOLD`, decide which layer owns the colors.
+  `tokens/core/` and `tokens/core.dark/` are exported from Figma, the design
+  source of truth, and `yarn sync:tokens:apply` overwrites them — so a token
+  VALUE is never the fix here: report the pair, with both measured colors and
+  the token names they resolve through, as a design observation. Only a
+  component that references the wrong semantic token for its role is a code
+  defect to report as such.
+- Cross-reference with `yarn audit:contrast` knowing the two can legitimately
+  disagree: script 10 composites a translucent background over what is behind
+  it and the token audit does not, so a translucent tint can pass one and fail
+  the other with neither being wrong. A disagreement is a prompt to look at
+  which layer is translucent, not proof that a token or a component is at
+  fault.
 
 **Keyboard / focus** (script captures outline styles, NOT tab traversal):
 
 - Use `mcp__playwright__browser_press_key({ key: "Tab" })` + `browser_evaluate`
   to verify Tab order is logical. Script cannot judge "logical for user workflow".
-- **Canonical procedure**: see [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §BX (mandatory browser checklist) for the full BX2 (tab order) + BX3 (focus-visible) + BX4 (Escape) steps with exact MCP call signatures. This agent's keyboard section is a subset; when `--deep` is set, also execute BX5–BX6 here so the a11y verdict is complete.
-- Confirm `:focus-visible` styles render — script reports the computed
-  `outlineWidth` / `outlineStyle` / `outlineColor`; if any is `none` / `0px` /
-  `transparent`, that's a focus-ring gap.
-- Test interaction keys (Enter, Space, Escape, Arrow) only for composite
-  widgets (tabs, select, radio group, menu).
+- **Scripted, not judged here**: BX1–BX7 are scripted verdict rows — see [`references/layer-2-browser-checklists.md`](../skills/audit-component/references/layer-2-browser-checklists.md) §BX. The scripts press only Tab and Escape, and Escape (BX4) only on overlays and components with an open / close / toggle method; BX3 passes a ring drawn by an outline or a `box-shadow`, even one whose colour is `transparent`. So this agent still judges: whether the Tab order is logical, whether Shift+Tab walks back, and the two bullets below.
+- Confirm the focus ring is visible while focused (SC 2.4.7) and reaches 3:1
+  against its background (SC 1.4.11). A component may draw it with
+  `box-shadow` instead of `outline` (mud-menu-item, mud-radio,
+  mud-accordion-item do), so `outlineStyle: none` alone is not a gap — read
+  the focused element's `box-shadow` too, and a `transparent` colour on either
+  is.
+- Test Enter and Space activation on every interactive element, Arrow keys
+  inside composite widgets (tabs, select, radio group, menu), and Escape on a
+  composite popup that is not an overlay and has no open / close / toggle
+  method.
 
 **Reduced motion**:
 
@@ -162,7 +260,12 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 
 ## Constraints
 
-- **Read-only**: never edit, write, or delete any source file.
+- **Read-only**: never edit, write, or delete any source file. The one
+  exception is `ai-findings.json` under `audit/<component>/runs/<run>/ai/`
+  (§ AI-leg contract) — that path is evidence output, not source.
+- **Never invokes `verdict.mjs` / `yarn audit:component` and never stops on
+  its exit code.** This leg reports findings; the orchestrator's script is
+  the only thing that decides `state`.
 - **No fixes**: report findings, propose token/CSS/TSX changes; the
   orchestrator decides and applies.
 - **Single browser session**: reuse the same `mcp__playwright__browser_*`
@@ -174,8 +277,8 @@ The Fast Path fails open in these cases — drop to manual `mcp__playwright__*`:
 
 | Symptom | Likely cause | Reported as |
 |---|---|---|
-| Script exits with `Storybook not reachable on port 6007` | Storybook not started | `environment-not-ready` |
+| Script exits with `Storybook not reachable` on this worktree's port (`.audit-storybook.json`) | Storybook not started | `environment-not-ready` |
 | `yarn audit:contrast` exits non-zero | New FAIL pairs outside ACCEPTED_EXCEPTIONS | `contrast-regression` + listed pairs |
 | Script exits with `playwright not installed` | dep missing | `playwright-missing` + fall back to MCP path |
 | Snapshot empty (script returns `interactive: []`) | Story failed to render or selectors too narrow | `story-render-failure` |
-| Storybook a11y addon panel missing | Storybook config issue | `a11y-addon-missing` + recommend fixing `.storybook/main.ts` |
+| Storybook a11y addon panel missing | Storybook config issue | `a11y-addon-missing` + recommend fixing `.storybook/main.mjs` |

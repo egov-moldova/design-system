@@ -2,13 +2,16 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { TOAST_VARIANTS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type ToastArgs = {
   variant: ToastVariant;
   closable: boolean;
   titleText: string;
-  iconName: string;
+  iconName: IconName | '';
   body: string;
+  locale: string;
   closeLabel: string;
 };
 
@@ -18,7 +21,8 @@ const renderToast = (args: ToastArgs) => /*html*/ `
     closable="${args.closable}"
     ${args.titleText ? `title-text="${args.titleText}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
-    close-label="${args.closeLabel}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
+    ${args.closeLabel ? `close-label="${args.closeLabel}"` : ''}
   >${args.body}</mud-toast>
 `;
 
@@ -28,7 +32,7 @@ const captionStyle =
   'font-family: var(--font-family-primary); font-size: 12px; font-weight: 500; color: var(--color-text-base-secondary); margin: 0;';
 
 const meta: Meta<ToastArgs> = {
-  title: 'Atoms/Toast',
+  title: 'Components/Toast',
   component: 'mud-toast',
   parameters: {
     layout: 'padded',
@@ -72,24 +76,31 @@ the consumer is responsible for animating out and removing the element.
     },
     iconName: {
       name: 'icon-name',
-      control: 'text',
-      description: 'Override the default per-variant icon (mud-icon name).',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon (mud-icon name). Empty keeps the variant default.',
     },
     body: { control: 'text', description: 'Default-slot text content.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     closeLabel: {
       name: 'close-label',
       control: 'text',
-      description: 'Accessible label for the close button.',
+      description: "Accessible label for the close button. Overrides the locale's copy.",
       table: { defaultValue: { summary: 'Închide' } },
     },
   },
   args: {
     variant: 'info',
     closable: true,
-    titleText: 'Mesaj important',
+    titleText: 'Important message',
     iconName: '',
-    body: 'Vă informăm despre modificările aduse serviciului.',
-    closeLabel: 'Închide',
+    body: 'We are letting you know about the changes made to the service.',
+    locale: '',
+    closeLabel: '',
   },
 };
 
@@ -119,14 +130,14 @@ export const Default: Story = {
 // ---------------------------------------------------------------------------
 const renderAllVariants = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-toast variant="info" closable title-text="Informație">Vă informăm despre modificările aduse serviciului.</mud-toast>
-    <mud-toast variant="warning" closable title-text="Atenție">Mentenanță programată astăzi între 22:00 și 02:00.</mud-toast>
-    <mud-toast variant="success" closable title-text="Succes">Plata a fost procesată cu succes.</mud-toast>
-    <mud-toast variant="error" closable title-text="Eroare">Eroare la încărcarea documentului. Reîncercați.</mud-toast>
+    <mud-toast variant="info" closable title-text="Information">We are letting you know about the changes made to the service.</mud-toast>
+    <mud-toast variant="warning" closable title-text="Attention">Scheduled maintenance today between 22:00 and 02:00.</mud-toast>
+    <mud-toast variant="success" closable title-text="Success">The payment was processed successfully.</mud-toast>
+    <mud-toast variant="error" closable title-text="Error">Error uploading the document. Try again.</mud-toast>
   </div>
 `;
 const docsSourceAllVariants = TOAST_VARIANTS.map(
-  v => `<mud-toast variant="${v}" closable title-text="...">Mesaj.</mud-toast>`,
+  v => `<mud-toast variant="${v}" closable title-text="...">Message.</mud-toast>`,
 ).join('\n');
 export const AllVariants: Story = {
   render: renderAllVariants,
@@ -138,9 +149,9 @@ export const AllVariants: Story = {
 // ---------------------------------------------------------------------------
 const renderNoHeading = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-toast variant="info" closable>Sesiunea va expira în 5 minute.</mud-toast>
-    <mud-toast variant="success" closable>Modificările au fost salvate.</mud-toast>
-    <mud-toast variant="error" closable>Conexiune întreruptă.</mud-toast>
+    <mud-toast variant="info" closable>Your session will expire in 5 minutes.</mud-toast>
+    <mud-toast variant="success" closable>The changes were saved.</mud-toast>
+    <mud-toast variant="error" closable>Connection lost.</mud-toast>
   </div>
 `;
 export const NoHeading: Story = {
@@ -148,7 +159,7 @@ export const NoHeading: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
-      source: { code: '<mud-toast variant="info">Sesiunea va expira în 5 minute.</mud-toast>' },
+      source: { code: '<mud-toast variant="info">Your session will expire in 5 minutes.</mud-toast>' },
     },
   },
 };
@@ -158,8 +169,8 @@ export const NoHeading: Story = {
 // ---------------------------------------------------------------------------
 const renderNotClosable = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-toast variant="success" closable="false" title-text="Salvat">Modificările au fost salvate.</mud-toast>
-    <mud-toast variant="info" closable="false">Se sincronizează datele…</mud-toast>
+    <mud-toast variant="success" closable="false" title-text="Saved">The changes were saved.</mud-toast>
+    <mud-toast variant="info" closable="false">Syncing data…</mud-toast>
   </div>
 `;
 export const NotClosable: Story = {
@@ -168,7 +179,7 @@ export const NotClosable: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-toast variant="success" closable="false" title-text="Salvat">Modificările au fost salvate.</mud-toast>',
+        code: '<mud-toast variant="success" closable="false" title-text="Saved">The changes were saved.</mud-toast>',
       },
     },
   },
@@ -179,20 +190,20 @@ export const NotClosable: Story = {
 // ---------------------------------------------------------------------------
 const renderWithLink = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-toast variant="info" closable title-text="Sesiunea va expira">
-      Salvați modificările pentru a evita pierderea datelor.
-      <mud-link slot="actions" href="#" underline="always" variant="white">Prelungește sesiunea</mud-link>
+    <mud-toast variant="info" closable title-text="Session about to expire">
+      Save your changes to avoid losing data.
+      <mud-link slot="actions" href="#" underline="always" variant="white">Extend session</mud-link>
     </mud-toast>
 
-    <mud-toast variant="error" closable title-text="Plată refuzată">
-      Tranzacția nu a putut fi finalizată.
-      <mud-link slot="actions" href="#" underline="always" variant="white">Reîncercați</mud-link>
+    <mud-toast variant="error" closable title-text="Payment declined">
+      The transaction could not be completed.
+      <mud-link slot="actions" href="#" underline="always" variant="white">Try again</mud-link>
     </mud-toast>
   </div>
 `;
-const docsSourceWithLink = /*html*/ `<mud-toast variant="info" closable title-text="Sesiunea va expira">
-  Salvați modificările pentru a evita pierderea datelor.
-  <mud-link slot="actions" href="#" variant="white">Prelungește sesiunea</mud-link>
+const docsSourceWithLink = /*html*/ `<mud-toast variant="info" closable title-text="Session about to expire">
+  Save your changes to avoid losing data.
+  <mud-link slot="actions" href="#" variant="white">Extend session</mud-link>
 </mud-toast>`;
 export const WithLink: Story = {
   render: renderWithLink,
@@ -204,22 +215,22 @@ export const WithLink: Story = {
 // ---------------------------------------------------------------------------
 const renderEdgeCases = () => /*html*/ `
   <div style="${sectionStyle}">
-    <p style="${captionStyle}">Conținut lung — se înfășoară pe 2-3 rânduri</p>
-    <mud-toast variant="info" closable title-text="Termeni și condiții actualizate">
-      Am actualizat termenii platformei. Modificările intră în vigoare începând cu 1 iunie 2026 și includ actualizări privind procesarea plăților și politica de confidențialitate.
+    <p style="${captionStyle}">Long content — wraps onto 2-3 lines</p>
+    <mud-toast variant="info" closable title-text="Updated terms and conditions">
+      We have updated the platform terms. The changes take effect on 1 June 2026 and include updates to payment processing and the privacy policy.
     </mud-toast>
 
-    <p style="${captionStyle}">Diacritice românești (ă â î ș ț)</p>
-    <mud-toast variant="warning">Înălțime mărită — țineți cont de această modificare.</mud-toast>
+    <p style="${captionStyle}">Accented characters (é ü ñ)</p>
+    <mud-toast variant="warning">Accented characters (é ü ñ) render correctly.</mud-toast>
 
     <p style="${captionStyle}">Custom icon override</p>
-    <mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
-      Vezi detalii în istoricul plăților.
+    <mud-toast variant="success" icon-name="receipt-check" closable title-text="Receipt generated">
+      See details in the payment history.
     </mud-toast>
   </div>
 `;
-const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
-  Vezi detalii în istoricul plăților.
+const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check" closable title-text="Receipt generated">
+  See details in the payment history.
 </mud-toast>`;
 export const EdgeCases: Story = {
   render: renderEdgeCases,

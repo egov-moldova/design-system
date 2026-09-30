@@ -1,5 +1,11 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h, readTask } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { PAGINATION_MESSAGES } from './mud-pagination.messages';
+import type { PaginationMessages } from './mud-pagination.messages';
 import { isOverflow } from './mud-pagination.types';
 import type {
   OverflowKey,
@@ -84,61 +90,77 @@ export class MudPagination {
 
   /**
    * Visible label for the Previous button (desktop only — hidden on `sm`).
-   * @default 'Anterior'
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing
+   * (the button keeps its `prev-aria-label`).
+   * @default 'Anterior' (ro-MD)
    */
-  @Prop({ attribute: 'prev-label' }) prevLabel: string = 'Anterior';
+  @Prop({ attribute: 'prev-label' }) prevLabel?: string;
 
   /**
    * Visible label for the Next button (desktop only — hidden on `sm`).
-   * @default 'Următor'
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing
+   * (the button keeps its `next-aria-label`).
+   * @default 'Următor' (ro-MD)
    */
-  @Prop({ attribute: 'next-label' }) nextLabel: string = 'Următor';
+  @Prop({ attribute: 'next-label' }) nextLabel?: string;
 
   /**
    * Accessible name for the navigation landmark when no `aria-label` is set on
-   * the host. Defaults to "Navigare pagini". Setting `aria-label` directly on
-   * the host also works — the consumer-supplied attribute wins and is captured
-   * on connect into `resolvedAriaLabel`, then stripped from the host to avoid
-   * Stencil's attribute-observer / render-loop antipattern (same pattern as
-   * mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb /
-   * mud-date-picker / mud-modal).
+   * the host. Overrides the `locale`'s copy when set to a non-empty string.
+   * Setting `aria-label` directly on the host also works — the consumer-supplied
+   * attribute wins and is captured on connect into `resolvedAriaLabel` (same
+   * pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion /
+   * mud-breadcrumb / mud-date-picker / mud-modal).
+   * @default 'Navigare pagini' (ro-MD)
    */
   @Prop() label?: string;
 
   /**
-   * Accessible label template for the Previous button. The `{page}` token is
-   * replaced with the target page number.
-   * @default 'Pagina anterioară, mergi la pagina {page}'
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'prev-aria-label' }) prevAriaLabel: string = 'Pagina anterioară, mergi la pagina {page}';
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label template for the Previous button. The `{page}` token is
+   * replaced with the target page number. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Pagina anterioară, mergi la pagina {page}' (ro-MD)
+   */
+  @Prop({ attribute: 'prev-aria-label' }) prevAriaLabel?: string;
 
   /**
    * Accessible label template for the Next button. The `{page}` token is
-   * replaced with the target page number.
-   * @default 'Pagina următoare, mergi la pagina {page}'
+   * replaced with the target page number. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Pagina următoare, mergi la pagina {page}' (ro-MD)
    */
-  @Prop({ attribute: 'next-aria-label' }) nextAriaLabel: string = 'Pagina următoare, mergi la pagina {page}';
+  @Prop({ attribute: 'next-aria-label' }) nextAriaLabel?: string;
 
   /**
    * Accessible label template for an individual page button. Tokens `{page}`
    * and `{total}` are substituted with the page number and total page count.
-   * @default 'Pagina {page} din {total}'
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Pagina {page} din {total}' (ro-MD)
    */
-  @Prop({ attribute: 'page-aria-label' }) pageAriaLabel: string = 'Pagina {page} din {total}';
+  @Prop({ attribute: 'page-aria-label' }) pageAriaLabel?: string;
 
   /**
    * Accessible label template for the overflow ("…") button. The `{from}`
    * and `{to}` tokens are replaced with the first and last page in the
-   * collapsed range.
-   * @default 'Arată paginile de la {from} la {to}'
+   * collapsed range. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Arată paginile de la {from} la {to}' (ro-MD)
    */
-  @Prop({ attribute: 'overflow-aria-label' }) overflowAriaLabel: string = 'Arată paginile de la {from} la {to}';
+  @Prop({ attribute: 'overflow-aria-label' }) overflowAriaLabel?: string;
 
   @State() private hasPrevIcon: boolean = false;
   @State() private hasNextIcon: boolean = false;
-  @State() private resolvedAriaLabel: string = 'Navigare pagini';
+  /** The consumer's own `aria-label` on the host, `undefined` while unset — see `observeAriaLabel`. */
+  @State() private resolvedAriaLabel?: string;
   @State() private openOverflow: OverflowKey | null = null;
   @State() private focusedOverflowIndex: number = -1;
+  /** True when the open overflow menu is flipped above its trigger (not enough room below). */
+  @State() private overflowDropUp: boolean = false;
 
   @Element() host!: HTMLMudPaginationElement;
 
@@ -150,10 +172,14 @@ export class MudPagination {
    */
   @Event() mudChange!: EventEmitter<PaginationChangeDetail>;
 
-  @Watch('label')
-  protected syncLabel(next?: string): void {
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
-  }
+  /**
+   * Runtime cap (px) on the open overflow menu, so it never runs past the
+   * viewport. Not `@State`: it reaches the stylesheet through a host custom
+   * property, so a re-render would buy nothing.
+   */
+  private overflowMaxBlockSize?: number;
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
 
   @Watch('currentPage')
   protected onCurrentPageChange(newValue: number) {
@@ -228,10 +254,28 @@ export class MudPagination {
     }
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
   componentWillLoad() {
-    this.captureAriaLabel();
     // Clamp initial values defensively (consumers may pass garbage props).
     this.currentPage = this.clampPage(this.currentPage);
+  }
+
+  componentDidRender() {
+    if (this.openOverflow !== null) this.positionOverflow();
+  }
+
+  disconnectedCallback() {
+    this.stopTrackingViewport();
+    this.stopAriaLabel?.();
+    this.stopLang?.();
   }
 
   componentDidUpdate() {
@@ -243,14 +287,25 @@ export class MudPagination {
     items[this.focusedOverflowIndex]?.focus();
   }
 
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.label && this.label.length > 0) {
-      this.resolvedAriaLabel = this.label;
-    }
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): PaginationMessages {
+    return localeMessages(
+      'mud-pagination',
+      this.host,
+      this.locale,
+      PAGINATION_MESSAGES,
+      {
+        navLabel: this.label,
+        prevLabel: this.prevLabel,
+        nextLabel: this.nextLabel,
+        prevAriaLabel: this.prevAriaLabel,
+        nextAriaLabel: this.nextAriaLabel,
+        pageAriaLabel: this.pageAriaLabel,
+        overflowAriaLabel: this.overflowAriaLabel,
+      },
+      // Visible optional captions: `""` renders nothing, as it did before the dictionary existed.
+      ['prevLabel', 'nextLabel'],
+    );
   }
 
   private clampPage(page: number): number {
@@ -299,6 +354,68 @@ export class MudPagination {
     if (this.openOverflow === null && this.focusedOverflowIndex === -1) return;
     this.openOverflow = null;
     this.focusedOverflowIndex = -1;
+    this.overflowDropUp = false;
+    this.overflowMaxBlockSize = undefined;
+    this.host.style.removeProperty('--_overflow-menu-max-block-size');
+    this.stopTrackingViewport();
+  }
+
+  private stopTrackingViewport(): void {
+    if (typeof window === 'undefined') return;
+    window.removeEventListener('resize', this.positionOverflow);
+    window.removeEventListener('scroll', this.positionOverflow, true);
+  }
+
+  /**
+   * The overflow menu opens below its trigger unless the viewport has no room
+   * for it there and more room above — then it flips up. Either way its height
+   * is capped to the room it has, so it never runs past the edge. Scheduled
+   * with readTask because componentDidRender calls it: writing state straight
+   * from the render cycle makes Stencil log a change-during-render and render
+   * twice. Same approach as mud-select's listbox.
+   */
+  private positionOverflow = (): void => {
+    if (this.openOverflow === null || typeof window === 'undefined') return;
+    readTask(() => this.measureOverflow());
+  };
+
+  private measureOverflow(): void {
+    if (this.openOverflow === null || typeof window === 'undefined') return;
+    const root = this.host.shadowRoot;
+    const trigger = root?.querySelector<HTMLElement>('.overflow-item.is-open .overflow-trigger');
+    const menu = root?.querySelector<HTMLElement>('.overflow-item.is-open .overflow-menu');
+    if (!trigger || !menu) return;
+
+    const styles = getComputedStyle(this.host);
+    const offset = parseFloat(styles.getPropertyValue('--pagination-overflow-menu-offset')) || 0;
+    const hardCap = parseFloat(styles.getPropertyValue('--pagination-overflow-menu-max-height')) || menu.scrollHeight;
+    const EDGE_MARGIN = 8; // breathing room from the viewport edge
+
+    const rect = trigger.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - offset - EDGE_MARGIN;
+    const spaceAbove = rect.top - offset - EDGE_MARGIN;
+    // scrollHeight is the full list whatever the current cap; the difference
+    // between offset and client height adds the menu's own border back.
+    // Environments without layout (mock-doc, SSR) report these as undefined;
+    // || 0 keeps a missing metric from turning every figure below into NaN.
+    const natural = (menu.scrollHeight || 0) + ((menu.offsetHeight || 0) - (menu.clientHeight || 0));
+    const wanted = Math.min(natural, hardCap);
+
+    const dropUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+    const available = dropUp ? spaceAbove : spaceBelow;
+    // Never squeeze a short menu below its own height, nor a long one below
+    // ~3 rows: a scrollable sliver is worse than touching the edge.
+    const floor = Math.min(wanted, 120);
+    const maxBlockSize = Math.round(Math.max(floor, Math.min(wanted, available)));
+
+    // Guarded writes: on scroll / resize the numbers usually repeat.
+    if (!Number.isFinite(maxBlockSize)) return;
+    if (this.overflowDropUp !== dropUp) this.overflowDropUp = dropUp;
+    if (this.overflowMaxBlockSize !== maxBlockSize) {
+      this.overflowMaxBlockSize = maxBlockSize;
+      // A host custom property, not an inline JSX style (CSP; ANTIPATTERN-001).
+      this.host.style.setProperty('--_overflow-menu-max-block-size', `${String(maxBlockSize)}px`);
+    }
   }
 
   private toggleOverflow(key: OverflowKey): void {
@@ -307,6 +424,10 @@ export class MudPagination {
     } else {
       this.openOverflow = key;
       this.focusedOverflowIndex = -1;
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.positionOverflow);
+        window.addEventListener('scroll', this.positionOverflow, true);
+      }
     }
   }
 
@@ -377,13 +498,9 @@ export class MudPagination {
     return [...startPages, ...leading, ...range(siblingsStart, siblingsEnd), ...trailing, ...endPages];
   }
 
-  private formatLabel(template: string, values: Record<string, string | number>): string {
-    return Object.entries(values).reduce((acc, [key, value]) => acc.replaceAll(`{${key}}`, String(value)), template);
-  }
-
-  private renderPageItem(page: number) {
+  private renderPageItem(page: number, m: PaginationMessages) {
     const isSelected = page === this.currentPage;
-    const ariaLabel = this.formatLabel(this.pageAriaLabel, { page, total: this.totalPages });
+    const ariaLabel = formatMessage(m.pageAriaLabel, this.host, this.locale, { page, total: this.totalPages });
     return (
       <li class="item">
         <button
@@ -399,13 +516,16 @@ export class MudPagination {
     );
   }
 
-  private renderOverflow(slot: PaginationOverflowSlot) {
+  private renderOverflow(slot: PaginationOverflowSlot, m: PaginationMessages) {
     const isOpen = this.openOverflow === slot.key;
     const from = slot.pages[0] ?? this.currentPage;
     const to = slot.pages[slot.pages.length - 1] ?? this.currentPage;
-    const triggerLabel = this.formatLabel(this.overflowAriaLabel, { from, to });
+    const triggerLabel = formatMessage(m.overflowAriaLabel, this.host, this.locale, { from, to });
     return (
-      <li class={{ 'item': true, 'overflow-item': true, 'is-open': isOpen }} key={`overflow-${slot.key}`}>
+      <li
+        class={{ 'item': true, 'overflow-item': true, 'is-open': isOpen, 'is-drop-up': isOpen && this.overflowDropUp }}
+        key={`overflow-${slot.key}`}
+      >
         <button
           type="button"
           class="overflow-trigger"
@@ -424,7 +544,10 @@ export class MudPagination {
         {isOpen ? (
           <ul class="overflow-menu" role="menu">
             {slot.pages.map((page, index) => {
-              const ariaLabel = this.formatLabel(this.pageAriaLabel, { page, total: this.totalPages });
+              const ariaLabel = formatMessage(m.pageAriaLabel, this.host, this.locale, {
+                page,
+                total: this.totalPages,
+              });
               return (
                 <li role="none" key={`overflow-${slot.key}-${page}`}>
                   <button
@@ -455,12 +578,12 @@ export class MudPagination {
     );
   }
 
-  private renderPrev() {
+  private renderPrev(m: PaginationMessages) {
     if (!this.showPrevNext) return null;
     // Per Figma "first-page" spec: hide rather than disable when on page 1.
     if (this.currentPage <= 1) return null;
     const targetPage = this.currentPage - 1;
-    const ariaLabel = this.formatLabel(this.prevAriaLabel, { page: targetPage });
+    const ariaLabel = formatMessage(m.prevAriaLabel, this.host, this.locale, { page: targetPage });
     return (
       <button
         type="button"
@@ -472,17 +595,17 @@ export class MudPagination {
           <slot name="prev-icon" onSlotchange={this.onPrevIconSlotChange} />
           {!this.hasPrevIcon ? <mud-icon name="chevron-left" size={this.size === 'sm' ? 16 : 20} /> : null}
         </span>
-        <span class="nav-label">{this.prevLabel}</span>
+        <span class="nav-label">{m.prevLabel}</span>
       </button>
     );
   }
 
-  private renderNext() {
+  private renderNext(m: PaginationMessages) {
     if (!this.showPrevNext) return null;
     // Per Figma "last-page" spec: hide rather than disable when on last page.
     if (this.currentPage >= this.totalPages) return null;
     const targetPage = this.currentPage + 1;
-    const ariaLabel = this.formatLabel(this.nextAriaLabel, { page: targetPage });
+    const ariaLabel = formatMessage(m.nextAriaLabel, this.host, this.locale, { page: targetPage });
     return (
       <button
         type="button"
@@ -490,7 +613,7 @@ export class MudPagination {
         aria-label={ariaLabel}
         onClick={this.onNextClick}
       >
-        <span class="nav-label">{this.nextLabel}</span>
+        <span class="nav-label">{m.nextLabel}</span>
         <span class="nav-icon">
           <slot name="next-icon" onSlotchange={this.onNextIconSlotChange} />
           {!this.hasNextIcon ? <mud-icon name="chevron-right" size={this.size === 'sm' ? 16 : 20} /> : null}
@@ -502,19 +625,22 @@ export class MudPagination {
   render() {
     // Hide entirely when there are no real pages to navigate.
     if (this.totalPages <= 1) {
-      return <Host aria-hidden="true" />;
+      return <Host aria-hidden="true" lang={hostLang(this.host, this.locale)} />;
     }
 
+    const m = this.messages();
+    const navLabel = this.resolvedAriaLabel ?? m.navLabel;
     const slots = this.computeRange();
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host>
-        <nav class="root" aria-label={this.resolvedAriaLabel}>
-          {this.renderPrev()}
+      <Host lang={lang}>
+        <nav class="root" aria-label={navLabel}>
+          {this.renderPrev(m)}
           <ul class="pages" role="list">
-            {slots.map(slot => (isOverflow(slot) ? this.renderOverflow(slot) : this.renderPageItem(slot)))}
+            {slots.map(slot => (isOverflow(slot) ? this.renderOverflow(slot, m) : this.renderPageItem(slot, m)))}
           </ul>
-          {this.renderNext()}
+          {this.renderNext(m)}
         </nav>
       </Host>
     );

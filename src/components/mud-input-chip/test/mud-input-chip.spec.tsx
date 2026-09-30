@@ -2,6 +2,9 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-input-chip';
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import { INPUT_CHIP_MESSAGES } from '../mud-input-chip.messages';
+import type { InputChipMessages } from '../mud-input-chip.messages';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from '../mud-input-chip.types';
 
 const queryControl = (root: Element | null | undefined): HTMLElement | null =>
@@ -293,6 +296,23 @@ describe('mud-input-chip', () => {
       const { root } = await render(<mud-input-chip label="x" chips={['a', 'b', 'c']} max-chips={3}></mud-input-chip>);
       expect(queryNative(root)?.hasAttribute('disabled')).toBe(true);
     });
+
+    it.each([
+      [1, 'ro-MD', 'Maximum 1 valoare permisă.'] as const,
+      [3, 'ro-MD', 'Maximum 3 valori permise.'] as const,
+      [21, 'ro-MD', 'Maximum 21 de valori permise.'] as const,
+    ])('maxRejectionText pluralizes {max}=%i under %s (20+ takes "de")', async (max, locale, expected) => {
+      const onError = vi.fn();
+      const chips = Array.from({ length: max }, (_, i) => `c${i}`);
+      const { root } = await render(
+        <mud-input-chip label="x" locale={locale} chips={chips} max-chips={max} onMudError={onError}></mud-input-chip>,
+      );
+      (root as unknown as { value: string }).value = 'overflow';
+      await flush();
+      pressOnInput(root, 'Enter');
+      await flush();
+      expect(onError.mock.calls[0][0].detail.message).toBe(expected);
+    });
   });
 
   describe('pattern validation', () => {
@@ -405,6 +425,7 @@ describe('mud-input-chip', () => {
       // Native label association (<label for=>) is hidden because hasVisibleLabel() is false;
       // the input carries the accessible name via aria-label.
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Destinatari');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('omits aria-label on the input when a visible label is provided', async () => {
@@ -454,4 +475,43 @@ describe('mud-input-chip', () => {
       spy.mockRestore();
     });
   });
+});
+
+describeLocales<InputChipMessages>('mud-input-chip', INPUT_CHIP_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-input-chip {...attrs}></mud-input-chip>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: () => null,
+  validity: {
+    key: 'requiredText',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-input-chip {...attrs}></mud-input-chip>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
+  unreachable: {
+    patternRejectionText:
+      'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    duplicateRejectionText:
+      'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    maxRejectionText: 'only surfaces via mudError on a rejected value — covered by the component’s own rejection tests',
+    addedAnnouncement:
+      'only renders in the live region after a chip is added — covered by the component’s own announcement tests',
+    removedAnnouncement:
+      'only renders in the live region after a chip is removed — covered by the component’s own announcement tests',
+    pastedAnnouncement:
+      'only renders in the live region after a multi-chip paste — covered by the component’s own announcement tests',
+    removeChipLabel:
+      'renders with `{chip}` already filled with the chip value, never the raw template — covered by the component’s own localized aria-label test',
+  },
 });

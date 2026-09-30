@@ -25,6 +25,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertLegacySizeLayout } from './legacy-size-layout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
@@ -202,6 +203,7 @@ async function processSize(size, dry) {
 }
 
 async function main() {
+  assertLegacySizeLayout(ASSETS_ROOT, SIZES);
   const args = parseArgs(process.argv.slice(2));
 
   console.log(

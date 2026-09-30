@@ -12,17 +12,17 @@
  *
  * Replaces AI work in:
  *   - `.claude/agents/audit-production.md` Phase 8.1 (JSDoc completeness)
- *   - `.claude/skills/audit-component/SKILL.md` Wave 2 docs check
+ *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` docs check
  *
  * Usage:
  *   node scripts/audit/04-jsdoc-completeness.mjs mud-button [--json] [--out file]
  *   node scripts/audit/04-jsdoc-completeness.mjs --all
  */
-import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import {
@@ -326,21 +326,10 @@ async function resolveTargets(args) {
   if (args.changed) {
     return listChangedComponents().map(n => resolveComponentPaths(n));
   }
-  return [resolveComponentPaths(args.component)];
+  return [resolveComponentPaths(args.component, { allowSubComponent: true })];
 }
 
-function listChangedComponents() {
-  const res = spawnSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  const names = new Set();
-  for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-    if (m) names.add(m[2]);
-  }
-  return [...names].sort();
-}
-
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

@@ -1,0 +1,318 @@
+{
+  "component": "mud-search-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "933:29110",
+        "reason": "rectangular/Hover/Large/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29622",
+        "reason": "rectangular/Hover/Medium/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29120",
+        "reason": "rectangular/Focus/Large/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "5238:17944",
+        "reason": "rectangular/Focus/Large/Button=True — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29631",
+        "reason": "rectangular/Focus/Medium/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "5238:17956",
+        "reason": "rectangular/Focus/Medium/Button=True — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29133",
+        "reason": "rectangular/Loading/Large/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "5238:17968",
+        "reason": "rectangular/Loading/Large/Button=True — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29643",
+        "reason": "rectangular/Loading/Medium/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "5238:17980",
+        "reason": "rectangular/Loading/Medium/Button=True — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29146",
+        "reason": "rectangular/Filled/Large/Button=False — pinned by rect-large-default and rect-medium-default."
+      },
+      {
+        "node": "933:29655",
+        "reason": "rectangular/Filled/Medium/Button=False — pinned by rect-large-default and rect-medium-default."
+      },
+      {
+        "node": "5238:18002",
+        "reason": "rectangular/Filled/Medium/Button=True — the submit button's own metrics are pinned by rect-large-button."
+      },
+      {
+        "node": "933:29168",
+        "reason": "rectangular/Disabled/Large/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29674",
+        "reason": "rectangular/Disabled/Medium/Button=False — the state treatments are the shared input family's (border colour, ring, surface, spinner); this manifest pins the search field's own anatomy, which those states do not move."
+      },
+      {
+        "node": "933:29731",
+        "reason": "circular/Default/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29740",
+        "reason": "circular/Hover/Large/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29749",
+        "reason": "circular/Hover/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29758",
+        "reason": "circular/Focus/Large/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19472",
+        "reason": "circular/Focus/Large/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29770",
+        "reason": "circular/Focus/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19484",
+        "reason": "circular/Focus/Medium/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29782",
+        "reason": "circular/Loading/Large/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19496",
+        "reason": "circular/Loading/Large/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29794",
+        "reason": "circular/Loading/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19508",
+        "reason": "circular/Loading/Medium/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29806",
+        "reason": "circular/Filled/Large/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19520",
+        "reason": "circular/Filled/Large/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29816",
+        "reason": "circular/Filled/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "5238:19530",
+        "reason": "circular/Filled/Medium/Button=True — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29826",
+        "reason": "circular/Disabled/Large/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      },
+      {
+        "node": "933:29834",
+        "reason": "circular/Disabled/Medium/Button=False — the circular set differs from the rectangular one only in the frame's radius, which circular-large-default pins; everything else is the same node tree."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-input-search--default",
+    "capture": {
+      "selector": "mud-search-input",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Every fixture pins the component to the 282px the Figma sets draw at (933:29100). The set hides the label (`👁️ Label` is false by default), so the fixtures name the field with `aria-label` and leave the visible label to the one state that pins its type style."
+  },
+  "states": [
+    {
+      "name": "rect-large-default",
+      "node": "933:29100",
+      "html": "<div style=\"width: 282px\"><mud-search-input aria-label=\"Caută\" placeholder=\"Placeholder\" size=\"lg\" shape=\"rectangular\"></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .control",
+          "node": "933:29104",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px",
+            "outlineWidth": "1px",
+            "outlineColor": "#D9D9D9",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 933:29104 is 48px tall, pads 0 16px, gaps 8px and strokes 1px #D9D9D9 at radius 8px over white."
+        },
+        {
+          "target": "mud-search-input .control-icon-start",
+          "node": "933:29105",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 933:29105 is the 24/search instance at 24x24."
+        },
+        {
+          "target": "mud-search-input .native",
+          "node": "933:29107",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "Figma 933:29107 is Desktop/Body/Default. Its #757575 is the placeholder colour, which lives on ::placeholder and no computed style can reach."
+        }
+      ]
+    },
+    {
+      "name": "rect-medium-default",
+      "node": "933:29613",
+      "html": "<div style=\"width: 282px\"><mud-search-input aria-label=\"Caută\" placeholder=\"Placeholder\" size=\"md\" shape=\"rectangular\"></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .control",
+          "node": "933:29617",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "12px",
+            "paddingRight": "12px",
+            "columnGap": "8px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 933:29617 drops to 40px and pads 0 12px; the gap and the radius do not change."
+        },
+        {
+          "target": "mud-search-input .control-icon-start",
+          "node": "933:29618",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 933:29618 steps the leading glyph down to 20/search."
+        },
+        {
+          "target": "mud-search-input .native",
+          "node": "933:29620",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 933:29620 steps the text down to Desktop/Body/Small."
+        }
+      ]
+    },
+    {
+      "name": "circular-large-default",
+      "node": "933:29722",
+      "html": "<div style=\"width: 282px\"><mud-search-input aria-label=\"Caută\" placeholder=\"Placeholder\" size=\"lg\" shape=\"circular\"></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .control",
+          "node": "933:29726",
+          "styles": {
+            "borderTopLeftRadius": "9999px",
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px"
+          },
+          "note": "Figma 933:29726 is the rectangular frame with radius 999px — the only difference between the two sets. The token resolves to 9999px; both exceed half the height, so Chromium clamps them to the same pill."
+        }
+      ]
+    },
+    {
+      "name": "rect-large-button",
+      "node": "5238:17992",
+      "html": "<div style=\"width: 282px\"><mud-search-input aria-label=\"Caută\" placeholder=\"Placeholder\" size=\"lg\" shape=\"rectangular\" with-button value=\"Placeholder\"></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .control",
+          "node": "5238:17996",
+          "styles": {
+            "paddingLeft": "16px",
+            "paddingRight": "4px",
+            "boxHeight": "48px"
+          },
+          "note": "Figma 5238:17996 shrinks the trailing padding to 4px when the submit button is shown, so the 40px button sits 4px from the frame's inner edge."
+        },
+        {
+          "target": "mud-search-input .submit-button",
+          "node": "5238:19374",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#0058D2",
+            "borderTopLeftRadius": "6px"
+          },
+          "note": "Figma 5238:19374 is button-filled-rectangular Style=Primary / Icon=Only / Size=Medium: 40x40, #0058D2, radius 6px."
+        },
+        {
+          "target": "mud-search-input .clear-button",
+          "node": "5238:18000",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px",
+            "backgroundColor": "rgba(18, 18, 18, 0.1)",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 5238:18000 is the shared text-input/.clear-button: a 20px pill filled rgba(18, 18, 18, 0.1) around a 16px cross."
+        },
+        {
+          "target": "mud-search-input .native",
+          "node": "5238:17999",
+          "styles": {
+            "color": "#121212"
+          },
+          "note": "Figma 5238:17999 darkens the entered text to #121212."
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "node": "933:29101",
+      "pixel": false,
+      "pixelNote": "Every variant in the set hides the label (`👁️ Label` is false by default), so no export shows it and there is nothing to diff against. Its type style still comes from the node.",
+      "html": "<div style=\"width: 282px\"><mud-search-input size=\"lg\" label=\"Label\" placeholder=\"Placeholder\"></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .label",
+          "node": "933:29102",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838",
+            "columnGap": "4px"
+          },
+          "note": "Figma 933:29102 is Desktop/Body/Small in #383838; 933:29101 gaps the label and its asterisk by 4px."
+        },
+        {
+          "target": "mud-search-input",
+          "node": "933:29100",
+          "styles": {
+            "rowGap": "8px"
+          },
+          "note": "Figma 933:29100 stacks label, input and assistive text 8px apart."
+        }
+      ]
+    }
+  ]
+}

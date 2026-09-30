@@ -10,6 +10,7 @@
 import tseslint from 'typescript-eslint';
 import stencil from '@stencil/eslint-plugin';
 import prettierConfig from 'eslint-config-prettier/flat';
+import noHardcodedCopy from './scripts/eslint/no-hardcoded-copy.mjs';
 
 export default tseslint.config(
   {
@@ -18,7 +19,6 @@ export default tseslint.config(
       'www/**',
       'loader/**',
       'storybook-static/**',
-      'src/legacy/**',
       '**/*.md',
       '**/*.css',
       'src/components.d.ts',
@@ -44,19 +44,34 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Stencil-plugin rules — explicit opt-out (the plugin's own `flat.recommended`
-      // would turn many of these on; we register the plugin manually and only
-      // enable `no-unused-watch`).
+      // Stencil-plugin rules — the plugin is registered manually, not through its
+      // `flat.recommended`, whose getter requires the optional peer `eslint-plugin-react`,
+      // which is not installed. Enabled: the rules measured at 0 violations (element-type
+      // after typing five `@Element()` fields) plus `no-unused-watch`; the rest are off.
       '@stencil/strict-mutable': 'off',
       '@stencil/decorators-context': 'off',
       '@stencil/ban-exported-const-enums': 'off',
       '@stencil/own-methods-must-be-private': 'off',
       '@stencil/strict-boolean-conditions': 'off',
       '@stencil/no-unused-watch': 'warn',
+      '@stencil/async-methods': 'error',
+      '@stencil/element-type': 'error',
+      '@stencil/render-returns-host': 'error',
+      '@stencil/single-export': 'error',
+      '@stencil/props-must-be-public': 'error',
+      '@stencil/methods-must-be-public': 'error',
+      // Components read the native `aria-label` instead of an `ariaLabel` prop (#88); the rule's
+      // case-insensitive false positives carry a line-level disable with the measured reason.
+      '@stencil/reserved-member-names': 'error',
       '@stencil/required-jsdoc': 'off',
       '@stencil/dependency-suggestions': 'off',
 
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // _agents/typescript-strict.md Rule 6. Autofixable except `import('…')` type annotations.
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-require-imports': 'warn',
@@ -92,4 +107,21 @@ export default tseslint.config(
   },
 
   prettierConfig,
+
+  // Issue #163's guard, wired in at `error` once every component (Phases 1-5) migrated to
+  // the locale/dictionary model — kept in its own file (`scripts/eslint/no-hardcoded-copy.mjs`)
+  // so `scripts/eslint/copy.config.mjs` can run it standalone during earlier phases. Appended
+  // last per the plan's Global constraints (away from the `src/legacy/**` ignore above and the
+  // open-PR comment near it); it carries no style rule, so `prettierConfig` staying the
+  // previous entry is still effectively "last" for the concern that comment protects.
+  {
+    files: ['src/components/**/*.tsx'],
+    ignores: ['src/components/**/*.spec.tsx', 'src/components/**/*.stories.tsx'],
+    plugins: {
+      mud: { rules: { 'no-hardcoded-copy': noHardcodedCopy } },
+    },
+    rules: {
+      'mud/no-hardcoded-copy': 'error',
+    },
+  },
 );

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { MUD_LOCALES } from '../../utils/locale';
 import { INPUT_CHIP_SIZES, INPUT_CHIP_VARIANTS } from './mud-input-chip.types';
 import type { InputChipSize, InputChipVariant } from './mud-input-chip.types';
 
@@ -11,6 +12,7 @@ type InputChipArgs = {
   helperText: string;
   errorText: string;
   chips: string;
+  locale: string;
   required: boolean;
   disabled: boolean;
   readonly: boolean;
@@ -33,6 +35,7 @@ const docsSourceDefault = (args: InputChipArgs) => {
     args.separators !== ',' ? `separators="${args.separators}"` : '',
     args.maxChips ? `max-chips="${args.maxChips}"` : '',
     args.validatePattern ? `validate-pattern="${args.validatePattern}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
@@ -44,7 +47,7 @@ const docsSourceDefault = (args: InputChipArgs) => {
 };
 
 const meta: Meta<InputChipArgs> = {
-  title: 'Atoms/Input/Chip',
+  title: 'Components/Input/Chip',
   component: 'mud-input-chip',
   argTypes: {
     variant: {
@@ -70,6 +73,11 @@ const meta: Meta<InputChipArgs> = {
     separators: { control: 'text', description: 'Characters that confirm a chip (plus Enter).' },
     maxChips: { control: 'number', description: 'Max chips allowed.' },
     validatePattern: { control: 'text', description: 'Regex pattern each chip must match.' },
+    locale: {
+      control: 'select',
+      options: ['', ...MUD_LOCALES],
+      description: 'Language of every built-in message. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
@@ -117,6 +125,7 @@ export const Default: Story = {
       separators="${args.separators}"
       ${args.maxChips ? `max-chips="${args.maxChips}"` : ''}
       ${args.validatePattern ? `validate-pattern="${args.validatePattern}"` : ''}
+      ${args.locale ? `locale="${args.locale}"` : ''}
       ${args.required ? 'required' : ''}
       ${args.disabled ? 'disabled' : ''}
       ${args.readonly ? 'readonly' : ''}
@@ -126,14 +135,15 @@ export const Default: Story = {
   args: {
     variant: 'default',
     size: 'lg',
-    label: 'Destinatari',
-    placeholder: 'Adaugă o adresă și apasă Enter',
-    helperText: 'Apasă Enter sau virgulă după fiecare adresă.',
+    label: 'Recipients',
+    placeholder: 'Add an address and press Enter',
+    helperText: 'Press Enter or comma after each address.',
     errorText: '',
     chips: '',
     separators: ',',
     maxChips: 0,
     validatePattern: '',
+    locale: '',
     required: false,
     disabled: false,
     readonly: false,
@@ -169,9 +179,9 @@ export const WithChips: Story = {
         <mud-input-chip
           id="story-with-chips"
           size="lg"
-          label="Destinatari"
-          placeholder="Adaugă altă adresă"
-          helper-text="Apasă Enter pentru a confirma."
+          label="Recipients"
+          placeholder="Add another address"
+          helper-text="Press Enter to confirm."
         ></mud-input-chip>
         ${preloadChips('#story-with-chips', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md'])}
       </div>
@@ -188,7 +198,7 @@ export const AllVariants: Story = {
         return cell(
           variant,
           /*html*/ `
-            <mud-input-chip id="${id}" variant="${variant}" size="lg" label="Destinatari" placeholder="Adaugă adresă"></mud-input-chip>
+            <mud-input-chip id="${id}" variant="${variant}" size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>
             ${preloadChips(`#${id}`, ['ana@gov.md', 'ion@gov.md'])}
           `,
         );
@@ -206,7 +216,7 @@ export const AllSizes: Story = {
         return cell(
           size,
           /*html*/ `
-            <mud-input-chip id="${id}" size="${size}" label="Destinatari" placeholder="Adaugă adresă"></mud-input-chip>
+            <mud-input-chip id="${id}" size="${size}" label="Recipients" placeholder="Add address"></mud-input-chip>
             ${preloadChips(`#${id}`, ['ana@gov.md', 'ion@gov.md'])}
           `,
         );
@@ -222,39 +232,39 @@ export const States: Story = {
       [
         cell(
           'default (empty)',
-          /*html*/ `<mud-input-chip size="lg" label="Destinatari" placeholder="Adaugă adresă"></mud-input-chip>`,
+          /*html*/ `<mud-input-chip size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>`,
         ),
         (() => {
           const id = 'iv-state-filled';
           return cell(
             'filled (3 chips)',
             /*html*/ `
-              <mud-input-chip id="${id}" size="lg" label="Destinatari" placeholder="Adaugă altă adresă"></mud-input-chip>
+              <mud-input-chip id="${id}" size="lg" label="Recipients" placeholder="Add another address"></mud-input-chip>
               ${preloadChips(`#${id}`, ['ana@gov.md', 'ion@gov.md', 'maria@gov.md'])}
             `,
           );
         })(),
         cell(
           'mandatory',
-          /*html*/ `<mud-input-chip size="lg" label="Destinatari" required placeholder="Câmp obligatoriu"></mud-input-chip>`,
+          /*html*/ `<mud-input-chip size="lg" label="Recipients" required placeholder="This field is required"></mud-input-chip>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<mud-input-chip size="lg" label="Destinatari" disabled placeholder="Adaugă adresă"></mud-input-chip>`,
+          /*html*/ `<mud-input-chip size="lg" label="Recipients" disabled placeholder="Add address"></mud-input-chip>`,
         ),
         (() => {
           const id = 'iv-state-disabled-filled';
           return cell(
             'disabled (with chips)',
             /*html*/ `
-              <mud-input-chip id="${id}" size="lg" label="Destinatari" disabled></mud-input-chip>
+              <mud-input-chip id="${id}" size="lg" label="Recipients" disabled></mud-input-chip>
               ${preloadChips(`#${id}`, ['ana@gov.md', 'ion@gov.md'])}
             `,
           );
         })(),
         cell(
           'destructive',
-          /*html*/ `<mud-input-chip variant="destructive" size="lg" label="Destinatari" placeholder="Adaugă adresă"></mud-input-chip>`,
+          /*html*/ `<mud-input-chip variant="destructive" size="lg" label="Recipients" placeholder="Add address"></mud-input-chip>`,
         ),
       ].join(''),
     ),
@@ -268,9 +278,9 @@ export const WithEmailValidation: Story = {
       <mud-input-chip
         id="story-email"
         size="lg"
-        label="Destinatari (e-mail)"
+        label="Recipients (e-mail)"
         placeholder="ex: ana@gov.md, ion@gov.md"
-        helper-text="Doar adrese valide sunt acceptate."
+        helper-text="Only valid addresses are accepted."
         validate-pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
       ></mud-input-chip>
       ${preloadChips('#story-email', ['ana@gov.md'])}
@@ -286,17 +296,17 @@ export const WithMaxChips: Story = {
       <mud-input-chip
         id="story-max"
         size="lg"
-        label="Destinatari (max 3)"
-        placeholder="Apasă Enter pentru a adăuga"
-        helper-text="Maximum 3 destinatari."
+        label="Recipients (max 3)"
+        placeholder="Press Enter to add"
+        helper-text="At most 3 recipients."
         max-chips="3"
       ></mud-input-chip>
       ${preloadChips('#story-max', ['ana@gov.md', 'ion@gov.md'])}
       <mud-input-chip
         id="story-max-reached"
         size="lg"
-        label="Destinatari (limita atinsă)"
-        helper-text="Limita de 3 destinatari atinsă — câmpul este blocat."
+        label="Recipients (limit reached)"
+        helper-text="The limit of 3 recipients is reached — the field is locked."
         max-chips="3"
       ></mud-input-chip>
       ${preloadChips('#story-max-reached', ['ana@gov.md', 'ion@gov.md', 'maria@gov.md'])}
@@ -314,9 +324,9 @@ export const WithSeparators: Story = {
           'separators=",;"',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Etichete"
-            placeholder="Apasă , sau ; sau Enter"
-            helper-text="Acceptă virgulă și punct-virgulă."
+            label="Labels"
+            placeholder="Press , or ; or Enter"
+            helper-text="Comma and semicolon are accepted."
             separators=",;"
           ></mud-input-chip>`,
         ),
@@ -324,9 +334,9 @@ export const WithSeparators: Story = {
           'separators=" "',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Cuvinte cheie"
-            placeholder="Apasă Spațiu între cuvinte"
-            helper-text="Apasă Spațiu sau Enter."
+            label="Keywords"
+            placeholder="Press Space between words"
+            helper-text="Press Space or Enter."
             separators=" "
           ></mud-input-chip>`,
         ),
@@ -342,11 +352,11 @@ export const DuplicateRejection: Story = {
       <mud-input-chip
         id="story-dup"
         size="lg"
-        label="Etichete unice"
-        placeholder="Încearcă să adaugi ‘moldova’ din nou"
-        helper-text="Valorile duplicate sunt ignorate."
+        label="Unique labels"
+        placeholder="Try adding ‘moldova’ again"
+        helper-text="Duplicate values are ignored."
       ></mud-input-chip>
-      ${preloadChips('#story-dup', ['moldova', 'cetățenie', 'identitate'])}
+      ${preloadChips('#story-dup', ['moldova', 'citizenship', 'identity'])}
     </div>
   `,
   parameters: { controls: { disable: true } },
@@ -361,19 +371,19 @@ export const WithHelperText: Story = {
           'default',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Destinatari"
-            helper-text="Apasă Enter după fiecare adresă."
-            placeholder="Adresă"
+            label="Recipients"
+            helper-text="Press Enter after each address."
+            placeholder="Address"
           ></mud-input-chip>`,
         ),
         cell(
           'mandatory',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Destinatari"
+            label="Recipients"
             required
-            helper-text="Câmp obligatoriu — cel puțin un destinatar."
-            placeholder="Adresă"
+            helper-text="This field is required — at least one recipient."
+            placeholder="Address"
           ></mud-input-chip>`,
         ),
       ].join(''),
@@ -390,10 +400,10 @@ export const WithError: Story = {
           'invalid + error',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Destinatari"
+            label="Recipients"
             invalid
-            error-text="Trebuie să adăugați cel puțin un destinatar"
-            placeholder="Adresă"
+            error-text="Add at least one recipient"
+            placeholder="Address"
           ></mud-input-chip>`,
         ),
         (() => {
@@ -405,9 +415,9 @@ export const WithError: Story = {
                 id="${id}"
                 variant="destructive"
                 size="lg"
-                label="Destinatari"
+                label="Recipients"
                 invalid
-                error-text="Formatul nu este corect"
+                error-text="The format is not correct"
               ></mud-input-chip>
               ${preloadChips(`#${id}`, ['ana@gov.md'])}
             `,
@@ -425,9 +435,9 @@ export const Wrapping: Story = {
       <mud-input-chip
         id="story-wrap"
         size="lg"
-        label="Destinatari (mulți)"
-        helper-text="Chip-urile se aliniază pe mai multe rânduri."
-        placeholder="Adaugă altă adresă"
+        label="Recipients (many)"
+        helper-text="Chips wrap onto several rows."
+        placeholder="Add another address"
       ></mud-input-chip>
       ${preloadChips('#story-wrap', [
         'ana@gov.md',
@@ -453,7 +463,7 @@ export const EdgeCases: Story = {
           return cell(
             'very long chip (truncates)',
             /*html*/ `
-              <mud-input-chip id="${id}" size="lg" label="Etichetă lungă" placeholder="Adaugă altă valoare"></mud-input-chip>
+              <mud-input-chip id="${id}" size="lg" label="Long label" placeholder="Add another value"></mud-input-chip>
               ${preloadChips(`#${id}`, ['moldova-digital-transformation-strategy-2025-2030-final-version-approved'])}
             `,
           );
@@ -463,16 +473,16 @@ export const EdgeCases: Story = {
           /*html*/ `<mud-input-chip
             size="lg"
             label="Moldova's digital evolution requires that you list every authorised representative in this submission"
-            placeholder="Adaugă"
+            placeholder="Add"
           ></mud-input-chip>`,
         ),
         cell(
           'long helper truncation (two lines)',
           /*html*/ `<mud-input-chip
             size="lg"
-            label="Destinatari"
-            helper-text="Acceptăm doar adrese de e-mail valide, cu domeniu instituțional moldovenesc; introduceți câte o adresă, apoi apăsați Enter sau virgulă pentru confirmare; valorile duplicate sunt ignorate"
-            placeholder="Adresă"
+            label="Recipients"
+            helper-text="Only valid e-mail addresses with a Moldovan institutional domain are accepted; enter one address at a time, then press Enter or comma to confirm; duplicate values are ignored"
+            placeholder="Address"
           ></mud-input-chip>`,
         ),
       ].join(''),

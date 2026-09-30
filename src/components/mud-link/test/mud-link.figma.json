@@ -1,0 +1,454 @@
+{
+  "component": "mud-link",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "564:19439",
+        "reason": "White/14: Small/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "564:19561",
+        "reason": "Strict/14: Small/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "54:401",
+        "reason": "Primary/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19442",
+        "reason": "White/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19564",
+        "reason": "Strict/14: Small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "255:6491",
+        "reason": "Primary/14: Small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19445",
+        "reason": "White/14: Small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19567",
+        "reason": "Strict/14: Small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "57:456",
+        "reason": "Primary/14: Small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19448",
+        "reason": "White/14: Small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19570",
+        "reason": "Strict/14: Small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19451",
+        "reason": "White/12: Extra-small/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "564:19573",
+        "reason": "Strict/12: Extra-small/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "54:404",
+        "reason": "Primary/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19454",
+        "reason": "White/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19576",
+        "reason": "Strict/12: Extra-small/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "255:6494",
+        "reason": "Primary/12: Extra-small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19457",
+        "reason": "White/12: Extra-small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19579",
+        "reason": "Strict/12: Extra-small/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "57:459",
+        "reason": "Primary/12: Extra-small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19460",
+        "reason": "White/12: Extra-small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19582",
+        "reason": "Strict/12: Extra-small/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19463",
+        "reason": "White/16: Medium/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "564:19585",
+        "reason": "Strict/16: Medium/Default — Style x Size is separable in this set: the Style axis only repaints the text and the underline, pinned by strict-lg (564:19597) and white-lg (564:19475), and the Size axis only moves the type ramp, pinned by default-md, default-sm and default-xs."
+      },
+      {
+        "node": "54:407",
+        "reason": "Primary/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19466",
+        "reason": "White/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "564:19588",
+        "reason": "Strict/16: Medium/Hover — Hover thickens the underline to 1.5px and keeps the resting colour; that is the whole state. All three Styles are now pinned at Large — hover-lg (54:410), strict-hover-lg (564:19600), white-hover-lg (564:19478) — and Size only moves the type ramp, which the four Default states cover."
+      },
+      {
+        "node": "255:6497",
+        "reason": "Primary/16: Medium/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19469",
+        "reason": "White/16: Medium/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19591",
+        "reason": "Strict/16: Medium/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "57:462",
+        "reason": "Primary/16: Medium/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19472",
+        "reason": "White/16: Medium/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19594",
+        "reason": "Strict/16: Medium/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "255:6500",
+        "reason": "Primary/18: Large/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19481",
+        "reason": "White/18: Large/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19603",
+        "reason": "Strict/18: Large/Visited — Not reachable: a page cannot mark its own links visited, so no automated browser can enter the state, and CSS restricts :visited to colour properties — the 1.5px visited underline this variant draws (e.g. 255:6502) cannot be expressed at all. The colour #AA18CE is carried by the token link.primary.label.visited."
+      },
+      {
+        "node": "564:19484",
+        "reason": "White/18: Large/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      },
+      {
+        "node": "564:19606",
+        "reason": "Strict/18: Large/Focus — Focus adds the Focus Ring/Small effect and changes nothing else; focus-lg (57:465) pins it. The ring does not vary with Style or Size in this set."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-link--default",
+    "capture": {
+      "selector": "mud-link",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "default-lg",
+      "node": "53:631",
+      "html": "<mud-link href=\"#\" size=\"lg\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "18px",
+            "lineHeight": "28px",
+            "fontWeight": "400",
+            "color": "#0058D2",
+            "boxHeight": "28px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 53:632 is the label in 18/28 at #0058D2, and 53:633 is the underline frame: a 35x1 rectangle, so the decoration is 1px thick. Its y inside the box is not a computed property — CSS places the underline relative to the baseline, not the line box — so the pixel diff is what checks the position."
+        }
+      ]
+    },
+    {
+      "name": "default-md",
+      "node": "53:628",
+      "html": "<mud-link href=\"#\" size=\"md\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400",
+            "color": "#0058D2",
+            "boxHeight": "24px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 53:629 is the label in 16/24 at #0058D2, and 53:630 is the underline frame: a 31x1 rectangle, so the decoration is 1px thick. Its y inside the box is not a computed property — CSS places the underline relative to the baseline, not the line box — so the pixel diff is what checks the position."
+        }
+      ]
+    },
+    {
+      "name": "default-sm",
+      "node": "53:622",
+      "html": "<mud-link href=\"#\" size=\"sm\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#0058D2",
+            "boxHeight": "20px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 53:623 is the label in 14/20 at #0058D2, and 53:624 is the underline frame: a 27x1 rectangle, so the decoration is 1px thick. Its y inside the box is not a computed property — CSS places the underline relative to the baseline, not the line box — so the pixel diff is what checks the position."
+        }
+      ]
+    },
+    {
+      "name": "default-xs",
+      "node": "53:625",
+      "html": "<mud-link href=\"#\" size=\"xs\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#0058D2",
+            "boxHeight": "16px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 53:626 is the label in 12/16 at #0058D2, and 53:627 is the underline frame: a 23x1 rectangle, so the decoration is 1px thick. Its y inside the box is not a computed property — CSS places the underline relative to the baseline, not the line box — so the pixel diff is what checks the position."
+        }
+      ]
+    },
+    {
+      "name": "hover-lg",
+      "node": "54:410",
+      "html": "<mud-link href=\"#\" size=\"lg\">Link</mud-link>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#0058D2",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1.5px"
+          },
+          "note": "Figma 54:412 is the hover underline frame at 35x1.5, against 35x1 at rest (53:633); the label 54:411 keeps #0058D2, so the underline is the only hover affordance."
+        }
+      ]
+    },
+    {
+      "name": "focus-lg",
+      "node": "57:465",
+      "pixel": false,
+      "pixelNote": "Out of the pixel diff, measured rather than assumed. Figma's text node for \"Link\" is 35 CSS px wide and Chromium advances the same string, font and size to 34: the glyph ink is identical in both exports (33 CSS px, measured column by column), so Figma reserves about half a pixel of extra side bearing and rounds the box up. Every state reports that as PIXEL-SIZE-MISMATCH and shrugs it off, because their ink ends before the edge — but the focus ring hugs the box, so the reference paints that extra column solid #3379DB for the full height and the diff counts 136 of its 260 pixels there, 2.4% of the canvas on its own. The ring is pinned exactly by style parity instead (boxShadow, borderTopLeftRadius) and by the export's own geometry: 82x68 at scale 2 is the 35x28 label box with a 3px bleed on every side.",
+      "html": "<mud-link href=\"#\" size=\"lg\">Link</mud-link>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px",
+            "borderTopLeftRadius": "0px",
+            "color": "#0058D2",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 57:465 carries the effect Focus Ring/Small, listed as 0px 0px 0px 3px rgba(51,121,219,1), 0px 0px 0px 1px rgba(255,255,255,1). Figma stacks those spreads: the render is a 1px white halo with the blue band ending 3px out, so in CSS the order reverses and the outer spread is the total 3px, not 1px + 3px. The underline stays 1px (57:467), as at rest. The ring has square corners: 57:465 carries no corner radius, and the exported node shows solid blue into the corner pixel — so the container radius is 0."
+        }
+      ]
+    },
+    {
+      "name": "strict-lg",
+      "node": "564:19597",
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"strict\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "18px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 564:19598 paints the Strict label #121212 and 564:19599 the underline in the same ink; the type ramp is unchanged from Primary."
+        }
+      ]
+    },
+    {
+      "name": "white-lg",
+      "node": "564:19475",
+      "pixel": false,
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"white\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#FFFFFF",
+            "fontSize": "18px",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px"
+          },
+          "note": "Figma 564:19476 paints the White label #FFFFFF and 564:19477 the underline in the same white. Out of the pixel diff on purpose: the Figma export is transparent around the glyphs and both images are flattened onto the page background, so white-on-white would compare two blank canvases and report a pass that means nothing. The colour is checked here instead."
+        }
+      ]
+    },
+    {
+      "name": "underline-none-lg",
+      "node": "661:7017",
+      "html": "<mud-link href=\"#\" size=\"lg\" underline=\"none\">Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "textDecorationLine": "none",
+            "color": "#0058D2",
+            "fontSize": "18px"
+          },
+          "note": "The Underline options section (661:6990) shows the set twice, labelled \"underline\" and \"underline-none\". 661:7017 is the second: the same Primary/Large component with the boolean property off, so the underline frame is not drawn and the label keeps #0058D2."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-lg",
+      "node": "661:7043",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"lg\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 2px halo around the 28px label box of 661:7043 — 28 + 2x2 = 32. The rendered gap above and below the label measures 2px, so the halo matches. Touch (40px, halo 6px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-md",
+      "node": "661:7047",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"md\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 4px halo around the 24px label box of 661:7047 — 24 + 2x4 = 32. The rendered gap above and below the label measures 4px, so the halo matches. Touch (40px, halo 8px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-sm",
+      "node": "661:7051",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"sm\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 6px halo around the 20px label box of 661:7051 — 20 + 2x6 = 32. The rendered gap above and below the label measures 6px, so the halo matches. Touch (40px, halo 10px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "target-pointer-xs",
+      "node": "661:7055",
+      "pixel": false,
+      "pixelNote": "The Figma node is a documentation instance wearing a translucent #2F56FF overlay that marks the hit area, not something the component paints, so there is nothing to compare pixel for pixel. The height it annotates is pinned below.",
+      "html": "<mud-link href=\"#\" size=\"xs\" standalone>Link</mud-link>",
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "boxHeight": "32px"
+          },
+          "note": "Figma's Target Sizes section (661:7040) says \"the touch target should be increased to 32px\" on pointer devices and draws it as a 8px halo around the 16px label box of 661:7055 — 16 + 2x8 = 32. The rendered gap above and below the label measures 8px, so the halo matches. Touch (40px, halo 12px, node in the second row of the same section) cannot be pinned here — the manifest has no way to emulate pointer: coarse — and was measured in Chromium under touch emulation instead."
+        }
+      ]
+    },
+    {
+      "name": "strict-hover-lg",
+      "node": "564:19600",
+      "pixel": false,
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"strict\">Link</mud-link>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#121212",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1.5px"
+          },
+          "note": "Figma 564:19601 keeps the Strict label at #121212 on hover — the same ink as at rest (564:19598) — and 564:19602 thickens the underline to 1.5px. The colour is not part of the hover affordance in any Style: Primary keeps #0058D2 the same way."
+        }
+      ]
+    },
+    {
+      "name": "white-hover-lg",
+      "node": "564:19478",
+      "pixel": false,
+      "html": "<mud-link href=\"#\" size=\"lg\" variant=\"white\">Link</mud-link>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-link .control"
+      },
+      "expect": [
+        {
+          "target": "mud-link .control",
+          "styles": {
+            "color": "#FFFFFF",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1.5px"
+          },
+          "note": "Figma 564:19479 keeps the White label at #FFFFFF on hover, 564:19480 thickens the underline to 1.5px. Out of the pixel diff for the same reason as white-lg: the export is transparent around white glyphs and both images flatten onto the page background."
+        }
+      ]
+    }
+  ]
+}

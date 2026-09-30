@@ -42,7 +42,33 @@ List missing files.
 
 ## Step 3: Run Full Audit
 
-Invoke `/audit-component $ARGUMENTS` (or follow `audit-component.md` steps inline if calling another slash command isn't supported in your harness).
+Run the deterministic gate:
+
+```bash
+yarn audit:component $ARGUMENTS --depth deep --json
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Any non-zero exit —
+STOP; read `audit/$ARGUMENTS/verdict.json` (`state`, `level`) and
+`audit/$ARGUMENTS/fix-brief.md` for every entry. The verdict never waits on an
+AI leg: at `deep` they are advisory (Decision 12,
+`2026-09-22-audit-depths-sentinel-fixes.md`). For their judgment, invoke the skill's
+[§ AI legs](../skills/audit-component/SKILL.md) with the run the gate above
+already wrote, so it never starts a second fresh run:
+
+```text
+Skill('audit-component', { args: '$ARGUMENTS --depth deep --run-dir <components[].runDir from audit/_run/summary.json>' })
+```
+
+Each leg writes
+`<runDir>/ai/<leg>/ai-findings.json`, where `<runDir>` is `components[].runDir`
+in `audit/_run/summary.json`. Then re-render the brief so those findings appear
+under "Advisory":
+
+```bash
+yarn audit:component --rerender $ARGUMENTS --json
+```
 
 The audit identifies all issues across structure, tokens, CSS, TypeScript, accessibility, security, performance, stories, tests.
 
@@ -128,11 +154,10 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 
 `yarn sp.build` regenerates these tracked files in your worktree:
 
-- `src/components.d.ts`
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. `src/components.d.ts` is regenerated too but git-ignored, so it is never staged. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Step 11: Human Approval Gate
 

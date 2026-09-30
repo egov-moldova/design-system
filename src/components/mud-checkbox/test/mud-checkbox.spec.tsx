@@ -2,7 +2,10 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-checkbox';
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { CHECKBOX_SIZES } from '../mud-checkbox.types';
+import { CHECKBOX_MESSAGES } from '../mud-checkbox.messages';
+import type { CheckboxMessages } from '../mud-checkbox.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -123,7 +126,8 @@ describe('mud-checkbox', () => {
       const { root } = await render(<mud-checkbox label="x" invalid error-text="Câmp obligatoriu."></mud-checkbox>);
       const error = root?.shadowRoot?.querySelector('.error');
       expect(error).toBeTruthy();
-      expect(error?.querySelector('.error-icon')?.getAttribute('name')).toBe('circle-error-filled');
+      expect(error?.querySelector('.error-icon')?.getAttribute('name')).toBe('circle-error');
+      expect(error?.querySelector('.error-icon')?.getAttribute('variant')).toBe('filled');
       expect(error?.querySelector('.error-text')?.textContent).toContain('Câmp obligatoriu.');
     });
 
@@ -205,16 +209,31 @@ describe('mud-checkbox', () => {
     it('uses explicit aria-label when no visible label is rendered', async () => {
       const { root } = await render(<mud-checkbox aria-label="Selectează rândul"></mud-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Selectează rândul');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
-    it('falls back to the label prop as input aria-label when no slot + no aria-label', async () => {
-      const { root } = await render(<mud-checkbox label="Fallback nume"></mud-checkbox>);
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Fallback nume');
+    it('renders the label prop as visible text that names the input', async () => {
+      const { root } = await render(<mud-checkbox label="Nume vizibil"></mud-checkbox>);
+      const label = root?.shadowRoot?.querySelector('.label');
+      expect(label?.textContent?.trim()).toBe('Nume vizibil');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBe(label?.id);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
-    it('explicit aria-label wins over the label prop', async () => {
-      const { root } = await render(<mud-checkbox label="ignored" aria-label="winning"></mud-checkbox>);
+    it('renders the supportingText prop and describes the input with it', async () => {
+      const { root } = await render(
+        <mud-checkbox label="Date" supporting-text="Acord pentru prelucrare."></mud-checkbox>,
+      );
+      const supporting = root?.shadowRoot?.querySelector('.supporting');
+      expect(supporting?.textContent?.trim()).toBe('Acord pentru prelucrare.');
+      expect(root?.classList.contains('has-supporting')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(supporting?.id);
+    });
+
+    it('explicit aria-label overrides the visible label as the accessible name', async () => {
+      const { root } = await render(<mud-checkbox label="vizibil" aria-label="winning"></mud-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('winning');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeNull();
     });
   });
 
@@ -253,9 +272,13 @@ describe('mud-checkbox', () => {
       expect(root?.classList.contains('has-label')).toBe(true);
     });
 
-    it('omits has-label when no slot is set (even if `label` prop is set)', async () => {
-      // Slot-first contract: prop alone does NOT toggle has-label.
-      const { root } = await render(<mud-checkbox label="not-rendered"></mud-checkbox>);
+    it('adds has-label for the label prop alone', async () => {
+      const { root } = await render(<mud-checkbox label="rendered"></mud-checkbox>);
+      expect(root?.classList.contains('has-label')).toBe(true);
+    });
+
+    it('omits has-label with neither a label prop nor a slot', async () => {
+      const { root } = await render(<mud-checkbox aria-label="doar nume"></mud-checkbox>);
       expect(root?.classList.contains('has-label')).toBe(false);
     });
 
@@ -504,4 +527,29 @@ describe('mud-checkbox', () => {
       expect((root as unknown as { checked: boolean }).checked).toBe(true);
     });
   });
+});
+
+describeLocales<CheckboxMessages>('mud-checkbox', CHECKBOX_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-checkbox {...attrs}></mud-checkbox>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: () => null,
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-checkbox {...attrs}></mud-checkbox>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
 });

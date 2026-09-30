@@ -21,6 +21,7 @@ type NumericInputArgs = {
   invalid: boolean;
   loading: boolean;
   showSteppers: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -44,6 +45,7 @@ const renderNumericInput = (args: NumericInputArgs) => /*html*/ `
     ${args.invalid ? 'invalid' : ''}
     ${args.loading ? 'loading' : ''}
     ${args.showSteppers ? '' : 'show-steppers="false"'}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-numeric-input>
 `;
 
@@ -66,6 +68,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
     args.invalid ? 'invalid' : '',
     args.loading ? 'loading' : '',
     args.showSteppers ? '' : 'show-steppers="false"',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -73,7 +76,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
 };
 
 const meta: Meta<NumericInputArgs> = {
-  title: 'Atoms/Input/Numeric',
+  title: 'Components/Input/Numeric',
   component: 'mud-numeric-input',
   argTypes: {
     variant: {
@@ -104,6 +107,12 @@ const meta: Meta<NumericInputArgs> = {
     invalid: { control: 'boolean' },
     loading: { control: 'boolean', description: 'Renders a brand spinner in place of the stepper stack.' },
     showSteppers: { control: 'boolean', description: 'Render the stacked stepper buttons.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description:
+        'BCP-47 locale for thousands-grouping and the built-in copy. Grouping stays off when unset; copy follows the closest ancestor `lang`, else `ro-MD`.',
+    },
   },
 };
 
@@ -131,6 +140,7 @@ export const Default: Story = {
     invalid: false,
     loading: false,
     showSteppers: true,
+    locale: '',
   },
   parameters: {
     docs: {
@@ -168,8 +178,8 @@ export const AllVariants: Story = {
       NUMERIC_INPUT_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<mud-numeric-input variant="${variant}" size="lg" label="Cantitate" value="12345">
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input variant="${variant}" size="lg" label="Quantity" value="12345">
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
       ).join(''),
@@ -180,7 +190,7 @@ export const AllVariants: Story = {
       source: {
         code: NUMERIC_INPUT_VARIANTS.map(
           v =>
-            `<mud-numeric-input variant="${v}" size="lg" label="Cantitate" value="12345"><span slot="suffix">lei</span></mud-numeric-input>`,
+            `<mud-numeric-input variant="${v}" size="lg" label="Quantity" value="12345"><span slot="suffix">MDL</span></mud-numeric-input>`,
         ).join('\n'),
       },
     },
@@ -192,7 +202,7 @@ export const AllSizes: Story = {
   render: () =>
     wrap2col(
       NUMERIC_INPUT_SIZES.map(size =>
-        cell(size, /*html*/ `<mud-numeric-input size="${size}" label="Cantitate" placeholder="0"></mud-numeric-input>`),
+        cell(size, /*html*/ `<mud-numeric-input size="${size}" label="Quantity" placeholder="0"></mud-numeric-input>`),
       ).join(''),
     ),
   parameters: {
@@ -200,7 +210,7 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: NUMERIC_INPUT_SIZES.map(
-          s => `<mud-numeric-input size="${s}" label="Cantitate" placeholder="0"></mud-numeric-input>`,
+          s => `<mud-numeric-input size="${s}" label="Quantity" placeholder="0"></mud-numeric-input>`,
         ).join('\n'),
       },
     },
@@ -221,13 +231,13 @@ const variationCells = (size: NumericInputSize) =>
     ),
     cell(
       'suffix',
-      /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><span slot="suffix">lei</span></mud-numeric-input>`,
+      /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><span slot="suffix">MDL</span></mud-numeric-input>`,
     ),
     cell(
       'icon-leading',
       /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><mud-icon slot="icon-start" name="coins" size="${
         size === 'lg' ? 24 : 20
-      }"></mud-icon><span slot="suffix">lei</span></mud-numeric-input>`,
+      }"></mud-icon><span slot="suffix">MDL</span></mud-numeric-input>`,
     ),
   ].join('');
 
@@ -260,8 +270,8 @@ export const Variations: Story = {
         code: [
           '<mud-numeric-input label="Label" value="12345"></mud-numeric-input>',
           '<mud-numeric-input label="Label" value="12345"><span slot="icon-start">€</span></mud-numeric-input>',
-          '<mud-numeric-input label="Label" value="12345"><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input label="Label" value="12345"><mud-icon slot="icon-start" name="coins" size="20"></mud-icon><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input label="Label" value="12345"><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input label="Label" value="12345"><mud-icon slot="icon-start" name="coins" size="20"></mud-icon><span slot="suffix">MDL</span></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -275,35 +285,35 @@ export const States: Story = {
       [
         cell(
           'default: empty',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" placeholder="0"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" placeholder="0"></mud-numeric-input>`,
         ),
         cell(
           'default: filled',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42"></mud-numeric-input>`,
         ),
         cell(
           'default: loading',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" loading></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" loading></mud-numeric-input>`,
         ),
         cell(
           'default: read-only',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" readonly></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" readonly></mud-numeric-input>`,
         ),
         cell(
           'default: disabled',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" disabled></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" disabled></mud-numeric-input>`,
         ),
         cell(
           'default: mandatory',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" placeholder="0" required></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" placeholder="0" required></mud-numeric-input>`,
         ),
         cell(
           'destructive: default',
-          /*html*/ `<mud-numeric-input variant="destructive" size="lg" label="Cantitate" value="42"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input variant="destructive" size="lg" label="Quantity" value="42"></mud-numeric-input>`,
         ),
         cell(
           'success: default',
-          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Quantity" value="42"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -312,14 +322,14 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Cantitate" placeholder="0"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="42"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" loading></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" readonly></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" disabled></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" placeholder="0" required></mud-numeric-input>',
-          '<mud-numeric-input variant="destructive" size="lg" label="Cantitate" value="42"></mud-numeric-input>',
-          '<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" placeholder="0"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" loading></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" readonly></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" disabled></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" placeholder="0" required></mud-numeric-input>',
+          '<mud-numeric-input variant="destructive" size="lg" label="Quantity" value="42"></mud-numeric-input>',
+          '<mud-numeric-input variant="success" size="lg" label="Quantity" value="42"></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -333,19 +343,19 @@ export const Loading: Story = {
       [
         cell(
           'lg + default',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" loading helper-text="Se verifică..."></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" loading helper-text="Checking…"></mud-numeric-input>`,
         ),
         cell(
           'md + default',
-          /*html*/ `<mud-numeric-input size="md" label="Cantitate" value="42" loading helper-text="Se verifică..."></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="md" label="Quantity" value="42" loading helper-text="Checking…"></mud-numeric-input>`,
         ),
         cell(
           'lg + destructive',
-          /*html*/ `<mud-numeric-input variant="destructive" size="lg" label="Cantitate" value="999" loading helper-text="Se verifică..."></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input variant="destructive" size="lg" label="Quantity" value="999" loading helper-text="Checking…"></mud-numeric-input>`,
         ),
         cell(
           'lg + success',
-          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42" loading helper-text="Se verifică..."></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Quantity" value="42" loading helper-text="Checking…"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -354,10 +364,10 @@ export const Loading: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" loading></mud-numeric-input>',
-          '<mud-numeric-input size="md" label="Cantitate" value="42" loading></mud-numeric-input>',
-          '<mud-numeric-input variant="destructive" size="lg" label="Cantitate" value="999" loading></mud-numeric-input>',
-          '<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42" loading></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" loading></mud-numeric-input>',
+          '<mud-numeric-input size="md" label="Quantity" value="42" loading></mud-numeric-input>',
+          '<mud-numeric-input variant="destructive" size="lg" label="Quantity" value="999" loading></mud-numeric-input>',
+          '<mud-numeric-input variant="success" size="lg" label="Quantity" value="42" loading></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -371,21 +381,21 @@ export const ReadOnly: Story = {
       [
         cell(
           'lg + populated',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" readonly></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" readonly></mud-numeric-input>`,
         ),
         cell(
           'md + populated',
-          /*html*/ `<mud-numeric-input size="md" label="Cantitate" value="42" readonly></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="md" label="Quantity" value="42" readonly></mud-numeric-input>`,
         ),
         cell(
           'lg + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="1250" precision="2" readonly>
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="1250" precision="2" readonly>
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           'lg + disabled (for comparison)',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="42" disabled></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="42" disabled></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -394,10 +404,10 @@ export const ReadOnly: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" readonly></mud-numeric-input>',
-          '<mud-numeric-input size="md" label="Cantitate" value="42" readonly></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Sumă" value="1250" precision="2" readonly><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="42" disabled></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" readonly></mud-numeric-input>',
+          '<mud-numeric-input size="md" label="Quantity" value="42" readonly></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="1250" precision="2" readonly><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="42" disabled></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -411,12 +421,12 @@ export const WithSuccess: Story = {
       [
         cell(
           'success + helper',
-          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42" helper-text="Verificat"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Quantity" value="42" helper-text="Verified"></mud-numeric-input>`,
         ),
         cell(
           'success + suffix',
-          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Sumă" value="1250" precision="2" helper-text="Verificat">
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input variant="success" size="lg" label="Amount" value="1250" precision="2" helper-text="Verified">
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
       ].join(''),
@@ -426,8 +436,8 @@ export const WithSuccess: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input variant="success" size="lg" label="Cantitate" value="42" helper-text="Verificat"></mud-numeric-input>',
-          '<mud-numeric-input variant="success" size="lg" label="Sumă" value="1250" precision="2" helper-text="Verificat"><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input variant="success" size="lg" label="Quantity" value="42" helper-text="Verified"></mud-numeric-input>',
+          '<mud-numeric-input variant="success" size="lg" label="Amount" value="1250" precision="2" helper-text="Verified"><span slot="suffix">MDL</span></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -453,7 +463,7 @@ export const WithMinMax: Story = {
         ),
         cell(
           'negative range −10..10',
-          /*html*/ `<mud-numeric-input size="lg" label="Temperatură" value="-3" min="-10" max="10" helper-text="−10..10 °C"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Temperature" value="-3" min="-10" max="10" helper-text="−10..10 °C"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -465,7 +475,7 @@ export const WithMinMax: Story = {
           '<mud-numeric-input size="lg" label="Persoane" value="0" min="0" max="10"></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="Persoane" value="10" min="0" max="10"></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="Persoane" value="5" min="0" max="10"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Temperatură" value="-3" min="-10" max="10"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Temperature" value="-3" min="-10" max="10"></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -477,18 +487,21 @@ export const WithStep: Story = {
   render: () =>
     wrap2col(
       [
-        cell('step=1 (default)', /*html*/ `<mud-numeric-input size="lg" label="Pași" value="5"></mud-numeric-input>`),
+        cell(
+          'step=1 (default)',
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="5"></mud-numeric-input>`,
+        ),
         cell(
           'step=0.5',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="2.5" step="0.5" precision="1"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="2.5" step="0.5" precision="1"></mud-numeric-input>`,
         ),
         cell(
           'step=10',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="100" step="10"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="100" step="10"></mud-numeric-input>`,
         ),
         cell(
           'step=100',
-          /*html*/ `<mud-numeric-input size="lg" label="Pași" value="1000" step="100"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="1000" step="100"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -497,10 +510,10 @@ export const WithStep: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Pași" value="5"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="2.5" step="0.5" precision="1"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="100" step="10"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Pași" value="1000" step="100"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="5"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="2.5" step="0.5" precision="1"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="100" step="10"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="1000" step="100"></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -514,15 +527,15 @@ export const WithPrecision: Story = {
       [
         cell(
           'precision=2 (currency)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="19.95" step="0.01" precision="2"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="19.95" step="0.01" precision="2"></mud-numeric-input>`,
         ),
         cell(
           'precision=3 (weight kg)',
-          /*html*/ `<mud-numeric-input size="lg" label="Masă" value="0.250" step="0.001" precision="3"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Weight" value="0.250" step="0.001" precision="3"></mud-numeric-input>`,
         ),
         cell(
           'precision=0 (integer)',
-          /*html*/ `<mud-numeric-input size="lg" label="Bucăți" value="7" step="1" precision="0"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Pieces" value="7" step="1" precision="0"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -531,9 +544,9 @@ export const WithPrecision: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Sumă" value="19.95" step="0.01" precision="2"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Masă" value="0.250" step="0.001" precision="3"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Bucăți" value="7" step="1" precision="0"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="19.95" step="0.01" precision="2"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Weight" value="0.250" step="0.001" precision="3"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Pieces" value="7" step="1" precision="0"></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -547,19 +560,19 @@ export const WithSuffix: Story = {
       [
         cell(
           'lei (MDL — Moldovan Leu)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="250" step="10" precision="2">
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="250" step="10" precision="2">
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           '€ (Euro)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2">
             <span slot="suffix">€</span>
           </mud-numeric-input>`,
         ),
         cell(
           'kg',
-          /*html*/ `<mud-numeric-input size="lg" label="Masă" value="1.5" step="0.1" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Weight" value="1.5" step="0.1" precision="2">
             <span slot="suffix">kg</span>
           </mud-numeric-input>`,
         ),
@@ -576,9 +589,9 @@ export const WithSuffix: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Sumă" value="250" step="10" precision="2"><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2"><span slot="suffix">€</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Masă" value="1.5" step="0.1" precision="2"><span slot="suffix">kg</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="250" step="10" precision="2"><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2"><span slot="suffix">€</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Weight" value="1.5" step="0.1" precision="2"><span slot="suffix">kg</span></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="Reducere" value="15" min="0" max="100" step="5"><span slot="suffix">%</span></mud-numeric-input>',
         ].join('\n'),
       },
@@ -593,29 +606,29 @@ export const WithPrefix: Story = {
       [
         cell(
           '€ (Euro)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2">
             <span slot="prefix">€</span>
           </mud-numeric-input>`,
         ),
         cell(
           'MDL (multi-character — no clip)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="1250" step="10" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="1250" step="10" precision="2">
             <span slot="prefix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           '$ + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Preț" value="99" step="1" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Price" value="99" step="1" precision="2">
             <span slot="prefix">$</span>
             <span slot="suffix">USD</span>
           </mud-numeric-input>`,
         ),
         cell(
           'icon-start + prefix + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2">
             <mud-icon slot="icon-start" name="wallet" size="24"></mud-icon>
             <span slot="prefix">€</span>
-            <span slot="suffix">lei</span>
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
       ].join(''),
@@ -625,10 +638,10 @@ export const WithPrefix: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2"><span slot="prefix">€</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Sumă" value="1250" step="10" precision="2"><span slot="prefix">MDL</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Preț" value="99" step="1" precision="2"><span slot="prefix">$</span><span slot="suffix">USD</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="prefix">€</span><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2"><span slot="prefix">€</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="1250" step="10" precision="2"><span slot="prefix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Price" value="99" step="1" precision="2"><span slot="prefix">$</span><span slot="suffix">USD</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="prefix">€</span><span slot="suffix">MDL</span></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -642,21 +655,21 @@ export const WithFormFeatures: Story = {
       [
         cell(
           'locale ro-MD (thousands grouping)',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" locale="ro-MD" value="1234567.89" precision="2">
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" locale="ro-MD" value="1234567.89" precision="2">
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           'clearable',
-          /*html*/ `<mud-numeric-input size="lg" label="Sumă" clearable value="1250" precision="2"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" clearable value="1250" precision="2"></mud-numeric-input>`,
         ),
         cell(
           'counter (maxlength 6)',
-          /*html*/ `<mud-numeric-input size="lg" label="Cod poștal" maxlength="6" value="2001"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Postal code" maxlength="6" value="2001"></mud-numeric-input>`,
         ),
         cell(
           'integer-only + positive-only',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -665,10 +678,10 @@ export const WithFormFeatures: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Sumă" locale="ro-MD" value="1234567.89" precision="2"><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Sumă" clearable value="1250" precision="2"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cod poștal" maxlength="6" value="2001"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" locale="ro-MD" value="1234567.89" precision="2"><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" clearable value="1250" precision="2"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Postal code" maxlength="6" value="2001"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -682,14 +695,14 @@ export const WithCurrencyIcon: Story = {
       [
         cell(
           'icon-start + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2">
+          /*html*/ `<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2">
             <mud-icon slot="icon-start" name="wallet" size="24"></mud-icon>
-            <span slot="suffix">lei</span>
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           'icon-start only',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="3">
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="3">
             <mud-icon slot="icon-start" name="group" size="24"></mud-icon>
           </mud-numeric-input>`,
         ),
@@ -700,8 +713,8 @@ export const WithCurrencyIcon: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="3"><mud-icon slot="icon-start" name="group" size="24"></mud-icon></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="3"><mud-icon slot="icon-start" name="group" size="24"></mud-icon></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -715,11 +728,11 @@ export const WithoutSteppers: Story = {
       [
         cell(
           'compact filter (no steppers)',
-          /*html*/ `<mud-numeric-input size="md" label="Cod poștal" value="2001" show-steppers="false"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="md" label="Postal code" value="2001" show-steppers="false"></mud-numeric-input>`,
         ),
         cell(
           'identifier (no steppers)',
-          /*html*/ `<mud-numeric-input size="lg" label="IDNP" value="2001005000000" show-steppers="false" helper-text="13 cifre"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="IDNP" value="2001005000000" show-steppers="false" helper-text="13 digits"></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -728,7 +741,7 @@ export const WithoutSteppers: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="md" label="Cod poștal" value="2001" show-steppers="false"></mud-numeric-input>',
+          '<mud-numeric-input size="md" label="Postal code" value="2001" show-steppers="false"></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="IDNP" value="2001005000000" show-steppers="false"></mud-numeric-input>',
         ].join('\n'),
       },
@@ -747,7 +760,7 @@ export const WithHelperText: Story = {
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-numeric-input size="lg" label="Vârstă" placeholder="0" min="18" max="120" helper-text="Trebuie să aveți cel puțin 18 ani" required></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Age" placeholder="0" min="18" max="120" helper-text="You must be at least 18 years old" required></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -757,7 +770,7 @@ export const WithHelperText: Story = {
       source: {
         code: [
           '<mud-numeric-input size="lg" label="Persoane" placeholder="0" min="0" max="20" helper-text="Maxim 20 persoane"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Vârstă" placeholder="0" min="18" max="120" helper-text="Trebuie să aveți cel puțin 18 ani" required></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Age" placeholder="0" min="18" max="120" helper-text="You must be at least 18 years old" required></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -771,11 +784,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="999" min="0" max="100" invalid error-text="Valoarea trebuie să fie între 0 și 100"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="999" min="0" max="100" invalid error-text="The value must be between 0 and 100"></mud-numeric-input>`,
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<mud-numeric-input size="lg" variant="destructive" label="Cantitate" placeholder="0" error-text="Introduceți un număr valid" invalid></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" variant="destructive" label="Quantity" placeholder="0" error-text="Enter a valid number" invalid></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -784,8 +797,8 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Cantitate" value="999" min="0" max="100" invalid error-text="Valoarea trebuie să fie între 0 și 100"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" variant="destructive" label="Cantitate" placeholder="0" error-text="Introduceți un număr valid" invalid></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="999" min="0" max="100" invalid error-text="The value must be between 0 and 100"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" variant="destructive" label="Quantity" placeholder="0" error-text="Enter a valid number" invalid></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -799,23 +812,23 @@ export const EdgeCases: Story = {
       [
         cell(
           'very large number',
-          /*html*/ `<mud-numeric-input size="lg" label="Suma totală" value="9999999.99" step="100" precision="2">
-            <span slot="suffix">lei</span>
+          /*html*/ `<mud-numeric-input size="lg" label="Total amount" value="9999999.99" step="100" precision="2">
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           'negative value',
           /*html*/ `<mud-numeric-input size="lg" label="Sold" value="-1250.50" step="10" precision="2">
-            <span slot="suffix">lei</span>
+            <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
           'label truncation (single line)',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitatea totală a produselor solicitate pentru această livrare directă către cetățean" value="42"></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Total quantity of the products requested for this direct delivery to the citizen" value="42"></mud-numeric-input>`,
         ),
         cell(
           'helper truncation (two lines)',
-          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" value="5" helper-text="Introduceți cantitatea de produse, în numere întregi. Cantitatea maximă acceptată per comandă este de 100 de unități pentru transport standard."></mud-numeric-input>`,
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="5" helper-text="Enter the quantity of products as whole numbers. The maximum quantity accepted per order is 100 units for standard transport."></mud-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -824,10 +837,10 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Suma totală" value="9999999.99" step="100" precision="2"><span slot="suffix">lei</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Sold" value="-1250.50" step="10" precision="2"><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Total amount" value="9999999.99" step="100" precision="2"><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Sold" value="-1250.50" step="10" precision="2"><span slot="suffix">MDL</span></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="…long label…" value="42"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Cantitate" value="5" helper-text="…long helper…"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="5" helper-text="…long helper…"></mud-numeric-input>',
         ].join('\n'),
       },
     },

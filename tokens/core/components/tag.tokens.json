@@ -102,6 +102,34 @@
         "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
         "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
       }
+    },
+    "info": {
+      "$comment": "Figma info-tag (624:8934) is its own set with no semantic axis: Type=Strong fills #E8F0FB under a #383838 label (624:8935), Type=Subtle has no fill and a #757575 label (624:8942). A leading icon pads the leading edge 4px (624:8939).",
+      "strong": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "label": { "$value": "{color.text.base.secondary}", "$type": "color" }
+      },
+      "subtle": {
+        "background": { "$value": "transparent", "$type": "color" },
+        "label": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+      },
+      "paddingInlineIcon": { "$value": "{spacing.4}", "$type": "dimension" }
+    },
+    "disabled": {
+      "background": {
+        "$value": "{color.background.disabled.default}",
+        "$type": "color",
+        "$comment": "Disabled replaces every semantic color: a disabled tag carries no state meaning. Same semantic pair as mud-chip / mud-input disabled."
+      },
+      "label": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" },
+      "outlined": {
+        "border": { "$value": "{color.border.disabled.default}", "$type": "color" },
+        "label": {
+          "$value": "{color.text.disabled.default}",
+          "$type": "color",
+          "$comment": "Outlined keeps its transparent fill, so the label sits on the container surface — text.disabled.default, not on-disabled."
+        }
+      }
     }
   }
 }

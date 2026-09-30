@@ -7,7 +7,10 @@ import '../mud-search-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from '../mud-search-input.types';
+import { SEARCH_INPUT_MESSAGES } from '../mud-search-input.messages';
+import type { SearchInputMessages } from '../mud-search-input.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -34,7 +37,7 @@ describe('mud-search-input', () => {
     it('renders with default props reflected on host', async () => {
       const { root } = await render(<mud-search-input></mud-search-input>);
       expect(root?.getAttribute('shape')).toBe('rectangular');
-      expect(root?.getAttribute('size')).toBe('sm');
+      expect(root?.getAttribute('size')).toBe('md');
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
       // Stencil reflects `boolean` true as the empty-string attribute presence.
@@ -75,7 +78,7 @@ describe('mud-search-input', () => {
       (root as unknown as { size: string }).size = 'huge';
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('size="huge"'));
-      expect(root?.getAttribute('size')).toBe('sm');
+      expect(root?.getAttribute('size')).toBe('md');
       warn.mockRestore();
     });
   });
@@ -113,9 +116,14 @@ describe('mud-search-input', () => {
       expect(assistive?.textContent).toContain('hint');
     });
 
-    it('does not render an assistive row when neither helper-text nor helper slot is present', async () => {
+    it('keeps the assistive row out of sight when neither helper-text nor helper slot is present', async () => {
       const { root } = await render(<mud-search-input label="x"></mud-search-input>);
-      expect(queryAssistive(root)).toBeNull();
+
+      // The row stays in the tree the way the label row does, so the slot that
+      // detects slotted helper content is there before that content arrives;
+      // `has-helper` is what makes it visible.
+      expect(queryAssistive(root)?.textContent?.trim()).toBe('');
+      expect(root?.classList.contains('has-helper')).toBe(false);
     });
   });
 
@@ -148,13 +156,13 @@ describe('mud-search-input', () => {
     });
 
     it('renders a constant 16px cross-small glyph in the clear button for both field sizes', async () => {
-      const sm = await render(<mud-search-input value="x" size="sm"></mud-search-input>);
       const md = await render(<mud-search-input value="x" size="md"></mud-search-input>);
-      const smIcon = queryClearButton(sm.root)?.querySelector('mud-icon');
+      const lg = await render(<mud-search-input value="x" size="lg"></mud-search-input>);
       const mdIcon = queryClearButton(md.root)?.querySelector('mud-icon');
-      expect(smIcon?.getAttribute('name')).toBe('cross-small');
-      expect(smIcon?.getAttribute('size')).toBe('16');
+      const lgIcon = queryClearButton(lg.root)?.querySelector('mud-icon');
+      expect(mdIcon?.getAttribute('name')).toBe('cross-small');
       expect(mdIcon?.getAttribute('size')).toBe('16');
+      expect(lgIcon?.getAttribute('size')).toBe('16');
     });
   });
 
@@ -399,11 +407,11 @@ describe('mud-search-input', () => {
       expect(querySpinner(root)).toBeTruthy();
     });
 
-    it('uses spinner size "md" on size="md" and "sm" on size="sm"', async () => {
+    it('uses a constant spinner size "sm" regardless of field size', async () => {
+      const { root: lg } = await render(<mud-search-input size="lg" loading></mud-search-input>);
+      expect(querySpinner(lg)?.getAttribute('size')).toBe('sm');
       const { root: md } = await render(<mud-search-input size="md" loading></mud-search-input>);
-      expect(querySpinner(md)?.getAttribute('size')).toBe('md');
-      const { root: sm } = await render(<mud-search-input size="sm" loading></mud-search-input>);
-      expect(querySpinner(sm)?.getAttribute('size')).toBe('sm');
+      expect(querySpinner(md)?.getAttribute('size')).toBe('sm');
     });
 
     it('suppresses the clear button while loading', async () => {
@@ -544,5 +552,91 @@ describe('mud-search-input', () => {
       expect(lastCall?.[0]).toEqual({ valueMissing: true });
       spy.mockRestore();
     });
+
+    it('restores the value the surrounding form started with on reset', async () => {
+      const { root } = await render(<mud-search-input label="x" value="buletin"></mud-search-input>);
+      const host = root as unknown as { value: string; formResetCallback(): void };
+
+      host.value = 'pașaport';
+      await flush();
+      host.formResetCallback();
+      await flush();
+
+      expect(host.value).toBe('buletin');
+    });
+
+    it('notices content arriving in the label and helper slots', async () => {
+      const { root } = await render(
+        <mud-search-input>
+          <span slot="label">Caută</span>
+          <span slot="helper">Introduceți cel puțin trei litere</span>
+        </mud-search-input>,
+      );
+
+      for (const name of ['label', 'helper']) {
+        const slot = root?.shadowRoot?.querySelector(`slot[name="${name}"]`) as HTMLSlotElement | null;
+        // mock-doc slots do not assign nodes, so the handler is driven directly
+        // with a slot that reports the light-DOM content the fixture provides.
+        const assigned = Array.from(root?.querySelectorAll(`[slot="${name}"]`) ?? []);
+        if (slot) slot.assignedNodes = () => assigned as Node[];
+        slot?.dispatchEvent(new Event('slotchange'));
+      }
+      await flush();
+
+      expect(queryLabel(root)).toBeTruthy();
+      expect(queryAssistive(root)).toBeTruthy();
+    });
+
+    it('takes the value back from a restored form state', async () => {
+      const { root } = await render(<mud-search-input label="x"></mud-search-input>);
+      const host = root as unknown as {
+        value: string;
+        formStateRestoreCallback(state: string | File | FormData | null): void;
+      };
+
+      host.formStateRestoreCallback('certificat');
+      await flush();
+      expect(host.value).toBe('certificat');
+
+      // A non-string state is what the browser hands back for a File or a
+      // FormData entry; the field has no way to read one, so it keeps what it has.
+      host.formStateRestoreCallback(null);
+      await flush();
+      expect(host.value).toBe('certificat');
+    });
   });
+});
+
+describeLocales<SearchInputMessages>('mud-search-input', SEARCH_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'label': 'x', 'value': 'hello', 'with-button': 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.submitLabel !== undefined) attrs['submit-label'] = String(props.submitLabel);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    const { root } = await render(
+      <mud-search-input {...attrs}></mud-search-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'submitLabel')
+      return host.shadowRoot?.querySelector('.submit-button')?.getAttribute('aria-label') ?? null;
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.clear-button')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { submitLabel: 'submitLabel', clearLabel: 'clearLabel' },
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-search-input {...attrs}></mud-search-input>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
 });

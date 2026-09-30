@@ -1,6 +1,8 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import type { SwitchChangeDetail } from './mud-switch.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 
 let switchInstanceCounter = 0;
 
@@ -59,36 +61,23 @@ export class MudSwitch {
   @Prop() value?: string;
 
   /**
-   * Accessible-name fallback. Used as `aria-label` on the internal input when
-   * no `label` slot is provided. Does NOT render visible text — use the
-   * `label` slot for that. Matches the mud-button / mud-checkbox / mud-radio
-   * convention.
+   * Visible label text, which also names the switch. The `label` slot replaces it
+   * for rich content. For an accessible name with no visible text, set the native
+   * `aria-label` attribute instead.
    */
   @Prop() label?: string;
 
-  /**
-   * Consumer-set `aria-label` on the host. The component caches the value
-   * (see `resolvedAriaLabel`) and strips the host attribute on mount to
-   * avoid the `aria-prohibited-attr` axe rule on the custom-element host.
-   */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
-
-  /** Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`. */
+  /** Consumer-set `aria-labelledby`. Same strip + cache pattern as `aria-label`. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
-  // See mud-radio.tsx for the rationale on these three pieces of cached
-  // state. Summary: axe `aria-prohibited-attr` flags `aria-label` /
-  // `aria-labelledby` on a custom-element host (implicit `generic` role);
-  // axe `label` cannot walk slots to find the projected label's text. We
-  // cache the consumer's ARIA attrs and mirror the flattened slot text
-  // onto the internal input's `aria-label` so AT and axe both see a
-  // discoverable accessible name on the actual radio control.
+  // `observeAriaLabel` reads + strips the host's `aria-label` (axe
+  // `aria-prohibited-attr` flags it on a custom-element host's implicit
+  // `generic` role) and moves it onto the internal input.
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
-  @State() private slottedLabelText: string = '';
 
   @Element() host!: HTMLMudSwitchElement;
 
@@ -107,6 +96,7 @@ export class MudSwitch {
   private readonly inputId = `mud-switch-input-${this.instanceId}`;
   private readonly labelId = `mud-switch-label-${this.instanceId}`;
   private initialChecked: boolean = false;
+  private stopAriaLabel?: () => void;
 
   @Watch('checked')
   handleCheckedChange() {
@@ -118,15 +108,7 @@ export class MudSwitch {
     this.syncFormValue();
   }
 
-  // Cache + strip consumer-set aria attributes — see @State JSDoc above.
-  @Watch('ariaLabel')
-  syncAriaLabel(next?: string) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-      if (this.host.hasAttribute('aria-label')) this.host.removeAttribute('aria-label');
-    }
-  }
-
+  // Cache + strip the consumer-set aria-labelledby — see @State JSDoc above.
   @Watch('ariaLabelledby')
   syncAriaLabelledby(next?: string) {
     if (next && next.length > 0) {
@@ -135,11 +117,18 @@ export class MudSwitch {
     }
   }
 
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
   componentWillLoad() {
     this.initialChecked = this.checked;
     this.syncFormValue();
     // Initial strip — @Watch only fires on subsequent prop changes.
-    this.syncAriaLabel(this.ariaLabel);
     this.syncAriaLabelledby(this.ariaLabelledby);
   }
 
@@ -175,18 +164,10 @@ export class MudSwitch {
 
   private onLabelSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
-    const assignedNodes = slot.assignedNodes({ flatten: true });
-    this.hasLabelSlot = assignedNodes.some(node => {
+    this.hasLabelSlot = slot.assignedNodes({ flatten: true }).some(node => {
       if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
       return true;
     });
-    // Mirror slotted text onto the input's aria-label so axe / NVDA see a
-    // discoverable name (their accessible-name calc doesn't walk slots).
-    this.slottedLabelText = assignedNodes
-      .map(node => node.textContent ?? '')
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim();
   };
 
   private handleChange = (ev: Event) => {
@@ -215,21 +196,14 @@ export class MudSwitch {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    // Slot-first content: `label` / consumer-set aria-label are ARIA-only
-    // fallbacks; the slot is the sole source of visible text.
-    const hasLabel = this.hasLabelSlot;
-    // aria-label priority:
-    //   1. explicit consumer aria-label (resolvedAriaLabel)
-    //   2. flattened slotted text (so axe + AT that can't walk slots still
-    //      see an accessible name on the actual control)
-    //   3. label prop fallback
-    //   4. undefined
-    const ariaLabelAttr =
-      this.resolvedAriaLabel ??
-      (hasLabel ? this.slottedLabelText || undefined : undefined) ??
-      this.label?.trim() ??
-      undefined;
-    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
+    // Hybrid content: the `label` prop renders as the slot's fallback text, and
+    // a filled slot replaces it.
+    const labelText = this.label?.trim() || undefined;
+    const hasLabel = this.hasLabelSlot || labelText !== undefined;
+    // The host's native aria-label overrides the accessible name; otherwise a
+    // visible label names the input through aria-labelledby.
+    const ariaLabelAttr = this.resolvedAriaLabel;
+    const ariaLabelledbyAttr = ariaLabelAttr ? undefined : hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -275,7 +249,9 @@ export class MudSwitch {
           */}
           <span class="text" part="text">
             <span class="label-text" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange} />
+              <slot name="label" onSlotchange={this.onLabelSlotChange}>
+                {labelText}
+              </slot>
             </span>
           </span>
         </label>

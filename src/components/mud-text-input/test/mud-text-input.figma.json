@@ -1,0 +1,330 @@
+{
+  "component": "mud-text-input",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "136:4217",
+        "reason": "Default/Hover/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13791",
+        "reason": "Default/Hover/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3430",
+        "reason": "Default/Focus/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13801",
+        "reason": "Default/Focus/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3443",
+        "reason": "Default/Loading/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13814",
+        "reason": "Default/Loading/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3456",
+        "reason": "Default/Filled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13827",
+        "reason": "Default/Filled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3467",
+        "reason": "Default/ReadOnly/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13838",
+        "reason": "Default/ReadOnly/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3478",
+        "reason": "Default/Disabled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13882",
+        "reason": "Default/Disabled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3487",
+        "reason": "Warning/Disabled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13891",
+        "reason": "Warning/Disabled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3496",
+        "reason": "Destructive/Disabled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13900",
+        "reason": "Destructive/Disabled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28178",
+        "reason": "Success/Disabled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13909",
+        "reason": "Success/Disabled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6057:13918",
+        "reason": "Destructive/Default/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28187",
+        "reason": "Success/Default/Large — Success differs from Default only in the frame's stroke colour, as warning-large and destructive-large show for their own."
+      },
+      {
+        "node": "6057:13928",
+        "reason": "Success/Default/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28091",
+        "reason": "Destructive/Hover/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13938",
+        "reason": "Destructive/Hover/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28197",
+        "reason": "Success/Hover/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13948",
+        "reason": "Success/Hover/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3515",
+        "reason": "Destructive/Filled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13958",
+        "reason": "Destructive/Filled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28207",
+        "reason": "Success/Filled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13969",
+        "reason": "Success/Filled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "6057:13980",
+        "reason": "Warning/Default/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28065",
+        "reason": "Warning/Hover/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:13990",
+        "reason": "Warning/Hover/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3536",
+        "reason": "Warning/Filled/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14000",
+        "reason": "Warning/Filled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3547",
+        "reason": "Destructive/Focus/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14011",
+        "reason": "Destructive/Focus/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28218",
+        "reason": "Success/Focus/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14024",
+        "reason": "Success/Focus/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3560",
+        "reason": "Destructive/Loading/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14037",
+        "reason": "Destructive/Loading/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "457:28231",
+        "reason": "Success/Loading/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14050",
+        "reason": "Success/Loading/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3573",
+        "reason": "Warning/Focus/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14063",
+        "reason": "Warning/Focus/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      },
+      {
+        "node": "132:3586",
+        "reason": "Warning/Loading/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
+      },
+      {
+        "node": "6057:14076",
+        "reason": "Warning/Loading/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-input-text--default",
+    "capture": {
+      "selector": "mud-text-input",
+      "bleed": "auto"
+    },
+    "fixtureNote": "Every fixture pins the component to the 282px the Figma set draws at (132:3420) and passes the English copy the frames show."
+  },
+  "states": [
+    {
+      "name": "default-large",
+      "node": "132:3420",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" placeholder=\"Placeholder\" size=\"lg\"></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control",
+          "node": "132:3424",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "boxHeight": "48px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "8px",
+            "outlineColor": "#D9D9D9",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 132:3424 is 48px tall, pads 0 16px, gaps 8px and strokes 1px #D9D9D9 at radius 8px over white."
+        },
+        {
+          "target": "mud-text-input .native",
+          "node": "132:3427",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "Figma 132:3427 is Desktop/Body/Default. Its #757575 is the placeholder colour, which lives on ::placeholder and no computed style can reach."
+        },
+        {
+          "target": "mud-text-input .label",
+          "node": "132:3422",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838",
+            "columnGap": "4px"
+          },
+          "note": "Figma 132:3422 is Desktop/Body/Small in #383838; 132:3421 gaps the label and its asterisk by 4px."
+        },
+        {
+          "target": "mud-text-input",
+          "node": "132:3420",
+          "styles": {
+            "rowGap": "8px"
+          },
+          "note": "Figma 132:3420 stacks label, input and assistive text 8px apart."
+        }
+      ]
+    },
+    {
+      "name": "default-medium",
+      "node": "6057:13781",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" placeholder=\"Placeholder\" size=\"md\"></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control",
+          "node": "6057:13785",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "12px",
+            "paddingRight": "12px",
+            "columnGap": "8px"
+          },
+          "note": "Figma 6057:13785 drops to 40px and pads 0 12px; the gap and the radius do not change."
+        },
+        {
+          "target": "mud-text-input .native",
+          "node": "6057:13788",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 6057:13788 steps the text down to Desktop/Body/Small."
+        }
+      ]
+    },
+    {
+      "name": "leading-icon-large",
+      "node": "132:3425",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" placeholder=\"Placeholder\" size=\"lg\"><mud-icon slot=\"icon-start\" name=\"credit-card\" size=\"24\"></mud-icon></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control-icon-start",
+          "node": "132:3425",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 132:3425 is the 24/credit-card instance at 24x24; the Medium field steps it down to 20 (6057:13786)."
+        }
+      ],
+      "pixel": false,
+      "pixelNote": "The cited node is the icon inside the frame, so its canvas never matches a whole-component capture. Its box is pinned by style parity."
+    },
+    {
+      "name": "warning-large",
+      "node": "132:3526",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" placeholder=\"Placeholder\" size=\"lg\" variant=\"warning\"></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control",
+          "node": "132:3530",
+          "styles": {
+            "outlineColor": "#DC6803",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 132:3530, the Input frame of 132:3526, strokes #DC6803 over the resting white fill."
+        }
+      ]
+    },
+    {
+      "name": "destructive-large",
+      "node": "132:3505",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" placeholder=\"Placeholder\" size=\"lg\" variant=\"destructive\"></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control",
+          "node": "132:3509",
+          "styles": {
+            "outlineColor": "#D92D20",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 132:3509, the Input frame of 132:3505, strokes #D92D20 over the resting white fill."
+        }
+      ]
+    }
+  ]
+}

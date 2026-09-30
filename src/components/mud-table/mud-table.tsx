@@ -1,6 +1,12 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './mud-table.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TABLE_MESSAGES } from './mud-table.messages';
+import type { TableMessages } from './mud-table.messages';
 import type {
   TableColumn,
   TableHeaderStyle,
@@ -23,7 +29,7 @@ import type {
  * row actions are projected via named slots so consumers can drop in
  * `mud-tag`, `mud-button`, or any custom content per cell.
  *
- * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+ * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
  * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
  * table-cell `649:4296`). The table structure itself is preserved; consumers
  * who need a card-stack layout on narrow screens should wrap their own
@@ -33,10 +39,15 @@ import type {
  *
  * @slot header-cell-{key} - Custom rendering for a specific column header.
  *                            Replaces the auto-rendered label + sort affordance.
- * @slot cell-{key} - Custom rendering for cells in a specific column. Useful for
- *                    status tags, action buttons, or any non-text content. The
- *                    consumer is responsible for providing one slotted element
- *                    per row (matched in order to `rows`).
+ * @slot cell-{key}-{rowId} - Custom content for one cell: the column's `key` and the
+ *                            row's `rowIdField` value (its index when the row has
+ *                            none). Useful for status tags, action buttons, or any
+ *                            non-text content. The cell follows its row when `rows`
+ *                            is sorted or filtered.
+ * @slot cell-{key}-{rowIndex} - Deprecated: addresses a row by its position, so the
+ *                               content stays put when `rows` is reordered. Use
+ *                               `cell-{key}-{rowId}`; when a row id equals another
+ *                               row's index, the id wins.
  * @slot empty - Custom empty-state content when `rows` is empty or undefined.
  */
 @Component({
@@ -125,17 +136,42 @@ export class MudTable {
   @Prop({ attribute: 'row-id-field' }) rowIdField: string = 'id';
 
   /**
-   * Accessible label propagated to the rendered `<table>` element. Captured
-   * into `resolvedAriaLabel` on mount and the host attribute is stripped to
-   * avoid Stencil's auto-reflection loop.
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop() ariaLabel?: string;
+  @Prop({ reflect: true }) locale?: LocaleProp;
 
+  /**
+   * Empty-state text shown when `rows` is empty or undefined. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Nu există date de afișat.' (ro-MD)
+   */
+  @Prop({ attribute: 'empty-text' }) emptyText?: string;
+
+  /**
+   * Accessible label for the header "select all rows" checkbox. Overrides the `locale`'s
+   * copy when set to a non-empty string.
+   * @default 'Selectează toate rândurile' (ro-MD)
+   */
+  @Prop({ attribute: 'select-all-label' }) selectAllLabel?: string;
+
+  /**
+   * Accessible label for a row's selection checkbox. Carries a `{row}` placeholder, filled
+   * with the row's 1-based position. Overrides the `locale`'s copy when set to a non-empty
+   * string.
+   * @default 'Selectează rândul {row}' (ro-MD)
+   */
+  @Prop({ attribute: 'select-row-label' }) selectRowLabel?: string;
+
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), propagated
+   * to the rendered `<table>` element.
+   */
   @State() private resolvedAriaLabel?: string;
   @State() private headerCellSlotted: Set<string> = new Set();
 
   /** Internal host reference. */
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudTableElement;
 
   /** Emitted when the user activates a sortable header. */
   @Event() mudSort!: EventEmitter<TableSortChangeDetail>;
@@ -173,33 +209,38 @@ export class MudTable {
     }
   }
 
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
+  /** Legacy cell-slot shapes already warned about, one warning per shape per instance. */
+  private warnedCellSlots = new Set<'index' | 'bare'>();
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
-  componentWillLoad() {
-    this.captureAriaLabel();
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  componentDidRender() {
+    this.warnLegacyCellSlots();
   }
 
   /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
+   * Built-in strings in the resolved locale, with the override props on top.
    */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
+  private messages(): TableMessages {
+    return localeMessages('mud-table', this.host, this.locale, TABLE_MESSAGES, {
+      emptyText: this.emptyText,
+      selectAllLabel: this.selectAllLabel,
+      selectRowLabel: this.selectRowLabel,
+    });
   }
 
   private getRowId(row: TableRowData, index: number): string {
@@ -352,6 +393,40 @@ export class MudTable {
     ];
   }
 
+  /**
+   * Warns once about each legacy cell-slot shape among the host's children: a bare
+   * `cell-{key}`, which only the first row can receive (the DOM assigns a slot name to
+   * the first slot that carries it), and the deprecated `cell-{key}-{rowIndex}`.
+   */
+  private warnLegacyCellSlots(): void {
+    const columns = this.columns ?? [];
+    if (columns.length === 0 || this.warnedCellSlots.size === 2) {
+      return;
+    }
+    const rows = this.rows ?? [];
+    const rowIds = new Set(rows.map((row, index) => this.getRowId(row, index)));
+    for (const child of Array.from(this.host.children)) {
+      const name = child.getAttribute('slot') ?? '';
+      for (const column of columns) {
+        const prefix = `cell-${column.key}`;
+        if (name === prefix && !this.warnedCellSlots.has('bare')) {
+          this.warnedCellSlots.add('bare');
+          console.warn(
+            `[mud-table] slot="${name}" is not supported: only the first row would receive it. Use slot="${prefix}-{rowId}", where {rowId} is the row's "${this.rowIdField}".`,
+          );
+        } else if (name.startsWith(`${prefix}-`) && !this.warnedCellSlots.has('index')) {
+          const suffix = name.slice(prefix.length + 1);
+          if (!rowIds.has(suffix) && /^\d+$/.test(suffix) && Number(suffix) < rows.length) {
+            this.warnedCellSlots.add('index');
+            console.warn(
+              `[mud-table] slot="${name}" addresses a row by its index, which is deprecated: the content stays put when rows are reordered. Use slot="${prefix}-{rowId}", where {rowId} is the row's "${this.rowIdField}".`,
+            );
+          }
+        }
+      }
+    }
+  }
+
   /*
    * Per-cell rendering for a data table is fundamentally data-driven:
    * `row[column.key]` IS the content, and the slot is an override mechanism
@@ -359,30 +434,26 @@ export class MudTable {
    * potentially in the hundreds, per-cell slot tracking would add measurable
    * cost for a contract that already matches the slot+data model.
    *
-   * ANTIPATTERN-026 was designed for atom-scale components where slot and
-   * prop are two parallel content channels. For data grids the pattern is
-   * inverted (data is primary, slot is override) and the regex check is a
-   * known false positive — left as-is by design.
+   * Data is primary and the slot is the override, which is why mud-table is in
+   * ANTIPATTERN-026's HYBRID_CONTENT_COMPONENTS allow-list.
    */
-  private renderCellContent(column: TableColumn, row: TableRowData, rowIndex: number) {
-    const slotName = `cell-${column.key}`;
+  private renderCellContent(column: TableColumn, row: TableRowData, rowId: string, rowIndex: number) {
+    const byId = `cell-${column.key}-${rowId}`;
+    const byIndex = `cell-${column.key}-${rowIndex}`;
     const fallback = row?.[column.key];
     const displayValue = fallback === undefined || fallback === null ? '' : String(fallback);
-    return (
-      <slot name={`${slotName}-${rowIndex}`}>
-        <slot name={slotName}>
-          <span class="cell-text">{displayValue}</span>
-        </slot>
-      </slot>
-    );
+    const text = <span class="cell-text">{displayValue}</span>;
+    // Every row has its own slot names. The index form nests inside the id form, so a
+    // row id that equals another row's index reaches the id slot, which comes first.
+    return <slot name={byId}>{byIndex === byId ? text : <slot name={byIndex}>{text}</slot>}</slot>;
   }
 
-  private renderEmptyState(colSpan: number) {
+  private renderEmptyState(colSpan: number, emptyText: string) {
     return (
       <tr class="empty-row">
         <td class="empty-cell" colSpan={colSpan}>
           <slot name="empty">
-            <span class="empty-text">Nu există date de afișat.</span>
+            <span class="empty-text">{emptyText}</span>
           </slot>
         </td>
       </tr>
@@ -390,6 +461,8 @@ export class MudTable {
   }
 
   render() {
+    const m = this.messages();
+    const lang = hostLang(this.host, this.locale);
     const columns = this.columns ?? [];
     const rows = this.rows ?? [];
     const hasRows = rows.length > 0;
@@ -399,7 +472,7 @@ export class MudTable {
     const someSelected = this.someRowsSelected();
 
     return (
-      <Host>
+      <Host lang={lang}>
         <div
           class="table-scroll"
           tabindex={0}
@@ -421,11 +494,13 @@ export class MudTable {
               <tr class="row row--header">
                 {this.selectable && (
                   <th class="th th--selection" scope="col" data-table-selection="">
-                    <mud-checkbox checked={allSelected} indeterminate={someSelected} onMudChange={this.handleSelectAll}>
-                      <span slot="label" class="visually-hidden">
-                        Selectează toate rândurile
-                      </span>
-                    </mud-checkbox>
+                    <mud-checkbox
+                      size="sm"
+                      aria-label={m.selectAllLabel}
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onMudChange={this.handleSelectAll}
+                    />
                   </th>
                 )}
                 {columns.map(column => {
@@ -463,7 +538,7 @@ export class MudTable {
               </tr>
             </thead>
             <tbody class="tbody">
-              {!hasRows && this.renderEmptyState(totalColumns)}
+              {!hasRows && this.renderEmptyState(totalColumns, m.emptyText)}
               {hasRows &&
                 rows.map((row, rowIndex) => {
                   const rowId = this.getRowId(row, rowIndex);
@@ -483,13 +558,11 @@ export class MudTable {
                       {this.selectable && (
                         <td class="td td--selection" data-table-selection="">
                           <mud-checkbox
+                            size="sm"
+                            aria-label={formatMessage(m.selectRowLabel, this.host, this.locale, { row: rowIndex + 1 })}
                             checked={selected}
                             onMudChange={(event: Event) => this.handleRowSelect(event, rowId)}
-                          >
-                            <span slot="label" class="visually-hidden">
-                              Selectează rândul {rowIndex + 1}
-                            </span>
-                          </mud-checkbox>
+                          />
                         </td>
                       )}
                       {columns.map(column => {
@@ -502,7 +575,7 @@ export class MudTable {
                               [`td--align-${align}`]: true,
                             }}
                           >
-                            {this.renderCellContent(column, row, rowIndex)}
+                            {this.renderCellContent(column, row, rowId, rowIndex)}
                           </td>
                         );
                       })}

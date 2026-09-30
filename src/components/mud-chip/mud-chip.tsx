@@ -1,7 +1,12 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { CHIP_MESSAGES } from './mud-chip.messages';
+import type { ChipMessages } from './mud-chip.messages';
 
 /**
  * Chip — compact, pill-shaped control for filter selection or token display.
@@ -23,9 +28,11 @@ import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } fro
  *               Falls back to the `label` prop when empty.
  * @slot icon-start - Optional leading visual: `mud-icon` or any 20×20 element.
  *               Inherits text color via `currentColor`.
- * @slot avatar - Optional leading avatar (`mud-avatar` or `<img>`), rendered
- *               flush to the leading edge and sized to ~chip height. Best for
- *               `type="input"` person/entity chips.
+ * @slot avatar - Optional leading avatar (`mud-avatar size="xs"` or `<img>`).
+ *               Figma 203:2082 gives this chip its own surface — white, outlined
+ *               — with a 24px avatar inset 6px, so pass the `xs` rung: the slot
+ *               pins the box to 24px, but an avatar built for a larger rung
+ *               keeps that rung's typography inside it.
  */
 @Component({
   tag: 'mud-chip',
@@ -63,8 +70,9 @@ export class MudChip {
 
   /**
    * Optional numeric badge rendered after the label (e.g. a result count).
-   * The badge colour inverts with the chip surface so it stays legible in both
-   * the default and selected states. Omit (or pass a non-number) to hide it.
+   * It is the design system's light counter badge — white pill, dark digits —
+   * on both the default and the selected chip, which is what keeps it legible
+   * on either surface. Omit (or pass a non-number) to hide it.
    */
   @Prop() count?: number;
 
@@ -77,9 +85,11 @@ export class MudChip {
 
   /**
    * Accessible-name fallback. Used as `aria-label` on the internal `<button>`
-   * when the default slot is empty (and no explicit `aria-label` is set). Does
-   * NOT render visible text — use the default slot for that. Matches the
-   * `mud-button` convention.
+   * when the default slot is empty and the host has no native `aria-label`. Does
+   * NOT render visible text — use the default slot for that.
+   *
+   * @deprecated `label` means visible text everywhere else in the library. Set the
+   * native `aria-label` attribute instead; `label` goes away in the next major.
    */
   @Prop() label?: string;
 
@@ -90,9 +100,25 @@ export class MudChip {
    */
   @Prop({ reflect: true }) removable: boolean = false;
 
+  /**
+   * Accessible label for the remove button. The chip's own text is appended to
+   * it, so a chip reading "Ion Popescu" gets "Elimină Ion Popescu". Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Elimină' (ro-MD)
+   */
+  @Prop({ attribute: 'remove-label' }) removeLabel?: string;
+
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
   @State() private hasIconStart: boolean = false;
   @State() private hasAvatar: boolean = false;
   @State() private hasLabelSlot: boolean = false;
+  /** The host's native `aria-label`, moved onto the internal `<button>`. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudChipElement;
 
@@ -106,6 +132,31 @@ export class MudChip {
    */
   @Event() mudRemove!: EventEmitter<void>;
 
+  private stopLang?: () => void;
+  private stopAriaLabel?: () => void;
+  private warnedLabelDeprecated = false;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+    this.stopAriaLabel?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): ChipMessages {
+    return localeMessages('mud-chip', this.host, this.locale, CHIP_MESSAGES, {
+      removeLabel: this.removeLabel,
+    });
+  }
+
   componentWillLoad() {
     this.detectSlots();
   }
@@ -117,8 +168,15 @@ export class MudChip {
       );
     }
     if (!this.hasAccessibleName()) {
+      console.warn('[mud-chip] chips require a label — provide text via the default slot, or an `aria-label`.');
+    }
+  }
+
+  componentDidRender() {
+    if (this.label?.trim() && !this.warnedLabelDeprecated) {
+      this.warnedLabelDeprecated = true;
       console.warn(
-        '[mud-chip] chips require a label — provide text via the default slot, the `label` prop, or `aria-label`.',
+        '[mud-chip] `label` as an accessible name is deprecated: set the native `aria-label` attribute instead. It goes away in the next major.',
       );
     }
   }
@@ -172,8 +230,8 @@ export class MudChip {
   };
 
   private hasAccessibleName(): boolean {
+    if (this.resolvedAriaLabel) return true;
     if (this.label && this.label.trim().length > 0) return true;
-    if (this.host.hasAttribute('aria-label')) return true;
     if (this.host.hasAttribute('aria-labelledby')) return true;
     if (this.hasLabelSlot) return true;
     // Final safety net for environments (unit tests) where slotchange does not
@@ -183,9 +241,8 @@ export class MudChip {
   }
 
   private resolveLabelText(): string {
+    if (this.resolvedAriaLabel) return this.resolvedAriaLabel.trim();
     if (this.label && this.label.trim().length > 0) return this.label.trim();
-    const ariaLabel = this.host.getAttribute('aria-label');
-    if (ariaLabel && ariaLabel.trim().length > 0) return ariaLabel.trim();
     const text = (this.host.textContent ?? '').trim();
     return text;
   }
@@ -220,17 +277,19 @@ export class MudChip {
   };
 
   render() {
+    const m = this.messages();
     const labelText = this.resolveLabelText();
+    const lang = hostLang(this.host, this.locale);
     const isFilter = this.type === 'filter';
     const isInput = this.type === 'input';
     const showRemove = isInput && this.removable;
     const ariaPressed = isFilter ? (this.selected ? 'true' : 'false') : null;
     const ariaDisabled = this.disabled ? 'true' : null;
     const tabIndexAttr = this.disabled ? -1 : 0;
-    // Slot-first content (matches mud-button/mud-checkbox): visible text lives
-    // ONLY in the default slot. The `label` prop is an ARIA-only fallback for
-    // the button's accessible name when no slot content is provided.
-    const ariaLabelAttr = !this.hasLabelSlot ? labelText || undefined : undefined;
+    // Visible text lives only in the default slot. The host's native `aria-label`
+    // names the button whatever the slot holds; without one, the deprecated
+    // `label` names it when the slot is empty.
+    const ariaLabelAttr = this.resolvedAriaLabel ?? (!this.hasLabelSlot ? labelText || undefined : undefined);
     // `multi` filter chips surface selection with a leading ✓ (Figma 524:3964),
     // so consumers no longer hand-slot a checkmark icon.
     const showCheck = isFilter && this.selectionMode === 'multi' && this.selected;
@@ -245,7 +304,7 @@ export class MudChip {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <button
           class="control"
           type="button"
@@ -277,23 +336,20 @@ export class MudChip {
           <button
             class="remove"
             type="button"
-            aria-label={`Remove ${labelText || 'chip'}`}
+            aria-label={labelText ? `${m.removeLabel} ${labelText}` : m.removeLabel}
             disabled={this.disabled}
             tabindex={this.disabled ? -1 : 0}
             onClick={this.handleRemoveClick}
             onKeyDown={this.handleRemoveKeyDown}
           >
             {/*
-              Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG): the
-              chip's × glyph renders at 8–10px (half the `--_remove-icon-size`
-              token). `mud-icon` ships `cross-small` only at 16/20/24, so
-              substituting it would enlarge the glyph by 60–100% and break
-              the design contract. Same rationale as mud-checkbox's check/dash.
+              Figma 203:2078 is the 20/cross-small asset at 20x20, and the circle
+              that appears behind it on hover (205:2476) hugs that same 20px box.
+              The glyph inside `cross-small` covers 40% of its frame, so the icon
+              set draws the same ~8px × the chip has always shown.
             */}
             <span class="remove-icon" aria-hidden="true">
-              <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <path d="M1 1 L9 9 M9 1 L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-              </svg>
+              <mud-icon name="cross-small" size={this.size === 'sm' ? 16 : 20}></mud-icon>
             </span>
           </button>
         ) : null}

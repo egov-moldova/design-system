@@ -8,18 +8,29 @@ const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// The version the sidebar shows under the title (manager.mjs): package.json's,
+// as committed, or as a release pipeline stamped it before building Storybook.
+// A local server reads "development" whatever this is.
+const { version: MUD_VERSION } = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+
 // In order of appearance in the UI (toolbar, addons panel, then docs)
 //
-// `@storybook/addon-vitest@10.4.0` is intentionally omitted: its "Run component
-// tests" UI panel calls the deprecated `vitest.init()` API and re-optimizes
-// Vite's deps mid-session, which crashes `dx:storybook` and tears down the
-// whole `yarn dev` graph. Tests remain runnable from the CLI:
-//   yarn test                  — spec (mock-doc, fast, 1485 assertions)
-//   yarn test.storybook        — storybook one-shot (CI / pre-commit gate)
+// `@storybook/addon-vitest` (dev only) adds the "Component tests" panel. It was
+// omitted on 10.4.0, where "Run tests" crashed `dx:storybook` while Vite
+// re-optimized deps mid-session. On 10.6.0 the panel still logs the deprecated
+// `vitest.init()` warning and still re-optimizes, but the server survives and
+// the panel runs the same tests as `yarn test.storybook`. CLI equivalents:
+//   yarn test                  — spec (mock-doc); the only test lane CI runs
+//   yarn test.storybook        — storybook one-shot (local; not run by CI)
 //   yarn test.storybook.watch  — storybook watch mode (manual second terminal)
 // The `storybookTest` plugin is imported directly in `vitest.config.mts`, so
-// removing the UI addon does not affect CLI test execution.
-const devAddons = ['@storybook/addon-docs', '@whitespace/storybook-addon-html', '@storybook/addon-a11y'];
+// the panel is optional for CLI test execution.
+const devAddons = [
+  '@storybook/addon-docs',
+  '@whitespace/storybook-addon-html',
+  '@storybook/addon-a11y',
+  '@storybook/addon-vitest',
+];
 
 const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
@@ -27,25 +38,24 @@ export default {
   stories: ['./stories/**/*.mdx', '../src/components/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
   // Map tokens/generated/ → /tokens/generated/ in production build output.
   // In dev mode, the custom middleware in viteFinal serves these files instead.
-  // Map illustration SVGs to /assets/assets/ — in production Vite bundles the Stencil ESM into
-  // /assets/[hash].js, so getAssetPath('./assets/illustrations/name.svg') resolves to
-  // /assets/assets/illustrations/*. In dev, Vite serves dist/mud/ from the filesystem
-  // directly (fs.allow: ['..']), so staticDirs is not needed there and the correct URL is
-  // /dist/mud/assets/illustrations/* regardless of this mapping.
+  // Map component asset dirs to /assets/assets/ — in production Vite bundles the Stencil ESM into
+  // /assets/[hash].js, so getAssetPath('./assets/<file>') resolves to /assets/assets/*. In dev,
+  // Vite serves dist/mud/ from the filesystem directly (fs.allow: ['..']), so staticDirs is not
+  // needed there and the correct URL is /dist/mud/assets/* regardless of this mapping.
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
-    // Disabled during legacy migration — mud-illustration is in src/legacy/ and not shipped.
-    // Re-enable (and update path) when a new illustration component is introduced.
-    // { from: '../src/components/mud-illustration/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
     // The shipped library's @font-face (src/assets/css/base/fonts.css) requests
-    // the static Onest weights at /assets/fonts/onest-*.ttf. Without this they 404
-    // in dev and the exact-weight faces shadow the variable font → fallback render.
+    // /assets/fonts/onest-variable.woff2. Without this it 404s in dev, where
+    // stencil.config.ts copies no fonts in watch mode.
     { from: '../src/assets/fonts', to: 'assets/fonts' },
     { from: '../src/components/mud-icon/assets', to: 'assets/assets' },
     { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
+  // The manager bundle receives every key of this preset as a build-time
+  // `process.env.<KEY>`; see MUD_VERSION above.
+  env: config => ({ ...config, MUD_SIDEBAR_VERSION: MUD_VERSION ?? '' }),
   framework: {
     name: getAbsolutePath('@storybook/web-components-vite'),
     options: {},
@@ -147,8 +157,18 @@ export default {
     // Both dirs are gitignored so Vite's chokidar won't see changes — we use Node
     // fs.watch and send a full-reload via Vite's WebSocket.
     config.plugins = config.plugins || [];
+    const timers = {};
+    const watchers = [];
     config.plugins.push({
       name: 'stencil-hot-reload',
+      // Close on `closeBundle`, which Vite runs from every environment's plugin
+      // container on both server close and restart. `httpServer` 'close' is not
+      // enough: in middleware mode `server.httpServer` is null, so that listener was
+      // never attached and the recursive watchers kept the process alive.
+      closeBundle() {
+        watchers.splice(0).forEach(w => w.close());
+        Object.values(timers).forEach(clearTimeout);
+      },
       configureServer(server) {
         const projectRoot = path.resolve(__dirname, '..');
 
@@ -174,8 +194,6 @@ export default {
         // Watch both gitignored dirs with separate debounce per dir.
         // Token-only changes skip module invalidation (tokens are <link> tags).
         // Component changes invalidate only dist/mud modules.
-        const timers = {};
-        const watchers = [];
 
         function onTokenChange(filename) {
           clearTimeout(timers.tokens);
@@ -210,6 +228,11 @@ export default {
           'dist/mud': onComponentChange,
         };
 
+        // The Vitest lane loads this config too, but its browser server runs with
+        // `watch: null` and compiles components from source, so reloads have no
+        // consumer there.
+        if (process.env.VITEST) return;
+
         for (const [dir, handler] of Object.entries(watchMap)) {
           try {
             const w = fs.watch(path.resolve(projectRoot, dir), { recursive: true }, (_event, filename) => {
@@ -220,8 +243,6 @@ export default {
             console.warn(`[stencil-hot-reload] Could not watch ${dir}:`, e.message);
           }
         }
-
-        server.httpServer?.on('close', () => watchers.forEach(w => w.close()));
       },
     });
 

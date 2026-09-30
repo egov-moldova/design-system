@@ -2,6 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-tooltip';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { TOOLTIP_MESSAGES } from '../mud-tooltip.messages';
+import type { TooltipMessages } from '../mud-tooltip.messages';
 import { TOOLTIP_POSITIONS, TOOLTIP_SIZES, TOOLTIP_VARIANTS } from '../mud-tooltip.types';
 
 const queryBubble = (root: Element | null | undefined): HTMLElement | null =>
@@ -76,6 +79,21 @@ describe('mud-tooltip', () => {
         </mud-tooltip>,
       );
       expect(queryCloseButton(root)).toBeNull();
+    });
+
+    it('exposes only the trigger and default slots, matching the single-text Figma tooltip', async () => {
+      const { root } = await render(
+        <mud-tooltip>
+          <button slot="trigger" type="button">
+            Trigger
+          </button>
+          <span slot="title">Title</span>
+          Body
+        </mud-tooltip>,
+      );
+      const slots = Array.from(root?.shadowRoot?.querySelectorAll('slot') ?? []).map(s => s.getAttribute('name'));
+      expect(slots).toEqual(['trigger', null]);
+      expect(root?.shadowRoot?.querySelector('.header')).toBeNull();
     });
   });
 
@@ -200,6 +218,84 @@ describe('mud-tooltip', () => {
       const slotted = root?.querySelector('[slot="trigger"]') as HTMLElement;
       const bubbleId = queryBubble(root)?.id;
       expect(slotted?.getAttribute('aria-describedby')).toBe(bubbleId ?? '');
+    });
+
+    it('mirrors the default-slot text into the described-by node', async () => {
+      const { root } = await render(
+        <mud-tooltip open>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          <span slot="title">Old title</span>
+          Codul are 13 cifre.
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Codul are 13 cifre.');
+    });
+
+    it('leaves framework comment markers out of the described-by node', async () => {
+      const { root } = await render(
+        <mud-tooltip>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          Ajutor
+        </mud-tooltip>,
+      );
+      root?.appendChild(document.createComment('v-if'));
+      (root as HTMLElement).setAttribute('open', '');
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Ajutor');
+    });
+
+    it('mirrors the content prop when the default slot is empty', async () => {
+      const { root } = await render(
+        <mud-tooltip open content="Detalii despre cont">
+          <button slot="trigger" type="button">
+            T
+          </button>
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Detalii despre cont');
+    });
+
+    it('does not mirror the content prop when a whitespace node takes the default slot', async () => {
+      const { root } = await render(
+        <mud-tooltip content="Detalii despre cont">
+          <button slot="trigger" type="button">
+            T
+          </button>
+        </mud-tooltip>,
+      );
+      root?.appendChild(document.createTextNode('\n  '));
+      (root as HTMLElement).setAttribute('open', '');
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('');
+    });
+
+    it('mirrors an element with an empty slot name, which the default slot receives', async () => {
+      const { root } = await render(
+        <mud-tooltip open>
+          <button slot="trigger" type="button">
+            T
+          </button>
+          <span slot="">Codul are 13 cifre.</span>
+        </mud-tooltip>,
+      );
+      await flush();
+
+      const mirrorId = (root?.querySelector('[slot="trigger"]') as HTMLElement).getAttribute('aria-describedby') ?? '';
+      expect(document.getElementById(mirrorId)?.textContent).toBe('Codul are 13 cifre.');
     });
 
     it('removes aria-describedby when the tooltip closes', async () => {
@@ -424,4 +520,29 @@ describe('mud-tooltip', () => {
       expect(bubble.textContent?.trim()).toContain('Ajutor: introdu codul');
     });
   });
+});
+
+describeLocales<TooltipMessages>('mud-tooltip', TOOLTIP_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { variant: 'coach', open: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    if (props.dismissHint !== undefined) attrs['dismiss-hint'] = String(props.dismissHint);
+    const { root } = await render(
+      <mud-tooltip {...attrs}>
+        <button slot="trigger" type="button">
+          T
+        </button>
+        Body
+      </mud-tooltip>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    if (key === 'dismissHint') return host.shadowRoot?.querySelector('.hint')?.textContent ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel', dismissHint: 'dismissHint' },
 });

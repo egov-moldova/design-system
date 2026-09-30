@@ -1,9 +1,12 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 import { setAssetPath } from '@stencil/core';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-stepper';
 import '../../mud-icon/mud-icon';
 
+import { STEPPER_MESSAGES } from '../mud-stepper.messages';
+import type { StepperMessages } from '../mud-stepper.messages';
 import type { StepperStep } from '../mud-stepper.types';
 
 // Romanian voice — onboarding flow used across the spec suite.
@@ -67,7 +70,7 @@ describe('mud-stepper', () => {
       // List semantics live on the HOST (a roleless host carrying aria-label trips
       // axe `aria-prohibited-attr`); the inner <ol> is presentational.
       expect(root?.getAttribute('role')).toBe('list');
-      expect(root?.getAttribute('aria-label')).toBe('Progress tracker');
+      expect(root?.getAttribute('aria-label')).toBe(STEPPER_MESSAGES['ro-MD'].navLabel);
       expect(queryRoot(root)?.getAttribute('role')).toBe('none');
     });
 
@@ -167,7 +170,7 @@ describe('mud-stepper', () => {
       const firstStep = querySteps(root)[0];
       const icon = firstStep.querySelector('mud-icon');
       // mud-icon's `name` prop is non-reflecting — read via property, not attribute.
-      expect((icon as unknown as { name: string }).name).toBe('checkmark-large');
+      expect((icon as unknown as { name: string }).name).toBe('checkmark-small');
     });
 
     it('renders an exclamation icon for error steps', async () => {
@@ -426,4 +429,75 @@ describe('mud-stepper', () => {
       items.slice(0, -1).forEach(li => expect(li.classList.contains('step--last')).toBe(false));
     });
   });
+});
+
+const SUFFIX_INDEX: Record<string, number> = {
+  completedSuffix: 0,
+  currentSuffix: 1,
+  availableSuffix: 2,
+  errorSuffix: 3,
+  pendingSuffix: 4,
+};
+
+describe('mud-stepper — supportingSeparator override', () => {
+  const stepsWithSupport: StepperStep[] = [{ label: 'Step', supportingText: 'Details', status: 'current' }];
+  const nameOf = async (separator: string) => {
+    const { root } = await render(
+      <mud-stepper locale="en-US" steps={stepsWithSupport} supporting-separator={separator}></mud-stepper>,
+    );
+    return root?.shadowRoot?.querySelector('li.step')?.getAttribute('aria-label') ?? '';
+  };
+
+  it('supportingSeparator override beats the locale', async () => {
+    expect(await nameOf(' / ')).toContain('Step / Details');
+  });
+
+  it('empty supportingSeparator falls back', async () => {
+    expect(await nameOf('')).toContain(`Step${STEPPER_MESSAGES['en-US'].supportingSeparator}Details`);
+  });
+});
+
+describeLocales<StepperMessages>('mud-stepper', STEPPER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.navLabel !== undefined) attrs['nav-label'] = String(props.navLabel);
+    if (props.completedSuffix !== undefined) attrs['completed-suffix'] = String(props.completedSuffix);
+    if (props.currentSuffix !== undefined) attrs['current-suffix'] = String(props.currentSuffix);
+    if (props.availableSuffix !== undefined) attrs['available-suffix'] = String(props.availableSuffix);
+    if (props.errorSuffix !== undefined) attrs['error-suffix'] = String(props.errorSuffix);
+    if (props.pendingSuffix !== undefined) attrs['pending-suffix'] = String(props.pendingSuffix);
+    const steps: StepperStep[] = [
+      { label: 'S', status: 'completed' },
+      { label: 'S', status: 'current' },
+      { label: 'S', status: 'available' },
+      { label: 'S', status: 'error' },
+      { label: 'S', status: 'pending' },
+    ];
+    const { root } = await render(
+      <mud-stepper steps={steps} {...attrs}></mud-stepper>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'navLabel') return host.getAttribute('aria-label');
+    const index = SUFFIX_INDEX[key as string];
+    if (index === undefined) return null;
+    const items = host.shadowRoot?.querySelectorAll('li.step') ?? [];
+    const label = items[index]?.getAttribute('aria-label');
+    return label ? label.slice(1) : null;
+  },
+  overrides: {
+    navLabel: 'navLabel',
+    completedSuffix: 'completedSuffix',
+    currentSuffix: 'currentSuffix',
+    availableSuffix: 'availableSuffix',
+    errorSuffix: 'errorSuffix',
+    pendingSuffix: 'pendingSuffix',
+  },
+  unreachable: {
+    supportingSeparator:
+      'joins label and supportingText inside one aria-label string — asserted by `empty supportingSeparator falls back` above',
+  },
 });

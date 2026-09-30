@@ -1,11 +1,16 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
 import { setAssetPath } from '@stencil/core';
 
+import { formatMessage } from '../../../utils/locale';
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-avatar';
 import '../../mud-icon/mud-icon';
 
+import { AVATAR_MESSAGES } from '../mud-avatar.messages';
+import type { AvatarMessages } from '../mud-avatar.messages';
 import { AVATAR_SIZES, AVATAR_TYPES } from '../mud-avatar.types';
 import { deriveInitials, ICON_SIZE_FOR } from '../mud-avatar.utils';
+import { ICON_SIZES } from '../../mud-icon/mud-icon.types';
 
 // `mud-icon` fetches its SVGs asynchronously via `getAssetPath` + `fetch`.
 // Stub both in this test environment so the avatar tests that render
@@ -15,9 +20,9 @@ let fetchSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   setAssetPath('http://localhost/');
   fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+    const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
     if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[2]}" data-size="${match[1]}"></svg>`, {
+    return new Response(`<svg data-name="${match[2]}" data-variant="${match[1]}"></svg>`, {
       status: 200,
       headers: { 'Content-Type': 'image/svg+xml' },
     });
@@ -78,7 +83,7 @@ describe('deriveInitials', () => {
 describe('ICON_SIZE_FOR', () => {
   it('maps every avatar size to a supported mud-icon size', () => {
     for (const size of AVATAR_SIZES) {
-      expect([12, 16, 20, 24]).toContain(ICON_SIZE_FOR[size]);
+      expect(ICON_SIZES).toContain(ICON_SIZE_FOR[size]);
     }
   });
 });
@@ -183,6 +188,35 @@ describe('mud-avatar', () => {
       expect(queryPhoto(root)).toBeNull();
       expect(queryIcon(root)).toBeTruthy();
     });
+
+    it('falls back to initials when the image fails to load', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      expect(queryPhoto(root)).toBeTruthy();
+
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+
+      // A portrait that 404s must not leave an empty circle behind.
+      expect(queryPhoto(root)).toBeNull();
+      expect(queryInitials(root)?.textContent).toBe('IP');
+    });
+
+    it('retries the photo when `src` changes after a failure', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar type="photo" src="https://example.com/missing.png" name="Ion Popescu"></mud-avatar>,
+      );
+      queryPhoto(root)?.dispatchEvent(new Event('error'));
+      await waitForChanges();
+      expect(queryPhoto(root)).toBeNull();
+
+      // A new URL deserves its own attempt; the failure must not be sticky.
+      (root as HTMLMudAvatarElement).src = 'https://example.com/ion.png';
+      await waitForChanges();
+
+      expect(queryPhoto(root)?.getAttribute('src')).toBe('https://example.com/ion.png');
+    });
   });
 
   describe('type="icon" rendering', () => {
@@ -213,10 +247,36 @@ describe('mud-avatar', () => {
       expect(root?.getAttribute('role')).toBe('img');
     });
 
-    it('uses `aria-label` override when provided', async () => {
+    it('uses `aria-label` override when provided, winning over `name`', async () => {
       const { root } = await render(
-        <mud-avatar name="Ion Popescu" ariaLabel="Coleg cu rol de administrator"></mud-avatar>,
+        <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
       );
+      expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
+    });
+
+    it('follows a later `name` change instead of freezing on the first one', async () => {
+      const { root, waitForChanges } = await render(<mud-avatar name="Ion Popescu"></mud-avatar>);
+      expect(root?.getAttribute('aria-label')).toBe('Ion Popescu');
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // The host's own `aria-label` write is read back by whatever names the
+      // host. Treating that echo as the consumer's label pinned the name to
+      // whoever rendered first, so a recycled element announced the wrong
+      // person. `nameHostWithFallback` tells the two apart by provenance.
+      expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
+    });
+
+    it('keeps a consumer `aria-label` across a `name` change', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-avatar name="Ion Popescu" aria-label="Coleg cu rol de administrator"></mud-avatar>,
+      );
+
+      (root as HTMLMudAvatarElement).name = 'Maria Pop';
+      await waitForChanges();
+
+      // Their label is theirs: re-applying the fallback must not overwrite it.
       expect(root?.getAttribute('aria-label')).toBe('Coleg cu rol de administrator');
     });
 
@@ -225,14 +285,16 @@ describe('mud-avatar', () => {
       expect(root?.getAttribute('aria-label')).toBe('Maria Pop');
     });
 
-    it('falls back to "Avatar for XX" when only initials are set', async () => {
+    it('falls back to the locale initials label when only initials are set', async () => {
       const { root } = await render(<mud-avatar initials="AB"></mud-avatar>);
-      expect(root?.getAttribute('aria-label')).toBe('Avatar for AB');
+      expect(root?.getAttribute('aria-label')).toBe(
+        formatMessage(AVATAR_MESSAGES['ro-MD'].initialsLabel, root!, undefined, { initials: 'AB' }),
+      );
     });
 
-    it('falls back to "User avatar" when nothing is set', async () => {
+    it('falls back to the locale fallback label when nothing is set', async () => {
       const { root } = await render(<mud-avatar type="icon"></mud-avatar>);
-      expect(root?.getAttribute('aria-label')).toBe('User avatar');
+      expect(root?.getAttribute('aria-label')).toBe(AVATAR_MESSAGES['ro-MD'].fallbackLabel);
     });
   });
 
@@ -282,4 +344,42 @@ describe('mud-avatar', () => {
       expect(queryInner(root)?.classList.contains('type-icon')).toBe(true);
     });
   });
+});
+
+describe('mud-avatar — initialsLabel override', () => {
+  it('initialsLabel override beats the locale', async () => {
+    const { root } = await render(
+      <mud-avatar locale="en-US" initials="AB" initials-label="Profile {initials}"></mud-avatar>,
+    );
+    expect(root?.getAttribute('aria-label')).toBe('Profile AB');
+  });
+
+  it('empty initialsLabel falls back', async () => {
+    const { root } = await render(<mud-avatar locale="en-US" initials="AB" initials-label=""></mud-avatar>);
+    expect(root?.getAttribute('aria-label')).toBe(
+      formatMessage(AVATAR_MESSAGES['en-US'].initialsLabel, root!, 'en-US', { initials: 'AB' }),
+    );
+  });
+});
+
+describeLocales<AvatarMessages>('mud-avatar', AVATAR_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { type: 'icon' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.initialsLabel !== undefined) attrs['initials-label'] = String(props.initialsLabel);
+    if (props.fallbackLabel !== undefined) attrs['fallback-label'] = String(props.fallbackLabel);
+    const { root } = await render(
+      <mud-avatar {...attrs}></mud-avatar>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'fallbackLabel') return host.getAttribute('aria-label');
+    return null;
+  },
+  overrides: { fallbackLabel: 'fallbackLabel' },
+  unreachable: {
+    initialsLabel: 'carries an {initials} placeholder — asserted by `empty initialsLabel falls back` above',
+  },
 });

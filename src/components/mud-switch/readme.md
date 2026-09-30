@@ -23,16 +23,15 @@ visual footprint stays untouched.
 
 ## Properties
 
-| Property         | Attribute         | Description                                                                                                                                                                                                                        | Type                  | Default     |
-| ---------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `ariaLabel`      | `aria-label`      | Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.                    | `string \| undefined` | `undefined` |
-| `ariaLabelledby` | `aria-labelledby` | Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.                                                                                                                                                         | `string \| undefined` | `undefined` |
-| `checked`        | `checked`         | Whether the switch is currently on.                                                                                                                                                                                                | `boolean`             | `false`     |
-| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                         | `boolean`             | `false`     |
-| `label`          | `label`           | Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the mud-button / mud-checkbox / mud-radio convention. | `string \| undefined` | `undefined` |
-| `name`           | `name`            | Form-control `name`. Used during form submission.                                                                                                                                                                                  | `string \| undefined` | `undefined` |
-| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                                                                                                                                        | `boolean`             | `false`     |
-| `value`          | `value`           | Value submitted with the form when this switch is on.                                                                                                                                                                              | `string \| undefined` | `undefined` |
+| Property         | Attribute         | Description                                                                                                                                                                                 | Type                  | Default     |
+| ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `ariaLabelledby` | `aria-labelledby` | Consumer-set `aria-labelledby`. Same strip + cache pattern as `aria-label`.                                                                                                                 | `string \| undefined` | `undefined` |
+| `checked`        | `checked`         | Whether the switch is currently on.                                                                                                                                                         | `boolean`             | `false`     |
+| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                  | `boolean`             | `false`     |
+| `label`          | `label`           | Visible label text, which also names the switch. The `label` slot replaces it for rich content. For an accessible name with no visible text, set the native `aria-label` attribute instead. | `string \| undefined` | `undefined` |
+| `name`           | `name`            | Form-control `name`. Used during form submission.                                                                                                                                           | `string \| undefined` | `undefined` |
+| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                                                                                                 | `boolean`             | `false`     |
+| `value`          | `value`           | Value submitted with the form when this switch is on.                                                                                                                                       | `string \| undefined` | `undefined` |
 
 
 ## Events
@@ -63,19 +62,6 @@ visual footprint stays untouched.
 | `"thumb"`   |             |
 | `"track"`   |             |
 
-
-## Dependencies
-
-### Used by
-
- - [mud-cookie-banner](../mud-cookie-banner)
-
-### Graph
-```mermaid
-graph TD;
-  mud-cookie-banner --> mud-switch
-  style mud-switch fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

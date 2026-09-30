@@ -21,9 +21,29 @@ export interface NumericInputStepDetail {
   value: number;
 }
 
-export interface NumericInputErrorDetail {
-  /** Machine-readable reason. */
-  reason: 'out-of-range' | 'not-a-number';
-  /** Raw string the user typed when the validation tripped. */
-  rawValue: string;
-}
+/**
+ * `mudError` detail: `reason` decides whether `message` exists, so a consumer narrowing on it
+ * never needs an `undefined` check for the branch that always carries one.
+ */
+export type NumericInputErrorDetail =
+  | {
+      /**
+       * The parsed value fell outside `min` / `max` (`out-of-range`), or the text held
+       * non-numeric residue past whatever the input mask lets through (`not-a-number`).
+       */
+      reason: 'out-of-range' | 'not-a-number';
+      /** Raw string the user typed when the validation tripped. */
+      rawValue: string;
+    }
+  | {
+      /**
+       * The entry uses the locale's own grouping character followed by exactly three digits
+       * (`1.234` under `ro-MD`), which could be a thousands group or a decimal, so the field
+       * yields no value instead of guessing.
+       */
+      reason: 'ambiguous';
+      /** Raw string the user typed when the validation tripped. */
+      rawValue: string;
+      /** Human-readable text in the field's locale. */
+      message: string;
+    };

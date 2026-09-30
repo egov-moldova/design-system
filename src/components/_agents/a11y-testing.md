@@ -1,5 +1,11 @@
 # Accessibility Testing Pattern — WCAG 2.1 AA
 
+## Scope
+Governs the three layers that validate WCAG 2.1 AA compliance of every `mud-*` component.
+**Read when writing accessibility assertions or running an accessibility audit.**
+
+---
+
 **Canonical reference:** Skill [`accessibility-compliance`](../../../.claude/skills/accessibility-compliance/SKILL.md) and Success Criteria list.
 
 This file describes the three layers used to validate accessibility of every `mud-*` component:
@@ -24,7 +30,7 @@ Components with state changes (modal open/close, dropdown expand, error state) m
 
 Use `render()` from `@stencil/vitest` and assert documented role / aria-* / focus attributes. This is fast, deterministic, and runs on every `yarn test`.
 
-> **Coverage requirement (always add this side-effect import)**: every spec MUST `import '../<componentName>';` at the top so `stencilVitestPlugin` compiles the source file on-the-fly and `coverage v8` sees real per-file numbers. Without it the test still passes IF the element was registered elsewhere, but coverage reports **0%** for the component TSX — see `_agents/testing.md` for the full rule.
+> **Coverage requirement (always add this side-effect import)**: every spec MUST `import '../<componentName>';` at the top so `stencilVitestPlugin` compiles the source file on-the-fly and `coverage v8` sees real per-file numbers. Without it the test still passes IF the element was registered elsewhere, but coverage reports **0%** for the component TSX — see `testing.md` for the full rule.
 
 ```tsx
 // src/components/mud-button/test/mud-button.spec.tsx

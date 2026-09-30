@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-segmented-control · @egovmd/mud-web-components</title>
+    <title>mud-segmented-control · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-segmented-control">
     <main class="demo-main">
@@ -15,23 +15,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control
-                  id="seg-md"
-                  size="md"
-                  value="lista"
-                  aria-label="Vizualizare"
-                ></mud-segmented-control>
+                <mud-segmented-control id="seg-md" size="md" value="lista" aria-label="View"></mud-segmented-control>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control
-                  id="seg-sm"
-                  size="sm"
-                  value="lista"
-                  aria-label="Vizualizare"
-                ></mud-segmented-control>
+                <mud-segmented-control id="seg-sm" size="sm" value="lista" aria-label="View"></mud-segmented-control>
               </div>
               <span class="label">sm</span>
             </div>
@@ -43,13 +33,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control id="seg-icons" value="acasa" aria-label="Navigare"></mud-segmented-control>
+                <mud-segmented-control id="seg-icons" value="acasa" aria-label="Navigation"></mud-segmented-control>
               </div>
               <span class="label">segments with iconName</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control id="seg-disabled-seg" value="luna" aria-label="Perioadă"></mud-segmented-control>
+                <mud-segmented-control id="seg-disabled-seg" value="luna" aria-label="Period"></mud-segmented-control>
               </div>
               <span class="label">one disabled segment</span>
             </div>
@@ -59,7 +49,7 @@
                   id="seg-disabled-all"
                   disabled=""
                   value="lista"
-                  aria-label="Blocat"
+                  aria-label="Locked"
                 ></mud-segmented-control>
               </div>
               <span class="label">disabled (whole group)</span>
@@ -72,13 +62,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control id="seg-many" value="s1" aria-label="Pași"></mud-segmented-control>
+                <mud-segmented-control id="seg-many" value="s1" aria-label="Steps"></mud-segmented-control>
               </div>
               <span class="label">5+ segments (overflow)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-segmented-control id="seg-long" value="t1" aria-label="Filtru"></mud-segmented-control>
+                <mud-segmented-control id="seg-long" value="t1" aria-label="Filter"></mud-segmented-control>
               </div>
               <span class="label">long labels + diacritics</span>
             </div>
@@ -92,34 +82,34 @@
             if (el) el.segments = segments;
           };
           const view = [
-            { value: 'lista', label: 'Listă' },
-            { value: 'grid', label: 'Grilă' },
+            { value: 'lista', label: 'List' },
+            { value: 'grid', label: 'Grid' },
           ];
           set('seg-md', view);
           set('seg-sm', view);
           set('seg-icons', [
-            { value: 'acasa', label: 'Acasă', iconName: 'home-line' },
-            { value: 'cautare', label: 'Căutare', iconName: 'search' },
-            { value: 'profil', label: 'Profil', iconName: 'person' },
+            { value: 'acasa', label: 'Home', iconName: 'home-line' },
+            { value: 'cautare', label: 'Lookup', iconName: 'search' },
+            { value: 'profil', label: 'Profile', iconName: 'person' },
           ]);
           set('seg-disabled-seg', [
             { value: 'zi', label: 'Zi' },
-            { value: 'luna', label: 'Lună' },
-            { value: 'an', label: 'An (indisponibil)', disabled: true },
+            { value: 'luna', label: 'Month' },
+            { value: 'an', label: 'Year (unavailable)', disabled: true },
           ]);
           set('seg-disabled-all', view);
           set('seg-many', [
             { value: 's1', label: 'Unu' },
             { value: 's2', label: 'Doi' },
-            { value: 's3', label: 'Trei' },
-            { value: 's4', label: 'Patru' },
-            { value: 's5', label: 'Cinci' },
-            { value: 's6', label: 'Șase' },
+            { value: 's3', label: 'Three' },
+            { value: 's4', label: 'Four' },
+            { value: 's5', label: 'Five' },
+            { value: 's6', label: 'Six' },
           ]);
           set('seg-long', [
-            { value: 't1', label: 'Cereri în așteptare' },
-            { value: 't2', label: 'Procesate' },
-            { value: 't3', label: 'Respinse definitiv' },
+            { value: 't1', label: 'Pending requests' },
+            { value: 't2', label: 'Processed' },
+            { value: 't3', label: 'Rejected permanently' },
           ]);
         });
       </script>

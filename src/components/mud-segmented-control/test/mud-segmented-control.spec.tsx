@@ -32,6 +32,15 @@ const sampleSegments: SegmentedControlSegment[] = [
 
 describe('mud-segmented-control', () => {
   describe('defaults + prop reflection', () => {
+    it('has no slot, so light-DOM children are not rendered', async () => {
+      const { root } = await render(
+        <mud-segmented-control aria-label="Filtru">
+          <span>Ignorat</span>
+        </mud-segmented-control>,
+      );
+      expect(root?.shadowRoot?.querySelector('slot')).toBeNull();
+    });
+
     it('renders with default props reflected on the host', async () => {
       const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
       expect(root?.getAttribute('size')).toBe('md');
@@ -53,6 +62,16 @@ describe('mud-segmented-control', () => {
     it('reflects the fluid attribute when full-width', async () => {
       const { root } = await render(<mud-segmented-control fluid aria-label="Filtru"></mud-segmented-control>);
       expect(root?.getAttribute('fluid')).not.toBeNull();
+    });
+
+    it('does not reflect the stacked attribute by default', async () => {
+      const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('stacked')).toBeNull();
+    });
+
+    it('reflects the stacked attribute when the icon sits above the label', async () => {
+      const { root } = await render(<mud-segmented-control stacked aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('stacked')).not.toBeNull();
     });
 
     it('warns and falls back when size is invalid', async () => {

@@ -15,7 +15,6 @@ Required:
 
 - `componentName` — e.g. `mud-button`
 - `componentTsxPath` — e.g. `src/components/mud-button/mud-button.tsx`
-- `atomicLevel` — `atoms` | `molecules` | `organisms` | `templates`
 - `writeMode` — `parallel-write` (default) | `read-only`
 
 Optional:
@@ -79,7 +78,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: '<AtomicLevel>/CorName',
+  title: 'Components/<Name>', // e.g. 'Components/Badge' — no mud prefix
   component: '<componentName>',
   argTypes: {
     // ... per prop: control, options, description, table.defaultValue
@@ -111,7 +110,7 @@ Then in the story: `import { SPINNER_SIZES as SIZES } from './...types';` and us
 
 **Rules**:
 
-- Title: `Atoms/CorName`, `Molecules/CorName` — atomic hierarchy
+- Title: `Components/Badge`, `Components/Accordion Item` — single flat category, no `mud` prefix
 - `component`: string tag name (NOT JS reference)
 - `render`: function with HTML template strings, prefixed `/*html*/` for IDE syntax highlighting
 - Typed `args: Args` parameter (no bare `args =>`)
@@ -222,10 +221,14 @@ yarn lint --fix src/components/<componentName>/<componentName>.stories.ts 2>&1 |
 Then verify it renders:
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=<atomicLevel>-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_wait_for({ time: 3 })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
+
+`<title-slug>` is the file's own `title` after `Components/`, lowercased with `/` and spaces as `-`
+(`Components/Input/Date` → `components-input-date`); `storyIdFor` in
+`scripts/audit/lib/storybook-helpers.mjs` is the one builder.
 
 If console errors appear, capture them — they indicate the story has a bug (likely a TSX prop mismatch).
 

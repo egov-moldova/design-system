@@ -62,7 +62,7 @@ const docsSourceAllSizes = BUTTON_SIZES.map(s => /*html*/ `<mud-button size="${s
 
 const docsSourceAllShapes = /*html*/ `<mud-button shape="rectangular">Rectangular</mud-button>
 <mud-button shape="circular">Circular pill</mud-button>
-<mud-button shape="circular" icon-only label="Navigate forward">
+<mud-button shape="circular" icon-only aria-label="Navigate forward">
   <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
 </mud-button>`;
 
@@ -88,8 +88,8 @@ const docsSourceSlotVariations = /*html*/ /*html*/ `<!-- text-only -->
   <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
 </mud-button>
 
-<!-- icon-only (requires \`label\` for screen readers) -->
-<mud-button icon-only label="Navigate forward">
+<!-- icon-only (requires \`aria-label\` for screen readers) -->
+<mud-button icon-only aria-label="Navigate forward">
   <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
 </mud-button>`;
 
@@ -158,7 +158,7 @@ const renderAllShapes = () => /*html*/ `
       <span style="${cellLabelStyle}">circular (pill)</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
-      <mud-button variant="primary" size="md" shape="circular" icon-only label="Navigate forward">
+      <mud-button variant="primary" size="md" shape="circular" icon-only aria-label="Navigate forward">
         <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
       </mud-button>
       <span style="${cellLabelStyle}">circular (icon-only)</span>
@@ -339,7 +339,7 @@ const renderSlotVariations = () => /*html*/ `
       <span style="${cellLabelStyle}">icon-start + icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
-      <mud-button variant="primary" size="md" icon-only label="Navigate forward">
+      <mud-button variant="primary" size="md" icon-only aria-label="Navigate forward">
         <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
       </mud-button>
       <span style="${cellLabelStyle}">icon-only</span>
@@ -473,7 +473,7 @@ const renderTouchTarget = () => {
       <div class="touch-row">
         <div class="touch-cell">
           <span class="touch-wrap" data-shape="icon-only" style="--btn-h: 32px; --btn-t: 40px;">
-            <mud-button size="sm" shape="circular" icon-only label="Navigate forward">
+            <mud-button size="sm" shape="circular" icon-only aria-label="Navigate forward">
               <mud-icon slot="icon" name="arrow-right" size="16"></mud-icon>
             </mud-button>
           </span>
@@ -481,14 +481,14 @@ const renderTouchTarget = () => {
         </div>
         <div class="touch-cell">
           <span class="touch-wrap" data-shape="icon-only" style="--btn-h: 40px; --btn-t: 48px;">
-            <mud-button size="md" shape="circular" icon-only label="Navigate forward">
+            <mud-button size="md" shape="circular" icon-only aria-label="Navigate forward">
               <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
             </mud-button>
           </span>
           <span style="${cellLabelStyle}">md — 40 → 48 (both axes)</span>
         </div>
         <div class="touch-cell">
-          <mud-button size="lg" shape="circular" icon-only label="Navigate forward">
+          <mud-button size="lg" shape="circular" icon-only aria-label="Navigate forward">
             <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
           </mud-button>
           <span style="${cellLabelStyle}">lg — 48 / 48 (no expansion)</span>
@@ -514,10 +514,10 @@ const docsSourceTouchTarget = /*html*/ `<!-- Touch-target expansion is driven by
 <mud-button size="lg">OK</mud-button>
 
 <!-- Icon-only -->
-<mud-button size="sm" shape="circular" icon-only label="Navigate forward">
+<mud-button size="sm" shape="circular" icon-only aria-label="Navigate forward">
   <mud-icon slot="icon" name="arrow-right" size="16"></mud-icon>
 </mud-button>
-<mud-button size="md" shape="circular" icon-only label="Navigate forward">
+<mud-button size="md" shape="circular" icon-only aria-label="Navigate forward">
   <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
 </mud-button>`;
 
@@ -572,7 +572,7 @@ const renderReducedMotion = () => /*html*/ `
 `;
 
 const meta: Meta<ButtonArgs> = {
-  title: 'Atoms/Button',
+  title: 'Components/Button',
   component: 'mud-button',
   argTypes: {
     variant: {

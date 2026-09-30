@@ -1,5 +1,6 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Method, Prop } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { MenuItemLeading, MenuItemSelectDetail, MenuType } from './mud-menu.types';
 
 /**
@@ -26,7 +27,7 @@ export class MudMenuItem {
   @Prop({ reflect: true }) leading: MenuItemLeading = 'none';
 
   /** Icon name to render when `leading="icon"`. */
-  @Prop() icon?: string;
+  @Prop() icon?: IconName;
 
   /** Whether the item is selected (selection menus) or checked (checkbox/radio leading). */
   @Prop({ reflect: true, mutable: true }) selected = false;
@@ -102,6 +103,7 @@ export class MudMenuItem {
       return (
         <mud-checkbox
           class="leading-control"
+          size="sm"
           checked={this.selected}
           disabled={this.disabled}
           inert={true}
@@ -110,7 +112,13 @@ export class MudMenuItem {
     }
     if (this.leading === 'radio') {
       return (
-        <mud-radio class="leading-control" checked={this.selected} disabled={this.disabled} inert={true}></mud-radio>
+        <mud-radio
+          class="leading-control"
+          size="sm"
+          checked={this.selected}
+          disabled={this.disabled}
+          inert={true}
+        ></mud-radio>
       );
     }
     return null;
@@ -148,7 +156,7 @@ export class MudMenuItem {
             <slot>{this.label ?? ''}</slot>
           </span>
           {showTrailingCheck ? (
-            <mud-icon class="check" name="checkmark-small" size={20} aria-hidden="true"></mud-icon>
+            <mud-icon class="check" name="checkmark-small" size={24} aria-hidden="true"></mud-icon>
           ) : null}
         </div>
       </Host>

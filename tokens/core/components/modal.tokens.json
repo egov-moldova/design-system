@@ -9,7 +9,11 @@
     "container": {
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
       "borderRadius": { "$value": "{borderRadius.16}", "$type": "dimension" },
-      "boxShadow": { "$value": "{dropShadow.500}", "$type": "string" },
+      "boxShadow": {
+        "$value": "{dropShadow.400}",
+        "$type": "string",
+        "$comment": "Figma modal 111:2565 and every sibling in 230:5243 carry Drop Shadow/400. This pointed at dropShadow.500 before, a value no Figma style defines."
+      },
       "minWidth": { "$value": "280px", "$type": "dimension" },
       "maxWidthSm": { "$value": "480px", "$type": "dimension" },
       "maxWidthMd": { "$value": "588px", "$type": "dimension" },
@@ -52,7 +56,12 @@
       "paddingBlockEndMd": { "$value": "{spacing.40}", "$type": "dimension" },
       "paddingBlockEndSm": { "$value": "{spacing.20}", "$type": "dimension" },
       "paddingInline": { "$value": "{spacing.32}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.16}", "$type": "dimension" }
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "gapSm": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma .content-slot Size=Small 6930:7644 spaces title and body 12px, against 16px at Medium (109:1974)."
+      }
     },
     "icon": {
       "size": { "$value": "{spacing.48}", "$type": "dimension" },
@@ -63,7 +72,12 @@
       "paddingBlockEndMd": { "$value": "{spacing.24}", "$type": "dimension" },
       "paddingBlockEndSm": { "$value": "{spacing.20}", "$type": "dimension" },
       "paddingInline": { "$value": "{spacing.20}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.8}", "$type": "dimension" }
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gapStacked": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma .modal-footer Actions=Vertical Stack 109:1970 stacks its buttons 12px apart; the 8px gap is the horizontal row (109:1967)."
+      }
     },
     "close": {
       "size": { "$value": "{spacing.32}", "$type": "dimension" },

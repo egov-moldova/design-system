@@ -10,6 +10,11 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# A context line in a patch can be a lone space; stripping it changes the
+# patch hash in yarn.lock and fails `yarn install --immutable`.
+[*.patch]
+trim_trailing_whitespace = false
+
 [*.md]
 insert_final_newline = false
 trim_trailing_whitespace = false

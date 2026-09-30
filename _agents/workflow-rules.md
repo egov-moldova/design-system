@@ -13,7 +13,7 @@ Governs when to start/stop/auto-proceed and when to wait for user approval. **Re
 2. **Wait** for the user to provide it
 3. **Only proceed** once you have the Figma reference
 
-**Exception:** Proceed without Figma only if the user **explicitly states** there is no design (e.g., utility components, internal tooling). Use `/custom-component` workflow in that case.
+**Exception:** Proceed without Figma only if the user **explicitly states** there is no design (e.g., utility components, internal tooling). Build it as a custom component from the stated requirements (in Claude Code, the `custom-component` agent).
 
 ---
 

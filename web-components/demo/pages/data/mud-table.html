@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-table · @egovmd/mud-web-components</title>
+    <title>mud-table · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-table">
     <main class="demo-main">
@@ -13,15 +13,15 @@
         <div class="subsection">
           <h3>Zebra rows, sortable columns, custom status cell (slot)</h3>
           <p class="label">
-            <code>columns</code> + <code>rows</code> set via JS property. The <code>cell-status</code> slot is matched
-            per-row as <code>cell-status-{index}</code> so each row gets its own <code>mud-tag</code>.
+            <code>columns</code> + <code>rows</code> set via JS property. Each status cell is the slot
+            <code>cell-status-{rowId}</code>, so every row gets its own <code>mud-tag</code> and keeps it when sorted.
           </p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <mud-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Cereri depuse">
-              <mud-tag slot="cell-status-0" variant="status" type="subtle" semantic="success">Aprobat</mud-tag>
-              <mud-tag slot="cell-status-1" variant="status" type="subtle" semantic="warning">În curs</mud-tag>
-              <mud-tag slot="cell-status-2" variant="status" type="subtle" semantic="danger">Refuzat</mud-tag>
-              <mud-tag slot="cell-status-3" variant="status" type="subtle" semantic="brand">Confirmat</mud-tag>
+            <mud-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Submitted requests">
+              <mud-tag slot="cell-status-1" variant="status" type="subtle" semantic="success">Approved</mud-tag>
+              <mud-tag slot="cell-status-2" variant="status" type="subtle" semantic="warning">In progress</mud-tag>
+              <mud-tag slot="cell-status-3" variant="status" type="subtle" semantic="danger">Rejected</mud-tag>
+              <mud-tag slot="cell-status-4" variant="status" type="subtle" semantic="brand">Confirmed</mud-tag>
             </mud-table>
           </div>
         </div>
@@ -43,7 +43,7 @@
         <div class="subsection">
           <h3>Selectable rows (preselected via selectedRows prop)</h3>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <mud-table id="demo-table-select" selectable="" row-style="zebra" aria-label="Documente"></mud-table>
+            <mud-table id="demo-table-select" selectable="" row-style="zebra" aria-label="Documents"></mud-table>
           </div>
         </div>
 
@@ -51,9 +51,9 @@
           <h3>Slots (header-cell-{key} + empty)</h3>
           <div style="width: 100%; max-width: 760px; overflow: auto">
             <mud-table id="demo-table-slots" row-style="divided">
-              <span slot="header-cell-amount" style="font-weight: 700">Sumă (MDL) ⤓</span>
+              <span slot="header-cell-amount" style="font-weight: 700">Amount (MDL) ⤓</span>
               <span slot="empty" style="display: block; padding: var(--spacing-24); text-align: center">
-                Nu există tranzacții în această perioadă. <a href="#new">Creează una</a>.
+                There are no transactions in this period. <a href="#new">Create one</a>.
               </span>
             </mud-table>
           </div>
@@ -71,7 +71,7 @@
             No columns / no rows at all (both props unset) — renders an empty shell with only the default empty row.
           </p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <mud-table aria-label="Tabel gol"></mud-table>
+            <mud-table aria-label="Empty table"></mud-table>
           </div>
 
           <p class="label" style="margin-top: var(--spacing-16)">
@@ -96,15 +96,15 @@
           const zebra = document.getElementById('demo-table-zebra');
           if (zebra) {
             zebra.columns = [
-              { key: 'service', label: 'Serviciu', sortable: true },
+              { key: 'service', label: 'Service', sortable: true },
               { key: 'applicant', label: 'Solicitant', sortable: true },
               { key: 'date', label: 'Data', sortable: true, align: 'start' },
               { key: 'status', label: 'Stare' },
             ];
             zebra.rows = [
-              { id: 1, service: 'Cazier judiciar', applicant: 'Ion Creangă', date: '12 mai 2026' },
-              { id: 2, service: 'Certificat de naștere', applicant: 'Ștefan Țurcanu', date: '14 mai 2026' },
-              { id: 3, service: 'Permis de conducere', applicant: 'Ângela Mârza', date: '16 mai 2026' },
+              { id: 1, service: 'Criminal record certificate', applicant: 'Ion Creangă', date: '12 mai 2026' },
+              { id: 2, service: 'Birth certificate', applicant: 'Ștefan Țurcanu', date: '14 mai 2026' },
+              { id: 3, service: 'Driving licence', applicant: 'Ângela Mârza', date: '16 mai 2026' },
               { id: 4, service: 'Extras cadastral', applicant: 'Răzvan Î. Șușnea', date: '18 mai 2026' },
             ];
           }
@@ -112,13 +112,13 @@
           // 2a) Inverted header / divided
           const inverted = document.getElementById('demo-table-inverted');
           const sampleCols = [
-            { key: 'name', label: 'Nume' },
+            { key: 'name', label: 'Name' },
             { key: 'role', label: 'Rol' },
           ];
           const sampleRows = [
             { id: 'a', name: 'Maria Popescu', role: 'Administrator' },
             { id: 'b', name: 'Andrei Rusu', role: 'Operator' },
-            { id: 'c', name: 'Elena Cojocaru', role: 'Vizitator' },
+            { id: 'c', name: 'Elena Cojocaru', role: 'Visitor' },
           ];
           if (inverted) {
             inverted.columns = sampleCols;
@@ -136,13 +136,13 @@
             select.columns = [
               { key: 'doc', label: 'Document' },
               { key: 'type', label: 'Tip' },
-              { key: 'size', label: 'Mărime', align: 'end', width: '120px' },
+              { key: 'size', label: 'Size', align: 'end', width: '120px' },
             ];
             select.rows = [
-              { id: 'd1', doc: 'Contract de muncă', type: 'PDF', size: '240 KB' },
-              { id: 'd2', doc: 'Declarație de venit', type: 'PDF', size: '1,2 MB' },
-              { id: 'd3', doc: 'Adeverință', type: 'DOCX', size: '88 KB' },
-              { id: 'd4', doc: 'Procură', type: 'PDF', size: '512 KB' },
+              { id: 'd1', doc: 'Employment contract', type: 'PDF', size: '240 KB' },
+              { id: 'd2', doc: 'Income declaration', type: 'PDF', size: '1,2 MB' },
+              { id: 'd3', doc: 'Certificate', type: 'DOCX', size: '88 KB' },
+              { id: 'd4', doc: 'Power of attorney', type: 'PDF', size: '512 KB' },
             ];
             // controlled selection — preselect two rows
             select.selectedRows = ['d1', 'd3'];
@@ -152,8 +152,8 @@
           const slots = document.getElementById('demo-table-slots');
           if (slots) {
             slots.columns = [
-              { key: 'ref', label: 'Referință' },
-              { key: 'amount', label: 'Sumă', align: 'end' },
+              { key: 'ref', label: 'Reference' },
+              { key: 'amount', label: 'Amount', align: 'end' },
             ];
             slots.rows = [];
           }
@@ -162,8 +162,8 @@
           const empty = document.getElementById('demo-table-empty');
           if (empty) {
             empty.columns = [
-              { key: 'a', label: 'Coloană A' },
-              { key: 'b', label: 'Coloană B' },
+              { key: 'a', label: 'Column A' },
+              { key: 'b', label: 'Column B' },
             ];
             empty.rows = [];
           }
@@ -173,9 +173,9 @@
           if (stress) {
             stress.columns = [
               { key: 'id', label: '#', align: 'end', width: '64px' },
-              { key: 'label', label: 'Denumire tranzacție' },
-              { key: 'note', label: 'Notă', sortable: true },
-              { key: 'amount', label: 'Sumă (MDL)', align: 'end', sortable: true, width: '140px' },
+              { key: 'label', label: 'Transaction name' },
+              { key: 'note', label: 'Note', sortable: true },
+              { key: 'amount', label: 'Amount (MDL)', align: 'end', sortable: true, width: '140px' },
             ];
             const longWord =
               'SupercalifragilisticexpialidociousIdentificatorTranzactieFoarteFoarteLungFaraSpatii1234567890';
@@ -183,9 +183,9 @@
             for (let i = 1; i <= 24; i++) {
               rows.push({
                 id: i,
-                label: i === 3 ? longWord : `Plată serviciu ${i} — diacritice ăâîșț & <tag> "ghilimele" 🧾`,
-                note: i % 4 === 0 ? 'Recurentă' : 'Unică',
-                amount: (i * 137.5).toLocaleString('ro-RO', { minimumFractionDigits: 2 }),
+                label: i === 3 ? longWord : `Service payment ${i} — accented éüñ & <tag> "quotes" 🧾`,
+                note: i % 4 === 0 ? 'Recurring' : 'One-time',
+                amount: (i * 137.5).toLocaleString('ro-MD', { minimumFractionDigits: 2 }),
               });
             }
             stress.rows = rows;

@@ -1,0 +1,7 @@
+# Generated files merge with `merge=ours`, so the merged tree may hold a stale
+# copy. Say so; the pre-push hook and CI fail on it if it is pushed.
+CHANGED=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null |
+  grep -E '^(src/components\.d\.ts|src/components/[^/]+/readme\.md|src/hidden/[^/]+/readme\.md)$' || true)
+if [ -n "$CHANGED" ]; then
+  printf '\n[i] Generated files changed in this merge. Run:\n    yarn build\n  then commit any residual diff.\n\n'
+fi

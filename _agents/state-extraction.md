@@ -45,10 +45,10 @@ Look for Figma variants or separate frames:
 
 ```javascript
 // Extract EACH state — parallel calls OK
-figma_get_design_context({ nodeId: "default-node-id" })
-figma_get_design_context({ nodeId: "hover-node-id" })
-figma_get_design_context({ nodeId: "selected-node-id" })
-figma_get_design_context({ nodeId: "selected-hover-node-id" })
+mcp__figma__get_design_context({ nodeId: "default-node-id" })
+mcp__figma__get_design_context({ nodeId: "hover-node-id" })
+mcp__figma__get_design_context({ nodeId: "selected-node-id" })
+mcp__figma__get_design_context({ nodeId: "selected-hover-node-id" })
 // ... ALL states
 ```
 

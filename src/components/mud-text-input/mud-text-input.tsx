@@ -1,7 +1,13 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TEXT_INPUT_MESSAGES } from './mud-text-input.messages';
+import type { TextInputMessages } from './mud-text-input.messages';
 
 let inputInstanceCounter = 0;
 
@@ -100,8 +106,62 @@ export class MudTextInput {
   /** Placeholder shown when the control is empty. */
   @Prop() placeholder?: string;
 
-  /** Accessible label for the clear (×) button. Only used when `clearable` is set. */
-  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Golește câmpul';
+  /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible label for the clear (×) button. Only used when `clearable` is set. Overrides
+   * the `locale`'s copy when set to a non-empty string.
+   * @default 'Golește câmpul' (ro-MD)
+   */
+  @Prop({ attribute: 'clear-label' }) clearLabel?: string;
+
+  /**
+   * Validation message reported when the field is `required` and empty, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Acest câmp este obligatoriu.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
+  /**
+   * Validation message reported when the value does not match `pattern`, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Valoarea nu respectă formatul cerut.' (ro-MD)
+   */
+  @Prop({ attribute: 'pattern-mismatch-message' }) patternMismatchMessage?: string;
+
+  /**
+   * Validation message reported when the value is shorter than `minlength`, and `errorText` is
+   * unset. `{min}` is replaced by the limit. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Introduceți cel puțin {min} caractere.' (ro-MD)
+   */
+  @Prop({ attribute: 'too-short-message' }) tooShortMessage?: string;
+
+  /**
+   * Validation message reported when the value is longer than `maxlength`, and `errorText` is
+   * unset. `{max}` is replaced by the limit. Overrides the `locale`'s copy when set to a
+   * non-empty string.
+   * @default 'Introduceți cel mult {max} caractere.' (ro-MD)
+   */
+  @Prop({ attribute: 'too-long-message' }) tooLongMessage?: string;
+
+  /**
+   * Validation message reported when a `type="email"` value is not an email address, and
+   * `errorText` is unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Introduceți o adresă de e-mail validă.' (ro-MD)
+   */
+  @Prop({ attribute: 'type-mismatch-email-message' }) typeMismatchEmailMessage?: string;
+
+  /**
+   * Validation message reported when a `type="url"` value is not a URL, and `errorText` is
+   * unset. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Introduceți o adresă URL validă.' (ro-MD)
+   */
+  @Prop({ attribute: 'type-mismatch-url-message' }) typeMismatchUrlMessage?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
@@ -125,18 +185,12 @@ export class MudTextInput {
   @Prop({ attribute: 'minlength' }) minLength?: number;
 
   /** Native `inputmode` hint forwarded to the internal control. */
+  // The rule matches names case-insensitively; `inputmode` does not shadow `HTMLElement.inputMode` (#88).
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop() inputmode?: string;
 
   /** Native `pattern` regex forwarded to the internal control. */
   @Prop() pattern?: string;
-
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Setting `aria-label` directly on the host also
-   * works — captured on connect into `resolvedAriaLabel` and stripped to
-   * avoid Stencil's attribute-observer / render-loop antipattern.
-   */
-  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -144,6 +198,10 @@ export class MudTextInput {
   @State() private hasIconEnd: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * internal control when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudTextInputElement;
@@ -168,33 +226,66 @@ export class MudTextInput {
   private readonly errorId = `mud-text-input-error-${this.instanceId}`;
   private nativeInput?: HTMLInputElement;
   private initialValue: string = '';
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TextInputMessages {
+    return localeMessages('mud-text-input', this.host, this.locale, TEXT_INPUT_MESSAGES, {
+      clearLabel: this.clearLabel,
+      requiredMessage: this.requiredMessage,
+      patternMismatch: this.patternMismatchMessage,
+      tooShort: this.tooShortMessage,
+      tooLong: this.tooLongMessage,
+      typeMismatchEmail: this.typeMismatchEmailMessage,
+      typeMismatchUrl: this.typeMismatchUrlMessage,
+    });
+  }
+
+  /** The message for the first native constraint the control reports, in the component's locale. */
+  private nativeMessage(nv: ValidityState): string {
+    const m = this.messages();
+    if (nv.typeMismatch) return this.type === 'url' ? m.typeMismatchUrl : m.typeMismatchEmail;
+    if (nv.patternMismatch) return m.patternMismatch;
+    if (nv.tooShort) {
+      const min = this.minLength ?? 0;
+      return formatMessage(m.tooShort, this.host, this.locale, { count: min, min });
+    }
+    const max = this.maxLength ?? 0;
+    return formatMessage(m.tooLong, this.host, this.locale, { count: max, max });
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
   }
 
-  private captureAriaLabel() {
-    const hostAttr = this.host.getAttribute('aria-label');
-    if (hostAttr && hostAttr.length > 0) {
-      this.resolvedAriaLabel = hostAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  syncAriaLabelProp(next?: string) {
-    // Only override resolvedAriaLabel when the prop is actually set —
-    // captureAriaLabel strips the attribute, which would otherwise null this out.
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
-  }
-
   @Watch('required')
   onRequiredChange() {
+    this.syncValidity();
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  onLocaleChange() {
     this.syncValidity();
   }
 
@@ -207,7 +298,7 @@ export class MudTextInput {
 
     if (isMissing) {
       flags.valueMissing = true;
-      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().requiredMessage;
     } else if (this.nativeInput) {
       // Mirror native HTML5 constraint validation (pattern / minLength / maxLength / typeMismatch).
       // `validity` is always present in a real browser; the mock DOM used in unit
@@ -219,7 +310,7 @@ export class MudTextInput {
         if (nv.tooLong) flags.tooLong = true;
         if (nv.typeMismatch) flags.typeMismatch = true;
         if (nv.patternMismatch || nv.tooShort || nv.tooLong || nv.typeMismatch) {
-          message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeInput.validationMessage;
+          message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeMessage(nv);
         }
       }
     }
@@ -373,10 +464,12 @@ export class MudTextInput {
   render() {
     const effectivelyDisabled = this.isInert();
     const variant = this.resolvedVariant();
+    const m = this.messages();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -391,7 +484,7 @@ export class MudTextInput {
     };
 
     return (
-      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null} lang={lang}>
         <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -443,7 +536,7 @@ export class MudTextInput {
               type="button"
               class="control-clear"
               part="clear"
-              aria-label={this.clearLabel}
+              aria-label={m.clearLabel}
               tabIndex={-1}
               onMouseDown={ev => ev.preventDefault()}
               onClick={this.handleClear}
@@ -465,15 +558,27 @@ export class MudTextInput {
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+            <mud-icon
+              class="assistive-icon"
+              name="circle-error"
+              variant="filled"
+              size={20}
+              color="icon-danger-default"
+            />
             <span class="assistive-text">{errorText}</span>
           </div>
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             {variant === 'warning' ? (
-              <mud-icon class="assistive-icon" name="warning-filled" size={20} color="icon-warning-default" />
+              <mud-icon class="assistive-icon" name="warning" variant="filled" size={20} color="icon-warning-default" />
             ) : variant === 'success' ? (
-              <mud-icon class="assistive-icon" name="circle-checkmark-filled" size={20} color="icon-positive-default" />
+              <mud-icon
+                class="assistive-icon"
+                name="circle-checkmark"
+                variant="filled"
+                size={20}
+                color="icon-positive-default"
+              />
             ) : null}
             <span class="assistive-text">
               {this.hasHelperSlot ? null : helperText}

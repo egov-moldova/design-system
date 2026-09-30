@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-tag · @egovmd/mud-web-components</title>
+    <title>mud-tag · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-tag">
     <main class="demo-main">
@@ -14,7 +14,7 @@
           <h3>Status tag — type × semantic matrix</h3>
           <div class="row">
             <div class="cell">
-              <mud-tag variant="status" type="subtle" semantic="neutral" label="Neutru"></mud-tag>
+              <mud-tag variant="status" type="subtle" semantic="neutral" label="Neutral"></mud-tag>
               <span class="label">subtle · neutral</span>
             </div>
             <div class="cell">
@@ -26,11 +26,11 @@
               <span class="label">subtle · accent</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="subtle" semantic="success" label="Activ"></mud-tag>
+              <mud-tag variant="status" type="subtle" semantic="success" label="Active"></mud-tag>
               <span class="label">subtle · success</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="subtle" semantic="warning" label="În așteptare"></mud-tag>
+              <mud-tag variant="status" type="subtle" semantic="warning" label="Waiting"></mud-tag>
               <span class="label">subtle · warning</span>
             </div>
             <div class="cell">
@@ -38,13 +38,13 @@
               <span class="label">subtle · brand</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="subtle" semantic="danger" label="Refuzat"></mud-tag>
+              <mud-tag variant="status" type="subtle" semantic="danger" label="Rejected"></mud-tag>
               <span class="label">subtle · danger</span>
             </div>
           </div>
           <div class="row">
             <div class="cell">
-              <mud-tag variant="status" type="strong" semantic="neutral" label="Neutru"></mud-tag>
+              <mud-tag variant="status" type="strong" semantic="neutral" label="Neutral"></mud-tag>
               <span class="label">strong · neutral</span>
             </div>
             <div class="cell">
@@ -56,11 +56,11 @@
               <span class="label">strong · accent</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="strong" semantic="success" label="Activ"></mud-tag>
+              <mud-tag variant="status" type="strong" semantic="success" label="Active"></mud-tag>
               <span class="label">strong · success</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="strong" semantic="warning" label="În așteptare"></mud-tag>
+              <mud-tag variant="status" type="strong" semantic="warning" label="Waiting"></mud-tag>
               <span class="label">strong · warning</span>
             </div>
             <div class="cell">
@@ -68,13 +68,13 @@
               <span class="label">strong · brand</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="strong" semantic="danger" label="Refuzat"></mud-tag>
+              <mud-tag variant="status" type="strong" semantic="danger" label="Rejected"></mud-tag>
               <span class="label">strong · danger</span>
             </div>
           </div>
           <div class="row">
             <div class="cell">
-              <mud-tag variant="status" type="outlined" semantic="neutral" label="Neutru"></mud-tag>
+              <mud-tag variant="status" type="outlined" semantic="neutral" label="Neutral"></mud-tag>
               <span class="label">outlined · neutral</span>
             </div>
             <div class="cell">
@@ -86,11 +86,11 @@
               <span class="label">outlined · accent</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="outlined" semantic="success" label="Activ"></mud-tag>
+              <mud-tag variant="status" type="outlined" semantic="success" label="Active"></mud-tag>
               <span class="label">outlined · success</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="outlined" semantic="warning" label="În așteptare"></mud-tag>
+              <mud-tag variant="status" type="outlined" semantic="warning" label="Waiting"></mud-tag>
               <span class="label">outlined · warning</span>
             </div>
             <div class="cell">
@@ -98,7 +98,7 @@
               <span class="label">outlined · brand</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="outlined" semantic="danger" label="Refuzat"></mud-tag>
+              <mud-tag variant="status" type="outlined" semantic="danger" label="Rejected"></mud-tag>
               <span class="label">outlined · danger</span>
             </div>
           </div>
@@ -116,7 +116,7 @@
               <span class="label">info · sm</span>
             </div>
             <div class="cell">
-              <mud-tag variant="status" type="strong" semantic="success" size="sm" label="Activ"></mud-tag>
+              <mud-tag variant="status" type="strong" semantic="success" size="sm" label="Active"></mud-tag>
               <span class="label">status strong · sm</span>
             </div>
           </div>
@@ -128,21 +128,21 @@
             <div class="cell">
               <mud-tag variant="status" type="subtle" semantic="success">
                 <mud-icon slot="icon-start" name="checkmark-large" size="16"></mud-icon>
-                Verificat
+                Verified
               </mud-tag>
               <span class="label">icon-start + slotted label</span>
             </div>
             <div class="cell">
               <mud-tag variant="status" type="outlined" semantic="info">
-                Detalii
+                Details
                 <mud-icon slot="icon-end" name="chevron-right" size="16"></mud-icon>
               </mud-tag>
               <span class="label">icon-end</span>
             </div>
             <div class="cell">
               <mud-tag variant="status" type="strong" semantic="brand">
-                <mud-icon slot="icon-start" name="circle-checkmark-filled" size="16"></mud-icon>
-                Salvat
+                <mud-icon slot="icon-start" name="circle-checkmark" variant="filled" size="16"></mud-icon>
+                Saved
                 <mud-icon slot="icon-end" name="cross-large" size="16"></mud-icon>
               </mud-tag>
               <span class="label">both icons</span>
@@ -158,7 +158,7 @@
                 variant="status"
                 type="subtle"
                 semantic="info"
-                label="Supercalifragilisticexpialidocious-fără-spații-deloc"
+                label="Supercalifragilisticexpialidocious-without-any-spaces"
               ></mud-tag>
               <span class="label">long unbroken label</span>
             </div>
@@ -167,7 +167,7 @@
                 variant="status"
                 type="subtle"
                 semantic="warning"
-                label="Document în curs de procesare și verificare la autoritatea competentă"
+                label="Document being processed and verified at the competent authority"
               ></mud-tag>
               <span class="label">long multi-word label</span>
             </div>

@@ -1,3 +1,5 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 export const TABS_SIZES = ['md', 'sm'] as const;
 
 export type TabsSize = (typeof TABS_SIZES)[number];
@@ -15,7 +17,7 @@ export interface TabDescriptor {
   /** Plain-text label rendered inside the tab. */
   label: string;
   /** Optional leading icon — maps to a registered `mud-icon` name. */
-  iconName?: string;
+  iconName?: IconName;
   /**
    * Optional trailing numbered badge. When >= 0 the host renders a count;
    * to render a dot or skip the badge, omit the field.

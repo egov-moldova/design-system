@@ -1,0 +1,4 @@
+# Fast checks on every commit (wireit caches unchanged inputs).
+# Bypass once with `git commit --no-verify`, or `HUSKY=0` for a whole shell.
+yarn lint
+yarn typecheck

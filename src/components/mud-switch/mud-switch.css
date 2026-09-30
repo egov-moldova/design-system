@@ -115,13 +115,15 @@
 
 /*
  * Native input is sized to the touch target (not the visual) so pointer
- * activation works anywhere inside the touch zone. Hidden visually but
- * kept in the a11y tree.
+ * activation works anywhere inside the touch zone. Figma's target is the track
+ * grown by the same amount on every side (Target Sizes, 578:34125 / 578:34161):
+ * 52x32 on pointer devices, 60x40 on touch. Hidden visually but kept in the
+ * a11y tree.
  */
 .native {
   position: absolute;
   inset: 50% auto auto 50%;
-  inline-size: var(--_touch-size);
+  inline-size: calc(var(--_track-width) + var(--_touch-size) - var(--_track-height));
   block-size: var(--_touch-size);
   transform: translate(-50%, -50%);
   margin: 0;
@@ -161,15 +163,15 @@
 }
 
 /*
- * Focus ring per Figma "Focus Ring/Small": 1px white inner halo + 3px
- * brand-blue outer ring. Implemented as two stacked box-shadows so the
- * track's own dimensions stay untouched.
+ * Focus ring per Figma "Focus Ring/Small" (68:517): a 1px white halo with the
+ * blue band ending 3px out. Figma stacks the two spreads, so the outer width
+ * is the total — adding the inner one to it would draw the band out to 4px.
+ * Two box-shadows, so the track's own dimensions stay untouched.
  */
 :host(.is-focused) .track {
   box-shadow:
     0 0 0 var(--switch-focus-ring-inner-width) var(--switch-focus-ring-inner-color),
-    0 0 0 calc(var(--switch-focus-ring-inner-width) + var(--switch-focus-ring-outer-width))
-      var(--switch-focus-ring-outer-color);
+    0 0 0 var(--switch-focus-ring-outer-width) var(--switch-focus-ring-outer-color);
 }
 
 :host(.is-disabled) {

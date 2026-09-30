@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "1.0.0",
+  "run": "2026-09-23T09-00-00-000Z-1",
+  "component": "mud-fx",
+  "depth": "deep",
+  "state": "FAIL",
+  "headline": "FAIL@deep · ai-legs: advisory",
+  "rows": [
+    {
+      "id": "lint",
+      "name": "check-lint",
+      "result": "pass"
+    },
+    {
+      "id": "01",
+      "name": "check-01",
+      "result": "pass"
+    },
+    {
+      "id": "02",
+      "name": "check-02",
+      "result": "warn"
+    },
+    {
+      "id": "03",
+      "name": "check-03",
+      "result": "pass"
+    },
+    {
+      "id": "04",
+      "name": "check-04",
+      "result": "pass"
+    },
+    {
+      "id": "05",
+      "name": "check-05",
+      "result": "pass"
+    },
+    {
+      "id": "07",
+      "name": "check-07",
+      "result": "pass"
+    },
+    {
+      "id": "14",
+      "name": "check-14",
+      "result": "pass"
+    },
+    {
+      "id": "16",
+      "name": "check-16",
+      "result": "pass"
+    },
+    {
+      "id": "17",
+      "name": "check-17",
+      "result": "pass"
+    },
+    {
+      "id": "06",
+      "name": "check-06",
+      "result": "pass"
+    },
+    {
+      "id": "08",
+      "name": "check-08",
+      "result": "pass"
+    },
+    {
+      "id": "13",
+      "name": "check-13",
+      "result": "pass"
+    },
+    {
+      "id": "18",
+      "name": "check-18",
+      "result": "pass"
+    },
+    {
+      "id": "09",
+      "name": "check-09",
+      "result": "pass"
+    },
+    {
+      "id": "10",
+      "name": "check-10",
+      "result": "pass"
+    },
+    {
+      "id": "11",
+      "name": "check-11",
+      "result": "pass"
+    },
+    {
+      "id": "12",
+      "name": "check-12",
+      "result": "pass"
+    },
+    {
+      "id": "15",
+      "name": "check-15",
+      "result": "fail"
+    },
+    {
+      "id": "19",
+      "name": "check-19",
+      "result": "pass"
+    },
+    {
+      "id": "figma-refs",
+      "name": "check-figma-refs",
+      "result": "pass"
+    },
+    {
+      "id": "adapter-react",
+      "name": "check-adapter-react",
+      "result": "pass"
+    },
+    {
+      "id": "adapter-vanilla",
+      "name": "check-adapter-vanilla",
+      "result": "pass"
+    }
+  ],
+  "scopes": [
+    "figma-gate",
+    "leg:a11y-verifier",
+    "row:01",
+    "row:02",
+    "row:03",
+    "row:04",
+    "row:05",
+    "row:06",
+    "row:07",
+    "row:08",
+    "row:09",
+    "row:10",
+    "row:11",
+    "row:12",
+    "row:13",
+    "row:14",
+    "row:15",
+    "row:16",
+    "row:17",
+    "row:18",
+    "row:19",
+    "row:adapter-react",
+    "row:adapter-vanilla",
+    "row:figma-refs",
+    "row:lint"
+  ],
+  "legs": [
+    {
+      "leg": "a11y-verifier",
+      "graded": true,
+      "cause": null
+    }
+  ],
+  "findings": [
+    {
+      "scope": "leg:a11y-verifier",
+      "key": "[\"fail\",\"CX1\",\"a.tsx\"]",
+      "label": "ai a11y-verifier · CX1 · a.tsx — focus lost"
+    },
+    {
+      "scope": "row:02",
+      "key": "[\"warning\",\"W1\",\"borderline\"]",
+      "label": "02 check-02 · W1 — borderline"
+    },
+    {
+      "scope": "row:15",
+      "key": "[\"fail\",\"STYLE-MISMATCH\",\"src/components/mud-fx/test/mud-fx.figma.json\",\"Default › label › color\",\"#hex\"]",
+      "label": "15 check-15 · STYLE-MISMATCH · src/components/mud-fx/test/mud-fx.figma.json — Default › label › color: Figma 1:2 = #f5f5f5, rendered #e8f0fb"
+    }
+  ]
+}

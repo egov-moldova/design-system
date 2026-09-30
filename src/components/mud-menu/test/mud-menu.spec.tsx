@@ -122,6 +122,7 @@ describe('mud-menu', () => {
       );
       const panel = root?.shadowRoot?.querySelector('.panel');
       expect(panel?.getAttribute('aria-label')).toBe('Acțiuni disponibile');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('does not set aria-label on the panel when prop is absent', async () => {

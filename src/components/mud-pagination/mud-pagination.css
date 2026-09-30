@@ -103,10 +103,13 @@
   color: var(--pagination-item-unselected-label-active);
 }
 
+/* Figma 383:20683 / 383:20691 — Focus Ring/Small, drawn outside the 40px box as
+   Figma stacks it: a 1px white halo with the blue band ending 3px out. */
 .page-button:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-item-unselected-border-focus);
+  box-shadow:
+    0 0 0 var(--pagination-item-focus-ring-inner-width) var(--pagination-item-focus-ring-inner-color),
+    0 0 0 var(--pagination-item-focus-ring-outer-width) var(--pagination-item-focus-ring-outer-color);
   background-color: var(--pagination-item-unselected-background-default);
 }
 
@@ -173,10 +176,13 @@
   background-color: var(--pagination-overflow-trigger-background-active);
 }
 
+/* The overflow element is a .pagination-item in Figma (415:24452), so it takes
+   the same Focus Ring/Small as a page number. */
 .overflow-trigger:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-overflow-trigger-border-focus);
+  box-shadow:
+    0 0 0 var(--pagination-item-focus-ring-inner-width) var(--pagination-item-focus-ring-inner-color),
+    0 0 0 var(--pagination-item-focus-ring-outer-width) var(--pagination-item-focus-ring-outer-color);
 }
 
 .overflow-item.is-open .overflow-trigger {
@@ -205,13 +211,20 @@
   /* Cap a large collapsed range (e.g. page 1 of 40 collapses ~34 pages) to a
      fixed height and scroll the surplus inside, instead of letting the menu run
      off the viewport. ~7.5 rows stay visible so the cut-off row hints at more. */
-  max-block-size: var(--pagination-overflow-menu-max-height);
+  max-block-size: var(--_overflow-menu-max-block-size, var(--pagination-overflow-menu-max-height));
   overflow-y: auto;
   overscroll-behavior: contain;
   background-color: var(--pagination-overflow-menu-background);
   border: var(--pagination-overflow-menu-border-width) solid var(--pagination-overflow-menu-border-color);
   border-radius: var(--pagination-overflow-menu-border-radius);
   box-shadow: var(--pagination-overflow-menu-shadow);
+}
+
+/* Flipped above the trigger when the viewport has no room below
+   (measureOverflow). The cap above then tracks the room above instead. */
+.overflow-item.is-drop-up .overflow-menu {
+  top: auto;
+  bottom: calc(100% + var(--pagination-overflow-menu-offset));
 }
 
 .overflow-menu li {
@@ -297,6 +310,15 @@
     border-color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function);
 }
 
+/* The chevron side takes the smaller padding and the label side the larger one, so
+   Next mirrors Previous: Figma 186:781 pads Previous 0 16px 0 12px (chevron first),
+   186:776 pads Next 0 12px 0 16px (chevron last). The two tokens read as
+   chevron-side / label-side for Previous; Next swaps them. */
+.nav-next {
+  padding-inline-start: var(--_nav-pad-end);
+  padding-inline-end: var(--_nav-pad-start);
+}
+
 .nav-button:hover {
   background-color: var(--pagination-nav-background-hover);
 }
@@ -305,10 +327,14 @@
   background-color: var(--pagination-nav-background-active);
 }
 
+/* Prev / Next are button-text-rectangular Strict (105:997, 105:1057), whose Focus
+   variants carry Focus Ring/Medium — the global ring mud-button draws too:
+   a 2px white halo with the blue band ending 5px out. */
 .nav-button:focus-visible {
   outline: none;
-  border-width: var(--pagination-item-border-width-focus);
-  border-color: var(--pagination-nav-border-focus);
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
 }
 
 .nav-button[disabled],

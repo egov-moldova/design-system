@@ -23,6 +23,7 @@ import {
 } from '@egov-moldova/mud-react';
 
 // Token + global stylesheets from the underlying @egov-moldova/mud package.
+// styles.css also loads the Onest font; no @font-face of your own is needed.
 import '@egov-moldova/mud/tokens/core.tokens.css';
 import '@egov-moldova/mud/styles.css';
 

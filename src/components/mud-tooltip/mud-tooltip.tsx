@@ -1,12 +1,15 @@
-import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TOOLTIP_MESSAGES } from './mud-tooltip.messages';
+import type { TooltipMessages } from './mud-tooltip.messages';
 
 import {
   OPPOSITE_POSITION,
-  VALID_DESCRIPTION_TAGS,
-  VALID_TITLE_TAGS,
   VALID_TRIGGER_TAGS,
   type TooltipAlignment,
   type TooltipBaseSide,
@@ -23,7 +26,7 @@ import {
 let tooltipIdCounter = 0;
 
 /**
- * Tooltip — transient label, structured popover, or coach mark anchored to a
+ * Tooltip — transient label or coach mark anchored to a
  * trigger element.
  *
  * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
@@ -40,10 +43,8 @@ let tooltipIdCounter = 0;
  *
  * @element mud-tooltip
  *
- * @slot trigger     - The element the tooltip describes (button, icon, link).
- * @slot title       - Optional title row inside the bubble (mud-icon, span, strong, em).
- * @slot description - Optional secondary description row.
- * @slot             - Default slot. Body content. Used when no title/description slots are set.
+ * @slot trigger - The element the tooltip describes (button, icon, link).
+ * @slot         - Default slot. Body content.
  */
 @Component({
   tag: 'mud-tooltip',
@@ -91,8 +92,9 @@ export class MudTooltip {
   @Prop({ reflect: true }) trigger: TooltipTrigger = 'hover';
 
   /**
-   * Convenience: tooltip body text. Used only when the default slot is empty
-   * AND no `title` / `description` slots are present.
+   * Convenience: tooltip body text. Rendered as the default slot's fallback, so
+   * only when the host has no default-slot nodes at all — whitespace between
+   * tags counts as a node.
    */
   @Prop() content?: string;
 
@@ -152,14 +154,34 @@ export class MudTooltip {
   @Prop({ reflect: true }) showArrow: boolean = true;
 
   /**
-   * Accessible name applied to the rendered bubble. Stripped from the host
-   * after ingestion; the value is forwarded to the bubble's `aria-label`.
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
+   * Accessible label for the `coach` variant's close button. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Închide tooltip-ul' (ro-MD)
+   */
+  @Prop() closeLabel?: string;
+
+  /**
+   * Dismiss hint shown in the `coach` variant's body. Overrides the `locale`'s copy when set
+   * to a non-empty string.
+   * @default 'Apasă Esc pentru a închide.' (ro-MD)
+   */
+  @Prop() dismissHint?: string;
 
   @State() private resolvedPosition: TooltipResolvedPosition = 'top';
 
-  @Element() host!: HTMLElement;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), forwarded
+   * to the rendered bubble's `aria-label`.
+   */
+  @State() private resolvedAriaLabel?: string;
+
+  @Element() host!: HTMLMudTooltipElement;
 
   /** Fired when the tooltip becomes visible (after `showDelay` for hover triggers). */
   @Event() mudOpen!: EventEmitter<void>;
@@ -241,6 +263,27 @@ export class MudTooltip {
   private resizeHandler: (() => void) | null = null;
   private documentClickHandler: ((event: MouseEvent) => void) | null = null;
   private documentKeydownHandler: ((event: KeyboardEvent) => void) | null = null;
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): TooltipMessages {
+    return localeMessages('mud-tooltip', this.host, this.locale, TOOLTIP_MESSAGES, {
+      closeLabel: this.closeLabel,
+      dismissHint: this.dismissHint,
+    });
+  }
 
   componentWillLoad() {
     this.tooltipId = `mud-tooltip-${++tooltipIdCounter}`;
@@ -278,6 +321,8 @@ export class MudTooltip {
   }
 
   disconnectedCallback() {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
     this.clearShowTimer();
     this.clearHideTimer();
     this.detachTriggerListeners();
@@ -304,20 +349,23 @@ export class MudTooltip {
    * the shadow-DOM boundary.
    */
   private getTooltipText(): string {
-    const titleEl = this.host.querySelector('[slot="title"]');
-    const descEl = this.host.querySelector('[slot="description"]');
-    const titleText = (titleEl?.textContent || '').trim();
-    const descText = (descEl?.textContent || '').trim();
-    if (titleText || descText) {
-      return [titleText, descText].filter(Boolean).join('. ');
-    }
-    const defaultText = Array.from(this.host.childNodes)
-      .filter(n => !(n as Element).slot)
+    // The nodes the default slot is assigned: text, and elements whose slot name is
+    // empty. Comment markers (`<!--v-if-->`, `<!--?lit$…$-->`) are not assigned, and
+    // reading them would put them in the mirror. The attribute, not `Element.slot`:
+    // mock-doc has no `slot` accessor, so the property read let the trigger's own
+    // text in under the spec runner.
+    const defaultNodes = Array.from(this.host.childNodes).filter(
+      n => n.nodeType === 3 || (n.nodeType === 1 && ((n as Element).getAttribute('slot') ?? '') === ''),
+    );
+    // `content` renders only as the slot's fallback, i.e. when no node is assigned —
+    // whitespace included. The mirror follows the same rule so screen readers never
+    // announce text the bubble does not show.
+    if (defaultNodes.length === 0) return (this.content ?? '').trim();
+    return defaultNodes
       .map(n => n.textContent || '')
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
-    return defaultText || (this.content ?? '').trim();
   }
 
   /**
@@ -751,22 +799,21 @@ export class MudTooltip {
 
   // ---------- Slot validation ----------
 
-  private validateSlot(name: 'trigger' | 'title' | 'description', validTags: readonly string[]): string | null {
-    const el = this.host.querySelector(`[slot="${name}"]`);
+  private validateTriggerSlot(): string | null {
+    const el = this.getSlottedTriggerEl();
     if (!el) return null;
     const tag = el.tagName.toLowerCase();
-    if (validTags.includes(tag)) return null;
-    return invalidSlottedTag(tag, validTags);
+    return VALID_TRIGGER_TAGS.includes(tag) ? null : invalidSlottedTag(tag, VALID_TRIGGER_TAGS);
   }
 
-  private renderCloseButton() {
+  private renderCloseButton(closeLabel: string) {
     // Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG):
     // the close glyph scales with `width/height: 100%` of the close button
     // (`--tooltip-close-size`, ~16px). mud-icon's `cross-small` ships at
     // 16/20/24 — would visibly enlarge on coach-sm. Same precedent as the
     // intrinsic glyphs in mud-checkbox and mud-chip.
     return (
-      <button type="button" class="close" aria-label="Închide tooltip-ul" onClick={this.handleCloseButtonClick}>
+      <button type="button" class="close" aria-label={closeLabel} onClick={this.handleCloseButtonClick}>
         <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" class="close-icon">
           <path
             d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5"
@@ -780,13 +827,10 @@ export class MudTooltip {
   }
 
   render() {
+    const m = this.messages();
     const isCoach = this.variant === 'coach';
-    const triggerError = this.validateSlot('trigger', VALID_TRIGGER_TAGS);
-    const titleError = this.validateSlot('title', VALID_TITLE_TAGS);
-    const descriptionError = this.validateSlot('description', VALID_DESCRIPTION_TAGS);
-    const hasTitle = !!this.host.querySelector('[slot="title"]');
-    const hasDescription = !!this.host.querySelector('[slot="description"]');
-    const showHeader = hasTitle || hasDescription;
+    const triggerError = this.validateTriggerSlot();
+    const lang = hostLang(this.host, this.locale);
 
     return (
       <Host
@@ -795,6 +839,7 @@ export class MudTooltip {
           [`position-${this.resolvedPosition}`]: true,
           [`variant-${this.variant}`]: true,
         }}
+        lang={lang}
       >
         {triggerError && <div class="slot-error">{triggerError}</div>}
         <span class="trigger">
@@ -806,31 +851,13 @@ export class MudTooltip {
           id={this.tooltipId}
           role="tooltip"
           aria-hidden={this.open ? 'false' : 'true'}
-          aria-label={this.ariaLabel}
+          aria-label={this.resolvedAriaLabel}
         >
-          {titleError && <div class="slot-error">{titleError}</div>}
-          {descriptionError && <div class="slot-error">{descriptionError}</div>}
-
-          {showHeader && (
-            <div class="header">
-              {hasTitle && (
-                <div class="title">
-                  <slot name="title" />
-                </div>
-              )}
-              {hasDescription && (
-                <div class="description">
-                  <slot name="description" />
-                </div>
-              )}
-            </div>
-          )}
-
           <div class="content">
             <slot>{this.content}</slot>
-            {isCoach && <p class="hint">Apasă Esc pentru a închide.</p>}
+            {isCoach && <p class="hint">{m.dismissHint}</p>}
           </div>
-          {isCoach && this.renderCloseButton()}
+          {isCoach && this.renderCloseButton(m.closeLabel)}
           {this.showArrow && <span class="arrow" aria-hidden="true" />}
         </div>
       </Host>

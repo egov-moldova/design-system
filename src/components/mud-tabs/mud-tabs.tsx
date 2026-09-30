@@ -1,7 +1,10 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { TABS_SIZES } from './mud-tabs.types';
 import type { TabDescriptor, TabsChangeDetail, TabsSize } from './mud-tabs.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { usesItemsProp, warnIfBothSources } from '../../utils/collection-source';
 
 let tabsInstanceCounter = 0;
 
@@ -15,6 +18,9 @@ let tabsInstanceCounter = 0;
  *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
  *     as a child `mud-tab` and exposes panels via `<div slot="panel-{value}">`
  *     elements supplied by the consumer.
+ *
+ * Use one per instance. When both are set, `tabs` wins: the `<mud-tab>`
+ * children are not rendered, and the component warns once.
  *
  * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
  * tabs are rendered children with `role="tab"`; the panels are slotted into
@@ -34,7 +40,7 @@ let tabsInstanceCounter = 0;
  *
  * @element mud-tabs
  *
- * @slot - Default slot for `<mud-tab>` children.
+ * @slot - Default slot for `<mud-tab>` children (not rendered when `tabs` is set).
  * @slot panel-{value} - Tab-panel content keyed by the `value` of the
  *   matching tab. Exactly one panel is visible at a time.
  */
@@ -58,17 +64,9 @@ export class MudTabs {
 
   /**
    * Data-driven tab list. When supplied, the component renders one
-   * `<mud-tab>` per entry. Mutually compatible with slotted children — the
-   * slotted variant takes precedence when both are present.
+   * `<mud-tab>` per entry, and `<mud-tab>` children are not rendered.
    */
   @Prop() tabs?: TabDescriptor[];
-
-  /**
-   * Accessible name for the tablist. Captured into `resolvedAriaLabel` on
-   * mount and the host attribute is stripped to avoid Stencil's
-   * auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
 
   /** Id of an external labelling element (overrides `aria-label`). */
   @Prop() ariaLabelledby?: string;
@@ -76,6 +74,10 @@ export class MudTabs {
   @State() private hasOverflow: boolean = false;
   @State() private canScrollStart: boolean = false;
   @State() private canScrollEnd: boolean = false;
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * inner `role="tablist"` element.
+   */
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
   /**
@@ -96,9 +98,14 @@ export class MudTabs {
   private resizeObserver?: ResizeObserver;
   private mutationObserver?: MutationObserver;
   private scrollRafId?: number;
+  private stopAriaLabel?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
 
   componentWillLoad() {
-    this.captureAriaAttrs();
+    this.captureAriaLabelledby();
   }
 
   componentDidLoad() {
@@ -108,32 +115,17 @@ export class MudTabs {
 
   /**
    * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` / `aria-labelledby` that creates an observer loop. Capture
-   * each consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
+   * `aria-labelledby` that creates an observer loop. Capture the
+   * consumer-provided value into a state field, then strip the attribute so
+   * the loop never fires.
    */
-  private captureAriaAttrs() {
-    const labelAttr = this.host.getAttribute('aria-label');
-    if (labelAttr) {
-      this.resolvedAriaLabel = labelAttr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-
+  private captureAriaLabelledby() {
     const labelledbyAttr = this.host.getAttribute('aria-labelledby');
     if (labelledbyAttr) {
       this.resolvedAriaLabelledby = labelledbyAttr;
       this.host.removeAttribute('aria-labelledby');
     } else if (this.ariaLabelledby) {
       this.resolvedAriaLabelledby = this.ariaLabelledby;
-    }
-  }
-
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
     }
   }
 
@@ -149,6 +141,7 @@ export class MudTabs {
     // where data-driven tabs become queryable in shadow DOM, so it is the
     // safest place to wire selection / ARIA state on both light + shadow
     // children.
+    warnIfBothSources(this.host, this.tabs, 'tabs', 'mud-tab');
     this.syncSelectionToTabs();
     this.syncPanels();
     // Overflow measurement mutates @State() — defer to the next frame so
@@ -164,6 +157,7 @@ export class MudTabs {
     if (this.resizeObserver) this.resizeObserver.disconnect();
     if (this.mutationObserver) this.mutationObserver.disconnect();
     if (this.scrollRafId !== undefined) cancelAnimationFrame(this.scrollRafId);
+    this.stopAriaLabel?.();
   }
 
   @Watch('size')
@@ -255,8 +249,11 @@ export class MudTabs {
   private getTabs(): HTMLMudTabElement[] {
     // Tabs from declarative slotted children live in the host's light DOM;
     // tabs from the `tabs` prop are rendered inside the shadow DOM track.
-    // We aggregate both. `:scope >` is avoided because mock-doc lacks support.
-    const light = Array.from(this.host.children).filter(el => el.tagName === 'MUD-TAB') as HTMLMudTabElement[];
+    // Only one source renders: `tabs` wins over the children. `:scope >` is
+    // avoided because mock-doc lacks support.
+    const light = usesItemsProp(this.tabs)
+      ? []
+      : (Array.from(this.host.children).filter(el => el.tagName === 'MUD-TAB') as HTMLMudTabElement[]);
     const shadow = this.host.shadowRoot
       ? (Array.from(this.host.shadowRoot.querySelectorAll('mud-tab')) as HTMLMudTabElement[])
       : [];
@@ -456,7 +453,7 @@ export class MudTabs {
           hidden={!showStartChevron}
           onClick={this.scrollByDirection('start')}
         >
-          <mud-icon name="chevron-left" size={20}></mud-icon>
+          <mud-icon name="chevron-left-small" size={this.size === 'sm' ? 20 : 24}></mud-icon>
         </button>
         <div class="scroller" part="scroller" ref={this.setScrollerRef}>
           {/*
@@ -476,8 +473,7 @@ export class MudTabs {
             aria-labelledby={this.resolvedAriaLabelledby || undefined}
             aria-orientation="horizontal"
           >
-            <slot></slot>
-            {this.renderDataTabs()}
+            {usesItemsProp(this.tabs) ? this.renderDataTabs() : <slot></slot>}
           </div>
         </div>
         <button
@@ -489,7 +485,7 @@ export class MudTabs {
           hidden={!showEndChevron}
           onClick={this.scrollByDirection('end')}
         >
-          <mud-icon name="chevron-right" size={20}></mud-icon>
+          <mud-icon name="chevron-right-small" size={this.size === 'sm' ? 20 : 24}></mud-icon>
         </button>
         <div class="panels" part="panels">
           {/* Render one passthrough slot per discovered light-DOM panel.

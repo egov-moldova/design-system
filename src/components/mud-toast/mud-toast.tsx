@@ -1,7 +1,12 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS } from './mud-toast.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TOAST_MESSAGES } from './mud-toast.messages';
+import type { ToastMessages } from './mud-toast.messages';
+import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS, TOAST_DISMISS_FALLBACK_MS } from './mud-toast.types';
 import type { ToastVariant } from './mud-toast.types';
 
 /**
@@ -14,7 +19,8 @@ import type { ToastVariant } from './mud-toast.types';
  *
  * Placement, vertical stacking and auto-dismiss are the consumer's
  * responsibility — this atom is just the surface. Its entrance animation
- * (slide-down + fade-in) plays once on mount.
+ * (slide-down + fade-in) plays once on mount; closing it fades it out in
+ * place before `mudClose` fires (Figma Behavior › dismissal).
  *
  * Pattern B (atom-display + interactive close): the close affordance lives
  * inside shadow DOM so it participates in tab order with a real
@@ -27,6 +33,9 @@ import type { ToastVariant } from './mud-toast.types';
  * - `info` / `success` → `role="status"` + `aria-live="polite"`
  * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
  *
+ * Set the native `aria-label` attribute on the host for an explicit accessible
+ * name when the body content alone is not descriptive enough.
+ *
  * @element mud-toast
  *
  * @slot - (default) The message body. Plain text or rich inline content.
@@ -34,8 +43,8 @@ import type { ToastVariant } from './mud-toast.types';
  *                    suppresses both the `iconName` prop and the per-variant
  *                    default icon.
  * @slot actions - Optional inline action group (typically `mud-button` or
- *                 `mud-link`). Aligned to the trailing edge before the close
- *                 button when present.
+ *                 `mud-link`). Renders as its own line below the heading/body
+ *                 stack (Figma `toast` `w/ heading: link` variant).
  */
 @Component({
   tag: 'mud-toast',
@@ -66,38 +75,70 @@ export class MudToast {
 
   /**
    * Override the default `mud-icon` name for the variant (e.g. swap
-   * `circle-info-filled` for a custom glyph). When the `icon-start` slot
+   * `circle-info` for a custom glyph). When the `icon-start` slot
    * is populated, this prop is ignored.
    */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /**
-   * Forwarded to the host as `aria-label`. Use this to give the entire
-   * toast an explicit accessible name when the body content alone is
-   * not descriptive enough.
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ reflect: true }) locale?: LocaleProp;
 
   /**
-   * Close-button accessible label. Defaults to the Romanian "Închide".
-   * Provide an alternative for non-Romanian locales.
-   * @default 'Închide'
+   * Close-button accessible label. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Închide' (ro-MD)
    */
-  @Prop() closeLabel: string = 'Închide';
+  @Prop() closeLabel?: string;
 
   @State() private hasIconStart: boolean = false;
   @State() private hasActions: boolean = false;
+  @State() private dismissing: boolean = false;
 
   @Element() host!: HTMLMudToastElement;
 
   /**
-   * Fires when the user activates the close button. Payload is `void` —
-   * the consumer is responsible for the dismiss animation / DOM removal.
+   * Fires once the close fade-out has finished (at once under
+   * `prefers-reduced-motion`). Payload is `void` — the consumer removes the
+   * toast from the DOM.
    */
   @Event() mudClose!: EventEmitter<void>;
 
+  private dismissTimer?: ReturnType<typeof setTimeout>;
+  private stopLang?: () => void;
+
+  /** Ends the close fade-out; the entrance animation ends here too and is ignored. */
+  @Listen('animationend')
+  onAnimationEnd(ev: AnimationEvent): void {
+    if (ev.animationName === 'toast-dismiss') this.finishDismiss();
+  }
+
+  connectedCallback(): void {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
   componentWillLoad(): void {
     this.detectSlots();
+  }
+
+  disconnectedCallback(): void {
+    this.stopLang?.();
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = undefined;
+  }
+
+  /**
+   * Built-in strings in the resolved locale, with the override props on top.
+   */
+  private messages(): ToastMessages {
+    return localeMessages('mud-toast', this.host, this.locale, TOAST_MESSAGES, {
+      closeLabel: this.closeLabel,
+    });
   }
 
   private detectSlots(): void {
@@ -128,18 +169,38 @@ export class MudToast {
 
   private handleCloseClick = (ev: MouseEvent) => {
     ev.stopPropagation();
-    this.mudClose.emit();
+    this.dismiss();
   };
 
   private handleCloseKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === 'Enter' || ev.key === ' ') {
       ev.preventDefault();
       ev.stopPropagation();
-      this.mudClose.emit();
+      this.dismiss();
     }
   };
 
-  private resolveIconName(): string {
+  /** Fades the toast out, then emits `mudClose`; a second close is ignored. */
+  private dismiss(): void {
+    if (this.dismissing) return;
+    const reduceMotion =
+      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      this.mudClose.emit();
+      return;
+    }
+    this.dismissing = true;
+    this.dismissTimer = setTimeout(this.finishDismiss, TOAST_DISMISS_FALLBACK_MS);
+  }
+
+  private finishDismiss = () => {
+    if (this.dismissTimer === undefined) return;
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = undefined;
+    this.mudClose.emit();
+  };
+
+  private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
     return TOAST_DEFAULT_ICONS[this.variant];
   }
@@ -153,23 +214,30 @@ export class MudToast {
   }
 
   render() {
+    const m = this.messages();
     const iconName = this.resolveIconName();
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
       'has-actions': this.hasActions,
       'has-title': !!(this.titleText && this.titleText.trim().length > 0),
       'is-closable': this.closable,
+      'is-dismissing': this.dismissing,
     };
 
     return (
-      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
+      <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true" lang={lang}>
         <div class="main">
           <span class="icon" aria-hidden="true">
             <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-              <mud-icon name={iconName} size={24} />
+              <mud-icon
+                name={iconName}
+                variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
+                size={24}
+              />
             </slot>
           </span>
 
@@ -191,13 +259,21 @@ export class MudToast {
           <button
             class="close"
             type="button"
-            aria-label={this.closeLabel}
+            aria-label={m.closeLabel}
             onClick={this.handleCloseClick}
             onKeyDown={this.handleCloseKeyDown}
           >
+            {/* Figma's own 16px `16/cross-large` glyph (3044:24437). mud-icon's
+                cross-large is drawn on a 24px grid; scaled to 16px it comes out
+                shorter and thinner than the design. */}
             <span class="close-icon" aria-hidden="true">
               <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                <path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M3.333 3.333 L12.667 12.667 M12.667 3.333 L3.333 12.667"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
               </svg>
             </span>
           </button>

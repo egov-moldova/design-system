@@ -136,7 +136,7 @@ Input:
 Expected behavior:
 
 - Mode: `tokens`; archetype not relevant
-- Output: Token Diff table + validation commands (`yarn lint.tokens`, `yarn tokens.build`)
+- Output: Token Diff table + validation commands (`yarn tokens.lint`, `yarn tokens.build`)
 - Skips API/Behavior/Stories/A11y sections (gated out per output-templates.md § Mode: tokens)
 
 ## Output contract

@@ -4,7 +4,7 @@
 
 Environment awareness checks and all build/dev commands. **Read before starting dev server or running builds.**
 
-> **Wireit**: All build scripts use [google/wireit](https://github.com/google/wireit) for declarative dependency graphs, automatic parallelism, and incremental caching. When you run a command like `yarn build`, wireit automatically runs its dependencies (`tokens.build`, `tokens.build.prod`, `wca.custom-elements`) in parallel first, then runs the stencil build. Unchanged inputs are skipped via caching — repeated `yarn tokens.build` calls return in ~0.1s if nothing changed. Services (`dev`, `dx:stencil`, `dx:storybook`, `tokens.watch`) use `service: true` for long-running processes.
+> **Wireit**: All build scripts use [google/wireit](https://github.com/google/wireit) for declarative dependency graphs, automatic parallelism, and incremental caching. When you run a command like `yarn build`, wireit automatically runs its dependencies (`tokens.build`, `tokens.build.prod`) in parallel first, then runs the stencil build. Unchanged inputs are skipped via caching — repeated `yarn tokens.build` calls return in ~0.1s if nothing changed. Services (`dev`, `dx:stencil`, `dx:storybook`, `tokens.watch`) use `service: true` for long-running processes.
 
 ---
 
@@ -24,6 +24,16 @@ lsof -i :6007
 
 - **Output shows LISTENING** → Storybook is already running. Use it. Do NOT start another.
 - **No output** → Start: `yarn sp.dev.watch` (non-blocking, wait ~10s for ready)
+
+To kill a stuck process on port 6007 instead:
+
+```bash
+# Windows (PowerShell)
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 6007).OwningProcess
+
+# macOS / Linux (Unix)
+kill -9 $(lsof -ti:6007)
+```
 
 ### Check Browser Session
 
@@ -79,7 +89,7 @@ yarn sp.dev.watch handles all three in watch mode. Only run it once.
 | `.css` / `.tsx` (NO watch) | `yarn dx:stencil:once` | ~20s | Single Stencil build without docs |
 | `.stories.ts` only | *(nothing — Storybook HMR)* | ~1s | Vite hot-reloads instantly |
 | `.tokens.json` + `.css` | `yarn tokens.build` → wait for watch | ~7s | Tokens first, watch handles CSS |
-| New component (all files) | `yarn tokens.build` + `yarn wca.custom-elements` | ~10s | Watch handles Stencil; WCA updates metadata |
+| New component (all files) | `yarn tokens.build` | ~10s | Watch handles Stencil and rewrites the Storybook manifest |
 
 **Why safe**: Token CSS files are standalone (`dist/mud/tokens/*.css`) loaded at runtime via `<link>`. Components use `var(--name)` — no inline values. Stories processed by Vite independently.
 
@@ -139,26 +149,25 @@ yarn test.dev
 # Development (wireit orchestrates dependencies + services automatically)
 yarn sp.dev.watch              # Storybook (port 6007) + Stencil watch + auto-rebuild
 yarn dev                       # Stencil + Storybook + token watch (wireit services)
+yarn dev:all                   # yarn dev + the web-components demo (5174) on one Stencil watcher; check: node scripts/check-dev-all.mjs
 yarn dx:prepare                # First-time setup: tokens + custom-elements (wireit parallel)
 yarn dx:clean                  # Clean all build artifacts
 
 # Build (production / final verification)
 yarn build                     # Full build: tokens + custom-elements + Stencil + docs (4GB RAM)
-yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
-yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
+yarn build.web                 # Build @egov-moldova/mud-web-components vanilla adapter
+yarn demo.web                  # Serve the @egov-moldova/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn sp.docker                 # Docker-optimized Storybook build
 
 # Build (dev — targeted per change type)
 yarn tokens.build              # After .tokens.json changes only (~5s)
 yarn tokens.build.prod         # Production tokens (core + dark, optimized)
-yarn tokens.build.age          # Build AGE theme tokens only
 yarn dx:stencil:once           # After .css/.tsx changes without watch (~20s)
 
 # Tokens
 yarn tokens.build              # Build all token themes (core + core.dark)
 yarn tokens.build.prod         # Production tokens (optimized)
-yarn tokens.build.age         # AGE theme tokens only
 yarn tokens.watch              # Watch token files and rebuild on change
 yarn tokens.audit              # Debug missing token references
 
@@ -166,7 +175,7 @@ yarn tokens.audit              # Debug missing token references
 yarn test                      # Vitest spec suite via the stderr wrapper (builds nothing)
 yarn test.dev                  # Same suite, no wireit cache layer (accepts args for specific components)
 yarn test.watch                # Test in watch mode
-yarn lint                      # ESLint (TS/TSX) + Prettier + Stylelint CSS check
+yarn lint                      # ESLint (TS/TSX) + Stylelint CSS (cached) + Prettier check (always runs)
 yarn lint.css                  # Stylelint CSS-only lint (src/**/*.css)
 yarn lint.css.fix              # Auto-fix CSS issues via Stylelint
 yarn format                    # Auto-fix TS/TSX + Prettier
@@ -177,14 +186,13 @@ yarn test.dev src/components/mud-button                           # Test all tes
 yarn test.dev                                                     # Run all tests (fast)
 
 # Utilities
-yarn generate                  # Stencil component generator scaffolding
-yarn wca.custom-elements       # Generate custom-elements.json for Storybook
-yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
-yarn svg:remove-size           # Remove size attributes from SVGs
-yarn svg:remove-fill           # Remove fill attributes from SVGs
-yarn format.icons              # Format SVG icons with SVGO
+npx stencil generate           # Stencil component generator scaffolding (not wired as a yarn script)
+yarn svg:icons                 # format.icons, then rebuild icons.manifest.json and icon-names.ts
+yarn format.icons              # both passes below, over src/components/mud-icon/assets/**
+yarn svg:remove-size           # drop the root width/height (CSS sizes the inlined svg)
+yarn svg:remove-fill           # drop hardcoded paint, keeping currentColor and none
 
 # Storybook URLs (port 6007)
 # Story iframe: http://localhost:6007/iframe.html?id={path}--{story}&viewMode=story
-# Example:      http://localhost:6007/iframe.html?id=atoms-mud-button--default&viewMode=story
+# Example:      http://localhost:6007/iframe.html?id=components-button--default&viewMode=story
 ```

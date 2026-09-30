@@ -14,15 +14,16 @@ type CheckboxArgs = {
   label: string;
   supportingText: string;
   errorText: string;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
 // ---------- Slot-first markup helper ----------
 //
-// `label` / `supportingText` props are ARIA-only (see component JSDoc); visible
-// content lives exclusively in the `label` / `supporting-text` slots. This
-// helper composes that markup so every story renders the same structure.
+// The `label` / `supporting-text` props render visible text; the slots of the
+// same names replace them for rich content. This helper uses the slots so every
+// story renders the same structure, rich or plain.
 
 type CbOpts = {
   size?: CheckboxSize;
@@ -36,6 +37,8 @@ type CbOpts = {
   ariaLabel?: string;
   /** Raw inner markup override. When set, ignores `label`/`supporting`. */
   rawSlots?: string;
+  /** Language of the built-in copy (`locale` attribute). */
+  locale?: string;
 };
 
 const cb = (opts: CbOpts = {}): string => {
@@ -43,6 +46,7 @@ const cb = (opts: CbOpts = {}): string => {
     opts.size && opts.size !== 'md' ? `size="${opts.size}"` : '',
     opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
     opts.errorText ? `error-text="${opts.errorText}"` : '',
+    opts.locale ? `locale="${opts.locale}"` : '',
     opts.flags ?? '',
   ]
     .filter(Boolean)
@@ -67,6 +71,7 @@ const renderCheckbox = (args: CheckboxArgs) =>
     label: args.label,
     supporting: args.supportingText,
     errorText: args.errorText,
+    locale: args.locale,
     flags: [
       args.checked && 'checked',
       args.indeterminate && 'indeterminate',
@@ -85,7 +90,7 @@ const docsSource = (args: CheckboxArgs) =>
     .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<CheckboxArgs> = {
-  title: 'Atoms/Checkbox',
+  title: 'Components/Checkbox',
   component: 'mud-checkbox',
   argTypes: {
     size: {
@@ -102,7 +107,8 @@ const meta: Meta<CheckboxArgs> = {
     readonly: { control: 'boolean' },
     label: {
       control: 'text',
-      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+      description:
+        'Visible label. The story slots it (`<span slot="label">…</span>`); the `label` prop renders the same text.',
     },
     supportingText: {
       control: 'text',
@@ -112,6 +118,11 @@ const meta: Meta<CheckboxArgs> = {
       control: 'text',
       description:
         'Plain-text error message (`error-text`). Shown with the error icon when `invalid` is set; replaces supporting text.',
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
   },
 };
@@ -133,6 +144,7 @@ export const Default: Story = {
     label: 'Acord',
     supportingText: '',
     errorText: '',
+    locale: '',
   },
   parameters: {
     docs: {
@@ -146,13 +158,13 @@ export const Default: Story = {
 
 export const Checked: Story = {
   render: renderCheckbox,
-  args: { ...Default.args!, checked: true, label: 'Termeni și condiții' },
+  args: { ...Default.args!, checked: true, label: 'Terms and conditions' },
   parameters: Default.parameters,
 };
 
 export const Indeterminate: Story = {
   render: renderCheckbox,
-  args: { ...Default.args!, indeterminate: true, label: 'Selectează toate categoriile' },
+  args: { ...Default.args!, indeterminate: true, label: 'Select all categories' },
   parameters: Default.parameters,
 };
 
@@ -218,8 +230,8 @@ export const AllSizes: Story = {
   render: () =>
     wrapNarrow(
       CHECKBOX_SIZES.flatMap(size => [
-        cell(`${size} · unchecked`, cb({ size, label: 'Acord' })),
-        cell(`${size} · checked`, cb({ size, label: 'Acord', flags: 'checked' })),
+        cell(`${size} · unchecked`, cb({ size, label: 'Consent' })),
+        cell(`${size} · checked`, cb({ size, label: 'Consent', flags: 'checked' })),
       ]).join(''),
     ),
   parameters: {
@@ -228,8 +240,8 @@ export const AllSizes: Story = {
       source: {
         code: docsCode(
           ...CHECKBOX_SIZES.flatMap(s => [
-            cb({ size: s, label: 'Acord' }),
-            cb({ size: s, label: 'Acord', flags: 'checked' }),
+            cb({ size: s, label: 'Consent' }),
+            cb({ size: s, label: 'Consent', flags: 'checked' }),
           ]),
         ),
       },
@@ -242,19 +254,19 @@ export const WithLabel: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell('plain slot', cb({ label: 'Acord' })),
-        cell('plain slot (checked)', cb({ label: 'Termeni și condiții', flags: 'checked' })),
+        cell('plain slot', cb({ label: 'Consent' })),
+        cell('plain slot (checked)', cb({ label: 'Terms and conditions', flags: 'checked' })),
         cell(
           'rich slot',
           cb({
-            rawSlots: /*html*/ `<span slot="label">Sunt de acord cu <strong>Termeni și condiții</strong></span>`,
+            rawSlots: /*html*/ `<span slot="label">I agree to the <strong>Terms and conditions</strong></span>`,
           }),
         ),
         cell(
           'rich slot (checked)',
           cb({
             flags: 'checked',
-            rawSlots: /*html*/ `<span slot="label">Doresc să primesc <a href="#">actualizări</a> prin email</span>`,
+            rawSlots: /*html*/ `<span slot="label">I want to receive <a href="#">updates</a> by email</span>`,
           }),
         ),
       ].join(''),
@@ -267,26 +279,26 @@ export const WithSupportingText: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell('unchecked', cb({ label: 'Acord', supporting: 'Vom trimite confirmarea la adresa ta de email.' })),
+        cell('unchecked', cb({ label: 'Consent', supporting: 'We will send the confirmation to your email address.' })),
         cell(
           'checked',
           cb({
-            label: 'Termeni și condiții',
-            supporting: 'Citește documentul complet înainte de a continua.',
+            label: 'Terms and conditions',
+            supporting: 'Read the full document before continuing.',
             flags: 'checked',
           }),
         ),
         cell(
           'indeterminate',
           cb({
-            label: 'Selectează toate',
-            supporting: 'Unele subcategorii sunt deja selectate.',
+            label: 'Select all',
+            supporting: 'Some subcategories are already selected.',
             flags: 'indeterminate',
           }),
         ),
         cell(
           'small size',
-          cb({ size: 'sm', label: 'Marketing', supporting: 'Pot fi dezactivate oricând din setări.' }),
+          cb({ size: 'sm', label: 'Marketing', supporting: 'Can be turned off at any time in settings.' }),
         ),
       ].join(''),
     ),
@@ -301,23 +313,23 @@ export const Error: Story = {
         cell(
           'error unchecked',
           cb({
-            label: 'Termeni și condiții',
-            errorText: 'Trebuie să accepți termenii pentru a continua.',
+            label: 'Terms and conditions',
+            errorText: 'You must accept the terms to continue.',
             flags: 'invalid required',
           }),
         ),
         cell(
           'error checked',
           cb({
-            label: 'Termeni și condiții',
-            errorText: 'Trebuie să accepți termenii pentru a continua.',
+            label: 'Terms and conditions',
+            errorText: 'You must accept the terms to continue.',
             flags: 'invalid checked',
           }),
         ),
-        cell('error sm', cb({ size: 'sm', label: 'Acord', errorText: 'Câmp obligatoriu.', flags: 'invalid' })),
+        cell('error sm', cb({ size: 'sm', label: 'Consent', errorText: 'Consent is needed.', flags: 'invalid' })),
         cell(
           'error sm checked',
-          cb({ size: 'sm', label: 'Acord', errorText: 'Câmp obligatoriu.', flags: 'invalid checked' }),
+          cb({ size: 'sm', label: 'Consent', errorText: 'Consent is needed.', flags: 'invalid checked' }),
         ),
       ].join(''),
     ),
@@ -329,12 +341,12 @@ export const Disabled: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell('disabled unchecked', cb({ label: 'Acord', flags: 'disabled' })),
-        cell('disabled checked', cb({ label: 'Acord', flags: 'disabled checked' })),
-        cell('disabled indeterminate', cb({ label: 'Acord', flags: 'disabled indeterminate' })),
+        cell('disabled unchecked', cb({ label: 'Consent', flags: 'disabled' })),
+        cell('disabled checked', cb({ label: 'Consent', flags: 'disabled checked' })),
+        cell('disabled indeterminate', cb({ label: 'Consent', flags: 'disabled indeterminate' })),
         cell(
           'disabled + supporting',
-          cb({ label: 'Acord', supporting: 'Această opțiune nu este disponibilă acum.', flags: 'disabled' }),
+          cb({ label: 'Consent', supporting: 'This option is not available right now.', flags: 'disabled' }),
         ),
       ].join(''),
     ),
@@ -350,20 +362,20 @@ export const EdgeCases: Story = {
           'long label wraps',
           cb({
             label:
-              'Doresc să primesc actualizări periodice prin email despre noile funcționalități, promoții și evenimente organizate de Corlab și partenerii săi',
+              'I want to receive periodic email updates about new features, promotions and events organised by Corlab and its partners',
           }),
         ),
         cell(
           'long label + supporting',
           cb({
-            label: 'Sunt de acord cu Termeni și condiții și Politica de confidențialitate',
+            label: 'I agree to the Terms and conditions and the Privacy policy',
             supporting:
-              'Te rugăm să citești cu atenție documentele complete înainte de a continua. Acordul tău se aplică tuturor serviciilor Corlab și poate fi retras oricând din pagina de setări a contului.',
+              'Please read the full documents carefully before continuing. Your consent applies to all Corlab services and can be withdrawn at any time from the account settings page.',
             flags: 'checked',
           }),
         ),
-        cell('no label (aria-only)', cb({ ariaLabel: 'Selectează rândul' })),
-        cell('readonly checked', cb({ label: 'Verificat de sistem', flags: 'readonly checked' })),
+        cell('no label (aria-only)', cb({ ariaLabel: 'Select row' })),
+        cell('readonly checked', cb({ label: 'Verified by the system', flags: 'readonly checked' })),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },

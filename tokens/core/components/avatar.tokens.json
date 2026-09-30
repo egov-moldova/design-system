@@ -72,11 +72,11 @@
     },
     "icon": {
       "size": {
-        "xs": { "$value": "{spacing.12}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.16}", "$type": "dimension" },
+        "xs": { "$value": "{spacing.16}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
         "md": { "$value": "{spacing.20}", "$type": "dimension" },
         "lg": { "$value": "{spacing.24}", "$type": "dimension" },
-        "xl": { "$value": "{spacing.32}", "$type": "dimension" }
+        "xl": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "color": {
         "$value": "{color.icon.base.secondary}",

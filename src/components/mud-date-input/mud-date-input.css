@@ -71,23 +71,21 @@
   white-space: nowrap;
 }
 
+/* Figma draws the mandatory mark as the 12/asterisk icon (2975:10179). The
+   label keeps its colour when the field is disabled (184:866). */
 .required-mark {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
   inline-size: var(--date-input-label-required-mark-size);
   block-size: var(--date-input-label-required-mark-size);
   color: var(--date-input-label-required-mark-color);
-  font-weight: var(--date-input-control-font-weight);
-  line-height: 1;
 }
 
-:host(.is-disabled) .label {
-  color: var(--date-input-label-color-disabled);
-}
-
-:host(.is-disabled) .required-mark {
-  color: var(--date-input-label-color-disabled);
+/* The mark (12px) sits below mud-icon's smallest `size` (16), so the icon's own
+   box is overridden here; without it the 16px icon overflows the 12px mark. */
+.required-mark mud-icon {
+  inline-size: var(--date-input-label-required-mark-size);
+  block-size: var(--date-input-label-required-mark-size);
 }
 
 :host(:not(.has-label)) .label {
@@ -96,12 +94,17 @@
 
 /* ---------- Control row ---------- */
 
+/* Figma strokes sit inside the frame without moving its content, while a CSS
+   border adds to the padding — subtract it so content starts 16 / 12px in.
+   `relative` anchors the calendar popover to the field, not to the helper
+   text below it. */
 .control {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--_gap);
   block-size: var(--_height);
-  padding-inline: var(--_padding-inline);
+  padding-inline: calc(var(--_padding-inline) - var(--_border-width-default));
   background-color: var(--_bg);
   border: var(--_border-width-default) solid var(--_border-color);
   border-radius: var(--_radius);
@@ -111,21 +114,57 @@
     background-color var(--_transition-duration) var(--_transition-easing);
 }
 
+/* Emphasis ring overlay.
+   The inset ring that stands in for Figma's 2px border lives on this pseudo
+   element, not on `.control` itself: an autofilled `.native` paints an opaque
+   `-webkit-box-shadow` fill over the control's own background and would clip
+   the ring's top and bottom edges. The overlay paints after the native input,
+   so the ring stays whole. It spans the padding box (`inset: 0`), whose radius
+   is the control's minus the border it sits inside. */
+.control::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--_radius) - var(--_border-width-default));
+  pointer-events: none;
+  /* Above `.native` (z-index 1), below the calendar popover (z-index 10). */
+  z-index: 2;
+  transition: box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
 :host(:not(.is-disabled):not(.is-focused):hover) .control {
   border-color: var(--_border-color-hover);
+}
+
+:host(:not(.is-disabled):not(.is-focused):hover) .control::after {
   box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
     var(--_border-color-hover);
 }
 
 :host(.is-focused:not(.is-disabled)) .control {
   border-color: var(--_border-color-focus);
-  box-shadow:
-    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
-    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+  /* The outer focus ring is drawn outside the control, where the native input
+     cannot reach it — it stays on `.control`. */
+  box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-focused:not(.is-disabled)) .control::after {
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-focus);
+}
+
+/* Disabled recolors the private vars rather than painting
+   `.control` directly: `.native:-webkit-autofill` fills the control with
+   `var(--_bg)` and tints text with `var(--_text)`, so a state that only
+   overrode `.control` would be repainted with the enabled colors as soon as
+   the browser autofilled the field. Driving the vars keeps every surface --
+   control background, autofill fill and text -- on one source of truth. */
+:host(.is-disabled) {
+  --_bg: var(--date-input-default-background-disabled);
+  --_text: var(--date-input-default-text-disabled);
 }
 
 :host(.is-disabled) .control {
-  background-color: var(--date-input-default-background-disabled);
   border-color: var(--date-input-default-border-disabled);
   cursor: not-allowed;
 }
@@ -292,27 +331,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--_icon-size);
-  block-size: var(--_icon-size);
-  color: var(--date-input-icon-color-default);
+  inline-size: var(--date-input-clear-button-size);
+  block-size: var(--date-input-clear-button-size);
+  color: var(--date-input-clear-button-icon-color);
   appearance: none;
-  background: transparent;
+  background-color: var(--date-input-clear-button-background-default);
   border: 0;
   padding: 0;
   margin: 0;
   cursor: pointer;
-  border-radius: var(--border-radius-4);
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
+  border-radius: var(--date-input-clear-button-border-radius);
+  transition: background-color var(--_transition-duration) var(--_transition-easing);
 }
 
 .clear-button:hover {
-  background-color: color-mix(in srgb, currentcolor 12%, transparent);
+  background-color: var(--date-input-clear-button-background-hover);
 }
 
 .clear-button:active {
-  background-color: color-mix(in srgb, currentcolor 20%, transparent);
+  background-color: var(--date-input-clear-button-background-active);
 }
 
 .clear-button:focus-visible {
@@ -326,10 +363,12 @@
 
 .picker-popover {
   position: absolute;
-  inset-block-start: 100%;
-  inset-inline-start: 0;
+  /* Offsets are from the padding box: step past the border to the outer edge. */
+  inset-block-start: calc(100% + var(--_border-width-default));
+  inset-inline-start: calc(-1 * var(--_border-width-default));
   z-index: 10;
-  margin-block-start: var(--spacing-4);
+  /* Figma puts the calendar 8px under the field (Date Picker page, 470:32032). */
+  margin-block-start: var(--date-input-popover-offset);
   display: block;
 }
 
@@ -352,6 +391,20 @@
   background-color: var(--color-background-alpha-overlay-dark);
 }
 
+/* ---------- Live region (screen readers only) ---------- */
+
+.live-region {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- Assistive (helper / error) ---------- */
 
 .assistive {
@@ -365,6 +418,12 @@
   color: var(--date-input-assistive-color-default);
   inline-size: 100%;
   min-inline-size: 0;
+}
+
+/* The helper slot stays in the tree while there is no helper, so content
+   slotted into it still fires slotchange; it shows once moved into .assistive. */
+.helper-slot {
+  display: none;
 }
 
 .assistive-error {
@@ -393,7 +452,9 @@
 /* ---------- prefers-reduced-motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .control {
+  .control,
+  .control::after,
+  .clear-button {
     transition: none;
   }
 }

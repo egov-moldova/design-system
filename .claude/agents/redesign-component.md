@@ -1,7 +1,7 @@
 ---
 name: redesign-component
-description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for Cline Kanban + worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
+description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, Skill
 model: opus
 ---
 
@@ -14,7 +14,7 @@ Redesign an existing `mud-*` component to align with the new MUD Design System u
 - `refactor-component` aligns existing code to *current* patterns (no visual change expected)
 - `redesign-component` aligns existing code to *Figma's new design* (visual change expected)
 - This agent **dispatches `parallel-aux-tasks`** after Core build for verifiers + writers in parallel
-- Optimized for Cline Kanban: assumes one worktree per component; explicit branch convention `redesign/mud-<name>`
+- Optimized for parallel worktrees: assumes one worktree per component; explicit branch convention `redesign/mud-<name>`
 
 ## Inputs
 
@@ -27,7 +27,7 @@ Optional:
 
 - `--write-mode=parallel-write` (default) | `--write-mode=read-only`
 - `--fast` — auto-proceed through plan checkpoints (atoms only; never for organisms)
-- `--worktree-aware` — if set, the agent assumes it's running inside a pre-created worktree (Cline Kanban scenario) and skips environment setup that touches the parent repo
+- `--worktree-aware` — if set, the agent assumes it's running inside a pre-created worktree and skips environment setup that touches the parent repo
 
 ## Step 0 — Worktree + Environment
 
@@ -192,7 +192,7 @@ Update `src/components/<componentName>/<componentName>.tsx`:
 ### 5.4 Validate render
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_wait_for({ time: 2 })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
@@ -206,9 +206,9 @@ If console errors → fix the TSX/CSS, then re-check. Component MUST render clea
 Dispatch all 5 subagents in a SINGLE message with parallel `Agent` tool calls (subagent_type values match the agent files):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=<componentName>, figmaNodeId=<figmaNodeId>, threshold=0.5")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=<componentName>, figmaUrl=<figma url with node-id>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=<componentName>")
-Agent(subagent_type="story-writer",           prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, atomicLevel=<atomicLevel>, writeMode=<writeMode>, figmaMetadata=<extracted-metadata>")
+Agent(subagent_type="story-writer",           prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, writeMode=<writeMode>, figmaMetadata=<extracted-metadata>")
 Agent(subagent_type="test-writer",            prompt="componentName=<componentName>, componentTsxPath=src/components/<componentName>/<componentName>.tsx, writeMode=<writeMode>")
 Agent(subagent_type="integration-checker",    prompt="componentName=<componentName>, changeKind=redesign, apiChanges=<list-from-Step-3>")
 ```
@@ -237,7 +237,7 @@ Re-screenshot only the changed states (pixel-perfect re-verify on the deltas).
 
 ## Step 8 — Final Verification
 
-Invoke `verification-before-completion` skill. Run in parallel:
+Invoke `superpowers:verification-before-completion` skill. Run in parallel:
 
 ```bash
 yarn lint
@@ -254,7 +254,7 @@ yarn sp.build
 Check console one final time:
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-<componentName>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_console_messages({ level: "error" })
 ```
 
@@ -271,7 +271,7 @@ mcp__playwright__browser_console_messages({ level: "error" })
 - [ ] Tests regenerated (parallel-write) OR drafted (read-only)
 
 ### Subagent reports
-- pixel-perfect-verifier: PASS (max diff: X%, all states < 0.5%)
+- pixel-perfect-verifier: Verdict <FAIL|INCOMPLETE|WARN|PASS> (<n> style mismatches, pixel PASS/WARNING/FAIL <a>/<b>/<c>, <m> uncovered variants)
 - a11y-verifier: PASS (0 critical, Y warnings)
 - story-writer: 6 stories, all render
 - test-writer: 14 tests, coverage Z%
@@ -297,21 +297,19 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 `yarn sp.build` regenerates these tracked files in your worktree:
 
-- `src/components.d.ts`
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts (critical for parallel worktrees), and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. `src/components.d.ts` is regenerated too but git-ignored, so it is never staged. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Return to Main Agent
 
-If running inside Cline Kanban worktree:
+If running inside a pre-created worktree (`--worktree-aware`):
 
-1. Stage changes: `git add -A` (only files modified by this redesign)
+1. Stage changes: `git add <files modified by this redesign>` (explicit paths — never `git add -A`/`git add .`, no hook filters out generated files for you)
 2. Commit: `git commit -m "redesign(mud-<name>): align to MUD Design System"`
 3. Push: `git push -u origin redesign/mud-<name>`
-4. Open PR (see `.claude/kanban/pr-template.md`)
-5. Update the Kanban card with PR link + summary
+4. Open PR
 
 Otherwise, present the report and wait for user instruction on commit/PR.
 

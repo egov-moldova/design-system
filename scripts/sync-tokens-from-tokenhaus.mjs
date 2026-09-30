@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
  * Converts a Tokenhaus Figma export (tokens-tokenhaus.json — 2026+ schema)
- * to Style Dictionary legacy-schema token files.
+ * to DTCG token files ($value / $type).
  *
  * Figma Plugin: https://www.figma.com/community/plugin/1578065513743190845/tokenhaus-variable-import-export-with-links
  *
  * Usage:
- *   node scripts/sync-tokens-from-tokenhaus.mjs --input <file> [-o <dir>] [--dry-run] [--report <file>] [--strict]
+ *   node scripts/sync-tokens-from-tokenhaus.mjs --input <file> [-o <dir>] [--apply] [--dry-run] [--report <file>] [--strict]
  *
- * Default output base is tokens/figma-export (staging, manual diff).
- * Pass --output tokens to clean-break overwrite tokens/core and tokens/core.dark.
+ * Default output base is tokens/figma-export: a staging area to diff against
+ * tokens/core before promoting anything. It is gitignored; `yarn test:scripts`
+ * checks that (scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs).
+ * Pass --apply to overwrite tokens/core and tokens/core.dark and delete the legacy
+ * orphan files (clean break).
  *
  * Generated files (under <output base>):
  *   core/palette.tokens.json              ← 2. Primitive Colors: Do not use directly
@@ -30,6 +33,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Command, CommanderError } from 'commander';
+
+import { GENERATED_FILES } from './lib/tokenhaus-generated-files.mjs';
+import { isEntrypoint } from './lib/is-entrypoint.mjs';
 
 const SCRIPT_FILE = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = path.dirname(SCRIPT_FILE);
@@ -106,7 +112,7 @@ class CliError extends Error {
 function createProgram() {
   return new Command()
     .name('sync-tokens-from-tokenhaus')
-    .description('Convert a Tokenhaus Figma export (2026+ schema) to Style Dictionary token files')
+    .description('Convert a Tokenhaus Figma export (2026+ schema) to DTCG token files')
     .requiredOption('--input <file>', 'Path to tokens-tokenhaus.json', DEFAULT_INPUT_FILE)
     .option('-o, --output <dir>', 'Output base directory (parent of core/ and core.dark/)', DEFAULT_OUTPUT_BASE)
     .option(
@@ -812,7 +818,6 @@ function printSummary(ctx, metadata) {
 
 function printNextSteps(options) {
   const outCore = formatPathForLog(path.join(options.outputBase, 'core'));
-  const outDark = formatPathForLog(path.join(options.outputBase, 'core.dark'));
 
   if (options.apply) {
     const action = options.dryRun
@@ -822,7 +827,7 @@ function printNextSteps(options) {
 Done. Apply mode ${action}.
 Next steps:
   1. Verify tokens/core/effects.tokens.json exists (carry-forward from shadow.tokens.json).
-     If missing, author it manually before yarn tokens.build (drop-shadow.100..500).
+     If missing, author it manually before yarn tokens.build (dropShadow.100..500).
   2. yarn tokens.build && yarn tokens.lint.all
   3. Run yarn test:scripts to confirm regression suite passes.
   4. Update src/components/ CSS variable references — see plan PR D for migration script.`);
@@ -832,16 +837,12 @@ Next steps:
   console.log(`
 Done. Next steps:
   1. Inspect generated foundation files:
-     - ${outCore}/palette.tokens.json
-     - ${outCore}/color.tokens.json
-     - ${outCore}/font.tokens.json
-     - ${outCore}/sizes.tokens.json
-     - ${outDark}/color.tokens.json
+${GENERATED_FILES.map(file => `     - ${formatPathForLog(path.join(options.outputBase, file))}`).join('\n')}
   2. Diff against current tokens/core:
      diff -r ${outCore} tokens/core
   3. For a clean break, re-run with --apply to overwrite tokens/core and tokens/core.dark
      and delete legacy orphan files automatically.
-  4. Author tokens/core/effects.tokens.json manually with drop-shadow.100..500 (Figma elevation 1-5).
+  4. Author tokens/core/effects.tokens.json manually with dropShadow.100..500 (Figma elevation 1-5).
   5. yarn tokens.build && yarn tokens.lint.all`);
 }
 
@@ -899,7 +900,7 @@ async function main(argv = process.argv) {
   ctx.notGenerated = [
     {
       file: 'effects.tokens.json',
-      reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)',
+      reason: 'not in Tokenhaus export — author manually (dropShadow.100..500 from Figma elevation 1-5)',
     },
     { file: 'screen.tokens.json', reason: 'not in Tokenhaus export — breakpoints removed from Figma' },
     { file: 'letterSpacing (in font.tokens.json)', reason: 'not in Tokenhaus export — emitted as empty placeholder' },
@@ -943,10 +944,6 @@ async function main(argv = process.argv) {
   };
 }
 
-function isEntrypoint() {
-  return process.argv[1] ? path.resolve(process.argv[1]) === SCRIPT_FILE : false;
-}
-
 function printFatalError(error) {
   if (error instanceof CliError) {
     console.error(`Error: ${error.message}`);
@@ -960,6 +957,7 @@ function printFatalError(error) {
 export {
   APPLY_OUTPUT_BASE,
   CliError,
+  GENERATED_FILES,
   MODE_DARK,
   MODE_LIGHT,
   ORPHAN_FILES_CORE,
@@ -985,7 +983,7 @@ export {
   validateInputStructure,
 };
 
-if (isEntrypoint()) {
+if (isEntrypoint(import.meta.url)) {
   main()
     .then(result => process.exit(result.exitCode))
     .catch(printFatalError);

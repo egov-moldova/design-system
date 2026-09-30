@@ -1,7 +1,10 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-pagination';
 
+import { PAGINATION_MESSAGES } from '../mud-pagination.messages';
+import type { PaginationMessages } from '../mud-pagination.messages';
 import { ELLIPSIS, PAGINATION_SIZES } from '../mud-pagination.types';
 
 // ---------------------------------------------------------------------------
@@ -418,6 +421,70 @@ describe('mud-pagination', () => {
   });
 
   // -------------------------------------------------------------------------
+  // Overflow menu placement — opens where the viewport has room
+  // -------------------------------------------------------------------------
+  describe('overflow menu placement', () => {
+    type Placeable = HTMLElement & { measureOverflow: () => void };
+
+    /**
+     * Opens the overflow on the last of 23 pages, then pins the geometry the
+     * placement reads: the trigger's box, the viewport height and the menu's
+     * natural height. The design tokens do not resolve in mock-doc, so the cap
+     * falls back to the menu's own height and the edge offset to zero.
+     */
+    const openAt = async (trigger: { top: number; bottom: number }, viewport: number, natural = 500) => {
+      const { root, waitForChanges } = await render(<mud-pagination total-pages={23} current-page={23} />);
+      queryEllipses(root)[0]?.click();
+      await waitForChanges();
+      const item = root?.shadowRoot?.querySelector('.overflow-item.is-open') as HTMLElement;
+      const button = item.querySelector('.overflow-trigger') as HTMLElement;
+      const menu = queryOverflowMenu(root) as HTMLElement;
+      vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({
+        ...trigger,
+        left: 0,
+        right: 40,
+        width: 40,
+        height: 40,
+        x: 0,
+        y: trigger.top,
+        toJSON: () => ({}),
+      } as DOMRect);
+      Object.defineProperty(menu, 'scrollHeight', { value: natural, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: viewport, configurable: true });
+      (root as unknown as Placeable).measureOverflow();
+      await waitForChanges();
+      return { root: root as HTMLElement, waitForChanges };
+    };
+    const openItem = (root: HTMLElement) => root.shadowRoot?.querySelector('.overflow-item.is-open');
+
+    it('opens below the trigger when the viewport has room there', async () => {
+      const { root } = await openAt({ top: 10, bottom: 50 }, 800);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(false);
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('500px');
+    });
+
+    it('flips above the trigger when there is no room below and more above', async () => {
+      const { root } = await openAt({ top: 740, bottom: 780 }, 800);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(true);
+    });
+
+    it('caps the menu to the room on the side it opens toward', async () => {
+      // 400px viewport: 202px below the trigger (400 - 190 - 8), 142px above.
+      const { root } = await openAt({ top: 150, bottom: 190 }, 400);
+      expect(openItem(root)?.classList.contains('is-drop-up')).toBe(false);
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('202px');
+    });
+
+    it('forgets the placement when the menu closes', async () => {
+      const { root, waitForChanges } = await openAt({ top: 740, bottom: 780 }, 800);
+      queryEllipses(root)[0]?.click();
+      await waitForChanges();
+      expect(root.shadowRoot?.querySelector('.is-drop-up')).toBeNull();
+      expect(root.style.getPropertyValue('--_overflow-menu-max-block-size')).toBe('');
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Constructor / harness sanity
   // -------------------------------------------------------------------------
   it('constructs without registering a host when registerHost=false', () => {
@@ -426,4 +493,61 @@ describe('mud-pagination', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describe('mud-pagination — template overrides', () => {
+  const en = PAGINATION_MESSAGES['en-US'];
+
+  it('empty prevAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} prevAriaLabel="" />);
+    expect(queryPrev(root)?.getAttribute('aria-label')).toBe(en.prevAriaLabel.replace('{page}', '2'));
+  });
+
+  it('empty nextAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={3} totalPages={5} nextAriaLabel="" />);
+    expect(queryNext(root)?.getAttribute('aria-label')).toBe(en.nextAriaLabel.replace('{page}', '4'));
+  });
+
+  it('empty pageAriaLabel falls back', async () => {
+    const { root } = await render(<mud-pagination locale="en-US" currentPage={2} totalPages={5} pageAriaLabel="" />);
+    const second = queryPageButtons(root).find(button => button.textContent?.trim() === '2');
+    expect(second?.getAttribute('aria-label')).toBe(en.pageAriaLabel.replace('{page}', '2').replace('{total}', '5'));
+  });
+
+  it('empty overflowAriaLabel falls back', async () => {
+    const { root } = await render(
+      <mud-pagination locale="en-US" currentPage={10} totalPages={20} overflowAriaLabel="" />,
+    );
+    const leading = queryEllipses(root).find(trigger => trigger.getAttribute('data-key') === 'leading');
+    expect(leading?.getAttribute('aria-label')).toBe(en.overflowAriaLabel.replace('{from}', '2').replace('{to}', '8'));
+  });
+});
+
+describeLocales<PaginationMessages>('mud-pagination', PAGINATION_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { 'current-page': '3', 'total-pages': '5' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.label !== undefined) attrs.label = String(props.label);
+    if (props.prevLabel !== undefined) attrs['prev-label'] = String(props.prevLabel);
+    if (props.nextLabel !== undefined) attrs['next-label'] = String(props.nextLabel);
+    const { root } = await render(
+      <mud-pagination {...attrs}></mud-pagination>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'navLabel') return queryNav(host)?.getAttribute('aria-label') ?? null;
+    if (key === 'prevLabel') return queryPrev(host)?.querySelector('.nav-label')?.textContent ?? null;
+    if (key === 'nextLabel') return queryNext(host)?.querySelector('.nav-label')?.textContent ?? null;
+    return null;
+  },
+  overrides: { navLabel: 'label', prevLabel: 'prevLabel', nextLabel: 'nextLabel' },
+  captions: ['prevLabel', 'nextLabel'],
+  unreachable: {
+    prevAriaLabel: 'carries a {page} placeholder — asserted by `empty prevAriaLabel falls back` above',
+    nextAriaLabel: 'carries a {page} placeholder — asserted by `empty nextAriaLabel falls back` above',
+    pageAriaLabel: 'carries {page}/{total} placeholders — asserted by `empty pageAriaLabel falls back` above',
+    overflowAriaLabel: 'carries {from}/{to} placeholders — asserted by `empty overflowAriaLabel falls back` above',
+  },
 });

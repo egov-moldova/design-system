@@ -16,10 +16,10 @@
   --_line-height: var(--chip-label-line-height-md);
   --_icon-size: var(--chip-icon-size-md);
   --_remove-size: var(--chip-input-remove-size-md);
-  --_remove-icon-size: var(--chip-input-remove-icon-size-md);
   --_avatar-size: var(--chip-avatar-size-md);
   --_count-size: var(--chip-count-size-md);
   --_count-font-size: var(--chip-count-font-size-md);
+  --_count-line-height: var(--chip-count-line-height-md);
   --_count-padding-inline: var(--chip-count-padding-inline-md);
 
   /* Type axis defaults (filter, off) */
@@ -57,10 +57,10 @@
   --_line-height: var(--chip-label-line-height-sm);
   --_icon-size: var(--chip-icon-size-sm);
   --_remove-size: var(--chip-input-remove-size-sm);
-  --_remove-icon-size: var(--chip-input-remove-icon-size-sm);
   --_avatar-size: var(--chip-avatar-size-sm);
   --_count-size: var(--chip-count-size-sm);
   --_count-font-size: var(--chip-count-font-size-sm);
+  --_count-line-height: var(--chip-count-line-height-sm);
   --_count-padding-inline: var(--chip-count-padding-inline-sm);
 }
 
@@ -80,19 +80,45 @@
   --_icon-color: var(--chip-filter-icon-selected);
 }
 
+/* An input chip's body is not a control — clicking it does nothing — and Figma
+   205:2460 leaves the pill at its default fill while only the close target
+   reacts. So this axis sets no hover fill. */
 :host([type='input']) {
   --_bg: var(--chip-input-background-default);
-  --_bg-hover: var(--chip-input-background-hover);
   --_label-color: var(--chip-input-label-default);
   --_icon-color: var(--chip-input-icon-default);
-  /* Input chips get a slightly wider floor than filter chips (Figma spec). */
-  --_min-width: var(--chip-input-min-width-md);
+  /* The 60px floor Figma measures (524:4327) is for the filter chip, which is
+     one box. An input chip carries a 32px close button beside the control, so
+     the same floor on the control alone would make the chip 8px wider than
+     Figma 203:2076 — it hugs its content instead. */
+  --_min-width: 0;
 }
 
-/* 2-attribute selector beats the single-attribute size axis so the sm input
-   floor isn't clobbered by the generic sm min-width. */
-:host([type='input'][size='sm']) {
-  --_min-width: var(--chip-input-min-width-sm);
+/* Figma 203:2082 gives the avatar input chip its own surface: white, outlined
+   1.5px #D9D9D9, and 6px gaps with 8px after the cross. The pill is painted on
+   the host rather than on `.control`, because the host is the one element that
+   wraps both the control and the remove button — the same single frame Figma
+   draws. Chromium floors `border-width: 1.5px` to 1px at every device scale,
+   so the stroke is an inset shadow. */
+:host([type='input'].has-avatar) {
+  --_gap: var(--chip-input-avatar-gap-md);
+  --_gap-icon: var(--chip-input-avatar-gap-md);
+  --_padding-inline-remove: var(--chip-input-avatar-padding-inline-remove-md);
+
+  background-color: var(--chip-input-avatar-background);
+  box-shadow: inset 0 0 0 var(--chip-input-avatar-border-width) var(--chip-input-avatar-border-color);
+}
+
+:host([type='input'][size='sm'].has-avatar) {
+  --_gap: var(--chip-input-avatar-gap-sm);
+  --_gap-icon: var(--chip-input-avatar-gap-sm);
+  --_padding-inline-remove: var(--chip-input-avatar-padding-inline-remove-sm);
+}
+
+/* The host paints the avatar chip, so its children must not cover the stroke. */
+:host([type='input'].has-avatar) .control,
+:host([type='input'].has-avatar) .remove {
+  background-color: transparent;
 }
 
 /* ---------- Internal main control ---------- */
@@ -160,15 +186,17 @@
   display: none;
 }
 
-/* Hover — disabled when chip is disabled */
-:host(:not([disabled])) .control:hover {
+/* Hover — filter chips only; the control is the toggle there. */
+:host([type='filter']:not([disabled])) .control:hover {
   background-color: var(--_bg-hover);
 }
 
-/* Asymmetric padding when a leading icon / auto-check is present */
+/* A leading icon tightens both ends of the leading edge: Figma 8027:814 and
+   255:6456 pad 12px instead of 16px AND gap 4px instead of 8px. */
 :host(.has-icon-start) .control,
 :host(.shows-check) .control {
   padding-inline-start: var(--_padding-inline-icon);
+  gap: var(--_gap-icon);
 }
 
 /* Avatar hugs the leading edge: inset symmetrically so the circle is centred
@@ -179,12 +207,26 @@
 
 /* ---------- Focus ring (dual halo, same as mud-button) ---------- */
 
-.control:focus-visible,
-.remove:focus-visible {
+.control:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
     0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+/* Figma 205:2477 rings the 20px close circle with the smaller Focus Ring/Small,
+   not the 32px button and not the whole chip. */
+.remove:focus-visible {
+  outline: none;
+}
+
+.remove:focus-visible .remove-icon {
+  box-shadow:
+    0 0 0 var(--chip-input-remove-focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--chip-input-remove-focus-ring-width-inner) + var(--chip-input-remove-focus-ring-width-outer))
+      var(--focus-ring-color-outer);
   position: relative;
   z-index: 1;
 }
@@ -217,11 +259,6 @@
     box-shadow var(--chip-container-transition-duration) var(--chip-container-transition-timing-function);
 }
 
-/* Hover the chip → also tints the remove background to match the control. */
-:host(:not([disabled])) .control:hover ~ .remove {
-  background-color: var(--_bg-hover);
-}
-
 /* Hover the remove pill itself → inner circle gets a darker fill. */
 .remove-icon {
   display: inline-flex;
@@ -239,10 +276,10 @@
   background-color: var(--_remove-bg-hover);
 }
 
-.remove-icon svg {
+.remove-icon mud-icon {
   display: block;
-  inline-size: calc(var(--_remove-icon-size) * 0.5);
-  block-size: calc(var(--_remove-icon-size) * 0.5);
+  --icon-color: currentcolor;
+
   pointer-events: none;
 }
 
@@ -302,13 +339,14 @@
   block-size: var(--_count-size);
   padding-inline: var(--_count-padding-inline);
   border-radius: var(--border-radius-full, 9999px);
-  /* Inverts against the chip surface so it stays legible default + selected. */
-  background-color: var(--_label-color);
-  color: var(--_bg);
+  /* numbered-badge Style=Light (Figma 255:6433 / 255:6455): the same white pill
+     on the light chip and on the dark selected one — it does not invert. */
+  background-color: var(--chip-count-background);
+  color: var(--chip-count-color);
   font-family: var(--chip-label-font-family);
   font-size: var(--_count-font-size);
   font-weight: var(--chip-label-font-weight);
-  line-height: 1;
+  line-height: var(--_count-line-height);
 }
 
 :host([disabled]) .count {
@@ -332,6 +370,11 @@
 
 :host([disabled]) ::slotted([slot='icon-start']) {
   color: var(--chip-disabled-icon);
+}
+
+/* Figma 203:2087 fades the avatar rather than recolouring it. */
+:host([disabled]) ::slotted([slot='avatar']) {
+  opacity: var(--chip-input-avatar-disabled-opacity);
 }
 
 /* ---------- Reduced motion ---------- */

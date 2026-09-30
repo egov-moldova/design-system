@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from './mud-text-input.types';
 import type { InputSize, InputType, InputVariant } from './mud-text-input.types';
@@ -18,6 +19,7 @@ type InputArgs = {
   loading: boolean;
   invalid: boolean;
   clearable: boolean;
+  locale: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -38,6 +40,7 @@ const renderInput = (args: InputArgs) => /*html*/ `
     ${args.loading ? 'loading' : ''}
     ${args.invalid ? 'invalid' : ''}
     ${args.clearable ? 'clearable' : ''}
+    ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-text-input>
 `;
 
@@ -57,6 +60,7 @@ const docsSourceDefault = (args: InputArgs) => {
     args.loading ? 'loading' : '',
     args.invalid ? 'invalid' : '',
     args.clearable ? 'clearable' : '',
+    args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -64,7 +68,7 @@ const docsSourceDefault = (args: InputArgs) => {
 };
 
 const meta: Meta<InputArgs> = {
-  title: 'Atoms/Input/Text',
+  title: 'Components/Input/Text',
   component: 'mud-text-input',
   argTypes: {
     variant: {
@@ -96,6 +100,11 @@ const meta: Meta<InputArgs> = {
     loading: { control: 'boolean' },
     invalid: { control: 'boolean' },
     clearable: { control: 'boolean', description: 'Shows a trailing clear (×) button while the field holds a value.' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
   },
 };
 
@@ -120,6 +129,7 @@ export const Default: Story = {
     loading: false,
     invalid: false,
     clearable: false,
+    locale: '',
   },
   parameters: {
     docs: {
@@ -250,11 +260,11 @@ export const WithWarning: Story = {
       [
         cell(
           'warning',
-          /*html*/ `<mud-text-input variant="warning" size="lg" label="Sumă" value="9 500" helper-text="Această valoare ar putea cauza probleme"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" helper-text="This value could cause problems"></mud-text-input>`,
         ),
         cell(
           'warning + placeholder',
-          /*html*/ `<mud-text-input variant="warning" size="lg" label="Sumă" placeholder="0,00 MDL" helper-text="Verifică suma înainte de a continua"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="warning" size="lg" label="Amount" placeholder="0,00 MDL" helper-text="Check the amount before continuing"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -263,8 +273,8 @@ export const WithWarning: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input variant="warning" size="lg" label="Sumă" value="9 500" helper-text="Această valoare ar putea cauza probleme"></mud-text-input>',
-          '<mud-text-input variant="warning" size="lg" label="Sumă" placeholder="0,00 MDL" helper-text="Verifică suma înainte de a continua"></mud-text-input>',
+          '<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" helper-text="This value could cause problems"></mud-text-input>',
+          '<mud-text-input variant="warning" size="lg" label="Amount" placeholder="0,00 MDL" helper-text="Check the amount before continuing"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -278,11 +288,11 @@ export const WithSuccess: Story = {
       [
         cell(
           'success',
-          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verificat"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verified"></mud-text-input>`,
         ),
         cell(
           'success + placeholder',
-          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validat de Registrul de stat"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validated by the State Register"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -291,8 +301,8 @@ export const WithSuccess: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verificat"></mud-text-input>',
-          '<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validat de Registrul de stat"></mud-text-input>',
+          '<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verified"></mud-text-input>',
+          '<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validated by the State Register"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -376,11 +386,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Birth date" value="45/MM/YYYY" invalid error-text="Enter a valid day (01-31)."></mud-text-input>`,
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<mud-text-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Câmpul este obligatoriu" invalid></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="This field is required" invalid></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -389,8 +399,8 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></mud-text-input>',
-          '<mud-text-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Câmpul este obligatoriu" invalid></mud-text-input>',
+          '<mud-text-input size="lg" label="Birth date" value="45/MM/YYYY" invalid error-text="Enter a valid day (01-31)."></mud-text-input>',
+          '<mud-text-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="This field is required" invalid></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -404,19 +414,19 @@ export const Loading: Story = {
       [
         cell(
           'default (lg)',
-          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Validating…"></mud-text-input>`,
         ),
         cell(
           'default (md)',
-          /*html*/ `<mud-text-input size="md" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="md" label="IDNP" value="2002004123456" loading helper-text="Validating…"></mud-text-input>`,
         ),
         cell(
           'warning + loading',
-          /*html*/ `<mud-text-input variant="warning" size="lg" label="Sumă" value="9 500" loading helper-text="Se verifică…"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" loading helper-text="Checking…"></mud-text-input>`,
         ),
         cell(
           'success + loading',
-          /*html*/ `<mud-text-input variant="success" size="lg" label="Cod" value="MD-12345" loading helper-text="Se confirmă…"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="success" size="lg" label="Code" value="MD-12345" loading helper-text="Confirming…"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -425,10 +435,10 @@ export const Loading: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></mud-text-input>',
-          '<mud-text-input size="md" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></mud-text-input>',
-          '<mud-text-input variant="warning" size="lg" label="Sumă" value="9 500" loading helper-text="Se verifică…"></mud-text-input>',
-          '<mud-text-input variant="success" size="lg" label="Cod" value="MD-12345" loading helper-text="Se confirmă…"></mud-text-input>',
+          '<mud-text-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Validating…"></mud-text-input>',
+          '<mud-text-input size="md" label="IDNP" value="2002004123456" loading helper-text="Validating…"></mud-text-input>',
+          '<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" loading helper-text="Checking…"></mud-text-input>',
+          '<mud-text-input variant="success" size="lg" label="Code" value="MD-12345" loading helper-text="Confirming…"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -442,7 +452,7 @@ export const ReadOnly: Story = {
       [
         cell(
           'read-only (lg)',
-          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Câmp doar pentru citire"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Read-only field"></mud-text-input>`,
         ),
         cell(
           'read-only (md)',
@@ -450,7 +460,7 @@ export const ReadOnly: Story = {
         ),
         cell(
           'disabled (for comparison)',
-          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Câmp dezactivat"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Disabled field"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -459,9 +469,9 @@ export const ReadOnly: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Câmp doar pentru citire"></mud-text-input>',
+          '<mud-text-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Read-only field"></mud-text-input>',
           '<mud-text-input size="md" label="IDNP" value="2002004123456" readonly></mud-text-input>',
-          '<mud-text-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Câmp dezactivat"></mud-text-input>',
+          '<mud-text-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Disabled field"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -475,7 +485,7 @@ export const WithIcons: Story = {
       [
         cell(
           'icon-start',
-          /*html*/ `<mud-text-input size="lg" label="Search" placeholder="Search">
+          /*html*/ `<mud-text-input size="lg" label="Find" placeholder="Find">
             <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
           </mud-text-input>`,
         ),
@@ -492,7 +502,7 @@ export const WithIcons: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input size="lg" label="Search" placeholder="Search"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" placeholder="Find"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-text-input>',
           '<mud-text-input size="lg" label="Date" placeholder="Placeholder"><mud-icon slot="icon-end" name="calendar" size="24"></mud-icon></mud-text-input>',
         ].join('\n'),
       },
@@ -507,21 +517,21 @@ export const Clearable: Story = {
       [
         cell(
           'filled — clear visible',
-          /*html*/ `<mud-text-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Find" value="Chișinău" clearable placeholder="Find"></mud-text-input>`,
         ),
         cell(
           'empty — clear hidden',
-          /*html*/ `<mud-text-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="lg" label="Find" clearable placeholder="Type to reveal ×"></mud-text-input>`,
         ),
         cell(
           'with leading icon',
-          /*html*/ `<mud-text-input size="lg" label="Search" value="Bălți" clearable placeholder="Search">
+          /*html*/ `<mud-text-input size="lg" label="Find" value="Bălți" clearable placeholder="Find">
             <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
           </mud-text-input>`,
         ),
         cell(
           'md size',
-          /*html*/ `<mud-text-input size="md" label="Search" value="Orhei" clearable placeholder="Search"></mud-text-input>`,
+          /*html*/ `<mud-text-input size="md" label="Find" value="Orhei" clearable placeholder="Find"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -534,8 +544,8 @@ export const Clearable: Story = {
       },
       source: {
         code: [
-          '<mud-text-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-text-input>',
-          '<mud-text-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" value="Chișinău" clearable placeholder="Find"></mud-text-input>',
+          '<mud-text-input size="lg" label="Find" clearable placeholder="Type to reveal ×"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -567,5 +577,32 @@ export const EdgeCases: Story = {
         ].join('\n'),
       },
     },
+  },
+};
+
+/**
+ * No visible label: the accessible name comes from the native `aria-label` on the host, which
+ * the component moves onto its inner input. Setting the native `ariaLabel` property later
+ * reaches the input too — the browser reflects it to the attribute.
+ */
+export const AccessibleName: Story = {
+  name: 'Accessible Name (aria-label)',
+  render: () => /*html*/ `<mud-text-input aria-label="Lookup" placeholder="Search services"></mud-text-input>`,
+  parameters: {
+    controls: { disable: true },
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('mud-text-input') as HTMLElement;
+    const input = (): HTMLInputElement | null | undefined => host.shadowRoot?.querySelector('input');
+
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Lookup'));
+    await expect(host.hasAttribute('aria-label')).toBe(false);
+
+    host.ariaLabel = 'Lookup services';
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Lookup services'));
+    await expect(host.hasAttribute('aria-label')).toBe(false);
+
+    host.setAttribute('aria-label', 'Find');
+    await waitFor(() => expect(input()?.getAttribute('aria-label')).toBe('Find'));
   },
 };

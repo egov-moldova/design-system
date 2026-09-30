@@ -16,6 +16,8 @@ const { color: colorDark } = coreDarkTokens;
 
 import '../dist/mud/mud.esm.js';
 import customElements from './custom-elements.json';
+import { extractArgTypes as extractManifestArgTypes, labelPropertiesWithAttributes } from './manifest-arg-types.mjs';
+import { installDocsStoryOverflow } from './docs-story-overflow.mjs';
 
 import '../dist/mud/mud.css';
 import './storybook-overrides.css';
@@ -23,23 +25,34 @@ import './storybook-overrides.css';
 // Initialize Stencil custom elements manifest for Storybook
 setCustomElements(customElements);
 
-// The `extractArgTypes` below reads `component.__docgenInfo`. A Stencil `component`
-// is a tag-name STRING and never has one, so it returns {} for every tag and the
-// docs API table is filled only by hand-written `argTypes` — the manifest loaded
-// above reaches no table at all. That is repo-wide, not specific to these two.
-// Baseline, on the built Storybook, before this Set existed:
-//   `(await __STORYBOOK_PREVIEW__.loadStory({storyId:'atoms-button--default'}))
-//    .parameters.docs.extractArgTypes('mud-button')` -> `{}`
-// Widened for the Accordion only, which is what issue #8 needs. Removing the guard
-// would change every docs page at once and belongs in its own PR (issue #18).
-// Baseline for the size of that PR: `node -p "require('./.storybook/custom-elements.json').tags.length"`
-// -> 56 custom-element tags across 47 component directories, not one page per directory.
-const MANIFEST_ARG_TYPES = new Set(['mud-accordion', 'mud-accordion-item']);
+// Component descriptions stay hidden from docs pages except the Accordion's, whose MDX
+// page renders <Description of={AccordionStories} /> and needs the real text.
+const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 
-// Keep data-theme in sync with the mode global at the preview level.
-// The themeDecorator handles story canvas, but docs pages don't re-run
-// decorators on globals change — this channel listener covers that gap.
+// A Docs page wraps every inline story in `<div id="story--…-inner" lang="en">`
+// (`parameters.htmlLang`, default "en": @storybook/addon-docs dist/blocks.js), and the
+// locale model reads the CLOSEST ancestor `lang`, so without retagging those wrappers no
+// component on a Docs page follows the toolbar. `<html>` is set last: its mutation is what
+// the components observe, and they must find the wrappers already retagged. The
+// `.sbdocs-content` wrapper keeps `lang="en"`: the docs prose is English.
+// Baseline: `grep -n 'story.parameters?.htmlLang' node_modules/@storybook/addon-docs/dist/blocks.js`
+/** `el.setAttribute('lang', lang)`, skipped when `lang` already holds that value — an
+ * unchanged global must not trigger every component's lang observer. */
+function setLangIfChanged(el, lang) {
+  if (el.getAttribute('lang') !== lang) el.setAttribute('lang', lang);
+}
+
+export function applyLang(value, doc = document) {
+  const lang = value || 'ro-MD';
+  doc.querySelectorAll('[id^="story--"][id$="-inner"][lang]').forEach(el => setLangIfChanged(el, lang));
+  setLangIfChanged(doc.documentElement, lang);
+}
+
+// Keep data-theme and <html lang> in sync with the mode and lang globals at the preview
+// level. The decorators handle the story canvas, but docs pages don't re-run decorators
+// on globals change — this channel listener covers that gap.
 addons.getChannel().on(GLOBALS_UPDATED, ({ globals }) => {
+  applyLang(globals.lang);
   if (globals.mode === 'dark') {
     document.documentElement.dataset.theme = 'dark';
   } else {
@@ -94,6 +107,15 @@ if (typeof document !== 'undefined') {
   });
 }
 
+// Keep horizontal scrolling on the Docs story frames that need it, so every other frame
+// can let its popovers overflow (see ./docs-story-overflow.mjs).
+// This module re-runs on HMR (`import.meta.hot.accept()` above), so the previous
+// install is torn down first instead of stacking a second set of listeners.
+if (typeof window !== 'undefined') {
+  window.__mudUninstallDocsStoryOverflow?.();
+  window.__mudUninstallDocsStoryOverflow = installDocsStoryOverflow(window);
+}
+
 // Cleanup decorator to remove toast notifications when switching stories
 const cleanupDecorator = story => {
   // Clean up any existing toast notifications from previous stories
@@ -116,7 +138,23 @@ const themeDecorator = (story, context) => {
   return story();
 };
 
-export const decorators = [cleanupDecorator, themeDecorator];
+// Issue #163: drives the component locale model's ancestor-`lang` fallback (see
+// `src/utils/locale.ts`'s `inheritedLang`). Sets `lang` on `<html>`, the closest ancestor
+// every story's components share, so any mud-* component with no explicit `locale` prop
+// follows this toolbar. `scripts/eslint/copy-probe.mjs` drives it via the `globals=lang:ru-MD`
+// query param rather than the toolbar UI.
+const langDecorator = (story, context) => {
+  applyLang(context.globals.lang);
+  return story();
+};
+
+export const decorators = [cleanupDecorator, themeDecorator, langDecorator];
+
+// Runs after the framework enhancer has merged the story's `argTypes` over the manifest
+// rows (see ./manifest-arg-types.mjs for why the labels need restoring).
+export const argTypesEnhancers = [
+  context => labelPropertiesWithAttributes(customElements, context.component, context.argTypes),
+];
 
 export const globalTypes = {
   // TODO: Add theme support
@@ -144,6 +182,23 @@ export const globalTypes = {
       dynamicTitle: true,
     },
   },
+  // Issue #163: ancestor `lang`, applied to `<html>` by `langDecorator` below. `'ro-MD'` is
+  // the library's own default locale (src/utils/locale.ts DEFAULT_LOCALE).
+  lang: {
+    name: 'Lang',
+    description: 'Built-in component copy only; story content stays in English',
+    defaultValue: 'ro-MD',
+    toolbar: {
+      icon: 'globe',
+      items: [
+        { value: 'ro-MD', title: 'Română' },
+        { value: 'en-US', title: 'English' },
+        { value: 'ru-MD', title: 'Русский' },
+      ],
+      showName: true,
+      dynamicTitle: true,
+    },
+  },
 };
 
 export const parameters = {
@@ -162,28 +217,11 @@ export const parameters = {
       type: 'code', // Show source code instead of JSDoc
     },
     codePanel: true, // Enable the code panel in Docs view
-    extractArgTypes: component => {
-      // The Accordion's two API tables are generated from the custom-elements
-      // manifest — the whole point of issue #8. Everywhere else the branch below
-      // runs unchanged.
-      if (MANIFEST_ARG_TYPES.has(component)) {
-        return webComponentsPreviewParameters.docs.extractArgTypes(component);
-      }
-      // Filter out CSS custom properties (@cssprop)
-      const argTypes = {};
-      if (component.__docgenInfo?.props) {
-        Object.entries(component.__docgenInfo.props).forEach(([key, value]) => {
-          if (!value.description?.includes('@cssprop')) {
-            argTypes[key] = value;
-          }
-        });
-      }
-      return argTypes;
-    },
-    // Hide component description from JSDoc — except for the Accordion, whose MDX
-    // page renders <Description of={AccordionStories} /> and needs the real text.
+    // Every API table is generated from the Stencil-written manifest; the story's own
+    // `argTypes` are merged over these rows by key (see ./manifest-arg-types.mjs).
+    extractArgTypes: component => extractManifestArgTypes(customElements, component),
     extractComponentDescription: component =>
-      MANIFEST_ARG_TYPES.has(component)
+      MANIFEST_DESCRIPTIONS.has(component)
         ? webComponentsPreviewParameters.docs.extractComponentDescription(component)
         : null,
   },
@@ -194,9 +232,7 @@ export const parameters = {
         'Foundations',
         'Design Tokens',
         ['Core', 'Core Dark'],
-        'Atoms',
-        'Molecules',
-        'Organisms',
+        'Components',
         'Templates',
         'Pages',
       ],

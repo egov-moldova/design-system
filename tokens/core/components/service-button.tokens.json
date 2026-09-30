@@ -1,5 +1,5 @@
 {
-  "service-button": {
+  "serviceButton": {
     "container": {
       "height": { "$value": "{spacing.48}", "$type": "dimension" },
       "minWidth": { "$value": "72px", "$type": "dimension" },

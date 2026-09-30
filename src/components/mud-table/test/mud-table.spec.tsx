@@ -11,6 +11,9 @@ import '../../mud-checkbox/mud-checkbox';
 // unupgraded `<mud-icon>` placeholder, which is sufficient for assertions
 // about table behaviour, aria-sort, and selection.
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { TABLE_MESSAGES } from '../mud-table.messages';
+import type { TableMessages } from '../mud-table.messages';
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES } from '../mud-table.types';
 import type { TableColumn, TableRowData } from '../mud-table.types';
 
@@ -34,6 +37,16 @@ const queryHeaderCells = (root: Element | null | undefined) =>
 
 const queryBodyRows = (root: Element | null | undefined) =>
   Array.from(root?.shadowRoot?.querySelectorAll('tbody tr') ?? []) as HTMLTableRowElement[];
+
+/**
+ * The accessible name the table gave a selection checkbox (its `aria-label`). A browser moves it
+ * onto the checkbox's input (`observeAriaLabel`); mock-doc has no MutationObserver, so a value set
+ * after the checkbox connected is still on its host.
+ */
+const checkboxName = (checkbox: Element | null | undefined): string | null =>
+  checkbox?.getAttribute('aria-label') ??
+  checkbox?.shadowRoot?.querySelector('input')?.getAttribute('aria-label') ??
+  null;
 
 const setProps = (el: Element | null | undefined, props: Record<string, unknown>) => {
   if (!el) return;
@@ -137,11 +150,12 @@ describe('mud-table', () => {
       expect(bodyRows[1]?.textContent ?? '').toContain('mihai@gov.md');
     });
 
-    it('reflects ariaLabel onto the <table>', async () => {
+    it('reflects the aria-label attribute onto the <table>', async () => {
       const { root, waitForChanges } = await render(<mud-table aria-label="Tabel principal" />);
       setProps(root, { columns, rows });
       await waitForChanges();
       expect(queryTable(root)?.getAttribute('aria-label')).toBe('Tabel principal');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('adds prepended selection column when selectable', async () => {
@@ -151,6 +165,94 @@ describe('mud-table', () => {
       const firstHeader = root?.shadowRoot?.querySelector('th.th--selection');
       expect(firstHeader).toBeTruthy();
       expect(firstHeader?.querySelector('mud-checkbox')).toBeTruthy();
+    });
+  });
+
+  describe('cell slots', () => {
+    const cellSlots = (root: Element | null | undefined, rowIndex: number) =>
+      Array.from(queryBodyRows(root)[rowIndex]?.querySelectorAll('td slot') ?? []).map(slot =>
+        slot.getAttribute('name'),
+      );
+    const lettered: TableRowData[] = [
+      { id: 'a', name: 'Alexandra Pop' },
+      { id: 'b', name: 'Mihai Ionescu' },
+    ];
+
+    it('names each cell slot by column key and row id, the deprecated index form nested inside', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-a', 'cell-name-0']);
+      expect(cellSlots(root, 1)).toEqual(['cell-name-b', 'cell-name-1']);
+    });
+
+    it('renders one slot per cell when the row id is its index', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: [{ name: 'Alexandra Pop' }] });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-0']);
+    });
+
+    it('keeps the id slot with its row when rows are reordered', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered].reverse() });
+      await waitForChanges();
+      expect(cellSlots(root, 0)).toEqual(['cell-name-b', 'cell-name-0']);
+      expect(queryBodyRows(root)[0]?.textContent).toContain('Mihai Ionescu');
+    });
+
+    it('warns once that a bare cell-{key} slot is not supported', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="name">x</span>
+          <span slot="cell-name">A</span>
+          <span slot="cell-name">B</span>
+        </mud-table>,
+      );
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered] });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([message]) => String(message).includes('slot="cell-name"'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('slot="cell-name-{rowId}"');
+      warn.mockRestore();
+    });
+
+    it('warns once that a cell-{key}-{rowIndex} slot is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="cell-name-0">A</span>
+          <span slot="cell-name-1">B</span>
+        </mud-table>,
+      );
+      setProps(root, { columns: [{ key: 'name', label: 'Nume' }], rows: lettered });
+      await waitForChanges();
+      setProps(root, { rows: [...lettered] });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([message]) => String(message).includes('deprecated'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('slot="cell-name-0"');
+      warn.mockRestore();
+    });
+
+    it('does not warn for slots that name a row id, including numeric ids', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-table>
+          <span slot="cell-name-1">A</span>
+          <span slot="cell-name-3">C</span>
+          <span slot="cell-name-9">not a row</span>
+        </mud-table>,
+      );
+      setProps(root, { columns, rows });
+      await waitForChanges();
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
     });
   });
 
@@ -403,4 +505,58 @@ describe('mud-table', () => {
       });
     });
   });
+
+  describe('selectRowLabel override', () => {
+    it('empty selectRowLabel falls back', async () => {
+      const { root, waitForChanges } = await render(<mud-table locale="en-US" select-row-label="" />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe(
+        TABLE_MESSAGES['en-US'].selectRowLabel.replace('{row}', '1'),
+      );
+    });
+
+    it('fills the {row} placeholder with the 1-based row index', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe('Selectează rândul 1');
+    });
+
+    it('honors a custom select-row-label override', async () => {
+      const { root, waitForChanges } = await render(<mud-table select-row-label="Alege rândul {row}" />);
+      setProps(root, { columns, rows, selectable: true });
+      await waitForChanges();
+      expect(checkboxName(root?.shadowRoot?.querySelector('tbody mud-checkbox'))).toBe('Alege rândul 1');
+    });
+  });
+});
+
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+
+describeLocales<TableMessages>('mud-table', TABLE_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = {};
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.emptyText !== undefined) attrs['empty-text'] = String(props.emptyText);
+    if (props.selectAllLabel !== undefined) attrs['select-all-label'] = String(props.selectAllLabel);
+    const { root, waitForChanges } = await render(
+      <mud-table {...attrs}></mud-table>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    setProps(root, { selectable: true });
+    await waitForChanges();
+    await flush();
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'emptyText') return host.shadowRoot?.querySelector('.empty-text')?.textContent ?? null;
+    if (key === 'selectAllLabel') return checkboxName(host.shadowRoot?.querySelector('thead mud-checkbox'));
+    return null;
+  },
+  overrides: { emptyText: 'emptyText', selectAllLabel: 'selectAllLabel' },
+  unreachable: {
+    selectRowLabel:
+      'carries a {row} placeholder filled per row, and needs rows where emptyText needs none — asserted by `empty selectRowLabel falls back` above',
+  },
 });

@@ -99,9 +99,9 @@ describe('<componentName>', () => {
   });
 
   describe('events', () => {
-    it('emits corChange when clicked', async () => {
+    it('emits mudChange when clicked', async () => {
       const { root, spyOnEvent } = await render(<<componentName> />);
-      const spy = spyOnEvent('corChange');
+      const spy = spyOnEvent('mudChange');
       root?.shadowRoot?.querySelector('button')?.click();
       expect(spy.length).toBe(1);
       expect(spy.lastEvent?.detail).toEqual({ /* … */ });

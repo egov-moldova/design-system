@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { BADGE_SIZES as SIZES, BADGE_TYPES as TYPES, BADGE_VARIANTS as VARIANTS } from './mud-badge.types';
 import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
@@ -10,6 +11,9 @@ type BadgeArgs = {
   count?: number;
   max: number;
   ariaLabel?: string;
+  disabled?: boolean;
+  locale: string;
+  notificationLabel: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center;';
@@ -17,11 +21,14 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 const renderBadge = (args: BadgeArgs) => {
   const countAttr = args.type === 'numbered' && args.count !== undefined ? `count="${args.count}"` : '';
   const ariaAttr = args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '';
-  return /*html*/ `<mud-badge type="${args.type}" variant="${args.variant}" size="${args.size}" max="${args.max}" ${countAttr} ${ariaAttr}></mud-badge>`;
+  const disabledAttr = args.disabled ? 'disabled' : '';
+  const localeAttr = args.locale ? `locale="${args.locale}"` : '';
+  const notificationLabelAttr = args.notificationLabel ? `notification-label="${args.notificationLabel}"` : '';
+  return /*html*/ `<mud-badge type="${args.type}" variant="${args.variant}" size="${args.size}" max="${args.max}" ${countAttr} ${ariaAttr} ${disabledAttr} ${localeAttr} ${notificationLabelAttr}></mud-badge>`;
 };
 
 const meta: Meta<BadgeArgs> = {
-  title: 'Atoms/Badge',
+  title: 'Components/Badge',
   component: 'mud-badge',
   argTypes: {
     type: {
@@ -55,6 +62,21 @@ const meta: Meta<BadgeArgs> = {
       control: 'text',
       description: 'Override the accessible name.',
     },
+    disabled: {
+      control: 'boolean',
+      description: 'Renders the disabled design, replacing the variant colors.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description: 'Language of the built-in copy. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
+    notificationLabel: {
+      control: 'text',
+      description: "Accessible-name fallback with no count. Overrides the locale's copy.",
+      table: { defaultValue: { summary: 'Notificare (ro-MD)' } },
+    },
   },
 };
 export default meta;
@@ -63,7 +85,16 @@ type Story = StoryObj<BadgeArgs>;
 
 export const Default: Story = {
   render: renderBadge,
-  args: { type: 'numbered', variant: 'danger', size: 'md', count: 3, max: 99 },
+  args: {
+    type: 'numbered',
+    variant: 'danger',
+    size: 'md',
+    count: 3,
+    max: 99,
+    disabled: false,
+    locale: '',
+    notificationLabel: '',
+  },
   parameters: {
     docs: {
       source: {
@@ -120,6 +151,35 @@ export const AllTypes: Story = {
             ? `<mud-badge type="dot" variant="danger"></mud-badge>`
             : `<mud-badge type="numbered" variant="danger" count="3"></mud-badge>`,
         ).join('\n'),
+      },
+    },
+  },
+};
+
+export const Disabled: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; align-items: center; gap: var(--spacing-24); padding: var(--spacing-24); flex-wrap: wrap;">
+      ${VARIANTS.map(
+        variant => /*html*/ `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8);">
+          <mud-badge variant="${variant}" count="3" disabled></mud-badge>
+          <span style="${cellLabelStyle}">${variant}</span>
+        </div>`,
+      ).join('')}
+      ${SIZES.map(
+        size => /*html*/ `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8);">
+          <mud-badge type="dot" size="${size}" disabled></mud-badge>
+          <span style="${cellLabelStyle}">dot ${size}</span>
+        </div>`,
+      ).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<mud-badge variant="danger" count="3" disabled></mud-badge>\n<mud-badge type="dot" disabled></mud-badge>`,
       },
     },
   },
@@ -312,5 +372,31 @@ export const ComposedWithIcon: Story = {
 </span>`,
       },
     },
+  },
+};
+
+/**
+ * The host carries the `status` role, so it keeps the accessible name. With no `aria-label` the
+ * badge names itself from its count; the consumer's `aria-label` wins, even when it matches the
+ * current count, and removing it brings the count back.
+ */
+export const AccessibleName: Story = {
+  name: 'Accessible Name (aria-label)',
+  render: () => /*html*/ `<mud-badge count="3"></mud-badge>`,
+  parameters: {
+    controls: { disable: true },
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('mud-badge') as HTMLElement;
+
+    await waitFor(() => expect(host.getAttribute('aria-label')).toBe('3'));
+
+    host.setAttribute('aria-label', '3');
+    host.setAttribute('count', '4');
+    await waitFor(() => expect(host.shadowRoot?.textContent).toContain('4'));
+    await expect(host.getAttribute('aria-label')).toBe('3');
+
+    host.removeAttribute('aria-label');
+    await waitFor(() => expect(host.getAttribute('aria-label')).toBe('4'));
   },
 };

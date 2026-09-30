@@ -1,6 +1,7 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@stencil/core';
 
-import type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
+import type { SidebarItemBadgeVariant, SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
 
 /**
  * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
@@ -22,11 +23,8 @@ export class MudSidebarItem {
   /** Value reported when the item is activated. */
   @Prop({ reflect: true }) value?: string;
 
-  /** Leading icon name. */
-  @Prop() icon?: string;
-
-  /** Leading icon name used while active (e.g. a filled variant). Falls back to `icon`. */
-  @Prop() iconActive?: string;
+  /** Leading icon name. Rendered filled while the item is active, where the icon has a filled drawing. */
+  @Prop() icon?: IconName;
 
   /** Primary label (overridden by slotted content). */
   @Prop() label?: string;
@@ -37,8 +35,15 @@ export class MudSidebarItem {
   /** Optional trailing tag text (rendered as an outlined `mud-tag`). */
   @Prop() tag?: string;
 
-  /** Optional trailing numbered badge count (rendered as a `mud-badge`). */
+  /** Optional trailing numbered badge count. */
   @Prop() badge?: number;
+
+  /**
+   * How the `badge` count is drawn: `neutral` is Figma's grey numbered badge,
+   * `notification` its red notification badge (a danger `mud-badge`).
+   * @default 'neutral'
+   */
+  @Prop() badgeVariant: SidebarItemBadgeVariant = 'neutral';
 
   /** Render as a link to this destination. */
   @Prop() href?: string;
@@ -83,16 +88,43 @@ export class MudSidebarItem {
     this.mudSelect.emit({ value: this.value ?? '' });
   };
 
+  private renderBadge() {
+    if (this.badge == null) return null;
+    if (this.badgeVariant === 'notification') {
+      // Figma notification-badge, Size=Extra Large (797:43130).
+      return (
+        <mud-badge class="badge-notification" type="numbered" variant="danger" size="xl" count={this.badge}></mud-badge>
+      );
+    }
+    return <span class="badge">{this.badge}</span>;
+  }
+
   private renderContent() {
-    const iconName = this.active && this.iconActive ? this.iconActive : this.icon;
     return [
-      iconName ? <mud-icon class="icon" name={iconName} size={20} aria-hidden="true"></mud-icon> : null,
+      this.icon ? (
+        <mud-icon
+          class="icon"
+          name={this.icon}
+          variant={this.active && hasIconVariant(this.icon, 'filled') ? 'filled' : 'outlined'}
+          size={20}
+          aria-hidden="true"
+        ></mud-icon>
+      ) : null,
       <span class="label">
         <slot>{this.label ?? ''}</slot>
       </span>,
       this.secondary ? <span class="secondary">{this.secondary}</span> : null,
-      this.tag ? <mud-tag class="tag" type="outlined" semantic="neutral" size="md" label={this.tag}></mud-tag> : null,
-      this.badge != null ? <span class="badge">{this.badge}</span> : null,
+      this.tag ? (
+        <mud-tag
+          class="tag"
+          type="outlined"
+          semantic="neutral"
+          size="md"
+          label={this.tag}
+          disabled={this.disabled}
+        ></mud-tag>
+      ) : null,
+      this.renderBadge(),
       this.expandable ? <mud-icon class="chevron" name="chevron-bottom" size={24} aria-hidden="true"></mud-icon> : null,
     ];
   }

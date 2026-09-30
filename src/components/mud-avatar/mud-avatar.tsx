@@ -1,5 +1,11 @@
-import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
+import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
+import { formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { AVATAR_MESSAGES } from './mud-avatar.messages';
+import type { AvatarMessages } from './mud-avatar.messages';
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { AvatarSize, AvatarType } from './mud-avatar.types';
 import { ICON_SIZE_FOR, deriveInitials } from './mud-avatar.utils';
 
@@ -71,43 +77,71 @@ export class MudAvatar {
    * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
    * @default 'person'
    */
-  @Prop() iconName: string = 'person';
+  @Prop() iconName: IconName = 'person';
 
   /**
-   * Accessible label override. When set, becomes the host's `aria-label` and
-   * the avatar is exposed to AT as a single labelled element. When omitted
-   * the component picks a sensible default (the name, the initials, or
-   * "User avatar").
-   *
-   * No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on
-   * every render with a derived value, and an explicit attribute observer
-   * would map that write back into this prop mid-render (Stencil warns
-   * "state/prop changed during rendering"). Stencil's implicit kebab→camel
-   * mapping still lets consumers set `aria-label="…"` from HTML.
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop() ariaLabel?: string;
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible-name fallback when only initials (no `name`) are set. Carries a `{initials}`
+   * placeholder. Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Avatar pentru {initials}' (ro-MD)
+   */
+  @Prop() initialsLabel?: string;
+
+  /**
+   * Accessible-name fallback when neither `name` nor initials are set. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Avatar utilizator' (ro-MD)
+   */
+  @Prop() fallbackLabel?: string;
 
   @State() private imageFailed: boolean = false;
 
   @Element() host!: HTMLMudAvatarElement;
+
+  /**
+   * Names the host: keeps the consumer's native `aria-label` attribute when
+   * set (the avatar is then exposed to AT as a single labelled element),
+   * otherwise applies the computed fallback — `name`, then the initials, then
+   * the locale's `fallbackLabelText`. See `nameHostWithFallback`.
+   */
+  private hostLabel?: HostAriaLabel;
+
+  private stopLang?: () => void;
 
   @Watch('src')
   onSrcChange() {
     this.imageFailed = false;
   }
 
-  @Watch('name')
-  @Watch('initials')
-  @Watch('ariaLabel')
-  syncAccessibleLabel() {
-    // Write `aria-label` imperatively (outside render) so the Host doesn't
-    // declaratively bind to a prop-mapped attribute — that pattern triggers
-    // Stencil's "state/prop changed during rendering" warning.
-    this.host.setAttribute('aria-label', this.accessibleName);
+  connectedCallback() {
+    this.hostLabel = nameHostWithFallback(this.host, () => this.computeFallbackLabel());
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
-  componentWillLoad() {
-    this.syncAccessibleLabel();
+  disconnectedCallback() {
+    this.hostLabel?.stop();
+    this.stopLang?.();
+  }
+
+  componentWillRender() {
+    this.hostLabel?.update();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): AvatarMessages {
+    return localeMessages('mud-avatar', this.host, this.locale, AVATAR_MESSAGES, {
+      initialsLabel: this.initialsLabel,
+      fallbackLabel: this.fallbackLabel,
+    });
   }
 
   private handleImageError = () => {
@@ -135,22 +169,25 @@ export class MudAvatar {
     return 'icon';
   }
 
-  private get accessibleName(): string {
-    if (this.ariaLabel) return this.ariaLabel;
+  private computeFallbackLabel(): string {
     if (this.name) return this.name;
-    if (this.resolvedInitials) return `Avatar for ${this.resolvedInitials}`;
-    return 'User avatar';
+    const m = this.messages();
+    if (this.resolvedInitials) {
+      return formatMessage(m.initialsLabel, this.host, this.locale, { initials: this.resolvedInitials });
+    }
+    return m.fallbackLabel;
   }
 
   render() {
     const mode = this.resolvedType;
     const iconSize = ICON_SIZE_FOR[this.size];
 
-    // `aria-label` is set imperatively by `syncAccessibleLabel()` so the
-    // attribute is not declared on `<Host>` here.
+    // `aria-label` is set imperatively by `hostLabel` (see `nameHostWithFallback`)
+    // so the attribute is not declared on `<Host>` here.
+    const lang = hostLang(this.host, this.locale);
 
     return (
-      <Host role="img">
+      <Host role="img" lang={lang}>
         <span class={{ inner: true, [`type-${mode}`]: true }}>
           {mode === 'photo' && (
             <img

@@ -21,6 +21,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertLegacySizeLayout } from './legacy-size-layout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
@@ -74,6 +75,7 @@ function reframe(svg, nominal) {
 }
 
 async function main() {
+  assertLegacySizeLayout(ASSETS_ROOT, SIZES);
   let total = 0;
   let changed = 0;
   let unchanged = 0;

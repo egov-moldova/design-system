@@ -168,7 +168,7 @@ const docsSourceMixedSizes = /*html*/ `<mud-button-group>
 </mud-button-group>`;
 
 const meta: Meta<ButtonGroupArgs> = {
-  title: 'Molecules/Button Group',
+  title: 'Components/Button Group',
   component: 'mud-button-group',
   argTypes: {
     orientation: {

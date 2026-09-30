@@ -1,12 +1,14 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 /**
  * Lifecycle state of a single step in a stepper.
  *
  * - `pending`     — step has not yet been reached and is NOT navigable; neutral grey ring + faded number.
- * - `current`     — the step the user is currently on; brand ring + brand number, neutral label.
- * - `completed`   — step is finished; filled brand circle + checkmark. When interactive, its label
- *                   renders as a brand underlined link (navigable back).
- * - `available`   — a future step the user MAY jump to; brand outline ring + brand number, and a
- *                   brand underlined link label when interactive (navigable forward).
+ * - `current`     — the step the user is currently on; brand ring + brand number + brand label.
+ * - `completed`   — step is finished; filled brand circle + checkmark, neutral label
+ *                   (navigable back when interactive).
+ * - `available`   — a future step the user MAY jump to; brand outline ring + brand number, neutral
+ *                   label (navigable forward when interactive).
  * - `error`       — step failed validation or was blocked; danger ring + danger cross, neutral label.
  */
 export type StepperStepStatus = 'pending' | 'current' | 'completed' | 'available' | 'error';
@@ -39,7 +41,7 @@ export type StepperStep = {
    *   - `error`     → `exclamation`
    *   - otherwise   → the step number (1-based index).
    */
-  iconName?: string;
+  iconName?: IconName;
   /** When true, the step is rendered as non-actionable even in interactive mode. */
   disabled?: boolean;
 };

@@ -1,6 +1,6 @@
 {
   "name": "@egov-moldova/mud",
-  "version": "0.0.0-development",
+  "version": "1.2.0-dev.1",
   "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/mud/mud.esm.js",
@@ -35,7 +35,16 @@
     "react"
   ],
   "resolutions": {
-    "undici-types": "~7.19.0"
+    "undici-types": "~7.19.0",
+    "@stencil/core@npm:~4.45.0": "patch:@stencil/core@npm%3A4.45.0#~/.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch",
+    "axios": "1.20.0",
+    "form-data": "4.0.6",
+    "browserslist": "4.29.0",
+    "fast-uri": "3.1.8",
+    "js-yaml": "4.3.2",
+    "@stencil/postcss/postcss": "^8.5.28",
+    "tar": "7.5.22",
+    "undici": "6.28.1"
   },
   "files": [
     "dist/",
@@ -47,26 +56,28 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
     "build.react": "stencil build --docs --react && node scripts/copy-component-assets.mjs && yarn workspace @egov-moldova/mud-react build",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
+    "demo.web.dev": "wireit",
     "build.watch": "stencil build --dev --watch",
     "dx:prepare": "wireit",
     "dev": "wireit",
+    "dev:all": "wireit",
     "dx:stencil": "wireit",
     "dx:storybook": "wireit",
     "dx:stencil:once": "wireit",
     "dx:clean": "rimraf .stencil .wireit storybook-static dist loader www",
     "format": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
     "format.fix": "wireit",
-    "format.icons": "svgo -f ./src/assets/images/icons --config=./svgo.config.icons.js",
+    "format.icons": "yarn svg:remove-size && yarn svg:remove-fill",
     "lint": "wireit",
     "lint.js": "wireit",
     "lint.css": "wireit",
+    "lint.format": "wireit",
     "lint.css.fix": "stylelint \"src/**/*.css\" --fix --allow-empty-input",
     "lint.colors": "node scripts/hardcoded-colors.mjs",
     "sp.build": "wireit",
@@ -80,8 +91,13 @@
     "test.watch": "vitest --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
-    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "test:scripts": "wireit",
+    "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
+    "changelog.check": "node scripts/changelog-release.mjs --check",
+    "locale.report": "node scripts/locale-report.mjs",
+    "changelog.release": "node scripts/changelog-release.mjs",
+    "version.bump": "node scripts/version-bump.mjs",
     "check": "wireit",
     "check.ci": "wireit",
     "check.verify": "wireit",
@@ -92,14 +108,14 @@
     "audit:contrast": "node scripts/audit-token-contrast.mjs",
     "tokens.audit.dark": "node scripts/debug-missing-token-references.mjs tokens/core.dark/style-dictionary.config.json",
     "tokens.lint": "node scripts/tokens-lint.mjs --root tokens/core",
-    "tokens.lint.dark": "node scripts/tokens-lint.mjs --root tokens/core.dark",
     "tokens.lint.all": "node scripts/tokens-lint.mjs --root tokens/core --root tokens/core.dark",
     "tokens.validate": "node scripts/tokens-validate.mjs --no-color",
     "tokens.watch": "wireit",
-    "wca.custom-elements": "wireit",
-    "svg:remove-size": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
-    "svg:remove-fill": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
-    "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/mud-icon/assets/local-icons.json",
+    "svg:remove-size": "svgo -f src/components/mud-icon/assets --recursive --config svgo.config.icons.size.js",
+    "svg:remove-fill": "svgo -f src/components/mud-icon/assets --recursive --config svgo.config.icons.fill.js",
+    "svg:icons": "yarn format.icons && node scripts/icons/build-registry.mjs",
+    "sync:main": "node scripts/git/sync-main.mjs",
+    "types.ensure": "wireit",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
     "audit:structure": "node scripts/audit/01-component-structure.mjs",
@@ -112,11 +128,15 @@
     "audit:bundle-size": "node scripts/audit/08-bundle-size.mjs",
     "audit:token-diff": "node scripts/audit/13-token-diff.mjs",
     "audit:contract": "node scripts/audit/14-component-contract.mjs",
+    "audit:stencil-contract": "node scripts/audit/16-stencil-contract.mjs",
     "audit:a11y-tree": "node scripts/audit/09-a11y-tree.mjs",
     "audit:contrast-pairs": "node scripts/audit/10-contrast-pairs.mjs",
     "audit:pixel-diff": "node scripts/audit/11-pixel-diff-states.mjs",
+    "audit:style-parity": "node scripts/audit/15-style-parity.mjs",
+    "audit:figma-refs": "node scripts/audit/figma-refs.mjs",
     "audit:console-errors": "node scripts/audit/12-console-errors.mjs",
     "audit:all": "node scripts/audit/run-all.mjs",
+    "audit:component": "node scripts/audit/verdict.mjs",
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "audit:test": "node scripts/audit/__tests__/02-antipatterns.test.mjs",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
@@ -202,25 +222,10 @@
         "scripts/tokens-watch.mjs"
       ]
     },
-    "wca.custom-elements": {
-      "command": "wca analyze src/components --format json --outFile .storybook/custom-elements.json && node scripts/ensure-custom-elements-manifest.mjs",
-      "files": [
-        "src/components/**/*.ts",
-        "src/components/**/*.tsx",
-        "scripts/ensure-custom-elements-manifest.mjs"
-      ],
-      "output": [
-        ".storybook/custom-elements.json"
-      ],
-      "packageLocks": [
-        "yarn.lock"
-      ]
-    },
     "build": {
       "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
       "dependencies": [
-        "tokens.build.prod",
-        "wca.custom-elements"
+        "tokens.build.prod"
       ],
       "clean": false,
       "files": [
@@ -228,14 +233,18 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "src/assets/**/*",
+        "!src/components.d.ts",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
         "scripts/copy-component-assets.mjs"
       ],
       "output": [
         "dist/**",
-        "loader/**"
+        "loader/**",
+        ".storybook/custom-elements.json",
+        "src/components.d.ts"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -265,6 +274,13 @@
       ],
       "service": true
     },
+    "demo.web.dev": {
+      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && yarn workspace @egov-moldova/mud-web-components demo",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "service": true
+    },
     "demo.web.build": {
       "command": "yarn workspace @egov-moldova/mud-web-components demo.build",
       "dependencies": [
@@ -284,8 +300,7 @@
     "dx:prepare": {
       "dependencies": [
         "tokens.build",
-        "tokens.build.prod",
-        "wca.custom-elements"
+        "tokens.build.prod"
       ]
     },
     "dev": {
@@ -296,8 +311,14 @@
         "dx:storybook"
       ]
     },
+    "dev:all": {
+      "dependencies": [
+        "dev",
+        "demo.web.dev"
+      ]
+    },
     "test.storybook.watch": {
-      "command": "wait-on --interval 200 --timeout 60000 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css .storybook/custom-elements.json && vitest --watch --project storybook",
       "dependencies": [
         "dx:prepare"
       ],
@@ -311,13 +332,14 @@
       "service": true
     },
     "dx:storybook": {
-      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && storybook dev -p 6007 --no-open",
+      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css .storybook/custom-elements.json && storybook dev -p 6007 --no-open",
       "dependencies": [
         "dx:prepare"
       ],
       "service": true,
       "files": [
-        ".storybook/**/*"
+        ".storybook/**/*",
+        "!.storybook/custom-elements.json"
       ]
     },
     "dx:stencil:once": {
@@ -330,23 +352,27 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
-        "tsconfig.stencil.json"
+        "tsconfig.stencil.json",
+        "!src/components.d.ts"
       ],
       "output": [
         "dist/**",
-        "loader/**"
+        "loader/**",
+        "src/components.d.ts"
       ],
       "packageLocks": [
         "yarn.lock"
       ]
     },
     "lint.js": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0 && prettier --check .",
+      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
         "eslint.config.mjs",
+        "scripts/eslint/**",
         ".prettierrc.json",
         ".prettierignore"
       ],
@@ -356,43 +382,25 @@
       ]
     },
     "format.fix": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/**/*.css",
-        "eslint.config.mjs",
-        ".prettierrc.json",
-        ".prettierignore"
-      ],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write . --cache --cache-strategy content"
+    },
+    "lint.format": {
+      "command": "prettier --check . --cache --cache-strategy content"
     },
     "check": {
       "command": "yarn check.verify",
       "dependencies": [
         "format.fix"
-      ],
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
       ]
     },
     "check.ci": {
-      "command": "yarn check.verify",
-      "files": [],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
+      "command": "yarn check.verify"
     },
     "lint": {
       "dependencies": [
         "lint.js",
-        "lint.css"
+        "lint.css",
+        "lint.format"
       ]
     },
     "check.verify": {
@@ -400,13 +408,24 @@
       "dependencies": [
         "typecheck",
         "lint",
-        "test"
+        "test",
+        "test:scripts",
+        "docs:check"
       ],
       "files": [],
       "output": [],
       "packageLocks": [
         "yarn.lock"
       ]
+    },
+    "test:scripts": {
+      "command": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+      "dependencies": [
+        "build"
+      ]
+    },
+    "docs:check": {
+      "command": "node scripts/docs/check-ai-docs.mjs"
     },
     "lint.css": {
       "command": "stylelint \"src/**/*.css\" --allow-empty-input",
@@ -422,11 +441,17 @@
     },
     "test": {
       "command": "node scripts/check-test-stderr.mjs --project spec",
+      "env": {
+        "SKIP_STDERR_CHECK": {
+          "external": true
+        }
+      },
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
         "vitest.config.mts",
         "vitest-setup.ts",
@@ -437,14 +462,24 @@
         "yarn.lock"
       ]
     },
+    "types.ensure": {
+      "command": "node scripts/ensure-components-dts.mjs",
+      "dependencies": [
+        "dx:prepare"
+      ]
+    },
     "typecheck": {
       "command": "tsc --noEmit",
       "dependencies": [
-        "dx:prepare"
+        "types.ensure"
       ],
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "src/**/*.json",
+        "*.ts",
+        "*.mjs",
+        "*.d.mts",
         "tsconfig.json"
       ],
       "output": [],
@@ -454,12 +489,18 @@
     },
     "sp.build": {
       "dependencies": [
-        "build",
-        "wca.custom-elements"
+        "build"
       ],
       "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static && node scripts/cleanup-storybook-fonts.mjs",
+      "env": {
+        "STORYBOOK_BASE_PATH": {
+          "external": true,
+          "default": "/"
+        }
+      },
       "files": [
         ".storybook/**/*",
+        "package.json",
         "scripts/cleanup-storybook-fonts.mjs",
         "src/**/*.stories.ts",
         "src/**/*.mdx"
@@ -478,68 +519,59 @@
     }
   },
   "dependencies": {
-    "@stencil/core": "^4.43.4"
+    "@stencil/core": "~4.45.0"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.2",
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.63.0",
     "@prettier/plugin-oxc": "^0.1.4",
-    "@stencil/eslint-plugin": "^1.3.0",
+    "@stencil/eslint-plugin": "^1.4.0",
     "@stencil/postcss": "^2.1.0",
-    "@stencil/react-output-target": "^1.5.2",
-    "@stencil/vitest": "^1.11.6",
-    "@storybook/addon-a11y": "^10.4.0",
-    "@storybook/addon-docs": "^10.4.0",
-    "@storybook/addon-links": "^10.4.0",
-    "@storybook/addon-vitest": "^10.4.0",
-    "@storybook/web-components": "10.4.0",
-    "@storybook/web-components-vite": "^10.4.0",
+    "@stencil/react-output-target": "^1.6.2",
+    "@stencil/vitest": "^1.15.1",
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-links": "^10.6.0",
+    "@storybook/addon-vitest": "^10.6.0",
+    "@storybook/web-components": "10.6.0",
+    "@storybook/web-components-vite": "^10.6.0",
     "@types/node": "^24.12.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
-    "@vitest/browser-playwright": "^4.1.6",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.11",
     "@whitespace/storybook-addon-html": "^9.0.0",
-    "agent-browser": "latest",
     "agentation": "^3.0.2",
     "commander": "^14.0.3",
     "cross-env": "^10.1.0",
-    "eslint": "^10.4.0",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-storybook": "^10.4.0",
     "husky": "^9.1.7",
-    "known-css-properties": "^0.37.0",
     "lit": "^3.3.2",
     "lodash": "^4.18.1",
-    "oxlint": "^1.66.0",
     "pixelmatch": "^7.1.0",
-    "playwright": "^1.60.0",
+    "playwright": "^1.63.0",
     "pngjs": "^7.0.0",
     "postcss": "^8.5.28",
     "postcss-nested": "^7.0.2",
     "postcss-preset-env": "^11.1.3",
-    "prettier": "^3.8.1",
+    "prettier": "^3.9.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rimraf": "^6.1.2",
-    "storybook": "^10.4.0",
+    "storybook": "^10.6.0",
     "style-dictionary": "^5.5.3",
-    "stylelint": "^17.4.0",
+    "stylelint": "^17.15.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-declaration-strict-value": "^1.11.1",
     "svgo": "^4.1.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.4",
+    "typescript-eslint": "^8.70.0",
     "vite": "^8.3.0",
-    "vitest": "^4.1.6",
+    "vitest": "^4.1.11",
     "wait-on": "^9.0.3",
-    "web-component-analyzer": "^2.0.0",
-    "wireit": "^0.14.12"
+    "wireit": "^0.14.13"
   },
   "engines": {
     "node": ">=24.0.0 <25.0.0"

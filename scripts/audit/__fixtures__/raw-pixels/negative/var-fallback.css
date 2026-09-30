@@ -1,0 +1,3 @@
+.box {
+  gap: var(--spacing-8, 8px);
+}

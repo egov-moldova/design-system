@@ -1,6 +1,7 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-accordion-item';
+import '../../mud-badge/mud-badge';
 
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
@@ -28,6 +29,24 @@ describe('mud-accordion-item', () => {
     expect(header?.getAttribute('aria-controls')).toBe(panelId ?? null);
     expect(panel?.getAttribute('aria-labelledby')).toBe(headerId ?? null);
     expect(panel?.getAttribute('role')).toBe('region');
+  });
+
+  it('renders the `trailing` slot outside the header button, after it (issue #22)', async () => {
+    const { root } = await render(<mud-accordion-item heading="A"></mud-accordion-item>);
+    const shadow = root?.shadowRoot;
+    const header = shadow?.querySelector<HTMLButtonElement>('button.header');
+    const trailing = shadow?.querySelector('slot[name="trailing"]');
+    expect(header && trailing).toBeTruthy();
+    // Interactive content inside a <button> is invalid HTML and joins the button's accessible name.
+    expect(header?.contains(trailing ?? null)).toBe(false);
+    // Tab order follows the flat tree: the trailing control is its own stop, after the header.
+    // Sibling order rather than `compareDocumentPosition`, which mock-doc answers with 0.
+    const row = Array.from(header?.parentElement?.children ?? []);
+    expect(row.indexOf(trailing!.parentElement!)).toBeGreaterThan(row.indexOf(header!));
+    // The label slots stay the header's name.
+    for (const name of ['icon-start', 'heading', 'supporting']) {
+      expect(header?.contains(shadow?.querySelector(`slot[name="${name}"]`) ?? null)).toBe(true);
+    }
   });
 
   it('toggles open on header click', async () => {
@@ -334,5 +353,43 @@ describe('mud-accordion-item', () => {
     // It arrived carrying the consumer's own value, so it never entered the
     // ledger and must survive the re-enable — issue #17 on the append path.
     expect(late.hasAttribute('disabled')).toBe(true);
+  });
+
+  it('claims a `mud-*` control whose `disabled="false"` attribute reads as not disabled', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment">
+        <mud-badge slot="trailing" count={2}></mud-badge>
+      </mud-accordion-item>,
+    );
+    const badge = root!.querySelector('mud-badge') as HTMLMudBadgeElement;
+    badge.setAttribute('disabled', 'false');
+    await waitForChanges();
+    expect(badge.disabled).toBe(false);
+
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    // Stencil reads the string "false" as `false`, so the badge is enabled and
+    // skipping it would leave a full-colour badge in a disabled row.
+    expect(badge.getAttribute('disabled')).toBe('');
+    expect(badge.disabled).toBe(true);
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(badge.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('does not claim a native control carrying `disabled="false"`, which HTML reads as disabled', async () => {
+    const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment"></mud-accordion-item>);
+    const button = document.createElement('button');
+    button.setAttribute('slot', 'trailing');
+    button.setAttribute('disabled', 'false');
+    root!.appendChild(button);
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(button.getAttribute('disabled')).toBe('false');
   });
 });

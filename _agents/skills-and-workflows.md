@@ -15,9 +15,10 @@ Skill invocation rules and available workflows. **Read when starting any compone
 | --- | --- | --- |
 | `optimize-prompt` | **On explicit user request only** — when user invokes `/optimize-prompt` or asks to structure/improve/optimize a prompt. Do NOT invoke automatically on normal tasks. Compiles raw requests into AGE-aware specs: routes on archetype (atom-visual / atom-interactive / form-associated / molecule / molecule-interactive / organism / layout), applies canonical defaults, runs 12-pattern contradiction detector + reuse scan, validates against codebase snapshot. Modes: `new`, `redesign`, `modify`, `fix`, `tokens`. Replaces the former `/optimize-prompt-new-component` command. | Active skill |
 | `token-creation` | Creating new component tokens, unfamiliar token structure or naming | Active skill |
-| `systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | Active skill |
-| `verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | Active skill |
+| `superpowers:systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | From the globally-installed `superpowers` plugin — see [`.claude/skills/LOCAL-SETUP.md`](../.claude/skills/LOCAL-SETUP.md) |
+| `superpowers:verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | From the globally-installed `superpowers` plugin — see [`.claude/skills/LOCAL-SETUP.md`](../.claude/skills/LOCAL-SETUP.md) |
 | `figma-illustration-import` | Custom multi-layer illustration — check `src/components/mud-illustration-*/` first | Active skill |
+| `pixel-perfect` | Verifying a `mud-*` component against Figma — after a build or fix, before a PR, or when asked whether it matches a Figma link | Active skill |
 | `accessibility-compliance` | **MANDATORY** reference for every `mud-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |
 
 **Standard component workflow** (atom/molecule with known patterns): follow AGENTS.md directly — no skill invocation needed.
@@ -26,7 +27,7 @@ Skill invocation rules and available workflows. **Read when starting any compone
 1. `AGENTS.md`, `tokens/AGENTS.md` → token + slot architecture
 2. `src/components/AGENTS.md`, `src/components/_agents/*.md` → implement the component
 3. `src/components/_agents/storybook-stories.md` → stories for all variants/states
-4. `_agents/pixel-perfect-qa.md` → pixel-perfect QA against Figma
+4. `_agents/pixel-perfect-qa.md` + the `pixel-perfect` skill → pixel-perfect QA against Figma
 
 ---
 
@@ -37,18 +38,18 @@ Skill invocation rules and available workflows. **Read when starting any compone
 - `/optimize-prompt` — Compile a raw request into an AGE-aware spec for downstream agents. Auto-routes by archetype + mode (`new` | `redesign` | `modify` | `fix` | `tokens`). See [`.claude/skills/optimize-prompt/SKILL.md`](../.claude/skills/optimize-prompt/SKILL.md).
 
 **Creation**:
-- `/new-component` — Create component from Figma (`--fast` for auto-proceed)
-- `/custom-component` — Create from user requirements (no Figma)
+- the `new-component` agent — Create component from Figma (`--fast` for auto-proceed)
+- the `custom-component` agent — Create from user requirements (no Figma)
 
 **Modification**:
 - `/modify-component` — Add variant, prop, state, refactor
 - `/fix-visual-bug` — Diagnose visual bugs, trace root cause
-- `/refactor-component` — Align to AGENTS.md patterns
+- the `refactor-component` agent — Align to AGENTS.md patterns
 
 **Audit**:
 - `/audit-component` — Component health check
 - `/audit-accessibility` — Deep a11y audit
-- `/audit-production` — Comprehensive pre-production gate
+- the `audit-production` agent — Comprehensive pre-production gate
 
 **Tokens**: `/update-tokens` — Token-only changes
 

@@ -4,6 +4,7 @@ import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
 
 const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/mud');
+const GENERATED_TOKENS = resolve(__dirname, '../../tokens/generated');
 
 // Multi-page build: the table of contents (index.html) + one page per component under
 // pages/<category>/<tag>.html. Dev server serves any .html by path already;
@@ -98,16 +99,26 @@ function copyDesignSystemAssetsToBuild(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   root: __dirname,
   // Emit relative asset URLs (./assets/...) so the built bundle works whether
   // it is served from the domain root, a subpath, or opened directly via
   // file:// (which is what the user does when sanity-checking the output).
   base: './',
   plugins: [serveDesignSystemAssets(), copyDesignSystemAssetsToBuild()],
+  // Stencil's watch build does not copy tokens into dist/ (stencil.config.ts, `copy: isWatchMode ? []`),
+  // so `yarn dev:all` (no `build` dependency) reads them from where Style Dictionary writes them.
+  // Serve only: `vite build` still resolves the package export to dist/mud/tokens/.
+  resolve: {
+    alias:
+      command === 'serve'
+        ? [{ find: /^@egov-moldova\/mud\/tokens\/(.*\.css)$/, replacement: `${GENERATED_TOKENS}/$1` }]
+        : [],
+  },
   server: {
     port: 5174,
-    open: '/index.html',
+    // scripts/check-dev-all.mjs sets this so a headless run never opens a browser window.
+    open: process.env.MUD_DEMO_NO_OPEN ? false : '/index.html',
     fs: {
       allow: [resolve(__dirname, '..'), resolve(__dirname, '../..')],
     },
@@ -125,4 +136,4 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@egov-moldova/mud/mud.esm.js'],
   },
-});
+}));

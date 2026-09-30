@@ -1,7 +1,7 @@
 ---
 name: new-component
 description: Create a production-ready Stencil web component from a Figma design link, running the full pixel-perfect pipeline (Figma extraction → tokens → TSX/CSS → stories → QA loop). Use when the user has a Figma link and wants a brand-new component. Supports `--fast` flag for atoms/molecules to skip checkpoints.
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, Skill
 model: opus
 ---
 
@@ -88,12 +88,8 @@ Read for detail: `_agents/figma-extraction.md`. For interactive/form components:
 
 Skip if simple display atom (badge, label, avatar, icon, divider) with no form association.
 
-Query Context7 only for form elements or unfamiliar lifecycle patterns:
-
-```text
-mcp__context7__resolve-library-id({ libraryName: "stenciljs" })
-mcp__context7__get-library-docs({ context7CompatibleLibraryID: "...", topic: "form associated lifecycle callbacks" })
-```
+Check current library documentation only for form elements or unfamiliar lifecycle patterns
+(Stencil's form-associated + lifecycle callbacks).
 
 For form elements, verify these requirements from `src/components/_agents/form-associated.md`:
 
@@ -134,7 +130,7 @@ Follow `src/components/AGENTS.md` directly.
 
 Project-specific requirements:
 
-- `!` on all decorator props: `@Element() host!: HTMLElement`, `@Event() corChange!: EventEmitter<T>`
+- `!` on all decorator props: `@Element() host!: HTMLMud<Name>Element` ([`SKILL.md` EL1](../skills/stencil-compliance/SKILL.md#rule-index)), `@Event() mudChange!: EventEmitter<T>`
 - `Record<string, T>` for size/variant maps
 - `?? ''` after optional chaining
 
@@ -160,9 +156,9 @@ Modes:
 Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id>, threshold=0.5")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaUrl=<figma url with node-id>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
-Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>, figmaMetadata=<metadata>")
+Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>, figmaMetadata=<metadata>")
 Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
 Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=new")
 ```
@@ -218,7 +214,7 @@ If any check fails → fix before continuing to verification.
 
 ## Step 9: Verification
 
-Invoke `verification-before-completion` skill — must run commands AND read output before claiming complete.
+Invoke `superpowers:verification-before-completion` skill — must run commands AND read output before claiming complete.
 
 ```bash
 yarn lint
@@ -226,6 +222,19 @@ yarn test
 yarn sp.build
 yarn audit:contrast
 ```
+
+Then run the deterministic gate and STOP if the exit status is non-zero:
+
+```bash
+yarn audit:component mud-<name> --depth standard
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). A `NEEDS-DECISION`
+with no Figma manifest at `HEAD` is expected here only if the manifest from
+Step 3/8 was never committed — commit it (or declare `figma.design: "none"`)
+before re-running. Read `audit/mud-<name>/fix-brief.md` for any other
+non-`PASS` state.
 
 Check console: `mcp__playwright__browser_console_messages({ level: "error" })`.
 
@@ -235,11 +244,10 @@ Reference: `_agents/verification-git.md`.
 
 `yarn sp.build` (Step 9) regenerates these tracked files in your worktree:
 
-- `src/components.d.ts`
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. `src/components.d.ts` is regenerated too but git-ignored, so it is never staged. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Return to Main Agent
 

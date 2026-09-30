@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-date-picker · @egovmd/mud-web-components</title>
+    <title>mud-date-picker · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-date-picker">
     <main class="demo-main">
@@ -18,7 +18,7 @@
           <h3>Modes</h3>
           <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
             <div class="cell">
-              <mud-date-picker id="dp-single" mode="single" value="2026-05-15" locale="ro-RO"></mud-date-picker>
+              <mud-date-picker id="dp-single" mode="single" value="2026-05-15"></mud-date-picker>
               <span class="label">single · value="2026-05-15" (attribute)</span>
             </div>
             <div class="cell">
@@ -36,15 +36,15 @@
           <h3>Breakpoints</h3>
           <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
             <div class="cell">
-              <mud-date-picker mode="single" breakpoint="desktop" locale="ro-RO"></mud-date-picker>
+              <mud-date-picker mode="single" breakpoint="desktop"></mud-date-picker>
               <span class="label">desktop</span>
             </div>
             <div class="cell">
-              <mud-date-picker mode="single" breakpoint="docked" locale="ro-RO"></mud-date-picker>
+              <mud-date-picker mode="single" breakpoint="docked"></mud-date-picker>
               <span class="label">docked</span>
             </div>
             <div class="cell">
-              <mud-date-picker mode="single" breakpoint="mobile" locale="ro-RO"></mud-date-picker>
+              <mud-date-picker mode="single" breakpoint="mobile"></mud-date-picker>
               <span class="label">mobile (drag handle)</span>
             </div>
           </div>
@@ -54,8 +54,8 @@
           <h3>Locale (Intl-driven labels)</h3>
           <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
             <div class="cell">
-              <mud-date-picker mode="single" value="2026-05-15" locale="ru-RU"></mud-date-picker>
-              <span class="label">ru-RU</span>
+              <mud-date-picker mode="single" value="2026-05-15" locale="ru-MD"></mud-date-picker>
+              <span class="label">ru-MD</span>
             </div>
             <div class="cell">
               <mud-date-picker mode="single" value="2026-05-15" locale="en-US" first-day-of-week="0"></mud-date-picker>
@@ -82,17 +82,19 @@
               <span class="label">min/max constrain navigation + disable out-of-range days</span>
             </div>
             <div class="cell">
-              <mud-date-picker
-                id="dp-future"
-                mode="single"
-                value="2099-12-25"
-                locale="ro-RO"
-                hide-today-shortcut=""
-              ></mud-date-picker>
-              <span class="label">far-future month (2099) · hide-today-shortcut</span>
+              <mud-date-picker id="dp-future" mode="single" value="2099-12-25"></mud-date-picker>
+              <span class="label">far-future month (2099)</span>
             </div>
             <div class="cell">
-              <mud-date-picker id="dp-disabled" mode="multi" locale="ro-RO"></mud-date-picker>
+              <mud-date-picker mode="single" value="2026-05-15" today-shortcut=""></mud-date-picker>
+              <span class="label">today-shortcut · "Azi" footer (off by default)</span>
+            </div>
+            <div class="cell">
+              <mud-date-picker mode="single" value="2026-05-15" header-style="dropdown"></mud-date-picker>
+              <span class="label">header-style=dropdown · month and year chips</span>
+            </div>
+            <div class="cell">
+              <mud-date-picker id="dp-disabled" mode="multi"></mud-date-picker>
               <span class="label">disabledDates (holidays) marked unselectable</span>
             </div>
           </div>

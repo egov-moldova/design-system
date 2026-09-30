@@ -193,7 +193,10 @@
   flex: 1 1 auto;
   min-inline-size: 0;
   inline-size: 100%;
-  block-size: 100%;
+  /* Its natural line-height box, centred by `.control`'s flex — stretching it to
+     the full row instead leaves the browser to centre the text itself, which
+     lands a pixel lower than the rest of the design system. */
+  block-size: auto;
   padding: 0;
   margin: 0;
   border: 0;
@@ -208,8 +211,20 @@
   -webkit-appearance: none;
   cursor: pointer;
   text-align: start;
-  display: flex;
-  align-items: center;
+  /* An input cannot hold a child to truncate, so it truncates itself. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A searchable control takes text, so it reads as one. */
+:host([searchable]:not([readonly]):not([disabled])) .trigger {
+  cursor: text;
+}
+
+.trigger::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
 }
 
 .trigger:disabled {
@@ -227,16 +242,16 @@
   outline: none;
 }
 
-.trigger-text {
-  flex: 1 1 auto;
-  min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* No selection: the field shows its placeholder, which needs the muted colour
+   even where `::placeholder` does not reach. */
+.trigger.is-placeholder {
+  color: var(--_text-placeholder);
 }
 
-.trigger-text.is-placeholder {
-  color: var(--_text-placeholder);
+/* Disabled outranks placeholder. Both are one class plus one qualifier, so
+   source order alone decided it and the later placeholder rule was winning. */
+:host(.is-disabled) .trigger.is-placeholder {
+  color: var(--select-default-text-disabled);
 }
 
 /* ---------- Listbox popover ---------- */
@@ -271,6 +286,53 @@
   display: none;
 }
 
+/* ---------- groups + separators ---------- */
+
+/* A nested column rather than `display: contents`, whose role is still dropped
+   by some assistive technology — the group has to keep announcing itself. The
+   gap repeats the listbox's so grouped and loose options share one rhythm. */
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--select-listbox-gap);
+}
+
+.group-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--select-group-gap);
+  padding-inline: var(--select-group-padding-inline);
+  padding-block: var(--select-group-padding-block);
+}
+
+.group-label {
+  font-family: var(--select-group-font-family);
+  font-size: var(--select-group-font-size);
+  font-weight: var(--select-group-font-weight);
+  line-height: var(--select-group-line-height);
+  color: var(--select-group-color);
+}
+
+/* A heading carries its own rule, as the Figma Section Heading does. */
+.option-group::before {
+  block-size: var(--select-separator-thickness);
+  margin-block: var(--select-separator-margin-block);
+  background-color: var(--select-separator-color);
+  content: '';
+}
+
+/* A rule against the panel's rounded top edge divides nothing. */
+.option-group:first-child::before {
+  display: none;
+}
+
+.listbox-separator {
+  flex: none;
+  block-size: var(--select-separator-thickness);
+  margin-block: var(--select-separator-margin-block);
+  background-color: var(--select-separator-color);
+}
+
 .listbox-empty {
   padding: var(--spacing-8) var(--spacing-12);
   font-size: var(--_option-font-size);
@@ -286,7 +348,12 @@
   gap: var(--select-option-gap);
   min-block-size: var(--_option-min-block-size);
   padding-block: var(--select-option-padding-block);
-  padding-inline: var(--select-option-padding-inline);
+  /* Figma fills the Default row explicitly. The token follows the theme, so a
+     dark surface stays dark rather than being pinned white. */
+  background-color: var(--select-option-background-default);
+  padding-inline-start: var(--select-option-padding-inline);
+  /* Figma reserves the wider end padding for a row with no trailing checkmark. */
+  padding-inline-end: var(--select-option-padding-inline-end);
   border-radius: var(--select-option-border-radius);
   color: var(--select-option-text-default);
   font-family: var(--select-option-font-family);
@@ -302,6 +369,11 @@
 
 .option.is-highlighted {
   background-color: var(--select-option-background-hover);
+}
+
+/* A trailing checkmark fills the space that end padding otherwise reserves. */
+.option.is-selected {
+  padding-inline-end: var(--select-option-padding-inline-end-trailing);
 }
 
 .option.is-selected {

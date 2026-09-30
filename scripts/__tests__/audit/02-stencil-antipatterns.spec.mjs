@@ -15,7 +15,13 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { PATTERNS, FILE_CHECKS, scanFile, analyzeComponent } from '../../audit/02-stencil-antipatterns.mjs';
+import {
+  PATTERNS,
+  FILE_CHECKS,
+  HYBRID_CONTENT_COMPONENTS,
+  scanFile,
+  analyzeComponent,
+} from '../../audit/02-stencil-antipatterns.mjs';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 const UNSAFE_HTML_ASSIGN = 'el.' + 'innerHTML = userInput;';
@@ -29,21 +35,18 @@ describe('02-stencil-antipatterns: pattern registry coverage', () => {
     'ANTIPATTERN-TS-ANY',
     'ANTIPATTERN-001-INLINE-STYLE',
     'ANTIPATTERN-002-HOST-CLASSLIST',
-    'ANTIPATTERN-003-METHOD-NON-ASYNC',
     'ANTIPATTERN-004-EVENTEMITTER-UNTYPED',
     'ANTIPATTERN-005-ARRAY-MUTATION',
     'ANTIPATTERN-007-LIFECYCLE-LEAK',
     'ANTIPATTERN-010-SETFORMVALUE-1ARG',
     'ANTIPATTERN-013-FORCEUPDATE',
     'ANTIPATTERN-014-SHOULDUPDATE',
-    'ANTIPATTERN-018-TRANSITION-ALL',
     'ANTIPATTERN-019-RAW-HEX',
     'ANTIPATTERN-020-PALETTE-IN-CSS',
     'ANTIPATTERN-021-RAW-SVG',
     'ANTIPATTERN-023-CLASSNAME',
     'ANTIPATTERN-025-EVENT-PREFIX',
     'ANTIPATTERN-SECURITY-INNERHTML',
-    'ANTIPATTERN-IMPORTANT',
     'ANTIPATTERN-RAW-PIXELS',
     'ANTIPATTERN-TS-IGNORE',
   ];
@@ -62,6 +65,12 @@ describe('02-stencil-antipatterns: pattern registry coverage', () => {
       assert.ok(['tsx', 'css'].includes(p.scope), `bad scope for ${p.code}`);
       assert.ok(p.regex instanceof RegExp, `bad regex for ${p.code}`);
       assert.ok(p.message, `message required for ${p.code}`);
+    }
+  });
+
+  it('tags every rule with the doc that owns it', () => {
+    for (const entry of [...PATTERNS, ...FILE_CHECKS]) {
+      assert.ok(['stencil', 'project'].includes(entry.ruleScope), `${entry.code}: ruleScope`);
     }
   });
 });
@@ -88,18 +97,6 @@ describe('02-stencil-antipatterns: TSX pattern detection', () => {
   it('flags className= (React idiom)', () => {
     const findings = scan({ content: '<div className="x" />', kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-023-CLASSNAME').length, 1);
-  });
-
-  it('flags @Method() with non-async, non-Promise return', () => {
-    const tsx = `@Method()\ndoSomething(): string {\n  return "x";\n}`;
-    const findings = scan({ content: tsx, kind: 'tsx' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-003-METHOD-NON-ASYNC').length, 1);
-  });
-
-  it('does NOT flag @Method() returning Promise<T>', () => {
-    const tsx = `@Method()\ndoSomething(): Promise<string> {\n  return Promise.resolve("x");\n}`;
-    const findings = scan({ content: tsx, kind: 'tsx' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-003-METHOD-NON-ASYNC').length, 0);
   });
 
   it('flags EventEmitter without generic type', () => {
@@ -220,18 +217,112 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length, 0);
   });
 
-  it('flags !important', () => {
-    const findings = scan({ content: '.foo { color: red !important; }', kind: 'css', file: 'fake.css' });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-IMPORTANT').length, 1);
+  const rawPixels = content =>
+    scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length;
+
+  it('does NOT flag a pixel fallback inside var(--token, Npx)', () => {
+    assert.equal(rawPixels('.foo { gap: var(--spacing-8, 8px); }'), 0);
   });
 
-  it('flags transition: all', () => {
-    const findings = scan({
-      content: '.foo { transition: all 0.2s ease; }',
-      kind: 'css',
-      file: 'fake.css',
-    });
-    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-018-TRANSITION-ALL').length, 1);
+  it('does NOT flag pixel conditions of @media / @container', () => {
+    assert.equal(rawPixels('@media (max-width: 640px) {'), 0);
+    assert.equal(rawPixels('@container card (max-width: 520px) {'), 0);
+  });
+
+  it('does NOT flag pixels inside calc()', () => {
+    assert.equal(rawPixels('.foo { margin-block-start: calc((var(--_lh) - 16px) / 2); }'), 0);
+  });
+
+  it('does NOT flag sub-pixel values below 1px', () => {
+    assert.equal(rawPixels('.foo { letter-spacing: 0.5px; }'), 0);
+  });
+
+  it('keeps a pixel inside calc() exempt after a bare or nested group closes', () => {
+    assert.equal(rawPixels('.a { margin: calc((100% - 1rem) / 2 - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc((var(--a)) + 12px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc(100% - (8px + 1rem)); }'), 0);
+  });
+
+  it('reads calc() in any case or vendor prefix, and judges the innermost named function', () => {
+    assert.equal(rawPixels('.a { width: -webkit-calc(100% - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: CALC(100% - 8px); }'), 0);
+    assert.equal(rawPixels('.a { width: calc(min(100%, 480px) - 8px); }'), 1);
+  });
+
+  it('still flags a raw pixel outside calc() on the same line', () => {
+    assert.equal(rawPixels('.foo { padding: 12px calc(100% - 4px); }'), 1);
+  });
+
+  it('flags :host without display', () => {
+    const findings = scanFile(
+      { kind: 'css', path: 'x.css', rel: 'x.css', content: ':host {\n  gap: 1rem;\n}\n' },
+      'mud-x',
+    );
+    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 1);
+  });
+
+  it('does NOT flag :host that declares display', () => {
+    const findings = scanFile(
+      { kind: 'css', path: 'x.css', rel: 'x.css', content: ':host {\n  display: block;\n}\n' },
+      'mud-x',
+    );
+    assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-HOST-DISPLAY').length, 0);
+  });
+
+  it('reads every bare :host rule, including nested blocks, before reporting a missing display', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(hostDisplay(':host {\n  --a: 1px;\n}\n\n:host {\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  &:hover {\n    color: red;\n  }\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  &:hover {\n    display: none;\n  }\n}\n'), 1);
+  });
+
+  it('reports a decimal pixel value whole, and skips a continued @media condition', () => {
+    const px = content =>
+      scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS');
+    assert.equal(px('.foo { border-width: 1.5px; }').length, 1);
+    assert.equal(px('@media (min-width: 640px)\n  and (max-width: 1024px) {').length, 0);
+  });
+
+  it('reads only top-level bare :host rules, including selector lists, and reports a stylesheet with none', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(
+      hostDisplay(
+        ':host {\n  gap: 1rem;\n}\n\n@media (max-width: 640px) {\n  .a {\n    color: red;\n  }\n  :host {\n    display: none;\n  }\n}\n',
+      ),
+      1,
+    );
+    assert.equal(hostDisplay(':host,\n:host([hidden]) {\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay(':host(.open) {\n  display: flex;\n}\n'), 1);
+  });
+
+  it('reads :host inside @layer, ignores braces inside strings, and skips a stylesheet with no rules', () => {
+    const hostDisplay = content =>
+      scanFile({ kind: 'css', path: 'x.css', rel: 'x.css', content }, 'mud-x').filter(
+        f => f.code === 'ANTIPATTERN-HOST-DISPLAY',
+      ).length;
+    assert.equal(hostDisplay('@layer base {\n  :host {\n    display: block;\n  }\n}\n'), 0);
+    assert.equal(hostDisplay(':host {\n  --x: "}";\n  display: block;\n}\n'), 0);
+    assert.equal(hostDisplay('@supports (display: grid) {\n  :host {\n    display: grid;\n  }\n}\n'), 1);
+    assert.equal(hostDisplay(''), 0);
+    assert.equal(hostDisplay(':host { display: block;\n.a { color: red; }'), 0);
+    assert.equal(hostDisplay('/* no rules yet */\n'), 0);
+  });
+
+  it('does not read digits inside a custom-property name, reports min()/max()/clamp() sizes, and skips media continuations', () => {
+    const px = content =>
+      scan({ content, kind: 'css', file: 'fake.css' }).filter(f => f.code === 'ANTIPATTERN-RAW-PIXELS').length;
+    assert.equal(px('.foo { --size-x2px: 2px; }'), 1);
+    assert.equal(px('.foo { width: min(100%, 480px); }'), 1);
+    assert.equal(px('.foo { font-size: clamp(12px, 2vw, 24px); }'), 2);
+    assert.equal(px('.foo { margin: -2px; }'), 1);
+    assert.equal(px('@media screen\n  and (width <= 1024px) {'), 0);
+    assert.equal(px('@media print\n  and (min-width: 1024px) {'), 0);
   });
 });
 
@@ -266,6 +357,56 @@ describe('02-stencil-antipatterns: file-level checks', () => {
     const tsx = `componentDidLoad() { window.addEventListener('resize', this.onResize); }`;
     const findings = scan({ content: tsx, kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-007-LIFECYCLE-LEAK').length, 1);
+  });
+});
+
+describe('02-stencil-antipatterns: ANTIPATTERN-026 hybrid content', () => {
+  const CODE = 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK';
+  const hits = (content, componentName = 'mud-fake') => scan({ content, componentName }).filter(f => f.code === CODE);
+
+  it('flags a text fallback inside a slot', () => {
+    assert.equal(hits('<slot name="label">{this.label}</slot>').length, 1);
+    assert.equal(hits('<slot name="title">\n  <h2 class="title">{this.titleText}</h2>\n</slot>').length, 1);
+  });
+
+  it('flags a sibling that renders text behind a has*Slot guard', () => {
+    assert.equal(
+      hits('<slot onSlotchange={this.onLabel} />\n{!this.hasLabelSlot && labelText ? labelText : null}').length,
+      1,
+    );
+    assert.equal(hits('<slot />\n{!this.hasLabelSlot ? <span>{this.label}</span> : null}').length, 1);
+  });
+
+  it('does not flag a default element whose only expressions are attributes', () => {
+    assert.deepEqual(hits('<slot name="icon">\n  <mud-icon name={iconName} size={24} />\n</slot>'), []);
+    assert.deepEqual(
+      hits('<slot name="next-icon" />\n{!this.hasNextIcon ? <mud-icon name="chevron-right" /> : null}'),
+      [],
+    );
+  });
+
+  it('does not flag a data render beside a slot', () => {
+    assert.deepEqual(hits('<slot></slot>\n{this.renderDataTabs()}'), []);
+  });
+
+  it('does not flag a slot mentioned in a comment', () => {
+    assert.deepEqual(
+      hits('/**\n * forwards a `<slot slot="trailing">` into this one, what {YOUR}\n * slot distributes </slot>\n */'),
+      [],
+    );
+  });
+
+  it('skips the components whose documented API is a hybrid, each with a reason', () => {
+    assert.deepEqual(hits('<slot name="label">{this.label}</slot>', 'mud-text-input'), []);
+    for (const [component, reason] of HYBRID_CONTENT_COMPONENTS) {
+      assert.match(component, /^mud-/);
+      assert.ok(reason.length > 0, `${component} has no reason`);
+    }
+  });
+
+  it('keeps the reported line number past a blanked comment', () => {
+    const [finding] = hits('/* one\n two */\n<slot name="label">{this.label}</slot>');
+    assert.equal(finding?.line, 3);
   });
 });
 

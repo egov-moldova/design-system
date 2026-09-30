@@ -69,7 +69,7 @@ Follow rules from `tokens/AGENTS.md`:
 5. **Token references**: NEVER use `{palette.*}`. Always use semantic `{color.*}`:
    - PASS: `{ "$value": "{color.neutral.text.weak}", "$type": "color" }`
    - FAIL: `{ "$value": "{palette.ui.gray.9}" }`
-6. **DTCG format**: use `$value` and `$type` (Style Dictionary v4)
+6. **DTCG format**: use `$value` and `$type` (Style Dictionary 5)
 
 ### Pre-Commit Validation Checklist
 
@@ -82,7 +82,7 @@ Example structure (DTCG):
 
 ```json
 {
-  "component-name": {
+  "componentName": {
     "variant": {
       "state": {
         "property": {
@@ -158,7 +158,7 @@ Reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance
 ## Step 8: Visual Check (if component exists)
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-<name>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=components-<title-slug>--default" })
 mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/token-update-check.png" })
 ```
 

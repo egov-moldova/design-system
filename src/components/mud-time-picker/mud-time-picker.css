@@ -1,0 +1,123 @@
+:host {
+  /* Seven rows are visible (Figma 13810:9451); the columns scroll the rest. */
+  --_visible-rows: 7;
+  --_row: var(--time-picker-option-height);
+  --_gap: var(--time-picker-column-gap);
+  --_ring: var(--time-picker-option-focus-ring-width);
+  --_container-bg: var(--time-picker-container-background);
+  --_transition-duration: var(--time-picker-container-transition-duration);
+  --_transition-easing: var(--time-picker-container-transition-timing-function);
+
+  display: inline-flex;
+  box-sizing: border-box;
+  inline-size: var(--time-picker-container-width);
+  padding: var(--time-picker-container-padding);
+  background-color: var(--_container-bg);
+  border-radius: var(--time-picker-container-border-radius);
+  box-shadow: var(--time-picker-container-shadow);
+  font-family: var(--time-picker-option-font-family);
+}
+
+.columns {
+  display: flex;
+  gap: var(--_gap);
+  inline-size: 100%;
+  block-size: calc(var(--_row) * var(--_visible-rows) + var(--_gap) * (var(--_visible-rows) - 1));
+}
+
+/* A scrolling column clips its content, which would cut the focus ring off an
+   edge option: it reaches out by the ring width on every side and pads it back,
+   so the options stay where Figma puts them. */
+.column {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--_gap);
+  margin: calc(-1 * var(--_ring));
+  padding: var(--_ring);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scroll-padding-block: var(--_ring);
+  scrollbar-width: none;
+}
+
+.column::-webkit-scrollbar {
+  display: none;
+}
+
+.option,
+.separator-cell {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  block-size: var(--_row);
+  padding-block: var(--time-picker-option-padding-block);
+  padding-inline: var(--time-picker-option-padding-inline);
+  font-family: var(--time-picker-option-font-family);
+  font-weight: var(--time-picker-option-font-weight);
+  font-size: var(--time-picker-option-font-size);
+  line-height: var(--time-picker-option-line-height);
+  color: var(--time-picker-option-default-color);
+}
+
+.option {
+  border-radius: var(--time-picker-option-border-radius);
+  cursor: pointer;
+  scroll-snap-align: start;
+  user-select: none;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.option:hover:not(.is-disabled):not(.is-selected) {
+  background-color: var(--time-picker-option-hover-background);
+}
+
+/* Selected value of the other column — .day-cell Middle (159:901). */
+.option.is-selected {
+  background-color: var(--time-picker-option-selected-inactive-background);
+  color: var(--time-picker-option-selected-inactive-color);
+}
+
+/* Selected value of the column being edited — .day-cell Active (158:400). */
+.option.is-selected.is-active {
+  background-color: var(--time-picker-option-selected-background);
+  color: var(--time-picker-option-selected-color);
+}
+
+.option.is-disabled {
+  color: var(--time-picker-option-disabled-color);
+  cursor: not-allowed;
+}
+
+/* Figma "Focus Ring/Small" (13810:9453): a 1px container-bg halo inside a brand
+   band that ends 3px out. */
+.option:focus-visible {
+  outline: 0;
+  box-shadow:
+    0 0 0 var(--time-picker-option-focus-ring-offset) var(--_container-bg),
+    0 0 0 var(--_ring) var(--time-picker-option-focus-ring);
+}
+
+.separator {
+  flex: 0 0 var(--time-picker-separator-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--_gap);
+  overflow: hidden;
+}
+
+.separator-cell {
+  padding-inline: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

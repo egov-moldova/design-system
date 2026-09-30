@@ -1,4 +1,7 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, h } from '@stencil/core';
+
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 let tabInstanceCounter = 0;
 
@@ -15,8 +18,10 @@ let tabInstanceCounter = 0;
  *
  * @element mud-tab
  * @slot - Default slot — typically a text label. Falls back to the `label` prop.
- * @slot icon-start - Optional leading icon. Falls back to a `mud-icon` resolved from `iconName`.
- * @slot badge - Optional trailing badge. Falls back to a numbered badge when `badgeCount` is provided.
+ * @slot icon-start - Deprecated: set `iconName`. Overrides the icon from `iconName` until it
+ *                    goes away in the next major.
+ * @slot badge - Deprecated: set `badgeCount`. Overrides the numbered badge until it goes away
+ *               in the next major.
  */
 @Component({
   tag: 'mud-tab',
@@ -40,7 +45,7 @@ export class MudTab {
   @Prop() label?: string;
 
   /** Optional leading icon name resolved against the `mud-icon` registry. */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /** Optional numbered badge displayed after the label. */
   @Prop() badgeCount?: number;
@@ -58,6 +63,7 @@ export class MudTab {
    */
   @Event() mudTabActivate!: EventEmitter<{ value: string }>;
 
+  private warnedSlots = false;
   private readonly instanceId = ++tabInstanceCounter;
   private readonly internalId = `mud-tab-${this.instanceId}`;
 
@@ -68,6 +74,27 @@ export class MudTab {
     if (!this.host.id) {
       this.host.id = this.internalId;
     }
+  }
+
+  componentDidRender() {
+    this.warnDeprecatedSlots();
+  }
+
+  /**
+   * The icon and the badge each have one channel, the prop (`iconName`, `badgeCount`); the
+   * `tabs` descriptor of `mud-tabs` carries the same fields. Warns once about the slots.
+   */
+  private warnDeprecatedSlots(): void {
+    if (this.warnedSlots) return;
+    const used = Array.from(this.host.children)
+      .map(child => child.getAttribute('slot'))
+      .filter((name): name is string => name === 'icon-start' || name === 'badge');
+    if (used.length === 0) return;
+    this.warnedSlots = true;
+    const names = [...new Set(used)].map(name => `"${name}"`);
+    console.warn(
+      `[mud-tab] The ${names.join(' and ')} ${names.length > 1 ? 'slots are' : 'slot is'} deprecated: set \`iconName\` / \`badgeCount\` instead. They go away in the next major.`,
+    );
   }
 
   private onLabelSlotChange = (ev: Event) => {

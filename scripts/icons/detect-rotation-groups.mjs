@@ -11,6 +11,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { assertLegacySizeLayout } from './legacy-size-layout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
@@ -22,6 +23,8 @@ function bodyHash(svg) {
   const body = svg.replace(/viewBox="[^"]*"/, '');
   return createHash('sha1').update(body).digest('hex');
 }
+
+assertLegacySizeLayout(ASSETS_ROOT, SIZES);
 
 const groups = new Map();
 

@@ -2,6 +2,174 @@
 
 ## Unreleased
 
+### Changed — components read the native `aria-label` instead of an `ariaLabel` prop
+
+An `ariaLabel` prop shadowed the platform's own `HTMLElement.ariaLabel`, which the Stencil ESLint
+plugin flags as a reserved member name. These components no longer declare it and read
+the host's native `aria-label` attribute instead: `mud-avatar`, `mud-badge`, `mud-banner`,
+`mud-checkbox`, `mud-date-input`, `mud-file-input`, `mud-icon`, `mud-input-chip`, `mud-link`,
+`mud-logo`, `mud-menu`, `mud-numeric-input`, `mud-phone-input`, `mud-radio`, `mud-search-input`,
+`mud-segmented-control`, `mud-select`, `mud-separator`, `mud-sidebar`, `mud-stepper`,
+`mud-switch`, `mud-table`, `mud-tabs`, `mud-tag`, `mud-text-input`, `mud-textarea`, `mud-toast`
+and `mud-tooltip`.
+
+Where the name belongs to an inner element (a form control, a list, a landmark), the component
+moves it there and off the host, and now also follows later changes to the attribute.
+`mud-checkbox`, `mud-date-input`, `mud-link`, `mud-menu`, `mud-sidebar` and `mud-tooltip` start
+moving it off the host with this change; the other components already did.
+
+**Migration:** HTML using `aria-label="…"` needs no change. Setting the property
+(`el.ariaLabel = '…'`) keeps working at runtime, because the browser reflects it to the attribute.
+What changes is the typing: `ariaLabel` is gone from these components in `components.d.ts`, so
+Stencil TSX that passes `ariaLabel={…}` stops compiling — pass `aria-label={…}` instead.
+
+Where the label is moved off the host, the attribute is no longer there afterwards: reading
+`el.ariaLabel` back returns `null`, and removing the attribute (or setting the property to `null`)
+does nothing. Clear such a label by setting it to an empty string. For `mud-checkbox`, `mud-date-input`,
+`mud-link`, `mud-menu`, `mud-sidebar` and `mud-tooltip` this replaces clearing by removal, which worked before.
+
+### Removed — `mud-cookie-banner` and `mud-receipt`
+
+The cookie banner and the receipt card are product-level compositions, not building blocks, so
+they are no longer part of the library. The `mud-cookie-banner` and `mud-receipt` custom elements
+are gone, and so are their `--cookie-banner-*` and `--receipt-*` component tokens.
+`@egov-moldova/mud/loader` stops re-exporting `CookieBannerPosition`, `CookieBannerVariant`,
+`CookieCategory`, `CookieConsentDetail`, `ReceiptActionDetail`, `ReceiptParty`, `ReceiptService`,
+`ReceiptStatus`, `MudCookieBannerCustomEvent` and `MudReceiptCustomEvent`.
+`@egov-moldova/mud-web-components` registers this package's elements, so it stops defining both
+tags and loses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types.
+
+**Migration:** there is no replacement in this package. A page that renders `<mud-cookie-banner>`
+or `<mud-receipt>` keeps an element nothing defines after upgrading — no shadow content renders,
+and any children it holds show unstyled. TypeScript code stops compiling where it imports any name
+above, or uses the global `HTMLMudCookieBannerElement` / `HTMLMudReceiptElement` types or the tags
+in TSX. Compose the banner or the receipt in the application from the remaining components, or pin
+`@egov-moldova/mud` (and `@egov-moldova/mud-web-components`, if you use it) to exactly `1.1.9`
+until you do.
+
+### Removed — `mud-tooltip` `title` and `description` slots
+
+The Figma tooltip (component set 210:3897) has a single text body and no title or description
+rows, so `mud-tooltip` no longer has `title` / `description` slots, and the undocumented
+`--tooltip-title-*`, `--tooltip-description-*` and `--tooltip-header-*` custom properties they read
+are gone with them.
+
+**Migration:** a child with `slot="title"` or `slot="description"` is no longer projected, so its
+text stops rendering and stops reaching screen readers; a tooltip that had text only in those slots
+now opens as an empty bubble. Put that text in the default slot instead.
+
+### Removed — `mud-header` and `mud-footer`
+
+The Header and Footer organisms are no longer part of the library. These custom elements are
+gone: `mud-header`, `mud-header-nav-item`, `mud-header-mega-menu`, `mud-header-services-menu`,
+`mud-header-mobile` and `mud-footer`. So are their `--header-*` and `--footer-*` component
+tokens, and these package-root exports: `MudHeader`, `MudHeaderNavItem`, `MudHeaderMegaMenu`,
+`MudHeaderServicesMenu`, `MudHeaderMobile`, `HEADER_DEFAULT_LANGUAGES`, `HeaderLanguage`,
+`HeaderLanguageChangeDetail`, `HeaderNavSelectDetail`, `HeaderNavToggleDetail`, `MegaMenuItem`,
+`MegaMenuColumn`, `HeaderMegaMenuSelectDetail`, `ServicePlatform` and
+`HeaderServiceSelectDetail`. `@egov-moldova/mud/loader` also stops re-exporting `FooterContact`,
+`FooterLocale`, `FooterLocaleChangeDetail`, `FooterPartner`, `FooterSection`, `FooterSocial`,
+`FooterVariant`, `MudFooterCustomEvent` and the five `MudHeader*CustomEvent` interfaces.
+`@egov-moldova/mud-web-components` re-exports this package's types and registers its elements, so
+it loses the same elements and types.
+
+**Migration:** there is no replacement in this package. A page that renders `<mud-header>` or
+`<mud-footer>` keeps an element nothing defines after upgrading — no shadow content renders, and
+any children it holds show unstyled. TypeScript code stops compiling where it imports any name
+above, or uses the global `HTMLMudHeader*Element` / `HTMLMudFooterElement` types or the tags in
+TSX. Build the page header and footer in the application, or pin `@egov-moldova/mud` (and
+`@egov-moldova/mud-web-components`, if you use it) to exactly `1.1.9` until you do.
+
+### Changed — icon style is a `variant` prop, and the size scale is 16 / 20 / 24 / 32
+
+The style used to live inside the name (`car-filled`) and the size used to pick a
+different drawing (`assets/24/car.svg`). Both are props now, and the assets are
+keyed by style: `assets/outlined/car.svg` and `assets/filled/car.svg`, one drawing
+each, scaled through `size`.
+
+```html
+<!-- before -->              <!-- after -->
+<mud-icon name="car-filled" size="24"></mud-icon>
+<mud-icon name="car" variant="filled" size="24"></mud-icon>
+```
+
+**Migration:** drop the `-filled` suffix from every icon name and pass
+`variant="filled"`. `size="12"` is gone — the scale is `16 | 20 | 24 | 32`, and
+`32` is new. `ICON_VARIANTS`, `ICON_SIZES`, `IconVariant`, `IconSize` and
+`hasIconVariant(name, variant)` are exported from the package root.
+
+142 of the 174 icons are drawn in one style only. Asking for the style an icon
+does not have renders the one it does and logs a warning; `hasIconVariant` answers
+the question up front when you want the filled drawing only where one exists.
+
+**`mud-sidebar-item`'s `icon-active` attribute is removed.** It existed to name a
+second icon for the active row, which is what `variant` expresses now — an active
+item renders the filled style of `icon` when that icon has one.
+
+### Changed — icon names are typed as `IconName`, and `mud-icon` requires `name`
+
+Every prop and data field that names an icon was typed `string`, so a misspelled or
+removed name compiled and rendered nothing. They are now typed `IconName`, the union
+of the names `mud-icon` ships: `mud-icon`'s `name`; `iconName` on `mud-toast`,
+`mud-banner`, `mud-info-box`, `mud-inline-message`, `mud-tab`, `mud-avatar` and
+`mud-search-input`; `icon` on `mud-menu-item`; `icon` on `mud-sidebar-item`
+(`iconActive` was typed here too, and is removed by the entry above); and
+`StepperStep.iconName`, `TabDescriptor.iconName`,
+`SegmentedControlSegment.iconName` and `BreadcrumbItem.iconStart`.
+
+**If you pass a plain `string`, TypeScript now rejects it.** Type the value as
+`IconName`, or narrow a value that arrives untyped (CMS content, JSON) with
+`isIconName(value)`. `ICON_NAMES`, `IconName` and `isIconName` are exported from the
+package root. Nothing changes at runtime: HTML attributes still accept any string,
+and an unknown name still logs `[mud-icon] Icon not found` and renders nothing.
+
+**`mud-icon` no longer defaults `name` to `'check'`.** No `check` icon exists, so
+that default only ever rendered an empty icon; `name` is now required.
+
+### Fixed — the form-field focus halo in dark mode
+
+The soft halo around a focused form field kept its light-mode colours in dark mode, so it drew a
+bright pastel ring on the dark surface. `--focus-ring-color-halo-brand`, `-danger`, `-warning`
+and `-positive` now have dark values (`#00357e`, `#7a271a`, `#792e0d`, `#054f31`), and so do the
+component focus-ring variables built on them, which `mud-text-input`, `mud-textarea`,
+`mud-select`, `mud-date-input`, `mud-time-input`, `mud-numeric-input`, `mud-phone-input`,
+`mud-search-input`, `mud-file-input` and `mud-input-chip` draw their halo from. Light mode is unchanged. A page
+that overrides these variables itself is not affected.
+
+### Fixed — `mud-icon` no longer throws on names like `constructor`
+
+A `name` matching an `Object.prototype` member (`constructor`, `toString`,
+`__proto__`…) passed the known-icon check and threw a `TypeError` while loading.
+Such names now behave like any other unknown name.
+
+### Changed — `mud-accordion-item` renders the `trailing` slot beside its header button
+
+The `trailing` slot used to render inside the header `<button>`. Controls placed there —
+the slot is documented for `mud-button` — were interactive content inside a button,
+which is invalid HTML. It is now rendered as a sibling of the button, after it.
+`part="header"` stays on the button and still covers the whole row: its box,
+background, hover tint and focus ring are unchanged. `heading`, `supporting` and
+`icon-start` stay inside the button.
+
+What you can observe:
+
+- **Accessible name.** The header's name no longer includes trailing content. A test
+  that asserts the old name (heading followed by badge text) needs updating.
+- **Tab order.** A trailing control is its own tab stop, after the header.
+- **Clicks.** Clicking trailing content no longer toggles the item or emits `mudToggle`.
+  A `mud-button` there no longer needs `stopPropagation` to keep the item still.
+- **Keyboard.** Arrow, Home and End pressed while a trailing control has focus no longer
+  reach the header, so they do not move between items.
+- **Font.** Plain text in `trailing` inherits the item's font instead of the browser's
+  default `<button>` font (13.33px in Chromium). `mud-badge` and `mud-button` set their
+  own and are unaffected.
+- **`::part(header)` styles stop at the button.** Trailing content is no longer inside
+  it, so a `::part(header):hover` rule no longer applies while the pointer is over
+  trailing content, and with `icon-position="left"` an inline padding override does
+  not move trailing content away from the row's end.
+- **Without `subgrid`** (Chromium before 117, Safari before 16) the header falls back to
+  a flex row, with the open/close icon before trailing content instead of after it.
+
 ### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
 
 While an item is disabled it sets `disabled` on the controls you place directly in
@@ -15,7 +183,8 @@ event and no warning.
 **Your `disabled` now survives.** The item records the elements it writes to, and on
 re-enable removes the attribute only from those. A control that already carried
 `disabled` — as an attribute or as a property — never enters that record and is never
-touched. The record is also released when the item is removed from the document, so a
+touched. A `mud-*` control carrying `disabled="false"` reads that as not disabled, so
+the item does claim it. The record is also released when the item is removed from the document, so a
 control you move elsewhere does not leave carrying an attribute you did not write.
 
 **Two narrowings.** The attribute now reaches only elements assigned to a slot, never
@@ -27,8 +196,7 @@ two slots are greyed through inherited colour instead.
 **What still reaches everything.** While the item is disabled, every element assigned
 to the three header slots gets `tabindex="-1"`, restored to exactly the value you
 authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
-`<div tabindex>`, or a custom element that does not implement it — `mud-tag` and
-`mud-badge` do not — so without this a
+`<div tabindex>`, or a custom element that does not implement it, so without this a
 control would stay Tab-reachable and Enter-activatable while assistive technology was
 told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
 elements.
@@ -40,10 +208,8 @@ state only — your trailing content's colour is untouched in every other state.
 
 **What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
 gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
-set its own `pointer-events`, and it stays keyboard-reachable. `mud-tag` and
-`mud-badge` render identically whether the item is disabled or not, because they have
-no disabled design — unchanged from 1.0.6. And this state is a UX affordance, not an
-authorization boundary: an action that must not be reachable while the item is
+set its own `pointer-events`, and it stays keyboard-reachable. And this state is a UX
+affordance, not an authorization boundary: an action that must not be reachable while the item is
 disabled needs its own guard, and server-side enforcement if it is security-sensitive.
 
 The `pointer-events` guard is deliberately not overridable — measured, a declaration
@@ -51,6 +217,23 @@ in this component's shadow tree wins even against an inline `!important` on your
 element. If you have a legitimate affordance that must stay clickable under a disabled
 item (an "unlock", a "why is this disabled?" trigger), open an issue rather than
 fighting the cascade; there is no escape hatch today.
+
+### Fixed — semibold text rendered as bold
+
+`styles.css` shipped static Onest faces for weights 400, 500 and 700, while the
+tokens also use 600 (`--font-weight-semibold`). A weight with no face renders with
+the nearest one, so every semibold label rendered bold, and consumers declared
+their own `@font-face` to work around it. `styles.css` now declares one variable
+face covering 100–900, and that workaround can be deleted. esbuild consumers
+need `--loader:.woff2=file`; see the README's Fonts section.
+
+### Changed — font files in `dist/mud/assets/fonts/`
+
+The font is one WOFF2 file, `dist/mud/assets/fonts/onest-variable.woff2`
+(57.5 KB), replacing `onest-regular.ttf`, `onest-medium.ttf` and `onest-bold.ttf`
+(176.7 KB together). Those three paths were never `exports` keys, but they were
+published, so a page that linked one directly from a CDN — rather than through
+`styles.css` — now gets a 404 and must link `styles.css` instead.
 
 ### Changed — public API surface (breaking for deep imports)
 
@@ -133,6 +316,18 @@ are removed with no alias: `<mud-icon>` logs `Icon not found` and renders nothin
 
 The static assets move with them: `assets/<size>/calender-*.svg` is now
 `assets/<size>/calendar-*.svg`.
+
+### Added
+
+- `mud-tag` and `mud-badge` take a `disabled` prop that renders a disabled
+  design, replacing every `type` × `semantic` / `variant` color. The prop is
+  visual only and adds no ARIA; the container announces the state.
+  `mud-sidebar-item` passes its `disabled` to its own tag, and a tag or badge
+  slotted directly into a disabled `mud-accordion-item`'s `trailing` slot is
+  disabled by the item — leave `disabled` off it there, since the item never
+  removes an attribute it did not write. In the item's `heading` or
+  `supporting` slots, and in any other container, set `disabled` on the tag or
+  badge alongside the container's.
 
 ### Internal
 

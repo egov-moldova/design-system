@@ -8,7 +8,7 @@
  *
  * Story ID convention:
  *   `${kebab(titleSegment1)}-${kebab(titleSegment2)}--${kebab(storyExportName)}`
- *   where title comes from the default export's `title` field (`Atoms/Button`).
+ *   where title comes from the default export's `title` field (`Components/Button`).
  *
  * Replaces AI work in:
  *   - `.claude/agents/pixel-perfect-verifier.md` Step 2
@@ -23,11 +23,12 @@
  *   node scripts/audit/05-story-exports.mjs mud-button --json
  *   node scripts/audit/05-story-exports.mjs --all --json
  */
-import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import ts from 'typescript';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';
 import { resolveComponentPaths, listAllComponents, relativeToRepo } from './lib/component-paths.mjs';
+import { listChangedComponents } from './lib/changed-components.mjs';
+import { storyIdFor } from './lib/storybook-helpers.mjs';
 import { buildResult, emit, finding } from './lib/json-output.mjs';
 import { EXIT_INTERNAL, exitCodeFromSummary } from './lib/exit-codes.mjs';
 import { createSourceFile, getLineNumber } from './lib/ts-parser.mjs';
@@ -155,7 +156,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
         code: 'STORY-NO-TITLE',
         file: fileRel,
         message: `Could not extract default export's "title" field — story IDs may be wrong.`,
-        fix: `Add { title: 'Atoms/${componentName?.replace(/^mud-/, '')}', component: '${componentName}', ... } to the default export.`,
+        fix: `Add { title: 'Components/${componentName?.replace(/^mud-/, '')}', component: '${componentName}', ... } to the default export.`,
       }),
     );
   }
@@ -205,7 +206,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
   }
 
   // docs.source contract checks — lessons captured from the mud-logo audit
-  // (2026-05): see .claude/skills/audit-component/SKILL.md story-coverage list.
+  // (2026-05): see .claude/skills/audit-component/references/wave-2-static-analysis.md §2.9 story-coverage list.
   findings.push(...checkDocsSource(sourceFile, fileRel));
 
   return { findings, stories, coverage, title, componentName };
@@ -420,28 +421,12 @@ function hasExport(node) {
 }
 
 /**
- * Build a Storybook story ID. Storybook lowercases + kebab-cases title and
- * concatenates with `--<storyName-kebab>`.
- *
- *   "Atoms/Button"   + "Default"      → "atoms-button--default"
- *   "Molecules/Tooltip" + "AllSizes"  → "molecules-tooltip--all-sizes"
+ * Build a Storybook story ID — `storyIdFor` in `lib/storybook-helpers.mjs`,
+ * which delegates to Storybook's own `toId`. Re-exported under this name
+ * because every caller and test of this module already uses it, and because
+ * two copies of the rule are what let this one drift (see that function).
  */
-export function buildStoryId(title, storyName) {
-  const titlePart = title
-    .split('/')
-    .map(s => kebabCase(s))
-    .join('-');
-  return `${titlePart}--${kebabCase(storyName)}`;
-}
-
-function kebabCase(s) {
-  return s
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase()
-    .replace(/[\s_]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-}
+export const buildStoryId = storyIdFor;
 
 /**
  * Coverage check: for each STANDARD_STORIES entry, does an exported name match?
@@ -464,18 +449,7 @@ async function resolveTargets(args) {
   return [resolveComponentPaths(args.component)];
 }
 
-function listChangedComponents() {
-  const res = spawnSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
-  if (res.status !== 0) return [];
-  const names = new Set();
-  for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
-    if (m) names.add(m[2]);
-  }
-  return [...names].sort();
-}
-
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const isDirectRun = isEntrypoint(import.meta.url);
 if (isDirectRun) {
   main().catch(err => {
     process.stderr.write(`${TOOL}: internal error — ${err.stack ?? err.message ?? err}\n`);

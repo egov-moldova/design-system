@@ -27,7 +27,7 @@ const renderSpinner = (args: SpinnerArgs) => /*html*/ `
 `;
 
 const meta: Meta<SpinnerArgs> = {
-  title: 'Atoms/Spinner',
+  title: 'Components/Spinner',
   component: 'mud-spinner',
   argTypes: {
     size: {
@@ -61,8 +61,8 @@ export const Default: Story = {
 
 ### Story File Rules
 
-- **Title**: `Atoms/MudButton`, `Molecules/MudFormField`, `Organisms/MudNavbar` (Atomic hierarchy)
-- **Sort**: `Introduction → Design Tokens → Atoms → Molecules → Organisms → Templates`
+- **Title**: `Components/Button`, `Components/Input/Date`, `Components/Table` — single flat category, no atomic-hierarchy prefix
+- **Sort**: `Introduction → Design Tokens → Components`
 - **Import**: `@storybook/web-components-vite` — NOT `@storybook/react`, and NOT the bare `@storybook/web-components` renderer (framework-based config is required since Storybook 10)
 - **Component**: string tag `'mud-button'` — NOT JS reference
 - **Render**: always use `render` with HTML template strings (backticks)
@@ -79,6 +79,9 @@ export const Default: Story = {
   export type SpinnerSize = (typeof SPINNER_SIZES)[number];
   ```
   Stories then use `options: SPINNER_SIZES` — no duplicate string array in two files.
+- **Demo content is English.** Everything a story puts in front of a component — slotted text, attribute values (`label`, `placeholder`, `helper-text`, …), array/object props (`items`, `rows`) — is English, so the Storybook language toolbar visibly changes only the component's own built-in copy. Realistic Moldovan data values (city names such as `Chișinău`, `+373` numbers, personal names) stay and are listed with a reason in `scripts/eslint/content-language.allow.json`. A demo text must also never equal a component dictionary value (`mud-<name>.messages.ts`, any locale): content must not look like component copy — reword it. `node scripts/eslint/copy-probe.mjs --content-language` (stories) and `node scripts/check-content-language.mjs` (demo pages, MDX) enforce both.
+- **Figma-reference stories keep Figma's text.** A story whose id is named by a `src/components/*/test/*.figma.json` manifest (list them with `grep -ho '"story": *"[^"]*"' src/components/*/test/*.figma.json | sort -u`) is compared pixel for pixel against Figma, so its text — and the text of any helper it renders through — is left as it is, even where it is Romanian. When another story needs the same fixture in English, add an English copy beside it (`demoItems` next to `defaultItems` in `mud-breadcrumb.stories.ts`) instead of editing the shared one. The probe exempts these ids.
+- **`Locales` is the one story that pins `locale`.** A component with visible built-in copy (a dictionary value that renders as a text node, not only in an `aria-*` attribute) gets a `Locales` story: three instances with `locale="ro-MD"`, `"en-US"` and `"ru-MD"`, showing the state where that copy is visible (an empty table, an open select with no options, an invalid segment, …). Every other story leaves `locale` unset and follows the toolbar. The probe recognises a `Locales` story structurally — a rendered DOM holding instances that resolve to all three locales — never by name.
 - **Web-components type quirk**: use `StoryObj<Args>` directly. **Do NOT** use `StoryObj<typeof meta>` — in `@storybook/web-components-vite@^10.x` it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck. (This differs from React/Vue Storybook setups where `StoryObj<typeof meta>` works.)
 
 ---
@@ -238,7 +241,7 @@ Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `sr
 | No `render` function | **Always use `render`** with HTML template strings | Storybook can't auto-render web components from args alone |
 | `tags: ['autodocs']` on a story | Omit it | Autodocs is configured globally in `.storybook/main.mjs` |
 | `argTypes` missing `description` or `table.defaultValue` | Include both | Controls panel needs them; audit-component flags missing entries |
-| `Components/Button` title | `Atoms/MudButton` (Atomic hierarchy) | Project Storybook sort order depends on the atomic prefix |
+| `Atoms/Button` / `Molecules/…` / `Organisms/…` title | `Components/Button` (single flat category) | The atomic-hierarchy prefix was unified into `Components` — see issue #128 |
 | `<Component {...args} />` JSX spread | `variant="${args.variant}"` (explicit attributes) | Web components consume attribute strings, not React props |
 | Inline `padding: 16px` | `padding: var(--spacing-16)` | See "Story Styling" — semantic tokens preferred |
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |

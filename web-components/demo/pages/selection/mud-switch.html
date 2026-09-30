@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-switch · @egovmd/mud-web-components</title>
+    <title>mud-switch · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-switch">
     <main class="demo-main">
@@ -15,37 +15,31 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch label="Notificări push"></mud-switch>
+                <mud-switch label="Push notifications"></mud-switch>
               </div>
               <span class="label">off</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch checked="" label="Notificări push"></mud-switch>
+                <mud-switch checked="" label="Push notifications"></mud-switch>
               </div>
               <span class="label">on</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch disabled="" label="Indisponibil"></mud-switch>
+                <mud-switch disabled="" label="Unavailable"></mud-switch>
               </div>
               <span class="label">disabled (off)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch checked="" disabled="" label="Pornit și blocat"></mud-switch>
+                <mud-switch checked="" disabled="" label="On and locked"></mud-switch>
               </div>
               <span class="label">disabled (on)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch
-                  checked=""
-                  required=""
-                  name="autosave"
-                  value="enabled"
-                  label="Salvare automată"
-                ></mud-switch>
+                <mud-switch checked="" required="" name="autosave" value="enabled" label="Autosave"></mud-switch>
               </div>
               <span class="label">required + value</span>
             </div>
@@ -58,7 +52,7 @@
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
                 <mud-switch checked="">
-                  <span slot="label">Mod întunecat (dark mode)</span>
+                  <span slot="label">Dark mode</span>
                 </mud-switch>
               </div>
               <span class="label">label slot</span>
@@ -67,14 +61,14 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-switch
                   checked=""
-                  label="Activează autentificarea în doi pași prin SMS pentru toate sesiunile noi de pe dispozitive necunoscute"
+                  label="Enable two-step SMS authentication for all new sessions from unknown devices"
                 ></mud-switch>
               </div>
               <span class="label">long wrapping label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-switch label="Diacritice ăâîșțĂÂÎȘȚ &amp; <b> 🔔"></mud-switch>
+                <mud-switch label="Accented éüñ &amp; <b> 🔔"></mud-switch>
               </div>
               <span class="label">diacritics + special chars</span>
             </div>

@@ -1,11 +1,11 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
-import {
-  DATE_PICKER_BREAKPOINTS,
-  DATE_PICKER_HEADER_STYLES,
-  DATE_PICKER_MODES,
-  DATE_PICKER_VIEWS,
-} from './mud-date-picker.types';
+import { formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { DATE_PICKER_MESSAGES } from './mud-date-picker.messages';
+import type { DatePickerMessages } from './mud-date-picker.messages';
+import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type {
   DatePickerBreakpoint,
   DatePickerChangeDetail,
@@ -19,6 +19,10 @@ let datePickerInstanceCounter = 0;
 
 const MS_PER_DAY = 86_400_000;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Year view: 12 cells starting at a decade; the arrows page by a decade (Figma 524:1858). */
+const YEAR_GRID_SIZE = 12;
+const YEARS_PER_PAGE_STEP = 10;
 
 /** Parse a `YYYY-MM-DD` ISO date into a UTC `Date` or null if malformed. */
 function parseIso(iso: string | undefined | null): Date | null {
@@ -66,7 +70,7 @@ function compareIso(a: string, b: string): number {
  * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
  *
  * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
- * no hard-coded strings. Romanian (`ro-RO`) is the default.
+ * no hard-coded strings. Romanian (`ro-MD`) is the default.
  *
  * Keyboard:
  * - Arrow keys move focus by day
@@ -126,8 +130,20 @@ export class MudDatePicker {
   /** ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays). */
   @Prop() disabledDates?: string[];
 
-  /** BCP-47 locale tag for weekday/month rendering. Defaults to Romanian. */
-  @Prop() locale: string = 'ro-RO';
+  /**
+   * BCP-47 locale tag for weekday/month rendering and language of the "jump to today" footer
+   * shortcut. Unset, both follow the closest ancestor `lang` (`<html lang>` included), else
+   * `ro-MD`. A tag whose language has no built-in dictionary (`de-DE`) reaches `Intl` as the
+   * shown dictionary's locale instead, with one `console.warn` — see `formatLocale`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Label of the "jump to today" footer shortcut, when `todayShortcut` is set. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Azi' (ro-MD)
+   */
+  @Prop() todayLabel?: string;
 
   /**
    * Accessible label for the entire picker. Set the `aria-label` attribute on
@@ -144,7 +160,18 @@ export class MudDatePicker {
    */
   @Prop() firstDayOfWeek: number = 1;
 
-  /** Hide the "Today" quick-jump shortcut. Default keeps it visible. */
+  /**
+   * Show the "Today" quick-jump shortcut under the grid. Off by default: no
+   * date-picker variant in the Figma spec (159:904) has it.
+   * @default false
+   */
+  @Prop() todayShortcut: boolean = false;
+
+  /**
+   * Hide the "Today" quick-jump shortcut.
+   * @deprecated The shortcut is hidden by default now; use `todayShortcut` to show it. When set,
+   * this still wins over `todayShortcut`.
+   */
   @Prop() hideTodayShortcut: boolean = false;
 
   /**
@@ -175,22 +202,15 @@ export class MudDatePicker {
   private readonly gridLabelId = `mud-date-picker-grid-${this.instanceId}`;
   private readonly titleId = `mud-date-picker-title-${this.instanceId}`;
   private todayIso = toIso(new Date());
-
-  componentWillLoad() {
-    this.captureAriaLabel();
-    this.syncViewFromValue();
-    this.todayIso = toIso(new Date());
-  }
-
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.label && this.label.length > 0) {
-      this.resolvedAriaLabel = this.label;
-    }
-  }
+  /**
+   * Selector of the control to focus after the next render — set when a view
+   * switch removes the control that had focus (a header chip, a month / year
+   * cell).
+   */
+  private focusOnRender: string | null = null;
+  /** Where picking a year from the year chip leads back to: the view the chip was in. */
+  private yearChipReturn: DatePickerView = 'days';
+  private stopLang?: () => void;
 
   @Watch('label')
   syncLabel(next?: string): void {
@@ -248,6 +268,79 @@ export class MudDatePicker {
     this.syncViewFromValue();
   }
 
+  @Listen('keydown')
+  handleHostKeyDown(ev: KeyboardEvent) {
+    // A host listener sees `ev.target` retargeted to the host; the day cell is
+    // the first node of the composed path.
+    const target = (ev.composedPath?.()[0] ?? ev.target) as HTMLElement | null;
+    // Escape backs out of the month / year view first; only the day view lets
+    // it through to a host popover (mud-date-input closes on it).
+    if (ev.key === 'Escape' && this.view !== 'days') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      // Back to the control that opened the view: the chip, or the title.
+      const chip = this.view === 'months' ? 'month-dropdown' : 'year-dropdown';
+      this.switchView('days', this.headerStyle === 'dropdown' ? `[part="${chip}"]` : 'button.title');
+      return;
+    }
+    const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
+    if (!dayCell) return;
+    const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;
+    if (!iso) return;
+    this.handleDayKeyDown(ev, iso);
+  }
+
+  connectedCallback() {
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopLang?.();
+  }
+
+  componentWillLoad() {
+    this.captureAriaLabel();
+    this.syncViewFromValue();
+    this.todayIso = toIso(new Date());
+  }
+
+  componentDidRender() {
+    const selector = this.focusOnRender;
+    if (!selector) return;
+    this.focusOnRender = null;
+    this.host.shadowRoot?.querySelector<HTMLElement>(selector)?.focus();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): DatePickerMessages {
+    return localeMessages('mud-date-picker', this.host, this.locale, DATE_PICKER_MESSAGES, {
+      todayLabel: this.todayLabel,
+    });
+  }
+
+  /**
+   * The BCP-47 tag handed to every `Intl` call — `formatLocale`'s result: a tag whose language
+   * has a built-in dictionary reaches `Intl` as given (region added when absent, `ro` → `ro-MD`);
+   * a tag whose language has none (`de-DE`) is rewritten to the shown dictionary's own locale.
+   */
+  private resolvedIntlTag(): string {
+    return formatLocale(this.host, this.locale);
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
+  }
+
   /** Move the visible month to whatever the selection (or today) implies. */
   private syncViewFromValue() {
     // Explicit viewDate takes highest priority.
@@ -275,14 +368,17 @@ export class MudDatePicker {
   /** Localized month + weekday strings via Intl. Never hard-coded. */
   private monthLabel(year: number, month: number): string {
     const date = new Date(Date.UTC(year, month, 1));
-    return new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+    return new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+      date,
+    );
   }
 
   /** Short weekday names starting at `firstDayOfWeek`. Locale-driven. */
   private weekdayLabels(): { short: string; long: string }[] {
+    const tag = this.resolvedIntlTag();
     // `narrow` → single-letter weekday headers (M T W T F S S), per the Figma.
-    const formatterShort = new Intl.DateTimeFormat(this.locale, { weekday: 'narrow', timeZone: 'UTC' });
-    const formatterLong = new Intl.DateTimeFormat(this.locale, { weekday: 'long', timeZone: 'UTC' });
+    const formatterShort = new Intl.DateTimeFormat(tag, { weekday: 'narrow', timeZone: 'UTC' });
+    const formatterLong = new Intl.DateTimeFormat(tag, { weekday: 'long', timeZone: 'UTC' });
     // 2024-01-07 is a Sunday in UTC — use as anchor.
     const sunday = Date.UTC(2024, 0, 7);
     const labels: { short: string; long: string }[] = [];
@@ -423,16 +519,6 @@ export class MudDatePicker {
     });
   }
 
-  @Listen('keydown')
-  handleHostKeyDown(ev: KeyboardEvent) {
-    const target = ev.target as HTMLElement | null;
-    const dayCell = target?.closest?.('button.day-cell') as HTMLElement | null;
-    if (!dayCell) return;
-    const iso = dayCell.getAttribute('data-iso') ?? this.focusedIso;
-    if (!iso) return;
-    this.handleDayKeyDown(ev, iso);
-  }
-
   private handleDayKeyDown = (ev: KeyboardEvent, iso: string) => {
     switch (ev.key) {
       case 'ArrowLeft':
@@ -482,56 +568,117 @@ export class MudDatePicker {
         ev.preventDefault();
         this.selectDay(iso);
         return;
-      case 'Escape':
-        if (this.view !== 'days') {
-          ev.preventDefault();
-          this.view = 'days';
-        }
-        return;
     }
   };
 
-  private todayLabel(): string {
-    // Localized "Today" label. We rely on Intl.RelativeTimeFormat for accuracy
-    // — `numeric: 'auto'` returns "today" / "azi" / "heute" depending on locale.
-    try {
-      return new Intl.RelativeTimeFormat(this.locale, { numeric: 'auto' }).format(0, 'day');
-    } catch {
-      return 'Today';
-    }
+  /**
+   * Change view and move focus once rendered — by default into the new view:
+   * its tab-stop day, or its selected month / year (the view year and month
+   * are always in their grids).
+   */
+  private switchView(next: DatePickerView, focus?: string) {
+    this.view = next;
+    // Fix the day that will take focus now, in the event handler: the focus
+    // lands during componentDidRender, where changing `focusedIso` would be a
+    // state change mid-render.
+    if (next === 'days' && !focus) this.focusedIso = this.dayTabStop(this.buildDayGrid());
+    this.focusOnRender = focus ?? (next === 'days' ? 'button.day-cell[tabindex="0"]' : '.picker-cell.is-selected');
+  }
+
+  /**
+   * The view a click on the header title cycles to: days → months → years → days. A class
+   * field (not an inline JSX arrow) so its literal view names never sit inside the render
+   * tree — see `mud/no-hardcoded-copy`'s JSX-descendant rule.
+   */
+  private readonly cycleView = (): void => {
+    this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days';
+  };
+
+  private readonly goToMonths = (): void => this.switchView('months');
+
+  private readonly goToDays = (): void => this.switchView('days');
+
+  private readonly goToYears = (): void => {
+    // The title cycles days → months → years, so it continues to the months; the year chip
+    // returns to the view it was opened from.
+    this.yearChipReturn = this.view === 'months' ? 'months' : 'days';
+    this.switchView('years');
+  };
+
+  private readonly pickMonth = (month: number): void => {
+    this.viewMonth = month;
+    this.goToDays();
+    this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
+  };
+
+  private readonly pickYear = (year: number): void => {
+    this.viewYear = year;
+    this.switchView(this.headerStyle === 'dropdown' ? this.yearChipReturn : 'months');
+    this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
+  };
+
+  /**
+   * The day holding the grid's single tab stop: the focused day, else the
+   * selection, today, or the first enabled day — whichever is first in the
+   * visible month. The grid always keeps one, or focus would fall to <body>
+   * when neither today nor a focused day is in view.
+   */
+  private dayTabStop(cells: { iso: string; outside: boolean }[]): string | null {
+    const enabled = cells.filter(cell => !cell.outside && !this.isDisabled(cell.iso)).map(cell => cell.iso);
+    const selection = this.mode === 'range' ? this.rangeStart : Array.isArray(this.value) ? this.value[0] : this.value;
+    const candidate = [this.focusedIso, selection, this.todayIso].find(iso => iso && enabled.includes(iso));
+    return candidate ?? enabled[0] ?? null;
+  }
+
+  /** First year of the 12-cell year grid: the decade the view year falls in (Figma 524:1858). */
+  private yearGridBase(): number {
+    return Math.floor(this.viewYear / YEARS_PER_PAGE_STEP) * YEARS_PER_PAGE_STEP;
   }
 
   private capitalize(s: string): string {
     if (!s) return s;
-    return s.charAt(0).toLocaleUpperCase(this.locale) + s.slice(1);
+    return s.charAt(0).toLocaleUpperCase(this.resolvedIntlTag()) + s.slice(1);
   }
 
   private renderHeader() {
     const monthYear = this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
-    // Year view shows the visible decade range (e.g. "2016 - 2027") as the header
-    // label, per the Figma year-picker — not the single Month/Year title.
-    const yearBase = Math.floor(this.viewYear / 12) * 12;
-    const yearRange = `${yearBase} - ${yearBase + 11}`;
-    const onPrev = () => (this.view === 'years' ? this.goToYear(-12) : this.goToMonth(-1));
-    const onNext = () => (this.view === 'years' ? this.goToYear(12) : this.goToMonth(1));
-    const prevAria = new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-      new Date(Date.UTC(this.viewYear, this.viewMonth - 1, 1)),
-    );
-    const nextAria = new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-      new Date(Date.UTC(this.viewYear, this.viewMonth + 1, 1)),
-    );
+    // Year view titles the decade it starts at ("2020-2030"), per the Figma
+    // year picker 494:13301, whose 12-cell grid runs on to 2031.
+    const yearBase = this.yearGridBase();
+    const decadeLabel = (base: number) => `${base}-${base + YEARS_PER_PAGE_STEP}`;
+    const isYears = this.view === 'years';
+    const isMonths = this.view === 'months';
+    // The arrows page by decade in the year view, by year in the month view
+    // and by month in the day view.
+    const step = isYears ? YEARS_PER_PAGE_STEP : 1;
+    const onPrev = () => (isYears || isMonths ? this.goToYear(-step) : this.goToMonth(-1));
+    const onNext = () => (isYears || isMonths ? this.goToYear(step) : this.goToMonth(1));
+    const monthAria = (delta: number) =>
+      new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+        new Date(Date.UTC(this.viewYear, this.viewMonth + delta, 1)),
+      );
+    const navAria = (direction: 1 | -1) =>
+      isYears
+        ? decadeLabel(yearBase + direction * YEARS_PER_PAGE_STEP)
+        : isMonths
+          ? String(this.viewYear + direction)
+          : monthAria(direction);
+    const prevAria = navAria(-1);
+    const nextAria = navAria(1);
     return (
       <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
-          <mud-icon name="chevron-left-small" size={20}></mud-icon>
+          <mud-icon name="chevron-left" size={20}></mud-icon>
         </button>
-        {this.view === 'years'
-          ? this.renderHeaderTitle(yearRange)
+        {isYears
+          ? this.renderHeaderTitle(decadeLabel(yearBase))
           : this.headerStyle === 'dropdown'
             ? this.renderHeaderDropdowns()
-            : this.renderHeaderTitle(monthYear)}
+            : // The month view titles its year, the label Figma's Behavior text
+              // (602:4076) taps to reach the year view.
+              this.renderHeaderTitle(isMonths ? String(this.viewYear) : monthYear)}
         <button type="button" class="nav-button" part="nav-button" aria-label={nextAria} onClick={onNext}>
-          <mud-icon name="chevron-right-small" size={20}></mud-icon>
+          <mud-icon name="chevron-right" size={20}></mud-icon>
         </button>
       </div>
     );
@@ -539,14 +686,7 @@ export class MudDatePicker {
 
   private renderHeaderTitle(monthYear: string) {
     return (
-      <button
-        type="button"
-        class="title"
-        part="title"
-        id={this.titleId}
-        aria-live="polite"
-        onClick={() => (this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days')}
-      >
+      <button type="button" class="title" part="title" id={this.titleId} aria-live="polite" onClick={this.cycleView}>
         {monthYear}
       </button>
     );
@@ -554,33 +694,39 @@ export class MudDatePicker {
 
   private renderHeaderDropdowns() {
     const monthName = this.capitalize(
-      new Intl.DateTimeFormat(this.locale, { month: 'long', timeZone: 'UTC' }).format(
+      new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'long', timeZone: 'UTC' }).format(
         new Date(Date.UTC(this.viewYear, this.viewMonth, 1)),
       ),
     );
     return (
       <div class="header-dropdowns" part="header-dropdowns" id={this.titleId}>
+        {/* Each chip swaps the grid for its own view and the chip it came from
+            leaves the DOM, so `switchView` re-homes focus. The month view keeps
+            only the year chip: "Tapping the year label within the month view
+            transitions to a year selection view" (Figma 602:4076). */}
+        {this.view === 'months' ? null : (
+          <button
+            type="button"
+            class="dropdown-trigger"
+            part="month-dropdown"
+            aria-haspopup="grid"
+            aria-expanded="false"
+            onClick={this.goToMonths}
+          >
+            <span class="dropdown-label">{monthName}</span>
+            <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
+          </button>
+        )}
         <button
           type="button"
-          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'months' }}
-          part="month-dropdown"
-          aria-haspopup="grid"
-          aria-expanded={this.view === 'months' ? 'true' : 'false'}
-          onClick={() => (this.view = this.view === 'months' ? 'days' : 'months')}
-        >
-          <span class="dropdown-label">{monthName}</span>
-          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
-        </button>
-        <button
-          type="button"
-          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'years' }}
+          class="dropdown-trigger"
           part="year-dropdown"
           aria-haspopup="grid"
-          aria-expanded={this.view === 'years' ? 'true' : 'false'}
-          onClick={() => (this.view = this.view === 'years' ? 'days' : 'years')}
+          aria-expanded="false"
+          onClick={this.goToYears}
         >
           <span class="dropdown-label">{this.viewYear}</span>
-          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
+          <mud-icon name="chevron-bottom-small" size={16}></mud-icon>
         </button>
       </div>
     );
@@ -591,7 +737,7 @@ export class MudDatePicker {
     return (
       <div class="row day-labels" role="row" part="day-labels">
         {labels.map(label => (
-          <div class="day-label" role="columnheader" aria-label={label.long} part="day-label">
+          <div key={label.long} class="day-label" role="columnheader" aria-label={label.long} part="day-label">
             <span aria-hidden="true">{this.capitalize(label.short)}</span>
             <span class="visually-hidden">{label.long}</span>
           </div>
@@ -605,18 +751,21 @@ export class MudDatePicker {
     const rows: { iso: string; date: Date; outside: boolean }[][] = [];
     for (let i = 0; i < 6; i++) rows.push(cells.slice(i * 7, i * 7 + 7));
     const today = this.todayIso;
+    const tabStop = this.dayTabStop(cells);
+    const dayLabelFormatter = new Intl.DateTimeFormat(this.resolvedIntlTag(), { dateStyle: 'full', timeZone: 'UTC' });
     return (
       <div class="day-grid" role="grid" aria-labelledby={this.titleId} part="day-grid">
         {this.renderDayLabels()}
         {rows.map(row => (
-          <div class="row" role="row">
+          <div key={row[0].iso} class="row" role="row">
             {row.map(cell => {
               const isToday = cell.iso === today;
               const isSelected = this.isSelected(cell.iso);
               const isMiddle = this.isRangeMiddle(cell.iso);
               const endpoint = this.isRangeEndpoint(cell.iso);
-              const disabled = this.isDisabled(cell.iso);
-              const isFocused = this.focusedIso === cell.iso;
+              // Spill-over days are inactive (Figma .day-cell Inactive 158:453);
+              // the arrow keys still cross into the next month.
+              const disabled = cell.outside || this.isDisabled(cell.iso);
               const classes = {
                 'day-cell': true,
                 'is-outside': cell.outside,
@@ -627,9 +776,10 @@ export class MudDatePicker {
                 'range-start': endpoint === 'start',
                 'range-end': endpoint === 'end',
               };
-              const tabIndex = isFocused || (!this.focusedIso && cell.iso === today && !cell.outside) ? 0 : -1;
+              const tabIndex = cell.iso === tabStop ? 0 : -1;
               return (
                 <button
+                  key={cell.iso}
                   type="button"
                   class={classes}
                   part="day-cell"
@@ -639,12 +789,11 @@ export class MudDatePicker {
                   aria-selected={isSelected ? 'true' : 'false'}
                   aria-disabled={disabled ? 'true' : null}
                   aria-current={isToday ? 'date' : null}
-                  aria-label={new Intl.DateTimeFormat(this.locale, {
-                    dateStyle: 'full',
-                    timeZone: 'UTC',
-                  }).format(cell.date)}
+                  aria-label={dayLabelFormatter.format(cell.date)}
                   disabled={disabled}
-                  onClick={() => this.selectDay(cell.iso)}
+                  onClick={() => {
+                    if (!disabled) this.selectDay(cell.iso);
+                  }}
                   onMouseEnter={() => (this.hoverIso = cell.iso)}
                   onMouseLeave={() => (this.hoverIso = null)}
                   onFocus={() => (this.focusedIso = cell.iso)}
@@ -660,7 +809,7 @@ export class MudDatePicker {
   }
 
   private renderMonthGrid() {
-    const formatter = new Intl.DateTimeFormat(this.locale, { month: 'short', timeZone: 'UTC' });
+    const formatter = new Intl.DateTimeFormat(this.resolvedIntlTag(), { month: 'short', timeZone: 'UTC' });
     return (
       <div class="month-grid" role="grid" aria-labelledby={this.titleId} part="month-grid">
         {Array.from({ length: 12 }, (_, m) => {
@@ -673,11 +822,7 @@ export class MudDatePicker {
               part="month-cell"
               role="gridcell"
               aria-selected={isCurrent ? 'true' : 'false'}
-              onClick={() => {
-                this.viewMonth = m;
-                this.view = 'days';
-                this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
-              }}
+              onClick={() => this.pickMonth(m)}
             >
               {label}
             </button>
@@ -688,10 +833,10 @@ export class MudDatePicker {
   }
 
   private renderYearGrid() {
-    const base = Math.floor(this.viewYear / 12) * 12;
+    const base = this.yearGridBase();
     return (
       <div class="year-grid" role="grid" aria-labelledby={this.titleId} part="year-grid">
-        {Array.from({ length: 12 }, (_, i) => {
+        {Array.from({ length: YEAR_GRID_SIZE }, (_, i) => {
           const year = base + i;
           const isCurrent = year === this.viewYear;
           return (
@@ -701,11 +846,7 @@ export class MudDatePicker {
               part="year-cell"
               role="gridcell"
               aria-selected={isCurrent ? 'true' : 'false'}
-              onClick={() => {
-                this.viewYear = year;
-                this.view = 'months';
-                this.mudMonthChange.emit({ year: this.viewYear, month: this.viewMonth });
-              }}
+              onClick={() => this.pickYear(year)}
             >
               {year}
             </button>
@@ -715,9 +856,8 @@ export class MudDatePicker {
     );
   }
 
-  private renderFooter() {
-    if (this.hideTodayShortcut) return null;
-    const today = this.todayLabel();
+  private renderFooter(today: string) {
+    if (!this.todayShortcut || this.hideTodayShortcut) return null;
     const jumpToToday = () => {
       const now = new Date();
       this.viewYear = now.getUTCFullYear();
@@ -736,7 +876,7 @@ export class MudDatePicker {
   }
 
   render() {
-    if (!DATE_PICKER_VIEWS.includes(this.view)) this.view = 'days';
+    const m = this.messages();
     const hostClasses = {
       [`mode-${this.mode}`]: true,
       [`breakpoint-${this.breakpoint}`]: true,
@@ -748,14 +888,15 @@ export class MudDatePicker {
     // cross the shadow boundary. Synthesising the label from the visible title
     // keeps the a11y tree deterministic and clears the inspector warning.
     const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
+      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId} lang={lang}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
         {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}
         {this.view === 'months' ? this.renderMonthGrid() : null}
         {this.view === 'years' ? this.renderYearGrid() : null}
-        {this.renderFooter()}
+        {this.renderFooter(m.todayLabel)}
       </Host>
     );
   }

@@ -14,24 +14,93 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
       - name: Run lint
         run: yarn lint
 
+      - name: Check AI docs against the repo
+        run: yarn docs:check
+
+  changelog:
+    name: Changelog fragments
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the breaking-change check reads every commit since the base branch.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      - name: Validate fragments
+        run: yarn changelog.check
+
+      # A commit marked breaking (`feat!:`, `BREAKING CHANGE:` footer) needs a
+      # fragment with `breaking: true` in this PR: it carries the migration note.
+      - name: Require a fragment for breaking changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: yarn changelog.check --base "origin/$BASE_REF"
+
   typecheck:
     name: Typecheck
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
       - name: Run typecheck
         run: yarn typecheck
+
+  tokens-validate:
+    name: Tokens validation
+    needs: [lint, typecheck]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      - name: Build tokens
+        run: yarn tokens.build
+
+      - name: Lint hardcoded colors
+        run: yarn lint.colors
+
+      - name: Lint token naming
+        run: yarn tokens.lint.all
+
+      - name: Validate tokens
+        run: yarn tokens.validate
+
+      # `.storybook/custom-elements.json` is a build artifact, and
+      # scripts/__tests__/storybook-manifest.spec.mjs checks it against the
+      # component readmes. Without this step that spec fails on a missing file
+      # rather than on a disagreement.
+      - name: Build
+        run: yarn build
+
+      # Generated files merge with `merge=ours` (.gitattributes), so a stale
+      # copy merges silently; only regenerating it shows the difference. Same
+      # check as .husky/pre-push, which a push can skip.
+      - name: Verify generated files are committed
+        run: |
+          STALE=$(git status --porcelain -- 'src/components/*/readme.md' 'src/hidden/*/readme.md')
+          if [ -n "$STALE" ]; then
+            printf 'Generated files differ from the commit; run yarn build and commit them:\n%s\n' "$STALE"
+            exit 1
+          fi
+
+      - name: Run token script tests
+        run: yarn test:scripts
 
   test:
     name: Test
@@ -39,7 +108,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
@@ -52,28 +121,39 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
       - name: Run dependencies security audit
-        run: yarn npm audit --severity high
+        run: yarn npm audit --severity high --all --recursive
 
   build:
     name: Build
-    needs: [test, dependencies-security-audit]
-    timeout-minutes: 10
+    needs: [test, dependencies-security-audit, tokens-validate]
+    timeout-minutes: 20
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=12288
+      STORYBOOK_DISABLE_TELEMETRY: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
+      # from tokens/generated/*.css, which only tokens.build writes. Storybook's
+      # preview-head.html links to the same files.
+      - name: Build token CSS
+        run: yarn tokens.build
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Build Stencil components and tokens
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Build Storybook
+        run: yarn sp.docker
+
+      - name: Validate package
+        run: yarn validate.package

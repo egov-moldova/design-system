@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-tooltip · @egovmd/mud-web-components</title>
+    <title>mud-tooltip · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-tooltip">
     <main class="demo-main">
@@ -14,31 +14,31 @@
           <h3>Positions (hover, give it room)</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <mud-tooltip position="top" content="Poziție: sus">
+              <mud-tooltip position="top" content="Position: top">
                 <mud-button slot="trigger" variant="secondary" size="sm">Top</mud-button>
               </mud-tooltip>
               <span class="label">top</span>
             </div>
             <div class="cell">
-              <mud-tooltip position="bottom" content="Poziție: jos">
+              <mud-tooltip position="bottom" content="Position: bottom">
                 <mud-button slot="trigger" variant="secondary" size="sm">Bottom</mud-button>
               </mud-tooltip>
               <span class="label">bottom</span>
             </div>
             <div class="cell">
-              <mud-tooltip position="left" content="Poziție: stânga">
+              <mud-tooltip position="left" content="Position: left">
                 <mud-button slot="trigger" variant="secondary" size="sm">Left</mud-button>
               </mud-tooltip>
               <span class="label">left</span>
             </div>
             <div class="cell">
-              <mud-tooltip position="right" content="Poziție: dreapta">
+              <mud-tooltip position="right" content="Position: right">
                 <mud-button slot="trigger" variant="secondary" size="sm">Right</mud-button>
               </mud-tooltip>
               <span class="label">right</span>
             </div>
             <div class="cell">
-              <mud-tooltip position="auto" content="Auto: preferă sus, se întoarce la nevoie">
+              <mud-tooltip position="auto" content="Auto: prefers top, flips when needed">
                 <mud-button slot="trigger" variant="secondary" size="sm">Auto</mud-button>
               </mud-tooltip>
               <span class="label">auto (default)</span>
@@ -56,13 +56,13 @@
               <span class="label">size sm (default)</span>
             </div>
             <div class="cell">
-              <mud-tooltip size="lg" content="Tooltip mare cu mai mult conținut explicativ">
+              <mud-tooltip size="lg" content="Large tooltip with more explanatory content">
                 <mud-button slot="trigger" variant="secondary" size="sm">lg</mud-button>
               </mud-tooltip>
               <span class="label">size lg</span>
             </div>
             <div class="cell">
-              <mud-tooltip trigger="focus" content="Apare la focalizare (Tab)">
+              <mud-tooltip trigger="focus" content="Appears on focus (Tab)">
                 <mud-button slot="trigger" variant="secondary" size="sm">Focus me</mud-button>
               </mud-tooltip>
               <span class="label">trigger focus</span>
@@ -78,9 +78,9 @@
                 id="demo-tooltip-manual"
                 trigger="manual"
                 position="bottom"
-                content="Controlat imperativ prin proprietatea open"
+                content="Controlled imperatively through the open property"
               >
-                <mud-button slot="trigger" variant="secondary" size="sm">Ancoră</mud-button>
+                <mud-button slot="trigger" variant="secondary" size="sm">Anchor</mud-button>
               </mud-tooltip>
               <span class="label">manual tooltip</span>
             </div>
@@ -100,9 +100,9 @@
                 size="lg"
                 open=""
                 position="bottom"
-                content="Acesta este un coach mark: rămâne deschis până apăsați Esc, butonul de închidere sau faceți clic în afară."
+                content="This is a coach mark: it stays open until you press Esc, use the close button or click outside."
               >
-                <mud-button slot="trigger" variant="primary" size="sm">Funcție nouă</mud-button>
+                <mud-button slot="trigger" variant="primary" size="sm">New feature</mud-button>
               </mud-tooltip>
               <span class="label">coach (open by default)</span>
             </div>
@@ -115,7 +115,7 @@
             <div class="cell">
               <mud-tooltip
                 max-width="320"
-                content="Text foarte lung pentru tooltip care verifică încadrarea pe mai multe rânduri sub lățimea maximă configurată, inclusiv diacritice ăâîșțĂÂÎȘȚ și o adresă fără-spații: foarteLungCuvântNeîntreruptPentruTestareaÎncadrării."
+                content="Very long tooltip text that checks wrapping over several lines under the configured maximum width, including accented characters éüñ and a space-free address: veryLongUnbrokenWordForTestingTheFit."
               >
                 <mud-button slot="trigger" variant="secondary" size="sm">Long text</mud-button>
               </mud-tooltip>

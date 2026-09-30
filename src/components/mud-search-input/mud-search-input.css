@@ -1,3 +1,8 @@
+/* The public `size` prop is `md` | `lg` (aligned with Figma's "medium"/"large"
+   labels and with `mud-text-input`'s own `md`/`lg` scale). The underlying
+   `--search-input-*` tokens keep their original `-sm`/`-md` suffixes — this
+   file is the only place mapping one to the other, so token names didn't
+   need a matching, wider rename. */
 :host {
   --_height: var(--search-input-container-height-sm);
   --_padding-inline: var(--search-input-container-padding-inline-sm);
@@ -32,7 +37,7 @@
   color: var(--_text);
 }
 
-:host([size='md']) {
+:host([size='lg']) {
   --_height: var(--search-input-container-height-md);
   --_padding-inline: var(--search-input-container-padding-inline-md);
   --_gap: var(--search-input-container-gap-md);
@@ -90,39 +95,85 @@
   display: none;
 }
 
+/* The helper row is hidden the same way, so the slot that detects slotted
+   helper content is in the tree before that content arrives. */
+:host(:not(.has-helper)) .assistive-helper {
+  display: none;
+}
+
 /* ---------- Control row ---------- */
 
 .control {
+  /* Positioning context for the emphasis ring overlay below. */
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--_gap);
   block-size: var(--_height);
   padding-inline: var(--_padding-inline);
   background-color: var(--_bg);
-  border: var(--_border-width-default) solid var(--_border-color);
+  /* A Figma stroke sits inside the frame and moves nothing (933:29104), while
+     a CSS border would push the glyph, the text and the submit button a pixel
+     further in. An outline pulled inside the box keeps the design's geometry. */
+  border: 0;
+  outline: var(--_border-width-default) solid var(--_border-color);
+  outline-offset: calc(-1 * var(--_border-width-default));
   border-radius: var(--_radius);
   transition:
-    border-color var(--_transition-duration) var(--_transition-easing),
+    outline-color var(--_transition-duration) var(--_transition-easing),
     box-shadow var(--_transition-duration) var(--_transition-easing),
     background-color var(--_transition-duration) var(--_transition-easing);
 }
 
+/* Emphasis ring overlay.
+   The inset ring that stands in for Figma's 2px border lives on this pseudo
+   element, not on `.control` itself: an autofilled `.native` paints an opaque
+   `-webkit-box-shadow` fill over the control's own background and would clip
+   the ring's top and bottom edges. The overlay paints after the native input,
+   so the ring stays whole. The frame's own stroke is an outline pulled inside
+   the box, so this spans the same box and carries the emphasised width whole
+   rather than the difference. */
+.control::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--_radius);
+  pointer-events: none;
+  transition: box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
 :host(:not(.is-disabled):not(.is-focused):hover) .control {
-  border-color: var(--_border-color-hover);
-  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
-    var(--_border-color-hover);
+  outline-color: var(--_border-color-hover);
+}
+
+:host(:not(.is-disabled):not(.is-focused):hover) .control::after {
+  box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-hover);
 }
 
 :host(.is-focused:not(.is-disabled)) .control {
-  border-color: var(--_border-color-focus);
-  box-shadow:
-    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
-    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+  outline-color: var(--_border-color-focus);
+  /* The outer focus ring is drawn outside the control, where the native input
+     cannot reach it — it stays on `.control`. */
+  box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-focused:not(.is-disabled)) .control::after {
+  box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-focus);
+}
+
+/* Disabled recolors the private vars rather than painting
+   `.control` directly: `.native:-webkit-autofill` fills the control with
+   `var(--_bg)` and tints text with `var(--_text)`, so a state that only
+   overrode `.control` would be repainted with the enabled colors as soon as
+   the browser autofilled the field. Driving the vars keeps every surface --
+   control background, autofill fill and text -- on one source of truth. */
+:host(.is-disabled) {
+  --_bg: var(--search-input-default-background-disabled);
+  --_text: var(--search-input-default-text-disabled);
 }
 
 :host(.is-disabled) .control {
-  background-color: var(--search-input-default-background-disabled);
-  border-color: var(--search-input-default-border-disabled);
+  outline-color: var(--search-input-default-border-disabled);
   cursor: not-allowed;
 }
 
@@ -141,20 +192,25 @@
   block-size: var(--_icon-start-size);
 }
 
+/* Collapsed by default — the wrapper always contains a `<slot>` element, so
+   `:empty`/`:has(*)` can never detect an actually-empty slot. Re-shown only
+   via `.has-icon-end-slot`, set from the TSX `hasIconEndSlot` state (real
+   slotted content, tracked on `slotchange`). Otherwise this 20px box stayed
+   in the flex row even with nothing slotted, pushing the spinner/clear-button
+   away from the field's trailing edge. */
 .control-icon-end {
+  display: none;
   inline-size: var(--_icon-end-clear-size);
   block-size: var(--_icon-end-clear-size);
+}
+
+:host(.has-icon-end-slot) .control-icon-end {
+  display: inline-flex;
 }
 
 :host(.is-disabled) .control-icon,
 :host(.is-disabled) .clear-button {
   color: var(--search-input-icon-start-color-disabled);
-}
-
-/* Hide the trailing slot wrapper when empty (clear button renders separately). */
-:host(:not(.has-value)) .control-icon-end:empty,
-.control-icon-end:not(:has(*)) {
-  display: none;
 }
 
 ::slotted([slot='icon-start']),
@@ -177,14 +233,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--search-input-loading-spinner-size-sm);
-  block-size: var(--search-input-loading-spinner-size-sm);
+  /* Constant across both field sizes, like --_icon-end-clear-size — see
+     search-input.tokens.json. */
+  inline-size: var(--search-input-loading-spinner-size);
+  block-size: var(--search-input-loading-spinner-size);
   color: var(--search-input-loading-spinner-color-default);
-}
-
-:host([size='md']) .control-spinner {
-  inline-size: var(--search-input-loading-spinner-size-md);
-  block-size: var(--search-input-loading-spinner-size-md);
 }
 
 :host(.is-disabled) .control-spinner {
@@ -258,7 +311,7 @@
     color var(--_transition-duration) var(--_transition-easing);
 }
 
-:host([size='md']) .submit-button {
+:host([size='lg']) .submit-button {
   inline-size: var(--search-input-submit-button-size-md);
   block-size: var(--search-input-submit-button-size-md);
 }
@@ -372,6 +425,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .control,
+  .control::after,
   .clear-button,
   .submit-button {
     transition: none;

@@ -1,17 +1,18 @@
 import type { AvatarSize } from './mud-avatar.types';
+import type { IconSize } from '../mud-icon/mud-icon.types';
 
 /**
  * Maps the avatar `size` rung to the icon glyph size in CSS pixels.
  *
  * The avatar slot is a circle whose diameter is the rung value
- * (24 / 32 / 40 / 48 / 72 px); the glyph inside follows the design system's
- * icon scale (12 / 16 / 20 / 24 / 32 px). `xl` is clamped to 24 because
- * `mud-icon` does not yet ship a 32-px variant — the icon visually centres
- * inside the larger circle.
+ * (24 / 32 / 40 / 48 / 72 px); the glyph inside follows `mud-icon`'s scale
+ * (16 / 20 / 24 / 32 px). These values mirror the `--avatar-icon-size-*`
+ * tokens, which carry the glyph box Figma draws in set 203:2112 — note that
+ * `xl` keeps the 24px glyph instead of growing with the circle.
  */
-export const ICON_SIZE_FOR: Record<AvatarSize, 12 | 16 | 20 | 24> = {
-  xs: 12,
-  sm: 16,
+export const ICON_SIZE_FOR: Record<AvatarSize, IconSize> = {
+  xs: 16,
+  sm: 20,
   md: 20,
   lg: 24,
   xl: 24,

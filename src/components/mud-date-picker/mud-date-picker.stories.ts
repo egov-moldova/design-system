@@ -14,7 +14,7 @@ type DatePickerArgs = {
   max: string;
   disabledDates: string;
   locale: string;
-  hideTodayShortcut: boolean;
+  todayShortcut: boolean;
   firstDayOfWeek: number;
 };
 
@@ -31,14 +31,14 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
     ${args.min ? `min="${args.min}"` : ''}
     ${args.max ? `max="${args.max}"` : ''}
     ${args.disabledDates ? `disabled-dates='${args.disabledDates}'` : ''}
-    locale="${args.locale}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     first-day-of-week="${args.firstDayOfWeek}"
-    ${args.hideTodayShortcut ? 'hide-today-shortcut' : ''}
+    ${args.todayShortcut ? 'today-shortcut' : ''}
   ></mud-date-picker>
 `;
 
 const meta: Meta<DatePickerArgs> = {
-  title: 'Molecules/Date Picker',
+  title: 'Components/Date Picker',
   component: 'mud-date-picker',
   argTypes: {
     mode: {
@@ -65,9 +65,18 @@ const meta: Meta<DatePickerArgs> = {
     min: { control: 'text', description: 'Inclusive lower bound (ISO).' },
     max: { control: 'text', description: 'Inclusive upper bound (ISO).' },
     disabledDates: { control: 'text', description: 'JSON-encoded array of ISO dates to disable.' },
-    locale: { control: 'text', description: 'BCP-47 locale tag (e.g. ro-RO, en-US).' },
+    locale: {
+      control: 'select',
+      options: ['', 'ro-MD', 'en-US', 'ru-MD'],
+      description:
+        'BCP-47 locale tag for weekday/month rendering and the "Today" shortcut language. Unset follows the closest ancestor `lang`, else `ro-MD`.',
+    },
     firstDayOfWeek: { control: 'number', description: '0=Sunday, 1=Monday (default).' },
-    hideTodayShortcut: { control: 'boolean' },
+    todayShortcut: {
+      control: 'boolean',
+      description: 'Show the "Today" quick-jump shortcut. Not part of the Figma spec, so off by default.',
+      table: { defaultValue: { summary: 'false' } },
+    },
   },
 };
 
@@ -87,9 +96,9 @@ export const Default: Story = {
     min: '',
     max: '',
     disabledDates: '',
-    locale: 'ro-RO',
+    locale: '',
     firstDayOfWeek: 1,
-    hideTodayShortcut: false,
+    todayShortcut: false,
   },
 };
 
@@ -104,7 +113,7 @@ export const Advanced: Story = {
   name: 'Advanced (dropdown header)',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24);">
-      <mud-date-picker mode="single" header-style="dropdown" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+      <mud-date-picker mode="single" header-style="dropdown" value="2026-05-23"></mud-date-picker>
     </div>
   `,
   parameters: {
@@ -125,7 +134,7 @@ export const Single: Story = {
   name: 'Single',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24);">
-      <mud-date-picker mode="single" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+      <mud-date-picker mode="single" value="2026-05-23"></mud-date-picker>
     </div>
   `,
   parameters: {
@@ -140,7 +149,7 @@ export const Range: Story = {
   name: 'Range',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24);">
-      <mud-date-picker mode="range" range-start="2026-05-10" range-end="2026-05-18" locale="ro-RO"></mud-date-picker>
+      <mud-date-picker mode="range" range-start="2026-05-10" range-end="2026-05-18"></mud-date-picker>
     </div>
   `,
   parameters: {
@@ -158,7 +167,7 @@ export const Multi: Story = {
   name: 'Multi',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24);">
-      <mud-date-picker mode="multi" value='["2026-05-02","2026-05-09","2026-05-16","2026-05-23"]' locale="ro-RO"></mud-date-picker>
+      <mud-date-picker mode="multi" value='["2026-05-02","2026-05-09","2026-05-16","2026-05-23"]'></mud-date-picker>
     </div>
   `,
   parameters: {
@@ -176,7 +185,7 @@ export const WithMinMax: Story = {
         value="2026-05-15"
         min="2026-05-10"
         max="2026-05-25"
-        locale="ro-RO"
+       
       ></mud-date-picker>
     </div>
   `,
@@ -199,7 +208,7 @@ export const WithDisabledDates: Story = {
         mode="single"
         value="2026-05-15"
         disabled-dates='["2026-05-09","2026-05-10","2026-05-16","2026-05-17","2026-05-23","2026-05-24"]'
-        locale="ro-RO"
+       
       ></mud-date-picker>
     </div>
   `,
@@ -220,7 +229,7 @@ export const Mobile: Story = {
   globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
     <div style="padding: var(--spacing-16); background: var(--color-background-base-secondary, #f5f5f5);">
-      <mud-date-picker mode="single" breakpoint="mobile" header-style="dropdown" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+      <mud-date-picker mode="single" breakpoint="mobile" header-style="dropdown" value="2026-05-23"></mud-date-picker>
     </div>
   `,
   parameters: {
@@ -238,9 +247,9 @@ export const Docked: Story = {
   name: 'Docked',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;">
-      <mud-date-input label="Selectează data" value="23/05/2026"></mud-date-input>
+      <mud-date-input label="Appointment date" value="23/05/2026"></mud-date-input>
       <div style="margin-top: var(--spacing-4);">
-        <mud-date-picker mode="single" breakpoint="docked" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+        <mud-date-picker mode="single" breakpoint="docked" value="2026-05-23"></mud-date-picker>
       </div>
     </div>
   `,
@@ -259,9 +268,9 @@ export const ComposedWithDateInput: Story = {
   name: 'ComposedWithDateInput',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 360px;" id="composed-host">
-      <mud-date-input id="composed-input" label="Selectează data" placeholder="ZZ/LL/AAAA"></mud-date-input>
+      <mud-date-input id="composed-input" label="Appointment date" placeholder="DD/MM/YYYY"></mud-date-input>
       <div style="margin-top: var(--spacing-8);">
-        <mud-date-picker id="composed-picker" mode="single" breakpoint="desktop" locale="ro-RO"></mud-date-picker>
+        <mud-date-picker id="composed-picker" mode="single" breakpoint="desktop"></mud-date-picker>
       </div>
     </div>
     <script>
@@ -295,10 +304,7 @@ export const RomanianLocale: Story = {
   name: 'RomanianLocale',
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); display: flex; gap: var(--spacing-32); flex-wrap: wrap;">
-      ${cell(
-        'ro-RO (default)',
-        /*html*/ `<mud-date-picker mode="single" value="2026-05-23" locale="ro-RO"></mud-date-picker>`,
-      )}
+      ${cell('ro-MD (default)', /*html*/ `<mud-date-picker mode="single" value="2026-05-23"></mud-date-picker>`)}
       ${cell(
         'en-US',
         /*html*/ `<mud-date-picker mode="single" value="2026-05-23" locale="en-US" first-day-of-week="0"></mud-date-picker>`,
@@ -310,7 +316,13 @@ export const RomanianLocale: Story = {
     docs: {
       description: {
         story:
-          'All weekday + month names come from `Intl.DateTimeFormat` — switching the `locale` prop swaps the language without code changes. Romanian (ro-RO) starts weeks on Monday; en-US on Sunday.',
+          'All weekday + month names come from `Intl.DateTimeFormat` — switching the `locale` prop swaps the language without code changes. Romanian (ro-MD) starts weeks on Monday; en-US on Sunday.',
+      },
+      source: {
+        code: [
+          '<mud-date-picker value="2026-05-23"></mud-date-picker>',
+          '<mud-date-picker value="2026-05-23" locale="en-US" first-day-of-week="0"></mud-date-picker>',
+        ].join('\n'),
       },
     },
   },
@@ -322,19 +334,19 @@ export const EdgeCases: Story = {
     <div style="padding: var(--spacing-24); display: grid; grid-template-columns: repeat(2, 320px); gap: var(--spacing-32);">
       ${cell(
         'Feb 2024 (leap year — 29 days)',
-        /*html*/ `<mud-date-picker mode="single" value="2024-02-29" locale="ro-RO"></mud-date-picker>`,
+        /*html*/ `<mud-date-picker mode="single" value="2024-02-29"></mud-date-picker>`,
       )}
       ${cell(
         'Feb 2026 (non-leap year — 28 days)',
-        /*html*/ `<mud-date-picker mode="single" value="2026-02-28" locale="ro-RO"></mud-date-picker>`,
+        /*html*/ `<mud-date-picker mode="single" value="2026-02-28"></mud-date-picker>`,
       )}
       ${cell(
         'Month boundary spillover (Dec → Jan)',
-        /*html*/ `<mud-date-picker mode="single" value="2026-12-31" locale="ro-RO"></mud-date-picker>`,
+        /*html*/ `<mud-date-picker mode="single" value="2026-12-31"></mud-date-picker>`,
       )}
       ${cell(
         'Year boundary (Jan 1 with previous-month spillover)',
-        /*html*/ `<mud-date-picker mode="single" value="2027-01-01" locale="ro-RO"></mud-date-picker>`,
+        /*html*/ `<mud-date-picker mode="single" value="2027-01-01"></mud-date-picker>`,
       )}
     </div>
   `,
@@ -343,8 +355,42 @@ export const EdgeCases: Story = {
     docs: {
       description: {
         story:
-          'Calendar edge cases — leap-year February 29, non-leap February 28, and the December→January and year-boundary transitions. The grid always renders 6 rows; out-of-month days appear muted.',
+          'Calendar edge cases — leap-year February 29, non-leap February 28, and the December→January and year-boundary transitions. The grid always renders 6 rows; out-of-month days are inactive (Figma `.day-cell` Inactive) — the arrow keys still cross into the next month.',
       },
+      source: {
+        code: [
+          '<mud-date-picker value="2024-02-29"></mud-date-picker>',
+          '<mud-date-picker value="2026-02-28"></mud-date-picker>',
+          '<mud-date-picker value="2026-12-31"></mud-date-picker>',
+          '<mud-date-picker value="2027-01-01"></mud-date-picker>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the month and weekday names, the first-day rule and the built-in Today label
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesDatePicker = (locale: string) =>
+  `<mud-date-picker locale="${locale}" mode="single" value="2026-05-15" today-shortcut></mud-date-picker>`;
+
+export const Locales: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-24); padding: var(--spacing-24);">
+      ${LOCALES.map(locale => cell(`locale="${locale}"`, localesDatePicker(locale))).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesDatePicker).join('\n') },
     },
   },
 };

@@ -18,11 +18,12 @@
   ],
   "scripts": {
     "build": "tsc || true",
+    "postinstall": "node ../scripts/git/install-hooks.mjs",
     "prepare": "echo 'skip build on link; Vite consumes src directly'"
   },
   "dependencies": {
     "@egov-moldova/mud": "workspace:^",
-    "@stencil/react-output-target": "^1.5.2"
+    "@stencil/react-output-target": "^1.6.2"
   },
   "peerDependencies": {
     "react": "^18.0.0",

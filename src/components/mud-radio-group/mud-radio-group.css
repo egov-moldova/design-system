@@ -1,0 +1,50 @@
+/*
+ * mud-radio-group — a labelled column (or wrapping row) of slotted mud-radio
+ * options. No Figma design exists for the group itself; spacing and label
+ * type come from the radio's own scale (see radio-group.tokens.json).
+ */
+
+:host {
+  --_label-font-size: var(--radio-group-label-font-size-md);
+  --_label-line-height: var(--radio-group-label-line-height-md);
+
+  display: block;
+}
+
+:host([size='sm']) {
+  --_label-font-size: var(--radio-group-label-font-size-sm);
+  --_label-line-height: var(--radio-group-label-line-height-sm);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--radio-group-gap);
+}
+
+.label {
+  font-family: var(--radio-group-label-font-family);
+  font-size: var(--_label-font-size);
+  line-height: var(--_label-line-height);
+  font-weight: var(--radio-group-label-font-weight);
+  color: var(--radio-group-label-color-default);
+  overflow-wrap: anywhere;
+}
+
+:host([disabled]) .label {
+  color: var(--radio-group-label-color-disabled);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--radio-group-options-gap-vertical);
+}
+
+:host([orientation='horizontal']) .options {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: var(--radio-group-options-gap-horizontal);
+}

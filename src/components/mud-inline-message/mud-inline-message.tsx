@@ -1,5 +1,6 @@
 import { Component, Host, Prop, h } from '@stencil/core';
 
+import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import { INLINE_MESSAGE_DEFAULT_ICONS } from './mud-inline-message.types';
 import type { InlineMessageSize, InlineMessageVariant } from './mud-inline-message.types';
 
@@ -53,21 +54,26 @@ export class MudInlineMessage {
   /**
    * Override the default per-variant `mud-icon` name.
    */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
-  private resolveIconName(): string {
+  private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
     return INLINE_MESSAGE_DEFAULT_ICONS[this.variant];
   }
 
   render() {
     const iconSize: 16 | 20 = this.size === 'small' ? 16 : 20;
+    const iconName = this.resolveIconName();
 
     return (
       <Host>
         {!this.hideIcon ? (
           <span class="icon" aria-hidden="true">
-            <mud-icon name={this.resolveIconName()} size={iconSize} />
+            <mud-icon
+              name={iconName}
+              variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
+              size={iconSize}
+            />
           </span>
         ) : null}
         <span class="text">

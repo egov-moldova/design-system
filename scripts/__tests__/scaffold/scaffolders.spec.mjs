@@ -5,10 +5,14 @@
  * generateSpecFile() and assert structural invariants.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { generateStoriesFile, guessEnumName } from '../../scaffold/story-scaffold.mjs';
 import { generateSpecFile } from '../../scaffold/test-scaffold.mjs';
+
+const SCRIPT = fileURLToPath(new URL('../../scaffold/story-scaffold.mjs', import.meta.url));
 
 function makeContract(overrides = {}) {
   return {
@@ -60,10 +64,9 @@ describe('story-scaffold: generateStoriesFile', () => {
     };
     const out = generateStoriesFile({
       contract: makeContract(),
-      atomic: 'atoms',
       target,
     });
-    assert.match(out, /title: 'Atoms\/Button'/);
+    assert.match(out, /title: 'Components\/Button'/);
     assert.match(out, /component: 'mud-button'/);
     assert.match(out, /import type \{ Meta, StoryObj \}/);
     assert.match(out, /export const Default: Story/);
@@ -73,7 +76,6 @@ describe('story-scaffold: generateStoriesFile', () => {
   it('emits an Object.values(EnumName) options block for enum-typed props', () => {
     const out = generateStoriesFile({
       contract: makeContract(),
-      atomic: 'atoms',
       target: { exists: { enums: true } },
     });
     assert.match(out, /options: Object\.values\(ButtonVariant\)/);
@@ -83,7 +85,6 @@ describe('story-scaffold: generateStoriesFile', () => {
   it('emits AllVariants story when a variant prop exists', () => {
     const out = generateStoriesFile({
       contract: makeContract(),
-      atomic: 'atoms',
       target: { exists: { enums: true } },
     });
     assert.match(out, /export const AllVariants/);
@@ -92,7 +93,6 @@ describe('story-scaffold: generateStoriesFile', () => {
   it('emits AllSizes story when a size prop exists', () => {
     const out = generateStoriesFile({
       contract: makeContract(),
-      atomic: 'atoms',
       target: { exists: { enums: true } },
     });
     assert.match(out, /export const AllSizes/);
@@ -104,20 +104,16 @@ describe('story-scaffold: generateStoriesFile', () => {
     });
     const out = generateStoriesFile({
       contract,
-      atomic: 'atoms',
       target: { exists: { enums: false } },
     });
     assert.doesNotMatch(out, /export const AllVariants/);
     assert.doesNotMatch(out, /export const AllSizes/);
   });
 
-  it('respects --atomic override', () => {
-    const out = generateStoriesFile({
-      contract: makeContract(),
-      atomic: 'molecules',
-      target: { exists: { enums: true } },
-    });
-    assert.match(out, /title: 'Molecules\/Button'/);
+  it('refuses the removed --atomic option', () => {
+    const run = spawnSync(process.execPath, [SCRIPT, 'mud-button', '--atomic', 'molecule'], { encoding: 'utf8' });
+    assert.equal(run.status, 2);
+    assert.match(run.stderr, /Unknown option/);
   });
 });
 

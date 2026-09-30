@@ -1,10 +1,4 @@
 // MUD Design System — active exports.
-//
-// Components inherited from the previous DS are archived in `src/legacy/`
-// and intentionally not exported here. Each component is added back to this
-// surface as it is redesigned for the new design system.
-//
-// See `src/legacy/index.ts` for a snapshot of the previous export surface.
 
 export { MudSpinner } from './components/mud-spinner/mud-spinner';
 export type { SpinnerSize, SpinnerVariant } from './components/mud-spinner/mud-spinner.types';
@@ -30,6 +24,17 @@ export type {
   ServiceButtonAppearance,
   ServiceButtonType,
 } from './components/mud-service-button/mud-service-button.types';
+
+export {
+  FILLED_ICON_NAMES,
+  hasIconVariant,
+  ICON_NAMES,
+  ICON_SIZES,
+  ICON_VARIANTS,
+  isIconName,
+  isIconVariant,
+} from './components/mud-icon/mud-icon.types';
+export type { IconName, IconSize, IconVariant } from './components/mud-icon/mud-icon.types';
 
 export { MudToast } from './components/mud-toast/mud-toast';
 export { TOAST_VARIANTS } from './components/mud-toast/mud-toast.types';
@@ -66,20 +71,5 @@ export { MudSidebarGroup } from './components/mud-sidebar/mud-sidebar-group';
 export { MudSidebarItem } from './components/mud-sidebar/mud-sidebar-item';
 export type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './components/mud-sidebar/mud-sidebar.types';
 
-export { MudHeader } from './components/mud-header/mud-header';
-export { MudHeaderNavItem } from './components/mud-header/mud-header-nav-item';
-export { MudHeaderMegaMenu } from './components/mud-header/mud-header-mega-menu';
-export { MudHeaderServicesMenu } from './components/mud-header/mud-header-services-menu';
-export { MudHeaderMobile } from './components/mud-header/mud-header-mobile';
-export { HEADER_DEFAULT_LANGUAGES } from './components/mud-header/mud-header.types';
-export type {
-  HeaderLanguage,
-  HeaderLanguageChangeDetail,
-  HeaderNavSelectDetail,
-  HeaderNavToggleDetail,
-  MegaMenuItem,
-  MegaMenuColumn,
-  HeaderMegaMenuSelectDetail,
-  ServicePlatform,
-  HeaderServiceSelectDetail,
-} from './components/mud-header/mud-header.types';
+export { MUD_LOCALES } from './utils/locale';
+export type { MudLocale, LocaleProp } from './utils/locale';

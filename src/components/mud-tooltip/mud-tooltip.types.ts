@@ -70,5 +70,3 @@ export const VALID_TRIGGER_TAGS: readonly string[] = [
   'mud-icon',
   'mud-link',
 ];
-export const VALID_TITLE_TAGS: readonly string[] = ['span', 'strong', 'em', 'mud-icon'];
-export const VALID_DESCRIPTION_TAGS: readonly string[] = ['span', 'p', 'div', 'mud-icon'];

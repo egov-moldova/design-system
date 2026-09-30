@@ -2,8 +2,9 @@
  * Smoke tests for scripts/audit/11-pixel-diff-states.mjs
  *
  * Pure helpers only. The browser + Pixelmatch flow is verified by:
- *   1. The smoke test for scripts/visual-diff.mjs (existing) covers Pixelmatch.
- *   2. Browser flow is tested manually once Playwright is installed.
+ *   1. image-diff.spec.mjs — canvas preparation and Pixelmatch.
+ *   2. Running the script against Storybook with the committed
+ *      mud-date-picker manifest (needs Playwright's browser installed).
  */
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -13,13 +14,43 @@ import { afterEach, describe, it } from 'node:test';
 
 import {
   classifyDiff,
+  findingsFor,
   kebabCase,
   pickReferencePath,
   DEFAULT_PASS,
   DEFAULT_WARN,
+  DEFAULT_SCALE,
+  analyzeComponent,
 } from '../../audit/11-pixel-diff-states.mjs';
 
 const tempDirs = [];
+
+describe('11-pixel-diff-states: S6 — PIXEL-NO-REFERENCES / PIXEL-NO-STORIES carry noTarget (Decision §5)', () => {
+  it('no manifest and no --figma-dir emits PIXEL-NO-REFERENCES with noTarget: true, no browser touched', async () => {
+    const target = { found: true, name: 'mud-nonexistent-fixture-xyz', exists: { stories: false }, paths: {} };
+    const opts = { args: { extras: {} } };
+    const { findings } = await analyzeComponent(target, opts);
+    const f = findings.find(x => x.code === 'PIXEL-NO-REFERENCES');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+  });
+
+  it('a --figma-dir but no stories file emits PIXEL-NO-STORIES with noTarget: true, no browser touched', async () => {
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'pixel-no-stories-'));
+    tempDirs.push(dir);
+    const target = {
+      found: true,
+      name: 'mud-nonexistent-fixture-xyz',
+      exists: { stories: false },
+      paths: { stories: path.join(dir, 'missing.stories.ts') },
+    };
+    const opts = { args: { extras: { 'figma-dir': dir } } };
+    const { findings } = await analyzeComponent(target, opts);
+    const f = findings.find(x => x.code === 'PIXEL-NO-STORIES');
+    assert.ok(f);
+    assert.equal(f.noTarget, true);
+  });
+});
 
 function tempFigmaDir(fileNames) {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'pixel-spec-'));
@@ -76,6 +107,10 @@ describe('11-pixel-diff-states: classifyDiff', () => {
     assert.equal(DEFAULT_PASS, 0.5);
     assert.equal(DEFAULT_WARN, 2.0);
   });
+
+  it('captures at the 2x scale Figma exports by default', () => {
+    assert.equal(DEFAULT_SCALE, 2);
+  });
 });
 
 describe('11-pixel-diff-states: kebabCase', () => {
@@ -101,9 +136,22 @@ describe('11-pixel-diff-states: pickReferencePath', () => {
     assert.equal(pickReferencePath(dir, 'Default', 'dark'), path.join(dir, 'default-dark.png'));
   });
 
-  it('falls back to <state>.png when theme-specific not found', () => {
+  it('never compares a dark capture with a light or theme-agnostic reference', () => {
+    // Regression: dark captures used to fall back to <state>.png and FAIL for
+    // every story that had no dark design.
+    const dir = tempFigmaDir(['default.png', 'default-light.png']);
+    assert.equal(pickReferencePath(dir, 'Default', 'dark'), null);
+  });
+
+  it('light prefers <state>-light.png, then <state>.png', () => {
+    assert.equal(
+      pickReferencePath(tempFigmaDir(['default.png', 'default-light.png']), 'Default', 'light').endsWith(
+        'default-light.png',
+      ),
+      true,
+    );
     const dir = tempFigmaDir(['default.png']);
-    assert.equal(pickReferencePath(dir, 'Default', 'dark'), path.join(dir, 'default.png'));
+    assert.equal(pickReferencePath(dir, 'Default', 'light'), path.join(dir, 'default.png'));
   });
 
   it('returns null when no candidate exists', () => {
@@ -114,5 +162,44 @@ describe('11-pixel-diff-states: pickReferencePath', () => {
   it('kebab-cases story names when looking up files', () => {
     const dir = tempFigmaDir(['all-variants-table.png']);
     assert.equal(pickReferencePath(dir, 'AllVariantsTable', 'light'), path.join(dir, 'all-variants-table.png'));
+  });
+});
+
+describe('11-pixel-diff-states: findingsFor', () => {
+  const opts = { warnThreshold: 2 };
+  const codes = themed => findingsFor('s', { diffImagePath: null, ...themed }, 2, opts).map(f => [f.code, f.severity]);
+
+  it('reports a masked FAIL with the masked count in the message', () => {
+    const out = findingsFor('s', { status: 'FAIL', diffPercent: 5, maskedPixels: 12, diffImagePath: null }, 2, opts);
+    assert.deepEqual(
+      out.map(f => [f.code, f.severity]),
+      [
+        ['PIXEL-MASKED', 'info'],
+        ['PIXEL-DIFF-FAIL', 'error'],
+      ],
+    );
+    assert.match(out[1].message, /\(12 px masked\)/);
+  });
+
+  it('leaves the masked note out when nothing was masked', () => {
+    const out = findingsFor('s', { status: 'WARNING', diffPercent: 1, maskedPixels: 0, diffImagePath: null }, 2, opts);
+    assert.deepEqual(
+      out.map(f => f.code),
+      ['PIXEL-DIFF-WARNING'],
+    );
+    assert.doesNotMatch(out[0].message, /masked/);
+  });
+
+  it('turns a comparison of nothing into an error, never a clean pass', () => {
+    assert.deepEqual(codes({ status: 'UNKNOWN', diffPercent: null, maskedPixels: 400 }), [
+      ['PIXEL-MASKED', 'info'],
+      ['PIXEL-NOTHING-COMPARED', 'error'],
+    ]);
+  });
+
+  it('keeps a tooling error as a skipped note', () => {
+    assert.deepEqual(codes({ status: 'UNKNOWN', diffPercent: null, maskedPixels: 0, error: 'visual-diff crashed' }), [
+      ['PIXEL-DIFF-SKIPPED', 'info'],
+    ]);
   });
 });

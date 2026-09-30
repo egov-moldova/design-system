@@ -1,5 +1,12 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, forceUpdate, h } from '@stencil/core';
 
+import { nameHostWithFallback, type HostAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { STEPPER_MESSAGES } from './mud-stepper.messages';
+import type { StepperMessages } from './mud-stepper.messages';
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';
 
 /**
@@ -24,15 +31,18 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
  *   non-actionable per the WAI-ARIA stepper pattern.
  *
- * State legend (Figma node 634:10573):
- *   - `pending`    — neutral grey ring + faded number, non-navigable
- *   - `current`    — brand ring + brand number, neutral label
- *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
- *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+ * State legend (Figma node 39:25050, unified across orientations):
+ *   - `pending`    — neutral grey ring + faded number, non-navigable, neutral label
+ *   - `current`    — brand ring + brand number + brand label
+ *   - `completed`  — brand filled circle + white checkmark, neutral label
+ *   - `available`  — brand outline ring + brand number, neutral label, navigable forward
  *   - `error`      — danger ring + danger cross, neutral label
  *
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+ * Set the native `aria-label` attribute on the host for the list landmark's
+ * accessible name; it defaults to `'Pași'` (ro-MD), following `locale`/`lang`
+ * like every other built-in string — see `navLabel`.
  *
  * @element mud-stepper
  *
@@ -95,15 +105,64 @@ export class MudStepper {
   @Prop() currentStep?: number;
 
   /**
-   * Accessible name for the surrounding list landmark. Falls back to
-   * `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Accessible name of the `role="list"` host when no consumer `aria-label` is set.
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Pași' (ro-MD)
+   */
+  @Prop() navLabel?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `completed`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', finalizat' (ro-MD)
+   */
+  @Prop() completedSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `current`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', curent' (ro-MD)
+   */
+  @Prop() currentSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `available`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', disponibil' (ro-MD)
+   */
+  @Prop() availableSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `error`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', eroare' (ro-MD)
+   */
+  @Prop() errorSuffix?: string;
+
+  /**
+   * Appended to a step's accessible name when its status is `pending`. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ', în așteptare' (ro-MD)
+   */
+  @Prop() pendingSuffix?: string;
+
+  /**
+   * Joins a step's `label` and `supportingText` in its accessible name. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default ' — ' (ro-MD)
+   */
+  @Prop() supportingSeparator?: string;
 
   /** True when the container is narrower than the auto-compact breakpoint. */
   @State() private isNarrow: boolean = false;
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLMudStepperElement;
 
   /**
    * Emitted when an interactive step is activated via mouse, keyboard, or AT.
@@ -113,31 +172,54 @@ export class MudStepper {
   @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<StepperStepClickDetail>;
 
   private resizeObserver?: ResizeObserver;
+  private hostLabel?: HostAriaLabel;
+  private stopLang?: () => void;
 
   connectedCallback() {
     // Auto-switch a horizontal tracker to the compact dot rail when its
     // container is too narrow for the labels (the Figma mobile breakpoint).
     // Vertical never needs this — stacked labels don't collide.
-    if (typeof ResizeObserver === 'undefined') return;
-    this.resizeObserver = new ResizeObserver(entries => {
-      const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
-      if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
-    });
-    this.resizeObserver.observe(this.host);
-  }
-
-  componentWillLoad() {
-    // Default accessible name for the host `role="list"`. Set imperatively (not
-    // via render) so it doesn't round-trip through the `ariaLabel` prop's native
-    // attribute reflection, which would warn "changed during rendering".
-    if (!this.ariaLabel) {
-      this.host.setAttribute('aria-label', 'Progress tracker');
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(entries => {
+        const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
+        if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
+      });
+      this.resizeObserver.observe(this.host);
     }
+
+    // Default accessible name for the host `role="list"`. Consumer's own
+    // `aria-label` (attribute or native `ariaLabel` property) wins and stays on
+    // the host; while there is none, the host gets the fallback.
+    this.hostLabel = nameHostWithFallback(this.host, () => this.messages().navLabel);
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => forceUpdate(this),
+    );
   }
 
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    this.hostLabel?.stop();
+    this.stopLang?.();
+  }
+
+  componentWillRender() {
+    this.hostLabel?.update();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): StepperMessages {
+    return localeMessages('mud-stepper', this.host, this.locale, STEPPER_MESSAGES, {
+      navLabel: this.navLabel,
+      completedSuffix: this.completedSuffix,
+      currentSuffix: this.currentSuffix,
+      availableSuffix: this.availableSuffix,
+      errorSuffix: this.errorSuffix,
+      pendingSuffix: this.pendingSuffix,
+      supportingSeparator: this.supportingSeparator,
+    });
   }
 
   /**
@@ -169,13 +251,13 @@ export class MudStepper {
   }
 
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
-  private resolveIconName(step: StepperStep, status: StepperStepStatus): string | null {
+  private resolveIconName(step: StepperStep, status: StepperStepStatus): IconName | null {
     if (step.iconName) return step.iconName;
-    // `-large` checkmark (not `-small`): the small variant is heavily padded, so
-    // at 16px it under-fills the 24px indicator. Error uses the bare `exclamation`
-    // glyph (red "!" inside the danger ring) per the Figma "blocked" state — NOT a
-    // cross, which reads as "cancel" rather than "alert".
-    if (status === 'completed') return 'checkmark-large';
+    // `checkmark-small` at 20px — matches the Figma instance verbatim ("20/checkmark-small",
+    // node 40:26949 / component 1:375) inside the 24px indicator. Error uses the bare
+    // `exclamation` glyph (red "!" inside the danger ring) per the Figma "blocked" state —
+    // NOT a cross, which reads as "cancel" rather than "alert".
+    if (status === 'completed') return 'checkmark-small';
     if (status === 'error') return 'exclamation';
     return null;
   }
@@ -199,7 +281,7 @@ export class MudStepper {
   private renderIndicator(step: StepperStep, status: StepperStepStatus, index: number) {
     const iconName = this.resolveIconName(step, status);
     const display = iconName ? (
-      <mud-icon name={iconName} size={16} />
+      <mud-icon name={iconName} size={iconName === 'exclamation' ? 16 : 20} />
     ) : (
       <span class="indicator-number">{index + 1}</span>
     );
@@ -224,7 +306,7 @@ export class MudStepper {
     return [this.renderIndicator(step, status, index), this.renderLabelBlock(step)];
   }
 
-  private renderStep(step: StepperStep, index: number, total: number) {
+  private renderStep(step: StepperStep, index: number, total: number, m: StepperMessages) {
     const status = this.effectiveStatus(step, index);
     const actionable = this.isActionable(step, status);
     const isLast = index === total - 1;
@@ -242,17 +324,19 @@ export class MudStepper {
     const ariaDisabled = !actionable && this.interactive ? 'true' : undefined;
 
     // Accessible label: prefer supportingText for richer announcement.
-    const accessibleName = step.supportingText ? `${step.label} — ${step.supportingText}` : step.label;
+    const accessibleName = step.supportingText
+      ? `${step.label}${m.supportingSeparator}${step.supportingText}`
+      : step.label;
     const statusSuffix =
       status === 'completed'
-        ? ', finalizat'
+        ? m.completedSuffix
         : status === 'current'
-          ? ', curent'
+          ? m.currentSuffix
           : status === 'available'
-            ? ', disponibil'
+            ? m.availableSuffix
             : status === 'error'
-              ? ', eroare'
-              : ', în așteptare';
+              ? m.errorSuffix
+              : m.pendingSuffix;
 
     const body = this.renderStepBody(step, status, index);
     const connector = !isLast ? <span class="connector" aria-hidden="true" /> : null;
@@ -306,15 +390,18 @@ export class MudStepper {
     // The list semantics live on the Host so the consumer-supplied `aria-label`
     // (which lands on the host element) names a real `role="list"` — a bare
     // custom-element host with `aria-label` and no role trips axe
-    // `aria-prohibited-attr`. The default name is applied in componentWillLoad
-    // (NOT here) because re-emitting `aria-label` through the vdom collides with
-    // the native `ariaLabel` reflection ("changed during rendering"). The inner
-    // <ol> is presentational; the <li> steps keep their explicit
+    // `aria-prohibited-attr`. The name (consumer's own, or the locale's `navLabel`
+    // fallback) is applied imperatively by `nameHostWithFallback` in
+    // `connectedCallback`, NOT here — binding `aria-label` through the vdom would
+    // collide with its own attribute writes ("changed during rendering"). The
+    // inner <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
+    const m = this.messages();
+    const lang = hostLang(this.host, this.locale);
     return (
-      <Host role="list" class={{ 'is-compact': compactMode }}>
+      <Host role="list" class={{ 'is-compact': compactMode }} lang={lang}>
         <ol class="root" role="none">
-          {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length)) : <slot />}
+          {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length, m)) : <slot />}
         </ol>
       </Host>
     );

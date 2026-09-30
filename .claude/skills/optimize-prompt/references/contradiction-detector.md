@@ -156,13 +156,13 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 ## Pattern 10 — Custom event without payload type
 
-**Trigger:** API → Events section declares an event without an explicit payload type, e.g., `corChange` without `EventEmitter<T>` where T is exported from `.types.ts`.
+**Trigger:** API → Events section declares an event without an explicit payload type, e.g., `mudChange` without `EventEmitter<T>` where T is exported from `.types.ts`.
 
 **Auto-fix:** Force exported type:
 
 ```
 ## Auto-corrections
-- `@Event() corChange!: EventEmitter<string>` → `@Event() corChange!: EventEmitter<InputChangeDetail>` where `InputChangeDetail` is exported from `mud-input.types.ts`. Even single-value payloads use a typed interface. (see canonical-defaults.md § 7 Event naming)
+- `@Event() mudChange!: EventEmitter<string>` → `@Event() mudChange!: EventEmitter<InputChangeDetail>` where `InputChangeDetail` is exported from `mud-input.types.ts`. Even single-value payloads use a typed interface. (see canonical-defaults.md § 7 Event naming)
 ```
 
 ---

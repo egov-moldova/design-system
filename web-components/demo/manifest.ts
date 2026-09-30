@@ -59,7 +59,8 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-switch', blurb: 'On/off toggle' },
       { tag: 'mud-select', blurb: 'Dropdown select (options prop)' },
       { tag: 'mud-segmented-control', blurb: 'Segmented selector (segments prop)' },
-      { tag: 'mud-date-input', blurb: 'Masked date field' },
+      { tag: 'mud-date-input', blurb: 'Masked date field — single / advanced / date range' },
+      { tag: 'mud-time-input', blurb: 'Masked HH:MM field with an hour / minute dropdown' },
       { tag: 'mud-phone-input', blurb: 'Country-aware phone field' },
     ],
   },
@@ -67,6 +68,7 @@ export const CATEGORIES: Category[] = [
     slug: 'feedback',
     title: 'Feedback & display',
     components: [
+      { tag: 'mud-banner', blurb: 'Full-width system message — info / warning / error, subtle / strong' },
       { tag: 'mud-avatar', blurb: 'Photo / initials / icon avatar' },
       { tag: 'mud-badge', blurb: 'Numbered / dot badge' },
       { tag: 'mud-tag', blurb: 'Status / info tag' },
@@ -94,7 +96,6 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-logo', blurb: 'Service logomarks (LogoName union)' },
       { tag: 'mud-file-input', blurb: 'Drag-and-drop upload zone' },
       { tag: 'mud-file-item', blurb: 'Upload row — uploaded/uploading/success/error' },
-      { tag: 'mud-cookie-banner', blurb: 'GDPR consent banner' },
     ],
   },
   {
@@ -102,9 +103,8 @@ export const CATEGORIES: Category[] = [
     title: 'Data & layout',
     components: [
       { tag: 'mud-table', blurb: 'Data table (columns/rows props, cell slots)' },
-      { tag: 'mud-receipt', blurb: 'Transaction receipt molecule' },
-      { tag: 'mud-footer', blurb: 'Site footer (evo / simple)' },
       { tag: 'mud-date-picker', blurb: 'Calendar — single / range / multi' },
+      { tag: 'mud-time-picker', blurb: 'Hour / minute picker panel' },
     ],
   },
 ];

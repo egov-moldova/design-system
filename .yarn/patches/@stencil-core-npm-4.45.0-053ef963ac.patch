@@ -1,0 +1,33 @@
+diff --git a/compiler/stencil.js b/compiler/stencil.js
+index 0d1ac841396c38089fc90ac6b464ebc2c6df4571..eef2c64df0974eed83af2f565f5c2c5458d8e4cd 100644
+--- a/compiler/stencil.js
++++ b/compiler/stencil.js
+@@ -277646,6 +277646,7 @@ var updateImportReferenceFactory = (typeCounts, filePath, config) => {
+ 
+ // src/compiler/types/generate-app-types.ts
+ var MAX_ONE_OF_REQUIRED_PROPS = 8;
++var MAX_ONE_OF_REQUIRED_PROPS_WITH_PROP = 5;
+ var generateAppTypes = async (config, compilerCtx, buildCtx, destination) => {
+   const timespan = buildCtx.createTimeSpan(`generated app types started`, true);
+   const areTypesInternal = destination === "src";
+@@ -277750,6 +277751,9 @@ var generateComponentTypesFile = (config, buildCtx, areTypesInternal) => {
+     c.push(
+       `    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in \`attr:\${K}\`]?: never } | { [P in \`attr:\${K}\`]: AttrT } & { [P in K]?: never };`
+     );
++    c.push(
++      `    type OneOf3<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in \`attr:\${K}\` | \`prop:\${K}\`]?: never } | { [P in \`attr:\${K}\`]: AttrT } & { [P in K | \`prop:\${K}\`]?: never } | { [P in \`prop:\${K}\`]: PropT } & { [P in K | \`attr:\${K}\`]?: never };`
++    );
+     c.push(``);
+   }
+   c.push(
+@@ -277770,8 +277774,9 @@ var generateComponentTypesFile = (config, buildCtx, areTypesInternal) => {
+       if (m.explicitAttributes) {
+         const baseOptional = `Omit<${m.tagNameAsPascal}, keyof ${m.tagNameAsPascal}Attributes> & { [K in keyof ${m.tagNameAsPascal} & keyof ${m.tagNameAsPascal}Attributes]?: ${m.tagNameAsPascal}[K] } & { [K in keyof ${m.tagNameAsPascal} & keyof ${m.tagNameAsPascal}Attributes as \`attr:\${K}\`]?: ${m.tagNameAsPascal}Attributes[K] } & { [K in keyof ${m.tagNameAsPascal} & keyof ${m.tagNameAsPascal}Attributes as \`prop:\${K}\`]?: ${m.tagNameAsPascal}[K] }`;
+         if (m.requiredProps && m.requiredProps.length > 0 && m.requiredProps.length <= MAX_ONE_OF_REQUIRED_PROPS) {
++          const oneOfType = m.requiredProps.length <= MAX_ONE_OF_REQUIRED_PROPS_WITH_PROP ? "OneOf3" : "OneOf";
+           const requiredUnions = m.requiredProps.map((prop) => {
+-            return `OneOf<"${prop.name}", ${m.tagNameAsPascal}["${prop.name}"], ${m.tagNameAsPascal}Attributes["${prop.name}"]>`;
++            return `${oneOfType}<"${prop.name}", ${m.tagNameAsPascal}["${prop.name}"], ${m.tagNameAsPascal}Attributes["${prop.name}"]>`;
+           }).join(" & ");
+           return `        "${m.tagName}": ${baseOptional} & ${requiredUnions};`;
+         } else {

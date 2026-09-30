@@ -1,5 +1,6 @@
 import { AttachInternals, Component, Element, Host, Prop, State, h } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
 import type { SpinnerVariant } from '../mud-spinner/mud-spinner.types';
 import type { ServiceButtonAppearance, ServiceButtonType } from './mud-service-button.types';
 
@@ -88,15 +89,41 @@ export class MudServiceButton {
 
   /**
    * Accessible name override. When omitted, the visible default-slot text is
-   * used as the accessible name (the standard pattern).
+   * used as the accessible name (the standard pattern). The host's native
+   * `aria-label` wins over it.
+   *
+   * @deprecated `label` means visible text everywhere else in the library. Set the
+   * native `aria-label` attribute instead; `label` goes away in the next major.
    */
   @Prop() label?: string;
 
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's native `aria-label`, moved onto the internal control. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudServiceButtonElement;
 
   @AttachInternals() internals!: ElementInternals;
+
+  private stopAriaLabel?: () => void;
+  private warnedLabelDeprecated = false;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
+  componentDidRender() {
+    if (this.label?.trim() && !this.warnedLabelDeprecated) {
+      this.warnedLabelDeprecated = true;
+      console.warn(
+        '[mud-service-button] `label` as an accessible name is deprecated: set the native `aria-label` attribute instead. It goes away in the next major.',
+      );
+    }
+  }
 
   /**
    * Browser-invoked when an ancestor `<fieldset disabled>` toggles. Mirrors the
@@ -112,6 +139,11 @@ export class MudServiceButton {
    */
   formResetCallback() {
     this.internals.setFormValue(null, null);
+  }
+
+  /** The control's accessible name: the host's native `aria-label`, else the deprecated `label`. */
+  private accessibleName(): string | undefined {
+    return this.resolvedAriaLabel ?? (this.label?.trim() || undefined);
   }
 
   private isInert(): boolean {
@@ -150,7 +182,7 @@ export class MudServiceButton {
       'is-fieldset-disabled': this.fieldsetDisabled && !this.disabled,
     };
 
-    const labelAttr = this.label?.trim();
+    const labelAttr = this.accessibleName();
     const ariaBusy = this.loading ? 'true' : null;
     const ariaDisabled = effectivelyDisabled ? 'true' : null;
     const tabIndexAttr = effectivelyDisabled ? -1 : 0;

@@ -24,25 +24,11 @@ export type PhoneCountryCode = string;
  * viewBox using semantic-iconographic stripes (2-3 horizontal or
  * vertical bands per ISO 3166-1 + canonical emblem hint where
  * essential to identification — e.g. Romania, Italy, Germany).
+ *
+ * The row itself lives in `mud-phone-input.data.ts` (data, not copy — the
+ * `mud/no-hardcoded-copy` guard lints only `.tsx`); this re-exports its type.
  */
-export interface PhoneCountry {
-  /** ISO 3166-1 alpha-2 (`MD`, `RO`, ...). */
-  iso: string;
-  /** International dial code with leading `+` (`+373`, `+40`). */
-  code: string;
-  /** English display name (`Moldova`). */
-  name: string;
-  /** Romanian display name (`Moldova`, `Germania`). */
-  nameRo: string;
-  /** Local-segment format mask using `X` for digits and space separators (`XXX XX XXX`). */
-  mask: string;
-  /** Inclusive minimum digit count of the local segment. */
-  minLen: number;
-  /** Inclusive maximum digit count of the local segment. */
-  maxLen: number;
-  /** Inline SVG renderer for the country flag glyph. */
-  flag: () => ReturnType<typeof import('@stencil/core').h>;
-}
+export type { PhoneCountry } from './mud-phone-input.data';
 
 export interface PhoneInputChangeDetail {
   /** Canonical E.164 representation: dial code + digits (e.g. `+37362123456`). Empty string when no digits are present. */

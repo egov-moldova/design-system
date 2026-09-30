@@ -14,6 +14,8 @@ import {
   checkPackerAgreement,
   checkPublicSpecifiers,
   checkSourceMaps,
+  checkFontFaceCoverage,
+  checkStylesheetAssets,
   collectDeclaredEntries,
   exportsKeyPattern,
   lazyBundleDir,
@@ -165,6 +167,111 @@ describe('checkBundleAssets', () => {
 
   it('is silent when the package has no assets at all', () => {
     assert.deepEqual(checkBundleAssets(['dist/mud/mud.esm.js'], 'dist/mud/', 'dist/components/'), []);
+  });
+});
+
+describe('checkStylesheetAssets', () => {
+  const css = files => file => files[file];
+
+  it('passes when every relative url resolves to a packed file', () => {
+    const read = css({ 'dist/mud/mud.css': "@font-face{src:url('./assets/fonts/onest-variable.woff2')}" });
+    const packed = ['dist/mud/mud.css', 'dist/mud/assets/fonts/onest-variable.woff2'];
+    assert.deepEqual(checkStylesheetAssets(PKG, packed, read), []);
+  });
+
+  it('names the url and the missing file', () => {
+    const read = css({ 'dist/mud/mud.css': "@font-face{src:url('./assets/fonts/onest-variable.woff2')}" });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), [
+      'dist/mud/mud.css references ./assets/fonts/onest-variable.woff2, but the tarball does not contain dist/mud/assets/fonts/onest-variable.woff2',
+    ]);
+  });
+
+  it('checks urls outside @font-face too', () => {
+    const read = css({ 'dist/mud/mud.css': '.x{background:url(img/a.svg?v=2)}' });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), [
+      'dist/mud/mud.css references img/a.svg?v=2, but the tarball does not contain dist/mud/img/a.svg',
+    ]);
+  });
+
+  it('skips absolute, protocol-relative, data and fragment-only urls', () => {
+    const read = css({
+      'dist/mud/mud.css':
+        '.a{background:url(https://cdn.example/a.svg)} .b{background:url(//cdn.example/b.svg)} ' +
+        '.c{background:url(/abs.svg)} .d{background:url(data:image/svg+xml;base64,AA==)} .e{mask:url(#m)}',
+    });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), []);
+  });
+
+  it('leaves a missing stylesheet to checkDeclaredEntries', () => {
+    assert.deepEqual(
+      checkStylesheetAssets(PKG, [], () => {
+        throw new Error('must not read');
+      }),
+      [],
+    );
+  });
+
+  it('throws when the package declares no global stylesheet', () => {
+    assert.throws(() => checkStylesheetAssets({ exports: {} }, [], () => ''), /exports\["\.\/styles\.css"\]/);
+  });
+});
+
+describe('checkFontFaceCoverage', () => {
+  const STYLES = 'dist/mud/mud.css';
+  const TOKENS = 'dist/mud/tokens/core.tokens.css';
+  const FONT = 'dist/mud/assets/fonts/onest.woff2';
+  const TOKEN_CSS = ':root{--font-family-primary:Onest;--font-weight-regular:400;--font-weight-semibold:600}';
+  const VARIABLE_FONT = fs.readFileSync(path.join(PROJECT_ROOT, 'src/assets/fonts/onest-variable.woff2'));
+  const STATIC_FONT = (() => {
+    const buffer = Buffer.alloc(48); // a well-formed WOFF2 with no tables, so no fvar
+    buffer.write('wOF2', 0, 'latin1');
+    return buffer;
+  })();
+  const run = (css, { tokens = TOKEN_CSS, font = VARIABLE_FONT, packed = [STYLES, TOKENS, FONT] } = {}) =>
+    checkFontFaceCoverage(
+      PKG,
+      packed,
+      file => ({ [STYLES]: css, [TOKENS]: tokens })[file],
+      () => font,
+    );
+  const face = (weight, style = 'normal') =>
+    `@font-face{font-family:'Onest';font-style:${style};font-weight:${weight};src:url('./assets/fonts/onest.woff2') format('woff2')}`;
+
+  it('passes a variable face whose file renders the declared range', () => {
+    assert.deepEqual(run(face('100 900')), []);
+  });
+
+  it('names every token weight no upright face covers', () => {
+    assert.deepEqual(run(face('400') + face('700') + face('100 900', 'italic')), [
+      'dist/mud/mud.css has no Onest face covering font-weight 600, which dist/mud/tokens/core.tokens.css uses',
+    ]);
+  });
+
+  it('refuses a static file declared as a variable range', () => {
+    assert.deepEqual(run(face('100 900'), { font: STATIC_FONT }), [
+      'dist/mud/assets/fonts/onest.woff2 is a static font, but dist/mud/mud.css declares it for Onest 100 900',
+    ]);
+  });
+
+  it('reports a file that is not WOFF2 instead of throwing', () => {
+    const [failure] = run(face('100 900'), {
+      font: Buffer.from('ttf bytes that are long enough for the header check'),
+    });
+    assert.match(
+      failure,
+      /onest\.woff2 is declared for Onest 100 900 but is not a readable WOFF2 — woff2: missing wOF2/,
+    );
+  });
+
+  it('reports token stylesheets with no primary family', () => {
+    assert.deepEqual(run(face('100 900'), { tokens: ':root{--font-weight-regular:400}' }), [
+      'dist/mud/tokens/core.tokens.css declares no --font-family-primary',
+    ]);
+  });
+
+  it('leaves a missing stylesheet, token file or font to the checks that own them', () => {
+    assert.deepEqual(run(face('100 900'), { packed: [STYLES] }), []);
+    assert.deepEqual(run(face('100 900'), { packed: [STYLES, TOKENS], font: STATIC_FONT }), []);
   });
 });
 

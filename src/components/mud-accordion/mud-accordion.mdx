@@ -19,9 +19,7 @@ The container. It owns coordination (`mode`), and it pushes `appearance`, `size`
 `icon-position` and `breakpoint` down onto its items — set those here, not on the
 individual rows.
 
-{/* `host` is `@Element()`; `wca` reports it as a public property. Excluded on the blocks, not in the metas — a typed `Meta` rejects an arg it does not declare (TS2353). Must stay one line: Prettier parses a multi-line MDX comment as markdown and rewrites `*` to `_`, producing invalid MDX. */}
-
-<Controls exclude={['host']} />
+<Controls />
 
 ## `mud-accordion-item`
 
@@ -30,7 +28,7 @@ header button and panel region in shadow DOM — it is not usable on its own, wh
 why its API is documented here rather than on a page of its own. Rendered examples
 live under **Molecules → Accordion Item** in the sidebar.
 
-<ArgTypes of={ItemStories} exclude={['host']} />
+<ArgTypes of={ItemStories} />
 
 ## Stories
 

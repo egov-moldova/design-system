@@ -38,7 +38,22 @@ class MockElementInternals {
     return this._validity.valid;
   }
 
-  setValidity(_flags?: Partial<ValidityState>, _message?: string, _anchor?: HTMLElement): void {}
+  /** The last `(flags, message)` handed to `setValidity`; specs read it, no component exposes it. */
+  lastValidity: { flags: Partial<ValidityState> | undefined; message: string | undefined } | undefined;
+
+  /**
+   * Records the call and, like Chromium, throws `TypeError` when any flag is true and the message
+   * is empty or missing — so a code path that could pass `""` fails `yarn test` instead of a user.
+   */
+  setValidity(flags?: Partial<ValidityState>, message?: string, _anchor?: HTMLElement): void {
+    const anyFlag = Object.values(flags ?? {}).some(Boolean);
+    if (anyFlag && (message === undefined || message === '')) {
+      throw new TypeError(
+        "Failed to execute 'setValidity' on 'ElementInternals': The second argument should not be empty if one or more flags in the first argument are true.",
+      );
+    }
+    this.lastValidity = { flags, message };
+  }
 
   get form(): HTMLFormElement | null {
     return this._form;
@@ -72,8 +87,11 @@ type MockDocModule = {
 const mockDoc = (await import('@stencil/core/mock-doc')) as unknown as MockDocModule;
 
 if (mockDoc.MockHTMLElement) {
-  mockDoc.MockHTMLElement.prototype.attachInternals = function () {
-    return new MockElementInternals() as unknown as ElementInternals;
+  mockDoc.MockHTMLElement.prototype.attachInternals = function (this: Record<symbol, unknown>) {
+    // One instance per host, so a spec can read what the component last passed to `setValidity`.
+    const internals = new MockElementInternals();
+    (this as Record<string, unknown>).__mudInternals = internals;
+    return internals as unknown as ElementInternals;
   };
 }
 

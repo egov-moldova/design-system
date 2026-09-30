@@ -122,6 +122,13 @@
 .icon {
   color: var(--avatar-icon-color);
   pointer-events: none;
+
+  /* The box comes from the token on every rung, so `--avatar-icon-size-*` stays
+     the single source of truth and cannot drift from ICON_SIZE_FOR, which only
+     picks the nearest mud-icon glyph scale. mud-icon sizes its own svg to 100%
+     of its host box, so pinning the box scales the glyph with it. */
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
 }
 
 /*

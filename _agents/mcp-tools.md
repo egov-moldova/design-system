@@ -14,7 +14,6 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 | **playwright** | `browser_*` | `mcp__playwright__browser_*` | `mcp__playwright__browser_navigate`, `mcp__playwright__browser_snapshot` |
 | **chrome-devtools** | `cdt_*` | `mcp__chrome-devtools__*` | `mcp__chrome-devtools__performance_start_trace`, `mcp__chrome-devtools__lighthouse_audit` |
 | **figma** | `figma_*` | `mcp__figma__*` | `mcp__figma__get_design_context`, `mcp__figma__get_screenshot` |
-| **context7** | `ctx7_*` | `mcp__context7__*` | `mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs` |
 | **image-compare** | `compare_*` | `mcp__image-compare__*` | `mcp__image-compare__compare_images` |
 | **agentation** | `agent_*` | `mcp__agentation__*` | `mcp__agentation__get_pending` |
 
@@ -26,7 +25,7 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 - Memory → auto-memory at `~/.claude/projects/<project>/memory/`
 - Web fetch → `WebFetch` / `WebSearch`
 
-**Security scanning** (used in `audit-production`): run Snyk via Bash (`yarn snyk:test` or `npx snyk test`) — no MCP server configured.
+**Security scanning** (used in `audit-production`): run Snyk via Bash (`npx snyk test` — not wired as a yarn script) — no MCP server configured.
 
 ---
 
@@ -93,19 +92,21 @@ memory_open_nodes({ names: [...] })
 
 ---
 
-## Figma Remote MCP (`figma_*`)
+## Figma Remote MCP (`mcp__figma__*`)
+
+> **Access.** The remote server needs OAuth — run `/mcp` in an interactive session. Until then every `mcp__figma__*` call fails. For pixel-perfect references set `FIGMA_TOKEN` (see the `pixel-perfect` skill, step 0).
 
 ```text
-figma_get_design_context({ nodeId: "123:456", forceCode: true })
-figma_get_screenshot({ nodeId: "123:456" })
-figma_get_metadata({ nodeId: "123:456" })
-figma_get_variable_defs({ nodeId: "123:456" })
-figma_generate_diagram({ mermaidSyntax: "...", name: "..." })
-figma_create_new_file({ fileName: "...", planKey: "...", editorType: "design" })
-figma_add_code_connect_map({ nodeId: "...", fileKey: "...", source: "...", componentName: "...", label: "React" })
+mcp__figma__get_design_context({ nodeId: "123:456", forceCode: true })
+mcp__figma__get_screenshot({ nodeId: "123:456" })
+mcp__figma__get_metadata({ nodeId: "123:456" })
+mcp__figma__get_variable_defs({ nodeId: "123:456" })
+mcp__figma__generate_diagram({ mermaidSyntax: "...", name: "..." })
+mcp__figma__create_new_file({ fileName: "...", planKey: "...", editorType: "design" })
+mcp__figma__add_code_connect_map({ nodeId: "...", fileKey: "...", source: "...", componentName: "...", label: "React" })
 ```
 
-### Component Behavior via `figma_get_metadata`
+### Component Behavior via `mcp__figma__get_metadata`
 
 Use **BEFORE** visual extraction to identify:
 
@@ -117,30 +118,13 @@ Use **BEFORE** visual extraction to identify:
 
 **Instance workflow**:
 ```javascript
-const metadata = figma_get_metadata({ nodeId: "123:456" });
+const metadata = mcp__figma__get_metadata({ nodeId: "123:456" });
 // If INSTANCE → navigate to main component
-const mainMetadata = figma_get_metadata({ nodeId: metadata.mainComponent.id });
+const mainMetadata = mcp__figma__get_metadata({ nodeId: metadata.mainComponent.id });
 // Extract from BOTH
-figma_get_design_context({ nodeId: "123:456", forceCode: true });
-figma_get_design_context({ nodeId: mainMetadata.id, forceCode: true });
+mcp__figma__get_design_context({ nodeId: "123:456", forceCode: true });
+mcp__figma__get_design_context({ nodeId: mainMetadata.id, forceCode: true });
 ```
-
----
-
-## Context7 MCP (`ctx7_*`)
-
-```text
-ctx7_resolve-library-id({ libraryName: "stenciljs", query: "..." })
-ctx7_query-docs({ libraryId: "...", query: "..." })
-```
-
-| Library | Typical ID | Use Case |
-| --- | --- | --- |
-| StencilJS | `/AydenRain/stencil-site` | Component APIs, decorators, form association |
-| Style Dictionary | `/amzn/style-dictionary` | Token transforms, formats, config |
-| Storybook | `/storybookjs/storybook` | CSF3 format, addons, argTypes |
-
-Always call `resolve-library-id` first, then `query-docs`.
 
 ---
 
@@ -244,8 +228,8 @@ Headless browser CLI for AI agents (Vercel Labs, native Rust). Outputs a compact
 ab_open → agent-browser open <url>
 
 # Examples
-agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-button--default
-agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-input--default
+agent-browser open http://localhost:6007/iframe.html?id=components-button--default
+agent-browser open http://localhost:6007/iframe.html?id=components-input-text--default
 ```
 
 **Use agent-browser when** the check can be answered by the accessibility tree alone:
@@ -341,18 +325,6 @@ browser_evaluate({
   }`
 })
 ```
-
----
-
-## Skill File Tool Name Corrections
-
-| Skill Says | Claude Code Tool |
-| --- | --- |
-| `figma_get_metadata({ node_id })` | `mcp__figma__get_metadata` |
-| `figma_get_design_context({ node_id })` | `mcp__figma__get_design_context` |
-| `browser_*` | `mcp__playwright__browser_*` |
-| `cdt_*` / `chrome_devtools_*` / `performance_*` / `lighthouse_*` | `mcp__chrome-devtools__*` |
-| `compare_*` | `mcp__image-compare__*` |
 
 ---
 

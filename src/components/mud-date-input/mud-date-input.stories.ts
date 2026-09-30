@@ -1,12 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
-import type { DateInputFormat, DateInputSize, DateInputVariant } from './mud-date-input.types';
+import {
+  DATE_INPUT_FORMATS,
+  DATE_INPUT_TYPES,
+  DATE_INPUT_LOCALES,
+  DATE_INPUT_SIZES,
+  DATE_INPUT_VARIANTS,
+} from './mud-date-input.types';
+import type { DateInputFormat, DateInputSize, DateInputType, DateInputVariant } from './mud-date-input.types';
 
 type DateInputArgs = {
   variant: DateInputVariant;
   size: DateInputSize;
   format: DateInputFormat;
+  type: DateInputType;
+  locale: string;
   label: string;
   placeholder: string;
   value: string;
@@ -25,6 +33,8 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
     variant="${args.variant}"
     size="${args.size}"
     format="${args.format}"
+    type="${args.type}"
+    ${args.locale ? `locale="${args.locale}"` : ''}
     label="${args.label}"
     placeholder="${args.placeholder}"
     value="${args.value}"
@@ -39,6 +49,7 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
 
 const docsSourceDefault = (args: DateInputArgs) => {
   const attrs = [
+    args.locale ? `locale="${args.locale}"` : '',
     args.variant !== 'default' ? `variant="${args.variant}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.format !== 'DD/MM/YYYY' ? `format="${args.format}"` : '',
@@ -58,7 +69,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
 };
 
 const meta: Meta<DateInputArgs> = {
-  title: 'Atoms/Input/Date',
+  title: 'Components/Input/Date',
   component: 'mud-date-input',
   argTypes: {
     variant: {
@@ -78,6 +89,19 @@ const meta: Meta<DateInputArgs> = {
       options: DATE_INPUT_FORMATS,
       description: 'Display format pattern.',
       table: { defaultValue: { summary: 'DD/MM/YYYY' } },
+    },
+    type: {
+      control: 'inline-radio',
+      options: DATE_INPUT_TYPES,
+      description:
+        'The Figma Types (470:32035): `default` (calendar with a "Month Year" title), `advanced` (month and year dropdown chips) or `date-range` (a start and an end date). The mobile bottom sheet always uses the chips.',
+      table: { defaultValue: { summary: 'default' } },
+    },
+    locale: {
+      control: 'select',
+      options: ['', ...DATE_INPUT_LOCALES],
+      description:
+        'Language of every built-in label and error message, plus the calendar popover. Unset follows the closest ancestor `lang`, else `ro-MD`.',
     },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },
@@ -101,6 +125,8 @@ export const Default: Story = {
     variant: 'default',
     size: 'lg',
     format: 'DD/MM/YYYY',
+    type: 'default',
+    locale: '',
     label: 'Label',
     placeholder: '',
     value: '',
@@ -291,17 +317,89 @@ export const Validation: Story = {
   render: () =>
     wrapTriple(
       [
+        cell('DD-error', /*html*/ `<mud-date-input size="lg" label="Label" value="45"></mud-date-input>`),
+        cell('MM-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>`),
+        cell('YYYY-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>`),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Built-in, real-time segment validation (Figma 489:8090): a complete day outside 01–31 (or past the number of days in its month), a month outside 01–12, a year outside the allowed range, a date that does not otherwise exist, or one outside `min` / `max` turns the field destructive and shows a message. Every message is translated from the required `locale` prop; a consumer `invalid` + `error-text` still wins.',
+      },
+      source: {
+        code: [
+          '<mud-date-input size="lg" label="Label" value="45"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+const typeColumn = (caption: string, field: string, calendar: string) => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-8); inline-size: 320px;">
+    <span style="${cellLabelStyle}">${caption}</span>
+    <div style="inline-size: 282px;">${field}</div>
+    ${calendar}
+  </div>
+`;
+
+export const Types: Story = {
+  name: 'Types',
+  render: () => /*html*/ `
+    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-48); padding: var(--spacing-24);">
+      ${typeColumn(
+        'default',
+        '<mud-date-input size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+        '<mud-date-picker value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
+      )}
+      ${typeColumn(
+        'advanced',
+        '<mud-date-input size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+        '<mud-date-picker header-style="dropdown" value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
+      )}
+      ${typeColumn(
+        'date-range',
+        '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+        '<mud-date-picker type="date-range" range-start="2025-01-18" range-end="2025-01-22" view-date="2025-01-01"></mud-date-picker>',
+      )}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The three types of the Figma Date Picker page (470:32035), laid out like the page: each field with the calendar it opens shown below it. `type="default"`: one "Month Year" title. `type="advanced"`: month and year dropdown chips. `type="date-range"`: a start and an end date. The calendars under the fields are static copies for comparison — the calendar icon opens the real one.',
+      },
+      source: {
+        code: [
+          '<mud-date-input size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const DateRange: Story = {
+  name: 'Date Range',
+  render: () =>
+    wrapTriple(
+      [
+        cell('empty', /*html*/ `<mud-date-input size="lg" label="Label" type="date-range"></mud-date-input>`),
         cell(
-          'DD-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>`,
+          'filled',
+          /*html*/ `<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
         ),
         cell(
-          'MM-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/18/" invalid error-text="Month must be between 01 and 12"></mud-date-input>`,
-        ),
-        cell(
-          'YYYY-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/1550" invalid error-text="Enter a valid year"></mud-date-input>`,
+          'order-error',
+          /*html*/ `<mud-date-input size="lg" label="Label" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -310,13 +408,12 @@ export const Validation: Story = {
     docs: {
       description: {
         story:
-          'Per-segment error patterns from the Figma docs page. Each variant maps a specific message to the segment that failed validation.',
+          'The Figma `date-range` type (Date Picker page, Types — 483:5705), `type="date-range"`: one field holds the start and the end date. Typing writes ` - ` after the first date; the calendar opens in range mode and fills the field once both ends are picked — closing it half-way (outside click, Escape) changes nothing. An end date before the start is an `order` error (`order-error-text`). `mudChange` carries `isoStart`, `isoEnd` and the ISO 8601 interval in `isoValue` (`2025-01-18/2025-01-22`).',
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/18/" invalid error-text="Month must be between 01 and 12"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/1550" invalid error-text="Enter a valid year"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" type="date-range"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -358,7 +455,7 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>`,
+          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>`,
         ),
         cell(
           'explicit destructive',
@@ -371,7 +468,7 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Day must be between 01 and 31"></mud-date-input>',
+          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>',
           '<mud-date-input variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>',
         ].join('\n'),
       },
@@ -443,19 +540,41 @@ export const MobileBottomSheet: Story = {
   globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); min-block-size: 480px;">
-      <mud-date-input label="Data nașterii"></mud-date-input>
+      <mud-date-input label="Birth date"></mud-date-input>
     </div>
   `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Data nașterii"></mud-date-input>',
+        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Birth date"></mud-date-input>',
       },
       description: {
         story:
           'Defaults to `breakpoint="auto"` and renders in a mobile device frame, so opening the calendar shows the full-width bottom sheet with a scrim and the month/year dropdown header. Switch the **Viewport** toolbar to a desktop size to watch it resize back to the anchored dropdown. Tapping the scrim, pressing Escape, or selecting a date dismisses it.',
       },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Locales — the built-in validation message for an impossible day
+// ---------------------------------------------------------------------------
+const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
+
+const localesDateInput = (locale: string) =>
+  `<mud-date-input locale="${locale}" size="lg" label="Date" value="45/01/2025"></mud-date-input>`;
+
+export const Locales: Story = {
+  render: () => wrap(LOCALES.map(locale => cell(`locale="${locale}"`, localesDateInput(locale))).join('')),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+      },
+      source: { code: LOCALES.map(localesDateInput).join('\n') },
     },
   },
 };

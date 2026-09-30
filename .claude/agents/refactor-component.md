@@ -11,7 +11,7 @@ Refactor an existing component to align with latest patterns from `AGENTS.md`. A
 
 ## Step 1: Run Audit First
 
-Invoke `/audit-component` (or follow `audit-component.md` steps inline) on the target component. Wait for the audit report before proceeding.
+Invoke the `audit-component` skill (`/audit-component <mud-name> --depth standard`) on the target component. Wait for the audit report before proceeding.
 
 ## Step 1.5: Capture Pre-Refactor Baseline
 
@@ -85,7 +85,7 @@ Strict dependency order:
    - Reorder members to match convention
    - Add `{ reflect: true }` to visual props
    - Add missing JSDoc
-   - Fix event naming to `cor` prefix
+   - Fix event naming to the `mud` prefix (`mudChange`)
    - Add proper TypeScript types (remove `any`)
 5. **Types/Enums** → create or update `.types.ts` and `.enums.ts`
    - Extract string literals into enums
@@ -102,14 +102,14 @@ Strict dependency order:
 Once the refactored component renders without console errors, invoke the **`parallel-aux-tasks` skill** with the **refactor-3** subagent set:
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id-if-available>, threshold=0.5, useBaseline=true")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaUrl=<url-if-available>")
 Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
 Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=refactor, apiChanges=<list-if-any>")
 ```
 
 A refactor SHOULD NOT change the visual or API. The reports should be all-PASS:
 
-- `pixel-perfect-verifier`: every state matches the pre-refactor baseline (Step 1.5) within `< 0.5%`
+- `pixel-perfect-verifier`: Verdict PASS or WARN against the existing manifest; INCOMPLETE (no `FIGMA_TOKEN`, nothing compared) is reported as not verified, not as a regression; no manifest → `manifest-missing`, and the before/after screenshots of Step 5 are the regression check
 - `a11y-verifier`: no new violations vs pre-refactor
 - `integration-checker`: no stale callsites (unless approved breaking change in Step 3.5)
 
@@ -166,7 +166,7 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 
 ## Step 7: Final Verification
 
-Invoke `verification-before-completion` skill.
+Invoke `superpowers:verification-before-completion` skill.
 
 ```bash
 yarn lint
@@ -174,6 +174,18 @@ yarn test
 yarn sp.build
 yarn audit:contrast
 ```
+
+Then run the deterministic gate and STOP if the exit status is non-zero:
+
+```bash
+yarn audit:component mud-<name> --depth standard
+```
+
+Exit 0 only on `state: PASS` (`scripts/audit/lib/exit-codes.mjs`: 1 `FAIL`, 3
+`INCOMPLETE`, 4 `NEEDS-DECISION`, 2 usage/internal error). Read
+`audit/mud-<name>/fix-brief.md` for any non-`PASS` state — a refactor that
+introduces a new finding here is the regression Step 6 exists to catch, seen
+from the deterministic side.
 
 ```text
 mcp__playwright__browser_console_messages({ level: "error" })
@@ -203,11 +215,10 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 `yarn sp.build` regenerates these tracked files in your worktree:
 
-- `src/components.d.ts`
 - `src/components/<your-component>/readme.md`
 - `.storybook/custom-elements.json`, `tokens/generated/**`
 
-**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+**Stage the `readme.md` explicitly** (`git add <path>`, never `git add -A`/`git add .`), in the same commit as the source change that regenerates them, and never hand-edit them. `src/components.d.ts` is regenerated too but git-ignored, so it is never staged. If `.husky/pre-push` or CI reports them stale, run `yarn build` and commit the diff. Why, and how the merge driver and gates work: `_agents/generated-files.md`.
 
 ## Return to Main Agent
 

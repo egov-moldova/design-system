@@ -43,9 +43,9 @@ This repository is a monorepo containing the following published packages:
 
 | Package                                                                                                       | Description                                                                                                           |
 |---------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| [`@egov-moldova/design-system`](https://www.npmjs.com/package/@egov-moldova/mud)                              | Core Stencil web components — framework-agnostic, Shadow DOM–isolated                                                 |
-| [`@egov-moldova/design-system-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components)| Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage                                   |
-| `@egov-moldova/design-system-react`                                                                           | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>React adapter — typed JSX wrapper components |
+| [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud)                              | Core Stencil web components — framework-agnostic, Shadow DOM–isolated                                                 |
+| [`@egov-moldova/mud-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components)| Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage                                   |
+| `@egov-moldova/mud-react`                                                                           | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>React adapter — typed JSX wrapper components |
 ---
 
 ## Getting Started
@@ -71,32 +71,32 @@ Paste directly into any HTML page's `<head>` — it self-registers every `mud-*`
 
 ```html
   <!-- Design tokens (light + dark) -->                                                                                                                                                                                                                                                                            
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/design-system@1.1.5/dist/mud/tokens/core.tokens.css">                                                                                                                                                                                                    
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/design-system@1.1.5/dist/mud/tokens/core.dark.tokens.css">                                                                                                                                                                                               
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.1.5/dist/mud/tokens/core.tokens.css">                                                                                                                                                                                                    
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.1.5/dist/mud/tokens/core.dark.tokens.css">                                                                                                                                                                                               
                                                                                                                                                                                                                                                                                                                    
   <!-- Global styles (fonts, resets) -->                                                                                                                                                                                                                                                                           
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/design-system@1.1.5/dist/mud/mud.css">                                                                                                                                                                                                                   
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.1.5/dist/mud/mud.css">                                                                                                                                                                                                                   
                                                                                                                                                                                                                                                                                                                    
   <!-- Self-registers every mud-* custom element on load — no import, no defineCustomElements() call -->                                                                                                                                                                                                           
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@egov-moldova/design-system@1.1.5/dist/mud/mud.esm.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.1.5/dist/mud/mud.esm.js"></script>
 ```
 
 **Option B — Import Map**
 
-For a locally installed package (`yarn add @egov-moldova/design-system`) served by a static server that exposes `node_modules/` — resolves the bare specifier via the browser's native import map instead of a bundler, while still using the explicit `defineCustomElements()` pattern.
+For a locally installed package (`yarn add @egov-moldova/mud`) served by a static server that exposes `node_modules/` — resolves the bare specifier via the browser's native import map instead of a bundler, while still using the explicit `defineCustomElements()` pattern.
 
 ```html
   <!-- Design tokens (light + dark) -->
-  <link rel="stylesheet" href="/node_modules/@egov-moldova/design-system/dist/mud/tokens/core.tokens.css">
-  <link rel="stylesheet" href="/node_modules/@egov-moldova/design-system/dist/mud/tokens/core.dark.tokens.css">
+  <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/tokens/core.tokens.css">
+  <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/tokens/core.dark.tokens.css">
 
   <!-- Global styles (fonts, resets) -->
-  <link rel="stylesheet" href="/node_modules/@egov-moldova/design-system/dist/mud/mud.css">
+  <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/mud.css">
 
   <script type="importmap">
   {
     "imports": {
-      "@egov-moldova/design-system/loader": "/node_modules/@egov-moldova/design-system/loader/index.js"
+      "@egov-moldova/mud/loader": "/node_modules/@egov-moldova/mud/loader/index.js"
     }
   }
   </script>
@@ -113,7 +113,7 @@ Any bundler (Vite, webpack, esbuild, Angular CLI, …) that resolves bare import
 **Step 1 — Install**
 
 ```bash
-yarn add @egov-moldova/design-system @egov-moldova/design-system-web-components
+yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 ```
 
 **Step 2 — Usage**
@@ -132,8 +132,20 @@ yarn add @egov-moldova/design-system @egov-moldova/design-system-web-components
   defineCustomElements();
 ```
 
+#### Fonts
+
+`styles.css` brings the Onest typeface with it — no `@font-face` of your own, no font files to copy. It declares one variable WOFF2 face (weights 100–900) referenced by a relative URL, so it resolves wherever `dist/mud/` goes:
+
+- **Bundlers** (Vite, webpack, Angular CLI, Next.js) find `./assets/fonts/onest-variable.woff2` next to the stylesheet and emit it with your build. **esbuild** used directly needs a loader for it: `--loader:.woff2=file`.
+- **CDN** — the font is fetched from the same CDN path as `mud.css`; jsDelivr and unpkg send the `Access-Control-Allow-Origin` header cross-origin fonts require.
+- **Self-hosted** — serve `dist/mud/` as one directory; copying `mud.css` alone leaves the font behind.
+
+With a Content Security Policy, `font-src` must allow wherever `mud.css` is served from (`'self'`, or the CDN origin).
+
+Releases up to and including 1.1.9 ship three static faces (400/500/700) instead, so semibold text renders bold there — pin a later release in the CDN examples above to get the variable face (see the [changelog](CHANGELOG.md)).
+
 ####  React component wrappers
-> Not yet published. `@egov-moldova/design-system-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
+> Not yet published. `@egov-moldova/mud-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
 
 #### API
 
@@ -145,6 +157,7 @@ yarn add @egov-moldova/design-system @egov-moldova/design-system-web-components
 
 Because the components are native custom elements, they integrate with every modern framework without a wrapper layer:
 
+- **React 18** sets every prop as a string attribute and does not bind `on*` handlers for custom events (`enableCustomElementPropertySupport` is off) — so pass objects/arrays and listen to `mud*` events through a `ref` and `addEventListener`, not through a prop.
 - **React 19+** treats unknown lowercase tags as custom elements and forwards props/attributes directly. Use `ref` for imperative APIs and standard `addEventListener` for events.
 - **Vue 3** needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('mud-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
 - **Angular 14+** needs `CUSTOM_ELEMENTS_SCHEMA` in the `NgModule`'s `schemas` array (or the standalone component's `schemas`). Use `(event)` bindings against the dispatched custom-event name.
@@ -152,10 +165,38 @@ Because the components are native custom elements, they integrate with every mod
 
 ---
 
+## Localization
+
+Every component that ships built-in text (labels, `aria-label`s, screen-reader announcements, validation messages, empty states) carries a dictionary for three locales: `ro-MD` (Romanian, the default), `en-US` (English) and `ru-MD` (Russian). The English and Russian texts are machine-drafted and have not been reviewed by native speakers.
+
+**Which locale a component uses** — the first that applies:
+
+1. its own `locale` attribute or property (`<mud-pagination locale="ru-MD">`);
+2. the closest ancestor `lang` attribute, crossing shadow roots (`<html lang="en">`, or `<section lang="ru">` around part of a page) — a `lang` on the component's own element is not read, use `locale` there;
+3. `ro-MD`.
+
+A component with an explicit `locale` sets `lang` on its own element while `locale` is set, so screen readers read its text in that language; content you place inside it inherits the same language, and so does any `mud-*` component nested in it. A component that renders another one passes its `locale` down, so setting `locale` once at the top of a group reaches all of it.
+
+**Language matching** — the language subtag picks the dictionary, so `ro-RO`, `ro`, `ru`, `ru-RU`, `en` and `en-GB` are all accepted. Dates and numbers follow the tag you gave: a bare `ro` or `ru` takes the region of the matching locale (`ro-MD`, `ru-MD`), while `lang="en-GB"` keeps its region and formats dates as `15/05/2026`. A tag with no dictionary (`de-DE`) logs one `console.warn` and falls back to `ro-MD` — text and formatting alike, so a component never mixes Romanian labels with German dates.
+
+**Overriding a string** — most built-in strings have an attribute of their own (`close-label`, `required-message`, …); each component's `readme.md` lists them with their `ro-MD` defaults. A non-empty value wins over the dictionary in every locale. An empty value (`close-label=""`) depends on what the string is:
+
+- accessible names and validation messages fall back to the dictionary, because an empty `aria-label` names nothing and an empty validation message is invalid;
+- a few visible optional captions render nothing: `mud-file-input` `supported-formats-text`, `max-size-text`, `cta-text` and `dropzone-active-text`, `mud-select` `empty-label`, and `mud-pagination` `prev-label` and `next-label`.
+
+**Changing the language at runtime** — changing a `lang` attribute anywhere in the page (`<html>` or any element in the document) re-renders the components below it, including their validation messages, and so does changing a component's `locale`. A `lang` changed inside another component's shadow root is read by the components inside that shadow root on their next render only.
+
+**Country list** — `mud-phone-input` lists Moldova first and the other countries alphabetically by their name in the active locale. A country list you pass in keeps your order.
+
+Full translation tables for review can be generated with `yarn locale.report` (contributors).
+
+---
+
 ## Additional Resources
 
 - [Design](https://mud.egov.md/)
 - [MUD Design System on npm](https://www.npmjs.com/package/@egov-moldova/mud)
+- [Contributing and releases](CONTRIBUTING.md#publishing): building the library, and bumping its version with `yarn version.bump`
 - [eGov Moldova — Agency for Electronic Governance](https://egov.md)
 - [MDN — Using custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
 - [Stencil documentation](https://stenciljs.com/docs/introduction)

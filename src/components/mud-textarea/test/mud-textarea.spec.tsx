@@ -7,7 +7,10 @@ import '../mud-textarea';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from '../mud-textarea.types';
+import { TEXTAREA_MESSAGES } from '../mud-textarea.messages';
+import type { TextareaMessages } from '../mud-textarea.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLTextAreaElement | null =>
   (root?.shadowRoot?.querySelector('textarea.native') ?? null) as HTMLTextAreaElement | null;
@@ -133,7 +136,7 @@ describe('mud-textarea', () => {
       expect(assistive?.classList.contains('assistive-error')).toBe(true);
       expect(assistive?.textContent).toContain('Required');
       const icon = assistive?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-error');
     });
 
     it('error message takes priority over helper text', async () => {
@@ -434,4 +437,29 @@ describe('mud-textarea', () => {
       spy.mockRestore();
     });
   });
+});
+
+describeLocales<TextareaMessages>('mud-textarea', TEXTAREA_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    const { root } = await render(
+      <mud-textarea {...attrs}></mud-textarea>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: () => null,
+  validity: {
+    key: 'requiredMessage',
+    prop: 'requiredMessage',
+    render: async (props, ancestorLang) => {
+      const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+      const { root } = await render(
+        <mud-textarea {...attrs}></mud-textarea>,
+        ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+      );
+      return root as Element;
+    },
+  },
 });

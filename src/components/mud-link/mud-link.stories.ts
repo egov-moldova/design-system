@@ -51,20 +51,20 @@ const cellLabelStyle =
 // ---------------------------------------------------------------------------
 const renderInline = () => /*html*/ `
   <p style="font-family: var(--font-family-primary); font-size: var(--font-size-16); line-height: var(--line-height-24); color: var(--color-text-base-default); max-width: 560px; padding: var(--spacing-24); margin: 0;">
-    Înainte de a continua,
+    Before you continue,
     <mud-link href="https://gov.md/ro/content/politica-de-confidentialitate" target="_blank">
-      citește politica de confidențialitate
+      read the privacy policy
     </mud-link>
-    pentru a înțelege cum sunt prelucrate datele dumneavoastră personale.
+    to understand how your personal data is processed.
   </p>
 `;
 
 const docsSourceInline = /*html*/ `<p>
-  Înainte de a continua,
+  Before you continue,
   <mud-link href="https://gov.md/ro/content/politica-de-confidentialitate" target="_blank">
-    citește politica de confidențialitate
+    read the privacy policy
   </mud-link>
-  pentru a înțelege cum sunt prelucrate datele dumneavoastră personale.
+  to understand how your personal data is processed.
 </p>`;
 
 // ---------------------------------------------------------------------------
@@ -75,16 +75,16 @@ const renderAllSizes = () => /*html*/ `
     ${LINK_SIZES.map(
       size => /*html*/ `
       <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4);">
-        <mud-link size="${size}" href="#">Mai multe detalii</mud-link>
+        <mud-link size="${size}" href="#">More details</mud-link>
         <span style="${cellLabelStyle}">${size} (${size === 'xs' ? '12px' : size === 'sm' ? '14px' : size === 'md' ? '16px' : '18px'})</span>
       </div>`,
     ).join('')}
   </div>
 `;
 
-const docsSourceAllSizes = LINK_SIZES.map(
-  s => /*html*/ `<mud-link size="${s}" href="#">Mai multe detalii</mud-link>`,
-).join('\n');
+const docsSourceAllSizes = LINK_SIZES.map(s => /*html*/ `<mud-link size="${s}" href="#">More details</mud-link>`).join(
+  '\n',
+);
 
 // ---------------------------------------------------------------------------
 // renderAllVariants — primary / strict / white shown together.
@@ -93,22 +93,22 @@ const docsSourceAllSizes = LINK_SIZES.map(
 const renderAllVariants = () => /*html*/ `
   <div style="display: flex; align-items: stretch; gap: var(--spacing-16); padding: var(--spacing-24); flex-wrap: wrap; font-family: var(--font-family-primary);">
     <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4); padding: var(--spacing-16); background: var(--color-background-base-default); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-6); min-width: 160px;">
-      <mud-link variant="primary" href="#">Citește acordul</mud-link>
+      <mud-link variant="primary" href="#">Read the agreement</mud-link>
       <span style="${cellLabelStyle}">primary</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4); padding: var(--spacing-16); background: var(--color-background-base-default); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-6); min-width: 160px;">
-      <mud-link variant="strict" href="#">Citește acordul</mud-link>
+      <mud-link variant="strict" href="#">Read the agreement</mud-link>
       <span style="${cellLabelStyle}">strict</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4); padding: var(--spacing-16); background: var(--color-background-base-inverse-default); border-radius: var(--border-radius-6); min-width: 160px;">
-      <mud-link variant="white" href="#">Citește acordul</mud-link>
+      <mud-link variant="white" href="#">Read the agreement</mud-link>
       <span style="${cellLabelStyle}; color: var(--color-text-base-inverse-on-color);">white (on dark)</span>
     </div>
   </div>
 `;
 
 const docsSourceAllVariants = LINK_VARIANTS.map(
-  v => /*html*/ `<mud-link variant="${v}" href="#">Citește acordul</mud-link>`,
+  v => /*html*/ `<mud-link variant="${v}" href="#">Read the agreement</mud-link>`,
 ).join('\n');
 
 // ---------------------------------------------------------------------------
@@ -181,14 +181,14 @@ const renderStandalone = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); align-items: flex-start; font-family: var(--font-family-primary);">
     <mud-link standalone href="/servicii/mpay">
       <mud-icon slot="icon-start" name="arrow-right" size="20"></mud-icon>
-      Continuă către MPay
+      Continue to MPay
     </mud-link>
     <mud-link standalone variant="strict" href="/profil">
       <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
-      Înapoi la profil
+      Back to profile
     </mud-link>
     <mud-link standalone size="lg" href="/raport">
-      Vezi raportul complet
+      See the full report
       <mud-icon slot="icon-end" name="arrow-up-right" size="20"></mud-icon>
     </mud-link>
   </div>
@@ -196,16 +196,16 @@ const renderStandalone = () => /*html*/ `
 
 const docsSourceStandalone = /*html*/ `<mud-link standalone href="/servicii/mpay">
   <mud-icon slot="icon-start" name="arrow-right" size="20"></mud-icon>
-  Continuă către MPay
+  Continue to MPay
 </mud-link>
 
 <mud-link standalone variant="strict" href="/profil">
   <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
-  Înapoi la profil
+  Back to profile
 </mud-link>
 
 <mud-link standalone size="lg" href="/raport">
-  Vezi raportul complet
+  See the full report
   <mud-icon slot="icon-end" name="arrow-up-right" size="20"></mud-icon>
 </mud-link>`;
 
@@ -266,13 +266,13 @@ const docsSourceTargetSizes = /*html*/ `<!-- Enlarged interactive target via \`s
 const renderExternalLink = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); align-items: flex-start; font-family: var(--font-family-primary);">
     <mud-link href="https://moldova.md" target="_blank">
-      Site-ul oficial al Republicii Moldova
+      The official website of the Republic of Moldova
     </mud-link>
     <mud-link href="https://www.gov.md/ro/content/legislatie" target="_blank">
-      Legislația în vigoare
+      Current legislation
     </mud-link>
     <mud-link href="https://wikipedia.org/wiki/E-guvernare" target="_blank" external="false">
-      Fără indicator extern (external="false")
+      No external indicator (external="false")
     </mud-link>
   </div>
   <p style="font-family: var(--font-family-primary); font-size: var(--font-size-12); color: var(--color-text-base-tertiary); padding: 0 var(--spacing-24) var(--spacing-24); margin: 0; font-style: italic; max-width: 540px;">
@@ -281,11 +281,11 @@ const renderExternalLink = () => /*html*/ `
 `;
 
 const docsSourceExternalLink = /*html*/ `<mud-link href="https://moldova.md" target="_blank">
-  Site-ul oficial al Republicii Moldova
+  The official website of the Republic of Moldova
 </mud-link>
 
 <mud-link href="https://wikipedia.org/wiki/E-guvernare" target="_blank" external="false">
-  Fără indicator extern
+  No external indicator
 </mud-link>`;
 
 // ---------------------------------------------------------------------------
@@ -295,7 +295,7 @@ const renderWithDownload = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); align-items: flex-start; font-family: var(--font-family-primary);">
     <mud-link href="/files/cerere-mpay.pdf" download="cerere-mpay.pdf">
       <mud-icon slot="icon-start" name="download" size="20"></mud-icon>
-      Descarcă cererea (PDF)
+      Download the request (PDF)
     </mud-link>
     <mud-link href="/files/raport-anual.xlsx" download standalone>
       <mud-icon slot="icon-start" name="file-download" size="20"></mud-icon>
@@ -306,7 +306,7 @@ const renderWithDownload = () => /*html*/ `
 
 const docsSourceWithDownload = /*html*/ `<mud-link href="/files/cerere-mpay.pdf" download="cerere-mpay.pdf">
   <mud-icon slot="icon-start" name="download" size="20"></mud-icon>
-  Descarcă cererea (PDF)
+  Download the request (PDF)
 </mud-link>`;
 
 // ---------------------------------------------------------------------------
@@ -317,7 +317,7 @@ const renderUnderlineVariations = () => /*html*/ `
     ${LINK_UNDERLINES.map(
       u => /*html*/ `
       <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4);">
-        <mud-link underline="${u}" href="#">Citește mai mult</mud-link>
+        <mud-link underline="${u}" href="#">Read more</mud-link>
         <span style="${cellLabelStyle}">underline="${u}"</span>
       </div>`,
     ).join('')}
@@ -325,7 +325,7 @@ const renderUnderlineVariations = () => /*html*/ `
 `;
 
 const docsSourceUnderlineVariations = LINK_UNDERLINES.map(
-  u => /*html*/ `<mud-link underline="${u}" href="#">Citește mai mult</mud-link>`,
+  u => /*html*/ `<mud-link underline="${u}" href="#">Read more</mud-link>`,
 ).join('\n');
 
 // ---------------------------------------------------------------------------
@@ -347,18 +347,18 @@ const renderVisited = () => /*html*/ `
     <p style="font-size: var(--font-size-14); color: var(--color-text-base-secondary); margin: 0 0 var(--spacing-8);">
       Click any link below — once the browser records it as visited, the color flips to magenta on next render.
     </p>
-    <mud-link href="https://www.gov.md/ro/about">Despre guvern</mud-link>
-    <mud-link href="https://www.gov.md/ro/news">Noutăți recente</mud-link>
+    <mud-link href="https://www.gov.md/ro/about">About the government</mud-link>
+    <mud-link href="https://www.gov.md/ro/news">Latest news</mud-link>
     <mud-link href="https://www.gov.md/ro/contacte">Date de contact</mud-link>
-    <mud-link href="https://www.gov.md/ro/transparenta">Transparență decizională</mud-link>
+    <mud-link href="https://www.gov.md/ro/transparenta">Decision-making transparency</mud-link>
   </div>
 `;
 
-const docsSourceVisited = /*html*/ `<!-- Visited links flip to brand magenta (#aa18ce) per DESIGN.md.
+const docsSourceVisited = /*html*/ `<!-- Visited links flip to brand magenta (color.text.brand.visited) per DESIGN.md.
      The :visited pseudo-class is browser-managed and triggers only after
      real navigation to the href. -->
-<mud-link href="https://www.gov.md/ro/about">Despre guvern</mud-link>
-<mud-link href="https://www.gov.md/ro/news">Noutăți recente</mud-link>`;
+<mud-link href="https://www.gov.md/ro/about">About the government</mud-link>
+<mud-link href="https://www.gov.md/ro/news">Latest news</mud-link>`;
 
 // ---------------------------------------------------------------------------
 // renderEdgeCases — very long label wrapping, empty link warning fallback.
@@ -371,9 +371,9 @@ const renderEdgeCases = () => /*html*/ `
       <p style="font-size: var(--font-size-16); line-height: var(--line-height-24); color: var(--color-text-base-default); margin: 0;">
         Citizen-facing forms often need to surface
         <mud-link href="https://www.gov.md/ro/content/aviz-de-confidentialitate-detaliat-privind-prelucrarea-datelor-personale-de-catre-agentia-de-guvernare-electronica">
-          un aviz de confidențialitate foarte lung referitor la prelucrarea datelor personale
+          a very long privacy notice about the processing of personal data
         </mud-link>
-        înainte ca pasul următor să devină accesibil.
+        before the next step becomes available.
       </p>
     </div>
 
@@ -381,7 +381,7 @@ const renderEdgeCases = () => /*html*/ `
       <p style="${cellLabelStyle}; margin: 0 0 var(--spacing-8);">Standalone with a very long label — wraps without breaking layout.</p>
       <mud-link standalone href="/raport-trimestrial">
         <mud-icon slot="icon-start" name="arrow-right" size="20"></mud-icon>
-        Vezi raportul trimestrial complet cu toate metricile, comparațiile și anexele
+        See the full quarterly report with all metrics, comparisons and annexes
       </mud-link>
     </div>
 
@@ -393,8 +393,8 @@ const renderEdgeCases = () => /*html*/ `
     <div>
       <p style="${cellLabelStyle}; margin: 0 0 var(--spacing-8);">Small (xs) link inside helper text.</p>
       <p style="font-size: var(--font-size-12); line-height: var(--line-height-16); color: var(--color-text-base-secondary); margin: 0;">
-        Parola trebuie să conțină cel puțin 8 caractere.
-        <mud-link size="xs" href="/parola">Vezi cerințele complete</mud-link>
+        The password must contain at least 8 characters.
+        <mud-link size="xs" href="/parola">See the full requirements</mud-link>
       </p>
     </div>
 
@@ -404,14 +404,14 @@ const renderEdgeCases = () => /*html*/ `
 const docsSourceEdgeCases = /*html*/ `<!-- Long label inside body copy: wraps as inline text. -->
 <p>
   Citizen-facing forms often need to surface
-  <mud-link href="…">un aviz de confidențialitate foarte lung…</mud-link>
-  înainte ca pasul următor să devină accesibil.
+  <mud-link href="…">a very long privacy notice…</mud-link>
+  before the next step becomes available.
 </p>
 
 <!-- Standalone long label: wraps gracefully. -->
 <mud-link standalone href="/raport">
   <mud-icon slot="icon-start" name="arrow-right" size="20"></mud-icon>
-  Vezi raportul trimestrial complet cu toate metricile…
+  See the full quarterly report with all metrics…
 </mud-link>
 
 <!-- No href: renders as <button>. -->
@@ -421,7 +421,7 @@ const docsSourceEdgeCases = /*html*/ `<!-- Long label inside body copy: wraps as
 // Meta
 // ---------------------------------------------------------------------------
 const meta: Meta<LinkArgs> = {
-  title: 'Atoms/Link',
+  title: 'Components/Link',
   component: 'mud-link',
   argTypes: {
     variant: {

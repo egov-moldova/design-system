@@ -22,7 +22,6 @@ via `external="false"`.
 
 | Property     | Attribute    | Description                                                                                                                                                                                                                                                                                                                                                                                | Type                               | Default     |
 | ------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | ----------- |
-| `ariaLabel`  | `aria-label` | Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.                                                                                                                                                                                                                                                                | `string \| undefined`              | `undefined` |
 | `disabled`   | `disabled`   | Disables interactivity. The link becomes inert: no navigation, no hover, no focus ring. `aria-disabled="true"` is set on the internal element and `pointer-events: none` is applied via CSS.                                                                                                                                                                                               | `boolean`                          | `false`     |
 | `download`   | `download`   | Anchor `download`. When present (any value including empty string), triggers a download instead of navigation.                                                                                                                                                                                                                                                                             | `string \| undefined`              | `undefined` |
 | `external`   | `external`   | When `true` (default) and `target="_blank"`, renders an external-link icon indicator after the label. Set to `false` to suppress the indicator (e.g. when the consumer wants to control the icon themselves via slot=icon-end).                                                                                                                                                            | `boolean`                          | `true`      |
@@ -43,21 +42,6 @@ via `external="false"`.
 | `"icon-end"`   | Optional trailing `mud-icon` (suppressed when the auto            external-link indicator is rendered to avoid duplication). |
 | `"icon-start"` | Optional leading `mud-icon`.                                                                                                 |
 
-
-## Dependencies
-
-### Used by
-
- - [mud-cookie-banner](../mud-cookie-banner)
- - [mud-footer](../mud-footer)
-
-### Graph
-```mermaid
-graph TD;
-  mud-cookie-banner --> mud-link
-  mud-footer --> mud-link
-  style mud-link fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

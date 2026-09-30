@@ -1,0 +1,142 @@
+{
+  "$comment": "Every override @Prop of a built-in string, by class. name: accessible names, announcements and visible text added after d982190c — an empty string falls back to the dictionary. message: validation messages and rejection texts — an empty string falls back, since setValidity throws on an empty message with a true flag. caption: a visible optional caption that existed at d982190c and rendered nothing for \"\" — an empty string renders nothing. Enforced by scripts/check-locale-specs.mjs. Evidence for each caption is under _captionEvidence.",
+  "mud-avatar": {
+    "fallbackLabel": "name",
+    "initialsLabel": "name"
+  },
+  "mud-badge": {
+    "notificationLabel": "name"
+  },
+  "mud-banner": {
+    "closeLabel": "name"
+  },
+  "mud-breadcrumb": {
+    "label": "name",
+    "loadingLabel": "name",
+    "overflowLabel": "name"
+  },
+  "mud-checkbox": {
+    "requiredMessage": "message"
+  },
+  "mud-chip": {
+    "removeLabel": "name"
+  },
+  "mud-date-input": {
+    "clearLabel": "name",
+    "dateErrorText": "message",
+    "dayErrorText": "message",
+    "monthErrorText": "message",
+    "openPickerLabel": "name",
+    "orderErrorText": "message",
+    "pickerLabel": "name",
+    "rangeErrorText": "message",
+    "requiredErrorText": "message",
+    "yearErrorText": "message"
+  },
+  "mud-date-picker": {
+    "todayLabel": "name"
+  },
+  "mud-file-input": {
+    "chooseFilesText": "name",
+    "ctaText": "caption",
+    "dropzoneActiveText": "caption",
+    "maxSizeText": "caption",
+    "supportedFormatsText": "caption"
+  },
+  "mud-file-item": {
+    "removeLabel": "name"
+  },
+  "mud-info-box": {
+    "closeLabel": "name"
+  },
+  "mud-modal": {
+    "closeLabel": "name"
+  },
+  "mud-numeric-input": {
+    "ambiguousMessage": "message",
+    "clearLabel": "name",
+    "decrementLabel": "name",
+    "incrementLabel": "name",
+    "maxMessage": "message",
+    "minMessage": "message",
+    "requiredMessage": "message"
+  },
+  "mud-pagination": {
+    "label": "name",
+    "nextAriaLabel": "name",
+    "nextLabel": "caption",
+    "overflowAriaLabel": "name",
+    "pageAriaLabel": "name",
+    "prevAriaLabel": "name",
+    "prevLabel": "caption"
+  },
+  "mud-search-input": {
+    "clearLabel": "name",
+    "requiredMessage": "message",
+    "submitLabel": "name"
+  },
+  "mud-select": {
+    "emptyLabel": "caption",
+    "listboxLabel": "name",
+    "requiredMessage": "message"
+  },
+  "mud-spinner": {
+    "label": "name"
+  },
+  "mud-stepper": {
+    "availableSuffix": "name",
+    "completedSuffix": "name",
+    "currentSuffix": "name",
+    "errorSuffix": "name",
+    "navLabel": "name",
+    "pendingSuffix": "name",
+    "supportingSeparator": "name"
+  },
+  "mud-table": {
+    "emptyText": "name",
+    "selectAllLabel": "name",
+    "selectRowLabel": "name"
+  },
+  "mud-text-input": {
+    "clearLabel": "name",
+    "patternMismatchMessage": "message",
+    "requiredMessage": "message",
+    "tooLongMessage": "message",
+    "tooShortMessage": "message",
+    "typeMismatchEmailMessage": "message",
+    "typeMismatchUrlMessage": "message"
+  },
+  "mud-textarea": {
+    "requiredMessage": "message"
+  },
+  "mud-time-input": {
+    "clearLabel": "name",
+    "hourErrorText": "message",
+    "minuteErrorText": "message",
+    "pickerLabel": "name",
+    "rangeErrorText": "message",
+    "requiredErrorText": "message",
+    "triggerLabel": "name"
+  },
+  "mud-time-picker": {
+    "hoursLabel": "name",
+    "label": "name",
+    "minutesLabel": "name"
+  },
+  "mud-toast": {
+    "closeLabel": "name"
+  },
+  "mud-tooltip": {
+    "closeLabel": "name",
+    "dismissHint": "name"
+  },
+  "_captionEvidence": {
+    "mud-file-input.ctaText": "d982190c mud-file-input.tsx:103 prop (`= 'Trage și plasează sau '`); :729 `<span class=\"dropzone-cta__body\">{this.ctaText}</span>` renders \"\" as empty",
+    "mud-file-input.dropzoneActiveText": "d982190c mud-file-input.tsx:117 prop (`= 'Eliberează pentru a încărca'`); :725 `{this.dropzoneActiveText}` renders \"\" as empty",
+    "mud-file-input.maxSizeText": "d982190c mud-file-input.tsx:131 prop; :608 `!== undefined` returns \"\" verbatim; :631-633 `Boolean(maxSizeCaption)` hides the line",
+    "mud-file-input.supportedFormatsText": "d982190c mud-file-input.tsx:124 prop; :601 `!== undefined` returns \"\" verbatim; :631-633 `Boolean(supportedFormats)` hides the line",
+    "mud-pagination.nextLabel": "d982190c mud-pagination.tsx:96 prop (`= 'Următor'`); :580 `<span class=\"nav-label\">{this.nextLabel}</span>` renders \"\" as empty; the button keeps nextAriaLabel",
+    "mud-pagination.prevLabel": "d982190c mud-pagination.tsx:90 prop (`= 'Anterior'`); :562 `<span class=\"nav-label\">{this.prevLabel}</span>` renders \"\" as empty; the button keeps prevAriaLabel",
+    "mud-select.emptyLabel": "d982190c mud-select.tsx:136 prop (`= 'Nicio opțiune'`); :903 `{this.emptyLabel}` renders \"\" as empty"
+  }
+}

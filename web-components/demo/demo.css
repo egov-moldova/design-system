@@ -1,11 +1,3 @@
-@font-face {
-  font-family: 'Onest';
-  src: url('../../assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ============================================================ */
 /* Base                                                          */
 /* ============================================================ */
@@ -27,6 +19,11 @@ h1,
 h2,
 h3 {
   margin: 0;
+}
+
+/* Author rules such as .toc__group { display: … } would otherwise beat the UA [hidden]. */
+[hidden] {
+  display: none !important;
 }
 
 code {
@@ -99,6 +96,20 @@ code {
   background: var(--color-background-base-default);
   color: var(--color-text-base-default);
   cursor: pointer;
+}
+[data-lang-select] {
+  font-family: inherit;
+  font-size: var(--font-size-14);
+  padding: var(--spacing-8) var(--spacing-12);
+  border: 1px solid var(--color-border-base-default);
+  border-radius: var(--border-radius-6);
+  background: var(--color-background-base-default);
+  color: var(--color-text-base-default);
+  cursor: pointer;
+}
+[data-lang-select]:focus-visible {
+  outline: 2px solid var(--color-border-brand-default);
+  outline-offset: 2px;
 }
 [data-theme-toggle]:hover {
   background: var(--color-background-base-secondary-hover);
@@ -204,16 +215,6 @@ code {
   justify-self: start;
   font-size: var(--font-size-12);
   color: var(--color-text-base-tertiary);
-}
-/* Slotted helper row used in the mud-receipt `extra` slot demo. */
-.receipt-row {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-16);
-}
-.receipt-row dt,
-.receipt-row dd {
-  margin: 0;
 }
 
 /* ============================================================ */

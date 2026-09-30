@@ -1,0 +1,408 @@
+{
+  "component": "mud-menu",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "409:22924",
+        "reason": ".menu-item-action Checkbox/Hover — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:22930",
+        "reason": ".menu-item-action Checkbox/Active — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:22936",
+        "reason": ".menu-item-action Checkbox/Disabled — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "416:24853",
+        "reason": ".menu-item-action Checkbox/Focus — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23138",
+        "reason": ".menu-item-action Radio/Hover — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23144",
+        "reason": ".menu-item-action Radio/Active — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23150",
+        "reason": ".menu-item-action Radio/Disabled — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "416:24864",
+        "reason": ".menu-item-action Radio/Focus — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23308",
+        "reason": ".menu-item-action Icon/Hover — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23313",
+        "reason": ".menu-item-action Icon/Active — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:23318",
+        "reason": ".menu-item-action Icon/Disabled — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "416:24876",
+        "reason": ".menu-item-action Icon/Focus — the two axes of this set are independent: State only repaints the row (fill, or the inset ring) and Leading Element only swaps what sits before the label. Both are pinned at their own axis — the five None/* states carry State, and action-icon, action-checkbox and action-radio carry Leading Element — so a cross product adds no value that is not already checked."
+      },
+      {
+        "node": "409:21924",
+        "reason": ".menu-item-selection Hover — byte for byte the treatment of its .menu-item-action twin 172:2954, which action-hover pins: same fill, same geometry, same ring. The two sets differ only in what the row carries on the right, and that is what selection-selected checks."
+      },
+      {
+        "node": "409:21933",
+        "reason": ".menu-item-selection Active — byte for byte the treatment of its .menu-item-action twin 409:22157, which action-active pins: same fill, same geometry, same ring. The two sets differ only in what the row carries on the right, and that is what selection-selected checks."
+      },
+      {
+        "node": "416:24838",
+        "reason": ".menu-item-selection Focus — byte for byte the treatment of its .menu-item-action twin 416:24843, which action-focus pins: same fill, same geometry, same ring. The two sets differ only in what the row carries on the right, and that is what selection-selected checks."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-menu--default",
+    "capture": {
+      "selector": "mud-menu-item .item",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "action-default",
+      "node": "172:2947",
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "columnGap": "12px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 172:2947 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State."
+        },
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 172:2947 fills the resting row #FFFFFF."
+        },
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 172:2947 sets the option label in Desktop/Body/Small 500."
+        },
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "color": "#383838"
+          },
+          "note": "Figma 172:2948 paints the resting label #383838."
+        },
+        {
+          "target": "mud-menu-item .check",
+          "absent": true,
+          "note": "No .menu-item-action variant carries a trailing checkmark; that belongs to .menu-item-selection Selected (172:3051)."
+        }
+      ]
+    },
+    {
+      "name": "action-hover",
+      "node": "172:2954",
+      "pixel": false,
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "interaction": {
+        "type": "hover",
+        "target": "mud-menu-item .item"
+      },
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "backgroundColor": "#F5F5F5"
+          },
+          "note": "Figma 172:2954 fills the hovered row #F5F5F5 and changes nothing else."
+        }
+      ]
+    },
+    {
+      "name": "action-active",
+      "node": "409:22157",
+      "pixel": false,
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "interaction": {
+        "type": "press",
+        "target": "mud-menu-item .item"
+      },
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "backgroundColor": "#D9D9D9"
+          },
+          "note": "Figma 409:22157 fills the pressed row #D9D9D9."
+        }
+      ]
+    },
+    {
+      "name": "action-disabled",
+      "node": "409:22395",
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item disabled>Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 409:22395 keeps the resting #FFFFFF fill when disabled — only the text dims."
+        },
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 409:22397 paints the disabled label #B2B2B2. Exempt from WCAG 1.4.3, which applies to enabled controls."
+        }
+      ]
+    },
+    {
+      "name": "action-focus",
+      "node": "416:24843",
+      "pixel": false,
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-menu-item"
+      },
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "boxShadow": "rgb(51, 121, 219) 0px 0px 0px 2px inset"
+          },
+          "note": "Figma 416:24843 carries the effect 'Focus Ring/Small: Inner' = inset 0 0 0 2px rgba(51, 121, 219, 1). Inset, so unlike the outer Focus Ring/Small on a link it takes no space outside the row and needs no reordering."
+        }
+      ]
+    },
+    {
+      "name": "action-icon",
+      "node": "409:23303",
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item leading=\"icon\" icon=\"plus-large\">Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .leading-icon",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 409:23327 places the 20/plus-large instance at 20x20 before the label."
+        },
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "columnGap": "12px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 409:23303 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State."
+        }
+      ]
+    },
+    {
+      "name": "action-checkbox",
+      "node": "409:22918",
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item leading=\"checkbox\">Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .leading-control",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 409:22919 places a checkbox instance at 20x20 — the Small rung of the checkbox set (403:21785), not the Medium one the component defaults to."
+        },
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "columnGap": "12px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 409:22918 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State."
+        }
+      ]
+    },
+    {
+      "name": "action-radio",
+      "node": "409:23132",
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item leading=\"radio\">Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .leading-control",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "Figma 409:23134 places a radio-button instance at 20x20. Its Figma variant is named Size=Medium, while our radio tokens call 20px sm and 24px md — the box is what is pinned here, the naming mismatch is a question for the radio component."
+        },
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "columnGap": "12px",
+            "borderTopLeftRadius": "8px"
+          },
+          "note": "Figma 409:23132 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State."
+        }
+      ]
+    },
+    {
+      "name": "selection-default",
+      "node": "409:21915",
+      "html": "<div style=\"width:298px\"><mud-menu open type=\"selection\"><mud-menu-item value=\"a\">Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingRight": "24px",
+            "backgroundColor": "#FFFFFF"
+          },
+          "note": "Figma 409:21915 keeps the 24px trailing padding of an unselected selection row — the space a checkmark would take. The fixture drives the menu, not the row: mud-menu propagates its own type to every item and derives selected by matching its value against the item value."
+        },
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "color": "#383838"
+          },
+          "note": "Figma 409:21917 paints the unselected label #383838."
+        }
+      ]
+    },
+    {
+      "name": "selection-selected",
+      "node": "172:2944",
+      "html": "<div style=\"width:298px\"><mud-menu open type=\"selection\" value=\"a\"><mud-menu-item value=\"a\">Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .item",
+          "styles": {
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "backgroundColor": "#F5F5F5"
+          },
+          "note": "Figma 172:2944 pads the selected row 12px 16px — the trailing 24px collapses to 16px because the checkmark occupies it — and fills it #F5F5F5. The fixture drives the menu, not the row: mud-menu propagates its own type to every item and derives selected by matching its value against the item value."
+        },
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "color": "#0058D2"
+          },
+          "note": "Figma 172:2796 brands the selected label #0058D2."
+        },
+        {
+          "target": "mud-menu-item .check",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Figma 172:3051 places the 24/checkmark-small instance at 24x24. The glyph inside is small, which is what made 20 look plausible before this was measured."
+        }
+      ]
+    },
+    {
+      "name": "selection-disabled",
+      "node": "409:21939",
+      "html": "<div style=\"width:298px\"><mud-menu open type=\"selection\"><mud-menu-item value=\"a\" disabled>Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .label",
+          "styles": {
+            "color": "#B2B2B2"
+          },
+          "note": "Figma 409:21941 paints the disabled selection label #B2B2B2. The fixture drives the menu, not the row: mud-menu propagates its own type to every item and derives selected by matching its value against the item value."
+        }
+      ]
+    },
+    {
+      "name": "contextual-menu",
+      "node": "409:22462",
+      "capture": {
+        "selector": "mud-menu .panel",
+        "bleed": "auto"
+      },
+      "pixel": false,
+      "pixelNote": "The Figma node is six identical mock rows labelled Option 1..6; the row content is illustrative, and the panel geometry that is not is pinned below.",
+      "html": "<div style=\"width:270px\"><mud-menu open><mud-menu-item >Option 1</mud-menu-item><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu .panel",
+          "styles": {
+            "paddingTop": "8px",
+            "paddingLeft": "8px",
+            "rowGap": "4px",
+            "borderTopLeftRadius": "16px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "0px",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 5px 12px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0.5px 0px"
+          },
+          "note": "Figma contextual-menu 409:22462 is an 8px-padded column with a 4px gap at radius 16, filled #FFFFFF under Drop Shadow/300. It carries no stroke — the depth is the shadow alone, which is why the border width is pinned at 0."
+        }
+      ]
+    },
+    {
+      "name": "section-heading",
+      "node": "403:21606",
+      "pixel": false,
+      "html": "<div style=\"width:298px\"><mud-menu open><mud-menu-item heading>Section Heading</mud-menu-item><mud-menu-item >Option 1</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu-item .heading",
+          "styles": {
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "paddingTop": "4px",
+            "paddingBottom": "4px",
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Figma 403:21613 pads the Heading Label frame 4px 16px and 403:21603 sets it in Desktop/Body/Small 500 at #757575."
+        },
+        {
+          "target": "mud-menu-item .separator",
+          "styles": {
+            "boxHeight": "1px",
+            "backgroundColor": "#D9D9D9"
+          },
+          "note": "Figma 403:21610 is a separator instance wrapping a 1px #D9D9D9 line."
+        }
+      ]
+    }
+  ]
+}

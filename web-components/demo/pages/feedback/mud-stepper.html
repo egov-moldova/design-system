@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-stepper · @egovmd/mud-web-components</title>
+    <title>mud-stepper · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-stepper">
     <main class="demo-main">
@@ -48,20 +48,20 @@
           const horizontal = document.getElementById('demo-tracker-horizontal');
           if (horizontal) {
             horizontal.steps = [
-              { label: 'Date personale', status: 'completed' },
-              { label: 'Documente', status: 'current' },
-              { label: 'Verificare', status: 'pending' },
-              { label: 'Plată', status: 'error' },
+              { label: 'Personal data', status: 'completed' },
+              { label: 'Documents', status: 'current' },
+              { label: 'Verification', status: 'pending' },
+              { label: 'Payment', status: 'error' },
             ];
           }
 
           const vertical = document.getElementById('demo-tracker-vertical');
           if (vertical) {
             vertical.steps = [
-              { label: 'Cont creat', supportingText: 'Finalizat acum 3 zile', status: 'completed' },
-              { label: 'Identitate', supportingText: 'În curs de verificare', status: 'current' },
-              { label: 'Semnătură', supportingText: 'Necesită semnătură electronică', status: 'pending' },
-              { label: 'Confirmare', supportingText: 'Ultimul pas', status: 'pending' },
+              { label: 'Account created', supportingText: 'Completed 3 days ago', status: 'completed' },
+              { label: 'Identity', supportingText: 'Under review', status: 'current' },
+              { label: 'Signature', supportingText: 'Requires an electronic signature', status: 'pending' },
+              { label: 'Confirmation', supportingText: 'Last step', status: 'pending' },
             ];
           }
 
@@ -83,11 +83,11 @@
             many.steps = [
               { label: 'Unu', status: 'completed' },
               { label: 'Doi', status: 'completed' },
-              { label: 'Trei', status: 'completed' },
-              { label: 'Patru', status: 'current' },
-              { label: 'Cinci', status: 'pending' },
-              { label: 'Șase', status: 'pending' },
-              { label: 'Șapte', status: 'pending' },
+              { label: 'Three', status: 'completed' },
+              { label: 'Four', status: 'current' },
+              { label: 'Five', status: 'pending' },
+              { label: 'Six', status: 'pending' },
+              { label: 'Seven', status: 'pending' },
             ];
           }
 
@@ -95,17 +95,17 @@
           if (longLabels) {
             longLabels.steps = [
               {
-                label: 'Completarea formularului de cerere pentru eliberarea actului de identitate',
-                supportingText: 'Toate câmpurile obligatorii trebuie completate cu diacritice ăâîșț',
+                label: 'Filling in the request form for issuing the identity document',
+                supportingText: 'All required fields must be filled in, including accented characters éüñ',
                 status: 'completed',
               },
               {
-                label: 'Încărcareadocumentelorjustificativefărăspațiipentrutestareaîncadrării',
-                supportingText: 'Format acceptat: PDF, JPG',
+                label: 'Uploadingthesupportingdocumentswithoutspacesfortestingthefit',
+                supportingText: 'Accepted format: PDF, JPG',
                 status: 'current',
               },
               {
-                label: 'Achitarea taxei de stat și confirmarea plății',
+                label: 'Paying the state fee and confirming the payment',
                 status: 'pending',
               },
             ];

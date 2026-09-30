@@ -9,7 +9,7 @@ Fix a visual bug in component `$ARGUMENTS`. Trace root cause through token → C
 
 ## Step 0: Invoke Systematic Debugging Skill
 
-Invoke the `systematic-debugging` skill **before touching any code**. Enforces 4-phase root-cause discipline — no fixes without root cause.
+Invoke the `superpowers:systematic-debugging` skill **before touching any code**. Enforces 4-phase root-cause discipline — no fixes without root cause.
 
 ## Step 0.5: Classify the Problem
 
@@ -114,7 +114,14 @@ mcp__image-compare__compare_images({
 })
 ```
 
-4. Diff vs Figma reference (if available) — confirm pixel-perfect:
+4. Confirm against Figma with the `pixel-perfect` skill. If the component has a Figma state manifest (`src/components/<name>/test/<name>.figma.json`), add an `expect` entry that would have caught this bug, then:
+
+```bash
+node scripts/audit/15-style-parity.mjs mud-<name> --json      # exact values, Figma node cited
+node scripts/audit/11-pixel-diff-states.mjs mud-<name> --json # screenshot diff per state
+```
+
+Without a manifest, diff one capture against a Figma export:
 
 ```text
 mcp__image-compare__compare_images({
@@ -147,7 +154,7 @@ Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-
 
 ## Step 7: Verification
 
-Invoke `verification-before-completion` skill, then:
+Invoke `superpowers:verification-before-completion` skill, then:
 
 ```bash
 yarn lint

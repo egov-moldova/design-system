@@ -58,7 +58,7 @@ For brand-new components without an existing implementation.
 ### Events
 | name | payload type | trigger |
 |------|--------------|---------|
-| corX | <Component><Action>Detail (exported from <name>.types.ts) | <when> |
+| mudX | <Component><Action>Detail (exported from <name>.types.ts) | <when> |
 
 ### Slots
 | name | required | empty-detection | allowed tags |
@@ -88,7 +88,7 @@ For brand-new components without an existing implementation.
 ### 6.3 Token file
 - tokens/core/components/<name>.tokens.json (DTCG format)
 - Build: yarn tokens.build
-- Validate: yarn lint.tokens
+- Validate: yarn tokens.lint
 
 ## 7. Implementation Rules
 - TSX member order: per src/components/AGENTS.md § "TSX Member Order"
@@ -103,7 +103,7 @@ For brand-new components without an existing implementation.
 - Pixel-perfect against Figma nodes <list>, all states + sizes + variants in both light and dark mode
 
 ### Functional
-- <interaction list — clicks fire corX, keyboard activates, focus visible, etc.>
+- <interaction list — clicks fire mudX, keyboard activates, focus visible, etc.>
 
 ### A11y (WCAG 2.1 AA)
 (auto-injected block per canonical-defaults.md § 5)
@@ -111,7 +111,7 @@ For brand-new components without an existing implementation.
 ### Quality
 - yarn build passes
 - yarn lint passes
-- yarn test.unit passes — coverage > 80%
+- yarn test passes — coverage > 80%
 - Stories exist: Default, AllVariants, AllSizes, States, AllStatesTable (gated per archetype-router.md § 3)
 ```
 
@@ -119,12 +119,12 @@ For brand-new components without an existing implementation.
 
 ## Mode: `redesign`
 
-For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/` with new Figma design.
+For an existing `src/components/mud-X/` component re-aligned to a new Figma design.
 
 ```
 ## 1. Goal
 - Component: mud-<name>
-- Source: src/legacy/mud-<name>/ → target: src/components/mud-<name>/
+- Baseline: src/components/mud-<name>/ (current implementation, redesigned in place)
 - Figma source (NEW design): <file URL> — primary node <node-id>
 - Reason: MUD Design System redesign program
 
@@ -142,7 +142,7 @@ For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/`
 - Deprecated tokens removed; consumers must update CSS overrides
 
 ## 5. Behavior delta
-- <only behaviors that change from legacy; if none, write "none">
+- <only behaviors that change from the baseline; if none, write "none">
 
 ## 6. Token Mapping
 (full per-variant tables for NEW design — see references/token-mapping-table.md)
@@ -152,7 +152,7 @@ For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/`
 - Backward-compatible API (or migration block explicit)
 - A11y baseline maintained or improved
 - Stories regenerated per archetype
-- yarn lint.tokens passes; yarn build passes
+- yarn tokens.lint passes; yarn build passes
 ```
 
 ---
@@ -181,7 +181,7 @@ For adding a variant/prop/size to an existing component.
 - New variant/prop/size matches Figma node <id>
 - Existing variants unchanged (regression check via Storybook visual diff)
 - Stories updated: new variant added to AllVariants / States grid
-- yarn lint.tokens passes; yarn build passes
+- yarn tokens.lint passes; yarn build passes
 ```
 
 ---
@@ -208,7 +208,7 @@ For visual or behavioral bug fixes.
 - Symptom no longer reproduces (manual test in Storybook)
 - Regression test added (story or unit test)
 - No regression in other states (verify via AllStatesTable story)
-- yarn build passes; yarn test.unit passes
+- yarn build passes; yarn test passes
 ```
 
 ---
@@ -228,7 +228,7 @@ For pure token changes — no TSX/CSS edits.
 
 ## 3. Acceptance Criteria
 - yarn tokens.build regenerates dist/cor.css without errors
-- yarn lint.tokens passes (naming regex valid)
+- yarn tokens.lint passes (naming regex valid)
 - yarn tokens.validate passes (contrast ratios)
 - No CSS files touched in src/components/
 - Storybook visual diff shows expected appearance change only

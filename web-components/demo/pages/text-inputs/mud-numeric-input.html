@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-numeric-input · @egovmd/mud-web-components</title>
+    <title>mud-numeric-input · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-numeric-input">
     <main class="demo-main">
@@ -15,7 +15,7 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input variant="default" label="Cantitate" value="3" min="0" max="100"></mud-numeric-input>
+                <mud-numeric-input variant="default" label="Quantity" value="3" min="0" max="100"></mud-numeric-input>
               </div>
               <span class="label">default</span>
             </div>
@@ -23,11 +23,11 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-numeric-input
                   variant="success"
-                  label="Cantitate validă"
+                  label="Valid quantity"
                   value="5"
                   min="0"
                   max="100"
-                  helper-text="În limite"
+                  helper-text="Within limits"
                 ></mud-numeric-input>
               </div>
               <span class="label">success</span>
@@ -36,7 +36,7 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-numeric-input
                   variant="destructive"
-                  label="Peste limită"
+                  label="Over the limit"
                   value="150"
                   min="0"
                   max="100"
@@ -70,7 +70,7 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Suma de plată" value="120" min="0" step="10" precision="2">
+                <mud-numeric-input label="Amount due" value="120" min="0" step="10" precision="2">
                   <mud-icon slot="icon-start" name="copy" size="20"></mud-icon>
                   <span slot="suffix">lei</span>
                 </mud-numeric-input>
@@ -79,7 +79,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Greutate" value="2.5" step="0.5" precision="1">
+                <mud-numeric-input label="Weight" value="2.5" step="0.5" precision="1">
                   <span slot="suffix">kg</span>
                 </mud-numeric-input>
               </div>
@@ -87,7 +87,7 @@
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Fără steppere" value="42" show-steppers="false">
+                <mud-numeric-input label="No steppers" value="42" show-steppers="false">
                   <span slot="suffix">%</span>
                 </mud-numeric-input>
               </div>
@@ -132,19 +132,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Dezactivat" value="7" disabled=""></mud-numeric-input>
+                <mud-numeric-input label="Disabled" value="7" disabled=""></mud-numeric-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Doar citire (fără steppere)" value="7" readonly=""></mud-numeric-input>
+                <mud-numeric-input label="Read-only (no steppers)" value="7" readonly=""></mud-numeric-input>
               </div>
               <span class="label">readonly (no steppers)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="În curs" value="7" loading=""></mud-numeric-input>
+                <mud-numeric-input label="In progress" value="7" loading=""></mud-numeric-input>
               </div>
               <span class="label">loading (spinner)</span>
             </div>
@@ -156,14 +156,14 @@
                   min="0"
                   max="100"
                   invalid=""
-                  error-text="Valoarea depășește maximul permis."
+                  error-text="The value exceeds the allowed maximum."
                 ></mud-numeric-input>
               </div>
               <span class="label">invalid + error-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-numeric-input label="Obligatoriu" required="" placeholder="0"></mud-numeric-input>
+                <mud-numeric-input label="Required" required="" placeholder="0"></mud-numeric-input>
               </div>
               <span class="label">required + empty</span>
             </div>

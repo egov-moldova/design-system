@@ -1,0 +1,129 @@
+{
+  "component": "mud-stepper",
+  "figma": {
+    "fileKey": "pvDAJPXKyUuJgz3P921Ye8",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "39:25050",
+        "reason": "\"available\" and \"error\" statuses, and every horizontal-orientation state, have no example in this flow instance — not verified against this file. See the state-legend node (634:10573 / 639:xxxx, cited in mud-stepper.tsx) for those, tracked separately."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-stepper--vertical",
+    "capture": { "selector": "mud-stepper", "bleed": "auto" },
+    "html": "<mud-stepper orientation=\"vertical\" aria-label=\"Pași\"></mud-stepper>",
+    "props": {
+      "mud-stepper": {
+        "steps": [
+          { "label": "Date solicitant", "status": "completed" },
+          { "label": "Selectare serviciu", "status": "completed" },
+          { "label": "Programare", "status": "current" },
+          { "label": "Confirmare", "status": "pending" },
+          { "label": "Plată", "status": "pending" },
+          { "label": "Finalizare", "status": "pending" }
+        ]
+      }
+    }
+  },
+  "states": [
+    {
+      "name": "vertical-layout",
+      "node": "40:26945",
+      "expect": [
+        {
+          "target": "mud-stepper",
+          "styles": { "boxHeight": "296.5px" },
+          "note": "Indicator centre-to-centre pitch (54.5px) × 5 gaps + half an indicator top and bottom = 296.5px, matching the \"Step titles\" frame (40:26945) height exactly. Catches any regression to the old 84px pitch."
+        }
+      ]
+    },
+    {
+      "name": "completed",
+      "node": "40:26951",
+      "expect": [
+        {
+          "target": "mud-stepper li:nth-child(2) .indicator",
+          "styles": {
+            "backgroundColor": "#0058d2",
+            "borderColor": "#0058d2",
+            "borderWidth": "2px",
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Node 40:26948 (\"Step\", Completed state) — bg + border both border-brand-default, border-width-2 (2px). Border colour equals fill, so the extra 0.5px vs. other states is invisible, but the value is exact."
+        },
+        {
+          "target": "mud-stepper li:nth-child(2) .label",
+          "styles": { "color": "#383838", "textDecorationLine": "none" },
+          "note": "Text node under 40:26946 (\"Date solicitant\") — colour text-base-secondary, no underline. Contradicts the general state-legend nodes (639:11170 / 634:11061, brand underlined link, used for horizontal); confirmed intentional for vertical, 2026-09-24."
+        },
+        {
+          "target": "mud-stepper li:nth-child(2) .connector",
+          "styles": { "backgroundColor": "#0058d2", "boxWidth": "1.5px" },
+          "note": "Traveled rail — asset 032f2.svg (stroke #0058D2, stroke-width 1.5) leading from step 2 into the current step."
+        }
+      ]
+    },
+    {
+      "name": "current",
+      "node": "40:26952",
+      "expect": [
+        {
+          "target": "mud-stepper li:nth-child(3) .indicator",
+          "styles": { "backgroundColor": "#e8f0fb", "borderColor": "#0058d2", "boxWidth": "24px", "boxHeight": "24px" },
+          "note": "Circle fill matches the pill background (#E8F0FB) so the ring reads as an outline, not a cutout — node 1:421 (\"Step\", Current state)."
+        },
+        {
+          "target": "mud-stepper li:nth-child(3) .label",
+          "styles": { "color": "#0058d2" },
+          "note": "Text node 1:423 — brand blue. Contradicts the general state-legend node 639:11161 (grey, used for horizontal); confirmed as an intentional vertical-only departure, 2026-09-24. See the `stepper.current.highlightLabel` token comment."
+        },
+        {
+          "target": "mud-stepper li:nth-child(3) .connector",
+          "styles": { "backgroundColor": "#d9d9d9", "boxWidth": "1.5px" },
+          "note": "Untraveled rail leaving the current step — asset 8ab29.svg (stroke #D9D9D9, stroke-width 1.5)."
+        }
+      ]
+    },
+    {
+      "name": "pending",
+      "node": "40:26953",
+      "expect": [
+        {
+          "target": "mud-stepper li:nth-child(4) .indicator",
+          "styles": {
+            "backgroundColor": "#ffffff",
+            "borderColor": "#b2b2b2",
+            "borderWidth": "1.5px",
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "Node I40:26953;1117:10852 — bg background-base-default (white), border border-base-secondary (#B2B2B2)."
+        },
+        {
+          "target": "mud-stepper li:nth-child(4) .label",
+          "styles": { "color": "#383838" }
+        },
+        {
+          "target": "mud-stepper li:nth-child(4) .connector",
+          "styles": { "backgroundColor": "#d9d9d9", "boxWidth": "1.5px" },
+          "note": "Same untraveled-rail asset (8ab29.svg) repeats for every pending-to-pending segment."
+        }
+      ]
+    },
+    {
+      "name": "pending-last",
+      "node": "40:26955",
+      "pixel": false,
+      "expect": [
+        {
+          "target": "mud-stepper li:nth-child(6) .connector",
+          "absent": true,
+          "note": "Last step in the flow (\"Finalizare\") has no trailing connector."
+        }
+      ]
+    }
+  ]
+}

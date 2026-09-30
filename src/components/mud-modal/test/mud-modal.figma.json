@@ -1,0 +1,297 @@
+{
+  "component": "mud-modal",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": [
+      {
+        "node": "6930:8393",
+        "reason": "modal Desktop/Default/Small — the Small rung is density only in Figma (it is the same 588px wide as Medium); its header, body and footer are pinned by header-sm, body-sm and footer-sm. Whole-modal pixels are not compared because the component’s size=\"sm\" also caps the width at 480px, an open design question recorded in the report."
+      },
+      {
+        "node": "230:5244",
+        "reason": "modal Mobile/Default/Medium — the 350px mobile width is the viewport less the 16px margin on each side; a manifest fixture cannot set the viewport, so this breakpoint is checked through the Mobile story instead."
+      },
+      {
+        "node": "1825:3479",
+        "reason": "modal Desktop/Image-Based/Medium — identical to the Default modal except for its header, which image-md pins from 1825:3338."
+      },
+      {
+        "node": "6930:8529",
+        "reason": "modal Desktop/Image-Based/Small — header pinned by image-sm (1825:3565); the rest is the Small density covered by body-sm and footer-sm."
+      },
+      {
+        "node": "1825:3571",
+        "reason": "modal Mobile/Image-Based/Medium — the mobile breakpoint, unreachable from a fixture for the reason given for 230:5244."
+      },
+      {
+        "node": "6930:7436",
+        "reason": ".modal-header Medium/Center — not implemented: mud-modal has no centred-header option (Figma pads it 64px on the left and centres the title). Adding one is an API change, raised in the report rather than decided here."
+      },
+      {
+        "node": "6930:7442",
+        "reason": ".modal-header Small/Center — as 6930:7436."
+      },
+      {
+        "node": "109:1976",
+        "reason": ".content-slot Type=Slot — a design-time placeholder whose own copy tells designers to detach it and build their content; it is not a runtime state of the component."
+      },
+      {
+        "node": "109:1965",
+        "reason": ".modal-footer Default/Horizontal/1 action/Medium — the same footer box as the 2-action row footer-md pins, with one button fewer."
+      },
+      {
+        "node": "6930:8415",
+        "reason": ".modal-footer Default/Horizontal/1 action/Small — as 109:1965 at the Small rung, which footer-sm pins."
+      },
+      {
+        "node": "6930:8423",
+        "reason": ".modal-footer Default/Vertical/2 actions/Small — the stacked column footer-stacked pins, at the Small rung footer-sm pins."
+      },
+      {
+        "node": "365:17030",
+        "reason": ".modal-footer Destructive/Horizontal/1/Medium — Figma draws identical footer chrome for Destructive; only the primary button turns #D92D20, and that colour belongs to mud-button variant=\"destructive\", not to the modal."
+      },
+      {
+        "node": "6930:8428",
+        "reason": ".modal-footer Destructive/Horizontal/1/Small — as 365:17030."
+      },
+      {
+        "node": "365:17032",
+        "reason": ".modal-footer Destructive/Horizontal/2/Medium — as 365:17030."
+      },
+      {
+        "node": "6930:8431",
+        "reason": ".modal-footer Destructive/Horizontal/2/Small — as 365:17030."
+      },
+      {
+        "node": "365:17048",
+        "reason": ".modal-footer Destructive/Vertical/2/Medium — as 365:17030, in the stacked column footer-stacked pins."
+      },
+      {
+        "node": "6930:8436",
+        "reason": ".modal-footer Destructive/Vertical/2/Small — as 365:17048."
+      }
+    ]
+  },
+  "defaults": {
+    "story": "components-modal--default",
+    "capture": {
+      "selector": "mud-modal .surface",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "modal-desktop-md",
+      "node": "111:2565",
+      "html": "<mud-modal open style=\"--modal-backdrop-background: transparent\" size=\"md\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"lg\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .surface",
+          "styles": {
+            "boxWidth": "588px",
+            "borderTopLeftRadius": "16px",
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 2px 8px 0px, rgba(0, 0, 0, 0.08) 0px 10px 24px 0px, rgba(0, 0, 0, 0.12) 0px 0px 0px 0.5px"
+          },
+          "note": "Figma 111:2565 fills the set 230:5243 (620px designed, 16px padding) at 588px, radius 16, #FFFFFF, under Drop Shadow/400. The shadow’s third layer is a 0.5px spread hairline — not the 0.5px blur of Drop Shadow/300."
+        }
+      ],
+      "interaction": {
+        "type": "click",
+        "target": "mud-modal .body"
+      },
+      "pixelNote": "Two capture artefacts are neutralised, both because 111:2565 is the modal card alone, at rest. The backdrop is made transparent through its own token, since the Figma export has nothing but transparency around the card and the dimmed overlay would otherwise fill the whole 24px shadow bleed. And the body is clicked first: showModal() moves focus to the close button, and with no pointer input before it Chromium matches :focus-visible and draws a ring the resting design does not have — a user who opened the modal with a click never sees it."
+    },
+    {
+      "name": "header-md",
+      "node": "109:1984",
+      "pixel": false,
+      "html": "<mud-modal open size=\"md\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"lg\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .header",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingLeft": "32px",
+            "paddingRight": "20px",
+            "paddingBottom": "0px",
+            "columnGap": "12px"
+          },
+          "note": "Figma 109:1984 pads the header 24px 20px 0 32px with a 12px gap between the title and the close button."
+        },
+        {
+          "target": "mud-modal .title",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "24px",
+            "lineHeight": "32px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.24px",
+            "color": "#121212"
+          },
+          "note": "Figma 109:1986 is Desktop/Heading/H3 — Onest SemiBold 24/32 at -0.01em, #121212. -0.01em at 24px is -0.24px."
+        },
+        {
+          "target": "mud-modal .close",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "9999px"
+          },
+          "note": "Figma 154:453 is an 8px-padded pill filled #F1F1F1 around a 16px glyph — 8 + 16 + 8 = 32."
+        },
+        {
+          "target": "mud-modal .close-icon",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "Figma 109:2526 places 16/cross-large at 16x16."
+        }
+      ]
+    },
+    {
+      "name": "header-sm",
+      "node": "361:16887",
+      "pixel": false,
+      "html": "<mud-modal open size=\"sm\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"md\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"md\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .title",
+          "styles": {
+            "fontSize": "20px",
+            "lineHeight": "28px",
+            "fontWeight": "600",
+            "letterSpacing": "-0.2px"
+          },
+          "note": "Figma 361:16889 drops the Small title to Desktop/Heading/H4 — 20/28 at -0.01em, which is -0.2px."
+        }
+      ]
+    },
+    {
+      "name": "body-md",
+      "node": "109:1974",
+      "pixel": false,
+      "html": "<mud-modal open size=\"md\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"lg\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .body",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "40px",
+            "paddingLeft": "32px",
+            "paddingRight": "32px",
+            "rowGap": "16px",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#383838"
+          },
+          "note": "Figma 109:1974 pads the content slot 24px 32px 40px with a 16px gap, body in Desktop/Body/Default at #383838."
+        }
+      ]
+    },
+    {
+      "name": "body-sm",
+      "node": "6930:7644",
+      "pixel": false,
+      "html": "<mud-modal open size=\"sm\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"md\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"md\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .body",
+          "styles": {
+            "paddingTop": "16px",
+            "paddingBottom": "20px",
+            "rowGap": "12px",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 6930:7644 tightens the Small content slot to 16px 32px 20px and its gap to 12px, body in Desktop/Body/Small. The gap is the value that used to stay at 16."
+        }
+      ]
+    },
+    {
+      "name": "footer-md",
+      "node": "109:1967",
+      "pixel": false,
+      "html": "<mud-modal open size=\"md\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"lg\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .footer",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "24px",
+            "paddingLeft": "20px",
+            "paddingRight": "20px",
+            "columnGap": "8px",
+            "justifyContent": "flex-end"
+          },
+          "note": "Figma 109:1967 pads the footer 12px 20px 24px and right-aligns two buttons 8px apart."
+        }
+      ]
+    },
+    {
+      "name": "footer-sm",
+      "node": "6930:8418",
+      "pixel": false,
+      "html": "<mud-modal open size=\"sm\" title-text=\"Title\">Body Text<mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"md\">Button</mud-button><mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"md\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .footer",
+          "styles": {
+            "paddingBottom": "20px"
+          },
+          "note": "Figma 6930:8418 trims the Small footer’s bottom padding to 20px."
+        }
+      ]
+    },
+    {
+      "name": "footer-stacked",
+      "node": "109:1970",
+      "pixel": false,
+      "html": "<mud-modal open size=\"md\" title-text=\"Title\" actions-layout=\"stacked\">Body Text<mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button><mud-button slot=\"actions\" variant=\"strict\" appearance=\"outlined\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .footer",
+          "styles": {
+            "flexDirection": "column",
+            "rowGap": "12px"
+          },
+          "note": "Figma 109:1970 stacks the two buttons in a column 12px apart; the 8px gap belongs to the horizontal row. The gap is the value that used to stay at 8."
+        }
+      ]
+    },
+    {
+      "name": "image-md",
+      "node": "1825:3338",
+      "pixel": false,
+      "html": "<mud-modal open size=\"md\" variant=\"with-image\" image-src=\"data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22588%22 height=%22280%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23cccccc%22/%3E%3C/svg%3E\">Body Text<mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"lg\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .header-image",
+          "styles": {
+            "boxHeight": "280px"
+          },
+          "note": "Figma 1825:3338 is a 280px image header at Medium."
+        }
+      ]
+    },
+    {
+      "name": "image-sm",
+      "node": "1825:3565",
+      "pixel": false,
+      "html": "<mud-modal open size=\"sm\" variant=\"with-image\" image-src=\"data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22588%22 height=%22280%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23cccccc%22/%3E%3C/svg%3E\">Body Text<mud-button slot=\"actions\" variant=\"primary\" appearance=\"filled\" shape=\"circular\" size=\"md\">Button</mud-button></mud-modal>",
+      "expect": [
+        {
+          "target": "mud-modal .header-image",
+          "styles": {
+            "boxHeight": "180px"
+          },
+          "note": "Figma 1825:3565 is a 180px image header at Small."
+        }
+      ]
+    }
+  ]
+}

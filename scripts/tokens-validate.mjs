@@ -4,8 +4,19 @@
 
 import { readFileSync, readdirSync, statSync, existsSync, writeFileSync } from 'node:fs';
 import { resolve, join, basename, relative, sep } from 'node:path';
+import StyleDictionary from 'style-dictionary';
 
 const REPO_ROOT = resolve(import.meta.dirname, '..');
+
+// The CSS variable a token path becomes — the same `name/kebab` transform the build configs use, so
+// `stackZIndex` maps to `stack-z-index` exactly as in tokens/generated/core.tokens.css.
+const nameKebab = StyleDictionary.hooks.transforms['name/kebab'];
+const cssVarName = tokenPath => `--${nameKebab.transform({ path: tokenPath.split('.') }, {})}`;
+
+// A component token may reference the palette only when it states why, e.g. colours that must not
+// follow the theme: "$extensions": { "md.egov.mud": { "tierPurityException": "<reason>" } }.
+const EXTENSIONS_NAMESPACE = 'md.egov.mud';
+const tierPurityException = leaf => leaf.$extensions?.[EXTENSIONS_NAMESPACE]?.tierPurityException;
 
 const args = process.argv.slice(2);
 const has = flag => args.includes(flag);
@@ -17,7 +28,8 @@ const valueOf = flag => {
 if (has('--help') || has('-h')) {
   process.stdout.write(
     `Usage: node scripts/tokens-validate.mjs [options]\n\n` +
-      `  --root <dir>            Token root (default: tokens)\n` +
+      `  --root <dir>            Token root (default: tokens); generated CSS is read from <root>/generated,\n` +
+      `                          component CSS from <root>/../src/components\n` +
       `  --out <file>            Write JSON report to file\n` +
       `  --no-color              Disable ANSI colors\n` +
       `  --no-component-css      Skip per-component CSS coverage check\n` +
@@ -49,15 +61,7 @@ const push = f => findings.push(f);
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (
-      name === 'generated' ||
-      name === 'figma-export' ||
-      name === 'legacy' ||
-      name === 'legacy.dark' ||
-      name === 'node_modules' ||
-      name.startsWith('.')
-    )
-      continue;
+    if (name === 'generated' || name === 'figma-export' || name === 'node_modules' || name.startsWith('.')) continue;
     const full = join(dir, name);
     const st = statSync(full);
     if (st.isDirectory()) walk(full, out);
@@ -223,6 +227,9 @@ function lookup(path, preferMode) {
 }
 
 for (const [, t] of tokens) {
+  const exception = tierPurityException(t.leaf);
+  const hasExceptionReason = typeof exception === 'string' && exception.trim() !== '';
+  let referencesPalette = false;
   for (const ref of iterRefs(t.$value)) {
     const target = lookup(ref, t.mode);
     if (!target) {
@@ -237,15 +244,30 @@ for (const [, t] of tokens) {
       continue;
     }
     if (t.tier === 'component' && ref.startsWith('palette.')) {
+      referencesPalette = true;
+      if (hasExceptionReason) continue;
       push({
         severity: 'error',
         code: 'tier-purity',
         file: t.file,
         ...locateKey(t.source, t.path),
         jsonPath: t.path,
-        message: `Component-tier token references palette directly ({${ref}}). Use a semantic token instead.`,
+        message:
+          exception === undefined
+            ? `Component-tier token references palette directly ({${ref}}). Use a semantic token instead.`
+            : `Component-tier token references palette directly ({${ref}}) and its "${EXTENSIONS_NAMESPACE}".tierPurityException has no reason.`,
       });
     }
+  }
+  if (exception !== undefined && !referencesPalette) {
+    push({
+      severity: 'warning',
+      code: 'tier-purity-exception-unused',
+      file: t.file,
+      ...locateKey(t.source, t.path),
+      jsonPath: t.path,
+      message: `Token carries "${EXTENSIONS_NAMESPACE}".tierPurityException but no component-tier palette reference. Remove the marker.`,
+    });
   }
 }
 
@@ -284,18 +306,35 @@ for (const [, t] of tokens) {
   for (const key of tokens.keys()) visit(key, []);
 }
 
-// Dark-mode parity (warning) — color.* tokens only
+// Dark-mode parity (warning). Every color.* token needs a dark override. So does any other
+// non-component colour that cannot follow the theme on its own: a hex literal or a direct palette
+// reference resolves to the same value in both modes (focusRing.color.halo, #75), while a reference
+// to a semantic token (`{color.border.brand.focus-ring}`) picks up that token's dark override.
 {
-  const lightColors = [...tokens.entries()].filter(([, t]) => t.mode === 'light' && t.path.startsWith('color.'));
-  for (const [, t] of lightColors) {
-    if (!tokens.has(`dark:${t.path}`)) {
+  // These look right in either theme: nothing to see, or the element's own text colour. Not
+  // `inherit`: a CSS-wide keyword in a custom property applies to the property itself, so
+  // `var(--x)` never receives it.
+  const THEME_NEUTRAL_KEYWORDS = new Set(['transparent', 'currentcolor']);
+  const isThemeNeutral = t => typeof t.$value === 'string' && THEME_NEUTRAL_KEYWORDS.has(t.$value.trim().toLowerCase());
+  const isThemeBlind = t => {
+    const refs = [...iterRefs(t.$value)];
+    return refs.length === 0 || refs.every(ref => ref.startsWith('palette.'));
+  };
+  const needsDark = t =>
+    t.mode === 'light' &&
+    !isThemeNeutral(t) &&
+    (t.path.startsWith('color.') || (t.tier === 'semantic' && t.$type === 'color' && isThemeBlind(t)));
+  for (const t of tokens.values()) {
+    if (needsDark(t) && !tokens.has(`dark:${t.path}`)) {
       push({
         severity: 'warning',
         code: 'dark-mode-missing',
         file: t.file,
         ...locateKey(t.source, t.path),
         jsonPath: t.path,
-        message: `Semantic color has no dark-mode override in tokens/core.dark/color.tokens.json.`,
+        message: t.path.startsWith('color.')
+          ? `Semantic color has no dark-mode override in tokens/core.dark/color.tokens.json.`
+          : `Colour resolves to the same value in both themes and has no dark-mode override under tokens/core.dark/.`,
       });
     }
   }
@@ -303,19 +342,14 @@ for (const [, t] of tokens) {
 
 // Generated CSS drift
 if (!SKIP_CSS_DRIFT) {
-  const cssPath = resolve(REPO_ROOT, 'tokens/generated/core.tokens.css');
+  const cssPath = resolve(root, 'generated/core.tokens.css');
   if (existsSync(cssPath)) {
     const css = readFileSync(cssPath, 'utf8');
     const defined = new Set();
     for (const m of css.matchAll(/(--[a-z0-9-]+)\s*:/g)) defined.add(m[1]);
     for (const [, t] of tokens) {
       if (t.mode !== 'light') continue;
-      const cssName =
-        '--' +
-        t.path
-          .replace(/\./g, '-')
-          .replace(/([a-z])([A-Z])/g, '$1-$2')
-          .toLowerCase();
+      const cssName = cssVarName(t.path);
       if (!defined.has(cssName)) {
         push({
           severity: 'warning',
@@ -323,7 +357,7 @@ if (!SKIP_CSS_DRIFT) {
           file: t.file,
           ...locateKey(t.source, t.path),
           jsonPath: t.path,
-          message: `Token has no matching CSS variable in tokens/generated/core.tokens.css (expected ${cssName}). Run \`yarn tokens.build\`.`,
+          message: `Token has no matching CSS variable in ${relative(REPO_ROOT, cssPath)} (expected ${cssName}). Run \`yarn tokens.build\`.`,
         });
       }
     }
@@ -335,7 +369,7 @@ if (!SKIP_CSS_DRIFT) {
       line: 1,
       col: 1,
       jsonPath: '',
-      message: `tokens/generated/core.tokens.css not found. Run \`yarn tokens.build\`.`,
+      message: `${relative(REPO_ROOT, cssPath)} not found. Run \`yarn tokens.build\`.`,
     });
   }
 }
@@ -343,30 +377,37 @@ if (!SKIP_CSS_DRIFT) {
 // Component CSS coverage
 if (!SKIP_COMPONENT_CSS) {
   const componentTokenFiles = files.filter(f => f.split(sep).join('/').includes('/tokens/core/components/'));
+  // A token root may be camelCase (`dateInput` in date-input.tokens.json); compare generated names.
+  const tokenVars = new Set([...tokens.values()].filter(t => t.mode === 'light').map(t => cssVarName(t.path)));
+  const componentsDir = resolve(root, '..', 'src/components');
+  if (componentTokenFiles.length > 0 && !existsSync(componentsDir)) {
+    push({
+      severity: 'warning',
+      code: 'component-css-missing',
+      file: componentsDir,
+      line: 1,
+      col: 1,
+      jsonPath: '',
+      message: `${relative(REPO_ROOT, componentsDir)} not found, so component CSS coverage was not checked. --root must be the tokens directory next to src/.`,
+    });
+  }
   for (const file of componentTokenFiles) {
     const name = basename(file).replace(/\.tokens\.json$/, '');
-    const cssPath = resolve(REPO_ROOT, `src/components/mud-${name}/mud-${name}.css`);
+    const cssPath = resolve(componentsDir, `mud-${name}/mud-${name}.css`);
     if (!existsSync(cssPath)) continue;
     const css = readFileSync(cssPath, 'utf8');
     const componentPrefix = `--${name}-`;
+    // Custom properties the stylesheet sets itself (`--tooltip-arrow-size: var(--tooltip-arrow-size-sm)`).
+    const declaredVars = new Set([...css.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
     const usedVars = new Set();
-    for (const m of css.matchAll(/var\((--[a-z0-9-]+)/g)) {
+    // A fallback does not make a variable intentional: a misspelled token name behind one renders the
+    // fallback silently, so fallback reads are checked like any other.
+    for (const m of css.matchAll(/var\(\s*(--[a-z0-9-]+)/g)) {
       if (m[1].startsWith(componentPrefix)) usedVars.add(m[1]);
     }
-    const tokenKeys = [...tokens.keys()].filter(k => k.startsWith('light:'));
     for (const v of usedVars) {
       const tail = v.slice(componentPrefix.length);
-      const normalizedVar = tail.toLowerCase().replace(/-/g, '');
-      const matched = tokenKeys.some(k => {
-        const kp = k.slice('light:'.length);
-        if (!kp.startsWith(`${name}.`)) return false;
-        const normalizedKp = kp
-          .slice(name.length + 1)
-          .toLowerCase()
-          .replace(/[.-]/g, '');
-        return normalizedKp === normalizedVar;
-      });
-      if (!matched) {
+      if (!tokenVars.has(v) && !declaredVars.has(v)) {
         push({
           severity: 'warning',
           code: 'css-uses-undefined-token',

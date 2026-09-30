@@ -233,6 +233,7 @@
 }
 
 :host([size='sm']) .body {
+  gap: var(--modal-body-gap-sm);
   padding-block-start: var(--modal-body-padding-block-start-sm);
   padding-block-end: var(--modal-body-padding-block-end-sm);
   font-size: var(--modal-body-font-size-sm);
@@ -277,6 +278,7 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
+  gap: var(--modal-footer-gap-stacked);
 }
 
 :host([actions-layout='stacked']) .footer ::slotted(*) {

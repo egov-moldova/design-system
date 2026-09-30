@@ -1,0 +1,25 @@
+{
+  "focusRing": {
+    "color": {
+      "halo": {
+        "$description": "Dark-mode halo shades, chosen so the halo keeps the soft contrast it has in light mode. The light *.200 halos sit at 1.28-1.42:1 against white; against the dark base surface (gray.900) they would reach 11.7-13:1. Each value is the family's shade closest to the light-mode ratio against gray.900: blue-sky.800 1.44, red.900 1.69, apricot.900 1.75, green.900 1.72. The halo is decorative; the 3px outer ring is the focus indicator.",
+        "brand": {
+          "$value": "{palette.blue-sky.800}",
+          "$type": "color"
+        },
+        "danger": {
+          "$value": "{palette.red.900}",
+          "$type": "color"
+        },
+        "warning": {
+          "$value": "{palette.apricot.900}",
+          "$type": "color"
+        },
+        "positive": {
+          "$value": "{palette.green.900}",
+          "$type": "color"
+        }
+      }
+    }
+  }
+}

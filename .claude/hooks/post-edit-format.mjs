@@ -16,7 +16,7 @@ const ROOT_CONFIG_FILES = new Set([
   'package.json',
   '.prettierrc.json',
   '.stylelintrc.json',
-  'commitlint.config.js',
+  'commitlint.config.mjs',
   'stencil.config.ts',
   'README.md',
   'AGENTS.md',

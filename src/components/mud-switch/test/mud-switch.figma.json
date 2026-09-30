@@ -1,0 +1,178 @@
+{
+  "component": "mud-switch",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-switch--default",
+    "capture": {
+      "selector": "mud-switch .track",
+      "bleed": 0
+    }
+  },
+  "states": [
+    {
+      "name": "off-default",
+      "node": "578:34098",
+      "pixel": false,
+      "html": "<mud-switch aria-label=\"Switch\"></mud-switch>",
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "28px"
+          },
+          "note": "State=Default, Checked=False (68:501): a 48x28 fully rounded track. The Off track is #757575 on purpose, not Figma's #B2B2B2: #B2B2B2 on white is about 2.1:1, below WCAG 1.4.11's 3:1 for a control boundary (tierPurityException on switch.background.off). Its colour is not pinned and the state is not pixel-compared; the geometry and the thumb are."
+        },
+        {
+          "target": "mud-switch .thumb",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0.5px 0 rgba(0, 0, 0, 0.3)"
+          },
+          "note": "A 24px white thumb 2px in (68:502), with Drop Shadow/100."
+        }
+      ]
+    },
+    {
+      "name": "off-focus",
+      "node": "578:34147",
+      "pixel": false,
+      "html": "<mud-switch aria-label=\"Switch\"></mud-switch>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-switch .native"
+      },
+      "capture": {
+        "selector": "mud-switch .track",
+        "bleed": 3
+      },
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "boxShadow": "0 0 0 1px #FFFFFF, 0 0 0 3px #3379DB"
+          },
+          "note": "State=Focus (68:517) carries Focus Ring/Small: a 1px white halo inside a blue band ending 3px out (the export is 54x34). The outer spread is the total. The Off track is #757575 on purpose, not Figma's #B2B2B2: #B2B2B2 on white is about 2.1:1, below WCAG 1.4.11's 3:1 for a control boundary (tierPurityException on switch.background.off). Its colour is not pinned and the state is not pixel-compared; the geometry and the thumb are."
+        }
+      ]
+    },
+    {
+      "name": "off-disabled",
+      "node": "578:34103",
+      "html": "<mud-switch aria-label=\"Switch\" disabled></mud-switch>",
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "28px"
+          },
+          "note": "State=Disabled (68:505): #F1F1F1 track."
+        },
+        {
+          "target": "mud-switch .thumb",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "none"
+          },
+          "note": "The disabled thumb (68:506) has no shadow."
+        }
+      ]
+    },
+    {
+      "name": "on-default",
+      "node": "578:34108",
+      "html": "<mud-switch aria-label=\"Switch\" checked></mud-switch>",
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "28px"
+          },
+          "note": "State=Default, Checked=True (68:503): #0058D2 track."
+        },
+        {
+          "target": "mud-switch .thumb",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "0 1px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0.5px 0 rgba(0, 0, 0, 0.3)"
+          },
+          "note": "The thumb moves to x=22 (68:504): 2px from the trailing edge."
+        }
+      ]
+    },
+    {
+      "name": "on-focus",
+      "node": "578:34154",
+      "html": "<mud-switch aria-label=\"Switch\" checked></mud-switch>",
+      "interaction": {
+        "type": "focus",
+        "target": "mud-switch .native"
+      },
+      "capture": {
+        "selector": "mud-switch .track",
+        "bleed": 3
+      },
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "boxShadow": "0 0 0 1px #FFFFFF, 0 0 0 3px #3379DB"
+          },
+          "note": "State=Focus, Checked=True (68:519): Focus Ring/Small, the band ending 3px out."
+        }
+      ]
+    },
+    {
+      "name": "on-disabled",
+      "node": "578:34113",
+      "html": "<mud-switch aria-label=\"Switch\" checked disabled></mud-switch>",
+      "expect": [
+        {
+          "target": "mud-switch .track",
+          "styles": {
+            "boxWidth": "48px",
+            "boxHeight": "28px"
+          },
+          "note": "State=Disabled, Checked=True (68:507): #F1F1F1 track, thumb at x=22 with no shadow (68:508)."
+        },
+        {
+          "target": "mud-switch .thumb",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "backgroundColor": "#FFFFFF",
+            "boxShadow": "none"
+          }
+        }
+      ]
+    },
+    {
+      "name": "target-pointer",
+      "node": "578:34125",
+      "pixel": false,
+      "html": "<mud-switch aria-label=\"Switch\"></mud-switch>",
+      "expect": [
+        {
+          "target": "mud-switch .native",
+          "styles": {
+            "boxWidth": "52px",
+            "boxHeight": "32px"
+          },
+          "note": "Target Sizes, pointer devices (578:34125): the 48x28 switch with a 2px target spread on every side, 52x32. The native input is the hit area. On touch devices (578:34161) the spread is 6px, 60x40, under @media (pointer: coarse), which a desktop capture cannot reach."
+        }
+      ]
+    }
+  ]
+}

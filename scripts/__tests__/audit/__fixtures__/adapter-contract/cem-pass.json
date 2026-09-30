@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "modules": [
+    {
+      "path": "src/components/mud-fixture/mud-fixture.tsx",
+      "declarations": [
+        {
+          "kind": "class",
+          "tagName": "mud-fixture",
+          "name": "MudFixture",
+          "members": [
+            { "kind": "field", "name": "variant" },
+            { "kind": "field", "name": "options" }
+          ],
+          "events": [{ "name": "mudChange" }],
+          "slots": [{ "name": "" }],
+          "cssParts": [{ "name": "content" }],
+          "cssProperties": []
+        }
+      ]
+    }
+  ]
+}

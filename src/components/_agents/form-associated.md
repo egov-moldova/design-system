@@ -11,11 +11,7 @@ Form element patterns (input, select, textarea, checkbox, radio) and mandatory S
 Before developing ANY new component:
 
 1. **Identify component type** (form, interactive, display, layout)
-2. **Check Stencil docs** via Context7 MCP (preferred):
-   ```text
-   mcp2_resolve-library-id({ libraryName: "stenciljs", query: "<question>" })
-   mcp2_query-docs({ libraryId: "<resolved-id>", query: "<specific question>" })
-   ```
+2. **Check current library documentation** for the relevant Stencil topic before implementing
 3. **Implement required features** based on documentation
 
 ### Key Doc Topics by Type

@@ -62,6 +62,40 @@ describe('14-component-contract: extractSlots', () => {
   it('returns empty array when no slots', () => {
     assert.deepEqual(extractSlots(`<div>no slots here</div>`), []);
   });
+
+  it('a dynamic name={...} contributes nothing (no spurious default) — mirrors Stencil compiler.js:280802-280807', () => {
+    const slots = extractSlots(`<slot name={this.slotName}/>`);
+    assert.deepEqual(slots, []);
+  });
+
+  it('a dynamic template-literal name={...} contributes nothing, even alongside a real default slot', () => {
+    const slots = extractSlots(`<div><slot /><slot name={\`cell-\${key}\`}/></div>`);
+    assert.deepEqual(slots, [{ name: 'default' }]);
+  });
+
+  it('a `<slot>` mentioned inside a line comment is not mistaken for a rendered one', () => {
+    const tsx = `
+      // \`<slot>\` when computing the accessible name of an aria-labelledby target
+      <div><slot name="label" /></div>
+    `;
+    const slots = extractSlots(tsx);
+    assert.deepEqual(
+      slots.map(s => s.name),
+      ['label'],
+    );
+  });
+
+  it('a `<slot>` mentioned inside a block comment is not mistaken for a rendered one', () => {
+    const tsx = `
+      /* the default <slot> renders child content */
+      <div><slot name="label" /></div>
+    `;
+    const slots = extractSlots(tsx);
+    assert.deepEqual(
+      slots.map(s => s.name),
+      ['label'],
+    );
+  });
 });
 
 describe('14-component-contract: extractContractFromTsx', () => {
@@ -363,6 +397,78 @@ describe('14-component-contract: archetype emission (end-to-end)', () => {
     assert.equal(contract.archetype.value, 'ACTION');
     assert.equal(contract.archetype.source, 'override');
     assert.equal(contract.archetype.confidence, 'high');
+  });
+});
+
+describe('14-component-contract: slots union vdom + @slot JSDoc tags (Stencil CEM parity)', () => {
+  it('a slot named via a runtime expression is found only through its @slot JSDoc tag (mud-table cell-{key} shape)', () => {
+    const tsx = `
+      import { Component, h } from '@stencil/core';
+      /**
+       * Test.
+       * @slot header-cell-{key} - Custom rendering for a specific column header.
+       * @slot cell-{key} - Custom rendering for cells in a specific column.
+       * @slot empty - Custom empty-state content.
+       */
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
+        renderCell(key) {
+          return <slot name={\`cell-\${key}\`}></slot>;
+        }
+        render() {
+          return <div><slot name="empty"></slot></div>;
+        }
+      }
+    `;
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
+    assert.deepEqual(contract.slots.map(s => s.name).sort(), ['cell-{key}', 'empty', 'header-cell-{key}']);
+  });
+
+  it('a slot with no <slot> element at all is found via its @slot JSDoc tag (mud-breadcrumb separator shape)', () => {
+    const tsx = `
+      import { Component, h } from '@stencil/core';
+      /**
+       * Test.
+       * @slot - (default) Nested items.
+       * @slot separator - Custom separator content, read off host.children.
+       */
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
+        render() {
+          return <ol><slot /></ol>;
+        }
+      }
+    `;
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
+    assert.deepEqual(contract.slots.map(s => s.name).sort(), ['default', 'separator']);
+  });
+
+  it('a component with only named slots (no default in render or JSDoc) reports no default slot (mud-radio shape)', () => {
+    const tsx = `
+      import { Component, h } from '@stencil/core';
+      /**
+       * Test.
+       * @slot label - Rich label content.
+       * @slot supporting-text - Rich supporting text.
+       */
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
+        render() {
+          return (
+            <div>
+              {/* \`<slot>\` mentioned here must not register as a default slot */}
+              <slot name="label" onSlotchange={this.onLabel} />
+              <slot name="supporting-text" onSlotchange={this.onSupporting} />
+            </div>
+          );
+        }
+      }
+    `;
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
+    assert.deepEqual(contract.slots.map(s => s.name).sort(), ['label', 'supporting-text']);
   });
 });
 

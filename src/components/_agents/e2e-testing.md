@@ -8,7 +8,7 @@ Patterns for exercising `shadow: true` `mud-*` components in a **real browser**.
 - Writing custom Playwright tests against the built Storybook
 - Driving the live Storybook story through the Playwright MCP (`mcp__playwright__browser_*`) during `/audit-accessibility`
 
-> **Note**: the project's `vitest.config.mts` currently exposes only the `spec` project (mock-doc + `@stencil/vitest` `render()`). The Stencil 4 `newE2EPage` Puppeteer harness was retired with the Jest → Vitest migration. Live browser interactions are validated either through the Playwright MCP against `storybook-static`, or — when a dedicated browser project is added — through Vitest's Playwright provider. The shadow-DOM patterns below apply to **any** Playwright-driven context (Vitest browser, raw Playwright, MCP).
+> **Note**: the project's `vitest.config.mts` exposes two projects — `spec` (mock-doc + `@stencil/vitest` `render()`) and `storybook` (each story runs as a Vitest test inside a real Chromium instance via `@vitest/browser-playwright`, run through `yarn test.storybook` or the Storybook UI Test panel). The Stencil 4 `newE2EPage` Puppeteer harness was retired with the Jest → Vitest migration. Live browser interactions are validated through the `storybook` project's Playwright provider, or through the Playwright MCP against `storybook-static`. The shadow-DOM patterns below apply to **any** Playwright-driven context (Vitest browser, raw Playwright, MCP).
 
 ---
 

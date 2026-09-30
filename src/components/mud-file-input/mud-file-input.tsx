@@ -1,6 +1,8 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
+import { observeAriaLabel } from '../../utils/aria-label';
 import type {
   FileInputChangeDetail,
   FileInputDropDetail,
@@ -10,6 +12,11 @@ import type {
   FileInputSize,
   FileInputVariant,
 } from './mud-file-input.types';
+import { childLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { formatFileSize } from '../../utils/file-size';
+import { FILE_INPUT_MESSAGES } from './mud-file-input.messages';
+import type { FileInputMessages } from './mud-file-input.messages';
 
 let fileInputInstanceCounter = 0;
 
@@ -93,38 +100,47 @@ export class MudFileInput {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop({ reflect: true }) locale?: LocaleProp;
+
+  /**
    * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the
    * brand-blue inline link. The trailing space is intentional — the link
-   * follows on the same line.
-   * @default 'Trage și plasează sau '
+   * follows on the same line. Overrides the `locale`'s copy when set to a string; an empty
+   * string renders nothing.
+   * @default 'Trage și plasează sau ' (ro-MD)
    */
-  @Prop({ attribute: 'cta-text' }) ctaText: string = 'Trage și plasează sau ';
+  @Prop({ attribute: 'cta-text' }) ctaText?: string;
 
   /**
    * Label for the inline "choose files" link. Rendered as an underlined
-   * brand-blue button that opens the native file picker.
-   * @default 'Alege fișiere'
+   * brand-blue button that opens the native file picker. Overrides the `locale`'s copy
+   * when set to a non-empty string.
+   * @default 'Alege fișiere' (ro-MD)
    */
-  @Prop({ attribute: 'choose-files-text' }) chooseFilesText: string = 'Alege fișiere';
+  @Prop({ attribute: 'choose-files-text' }) chooseFilesText?: string;
 
   /**
    * Body text shown while a drag is over the drop zone (Figma "Active" state).
    * Replaces the resting body + hides the icon for the duration of the drag.
-   * @default 'Eliberează pentru a încărca'
+   * Overrides the `locale`'s copy when set to a string; an empty string renders nothing.
+   * @default 'Eliberează pentru a încărca' (ro-MD)
    */
-  @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText: string = 'Eliberează pentru a încărca';
+  @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText?: string;
 
   /**
-   * Top-left caption inside the field row, shown below the dropzone. When
-   * unset and `accept` is provided, this is derived from `accept` as
-   * `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
+   * Top-left caption inside the field row, shown below the dropzone. When set to a
+   * string it replaces the caption verbatim, and an empty string hides it; otherwise, when
+   * `accept` is provided, it is derived from `accept` as `Formate acceptate: jpg, png, pdf` (ro-MD).
    */
   @Prop({ attribute: 'supported-formats-text' }) supportedFormatsText?: string;
 
   /**
-   * Top-right caption inside the field row, shown below the dropzone. When
-   * unset and `maxSize` is provided, this is derived from `maxSize` (bytes)
-   * as `Mărime maximă: 100 MB`. Explicit prop wins.
+   * Top-right caption inside the field row, shown below the dropzone. When set to a
+   * string it replaces the caption verbatim, and an empty string hides it; otherwise, when
+   * `maxSize` is provided, it is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB` (ro-MD).
    */
   @Prop({ attribute: 'max-size-text' }) maxSizeText?: string;
 
@@ -135,16 +151,6 @@ export class MudFileInput {
    */
   @Prop({ mutable: true }) files: File[] = [];
 
-  /**
-   * Accessible name; mirrors to the drop zone's `aria-label` when no visible
-   * label is provided. Setting `aria-label` directly on the host also works —
-   * captured on connect into `resolvedAriaLabel` and stripped to avoid
-   * Stencil's attribute-observer / render-loop antipattern (same pattern as
-   * mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb /
-   * mud-date-picker / mud-modal / mud-pagination / mud-receipt).
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   /** Tracks drag-over. Maps to Figma's "Active" state visually. */
@@ -152,6 +158,10 @@ export class MudFileInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
+  /**
+   * The host's `aria-label` (attribute or native `ariaLabel` property), moved onto the
+   * drop zone when no visible label is present.
+   */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudFileInputElement;
@@ -187,11 +197,49 @@ export class MudFileInput {
   private dragDepth: number = 0;
   /** Object URLs created for image-preview thumbnails, keyed by File for revocation. */
   private previewUrls = new Map<File, string>();
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity(this.files);
+        forceUpdate(this);
+      },
+    );
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): FileInputMessages {
+    return localeMessages(
+      'mud-file-input',
+      this.host,
+      this.locale,
+      FILE_INPUT_MESSAGES,
+      {
+        ctaText: this.ctaText,
+        chooseFilesText: this.chooseFilesText,
+        dropzoneActiveText: this.dropzoneActiveText,
+      },
+      // Visible optional captions: `""` renders nothing, as before the dictionary existed.
+      ['ctaText', 'dropzoneActiveText'],
+    );
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.syncFormValue(this.files);
     this.syncValidity(this.files);
+    // Static-capture affordance, the render-side counterpart of the
+    // `.is-hover-demo` / `.is-focus-demo` classes the CSS honours: a drag-over
+    // cannot be produced by a story or by the Figma verification harness, and
+    // this state swaps DOM (the icon and the call to action give way to the
+    // drop line), so a class alone could not paint it. Read once at load —
+    // adding it later has no effect, which is what keeps it out of the
+    // component's real behaviour.
+    if (this.host.classList.contains('is-active-demo')) this.isActive = true;
   }
 
   componentWillRender() {
@@ -201,6 +249,8 @@ export class MudFileInput {
   disconnectedCallback() {
     for (const url of this.previewUrls.values()) URL.revokeObjectURL(url);
     this.previewUrls.clear();
+    this.stopAriaLabel?.();
+    this.stopLang?.();
   }
 
   /**
@@ -224,23 +274,14 @@ export class MudFileInput {
     }
   }
 
-  private captureAriaLabel(): void {
-    const userLabel = this.host.getAttribute('aria-label');
-    if (userLabel && userLabel.length > 0) {
-      this.resolvedAriaLabel = userLabel;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
-  }
-
-  @Watch('ariaLabel')
-  protected syncAriaLabelProp(next?: string): void {
-    if (next && next.length > 0) this.resolvedAriaLabel = next;
-  }
-
   @Watch('required')
   protected onRequiredChange() {
+    this.syncValidity(this.files);
+  }
+
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  protected onLocaleChange() {
     this.syncValidity(this.files);
   }
 
@@ -339,7 +380,7 @@ export class MudFileInput {
     const flags: ValidityStateFlags = { valueMissing: isMissing };
     const anchor = this.nativeInput ?? undefined;
     if (isMissing) {
-      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : this.messages().requiredText;
       this.internals.setValidity(flags, msg, anchor);
     } else {
       this.internals.setValidity({}, undefined, anchor);
@@ -414,13 +455,21 @@ export class MudFileInput {
   }
 
   private reasonMessage(code: FileInputRejectionReason, file?: File): string {
+    const m = this.messages();
     switch (code) {
       case 'size':
-        return file ? `Fișierul "${file.name}" depășește limita de mărime.` : 'Fișier prea mare.';
+        return file
+          ? formatMessage(m.sizeRejectionText, this.host, this.locale, { name: file.name })
+          : m.sizeRejectionGenericText;
       case 'type':
-        return file ? `Formatul fișierului "${file.name}" nu este acceptat.` : 'Format nepermis.';
+        return file
+          ? formatMessage(m.typeRejectionText, this.host, this.locale, { name: file.name })
+          : m.typeRejectionGenericText;
       case 'count':
-        return `Maximum ${this.maxFiles ?? ''} fișiere permise.`;
+        return formatMessage(m.countRejectionText, this.host, this.locale, {
+          max: this.maxFiles ?? '',
+          count: this.maxFiles ?? 0,
+        });
     }
   }
 
@@ -456,15 +505,14 @@ export class MudFileInput {
     const nextFiles = this.multiple ? [...this.files, ...accepted] : accepted.slice(0, 1);
     this.files = nextFiles;
 
+    const m = this.messages();
     if (accepted.length > 0) {
       this.announcement =
         accepted.length === 1
-          ? `Fișierul ${accepted[0].name} a fost adăugat.`
-          : `${accepted.length} fișiere au fost adăugate.`;
+          ? formatMessage(m.addedOneAnnouncement, this.host, this.locale, { name: accepted[0].name })
+          : formatMessage(m.addedManyAnnouncement, this.host, this.locale, { count: accepted.length });
     } else if (rejected.length > 0) {
-      this.announcement = `${rejected.length} fișier${rejected.length === 1 ? '' : 'e'} respins${
-        rejected.length === 1 ? '' : 'e'
-      }.`;
+      this.announcement = formatMessage(m.rejectedAnnouncement, this.host, this.locale, { count: rejected.length });
     }
 
     this.mudChange.emit({ files: nextFiles });
@@ -590,30 +638,26 @@ export class MudFileInput {
    * Format bytes as a human-readable size string with one decimal at most.
    * 5_242_880 → `5 MB`, 1500 → `1.5 KB`, 1_000_000_000 → `1 GB`.
    */
-  private formatBytes(bytes: number): string {
-    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let value = bytes;
-    let unit = 0;
-    while (value >= 1024 && unit < units.length - 1) {
-      value /= 1024;
-      unit += 1;
-    }
-    const rounded = value >= 100 || Number.isInteger(value) ? Math.round(value) : Math.round(value * 10) / 10;
-    return `${rounded} ${units[unit]}`;
+  private formatBytes(bytes: number, m: FileInputMessages): string {
+    const units = [m.sizeUnitBytes, m.sizeUnitKB, m.sizeUnitMB, m.sizeUnitGB, m.sizeUnitTB];
+    if (!Number.isFinite(bytes) || bytes <= 0) return `0 ${units[0]}`;
+    return formatFileSize(bytes, this.host, this.locale, units);
   }
 
   private resolvedSupportedFormatsText(): string | undefined {
-    if (this.supportedFormatsText !== undefined) return this.supportedFormatsText;
+    if (typeof this.supportedFormatsText === 'string') return this.supportedFormatsText;
     if (!this.accept) return undefined;
     const formats = this.formatsFromAccept(this.accept);
-    return formats ? `Formate acceptate: ${formats}` : undefined;
+    return formats
+      ? formatMessage(this.messages().supportedFormatsText, this.host, this.locale, { formats })
+      : undefined;
   }
 
   private resolvedMaxSizeText(): string | undefined {
-    if (this.maxSizeText !== undefined) return this.maxSizeText;
+    if (typeof this.maxSizeText === 'string') return this.maxSizeText;
     if (this.maxSize === undefined) return undefined;
-    return `Mărime maximă: ${this.formatBytes(this.maxSize)}`;
+    const m = this.messages();
+    return formatMessage(m.maxSizeText, this.host, this.locale, { size: this.formatBytes(this.maxSize, m) });
   }
 
   private handleRemove = (index: number) => (ev: CustomEvent<{ filename: string }>) => {
@@ -622,12 +666,15 @@ export class MudFileInput {
     if (!target) return;
     const next = this.files.filter((_, i) => i !== index);
     this.files = next;
-    this.announcement = `Fișierul ${target.name} a fost eliminat.`;
+    this.announcement = formatMessage(this.messages().removedAnnouncement, this.host, this.locale, {
+      name: target.name,
+    });
     this.mudRemove.emit({ file: target, index });
     this.mudChange.emit({ files: next });
   };
 
   render() {
+    const m = this.messages();
     const effectivelyDisabled = this.isInert();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
@@ -638,6 +685,7 @@ export class MudFileInput {
     const maxSizeCaption = this.resolvedMaxSizeText();
     const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
     const isButton = this.variant === 'button';
+    const lang = hostLang(this.host, this.locale);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -649,7 +697,7 @@ export class MudFileInput {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="label" htmlFor={this.dropzoneId} id={this.labelId} part="label">
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
@@ -666,12 +714,16 @@ export class MudFileInput {
         {isButton
           ? [
               hasCaptions ? (
+                /*
+                  Figma 616:6921 writes the button composition's caption as ONE
+                  Body/Small line — "Supported formats: jpg, png, pdf. Maximum
+                  size: 100 MB" — where the drop zone (262:6711) splits the same
+                  two facts across the ends of a row. One element carries both
+                  part names so consumers keep either hook in either variant.
+                */
                 <div class="captions captions--inline" part="captions">
-                  <span class="captions__formats" part="captions-formats">
-                    {supportedFormats}
-                  </span>
-                  <span class="captions__max-size" part="captions-max-size">
-                    {maxSizeCaption}
+                  <span class="captions__formats" part="captions-formats captions-max-size">
+                    {[supportedFormats, maxSizeCaption].filter(Boolean).join('. ')}
                   </span>
                 </div>
               ) : null,
@@ -680,7 +732,7 @@ export class MudFileInput {
                 part="upload-button"
                 variant="primary"
                 appearance="filled"
-                size={this.size === 'lg' ? 'md' : 'sm'}
+                size={this.size === 'lg' ? 'lg' : 'md'}
                 disabled={effectivelyDisabled}
                 aria-label={ariaLabelAttr}
                 aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
@@ -690,7 +742,7 @@ export class MudFileInput {
                 onFocus={this.handleFocus}
                 onBlur={this.handleBlur}
               >
-                {this.chooseFilesText}
+                {m.chooseFilesText}
               </mud-button>,
             ]
           : [
@@ -717,18 +769,18 @@ export class MudFileInput {
                 {!isActiveNow ? (
                   <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
                     <slot name="icon">
-                      <mud-icon name="cloud-upload" size={24} color="icon-base-default" />
+                      <mud-icon name="cloud-upload" size={24} />
                     </slot>
                   </span>
                 ) : null}
                 <span class="dropzone-body" part="dropzone-body">
                   {isActiveNow ? (
                     <span class="dropzone-text" part="dropzone-text">
-                      {this.dropzoneActiveText}
+                      {m.dropzoneActiveText}
                     </span>
                   ) : (
                     <span class="dropzone-cta" part="dropzone-cta">
-                      <span class="dropzone-cta__body">{this.ctaText}</span>
+                      <span class="dropzone-cta__body">{m.ctaText}</span>
                       <button
                         type="button"
                         class="dropzone-cta__link"
@@ -744,13 +796,13 @@ export class MudFileInput {
                         onFocus={this.handleFocus}
                         onBlur={this.handleBlur}
                       >
-                        {this.chooseFilesText}
+                        {m.chooseFilesText}
                       </button>
                     </span>
                   )}
                 </span>
               </div>,
-              !isActiveNow && hasCaptions ? (
+              hasCaptions ? (
                 <div class="captions" part="captions">
                   <span class="captions__formats" part="captions-formats">
                     {supportedFormats}
@@ -784,6 +836,7 @@ export class MudFileInput {
                   size={file.size}
                   preview-src={this.previewUrls.get(file)}
                   disabled={effectivelyDisabled}
+                  locale={childLocale(this.host, this.locale)}
                   onMudRemove={this.handleRemove(index)}
                 />
               </li>
@@ -793,7 +846,13 @@ export class MudFileInput {
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+            <mud-icon
+              class="assistive-icon"
+              name="circle-error"
+              variant="filled"
+              size={20}
+              color="icon-danger-default"
+            />
             <span class="assistive-text">{errorText}</span>
           </div>
         ) : this.hasHelperMessage() ? (

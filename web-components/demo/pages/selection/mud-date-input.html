@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-date-input · @egovmd/mud-web-components</title>
+    <title>mud-date-input · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-date-input">
     <main class="demo-main">
@@ -11,11 +11,41 @@
         <h2>&lt;mud-date-input&gt;</h2>
 
         <div class="subsection">
+          <h3>Types</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-date-input type="default" value="15/04/2025" label="Date"></mud-date-input>
+              </div>
+              <span class="label">type=default · month title</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-date-input type="advanced" value="15/04/2025" label="Date"></mud-date-input>
+              </div>
+              <span class="label">type=advanced · month and year dropdowns</span>
+            </div>
+            <div class="cell">
+              <div style="width: 320px">
+                <mud-date-input type="date-range" value="18/01/2025 - 22/01/2025" label="Period"></mud-date-input>
+              </div>
+              <span class="label">type=date-range · start - end</span>
+            </div>
+            <div class="cell">
+              <div style="width: 320px">
+                <mud-date-input type="date-range" value="22/01/2025 - 18/01/2025" label="Period"></mud-date-input>
+              </div>
+              <span class="label">date-range · end before start (order error)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
           <h3>Formats</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input format="DD/MM/YYYY" value="15/04/2025" label="Data nașterii"></mud-date-input>
+                <mud-date-input format="DD/MM/YYYY" value="15/04/2025" label="Birth date"></mud-date-input>
               </div>
               <span class="label">DD/MM/YYYY</span>
             </div>
@@ -39,19 +69,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input size="md" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input size="md" value="15/04/2025" label="Date"></mud-date-input>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input size="lg" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input size="lg" value="15/04/2025" label="Date"></mud-date-input>
               </div>
               <span class="label">lg</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input variant="destructive" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input variant="destructive" value="15/04/2025" label="Date"></mud-date-input>
               </div>
               <span class="label">variant=destructive</span>
             </div>
@@ -63,38 +93,38 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input label="Data" placeholder="DD/MM/YYYY"></mud-date-input>
+                <mud-date-input label="Date" placeholder="DD/MM/YYYY"></mud-date-input>
               </div>
               <span class="label">empty (placeholder)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input label="Data programării" helper-text="Selectează o zi lucrătoare"></mud-date-input>
+                <mud-date-input label="Appointment date" helper-text="Pick a working day"></mud-date-input>
               </div>
               <span class="label">helper-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input disabled="" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input disabled="" value="15/04/2025" label="Date"></mud-date-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input readonly="" value="15/04/2025" label="Data"></mud-date-input>
+                <mud-date-input readonly="" value="15/04/2025" label="Date"></mud-date-input>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input required="" label="Data" placeholder="DD/MM/YYYY"></mud-date-input>
+                <mud-date-input required="" label="Date" placeholder="DD/MM/YYYY"></mud-date-input>
               </div>
               <span class="label">required (asterisk)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
                 <mud-date-input>
-                  <span slot="label">Data expirării</span>
+                  <span slot="label">Expiry date</span>
                   <span slot="helper">Format <code>ZZ/LL/AAAA</code></span>
                 </mud-date-input>
               </div>
@@ -122,15 +152,15 @@
                 <mud-date-input
                   invalid=""
                   value="32/13/2025"
-                  label="Data"
-                  error-text="Data introdusă nu există"
+                  label="Date"
+                  error-text="The entered date does not exist"
                 ></mud-date-input>
               </div>
               <span class="label">invalid calendar date + error</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-date-input value="15/04" label="Data" helper-text="Continuă să completezi"></mud-date-input>
+                <mud-date-input value="15/04" label="Date" helper-text="Keep filling in"></mud-date-input>
               </div>
               <span class="label">incomplete value</span>
             </div>
@@ -141,8 +171,8 @@
                   max="2025-12-31"
                   invalid=""
                   value="01/01/2030"
-                  label="Data"
-                  error-text="Data este în afara intervalului permis"
+                  label="Date"
+                  error-text="The date is outside the allowed range"
                 ></mud-date-input>
               </div>
               <span class="label">out-of-range</span>

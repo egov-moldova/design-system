@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-radio · @egovmd/mud-web-components</title>
+    <title>mud-radio · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-radio">
     <main class="demo-main">
@@ -15,11 +15,11 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: var(--spacing-12)">
-                <mud-radio name="livrare" value="ghiseu" checked="" label="Ridicare de la ghișeu"></mud-radio>
-                <mud-radio name="livrare" value="posta" label="Poștă recomandată"></mud-radio>
-                <mud-radio name="livrare" value="curier" label="Curier rapid"></mud-radio>
+                <mud-radio name="delivery" value="ghiseu" checked="" label="Pickup at the counter"></mud-radio>
+                <mud-radio name="delivery" value="posta" label="Registered mail"></mud-radio>
+                <mud-radio name="delivery" value="curier" label="Express courier"></mud-radio>
               </div>
-              <span class="label">name="livrare" (single-select)</span>
+              <span class="label">name="delivery" (single-select)</span>
             </div>
           </div>
         </div>
@@ -47,37 +47,37 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio label="Neselectat"></mud-radio>
+                <mud-radio label="Unselected"></mud-radio>
               </div>
               <span class="label">unchecked</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio checked="" label="Selectat"></mud-radio>
+                <mud-radio checked="" label="Selected"></mud-radio>
               </div>
               <span class="label">checked</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio disabled="" label="Indisponibil"></mud-radio>
+                <mud-radio disabled="" label="Unavailable"></mud-radio>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio checked="" disabled="" label="Selectat și blocat"></mud-radio>
+                <mud-radio checked="" disabled="" label="Selected and locked"></mud-radio>
               </div>
               <span class="label">disabled + checked</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio invalid="" checked="" label="Eroare"></mud-radio>
+                <mud-radio invalid="" checked="" label="Error"></mud-radio>
               </div>
               <span class="label">invalid</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio readonly="" checked="" label="Doar citire"></mud-radio>
+                <mud-radio readonly="" checked="" label="Read only"></mud-radio>
               </div>
               <span class="label">readonly</span>
             </div>
@@ -90,8 +90,8 @@
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
                 <mud-radio checked="">
-                  <span slot="label">Persoană fizică</span>
-                  <span slot="supporting-text">Cetățean cu IDNP valid din Republica Moldova.</span>
+                  <span slot="label">Individual</span>
+                  <span slot="supporting-text">Citizen with a valid IDNP from the Republic of Moldova.</span>
                 </mud-radio>
               </div>
               <span class="label">label + supporting-text slots</span>
@@ -100,14 +100,14 @@
               <div style="width: 100%; max-width: 360px">
                 <mud-radio
                   checked=""
-                  label="Doresc să fiu contactat telefonic în intervalul orar de program al instituției pentru clarificări suplimentare privind dosarul depus"
+                  label="I want to be contacted by phone during the institution's working hours for further clarification about the submitted file"
                 ></mud-radio>
               </div>
               <span class="label">long wrapping label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <mud-radio label="Diacritice ăâîșțĂÂÎȘȚ &amp; <tag>"></mud-radio>
+                <mud-radio label="Accented éüñ &amp; <tag>"></mud-radio>
               </div>
               <span class="label">diacritics + special chars</span>
             </div>

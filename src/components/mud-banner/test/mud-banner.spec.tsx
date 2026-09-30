@@ -2,6 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-banner';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { BANNER_MESSAGES } from '../mud-banner.messages';
+import type { BannerMessages } from '../mud-banner.messages';
 import { BANNER_EMPHASES, BANNER_VARIANTS } from '../mud-banner.types';
 
 const queryClose = (root: Element | null | undefined): HTMLButtonElement | null =>
@@ -70,18 +73,18 @@ describe('mud-banner', () => {
   describe('icon resolution', () => {
     it('uses the per-variant default icon', async () => {
       const { root } = await render(<mud-banner variant="error">M</mud-banner>);
-      expect(queryIcon(root)?.getAttribute('name')).toBe('circle-error-filled');
+      expect(queryIcon(root)?.getAttribute('name')).toBe('circle-error');
     });
 
     it('honors the iconName override', async () => {
-      const { root } = await render(<mud-banner icon-name="bell-filled">M</mud-banner>);
-      expect(queryIcon(root)?.getAttribute('name')).toBe('bell-filled');
+      const { root } = await render(<mud-banner icon-name="notification">M</mud-banner>);
+      expect(queryIcon(root)?.getAttribute('name')).toBe('notification');
     });
 
     it('flags has-icon-start when the icon-start slot is filled', async () => {
       const { root } = await render(
         <mud-banner>
-          <mud-icon slot="icon-start" name="custom"></mud-icon>
+          <mud-icon slot="icon-start" name="circle-info"></mud-icon>
           Mesaj
         </mud-banner>,
       );
@@ -163,6 +166,7 @@ describe('mud-banner', () => {
 
   describe('inline link', () => {
     it('renders the link with href + text when linkText is set', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <mud-banner link-text="Click here" link-href="/status">
           M
@@ -172,11 +176,63 @@ describe('mud-banner', () => {
       expect(link).not.toBeNull();
       expect(link?.getAttribute('href')).toBe('/status');
       expect(link?.textContent).toBe('Click here');
+      warn.mockRestore();
     });
 
     it('defaults the link href to #', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-banner link-text="Detalii">M</mud-banner>);
       expect(queryLink(root)?.getAttribute('href')).toBe('#');
+      warn.mockRestore();
+    });
+  });
+
+  describe('actions slot', () => {
+    it('shows the actions wrapper only when the slot is filled', async () => {
+      const { root } = await render(
+        <mud-banner>
+          M
+          <a slot="actions" href="/status">
+            Detalii
+          </a>
+        </mud-banner>,
+      );
+      expect(root?.classList.contains('has-actions')).toBe(true);
+      expect(root?.shadowRoot?.querySelector('.actions slot[name="actions"]')).not.toBeNull();
+
+      const { root: bare } = await render(<mud-banner>M</mud-banner>);
+      expect(bare?.classList.contains('has-actions')).toBe(false);
+    });
+
+    it('replaces the deprecated link props when filled', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(
+        <mud-banner link-text="Vechi" link-href="/old">
+          M
+          <a slot="actions" href="/new">
+            Nou
+          </a>
+        </mud-banner>,
+      );
+      expect(queryLink(root)).toBeNull();
+      expect(root?.classList.contains('has-link')).toBe(false);
+      warn.mockRestore();
+    });
+
+    it('warns once that linkText is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-banner link-text="Detalii">M</mud-banner>);
+      Object.assign(root as object, { linkText: 'Alt text' });
+      await waitForChanges();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('are deprecated'))).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it('does not warn without linkText', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(<mud-banner>M</mud-banner>);
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('deprecated'))).toHaveLength(0);
+      warn.mockRestore();
     });
   });
 
@@ -198,4 +254,22 @@ describe('mud-banner', () => {
     expect(Ctor).toBeTruthy();
     expect(new Ctor!(false)).toBeTruthy();
   });
+});
+
+describeLocales<BannerMessages>('mud-banner', BANNER_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { dismissible: 'true' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.closeLabel !== undefined) attrs['close-label'] = String(props.closeLabel);
+    const { root } = await render(
+      <mud-banner {...attrs}>M</mud-banner>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'closeLabel') return host.shadowRoot?.querySelector('button.close')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { closeLabel: 'closeLabel' },
 });

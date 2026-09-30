@@ -129,7 +129,7 @@
         },
         "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
       },
-      "focusRingColor": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRingColor": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
     "default": {
       "background": {
@@ -147,7 +147,7 @@
         "placeholder": { "$value": "{color.text.base.tertiary}", "$type": "color" },
         "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
     "destructive": {
       "border": {
@@ -155,7 +155,7 @@
         "hover": { "$value": "{color.border.danger.default}", "$type": "color" },
         "focus": { "$value": "{color.border.danger.default}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.red.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.danger}", "$type": "color" }
     }
   }
 }

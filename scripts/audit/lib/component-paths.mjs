@@ -29,7 +29,7 @@ export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url
 
 const COMPONENTS_ROOT = path.join(REPO_ROOT, 'src', 'components');
 const HIDDEN_ROOT = path.join(REPO_ROOT, 'src', 'hidden');
-const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'components');
+export const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'components');
 
 /**
  * Normalize a user-provided component name. Accepts:
@@ -66,8 +66,11 @@ export function bareName(componentName) {
  *
  * If neither `src/components/<name>/` nor `src/hidden/<name>/` exists, returns
  * `{ found: false, ... }` so the caller can produce a clean "not found" error.
+ *
+ * `allowSubComponent` is opt-in: a sub-component has no stories, spec or readme of its own,
+ * so only a caller that reads the source file alone may accept one.
  */
-export function resolveComponentPaths(componentName) {
+export function resolveComponentPaths(componentName, { allowSubComponent = false } = {}) {
   const name = normalizeComponentName(componentName);
   if (!name) {
     return { found: false, reason: 'invalid-name', input: componentName };
@@ -84,6 +87,19 @@ export function resolveComponentPaths(componentName) {
     if (isDirSafe(c.root)) {
       matched = c;
       break;
+    }
+  }
+  // A sub-component (`mud-tab`) has no folder of its own: it lives as `<name>.tsx` inside
+  // another component's folder (`mud-tabs/`). Resolve it there, flagged, so a caller that
+  // opted in can scan that one component instead of reporting it missing.
+  let subComponent = false;
+  if (!matched && allowSubComponent) {
+    for (const component of listAllComponents()) {
+      if (isFileSafe(path.join(component.root, `${name}.tsx`))) {
+        matched = { location: component.location, root: component.root };
+        subComponent = true;
+        break;
+      }
     }
   }
 
@@ -122,6 +138,7 @@ export function resolveComponentPaths(componentName) {
     name,
     bare,
     location: matched.location, // 'components' | 'hidden'
+    subComponent,
     root,
     paths,
     exists,
@@ -146,6 +163,17 @@ export function listAllComponents() {
     }
   }
   return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * The component a spec file belongs to — `mud-*` under `src/components/` or
+ * `src/hidden/` — or null. The one mapper 06 and run-all's coverage
+ * prerequisite share (T18); the trailing slash keeps `mud-button` from
+ * claiming `mud-button-group`'s specs.
+ */
+export function componentOfSpec(specPath) {
+  const normalized = String(specPath ?? '').replace(/\\/g, '/');
+  return normalized.match(/(?:^|\/)src\/(?:components|hidden)\/(mud-[a-z0-9-]+)\//)?.[1] ?? null;
 }
 
 /** Convert an absolute path to a repo-relative one with forward slashes (for stable output). */

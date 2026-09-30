@@ -14,8 +14,8 @@ import '../mud-sidebar-item';
 // HTMLElement), their JSX-set attributes remain as plain HTML attributes and
 // getAttribute() returns the expected values. This matches the pattern used in
 // mud-search-input.spec.tsx where mud-icon is also not imported.
-// Note: mud-sidebar-item renders badge as <span class="badge"> (not mud-badge),
-// so mud-badge import is not required here at all.
+// Note: mud-sidebar-item renders the neutral badge as <span class="badge">; the
+// notification badge is a mud-badge, left un-upgraded here for the same reason.
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -45,10 +45,11 @@ describe('mud-sidebar', () => {
     expect(nav).toBeTruthy();
   });
 
-  it('sets aria-label on the nav when aria-label prop is provided', async () => {
+  it('sets aria-label on the nav when the aria-label attribute is provided', async () => {
     const { root } = await render(<mud-sidebar aria-label="Navigare principala" />);
     const nav = root?.shadowRoot?.querySelector('nav.sidebar');
     expect(nav?.getAttribute('aria-label')).toBe('Navigare principala');
+    expect(root?.hasAttribute('aria-label')).toBe(false);
   });
 
   it('does not set aria-label on the nav when prop is absent', async () => {
@@ -295,10 +296,10 @@ describe('mud-sidebar-item', () => {
 
   describe('icon rendering', () => {
     it('renders mud-icon with the icon name when icon prop is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon).toBeTruthy();
-      expect(icon?.getAttribute('name')).toBe('home');
+      expect(icon?.getAttribute('name')).toBe('home-line');
     });
 
     it('does not render a leading icon when icon is not set', async () => {
@@ -306,24 +307,37 @@ describe('mud-sidebar-item', () => {
       expect(root?.shadowRoot?.querySelector('mud-icon.icon')).toBeNull();
     });
 
-    it('uses iconActive name when active=true and iconActive is set', async () => {
-      const { root } = await render(
-        <mud-sidebar-item icon="home-outline" iconActive="home-filled" active label="Home" />,
-      );
+    it('renders the filled style of the same icon when active=true', async () => {
+      const { root } = await render(<mud-sidebar-item icon="home-line" active label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-filled');
+      expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('filled');
     });
 
-    it('falls back to icon when active=true but iconActive is not set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" active label="Home" />);
-      const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home');
+    it('keeps an outlined-only icon outlined when active, without warning', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      try {
+        // `search` has no filled drawing, so asking mud-icon for one would warn
+        // on every activation. Baseline: `node -e "const
+        // n=require('./src/components/mud-icon/icon-names.ts')"` is not runnable on a
+        // .ts module — read FILLED_ICON_NAMES in that generated file instead; `search`
+        // is absent from it.
+        const { root, waitForChanges } = await render(<mud-sidebar-item icon="search" active label="Search" />);
+        // The warning would come from the child's own load, which has not run yet.
+        await waitForChanges();
+        const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
+        expect(icon?.getAttribute('variant')).toBe('outlined');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
     });
 
-    it('uses icon (not iconActive) when active=false even if iconActive is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home-outline" iconActive="home-filled" label="Home" />);
+    it('renders the outlined style when active=false', async () => {
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-outline');
+      expect(icon?.getAttribute('name')).toBe('home-line');
+      expect(icon?.getAttribute('variant')).toBe('outlined');
     });
   });
 
@@ -356,6 +370,15 @@ describe('mud-sidebar-item', () => {
       expect(tag?.getAttribute('label')).toBe('NEW');
     });
 
+    it('renders its mud-tag disabled while the item is disabled, and re-enables it', async () => {
+      const { root, waitForChanges } = await render(<mud-sidebar-item label="Beta" tag="NEW" disabled />);
+      expect(root?.shadowRoot?.querySelector('mud-tag.tag')?.hasAttribute('disabled')).toBe(true);
+
+      (root as HTMLMudSidebarItemElement).disabled = false;
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelector('mud-tag.tag')?.hasAttribute('disabled')).toBe(false);
+    });
+
     it('omits mud-tag when tag prop is not set', async () => {
       const { root } = await render(<mud-sidebar-item label="Item" />);
       expect(root?.shadowRoot?.querySelector('mud-tag.tag')).toBeNull();
@@ -381,6 +404,29 @@ describe('mud-sidebar-item', () => {
     it('omits badge span when badge prop is not set', async () => {
       const { root } = await render(<mud-sidebar-item label="Item" />);
       expect(root?.shadowRoot?.querySelector('span.badge')).toBeNull();
+    });
+
+    it('defaults badgeVariant to neutral, the grey numbered badge', async () => {
+      const { root } = await render(<mud-sidebar-item label="Item" badge={3} />);
+      expect((root as HTMLMudSidebarItemElement).badgeVariant).toBe('neutral');
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('mud-badge')).toBeNull();
+    });
+
+    it('renders the red notification badge (Figma notification-badge 797:43130) as mud-badge', async () => {
+      const { root } = await render(<mud-sidebar-item label="Inbox" badge={3} badgeVariant="notification" />);
+      const badge = root?.shadowRoot?.querySelector('mud-badge');
+      expect(badge).toBeTruthy();
+      expect(badge?.getAttribute('type')).toBe('numbered');
+      expect(badge?.getAttribute('variant')).toBe('danger');
+      expect(badge?.getAttribute('size')).toBe('xl');
+      expect(badge?.getAttribute('count')).toBe('3');
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeNull();
+    });
+
+    it('renders no notification badge without a count', async () => {
+      const { root } = await render(<mud-sidebar-item label="Inbox" badgeVariant="notification" />);
+      expect(root?.shadowRoot?.querySelector('mud-badge')).toBeNull();
     });
   });
 
@@ -666,7 +712,7 @@ describe('mud-sidebar-item', () => {
     });
 
     it('mud-icon in shadow DOM is aria-hidden to avoid duplicate announcements', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('aria-hidden')).toBe('true');
     });

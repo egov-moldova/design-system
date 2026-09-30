@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
 import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
 
@@ -32,15 +33,6 @@ const restoreTabindex = (el: Element, previous: string | null) => {
   else el.setAttribute('tabindex', previous);
 };
 
-// `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
-// the docblock below, because two generators read it and neither reads the other's
-// tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
-// which writes `.storybook/custom-elements.json`, and so the Storybook API table —
-// takes only `@csspart` and `@fires`. The note sits out here rather than inside the
-// block: Stencil concatenates untagged prose into the PRECEDING tag's description,
-// which is how it once landed inside the `panel` shadow-part row.
-// Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts.map(p=>p.name))"`
-// -> both events and both parts; dropping either tag empties its table.
 /**
  * Accordion item — a single collapsible row inside `mud-accordion`.
  *
@@ -71,14 +63,15 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  *    slot distributes is what gets written — measured. That is still content you
  *    handed to the slot, one component further out.)
  * 2. `disabled` does what the element makes of it, and that is not universal —
- *    27 of this library's 56 components implement it at the time of writing;
+ *    28 of this library's 49 components implement it at the time of writing;
  *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
- *    lives in the repo rather than in the published package. The load-bearing
- *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
- *    so the attribute is inert on them, and they render
- *    identically whether the item is disabled or not. An `<a href>`, a
- *    `<div tabindex>` or any custom element without `disabled` behaviour is the
- *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+ *    lives in the repo rather than in the published package. `mud-tag` and
+ *    `mud-badge` implement it as a visual state only: in `trailing` they render
+ *    their disabled design, but in `heading` or `supporting` they receive no
+ *    attribute and keep their colors, because they paint their own surface
+ *    instead of inheriting the header's disabled color. An `<a href>`, a
+ *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+ *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
  *    keyboard at least matches what assistive technology is told; the element is
  *    still clickable by script and still activates programmatically.
  *
@@ -94,18 +87,15 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  * @slot icon-start - Optional leading icon (`mud-icon` recommended).
  * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
- *                   Disabled along with the item while directly slotted.
+ *                   Rendered beside the header button, not inside it: a control
+ *                   here is its own tab stop after the header, is not part of the
+ *                   header's accessible name, and clicking it does not toggle the
+ *                   item. Disabled along with the item while directly slotted.
  * @slot - (default) Panel body. Always in the DOM; the panel carries `hidden`
  * while the item is closed, so slotted media still loads when collapsed.
  *
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.
- *
- * @csspart header - The button that toggles open/closed.
- * @csspart panel - The region revealed when open.
- *
- * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
- * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
  */
 @Component({
   tag: 'mud-accordion-item',
@@ -139,6 +129,8 @@ export class MudAccordionItem {
    * Stable identifier used by the parent `mud-accordion` when emitting
    * `mudChange`. Auto-generated if omitted.
    */
+  // The rule matches names case-insensitively; no browser defines `HTMLElement.itemId` (#88).
+  // eslint-disable-next-line @stencil/reserved-member-names
   @Prop({ reflect: true, mutable: true }) itemId?: string;
 
   /**
@@ -194,10 +186,13 @@ export class MudAccordionItem {
    * tab order, but it does nothing to an `<a href>`, a `<div tabindex>`, or a
    * custom element that does not implement it. Measured in Chromium, such an
    * element under a disabled item is still Tab-reachable and still activates on
-   * Enter — while the disabled header `<button>` ancestor makes the
-   * accessibility tree report it as `disabled`. Assistive technology would
-   * announce "unavailable" about a control that works, which is WCAG 2.1
-   * SC 4.1.2. This closes that for directly slotted elements.
+   * Enter. In `heading` and `supporting`, which render inside the disabled header
+   * `<button>`, that ancestor also makes the accessibility tree report it as
+   * `disabled`, so assistive technology would announce "unavailable" about a
+   * control that works — WCAG 2.1 SC 4.1.2. `trailing` renders beside the button
+   * (issue #22) and inherits no such state, but its control would still stay
+   * operable inside an item that is disabled. This closes both for directly
+   * slotted elements.
    *
    * A Map rather than a Set because a consumer's own `tabindex` must come back
    * exactly as authored, including `tabindex="0"` — the case a Set would have to
@@ -244,8 +239,8 @@ export class MudAccordionItem {
 
   connectedCallback() {
     // Re-acquire, and this is the other half of `disconnectedCallback`'s release.
-    // Measured against the installed runtime (@stencil/core 4.43.4): a second
-    // connect takes the `else` branch at `internal/client/index.js:4011`, which
+    // Measured against the installed runtime (@stencil/core 4.45.0): a second
+    // connect takes the `else` branch at `internal/client/index.js:4056`, which
     // fires `connectedCallback` but never `initializeComponent`, so
     // `componentDidLoad` does not run again; `@Watch('disabled')` does not fire
     // either, because the value never changed. Without this line an item moved
@@ -383,9 +378,13 @@ export class MudAccordionItem {
       // (React 19 sets unknown props on custom elements as properties) would
       // otherwise be claimed here and cleared on re-enable — issue #17 again,
       // in the one shape no in-repo test can reach, since every `mud-*` control
-      // reflects.
-      if (el.hasAttribute('disabled')) continue;
-      if ((el as { disabled?: unknown }).disabled === true) continue;
+      // reflects. An attribute whose element reads it as `false` is not a
+      // consumer's disabled: Stencil parses `disabled="false"` to `false`, and
+      // skipping it would leave a `mud-*` control enabled in a disabled row. A
+      // native control reads any value as disabled, so it still stays unclaimed.
+      const property = (el as { disabled?: unknown }).disabled;
+      if (el.hasAttribute('disabled') && property !== false) continue;
+      if (property === true) continue;
       el.setAttribute('disabled', '');
       this.ownedDisabled.add(el);
     }
@@ -450,14 +449,20 @@ export class MudAccordionItem {
     // mud-chip / mud-tooltip.
     const triggerIcon = (
       <span class="trigger" aria-hidden="true">
+        {/* Endpoints at 5 and 15, not 4.25 and 15.75. `stroke-linecap: round` adds
+            half the stroke beyond each endpoint, so 10 + 1.5 paints an 11.5px glyph
+            — what Figma's 20/plus-small (3044:14513) and 20/minus-small
+            (3044:14511) measure on the 2x exports of 659:10907 and 659:10919:
+            solid from 4.25 to 15.75 of the 20px icon box, 1.5px thick. Endpoints
+            AT 4.25/15.75 painted 13px, one stroke too wide in each direction. */}
         <svg class="trigger-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-          <line x1="4.25" y1="10" x2="15.75" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           <line
             class="trigger-icon-vertical"
             x1="10"
-            y1="4.25"
+            y1="5"
             x2="10"
-            y2="15.75"
+            y2="15"
             stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
@@ -468,46 +473,54 @@ export class MudAccordionItem {
 
     return (
       <Host>
-        <button
-          type="button"
-          class="header"
-          part="header"
-          id={this.headingId}
-          aria-expanded={ariaExpanded}
-          aria-controls={this.panelId}
-          aria-disabled={ariaDisabled}
-          disabled={isDisabled}
-          tabindex={tabIndex}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyDown}
-        >
-          {isIconLeft && triggerIcon}
-          <span class={{ 'icon-start': true, 'has-content': this.hasIconStart }}>
-            <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
-          </span>
-          <span class="text-group">
-            <span class={{ 'heading': true, 'has-slot': this.hasHeadingSlot }}>
-              <slot name="heading" onSlotchange={this.onHeadingSlotChange}>
-                {this.heading}
-              </slot>
+        {/* `trailing` is a sibling of the header button, never a child (issue #22):
+            interactive content inside a <button> is invalid HTML, and everything in
+            the button joins its accessible name. The row is a grid and the button
+            spans all of it through `subgrid`, so `part="header"` keeps its box. */}
+        <div class={{ 'header-row': true, 'has-trailing': this.hasTrailing }}>
+          <button
+            type="button"
+            class="header"
+            part="header"
+            id={this.headingId}
+            aria-expanded={ariaExpanded}
+            aria-controls={this.panelId}
+            aria-disabled={ariaDisabled}
+            disabled={isDisabled}
+            tabindex={tabIndex}
+            onClick={this.handleClick}
+            onKeyDown={this.handleKeyDown}
+          >
+            {isIconLeft && triggerIcon}
+            <span class="lead">
+              <span class={{ 'icon-start': true, 'has-content': this.hasIconStart }}>
+                <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
+              </span>
+              <span class="text-group">
+                <span class={{ 'heading': true, 'has-slot': this.hasHeadingSlot }}>
+                  <slot name="heading" onSlotchange={this.onHeadingSlotChange}>
+                    {this.heading}
+                  </slot>
+                </span>
+                <span
+                  class={{
+                    'supporting': true,
+                    'has-slot': this.hasSupportingSlot,
+                    'has-content': Boolean(this.supportingText) || this.hasSupportingSlot,
+                  }}
+                >
+                  <slot name="supporting" onSlotchange={this.onSupportingSlotChange}>
+                    {this.supportingText}
+                  </slot>
+                </span>
+              </span>
             </span>
-            <span
-              class={{
-                'supporting': true,
-                'has-slot': this.hasSupportingSlot,
-                'has-content': Boolean(this.supportingText) || this.hasSupportingSlot,
-              }}
-            >
-              <slot name="supporting" onSlotchange={this.onSupportingSlotChange}>
-                {this.supportingText}
-              </slot>
-            </span>
-          </span>
+            {!isIconLeft && triggerIcon}
+          </button>
           <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
             <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
           </span>
-          {!isIconLeft && triggerIcon}
-        </button>
+        </div>
         <div
           class="panel"
           part="panel"

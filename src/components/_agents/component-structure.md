@@ -2,7 +2,7 @@
 
 ## Scope
 
-File structure per component, TSX class member order, @Watch rule, and stenciljs skill corrections. **Read when scaffolding a new component.**
+File structure per component, TSX class member order, @Watch rule, and common Stencil mistake corrections. **Read when scaffolding a new component.**
 
 ## Contents
 
@@ -47,9 +47,13 @@ src/components/mud-[name]/
 
 ### @Watch Rule
 
-**Forbidden** for side effects or state cascades.
+**Allowed:** validating the new value, deriving `@State` from it, syncing a native DOM property
+that has no attribute equivalent, syncing `internals.setFormValue(value, state)`, and a
+**validation fallback** — assigning a literal to the watched prop inside an `if` block of the
+watcher.
 
-**Allowed** only for syncing native DOM properties without attribute equivalent:
+**Forbidden:** an `async` watcher, and any other write to the watched prop (a computed value, a
+compound assignment, an unconditional reset).
 
 ```typescript
 // ✅ ALLOWED — DOM property sync
@@ -61,23 +65,32 @@ watchChecked(newValue: boolean) {
   }
 }
 
-// ❌ FORBIDDEN — side effects
+// ✅ ALLOWED — validation fallback (mud-radio.tsx)
+@Watch('size')
+validateSize(next: RadioSize) {
+  if (!RADIO_SIZES.includes(next)) {
+    console.warn(`[mud-radio] size="${String(next)}" is not supported. Falling back to "md".`);
+    this.size = 'md';
+  }
+}
+
+// ❌ FORBIDDEN — async watcher, computed write to the watched prop
 @Watch('value')
-watchValue(newValue: string) {
-  this.doApiCall(newValue);    // Use @Listen or lifecycle instead
-  this.someOtherState = newValue;
+async watchValue(newValue: string) {
+  await this.doApiCall(newValue); // Use an event handler or lifecycle instead
+  this.value = newValue.trim();
 }
 ```
+
+Enforced by `yarn audit:stencil-contract` (`STENCIL-WATCH-ASYNC`, `STENCIL-WATCH-WRITES-WATCHED`;
+report-only, not a CI gate). Whether a literal write inside an `if` really is validation is not
+decidable from source and stays a review question.
 
 ---
 
 ## TypeScript Strict Mode
 
-**Canonical rules in `_agents/typescript-strict.md` (root).** Key reminders:
-
-- All `@Element()` / `@Event()` / `@AttachInternals()` → use `!` assertion
-- Object maps → `Record<string, T>` annotation
-- Optional chaining → always `?? ''` or `?? fallback`
+Decorator properties use `!`, object maps use `Record<>`, optional chains use `??`. Full rules: `_agents/typescript-strict.md` (root, canonical).
 
 ---
 
@@ -169,13 +182,13 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 
 ## Common Stencil Component Mistakes
 
-| Skill Says | Correct |
+| Model assumes | Correct |
 | --- | --- |
 | `my-component` prefix | Always **`mud-*`** prefix |
 | `@Prop({ reflect: true })` "use sparingly" | **Reflect most props** — variant, size, disabled, etc. |
-| Member order: Element → State → Props | `@Prop` → `@State` → `@Element` → `@AttachInternals` → `@Event` → `@Watch` → `@Listen` → Lifecycle → Private → `render()` |
+| Member order: Element → State → Props | The order in [§ TSX Class Member Order](#tsx-class-member-order) |
 | No token integration | Always use CSS custom properties from tokens |
 | No `::slotted()` patterns | Use `::slotted(*)` for slot-based components |
 | No `:host([attr])` patterns | Use `:host([variant='x'])`, `:host([size='y'])` |
-| Generic `@Event() itemSelected` | Use `cor` prefix: `@Event() mudButtonClick` |
+| Generic `@Event() itemSelected` | Use `mud` prefix: `@Event() mudButtonClick` |
 | No slot validation | Use `invalidSlottedTag()` from `src/utils/` |

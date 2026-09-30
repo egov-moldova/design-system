@@ -44,13 +44,16 @@ afterEach(() => {
 describe('05-story-exports: helpers', () => {
   describe('buildStoryId', () => {
     it('kebab-cases title segments and story name', () => {
-      assert.equal(buildStoryId('Atoms/Button', 'Default'), 'atoms-button--default');
-      assert.equal(buildStoryId('Molecules/Tooltip', 'AllSizes'), 'molecules-tooltip--all-sizes');
-      assert.equal(buildStoryId('Templates/CalendarGrid', 'EventLog'), 'templates-calendar-grid--event-log');
+      assert.equal(buildStoryId('Components/Button', 'Default'), 'components-button--default');
+      assert.equal(buildStoryId('Components/Tooltip', 'AllSizes'), 'components-tooltip--all-sizes');
+      // Only the export name is split into words; Storybook lowercases a
+      // title segment whole, so `CalendarGrid` is `calendargrid`.
+      // scripts/__tests__/audit/story-id.spec.mjs anchors this to its `toId`.
+      assert.equal(buildStoryId('Templates/CalendarGrid', 'EventLog'), 'templates-calendargrid--event-log');
     });
 
     it('handles multi-word PascalCase story names', () => {
-      assert.equal(buildStoryId('Atoms/Foo', 'AllVariantsTable'), 'atoms-foo--all-variants-table');
+      assert.equal(buildStoryId('Components/Foo', 'AllVariantsTable'), 'components-foo--all-variants-table');
     });
   });
 
@@ -60,12 +63,12 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'a',
           `
-        export default { title: 'Atoms/Button', component: 'mud-button' };
+        export default { title: 'Components/Button', component: 'mud-button' };
         export const Default = {};
       `,
         ),
       );
-      assert.equal(extractStoryTitle(sf), 'Atoms/Button');
+      assert.equal(extractStoryTitle(sf), 'Components/Button');
     });
 
     it('extracts title from variable + default reference (CSF3 idiom)', () => {
@@ -73,13 +76,13 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'b',
           `
-        const meta = { title: 'Molecules/Tooltip', component: 'mud-tooltip' };
+        const meta = { title: 'Components/Tooltip', component: 'mud-tooltip' };
         export default meta;
         export const Default = {};
       `,
         ),
       );
-      assert.equal(extractStoryTitle(sf), 'Molecules/Tooltip');
+      assert.equal(extractStoryTitle(sf), 'Components/Tooltip');
     });
 
     it('extracts title from meta satisfies Meta', () => {
@@ -88,12 +91,12 @@ describe('05-story-exports: helpers', () => {
           'c',
           `
         import type { Meta } from '@storybook/web-components-vite';
-        const meta = { title: 'Atoms/Foo', component: 'mud-foo' } satisfies Meta;
+        const meta = { title: 'Components/Foo', component: 'mud-foo' } satisfies Meta;
         export default meta;
       `,
         ),
       );
-      assert.equal(extractStoryTitle(sf), 'Atoms/Foo');
+      assert.equal(extractStoryTitle(sf), 'Components/Foo');
     });
 
     it('returns null when no title is found', () => {
@@ -108,7 +111,7 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'e',
           `
-        export default { title: 'Atoms/Foo' };
+        export default { title: 'Components/Foo' };
         export const Default = {};
         export const AllVariants = {};
         export const ManualControl = {};
@@ -170,7 +173,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
     const p = tempStoriesFile(
       'test',
       `
-      export default { title: 'Atoms/Test', component: 'mud-test' };
+      export default { title: 'Components/Test', component: 'mud-test' };
       export const Default = { args: {} };
       export const AllVariants = { args: {} };
     `,
@@ -178,7 +181,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
     const { stories, coverage, findings } = analyzeStoriesFile(p, 'mud-test');
     assert.equal(stories.length, 2);
     assert.equal(stories[0].name, 'Default');
-    assert.equal(stories[0].storyId, 'atoms-test--default');
+    assert.equal(stories[0].storyId, 'components-test--default');
     assert.equal(coverage.Default, 'Default');
     assert.equal(coverage.AllVariants, 'AllVariants');
     // No warnings — Default is present
@@ -189,7 +192,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
     const p = tempStoriesFile(
       'test',
       `
-      export default { title: 'Atoms/Test' };
+      export default { title: 'Components/Test' };
       export const Primary = {};
     `,
     );
@@ -203,7 +206,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
     const p = tempStoriesFile(
       'empty',
       `
-      export default { title: 'Atoms/Empty' };
+      export default { title: 'Components/Empty' };
     `,
     );
     const { findings } = analyzeStoriesFile(p, 'mud-empty');
@@ -218,7 +221,7 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'missing-dynamic',
       `
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const Default = {
         render: (args) => \`<mud-x />\`,
         parameters: {
@@ -241,7 +244,7 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'with-dynamic',
       `
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const Default = {
         render: (args) => \`<mud-x />\`,
         parameters: {
@@ -263,7 +266,7 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'args-any',
       `
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const Default = {
         parameters: {
           docs: {
@@ -286,7 +289,7 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'args-typed',
       `
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const Default = {
         parameters: {
           docs: {
@@ -308,7 +311,7 @@ describe('05-story-exports: docs.source contract', () => {
       'composite-no-code',
       `
       const VARIANTS = ['a', 'b'];
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const AllVariants = {
         parameters: { controls: { disable: true } },
         render: () => \`<div>\${VARIANTS.map(v => \`<mud-x variant="\${v}"></mud-x>\`).join('')}</div>\`,
@@ -327,7 +330,7 @@ describe('05-story-exports: docs.source contract', () => {
       `
       const VARIANTS = ['a', 'b'];
       const docsSource = VARIANTS.map(v => \`<mud-x variant="\${v}"></mud-x>\`).join('\\n');
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const AllVariants = {
         parameters: {
           controls: { disable: true },
@@ -345,7 +348,7 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'composite-clean-render',
       `
-      export default { title: 'Atoms/X', component: 'mud-x' };
+      export default { title: 'Components/X', component: 'mud-x' };
       export const Plain = {
         parameters: { controls: { disable: true } },
         render: () => \`<mud-x></mud-x>\`,

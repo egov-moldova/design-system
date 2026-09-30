@@ -7,16 +7,13 @@
  * `disabled` is not universal across slottable MUD controls. That is a claim
  * about this repo, so it needs a way to be recounted rather than trusted.
  *
- * Counts by the `@Component({ tag: … })` decorator, not by directory. Nine
- * components ship from five siblings' directories — the four `mud-header-*`
- * inside `mud-header/`, two `mud-sidebar-*`, `mud-menu-item`, `mud-tab` and
- * `mud-breadcrumb-item` — so a per-directory count undercounts, and a glob over
- * every `.tsx` in a directory over-counts against a directory denominator. Both
- * mistakes were made before this script existed; `--list` against a listing of
- * the component directories re-derives the nine.
- *
- * `src/legacy/` is excluded on purpose: those `cor-*` components are archived and
- * unshipped, and the claim this script serves is about the `mud-*` set.
+ * Counts by the `@Component({ tag: … })` decorator, not by directory. Five
+ * components ship from four siblings' directories — two `mud-sidebar-*`,
+ * `mud-menu-item`, `mud-tab` and `mud-breadcrumb-item` — so a per-directory
+ * count undercounts, and a glob over every `.tsx` in a directory over-counts
+ * against a directory denominator. Both mistakes were made before this script
+ * existed; `--list` against a listing of the component directories re-derives
+ * the five.
  *
  * The right-hand anchor on DISABLED_PROP is load-bearing, not tidiness:
  * `mud-date-picker` declares `@Prop() disabledDates?: string[]` and no `disabled`

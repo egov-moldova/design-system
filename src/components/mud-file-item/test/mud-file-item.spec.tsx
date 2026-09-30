@@ -2,6 +2,9 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-file-item';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
+import { FILE_ITEM_MESSAGES } from '../mud-file-item.messages';
+import type { FileItemMessages } from '../mud-file-item.messages';
 import { FILE_ITEM_STATES } from '../mud-file-item.types';
 
 const queryFilename = (root: Element | null | undefined): HTMLElement | null =>
@@ -53,7 +56,14 @@ describe('mud-file-item', () => {
 
     it('renders human-readable size in KB', async () => {
       const { root } = await render(<mud-file-item filename="x.pdf" size={2048}></mud-file-item>);
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
+    });
+
+    it('formats a fractional size with the locale decimal separator, not always "."', async () => {
+      const { root: ro } = await render(<mud-file-item filename="x.pdf" size={1536} locale="ro-MD"></mud-file-item>);
+      expect(queryMeta(ro)?.textContent).toBe('1,5 KB');
+      const { root: en } = await render(<mud-file-item filename="x.pdf" size={1536} locale="en-US"></mud-file-item>);
+      expect(queryMeta(en)?.textContent).toBe('1.5 KB');
     });
 
     it('renders human-readable size in MB', async () => {
@@ -76,14 +86,14 @@ describe('mud-file-item', () => {
         <mud-file-item state="error" filename="x.pdf" size={2048} error-text="Fișier prea mare"></mud-file-item>,
       );
       // Size stays in the meta line; the message renders below the divider.
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
       const msg = root?.shadowRoot?.querySelector('.error-message');
       expect(msg?.textContent).toBe('Fișier prea mare');
     });
 
     it('renders the size and no message when state="error" but error-text is empty', async () => {
       const { root } = await render(<mud-file-item state="error" filename="x.pdf" size={2048}></mud-file-item>);
-      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(queryMeta(root)?.textContent).toBe('2 KB');
       expect(root?.shadowRoot?.querySelector('.error-message')).toBeNull();
     });
 
@@ -223,4 +233,33 @@ describe('mud-file-item', () => {
       expect(tip?.textContent).toBe(longName);
     });
   });
+});
+
+describeLocales<FileItemMessages>('mud-file-item', FILE_ITEM_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { filename: 'x.pdf' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.removeLabel !== undefined) attrs['remove-label'] = String(props.removeLabel);
+    const { root } = await render(
+      <mud-file-item {...attrs}></mud-file-item>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'removeLabel')
+      return host.shadowRoot?.querySelector('button.remove')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { removeLabel: 'removeLabel' },
+  unreachable: {
+    sizeUnitBytes:
+      'the unit renders merged with the formatted number ("512 B"), never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitKB:
+      'the unit renders merged with the formatted number ("2.0 KB"), never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitMB:
+      'the unit renders merged with the formatted number, never isolated — covered by the component’s own size-formatting tests',
+    sizeUnitGB:
+      'the unit renders merged with the formatted number, never isolated — covered by the component’s own size-formatting tests',
+  },
 });

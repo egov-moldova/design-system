@@ -1,0 +1,11 @@
+@media (max-width: 640px) {
+  .box {
+    display: none;
+  }
+}
+
+@container card (max-width: 520px) {
+  .box {
+    display: none;
+  }
+}

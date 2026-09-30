@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro-MD">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mud-toast · @egovmd/mud-web-components</title>
+    <title>mud-toast · @egov-moldova/mud-web-components</title>
   </head>
   <body data-component="mud-toast">
     <main class="demo-main">
@@ -13,31 +13,29 @@
         <div class="subsection">
           <h3>Variants (info / warning / success / error)</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast variant="info" title-text="Informație">
-              Cererea dumneavoastră a fost înregistrată cu succes.
-            </mud-toast>
-            <mud-toast variant="warning" title-text="Atenție">Sesiunea expiră în 5 minute.</mud-toast>
-            <mud-toast variant="success" title-text="Succes">Documentul a fost semnat electronic.</mud-toast>
-            <mud-toast variant="error" title-text="Eroare">IDNP-ul introdus nu este valid.</mud-toast>
+            <mud-toast variant="info" title-text="Information"> Your request was registered successfully. </mud-toast>
+            <mud-toast variant="warning" title-text="Attention">The session expires in 5 minutes.</mud-toast>
+            <mud-toast variant="success" title-text="Success">The document was signed electronically.</mud-toast>
+            <mud-toast variant="error" title-text="Error">The entered IDNP is not valid.</mud-toast>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Text-only (no heading)</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast variant="info">Se sincronizează datele…</mud-toast>
-            <mud-toast variant="success">Modificările au fost salvate.</mud-toast>
+            <mud-toast variant="info">Syncing data…</mud-toast>
+            <mud-toast variant="success">The changes were saved.</mud-toast>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Close button (default) + not closable</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast id="demo-toast-closable" variant="info" title-text="Actualizare disponibilă">
-              O nouă versiune a portalului este gata de instalare.
+            <mud-toast id="demo-toast-closable" variant="info" title-text="Update available">
+              A new version of the portal is ready to install.
             </mud-toast>
-            <mud-toast variant="success" closable="false" title-text="Salvat automat">
-              Nu este necesară nicio acțiune.
+            <mud-toast variant="success" closable="false" title-text="Saved automatically">
+              No action is needed.
             </mud-toast>
           </div>
         </div>
@@ -45,9 +43,9 @@
         <div class="subsection">
           <h3>Inline link (actions slot)</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast variant="info" title-text="Sesiunea va expira">
-              Salvați modificările pentru a evita pierderea datelor.
-              <mud-link slot="actions" href="#" underline="always" variant="white">Prelungește sesiunea</mud-link>
+            <mud-toast variant="info" title-text="Session about to expire">
+              Save your changes to avoid losing data.
+              <mud-link slot="actions" href="#" underline="always" variant="white">Extend session</mud-link>
             </mud-toast>
           </div>
         </div>
@@ -55,9 +53,9 @@
         <div class="subsection">
           <h3>Slots — custom icon-start</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast variant="info" title-text="Pictogramă personalizată">
-              <mud-icon slot="icon-start" name="sparkles-filled" size="24"></mud-icon>
-              Funcție nouă: semnătura mobilă.
+            <mud-toast variant="info" title-text="Custom icon">
+              <mud-icon slot="icon-start" name="sparkles" variant="filled" size="24"></mud-icon>
+              New feature: the mobile signature.
             </mud-toast>
           </div>
         </div>
@@ -65,13 +63,13 @@
         <div class="subsection">
           <h3>Edge cases</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <mud-toast variant="info">Mesaj fără titlu — doar corpul mesajului.</mud-toast>
-            <mud-toast variant="warning" title-text="Corp foarte lung">
-              Acesta este un mesaj deosebit de lung pentru a verifica încadrarea textului pe mai multe rânduri,
-              alinierea pictogramei la prima linie și poziționarea butonului de închidere atunci când conținutul
-              depășește înălțimea unei singure linii. Diacritice: ăâîșțĂÂÎȘȚ.
+            <mud-toast variant="info">Message without a title — only the message body.</mud-toast>
+            <mud-toast variant="warning" title-text="Very long body">
+              This is an especially long message to check how the text wraps over several lines, the icon alignment with
+              the first line and the position of the close button when the content exceeds the height of a single line.
+              Accented characters: éüñ.
             </mud-toast>
-            <mud-toast variant="error" title-text="Cuvânt neîntrerupt">
+            <mud-toast variant="error" title-text="Unbroken word">
               Pneumonoultramicroscopicsilicovolcanoconiosisextraordinarwithoutanyspaces
             </mud-toast>
             <mud-toast variant="info" title-text="RTL"> مرحبا بكم في البوابة الإلكترونية للخدمات الحكومية </mud-toast>

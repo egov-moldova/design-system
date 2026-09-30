@@ -5,6 +5,9 @@ www/
 loader/
 storybook-static/
 tokens/generated/
+# Stencil rewrites it on every build and `dx:prepare`; the package ships its own copy in
+# dist/types/. Tracked, it made every pair of open PRs conflict on GitHub.
+src/components.d.ts
 coverage/
 reports/
 
@@ -23,6 +26,12 @@ node_modules/
 .stencil/
 .wireit/
 .playwright-mcp
+.audit-screenshots/
+.audit-figma/
+# Audit verdicts, fix briefs and per-run inputs (scripts/audit/verdict.mjs). Anchored:
+# an unanchored `audit/` would also ignore scripts/audit/.
+/audit/
+/.audit-storybook.json
 .remember/
 .sass-cache/
 .versions/
@@ -38,6 +47,7 @@ node_modules/
 
 custom-elements.json
 styleguide-tokens.json
+tokens/figma-export/
 **/*.tokens.css
 .storybook/stories/assets/*.tokens.json
 

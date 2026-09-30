@@ -80,12 +80,31 @@
   flex: 0 0 auto;
 }
 
+:host([orientation='vertical']) .step--current {
+  /* Column, not row, for this step only: its connector becomes a normal-flow
+     sibling stacked BELOW the body (see `.step--current .connector` below),
+     so it starts right where the body's own — possibly taller,
+     `supportingText`-grown — content ends, rather than at a fixed offset that
+     assumes a single-line body and can land inside the current-step highlight
+     (which covers the whole body, however tall). Every other status keeps the
+     plain fixed-offset connector: uniform pitch, unaffected by this. */
+  flex-direction: column;
+}
+
 /* ---------- Step body (indicator + label) ---------- */
 
 .step-content,
 .step-trigger {
   display: inline-flex;
-  align-items: center;
+  /* Indicator flush at the row's own top, always — regardless of label height
+     (a 2-line `supportingText` label included). `.label-block` below nudges
+     down 2px instead to align centres for the common single-line case, so the
+     indicator's position (and everything measured from it — the connector's
+     fixed top/bottom offsets, the current-step pill's centred band) stays
+     independent of label length. Horizontal re-declares its own
+     `align-items: center` below for its column layout (indicator on top,
+     label under) — a different axis, unaffected by this. */
+  align-items: flex-start;
   gap: var(--stepper-step-indicator-gap);
   padding: 0;
   margin: 0;
@@ -94,11 +113,6 @@
   font: inherit;
   color: inherit;
   text-align: left;
-}
-
-:host([orientation='vertical']) .step-content,
-:host([orientation='vertical']) .step-trigger {
-  align-items: flex-start;
 }
 
 .step-trigger {
@@ -157,6 +171,15 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+
+:host([orientation='vertical']) .label-block {
+  /* Nudges the label down 2px so its first line's centre (10px into the 20px
+     line-height) lands on the indicator's centre (12px into the 24px circle)
+     — confirmed against Figma 39:25050. A margin on the label, not the
+     indicator, so the indicator's own top-edge position stays untouched
+     (see the `align-items: flex-start` comment above). */
+  margin-top: 2px;
 }
 
 .label {
@@ -242,7 +265,9 @@
 
 :host([orientation='vertical']) .step:not(.step--last) {
   /* Each non-last step must be tall enough to host the vertical connector
-   * that drops from its indicator. 84px matches the Figma vertical spacing. */
+   * that drops from its indicator. 54.5px matches the Figma vertical pitch
+   * (39:25050) for a single-line body; a taller `supportingText` body just
+   * grows the step past it, same as before. */
   min-height: var(--stepper-container-vertical-step-min-height);
 }
 
@@ -256,6 +281,30 @@
    * rail floats evenly between circles instead of butting into the lower one. */
   top: calc(var(--stepper-indicator-size) + var(--stepper-container-label-gap));
   bottom: var(--stepper-container-label-gap);
+}
+
+:host([orientation='vertical']) .step--current .connector {
+  /* This step alone switches to normal flow (its `.step--current` is a column,
+   * see above), stacked right after the body instead of pinned at a fixed
+   * offset — the body can be taller than a single line (`supportingText`) and
+   * is fully covered by the current-step highlight, which the fixed offset
+   * above doesn't know about and would sit under. Every other step's connector
+   * keeps the plain fixed-offset rule: uniform pitch, unaffected by this. */
+  position: static;
+  align-self: unset;
+  left: auto;
+  top: auto;
+  bottom: auto;
+  margin-left: calc(var(--stepper-indicator-size) / 2 - var(--_ct) / 2);
+  margin-block: var(--stepper-container-label-gap);
+  flex: 1 0 auto;
+  /* Same length as the fixed-offset connector in the single-line case
+   * (indicator + 2 × labelGap subtracted from the step's own floor) —
+   * flex-grow fills any extra space if the step is taller than that floor. */
+  min-height: calc(
+    var(--stepper-container-vertical-step-min-height) - var(--stepper-indicator-size) -
+      var(--stepper-container-label-gap) * 2
+  );
 }
 
 /* ---------- Compact (mobile dot rail) ----------
@@ -331,10 +380,70 @@
   font-weight: var(--stepper-current-label-font-weight);
 }
 
+/* Vertical-only current-step highlight: a rounded pill behind the indicator +
+   label (Figma 39:25050, node 40:26952 "Current" state — Inspect panel on the
+   row frame reads Width: Fill 256px, Border: 8px / Alignment: Outside, Padding:
+   0). "Outside" means the 8px bleeds beyond the row's own box on all four
+   sides — equally left/right as top/bottom — rather than inset padding, so it
+   doesn't shift the indicator/label inward and doesn't touch the parent's
+   256px column edges. Painted as a `::before` overlay (not real padding) so it
+   bleeds without adding height to the flex item — real padding here inflated
+   the step's box and threw off the indicator-to-indicator pitch (Figma keeps
+   every `.step-desktop` block at a uniform 46.5px regardless of state). */
+:host([orientation='vertical']) .step--current .step-content,
+:host([orientation='vertical']) .step--current .step-trigger {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+}
+
+:host([orientation='vertical']) .step--current .step-content::before,
+:host([orientation='vertical']) .step--current .step-trigger::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  /* Covers the whole row (indicator + label, including a taller supportingText
+     line) — not just an indicator-sized band — so the highlight reads as one
+     row, matching a plain background highlight. The connector below relies on
+     its own explicit z-index (see `.connector`) to stay visible on top of this
+     rather than the pill stopping short of it. */
+  inset: calc(var(--stepper-current-highlight-padding) * -1);
+  background: var(--stepper-current-highlight-background);
+  /* An outside stroke traces the inner shape at a constant offset, so its own
+     corner radius is the inner radius plus the offset (4px + 8px = 12px) —
+     using the inner 4px directly here looks flatter than Figma at this box
+     size. */
+  border-radius: calc(var(--stepper-current-highlight-border-radius) + var(--stepper-current-highlight-padding));
+}
+
+/* Compact dot rail has no label to highlight — a full-width pill with nothing
+   in it just reads as a stray bar, so the vertical current-step treatment is
+   suppressed here (numbers/labels are already hidden by `.is-compact`). */
+:host(.is-compact) .step--current .step-content,
+:host(.is-compact) .step--current .step-trigger {
+  width: auto;
+}
+
+:host(.is-compact) .step--current .step-content::before,
+:host(.is-compact) .step--current .step-trigger::before {
+  content: none;
+}
+
+:host(.is-compact) .step--current .indicator {
+  /* Restore the hollow ring — no pill behind it to blend into here. */
+  background: var(--stepper-current-indicator-background);
+}
+
+:host([orientation='vertical']) .step--current .indicator {
+  /* Circle fill matches the pill so the ring reads as an outline, not a cutout. */
+  background: var(--stepper-current-highlight-background);
+}
+
 /* ---------- State: COMPLETED ---------- */
 
 .step--completed .indicator {
   border-color: var(--stepper-completed-indicator-border);
+  border-width: var(--stepper-completed-indicator-border-width);
   background: var(--stepper-completed-indicator-background);
   color: var(--stepper-completed-indicator-text);
 }
@@ -365,22 +474,16 @@
   color: var(--stepper-available-indicator-text);
 }
 
+/* ---------- Completed / available labels are plain neutral text ----------
+ * Matches the vertical flow reference (39:25050, e.g. the "Date solicitant"
+ * text node): no brand colour, no underline, on every status but `current` —
+ * unified across both orientations, 2026-09-24, so horizontal reads the same
+ * way as vertical rather than following the older brand-underlined-link
+ * treatment (was per 639:11170 / 639:11225 / 634:11061). */
+.step--completed .label,
 .step--available .label {
-  color: var(--stepper-available-label);
-}
-
-/* ---------- Navigable (actionable) labels render as brand underlined links ----------
- * Per Figma 639:11170 / 639:11225: completed + available steps that are clickable
- * (interactive mode) get a brand colour + underline. `current` stays neutral. */
-
-.step--actionable.step--completed .label {
-  color: var(--stepper-completed-label-actionable);
-}
-
-.step--actionable.step--completed .label,
-.step--actionable.step--available .label {
-  text-decoration: underline;
-  text-underline-position: from-font;
+  color: var(--stepper-label-color);
+  text-decoration: none;
 }
 
 /* ---------- Disabled (in interactive mode) ---------- */

@@ -23,11 +23,29 @@
   box-sizing: border-box;
 }
 
+/* Date Range Picker variant (159:905) spaces its rows 6px apart, not 8px. */
+:host(.mode-range) {
+  --_container-gap: var(--date-picker-container-range-gap);
+}
+
+/* Bottom sheet (797:37918): the sheet has no padding; each row carries its own. */
 :host(.breakpoint-mobile) {
   --_container-width: 100%;
   --_container-padding: var(--date-picker-container-padding-mobile);
+  --_container-gap: var(--date-picker-sheet-gap);
   box-shadow: none;
   border-radius: var(--border-radius-12) var(--border-radius-12) 0 0;
+}
+
+:host(.breakpoint-mobile) .header {
+  padding-inline: var(--date-picker-sheet-header-padding-inline);
+}
+
+:host(.breakpoint-mobile) .day-grid,
+:host(.breakpoint-mobile) .month-grid,
+:host(.breakpoint-mobile) .year-grid {
+  padding-block: var(--date-picker-sheet-content-padding-block);
+  padding-inline: var(--date-picker-sheet-content-padding-inline);
 }
 
 :host(.breakpoint-docked) {
@@ -43,7 +61,7 @@
   background-color: var(--date-picker-drag-handle-background);
   border-radius: var(--date-picker-drag-handle-border-radius);
   align-self: center;
-  margin-block-end: var(--spacing-8);
+  margin-block: var(--date-picker-sheet-drag-handle-padding);
 }
 
 /* ---------- Header ---------- */
@@ -122,7 +140,7 @@
   flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  gap: var(--date-picker-header-gap);
+  gap: var(--date-picker-header-dropdown-group-gap);
   min-inline-size: 0;
 }
 
@@ -130,12 +148,13 @@
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
-  padding-block: var(--spacing-4);
-  padding-inline: var(--spacing-8);
+  gap: var(--date-picker-header-dropdown-gap);
+  block-size: var(--date-picker-header-dropdown-height);
+  padding-block: 0;
+  padding-inline: var(--date-picker-header-dropdown-padding-start) var(--date-picker-header-dropdown-padding-end);
   background: transparent;
   border: 0;
-  border-radius: var(--border-radius-6);
+  border-radius: var(--date-picker-header-dropdown-border-radius);
   cursor: pointer;
   font-family: var(--date-picker-header-title-font-family);
   font-weight: var(--date-picker-header-title-font-weight);
@@ -146,9 +165,12 @@
   transition: background-color var(--_transition-duration) var(--_transition-easing);
 }
 
-.dropdown-trigger:hover,
-.dropdown-trigger.is-open {
-  background-color: var(--color-background-base-tertiary);
+.dropdown-trigger:hover {
+  background-color: var(--date-picker-header-dropdown-background-hover);
+}
+
+.dropdown-trigger:active {
+  background-color: var(--date-picker-header-dropdown-background-active);
 }
 
 .dropdown-trigger:focus-visible {
@@ -201,7 +223,7 @@
   padding: 0;
   margin: 0;
   background: transparent;
-  border: var(--date-picker-day-cell-border-width) solid transparent;
+  border: 0;
   border-radius: var(--date-picker-day-cell-border-radius);
   font-family: var(--date-picker-day-cell-font-family);
   font-weight: var(--date-picker-day-cell-font-weight);
@@ -213,7 +235,7 @@
   transition:
     background-color var(--_transition-duration) var(--_transition-easing),
     color var(--_transition-duration) var(--_transition-easing),
-    border-color var(--_transition-duration) var(--_transition-easing);
+    box-shadow var(--_transition-duration) var(--_transition-easing);
 }
 
 .day-cell:hover:not(:disabled):not(.is-selected) {
@@ -221,28 +243,36 @@
   color: var(--date-picker-day-cell-hover-color);
 }
 
-/* Focus = Figma "Focus Ring/Small": 1px container-bg halo + 3px brand ring,
-   drawn as stacked box-shadows. No border-color override — a focused normal
-   cell must NOT mimic the today cell's brand border. */
+/* Focus = Figma "Focus Ring/Small" (494:13074): a 1px container-bg halo inside
+   a brand band that ends 3px out. */
 .day-cell:focus-visible {
   outline: 0;
   box-shadow:
     0 0 0 var(--date-picker-day-cell-focus-ring-offset) var(--_container-bg),
-    0 0 0 calc(var(--date-picker-day-cell-focus-ring-offset) + var(--date-picker-day-cell-focus-ring-width))
-      var(--date-picker-day-cell-focus-ring);
+    0 0 0 var(--date-picker-day-cell-focus-ring-width) var(--date-picker-day-cell-focus-ring);
 }
 
 .day-cell.is-outside {
   color: var(--date-picker-day-cell-outside-month-color);
 }
 
+/* Today ring (158:1569, 1.5px). Drawn as an inset shadow: Chromium snaps a
+   1.5px border down to 1px at every device-pixel ratio. */
 .day-cell.is-today:not(.is-selected) {
   color: var(--date-picker-day-cell-today-color);
-  border-color: var(--date-picker-day-cell-today-border-color);
+  box-shadow: inset 0 0 0 var(--date-picker-day-cell-border-width) var(--date-picker-day-cell-today-border-color);
+}
+
+.day-cell.is-today:not(.is-selected):focus-visible {
+  box-shadow:
+    0 0 0 var(--date-picker-day-cell-focus-ring-offset) var(--_container-bg),
+    0 0 0 var(--date-picker-day-cell-focus-ring-width) var(--date-picker-day-cell-focus-ring),
+    inset 0 0 0 var(--date-picker-day-cell-border-width) var(--date-picker-day-cell-today-border-color);
 }
 
 .day-cell.is-today:not(.is-selected):hover {
   background-color: var(--date-picker-day-cell-today-hover-background);
+  color: var(--date-picker-day-cell-today-hover-color);
 }
 
 .day-cell.is-middle {
@@ -256,7 +286,6 @@
 .day-cell.range-end {
   background-color: var(--date-picker-day-cell-selected-background);
   color: var(--date-picker-day-cell-selected-color);
-  border-color: transparent;
 }
 
 .day-cell.is-selected:hover {
@@ -287,7 +316,13 @@
   display: grid;
   /* 4 columns × 3 rows for the 12-cell month/year pickers, per the Figma. */
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--date-picker-month-grid-row-gap);
+  row-gap: var(--date-picker-month-grid-row-gap);
+  column-gap: var(--date-picker-month-grid-column-gap);
+}
+
+.year-grid {
+  row-gap: var(--date-picker-year-grid-row-gap);
+  column-gap: var(--date-picker-year-grid-column-gap);
 }
 
 .picker-cell {

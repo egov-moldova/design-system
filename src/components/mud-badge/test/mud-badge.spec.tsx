@@ -1,9 +1,12 @@
 import { render, h, describe, it, expect } from '@stencil/vitest';
 
+import { describeLocales } from '../../../utils/locale.test-helpers';
 // Side-effect import: stencilVitestPlugin appends a customElements.define call
 // so the element is registered before render().
 import '../mud-badge';
 
+import { BADGE_MESSAGES } from '../mud-badge.messages';
+import type { BadgeMessages } from '../mud-badge.messages';
 import type { BadgeSize, BadgeType, BadgeVariant } from '../mud-badge.types';
 
 const TYPES: BadgeType[] = ['numbered', 'dot'];
@@ -100,31 +103,57 @@ describe('mud-badge', () => {
     expect(root?.shadowRoot?.querySelector('.badge-count')).toBeFalsy();
     expect(root?.shadowRoot?.querySelector('.badge-dot')).toBeFalsy();
     // Still announces a meaningful accessible name.
-    expect(root?.getAttribute('aria-label')).toBe('Notification');
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
-  it('uses the visible count as the accessible name when no ariaLabel is set', async () => {
+  it('uses the visible count as the accessible name when no aria-label is set', async () => {
     const { root } = await render(<mud-badge count={3} />);
     expect(root?.getAttribute('aria-label')).toBe('3');
   });
 
-  it('falls back to "Notification" for dot type with no ariaLabel', async () => {
+  it('falls back to the locale notification label for dot type with no aria-label', async () => {
     const { root } = await render(<mud-badge type="dot" />);
-    expect(root?.getAttribute('aria-label')).toBe('Notification');
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
-  it('falls back to "Notification" for numbered type with no count and no ariaLabel', async () => {
+  it('falls back to the locale notification label for numbered type with no count and no aria-label', async () => {
     const { root } = await render(<mud-badge type="numbered" />);
-    expect(root?.getAttribute('aria-label')).toBe('Notification');
+    expect(root?.getAttribute('aria-label')).toBe(BADGE_MESSAGES['ro-MD'].notificationLabel);
   });
 
-  it('honors a custom ariaLabel override', async () => {
-    const { root } = await render(<mud-badge count={5} ariaLabel="5 unread messages" />);
+  it('honors a custom aria-label override', async () => {
+    const { root } = await render(<mud-badge count={5} aria-label="5 unread messages" />);
     expect(root?.getAttribute('aria-label')).toBe('5 unread messages');
   });
 
+  it('keeps the accessible name in step with the count', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} />);
+    expect(root?.getAttribute('aria-label')).toBe('3');
+
+    // The host's own `aria-label` write is read back by whatever names the
+    // host. Treating that echo as the consumer's label pinned the name to the
+    // first rendered count — and this is a live region, so every later change
+    // announced the stale value while the pill showed the new one.
+    (root as HTMLMudBadgeElement).count = 7;
+    await waitForChanges();
+    expect(root?.getAttribute('aria-label')).toBe('7');
+
+    (root as HTMLMudBadgeElement).count = 150;
+    await waitForChanges();
+    expect(root?.getAttribute('aria-label')).toBe('99+');
+  });
+
+  it('keeps a consumer aria-label across a count change', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} aria-label="3 unread messages" />);
+
+    (root as HTMLMudBadgeElement).count = 9;
+    await waitForChanges();
+    // Their label is theirs: re-applying the fallback must not overwrite it.
+    expect(root?.getAttribute('aria-label')).toBe('3 unread messages');
+  });
+
   it('exposes the WCAG-required live-status contract', async () => {
-    const { root } = await render(<mud-badge count={1} ariaLabel="1 notification" />);
+    const { root } = await render(<mud-badge count={1} aria-label="1 notification" />);
 
     expect(root?.getAttribute('role')).toBe('status');
     expect(root?.getAttribute('aria-live')).toBe('polite');
@@ -137,6 +166,30 @@ describe('mud-badge', () => {
     expect(root?.shadowRoot?.querySelector('.badge-count')?.textContent).toBe('');
   });
 
+  it('defaults disabled to false and leaves no disabled attribute on the host', async () => {
+    const { root } = await render(<mud-badge count={3} />);
+    expect((root as HTMLMudBadgeElement).disabled).toBe(false);
+    expect(root?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('reflects the disabled property onto the host so the disabled design applies', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} />);
+    (root as HTMLMudBadgeElement).disabled = true;
+    await waitForChanges();
+    expect(root?.hasAttribute('disabled')).toBe(true);
+
+    (root as HTMLMudBadgeElement).disabled = false;
+    await waitForChanges();
+    expect(root?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('keeps the live-status contract when disabled — no aria-disabled on role=status', async () => {
+    const { root } = await render(<mud-badge count={3} disabled />);
+    expect(root?.getAttribute('role')).toBe('status');
+    expect(root?.getAttribute('aria-label')).toBe('3');
+    expect(root?.getAttribute('aria-disabled')).toBeNull();
+  });
+
   // Coverage guard — exercises the stencilVitestPlugin-injected constructor
   // branch (`if (registerHost !== false) { ... }`). Without this, coverage
   // for the compiled constructor branches caps at 50%.
@@ -146,4 +199,22 @@ describe('mud-badge', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+});
+
+describeLocales<BadgeMessages>('mud-badge', BADGE_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { type: 'dot' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.notificationLabel !== undefined) attrs['notification-label'] = String(props.notificationLabel);
+    const { root } = await render(
+      <mud-badge {...attrs}></mud-badge>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'notificationLabel') return host.getAttribute('aria-label');
+    return null;
+  },
+  overrides: { notificationLabel: 'notificationLabel' },
 });

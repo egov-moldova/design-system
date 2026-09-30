@@ -2,6 +2,18 @@
 
 This document explains how to create OS/environment-specific skill overrides for Claude Code.
 
+## Prerequisite: `superpowers` plugin
+
+`superpowers:systematic-debugging` and `superpowers:verification-before-completion`
+(see the table below) come from the `superpowers` Claude Code plugin. It is
+installed globally by each developer, not declared in this project's
+`.claude/settings.json`, so it is never loaded twice. Install it once, from any
+Claude Code session, before using either skill:
+
+```text
+/plugin install superpowers@claude-plugins-official
+```
+
 ## Quick Start
 
 ```bash
@@ -63,12 +75,27 @@ npx wait-on http://localhost:6006 --timeout 3000
 |-------|-------------|----------------------|--------|
 | `figma-illustration-import` | Import Figma vector illustrations as Stencil components | No | Active |
 | `token-creation` | Token creation patterns and naming conventions | No | Active |
-| `systematic-debugging` | Root-cause investigation before any fix. 4-phase discipline. | No | Active — reference from `/fix-visual-bug` Step 0 |
-| `verification-before-completion` | Evidence-based completion gates. No "Done!" without verified output. | No | Active — reference from `/pre-pr-check`, `/new-component` Step 9 |
-| `skill-creator` | Guide for creating new skills with consistent structure | No | DO NOT PROCEED — use when a new skill creation task arises |
+| `superpowers:systematic-debugging` | Root-cause investigation before any fix. 4-phase discipline. | No | From the globally-installed `superpowers` plugin (see Prerequisite below) — reference from `/fix-visual-bug` Step 0 |
+| `superpowers:verification-before-completion` | Evidence-based completion gates. No "Done!" without verified output. | No | From the globally-installed `superpowers` plugin (see Prerequisite below) — reference from `/pre-pr-check`, the `new-component` agent Step 9 |
 | `accessibility-compliance` | WCAG 2.1 AA criteria, ARIA, keyboard, contrast (light + dark), focus management for Stencil Shadow DOM | Yes (Stencil override may be needed) | Active — required reference for all `mud-*` components. Includes SKILL.md + `references/` (aria-patterns, mobile-accessibility, wcag-guidelines). Used alongside `AGENTS.md` and `src/components/AGENTS.md`. |
-| `stencil-compliance` | Stencil 4.x best practices — decorators, lifecycle, host, JSX/styling, form-associated, reactive data, serialization. 6 reference files + top-25 anti-patterns. | No | Active — invoked by `/audit-component @mud-<name> --deep`, `audit-production` Phase 1, and Wave 1 grep gates in `/pre-pr-check`. |
-| `audit-component` | 3-wave production audit per component. Flags: `--deep` (full Stencil + a11y), `--e2e`, `--fast`. | No | Active — wraps the `/audit-component` slash command logic for reuse from other agents (new-component, refactor-component, migrate-component). |
+| `stencil-compliance` | Script-first run procedure over the pinned Stencil version — decorators, lifecycle, host, JSX/styling, form-associated, reactive data, serialization. As an advisory leg of `--depth deep`, writes `ai-findings.json` into the run (never invokes `verdict.mjs`); its findings are listed, never state-changing. | No | Active — dispatched by `/audit-component @mud-<name> --depth deep` and `audit-production` Phase 1; linked from `/pre-pr-check`. |
+| `pixel-perfect` | Figma verification: state manifest, exact style parity (`15-style-parity`), screenshot diff (`11-pixel-diff-states`), reference export (`figma-refs`). | No | Active — procedure behind `_agents/pixel-perfect-qa.md`; loaded by the `pixel-perfect-verifier` agent. |
+| `audit-component` | Deterministic production audit per component. Flags: `--depth quick\|standard\|deep` (default `standard`); `--fast` (deprecated alias of `--depth quick`), `--e2e` (deprecated alias, folds into `--depth deep`), `--no-figma`, `--no-browser`/`--ci`. | No | Active — is `/audit-component` (no command file); runs the script-computed audit and, at `deep`, its advisory AI legs. Invoked by other agents and commands (new-component, refactor-component, migrate-component, audit-production). |
+
+## Verdict / exit-code contract
+
+`yarn audit:component <name> --depth <d>` (`scripts/audit/verdict.mjs`) is the
+only writer of `audit/<name>/verdict.json` and `audit/<name>/fix-brief.md`,
+rewritten every run. `state` — `INCOMPLETE` → `FAIL` → `NEEDS-DECISION` →
+`PASS`, first match wins — maps to a distinct exit code
+(`scripts/audit/lib/exit-codes.mjs`): `0` PASS, `1` FAIL, `3` INCOMPLETE, `4`
+NEEDS-DECISION, `2` usage/internal error. A gate caller (`pre-pr-check`,
+`/audit-component`, `audit-production`, `new-component`,
+`refactor-component`, `migrate-component`) runs this command and STOPS on a
+non-zero exit status. A leg (`a11y-verifier`, `stencil-compliance`) never
+invokes it — it keeps running its own `run-all --only` evidence pass and, at
+`--depth deep`, closes the AI-leg row the orchestrator opened for it by
+writing `ai-findings.json`.
 
 ## Notes
 

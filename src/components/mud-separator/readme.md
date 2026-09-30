@@ -10,18 +10,19 @@
 Separator — visual divider between groups of content or UI components.
 
 Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
-No events, no interactivity. ARIA `separator` semantics.
+No events, no interactivity. ARIA `separator` semantics. Most separators are
+decorative; give one the native `aria-label` attribute when it marks a
+boundary worth announcing — it stays on the host, which carries the role.
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                                                                                                                                           | Type                                            | Default        |
-| ------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | -------------- |
-| `ariaLabel`   | `aria-label`  | Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement. | `string \| undefined`                           | `undefined`    |
-| `inset`       | `inset`       | Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.                                                                                                | `boolean`                                       | `false`        |
-| `label`       | `label`       | Optional plain-text label rendered inline at the center of the separator. For richer label content (e.g. an icon plus text), use the default slot instead.                                            | `string \| undefined`                           | `undefined`    |
-| `orientation` | `orientation` | Layout orientation of the separator.                                                                                                                                                                  | `"horizontal" \| "vertical"`                    | `'horizontal'` |
-| `size`        | `size`        | Visual thickness of the rule.                                                                                                                                                                         | `"extra-thin" \| "medium" \| "thick" \| "thin"` | `'thin'`       |
-| `variant`     | `variant`     | Color treatment / emphasis.                                                                                                                                                                           | `"mild" \| "strong" \| "subtle"`                | `'subtle'`     |
+| Property      | Attribute     | Description                                                                                                                                                | Type                                            | Default        |
+| ------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | -------------- |
+| `inset`       | `inset`       | Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.                                                     | `boolean`                                       | `false`        |
+| `label`       | `label`       | Optional plain-text label rendered inline at the center of the separator. For richer label content (e.g. an icon plus text), use the default slot instead. | `string \| undefined`                           | `undefined`    |
+| `orientation` | `orientation` | Layout orientation of the separator.                                                                                                                       | `"horizontal" \| "vertical"`                    | `'horizontal'` |
+| `size`        | `size`        | Visual thickness of the rule.                                                                                                                              | `"extra-thin" \| "medium" \| "thick" \| "thin"` | `'thin'`       |
+| `variant`     | `variant`     | Color treatment / emphasis.                                                                                                                                | `"mild" \| "strong" \| "subtle"`                | `'subtle'`     |
 
 
 ## Slots
@@ -44,17 +45,11 @@ No events, no interactivity. ARIA `separator` semantics.
 
 ### Used by
 
- - [mud-cookie-banner](../mud-cookie-banner)
- - [mud-header-mega-menu](../mud-header)
- - [mud-header-mobile](../mud-header)
  - [mud-sidebar-group](../mud-sidebar)
 
 ### Graph
 ```mermaid
 graph TD;
-  mud-cookie-banner --> mud-separator
-  mud-header-mega-menu --> mud-separator
-  mud-header-mobile --> mud-separator
   mud-sidebar-group --> mud-separator
   style mud-separator fill:#f9f,stroke:#333,stroke-width:4px
 ```

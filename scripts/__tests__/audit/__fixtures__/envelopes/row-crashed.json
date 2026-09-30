@@ -1,0 +1,10 @@
+{
+  "id": "01",
+  "name": "structure",
+  "wave": "A",
+  "status": "crashed",
+  "ok": false,
+  "exitCode": 2,
+  "summary": null,
+  "error": "internal error — unexpected token in JSON"
+}

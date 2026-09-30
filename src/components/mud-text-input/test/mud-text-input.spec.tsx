@@ -7,7 +7,11 @@ import '../mud-text-input';
 // environment cannot resolve. We only need to observe that the wrapped
 // element exists in the shadow tree, not that it loads pixels.
 
+import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
+import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from '../mud-text-input.types';
+import { TEXT_INPUT_MESSAGES } from '../mud-text-input.messages';
+import type { TextInputMessages } from '../mud-text-input.messages';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -116,7 +120,7 @@ describe('mud-text-input', () => {
       expect(assistive?.classList.contains('assistive-error')).toBe(true);
       expect(assistive?.textContent).toContain('Required');
       const icon = assistive?.querySelector('mud-icon');
-      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+      expect(icon?.getAttribute('name')).toBe('circle-error');
     });
 
     it('error message takes priority over helper text', async () => {
@@ -360,12 +364,13 @@ describe('mud-text-input', () => {
 
   describe('aria-label capture', () => {
     it('puts aria-label on the inner input when no visible label is present', async () => {
-      const { root } = await render(<mud-text-input ariaLabel="Search"></mud-text-input>);
+      const { root } = await render(<mud-text-input aria-label="Search"></mud-text-input>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Search');
+      expect(root?.hasAttribute('aria-label')).toBe(false);
     });
 
     it('omits aria-label on the input when a visible label is provided', async () => {
-      const { root } = await render(<mud-text-input label="Email" ariaLabel="Other"></mud-text-input>);
+      const { root } = await render(<mud-text-input label="Email" aria-label="Other"></mud-text-input>);
       expect(queryNative(root)?.hasAttribute('aria-label')).toBe(false);
     });
   });
@@ -433,4 +438,78 @@ describe('mud-text-input', () => {
       expect(queryClear(root)).toBeNull();
     });
   });
+});
+
+/**
+ * Renders a text input whose native control reports `flags`, as a browser would (mock-doc has no
+ * constraint validation), then re-runs the component's validity sync against that control.
+ */
+function renderNativeInvalid(flags: Partial<ValidityState>, attrs: Record<string, string> = {}): DescribeLocalesRender {
+  return async (props, ancestorLang) => {
+    const all = { label: 'x', value: 'x', ...attrs, ...propsToAttrs(props) };
+    const { root } = await render(
+      <mud-text-input {...all}></mud-text-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    Object.defineProperty(queryNative(root), 'validity', { value: flags, configurable: true });
+    (root as unknown as { value: string }).value = 'xy';
+    await flush();
+    return root as Element;
+  };
+}
+
+describeLocales<TextInputMessages>('mud-text-input', TEXT_INPUT_MESSAGES, {
+  render: async (props, ancestorLang) => {
+    const attrs: Record<string, string> = { label: 'x', clearable: 'true', value: 'hello' };
+    if (props.locale !== undefined) attrs.locale = String(props.locale);
+    if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
+    const { root } = await render(
+      <mud-text-input {...attrs}></mud-text-input>,
+      ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+    );
+    return root as Element;
+  },
+  read: (host, key) => {
+    if (key === 'clearLabel')
+      return host.shadowRoot?.querySelector('.control-clear')?.getAttribute('aria-label') ?? null;
+    return null;
+  },
+  overrides: { clearLabel: 'clearLabel' },
+  validity: [
+    {
+      key: 'requiredMessage',
+      prop: 'requiredMessage',
+      render: async (props, ancestorLang) => {
+        const attrs: Record<string, string> = { label: 'x', required: 'true', ...propsToAttrs(props) };
+        const { root } = await render(
+          <mud-text-input {...attrs}></mud-text-input>,
+          ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
+        );
+        return root as Element;
+      },
+    },
+    { key: 'patternMismatch', prop: 'patternMismatchMessage', render: renderNativeInvalid({ patternMismatch: true }) },
+    {
+      key: 'tooShort',
+      prop: 'tooShortMessage',
+      render: renderNativeInvalid({ tooShort: true }, { minlength: '5' }),
+      vars: { count: 5, min: 5 },
+    },
+    {
+      key: 'tooLong',
+      prop: 'tooLongMessage',
+      render: renderNativeInvalid({ tooLong: true }, { maxlength: '3' }),
+      vars: { count: 3, max: 3 },
+    },
+    {
+      key: 'typeMismatchEmail',
+      prop: 'typeMismatchEmailMessage',
+      render: renderNativeInvalid({ typeMismatch: true }, { type: 'email' }),
+    },
+    {
+      key: 'typeMismatchUrl',
+      prop: 'typeMismatchUrlMessage',
+      render: renderNativeInvalid({ typeMismatch: true }, { type: 'url' }),
+    },
+  ],
 });

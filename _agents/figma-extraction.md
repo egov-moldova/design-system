@@ -16,9 +16,9 @@ Steps A through A.1.5 of the pre-implementation protocol: Figma screenshot analy
 ## Step A: Extract & Analyze Figma
 
 ```text
-1. figma_get_screenshot({ nodeId: "..." })                          → SEE the design
-2. figma_get_design_context({ nodeId: "...", forceCode: true })     → GET exact specs (always forceCode: true)
-3. figma_get_variable_defs({ nodeId: "..." })                       → GET token values
+1. mcp__figma__get_screenshot({ nodeId: "..." })                          → SEE the design
+2. mcp__figma__get_design_context({ nodeId: "...", forceCode: true })     → GET exact specs (always forceCode: true)
+3. mcp__figma__get_variable_defs({ nodeId: "..." })                       → GET token values
 ```
 
 **After getting the screenshot, DESCRIBE what you see:**
@@ -33,7 +33,7 @@ Steps A through A.1.5 of the pre-implementation protocol: Figma screenshot analy
 
 ## Step A.0.5: Asset Download (if custom graphics present)
 
-After `figma_get_design_context`, check for non-icon assets.
+After `mcp__figma__get_design_context`, check for non-icon assets.
 
 **Download**: Custom illustrations, logos, background images, decorative SVGs
 **Skip**: standard UI icons → handled separately by `mud-icon` component (loaded via Figma-exported SVG set, TBD in next branch)
@@ -53,7 +53,7 @@ After `figma_get_design_context`, check for non-icon assets.
 
 **CRITICAL**: Use Figma MCP to explore behavior/variants/props **BEFORE** visual analysis. Prevents implementing wrong component type or missing states.
 
-### What to Extract via `figma_get_metadata`
+### What to Extract via `mcp__figma__get_metadata`
 
 1. **Component Type**: Is it `COMPONENT` (main) or `INSTANCE` (references main)?
    - If instance → navigate to main component for full variant/prop info
@@ -68,14 +68,14 @@ After `figma_get_design_context`, check for non-icon assets.
 
 ```javascript
 // If INSTANCE → navigate to main component
-figma_get_metadata({ nodeId: "123:456" })
+mcp__figma__get_metadata({ nodeId: "123:456" })
 // Output: "type": "INSTANCE", "mainComponent": { "id": "789:012" }
-figma_get_metadata({ nodeId: "789:012" })
+mcp__figma__get_metadata({ nodeId: "789:012" })
 // Now: full variant/prop structure
 
 // Extract design context from BOTH
-figma_get_design_context({ nodeId: "123:456", forceCode: true })  // Current variant
-figma_get_design_context({ nodeId: "789:012", forceCode: true })  // All variants
+mcp__figma__get_design_context({ nodeId: "123:456", forceCode: true })  // Current variant
+mcp__figma__get_design_context({ nodeId: "789:012", forceCode: true })  // All variants
 ```
 
 ### Subcomponent Identification
@@ -117,7 +117,7 @@ When nested components found:
 
 ```javascript
 // Step 1: Check if parent frame
-const nodeMetadata = figma_get_metadata({ nodeId: "user-provided-id" });
+const nodeMetadata = mcp__figma__get_metadata({ nodeId: "user-provided-id" });
 
 // Step 2: If FRAME with children → scan for instances
 if (nodeMetadata.type === "FRAME" && nodeMetadata.children?.length > 0) {
@@ -130,7 +130,7 @@ if (nodeMetadata.type === "FRAME" && nodeMetadata.children?.length > 0) {
 ### Fallback: Single Instance Provided
 
 1. Extract from that instance
-2. Navigate to main component via `figma_get_metadata`
+2. Navigate to main component via `mcp__figma__get_metadata`
 3. Check main component variants for missing states
 4. **Inform user**: "Found N states in main component. Shall I search parent frame for examples?"
 

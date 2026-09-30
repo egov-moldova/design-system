@@ -2,12 +2,14 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { INLINE_MESSAGE_SIZES, INLINE_MESSAGE_VARIANTS } from './mud-inline-message.types';
 import type { InlineMessageSize, InlineMessageVariant } from './mud-inline-message.types';
+import { ICON_NAMES } from '../mud-icon/mud-icon.types';
+import type { IconName } from '../mud-icon/mud-icon.types';
 
 type InlineMessageArgs = {
   variant: InlineMessageVariant;
   size: InlineMessageSize;
   hideIcon: boolean;
-  iconName: string;
+  iconName: IconName | '';
   text: string;
 };
 
@@ -26,7 +28,7 @@ const cellStyle = 'display: flex; flex-direction: column; gap: var(--spacing-8);
 const rowStyle = 'display: flex; flex-wrap: wrap; gap: var(--spacing-32) var(--spacing-48);';
 
 const meta: Meta<InlineMessageArgs> = {
-  title: 'Atoms/InlineMessage',
+  title: 'Components/InlineMessage',
   component: 'mud-inline-message',
   parameters: {
     layout: 'padded',
@@ -68,7 +70,12 @@ messages use \`mud-toast\` / \`mud-banner\`.
       description: 'Suppress the leading icon (the `icon-none` variation).',
       table: { defaultValue: { summary: 'false' } },
     },
-    iconName: { name: 'icon-name', control: 'text', description: 'Override the default per-variant icon.' },
+    iconName: {
+      name: 'icon-name',
+      control: 'select',
+      options: ['', ...ICON_NAMES],
+      description: 'Override the default per-variant icon. Empty keeps the variant default.',
+    },
     text: { control: 'text', description: 'Message text (default slot).' },
   },
   args: {
@@ -206,12 +213,12 @@ const renderEdgeCases = () => /*html*/ `
     <div style="${cellStyle}">
       <span style="${captionStyle}">long text — wraps, icon stays on first line</span>
       <mud-inline-message variant="warning">
-        Mesajul depășește o singură linie și se înfășoară pe mai multe rânduri, păstrând pictograma aliniată la prima linie.
+        The message exceeds a single line and wraps onto several rows, keeping the icon aligned with the first line.
       </mud-inline-message>
     </div>
     <div style="${cellStyle}">
       <span style="${captionStyle}">custom icon override</span>
-      <mud-inline-message variant="success" icon-name="sparkles-filled">Profil verificat cu succes.</mud-inline-message>
+      <mud-inline-message variant="success" icon-name="sparkles">Profile verified successfully.</mud-inline-message>
     </div>
   </div>
 `;

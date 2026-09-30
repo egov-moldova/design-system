@@ -1,7 +1,13 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from './mud-textarea.types';
 import type { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from './mud-textarea.types';
+import { observeAriaLabel } from '../../utils/aria-label';
+import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import type { LocaleProp } from '../../utils/locale';
+import { TEXTAREA_MESSAGES } from './mud-textarea.messages';
+import type { TextareaMessages } from './mud-textarea.messages';
 
 let textareaInstanceCounter = 0;
 
@@ -97,6 +103,19 @@ export class MudTextarea {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
+   * Language of the built-in copy. Unset, the component follows the closest ancestor `lang`
+   * (`<html lang>` included), else `ro-MD`.
+   */
+  @Prop() locale?: LocaleProp;
+
+  /**
+   * Validation message reported when the field is `required` and empty. Overrides the
+   * `locale`'s copy when set to a non-empty string.
+   * @default 'Completați acest câmp.' (ro-MD)
+   */
+  @Prop({ attribute: 'required-message' }) requiredMessage?: string;
+
+  /**
    * Minimum visible rows for the native control. Drives the initial height
    * floor before the user resizes vertically.
    * @default 4
@@ -117,17 +136,11 @@ export class MudTextarea {
    */
   @Prop({ attribute: 'show-counter' }) showCounter: boolean = true;
 
-  /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present. Captured into `resolvedAriaLabel` on mount and
-   * the host attribute is stripped to avoid Stencil's auto-reflection loop.
-   */
-  @Prop() ariaLabel?: string;
-
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the internal control when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudTextareaElement;
@@ -153,28 +166,37 @@ export class MudTextarea {
   private readonly counterId = `mud-textarea-counter-${this.instanceId}`;
   private initialValue: string = '';
   private nativeEl?: HTMLTextAreaElement;
+  private stopAriaLabel?: () => void;
+  private stopLang?: () => void;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopLang = watchDocumentLang(
+      this.host,
+      () => this.locale,
+      () => {
+        this.syncValidity();
+        forceUpdate(this);
+      },
+    );
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+    this.stopLang?.();
+  }
+
+  /** Built-in strings in the resolved locale, with the override props on top. */
+  private messages(): TextareaMessages {
+    return localeMessages('mud-textarea', this.host, this.locale, TEXTAREA_MESSAGES, {
+      requiredMessage: this.requiredMessage,
+    });
+  }
 
   componentWillLoad() {
-    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
-  }
-
-  /**
-   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
-   * `aria-label` that creates an observer loop (host attr → prop → host attr).
-   * Capture the consumer-provided value into a state field, then strip the
-   * attribute so the loop never fires.
-   */
-  private captureAriaLabel() {
-    const attr = this.host.getAttribute('aria-label');
-    if (attr) {
-      this.resolvedAriaLabel = attr;
-      this.host.removeAttribute('aria-label');
-    } else if (this.ariaLabel) {
-      this.resolvedAriaLabel = this.ariaLabel;
-    }
   }
 
   /**
@@ -186,7 +208,7 @@ export class MudTextarea {
     if (!this.internals) return;
     const value = this.value ?? '';
     if (this.required && value.length === 0) {
-      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
+      this.internals.setValidity({ valueMissing: true }, this.messages().requiredMessage, this.nativeEl);
       return;
     }
     this.internals.setValidity({});
@@ -242,13 +264,10 @@ export class MudTextarea {
     this.syncValidity();
   }
 
-  @Watch('ariaLabel')
-  handleAriaLabelChange(next: string | undefined) {
-    // Guarded against the strip-from-host self-trigger (next will be null/empty
-    // when captureAriaLabel() removes the attribute).
-    if (next && next.length > 0) {
-      this.resolvedAriaLabel = next;
-    }
+  // The validity message is a string handed to `setValidity` once, so a new locale must re-run it.
+  @Watch('locale')
+  handleLocaleChange() {
+    this.syncValidity();
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -352,6 +371,7 @@ export class MudTextarea {
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
+    const lang = hostLang(this.host, this.locale);
     const counterCurrent = (this.value ?? '').length;
     const counterOver = this.isCounterOverLimit();
 
@@ -368,7 +388,7 @@ export class MudTextarea {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} lang={lang}>
         <label class="label" htmlFor={`textarea-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             {this.hasLabelSlot ? null : labelText}
@@ -417,7 +437,13 @@ export class MudTextarea {
           <div class="captions" part="captions">
             {this.hasErrorMessage() ? (
               <div class="assistive assistive-error" id={this.errorId} part="error">
-                <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
+                <mud-icon
+                  class="assistive-icon"
+                  name="circle-error"
+                  variant="filled"
+                  size={20}
+                  color="icon-danger-default"
+                />
                 <span class="assistive-text">{errorText}</span>
               </div>
             ) : this.hasHelperMessage() ? (

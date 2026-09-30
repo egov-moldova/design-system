@@ -248,7 +248,7 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 - **States:** default → hover → active → focus-visible → disabled → loading. Focus indicator uses brand blue at 1.5px outline plus 2px offset; visible against every surface.
 - **Hover / Focus:** 150ms `ease-out` transition on background, border, and label color. No transform, no scale, no shadow change.
 - **Loading:** centered `mud-spinner` (xs on sm, sm on md/lg) replaces label; `aria-busy="true"`, control remains in tab order but does not fire activation.
-- **Icon-only:** square footprint, equal padding, `slot="icon"`, requires `label` prop for screen readers.
+- **Icon-only:** square footprint, equal padding, `slot="icon"`, requires an `aria-label` for screen readers.
 
 ### Button Group (`mud-button-group`)
 
@@ -260,7 +260,7 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 
 - **Sizes** match the 8pt scale; default 20px (matches md button label).
 - **Color** inherits via `currentColor`; never carries hardcoded fill.
-- **Source** is the curated local SVG library (`src/assets/images/icons`), pre-processed by `yarn svg:icons` to strip size and fill.
+- **Source** is the curated local SVG library (`src/components/mud-icon/assets/{12,16,20,24}/`), normalized by `yarn svg:icons`, which strips the root `width`/`height` and any hardcoded paint — keeping `fill="currentColor"`, which is what the bullet above inherits through — and then regenerates `icons.manifest.json`.
 
 ### Logo (`mud-logo`)
 

@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import type { EventEmitter } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import type {
   AccordionAppearance,
@@ -8,6 +9,7 @@ import type {
   AccordionMode,
   AccordionSize,
 } from './mud-accordion.types';
+import { usesItemsProp, warnIfBothSources } from '../../utils/collection-source';
 
 /**
  * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
@@ -19,14 +21,13 @@ import type {
  *
  * Consumers may either:
  *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
- *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
+ *   2. Pass an `items` array (deprecated: a panel body from it can only be plain text).
+ *
+ * When both are set, `items` wins and the component warns once.
  *
  * @element mud-accordion
  *
  * @slot - One or more `<mud-accordion-item>` elements.
- *
- * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
- *                     item currently open (single entry in `mode="single"`).
  */
 @Component({
   tag: 'mud-accordion',
@@ -72,9 +73,12 @@ export class MudAccordion {
   @Prop({ reflect: true }) breakpoint?: 'desktop' | 'mobile';
 
   /**
-   * Declarative data source. When set, the accordion renders the items for you;
-   * the default slot is ignored. Items can still be slotted for advanced use
-   * cases — choose one approach per instance.
+   * Data source. When set, the accordion renders the items for you and the
+   * `<mud-accordion-item>` children are not rendered.
+   *
+   * @deprecated A panel body from `items` can only be plain text (`content` is a
+   * string), and rich content is what a panel is for. Slot `<mud-accordion-item>`
+   * children instead; `items` goes away in the next major.
    */
   @Prop() items?: AccordionItemDescriptor[];
 
@@ -89,12 +93,14 @@ export class MudAccordion {
   @Element() host!: HTMLMudAccordionElement;
 
   /**
-   * Emitted whenever the open set changes.
+   * Emitted whenever the open set changes. `detail.openIds` lists every item currently
+   * open (single entry in `mode="single"`).
    */
   @Event({ eventName: 'mudChange', bubbles: true, composed: true })
   mudChange!: EventEmitter<AccordionChangeDetail>;
 
   private mediaQuery?: MediaQueryList;
+  private warnedItemsDeprecated = false;
 
   @Watch('appearance')
   @Watch('breakpoint')
@@ -203,6 +209,16 @@ export class MudAccordion {
     this.propagateToItems();
   }
 
+  componentDidRender() {
+    if (usesItemsProp(this.items) && !this.warnedItemsDeprecated) {
+      this.warnedItemsDeprecated = true;
+      console.warn(
+        '[mud-accordion] `items` is deprecated: slot <mud-accordion-item> children instead. It goes away in the next major.',
+      );
+    }
+    warnIfBothSources(this.host, this.items, 'items', 'mud-accordion-item');
+  }
+
   private emitChange() {
     const openIds = this.queryItems()
       .filter(item => item.open)
@@ -233,7 +249,7 @@ export class MudAccordion {
     const ariaLabel = this.label?.trim() ? this.label : null;
     return (
       <Host role="group" aria-label={ariaLabel}>
-        {this.items && this.items.length > 0 ? this.items.map(this.renderItem) : <slot />}
+        {usesItemsProp(this.items) ? (this.items ?? []).map(this.renderItem) : <slot />}
       </Host>
     );
   }

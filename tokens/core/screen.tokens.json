@@ -19,7 +19,7 @@
           "$type": "dimension"
         }
       },
-      "min-fluid": {
+      "minFluid": {
         "desktop": {
           "$value": "1440px",
           "$type": "dimension"
@@ -37,7 +37,7 @@
           "$type": "dimension"
         }
       },
-      "max-fluid": {
+      "maxFluid": {
         "desktop": {
           "$value": "1920px",
           "$type": "dimension"
