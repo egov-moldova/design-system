@@ -213,8 +213,13 @@ export const parameters = {
     // `.storybook/storybook-overrides.css` — that selector is toggled live
     // by the GLOBALS_UPDATED listener above and by manager.mjs.
     theme: lightTheme,
+    // `'code'` shows a story's own source text (`originalSource`, the story object from
+    // its `.stories.ts` file), not rendered markup. Every sidebar-visible story overrides
+    // it with `source.code` or `type: 'dynamic'` + `transform`, so a story missing one is
+    // obvious in the panel; src/components/stories-docs-source.spec.ts enforces it. Not
+    // `'dynamic'` here: `render` returns HTML strings, which that mode serialises escaped.
     source: {
-      type: 'code', // Show source code instead of JSDoc
+      type: 'code',
     },
     codePanel: true, // Enable the code panel in Docs view
     // Every API table is generated from the Stencil-written manifest; the story's own

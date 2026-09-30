@@ -237,15 +237,17 @@ function unwrapAsSatisfies(node) {
  * Returns findings for any of:
  *   - STORY-DOCS-SOURCE-MISSING-DYNAMIC — `transform` is present but
  *     `parameters.docs.source.type` is not `'dynamic'`. The global `'code'`
- *     mode (.storybook/preview.js) caches the snippet at registration so the
- *     transform never re-runs on Controls changes.
+ *     mode (.storybook/preview.js) shows the story's own source text and never
+ *     calls the transform.
  *   - STORY-DOCS-SOURCE-ARGS-ANY — the transform signature uses `any` for
  *     its parameter type(s) — usually `({ args }: any)`. Type the destructure.
  *   - STORY-COMPOSITE-NO-CODE-OVERRIDE — story disables Controls AND uses a
  *     helper-laden render (template-string `${…}` interpolations) AND
  *     provides neither `code` nor `transform`. The global `'code'` mode then
- *     exposes the demo render verbatim (wrapper divs, inline styles, loop
- *     guts) as the "Show code" snippet — useless to consumers.
+ *     shows the story object from the `.stories.ts` file (`render`, helper
+ *     calls, `args`) as the "Show code" snippet — useless to consumers.
+ *     Every sidebar-visible story, composite or not, is held to an explicit
+ *     source by src/components/stories-docs-source.spec.ts.
  */
 export function checkDocsSource(sourceFile, fileRel) {
   const findings = [];
@@ -298,7 +300,7 @@ export function checkDocsSource(sourceFile, fileRel) {
             code: 'STORY-DOCS-SOURCE-MISSING-DYNAMIC',
             file: fileRel,
             line: getLineNumber(sourceFile, transformNode),
-            message: `Story "${storyName}" provides docs.source.transform but no \`type: 'dynamic'\`. The global 'code' mode caches the snippet at registration so the transform never re-runs on Controls changes.`,
+            message: `Story "${storyName}" provides docs.source.transform but no \`type: 'dynamic'\`. The global 'code' mode shows the story's source text and never calls the transform.`,
             fix: "Add `type: 'dynamic'` to `parameters.docs.source` alongside the transform.",
           }),
         );
@@ -334,7 +336,7 @@ export function checkDocsSource(sourceFile, fileRel) {
               code: 'STORY-COMPOSITE-NO-CODE-OVERRIDE',
               file: fileRel,
               line: getLineNumber(sourceFile, render),
-              message: `Story "${storyName}" disables Controls and uses a helper-laden render but has no \`parameters.docs.source.code\` override. The "Show code" panel will expose demo chrome (wrapper divs, inline styles, \${…} guts) verbatim.`,
+              message: `Story "${storyName}" disables Controls and uses a helper-laden render but has no \`parameters.docs.source.code\` override. The "Show code" panel will show the story object (render, helper calls, args) instead of markup.`,
               fix: 'Add a static `parameters.docs.source.code` with one clean `<mud-component …></mud-component>` per variation. See `src/components/mud-logo/mud-logo.stories.ts`.',
             }),
           );
