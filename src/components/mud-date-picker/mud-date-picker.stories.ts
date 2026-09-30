@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
 import type { DatePickerBreakpoint, DatePickerHeaderStyle, DatePickerMode } from './mud-date-picker.types';
-import { attr } from '../../utils/story-docs-source';
+import { attr, jsValue } from '../../utils/story-docs-source';
 
 type DatePickerArgs = {
   mode: DatePickerMode;
@@ -44,7 +44,18 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
 // shows what a consumer would actually paste into their HTML.
 // ---------------------------------------------------------------------------
 
+// The `disabledDates` control is free text; only a JSON array of strings reaches the snippet.
+const parseDisabledDates = (value: string): string[] | null => {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) && parsed.length && parsed.every(d => typeof d === 'string') ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
 const docsSourceDefault = (args: DatePickerArgs) => {
+  const disabledDates = args.disabledDates ? parseDisabledDates(args.disabledDates) : null;
   const attrs = [
     args.mode !== 'single' ? `mode="${args.mode}"` : '',
     args.breakpoint !== 'desktop' ? `breakpoint="${args.breakpoint}"` : '',
@@ -54,7 +65,7 @@ const docsSourceDefault = (args: DatePickerArgs) => {
     args.rangeEnd ? `range-end="${attr(args.rangeEnd)}"` : '',
     args.min ? `min="${attr(args.min)}"` : '',
     args.max ? `max="${attr(args.max)}"` : '',
-    args.disabledDates ? 'id="default-date-picker"' : '',
+    disabledDates ? 'id="default-date-picker"' : '',
     args.locale ? `locale="${attr(args.locale)}"` : '',
     Number.isFinite(args.firstDayOfWeek) && args.firstDayOfWeek !== 1
       ? `first-day-of-week="${args.firstDayOfWeek}"`
@@ -65,10 +76,10 @@ const docsSourceDefault = (args: DatePickerArgs) => {
     .join(' ');
   const picker = attrs ? `<mud-date-picker ${attrs}></mud-date-picker>` : '<mud-date-picker></mud-date-picker>';
   // `disabledDates` is a property, not an attribute (readme props table), so it is set from a script.
-  return args.disabledDates
+  return disabledDates
     ? `${picker}
 <script>
-  document.getElementById('default-date-picker').disabledDates = ${args.disabledDates.replace(/<\//g, '<\\/')};
+  document.getElementById('default-date-picker').disabledDates = ${jsValue(disabledDates)};
 </script>`
     : picker;
 };

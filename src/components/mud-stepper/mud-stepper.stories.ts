@@ -157,7 +157,7 @@ const renderDefault = (args: StepperArgs) => /*html*/ `
 
 // Consumer markup for the "Show code" panel. `steps` is a property, not an attribute,
 // so it is set from a script; attributes at their component default are omitted.
-const docsSourceDefault = (args: StepperArgs, id = 'my-tracker') => {
+const docsSourceDefault = (args: StepperArgs, id = 'stepper-default') => {
   const attrs = [
     `id="${id}"`,
     args.orientation !== 'horizontal' ? `orientation="${args.orientation}"` : '',
@@ -362,13 +362,13 @@ export const NonInteractive: Story = {
 const docsSourceAllStates = /*html*/ `<!-- horizontal -->
 ${docsSourceDefault(
   { steps: allStatesSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'All states' },
-  'states-horizontal',
+  'stepper-states-horizontal',
 )}
 
 <!-- vertical -->
 ${docsSourceDefault(
   { steps: allStatesSteps, orientation: 'vertical', interactive: false, ariaLabel: 'All states' },
-  'states-vertical',
+  'stepper-states-vertical',
 )}`;
 
 export const AllStates: Story = {
@@ -426,7 +426,7 @@ export const WithSupportingText: Story = {
             interactive: false,
             ariaLabel: 'Steps with details',
           },
-          'supporting-text-tracker',
+          'stepper-supporting-text',
         ),
       },
     },
@@ -454,7 +454,7 @@ export const NumberedIndicators: Story = {
       source: {
         code: docsSourceDefault(
           { steps: numberedSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Numbered steps' },
-          'numbered-tracker',
+          'stepper-numbered',
         ),
       },
     },
@@ -482,7 +482,7 @@ export const IconIndicators: Story = {
       source: {
         code: docsSourceDefault(
           { steps: iconSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Steps with icons' },
-          'icon-tracker',
+          'stepper-icons',
         ),
       },
     },
@@ -517,7 +517,7 @@ export const StepIndicatorOnly: Story = {
             compact: true,
             ariaLabel: 'Step indicator',
           },
-          'indicator-tracker',
+          'stepper-indicator-only',
         ),
       },
     },
@@ -579,7 +579,7 @@ export const Mobile: Story = {
 const docsSourceEdgeCases = /*html*/ `<!-- 8 steps -->
 ${docsSourceDefault(
   { steps: manySteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Multiple steps' },
-  'many-steps',
+  'stepper-many-steps',
 )}
 
 <!-- single step -->
@@ -590,7 +590,7 @@ ${docsSourceDefault(
     interactive: false,
     ariaLabel: 'A single step',
   },
-  'single-step',
+  'stepper-single-step',
 )}`;
 
 export const EdgeCases: Story = {
