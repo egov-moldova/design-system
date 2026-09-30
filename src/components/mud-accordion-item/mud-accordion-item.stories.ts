@@ -40,6 +40,30 @@ const renderItem = (args: AccordionItemArgs) => /*html*/ `
   </div>
 `;
 
+// `size` and `icon-position` sit on the container, as in the render; attributes left at the
+// component default are omitted, and the item is shown as a consumer would write it.
+const docsSourceDefault = (args: AccordionItemArgs) => {
+  const containerAttrs = [
+    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.iconPosition !== 'right' ? `icon-position="${args.iconPosition}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const itemAttrs = [
+    args.heading ? `heading="${attr(args.heading)}"` : '',
+    args.supportingText ? `supporting-text="${attr(args.supportingText)}"` : '',
+    args.open ? 'open' : '',
+    args.disabled ? 'disabled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const container = containerAttrs ? `<mud-accordion ${containerAttrs}>` : '<mud-accordion>';
+  const item = itemAttrs ? `<mud-accordion-item ${itemAttrs}>` : '<mud-accordion-item>';
+  return `${container}
+  ${item}Panel body content. Always in the DOM; hidden while the item is closed.</mud-accordion-item>
+</mud-accordion>`;
+};
+
 const docsSourceAllSizes = /*html*/ `<mud-accordion mode="multiple" size="sm">
   <mud-accordion-item heading="size=&quot;sm&quot;" supporting-text="Compact header">Panel body.</mud-accordion-item>
 </mud-accordion>
@@ -86,6 +110,14 @@ export const Default: Story = {
     disabled: false,
     size: 'md',
     iconPosition: 'right',
+  },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: AccordionItemArgs }) => docsSourceDefault(args),
+      },
+    },
   },
 };
 

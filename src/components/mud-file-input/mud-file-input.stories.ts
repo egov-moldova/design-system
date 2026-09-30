@@ -313,6 +313,8 @@ export const WithAcceptedTypes: Story = {
   },
 };
 
+const docsSourceWithCustomCopy = /*html*/ `<mud-file-input size="lg" cta-text="Drag files here or " choose-files-text="select files" dropzone-active-text="Drop here to upload" supported-formats-text="Accepted formats: jpg, png, pdf" max-size-text="Max file size: 100 MB"></mud-file-input>`;
+
 // Override the Romanian defaults with English copy for international consumers.
 export const WithCustomCopy: Story = {
   name: 'With Custom Copy (English)',
@@ -335,6 +337,7 @@ export const WithCustomCopy: Story = {
         story:
           'All copy is overridable. The Romanian defaults serve `.gov.md` consumers; international consumers (or partner agencies) pass localized strings via `cta-text`, `choose-files-text`, `supported-formats-text`, `max-size-text`, and `dropzone-active-text`.',
       },
+      source: { code: docsSourceWithCustomCopy },
     },
   },
 };
@@ -485,6 +488,10 @@ export const MultipleFiles: Story = {
   },
 };
 
+const docsSourceWithMaxSize = /*html*/ `<mud-file-input size="lg" label="Documents" max-size="5242880"></mud-file-input>
+<mud-file-input size="lg" label="Documents" multiple max-size="5242880" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>
+<mud-file-item state="error" filename="declaratie-foarte-mare.pdf" size="14000000" error-text="The file exceeds the 5 MB limit"></mud-file-item>`;
+
 export const WithMaxSize: Story = {
   name: 'With Max Size',
   render: () =>
@@ -508,8 +515,11 @@ export const WithMaxSize: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithMaxSize } } },
 };
+
+const docsSourceWithAcceptFilter = /*html*/ `<mud-file-input size="lg" label="Documents" accept=".pdf"></mud-file-input>
+<mud-file-input size="lg" label="Fotografii" accept="image/*"></mud-file-input>`;
 
 export const WithAcceptFilter: Story = {
   name: 'With Accept Filter',
@@ -520,8 +530,10 @@ export const WithAcceptFilter: Story = {
         cell('images only', /*html*/ `<mud-file-input size="lg" label="Fotografii" accept="image/*"></mud-file-input>`),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithAcceptFilter } } },
 };
+
+const docsSourceWithMaxCount = /*html*/ `<mud-file-input size="lg" label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`;
 
 export const WithMaxCount: Story = {
   name: 'With Max Count',
@@ -534,8 +546,11 @@ export const WithMaxCount: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithMaxCount } } },
 };
+
+const docsSourceWithHelperText = /*html*/ `<mud-file-input size="lg" label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>
+<mud-file-input size="lg" label="Documents" required helper-text="This field is required"></mud-file-input>`;
 
 export const WithHelperText: Story = {
   name: 'With Helper Text',
@@ -552,8 +567,11 @@ export const WithHelperText: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithHelperText } } },
 };
+
+const docsSourceWithError = /*html*/ `<mud-file-input size="lg" label="Documents" invalid></mud-file-input>
+<mud-file-input size="lg" label="Documents" invalid error-text="Attach at least one document"></mud-file-input>`;
 
 export const WithError: Story = {
   name: 'With Error',
@@ -567,8 +585,20 @@ export const WithError: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithError } } },
 };
+
+/** `files` is a `File[]` property, so the snippet assigns it in a script on the element's `id`. */
+const docsSourceEdgeCases = /*html*/ `<mud-file-input label="Moldova's digital evolution requires that you upload the complete identification documentation in a single submission"></mud-file-input>
+<mud-file-input label="Documents" helper-text="PDF, JPG or PNG files are accepted, up to 5 MB per file, uploaded in a single session; scanned documents must be legible and include the signature"></mud-file-input>
+<mud-file-input id="documents" label="Documents" multiple></mud-file-input>
+<script>
+  document.getElementById('documents').files = [
+    new File([], 'moldova-digital-transformation-strategy-2025-2030-final-version-approved-by-government.pdf', {
+      type: 'application/pdf',
+    }),
+  ];
+</script>`;
 
 export const EdgeCases: Story = {
   name: 'Edge Cases',
@@ -589,7 +619,7 @@ export const EdgeCases: Story = {
         },
       ]),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
 };
 
 // ---------------------------------------------------------------------------

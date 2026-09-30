@@ -87,6 +87,34 @@ const renderRowActionsSlot = (rowId: string) => /*html*/ `
 const stringify = (value: unknown) => JSON.stringify(value).replace(/<\//g, '<\\/');
 
 // ---------------------------------------------------------------------------
+// Code-panel snippets — the consumer markup, without the demo chrome
+// ---------------------------------------------------------------------------
+
+// One column or row as a one-line JS object literal.
+const jsObject = (value: object) =>
+  `{ ${Object.entries(value)
+    .map(([key, v]) => `${key}: ${typeof v === 'string' ? `'${v.replace(/'/g, "\\'")}'` : String(v)}`)
+    .join(', ')} }`;
+
+const jsArray = (items: object[], pad: string) =>
+  items.length ? `[\n${items.map(item => `${pad}  ${jsObject(item)},`).join('\n')}\n${pad}]` : '[]';
+
+// `columns` and `rows` are properties, not attributes, so a snippet hands them over in a
+// script: to the one table in the snippet, or to every table in it.
+const docsSourceScript = (columns: TableColumn[], rows: TableRowData[]) => `<script>
+  const table = document.querySelector('mud-table');
+  table.columns = ${jsArray(columns, '  ')};
+  table.rows = ${jsArray(rows, '  ')};
+</script>`;
+
+const docsSourceScriptAll = (columns: TableColumn[], rows: TableRowData[]) => `<script>
+  for (const table of document.querySelectorAll('mud-table')) {
+    table.columns = ${jsArray(columns, '    ')};
+    table.rows = ${jsArray(rows, '    ')};
+  }
+</script>`;
+
+// ---------------------------------------------------------------------------
 // Base data-driven renderer (preserves slot composition)
 // ---------------------------------------------------------------------------
 
@@ -224,6 +252,11 @@ export const Default: Story = {
   },
 };
 
+const docsSourceAllRowStyles = /*html*/ `<mud-table row-style="divided"></mud-table>
+<mud-table row-style="zebra"></mud-table>
+<mud-table row-style="borderless"></mud-table>
+${docsSourceScriptAll(demoColumns, baseRows)}`;
+
 export const AllRowStyles: Story = {
   name: 'AllRowStyles',
   render: () =>
@@ -234,7 +267,15 @@ export const AllRowStyles: Story = {
         group('borderless', renderTable('tbl-borderless', demoColumns, baseRows, { rowStyle: 'borderless' })),
       ].join(''),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceAllRowStyles } },
+  },
 };
+
+const docsSourceAllHeaderStyles = /*html*/ `<mud-table header-style="default"></mud-table>
+<mud-table header-style="inverted"></mud-table>
+<mud-table header-style="white"></mud-table>
+${docsSourceScriptAll(demoColumns, baseRows)}`;
 
 export const AllHeaderStyles: Story = {
   name: 'AllHeaderStyles',
@@ -246,7 +287,13 @@ export const AllHeaderStyles: Story = {
         group('white', renderTable('tbl-hdr-white', demoColumns, baseRows, { headerStyle: 'white' })),
       ].join(''),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceAllHeaderStyles } },
+  },
 };
+
+const docsSourceSortable = /*html*/ `<mud-table aria-label="Sortable table"></mud-table>
+${docsSourceScript(demoColumns, baseRows)}`;
 
 export const Sortable: Story = {
   name: 'Sortable',
@@ -270,7 +317,17 @@ export const Sortable: Story = {
         ),
       ].join(''),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceSortable } },
+  },
 };
+
+const docsSourceDisableSort = /*html*/ `<!-- Sorting enabled: each column's sortable flag applies. -->
+<mud-table aria-label="Sortable table"></mud-table>
+
+<!-- Sorting disabled: disable-sort overrides every column. -->
+<mud-table aria-label="Table with sorting disabled" disable-sort></mud-table>
+${docsSourceScriptAll(demoColumns, baseRows)}`;
 
 export const DisableSort: Story = {
   name: 'DisableSort',
@@ -301,7 +358,13 @@ export const DisableSort: Story = {
       ].join(''),
     );
   },
+  parameters: {
+    docs: { source: { code: docsSourceDisableSort } },
+  },
 };
+
+const docsSourceSelectable = /*html*/ `<mud-table aria-label="Table with selection" selectable hoverable></mud-table>
+${docsSourceScript(demoColumns, baseRows)}`;
 
 export const Selectable: Story = {
   name: 'Selectable',
@@ -319,7 +382,15 @@ export const Selectable: Story = {
         ),
       ].join(''),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceSelectable } },
+  },
 };
+
+const docsSourceWithStatusBadges = /*html*/ `<mud-table>
+${baseRows.map(row => `  ${renderStatusSlot(String(row.id), String(row.status))}`).join('\n')}
+</mud-table>
+${docsSourceScript(demoColumns, baseRows)}`;
 
 export const WithStatusBadges: Story = {
   name: 'WithStatusBadges',
@@ -333,7 +404,22 @@ export const WithStatusBadges: Story = {
       ),
     );
   },
+  parameters: {
+    docs: { source: { code: docsSourceWithStatusBadges } },
+  },
 };
+
+const docsSourceWithActions = /*html*/ `<mud-table>
+${baseRows
+  .map(
+    row => `  <span slot="cell-actions-${row.id}">
+    <mud-button appearance="text" size="sm">View</mud-button>
+    <mud-button appearance="text" size="sm" variant="destructive">Delete</mud-button>
+  </span>`,
+  )
+  .join('\n')}
+</mud-table>
+${docsSourceScript([...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }], baseRows)}`;
 
 export const WithActions: Story = {
   name: 'WithActions',
@@ -347,7 +433,13 @@ export const WithActions: Story = {
       ),
     );
   },
+  parameters: {
+    docs: { source: { code: docsSourceWithActions } },
+  },
 };
+
+const docsSourceHoverable = /*html*/ `<mud-table hoverable></mud-table>
+${docsSourceScript(demoColumns, baseRows)}`;
 
 export const Hoverable: Story = {
   name: 'Hoverable',
@@ -359,7 +451,34 @@ export const Hoverable: Story = {
         'Hover affordance is independent of selection; rows still emit `mudRowClick` when clicked.',
       ),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceHoverable } },
+  },
 };
+
+const docsSourceAllDataTypes = /*html*/ `<mud-table>
+${baseRows
+  .slice(0, 3)
+  .map((row, idx) => {
+    const tag = statusTagMap[String(row.status)];
+    return `  <mud-tag slot="cell-status-${row.id}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
+  <mud-checkbox slot="cell-verified-${row.id}"${idx === 1 ? '' : ' checked'} aria-label="Confirmed"></mud-checkbox>
+  <mud-button slot="cell-actions-${row.id}" appearance="text" size="sm" icon-only aria-label="Edit">
+    <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
+  </mud-button>`;
+  })
+  .join('\n')}
+</mud-table>
+${docsSourceScript(
+  [
+    { key: 'name', label: 'Text' },
+    { key: 'amount', label: 'Number', align: 'end' },
+    { key: 'status', label: 'Status tag' },
+    { key: 'verified', label: 'Checkbox', align: 'center' },
+    { key: 'actions', label: 'Action', align: 'end' },
+  ],
+  baseRows.slice(0, 3).map(({ id, name, amount, status }) => ({ id, name, amount, status })),
+)}`;
 
 export const AllDataTypes: Story = {
   name: 'AllDataTypes',
@@ -406,7 +525,23 @@ export const AllDataTypes: Story = {
       ),
     );
   },
+  parameters: {
+    docs: { source: { code: docsSourceAllDataTypes } },
+  },
 };
+
+const docsSourceEmptyState = /*html*/ `<!-- Default message -->
+<mud-table aria-label="Empty table"></mud-table>
+
+<!-- Custom slot content -->
+<mud-table aria-label="Empty table with a custom message">
+  <span slot="empty">
+    <mud-icon name="document" size="24" color="icon-base-tertiary"></mud-icon>
+    <strong>No payments recorded.</strong>
+    <span>Add a new payment to get started.</span>
+  </span>
+</mud-table>
+${docsSourceScriptAll(demoColumns, [])}`;
 
 export const EmptyState: Story = {
   name: 'EmptyState',
@@ -438,7 +573,18 @@ export const EmptyState: Story = {
         ),
       ].join(''),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceEmptyState } },
+  },
 };
+
+const docsSourceLoading = /*html*/ `<mud-table aria-label="Table loading">
+  <span slot="empty">
+    <mud-spinner size="md"></mud-spinner>
+    <span>Loading data…</span>
+  </span>
+</mud-table>
+${docsSourceScript(demoColumns, [])}`;
 
 export const Loading: Story = {
   name: 'Loading',
@@ -464,7 +610,13 @@ export const Loading: Story = {
         'Loading is a consumer concern — replace the `empty` slot with a spinner or skeleton.',
       ),
     ),
+  parameters: {
+    docs: { source: { code: docsSourceLoading } },
+  },
 };
+
+const docsSourceMobile = /*html*/ `<mud-table aria-label="Mobile table"></mud-table>
+${docsSourceScript(demoColumns, baseRows)}`;
 
 export const Mobile: Story = {
   name: 'Mobile',
@@ -479,7 +631,56 @@ export const Mobile: Story = {
       </div>
     </div>
   `,
+  parameters: {
+    docs: { source: { code: docsSourceMobile } },
+  },
 };
+
+const docsSourceEdgeCases = /*html*/ `<mud-table row-style="zebra" aria-label="Table with many columns"></mud-table>
+${docsSourceScript(
+  [
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Full name' },
+    { key: 'email', label: 'Email address' },
+    { key: 'phone', label: 'Phone' },
+    { key: 'address', label: 'Address' },
+    { key: 'role', label: 'Rol' },
+    { key: 'department', label: 'Department' },
+    { key: 'amount', label: 'Amount', align: 'end' },
+  ],
+  [
+    {
+      id: 'A-001',
+      name: 'Alexandra-Maria Constantinescu-Popescu',
+      email: 'alexandra.maria.constantinescu@cancelaria.gov.md',
+      phone: '+373 22 123 456',
+      address: '105 Ștefan cel Mare St., MD-2012 Chișinău',
+      role: 'Executive director',
+      department: 'State Chancellery',
+      amount: '12.450,75 MDL',
+    },
+    {
+      id: 'A-002',
+      name: 'Mihai Ionescu',
+      email: 'mihai@gov.md',
+      phone: '+373 22 222 333',
+      address: 'Bd. Negruzzi 1',
+      role: 'Inspector',
+      department: 'Finance',
+      amount: '480 MDL',
+    },
+    {
+      id: 'A-003',
+      name: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
+      email: 'foarte.lung.de.email@subdomeniu.exemplu.gov.md',
+      phone: '+373 22 999 888',
+      address: 'A long street name without limit that exceeds the standard column size 245A',
+      role: 'Senior digital projects manager',
+      department: 'Digital transformation',
+      amount: '99.999,99 MDL',
+    },
+  ],
+)}`;
 
 export const EdgeCases: Story = {
   name: 'EdgeCases',
@@ -534,6 +735,9 @@ export const EdgeCases: Story = {
         ),
       ].join(''),
     );
+  },
+  parameters: {
+    docs: { source: { code: docsSourceEdgeCases } },
   },
 };
 

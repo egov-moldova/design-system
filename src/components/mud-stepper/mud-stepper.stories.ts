@@ -154,12 +154,25 @@ const renderDefault = (args: StepperArgs) => /*html*/ `
   </div>
 `;
 
-const docsSourceDefault = (args: StepperArgs) => `<mud-stepper id="my-tracker"
-  orientation="${args.orientation}"
-  ${args.interactive ? 'interactive' : ''}></mud-stepper>
+// Consumer markup for the "Show code" panel. `steps` is a property, not an attribute,
+// so it is set from a script; attributes at their component default are omitted.
+const docsSourceDefault = (args: StepperArgs, id = 'my-tracker') => {
+  const attrs = [
+    `id="${id}"`,
+    args.orientation !== 'horizontal' ? `orientation="${args.orientation}"` : '',
+    args.interactive ? 'interactive' : '',
+    args.compact ? 'compact' : '',
+    typeof args.currentStep === 'number' ? `current-step="${args.currentStep}"` : '',
+    args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
+    args.locale ? `locale="${args.locale}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return `<mud-stepper ${attrs}></mud-stepper>
 <script>
-  document.getElementById('my-tracker').steps = ${JSON.stringify(args.steps, null, 2)};
+  document.getElementById('${id}').steps = ${JSON.stringify(args.steps, null, 2)};
 </script>`;
+};
 
 const meta: Meta<StepperArgs> = {
   title: 'Components/Stepper',
@@ -324,12 +337,32 @@ export const NonInteractive: Story = {
     interactive: false,
     ariaLabel: 'Registration steps',
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: StepperArgs }) => docsSourceDefault(args),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
 // AllStates — pending / current / completed / error side-by-side.
 // ---------------------------------------------------------------------------
+const docsSourceAllStates = /*html*/ `<!-- horizontal -->
+${docsSourceDefault(
+  { steps: allStatesSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'All states' },
+  'states-horizontal',
+)}
+
+<!-- vertical -->
+${docsSourceDefault(
+  { steps: allStatesSteps, orientation: 'vertical', interactive: false, ariaLabel: 'All states' },
+  'states-vertical',
+)}`;
+
 export const AllStates: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 996px;">
@@ -356,7 +389,7 @@ export const AllStates: Story = {
       </div>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceAllStates } } },
 };
 
 // ---------------------------------------------------------------------------
@@ -374,7 +407,22 @@ export const WithSupportingText: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          {
+            steps: withSupportingTextSteps,
+            orientation: 'vertical',
+            interactive: false,
+            ariaLabel: 'Steps with details',
+          },
+          'supporting-text-tracker',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -392,7 +440,17 @@ export const NumberedIndicators: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          { steps: numberedSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Numbered steps' },
+          'numbered-tracker',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -410,7 +468,17 @@ export const IconIndicators: Story = {
       })}
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          { steps: iconSteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Steps with icons' },
+          'icon-tracker',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -429,7 +497,23 @@ export const StepIndicatorOnly: Story = {
         })}
       </div>
     `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: docsSourceDefault(
+          {
+            steps: defaultSteps,
+            orientation: 'horizontal',
+            interactive: false,
+            compact: true,
+            ariaLabel: 'Step indicator',
+          },
+          'indicator-tracker',
+        ),
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -484,6 +568,23 @@ export const Mobile: Story = {
 // ---------------------------------------------------------------------------
 // EdgeCases — many steps (8), overflow / wrap behaviour.
 // ---------------------------------------------------------------------------
+const docsSourceEdgeCases = /*html*/ `<!-- 8 steps -->
+${docsSourceDefault(
+  { steps: manySteps, orientation: 'horizontal', interactive: false, ariaLabel: 'Multiple steps' },
+  'many-steps',
+)}
+
+<!-- single step -->
+${docsSourceDefault(
+  {
+    steps: [{ label: 'Only one step', status: 'current' }],
+    orientation: 'horizontal',
+    interactive: false,
+    ariaLabel: 'A single step',
+  },
+  'single-step',
+)}`;
+
 export const EdgeCases: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
@@ -521,7 +622,7 @@ export const EdgeCases: Story = {
       </div>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
 };
 
 // ---------------------------------------------------------------------------

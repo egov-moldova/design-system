@@ -56,6 +56,28 @@ const renderControlHtml = (
 `;
 };
 
+// ---------------------------------------------------------------------------
+// Code-panel snippets — the consumer markup, without the demo chrome
+// ---------------------------------------------------------------------------
+
+// One segment as a one-line JS object literal.
+const jsSegment = (segment: SegmentedControlSegment) =>
+  `{ ${Object.entries(segment)
+    .map(([key, v]) => `${key}: ${typeof v === 'string' ? `'${v}'` : String(v)}`)
+    .join(', ')} }`;
+
+// `segments` is a property, not an attribute, so a snippet hands it over in a script, one
+// `[selector, segments]` pair per element.
+const docsSourceScript = (assignments: Array<[selector: string, segments: SegmentedControlSegment[]]>) => `<script>
+${assignments
+  .map(
+    ([selector, segments]) => `  document.querySelector('${selector}').segments = [
+${segments.map(segment => `    ${jsSegment(segment)},`).join('\n')}
+  ];`,
+  )
+  .join('\n')}
+</script>`;
+
 const meta: Meta<StoryArgs> = {
   title: 'Components/Segmented Control',
   component: 'mud-segmented-control',
@@ -167,6 +189,18 @@ export const Two: Story = {
   },
 };
 
+const docsSourceThree = /*html*/ `<mud-segmented-control aria-label="Status filter" value="active"></mud-segmented-control>
+${docsSourceScript([
+  [
+    'mud-segmented-control',
+    [
+      { value: 'toate', label: 'Toate' },
+      { value: 'active', label: 'Active' },
+      { value: 'inactive', label: 'Inactive' },
+    ],
+  ],
+])}`;
+
 export const Three: Story = {
   name: 'Three',
   render: () =>
@@ -186,8 +220,22 @@ export const Three: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceThree } },
   },
 };
+
+const docsSourceFour = /*html*/ `<mud-segmented-control aria-label="Range" value="saptamana"></mud-segmented-control>
+${docsSourceScript([
+  [
+    'mud-segmented-control',
+    [
+      { value: 'zi', label: 'Zi' },
+      { value: 'saptamana', label: 'Week' },
+      { value: 'luna', label: 'Month' },
+      { value: 'an', label: 'An' },
+    ],
+  ],
+])}`;
 
 export const Four: Story = {
   name: 'Four',
@@ -209,8 +257,38 @@ export const Four: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceFour } },
   },
 };
+
+const docsSourceFivePlus = /*html*/ `<!-- 5 segments: the recommended ceiling. -->
+<mud-segmented-control id="five" aria-label="Request filter" value="noi"></mud-segmented-control>
+
+<!-- 6 segments: use sparingly. -->
+<mud-segmented-control id="six" aria-label="Pas" value="3"></mud-segmented-control>
+${docsSourceScript([
+  [
+    '#five',
+    [
+      { value: 'toate', label: 'Toate' },
+      { value: 'noi', label: 'Noi' },
+      { value: 'in-curs', label: 'In progress' },
+      { value: 'finalizate', label: 'Completed' },
+      { value: 'expirate', label: 'Expirate' },
+    ],
+  ],
+  [
+    '#six',
+    [
+      { value: '1', label: '1' },
+      { value: '2', label: '2' },
+      { value: '3', label: '3' },
+      { value: '4', label: '4' },
+      { value: '5', label: '5' },
+      { value: '6', label: '6' },
+    ],
+  ],
+])}`;
 
 export const FivePlus: Story = {
   name: 'FivePlus',
@@ -255,6 +333,7 @@ export const FivePlus: Story = {
         story:
           'Figma 659:8188 recommends up to 5 segments. Past that, consider tabs or a `mud-select` instead — the control still works, but the labels start losing legibility.',
       },
+      source: { code: docsSourceFivePlus },
     },
   },
 };
@@ -310,6 +389,18 @@ export const Breakpoints: Story = {
   },
 };
 
+const docsSourceEqualSizes = /*html*/ `<mud-segmented-control aria-label="Dimensiuni egale" value="a"></mud-segmented-control>
+${docsSourceScript([
+  [
+    'mud-segmented-control',
+    [
+      { value: 'a', label: 'Other Label' },
+      { value: 'b', label: 'Label' },
+      { value: 'c', label: 'Label' },
+    ],
+  ],
+])}`;
+
 export const EqualSizes: Story = {
   name: 'EqualSizes',
   render: () =>
@@ -334,6 +425,7 @@ export const EqualSizes: Story = {
         story:
           'Every segment resolves to the width of the widest label, so siblings stay uniform regardless of their own text length (Figma "Equal Sizes" — Do).',
       },
+      source: { code: docsSourceEqualSizes },
     },
   },
 };
@@ -378,6 +470,25 @@ export const AllSizes: Story = {
     },
   },
 };
+
+const stateSegments: SegmentedControlSegment[] = [
+  { value: 'a', label: 'Label' },
+  { value: 'b', label: 'Label' },
+];
+
+const docsSourceStates = /*html*/ `<!-- default -->
+<mud-segmented-control id="state-default" aria-label="Stare default" value="a"></mud-segmented-control>
+
+<!-- unselected: no selection -->
+<mud-segmented-control id="state-unselected" aria-label="No selection"></mud-segmented-control>
+
+<!-- focus: use Tab to focus -->
+<mud-segmented-control id="state-focus" aria-label="Stare focus" value="a"></mud-segmented-control>
+${docsSourceScript([
+  ['#state-default', stateSegments],
+  ['#state-unselected', stateSegments],
+  ['#state-focus', stateSegments],
+])}`;
 
 export const States: Story = {
   name: 'States',
@@ -426,9 +537,34 @@ export const States: Story = {
         story:
           'Hover the unselected segment to see the soft hover tint. Tab into the control to see the keyboard focus ring (brand blue per AGE focus-ring tokens).',
       },
+      source: { code: docsSourceStates },
     },
   },
 };
+
+const docsSourceDisabled = /*html*/ `<!-- The whole control disabled. -->
+<mud-segmented-control id="disabled-all" aria-label="Interval (disabled)" value="saptamana" disabled></mud-segmented-control>
+
+<!-- A single segment disabled. -->
+<mud-segmented-control id="disabled-one" aria-label="Range with a disabled segment" value="zi"></mud-segmented-control>
+${docsSourceScript([
+  [
+    '#disabled-all',
+    [
+      { value: 'zi', label: 'Zi' },
+      { value: 'saptamana', label: 'Week' },
+      { value: 'luna', label: 'Month' },
+    ],
+  ],
+  [
+    '#disabled-one',
+    [
+      { value: 'zi', label: 'Zi' },
+      { value: 'saptamana', label: 'Week', disabled: true },
+      { value: 'luna', label: 'Month' },
+    ],
+  ],
+])}`;
 
 export const Disabled: Story = {
   name: 'Disabled',
@@ -463,8 +599,29 @@ export const Disabled: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceDisabled } },
   },
 };
+
+const docsSourceWithIcons = /*html*/ `<mud-segmented-control id="icons-three" aria-label="Display mode" value="lista"></mud-segmented-control>
+<mud-segmented-control id="icons-sm" aria-label="Display mode (compact)" value="harta" size="sm"></mud-segmented-control>
+${docsSourceScript([
+  [
+    '#icons-three',
+    [
+      { value: 'lista', label: 'List', iconName: 'bullet-list' },
+      { value: 'harta', label: 'Map', iconName: 'map-pin' },
+      { value: 'grila', label: 'Grid', iconName: 'dot-grid' },
+    ],
+  ],
+  [
+    '#icons-sm',
+    [
+      { value: 'lista', label: 'List', iconName: 'bullet-list' },
+      { value: 'harta', label: 'Map', iconName: 'map-pin' },
+    ],
+  ],
+])}`;
 
 export const WithIcons: Story = {
   name: 'WithIcons',
@@ -503,9 +660,26 @@ export const WithIcons: Story = {
         story:
           'Leading icons use the existing `mud-icon` registry. Provide the icon `name` on the segment; the component renders it at 20px and inherits the segment text colour.',
       },
+      source: { code: docsSourceWithIcons },
     },
   },
 };
+
+const docsSourceStacked = /*html*/ `<!-- Stacks itself when a row will not fit; the stacked attribute pins the layout. -->
+<mud-segmented-control id="stacked" aria-label="Type (stacked)" value="cetatean" stacked fluid></mud-segmented-control>
+
+<!-- The same segments as a row. -->
+<mud-segmented-control id="stacked-row" aria-label="Type (row)" value="cetatean" fluid></mud-segmented-control>
+${docsSourceScript(
+  ['#stacked', '#stacked-row'].map((selector): [string, SegmentedControlSegment[]] => [
+    selector,
+    [
+      { value: 'cetatean', label: 'Citizen', iconName: 'bullet-list' },
+      { value: 'afacere', label: 'Business', iconName: 'map-pin' },
+      { value: 'institutii', label: 'Institutions', iconName: 'dot-grid' },
+    ],
+  ]),
+)}`;
 
 export const Stacked: Story = {
   name: 'Stacked',
@@ -543,6 +717,7 @@ export const Stacked: Story = {
         story:
           'The control stacks by itself when a row will not fit: it measures what the row would need — the widest segment, since the track keeps its columns equal — against the space it has, and moves the icons above the labels only then. Resize the canvas and watch the first cell flip at around 300px.\n\nNot a Figma variant. The design set draws one row at both breakpoints and answers a long label with an ellipsis, which runs out on a narrow phone: three segments with icons need 382px where a 320px device offers 288, and truncating leaves “Ce…”, “Af…”, “Ins…” to choose between. Stacking brings the same three to 258px and keeps every word. The `stacked` attribute pins the layout where a row would still fit. Pending design sign-off.',
       },
+      source: { code: docsSourceStacked },
     },
   },
 };

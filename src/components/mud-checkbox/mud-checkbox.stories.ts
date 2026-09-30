@@ -84,10 +84,16 @@ const renderCheckbox = (args: CheckboxArgs) =>
       .join(' '),
   });
 
-const docsSource = (args: CheckboxArgs) =>
-  renderCheckbox(args)
-    .replace(/<\/mud-checkbox>/, '\n</mud-checkbox>')
-    .replace(/<span slot=/g, '\n  <span slot=');
+const indentSlots = (markup: string) =>
+  markup.replace(/<\/mud-checkbox>/, '\n</mud-checkbox>').replace(/<span slot=/g, '\n  <span slot=');
+
+const docsSource = (args: CheckboxArgs) => indentSlots(renderCheckbox(args));
+
+/** `cb` markup with slotted children on their own lines; an element without slots stays on one line. */
+const docsCb = (opts: CbOpts = {}) => {
+  const markup = cb(opts);
+  return markup.includes('<span slot=') ? indentSlots(markup) : markup;
+};
 
 const meta: Meta<CheckboxArgs> = {
   title: 'Components/Checkbox',
@@ -249,6 +255,18 @@ export const AllSizes: Story = {
   },
 };
 
+const docsSourceWithLabel = docsCode(
+  docsCb({ label: 'Consent' }),
+  docsCb({ label: 'Terms and conditions', flags: 'checked' }),
+  docsCb({
+    rawSlots: /*html*/ `<span slot="label">I agree to the <strong>Terms and conditions</strong></span>`,
+  }),
+  docsCb({
+    flags: 'checked',
+    rawSlots: /*html*/ `<span slot="label">I want to receive <a href="#">updates</a> by email</span>`,
+  }),
+);
+
 export const WithLabel: Story = {
   name: 'With Label',
   render: () =>
@@ -271,8 +289,23 @@ export const WithLabel: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithLabel } } },
 };
+
+const docsSourceWithSupportingText = docsCode(
+  docsCb({ label: 'Consent', supporting: 'We will send the confirmation to your email address.' }),
+  docsCb({
+    label: 'Terms and conditions',
+    supporting: 'Read the full document before continuing.',
+    flags: 'checked',
+  }),
+  docsCb({
+    label: 'Select all',
+    supporting: 'Some subcategories are already selected.',
+    flags: 'indeterminate',
+  }),
+  docsCb({ size: 'sm', label: 'Marketing', supporting: 'Can be turned off at any time in settings.' }),
+);
 
 export const WithSupportingText: Story = {
   name: 'With Supporting Text',
@@ -302,8 +335,23 @@ export const WithSupportingText: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithSupportingText } } },
 };
+
+const docsSourceError = docsCode(
+  docsCb({
+    label: 'Terms and conditions',
+    errorText: 'You must accept the terms to continue.',
+    flags: 'invalid required',
+  }),
+  docsCb({
+    label: 'Terms and conditions',
+    errorText: 'You must accept the terms to continue.',
+    flags: 'invalid checked',
+  }),
+  docsCb({ size: 'sm', label: 'Consent', errorText: 'Consent is needed.', flags: 'invalid' }),
+  docsCb({ size: 'sm', label: 'Consent', errorText: 'Consent is needed.', flags: 'invalid checked' }),
+);
 
 export const Error: Story = {
   name: 'Error',
@@ -333,8 +381,15 @@ export const Error: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceError } } },
 };
+
+const docsSourceDisabled = docsCode(
+  docsCb({ label: 'Consent', flags: 'disabled' }),
+  docsCb({ label: 'Consent', flags: 'disabled checked' }),
+  docsCb({ label: 'Consent', flags: 'disabled indeterminate' }),
+  docsCb({ label: 'Consent', supporting: 'This option is not available right now.', flags: 'disabled' }),
+);
 
 export const Disabled: Story = {
   name: 'Disabled',
@@ -350,8 +405,23 @@ export const Disabled: Story = {
         ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceDisabled } } },
 };
+
+const docsSourceEdgeCases = docsCode(
+  docsCb({
+    label:
+      'I want to receive periodic email updates about new features, promotions and events organised by Corlab and its partners',
+  }),
+  docsCb({
+    label: 'I agree to the Terms and conditions and the Privacy policy',
+    supporting:
+      'Please read the full documents carefully before continuing. Your consent applies to all Corlab services and can be withdrawn at any time from the account settings page.',
+    flags: 'checked',
+  }),
+  docsCb({ ariaLabel: 'Select row' }),
+  docsCb({ label: 'Verified by the system', flags: 'readonly checked' }),
+);
 
 export const EdgeCases: Story = {
   name: 'Edge Cases',
@@ -378,7 +448,7 @@ export const EdgeCases: Story = {
         cell('readonly checked', cb({ label: 'Verified by the system', flags: 'readonly checked' })),
       ].join(''),
     ),
-  parameters: { controls: { disable: true } },
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
 };
 
 export const ReducedMotion: Story = {
