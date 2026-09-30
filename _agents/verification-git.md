@@ -117,8 +117,9 @@ files you did not edit — that is why it is the sanctioned command in
 
 It becomes a scope problem the moment `main` is *not* clean: the formatter then
 rewrites every drifted file in the repo. Observed on PR #12, where `main` was red
-and unrelated infrastructure plus a hand-maintained CDN demo page were rewritten.
-Infrastructure has since moved to the Azure DevOps operations repository.
+and unrelated legacy infrastructure plus `web-components/CDN_TEST.html` were
+rewritten. Helm templates are now maintained in `deploy/` and excluded from
+Prettier because template syntax is not valid plain YAML.
 
 **Pre-existing drift is decided per file, by who owns it.** Reverting a drifted
 file alone turns `yarn lint` red again, since it checks the same repo-wide scope,
@@ -130,9 +131,10 @@ so the revert and the ignore rule always travel together:
 | Hand-maintained artifact — for example, demo pages | Add it to `.prettierignore`, then `git checkout main -- <path>` | This repo's JS toolchain does not own those files, and formatting them is churn in someone else's review |
 
 Resolved that way on PR #12. The legacy infrastructure files later moved out of
-this source repository, and the unused demo page was deleted (#124). Twelve
-source files stayed formatted in two `style:` commits because `yarn lint` is a
-blocking CI step and was red on main.
+this source repository, and the unused demo page was deleted (#124). Current
+Helm templates under `deploy/` remain ignored. Twelve source files stayed
+formatted in two `style:` commits because `yarn lint` is a blocking CI step and
+was red on main.
 
 To format only what you edited:
 
