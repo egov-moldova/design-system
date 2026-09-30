@@ -614,7 +614,7 @@
             "boxHeight": "24px",
             "color": "#039855"
           },
-          "note": "Figma 24/checkmark-small at 24x24 in the Medium frame (7854:6805); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+          "note": "Figma 24/checkmark-small at 24x24 in the Medium frame (7854:6805); its fill is #039855, the icon.positive.default token."
         },
         {
           "target": "mud-phone-input .control",
@@ -626,9 +626,50 @@
             "boxHeight": "40px"
           },
           "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6794",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "7854:6799",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "32px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 32px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "7854:6799",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "node": "7854:6799",
+          "absent": true,
+          "note": "The read-only International frame has only the flag and the code, no chevron."
         }
       ],
-      "pixel": false
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff.",
+      "capture": {
+        "selector": "mud-phone-input",
+        "bleed": 0
+      },
+      "captureNote": "Same as default-large-international: the country listbox popover carries a drop shadow even while hidden, which `bleed: \"auto\"` would union into the frame."
     },
     {
       "name": "readonly-large-international",
@@ -643,7 +684,7 @@
             "boxHeight": "24px",
             "color": "#039855"
           },
-          "note": "Figma 24/checkmark-small at 24x24 in the Large frame (7854:6792); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+          "note": "Figma 24/checkmark-small at 24x24 in the Large frame (7854:6792); its fill is #039855, the icon.positive.default token."
         },
         {
           "target": "mud-phone-input .control",
@@ -655,9 +696,50 @@
             "boxHeight": "48px"
           },
           "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6781",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "7854:6786",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "36px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 36px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "7854:6786",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "node": "7854:6786",
+          "absent": true,
+          "note": "The read-only International frame has only the flag and the code, no chevron."
         }
       ],
-      "pixel": false
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff.",
+      "capture": {
+        "selector": "mud-phone-input",
+        "bleed": 0
+      },
+      "captureNote": "Same as default-large-international: the country listbox popover carries a drop shadow even while hidden, which `bleed: \"auto\"` would union into the frame."
     },
     {
       "name": "readonly-medium-local",
@@ -672,7 +754,7 @@
             "boxHeight": "24px",
             "color": "#039855"
           },
-          "note": "Figma the same 24x24 checkmark, as in the Medium International frame (7854:6805); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+          "note": "Figma the same 24x24 checkmark, as in the Medium International frame (7854:6805); its fill is #039855, the icon.positive.default token."
         },
         {
           "target": "mud-phone-input .control",
@@ -684,9 +766,39 @@
             "boxHeight": "40px"
           },
           "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "6173:6074",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "6173:6079",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "32px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 32px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "6173:6079",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
         }
       ],
-      "pixel": false
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff."
     },
     {
       "name": "readonly-large-local",
@@ -701,7 +813,7 @@
             "boxHeight": "24px",
             "color": "#039855"
           },
-          "note": "Figma the same 24x24 checkmark, as in the Large International frame (7854:6792); its fill is #039855, the icon.positive.default token. Only the check is pinned here. The pixel diff is off for the read-only frames because the rest of the state still differs from Figma: the field draws a 1px border where the frame has none, the country chip is grey where the frame draws it white, the dial code is dimmed to #B2B2B2 where the frame draws #121212, and the International chip keeps its chevron where the frame has none."
+          "note": "Figma the same 24x24 checkmark, as in the Large International frame (7854:6792); its fill is #039855, the icon.positive.default token."
         },
         {
           "target": "mud-phone-input .control",
@@ -713,9 +825,39 @@
             "boxHeight": "48px"
           },
           "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18224",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "3318:18224",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "36px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 36px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "3318:18224",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
         }
       ],
-      "pixel": false
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff."
     }
   ]
 }

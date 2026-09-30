@@ -295,6 +295,17 @@ button.country-trigger:disabled {
   cursor: default;
 }
 
+/* Read-only (Figma 7854:6799, 6173:6079): a white chip with a full-strength dial
+   code and the Local chip's 12px trailing padding. The International trigger is a
+   disabled <button> here, so undo the disabled recolor. */
+:host(.is-readonly:not(.is-disabled)) .country-trigger,
+:host(.is-readonly:not(.is-disabled)) button.country-trigger:disabled {
+  padding-inline-end: var(--phone-input-country-trigger-padding-inline-end-local);
+  background-color: var(--phone-input-country-trigger-background-read-only);
+  color: var(--phone-input-default-text-read-only);
+  -webkit-text-fill-color: var(--phone-input-default-text-read-only);
+}
+
 .country-trigger-code {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;

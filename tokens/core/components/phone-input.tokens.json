@@ -110,7 +110,11 @@
         "default": { "$value": "{color.border.base.default}", "$type": "color" },
         "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
         "focus": { "$value": "{color.border.brand.default}", "$type": "color" },
-        "readOnly": { "$value": "{color.border.base.default}", "$type": "color" },
+        "readOnly": {
+          "$value": "transparent",
+          "$type": "color",
+          "$comment": "Figma 7854:6798, 6173:6078, 7854:6785, 3318:18224's Input frame: a #F5F5F5 fill and no stroke. The field is told apart from an editable one by its surface alone."
+        },
         "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
       },
       "text": {
@@ -191,6 +195,11 @@
       "background": {
         "default": { "$value": "{color.background.base.secondary}", "$type": "color" },
         "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "readOnly": {
+          "$value": "{color.background.base.default}",
+          "$type": "color",
+          "$comment": "Figma 7854:6799, 6173:6079: on the #F5F5F5 read-only field the chip is white, the inverse of the editable field (a #F5F5F5 chip on white)."
+        },
         "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
       },
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },

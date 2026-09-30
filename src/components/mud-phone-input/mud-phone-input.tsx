@@ -950,7 +950,8 @@ export class MudPhoneInput {
                 <span class="country-trigger-code" part="country-trigger-code">
                   {country.code}
                 </span>
-                <mud-icon class="country-trigger-chevron" name="chevron-bottom" size={16} />
+                {/* Figma 7854:6799: the read-only chip is the flag and the code, without the chevron. */}
+                {this.readonly ? null : <mud-icon class="country-trigger-chevron" name="chevron-bottom" size={16} />}
               </button>
             ) : (
               <span {...triggerCommon} aria-label={triggerAriaLabel} role="img">
