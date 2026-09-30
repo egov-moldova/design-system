@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import type { StepperStep } from './mud-stepper.types';
-import { attr } from '../../utils/story-docs-source';
+import { attr, jsValue } from '../../utils/story-docs-source';
 
 type StepperArgs = {
   steps: StepperStep[];
@@ -171,7 +171,7 @@ const docsSourceDefault = (args: StepperArgs, id = 'stepper-default') => {
     .join(' ');
   return `<mud-stepper ${attrs}></mud-stepper>
 <script>
-  document.getElementById('${id}').steps = ${JSON.stringify(args.steps, null, 2).replace(/<\//g, '<\\/')};
+  document.getElementById('${id}').steps = ${jsValue(args.steps, 2)};
 </script>`;
 };
 

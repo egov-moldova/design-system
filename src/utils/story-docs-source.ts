@@ -14,11 +14,15 @@ export const text = (value: string): string =>
     .replace(/</g, '&lt;');
 
 /**
- * A JS value for a snippet `<script>`: JSON, with `</` split so a string holding `</script>`
- * cannot close the script block early.
+ * A JS value for a snippet `<script>`: JSON with every `<` written as `\u003c`, so no string
+ * value (`</script>`, `<!--`) can end or re-mode the script block. JSON has no value for a
+ * function, a symbol or a non-finite number; those are written as `undefined` or `String(value)`.
  */
-export const jsValue = (value: unknown): string =>
-  value === undefined ? 'undefined' : JSON.stringify(value).replace(/<\//g, '<\\/');
+export const jsValue = (value: unknown, space?: number): string => {
+  if (typeof value === 'number' && !Number.isFinite(value)) return String(value);
+  const json = JSON.stringify(value, null, space) as string | undefined;
+  return json === undefined ? 'undefined' : json.replace(/</g, '\\u003c');
+};
 
 /** One-line JS object literal; a key that is not a plain identifier is quoted. */
 export const jsLiteral = (value: object): string =>
