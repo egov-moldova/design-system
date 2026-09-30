@@ -237,8 +237,8 @@ function unwrapAsSatisfies(node) {
  * Returns findings for any of:
  *   - STORY-DOCS-SOURCE-MISSING-DYNAMIC — `transform` is present but
  *     `parameters.docs.source.type` is not `'dynamic'`. The global `'code'`
- *     mode (.storybook/preview.js) shows the story's own source text and never
- *     calls the transform.
+ *     mode (.storybook/preview.js) makes the Code panel ignore the transform and
+ *     show the story's own source text.
  *   - STORY-DOCS-SOURCE-ARGS-ANY — the transform signature uses `any` for
  *     its parameter type(s) — usually `({ args }: any)`. Type the destructure.
  *   - STORY-COMPOSITE-NO-CODE-OVERRIDE — story disables Controls AND uses a
@@ -300,7 +300,7 @@ export function checkDocsSource(sourceFile, fileRel) {
             code: 'STORY-DOCS-SOURCE-MISSING-DYNAMIC',
             file: fileRel,
             line: getLineNumber(sourceFile, transformNode),
-            message: `Story "${storyName}" provides docs.source.transform but no \`type: 'dynamic'\`. The global 'code' mode shows the story's source text and never calls the transform.`,
+            message: `Story "${storyName}" provides docs.source.transform but no \`type: 'dynamic'\`. Under the global 'code' mode the Code panel ignores the transform and shows the story object.`,
             fix: "Add `type: 'dynamic'` to `parameters.docs.source` alongside the transform.",
           }),
         );

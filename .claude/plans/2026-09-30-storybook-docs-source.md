@@ -53,7 +53,9 @@ Zero tolerance:
 - `LINT=1 node probe.mjs` flags a new snippet with a `<div>`, `style=` or an attribute the manifest (`.storybook/custom-elements.json`) does not declare; demo labels are reviewed by reading.
 - `node probe.mjs` fingerprint diff shows a change to a story's render/args/argTypes/play/decorators/tags/name or non-`docs.source` parameters. New `docsSource*` constants are allowed.
 
-Deviation (accepted 2026-09-30, stated in the PR): Stepper Default, Vertical and Interactive share
+Deviations (accepted 2026-09-30, stated in the PR): Date Picker → Default with default controls
+prints `<mud-date-picker></mud-date-picker>`, not the issue's acceptance string, which lists four
+attributes equal to their prop defaults (see Decision). Stepper Default, Vertical and Interactive share
 the `docsSourceDefault` helper that NonInteractive now also uses. Extending it changed their
 snippets: the blank continuation lines and the default `orientation="horizontal"` are gone, and
 the `aria-label` their args already set now appears. Keeping the old bytes would need a second,
@@ -64,8 +66,8 @@ Instrument: a node-side probe (esbuild-bundles every `*.stories.ts`, merges meta
 parameters, applies the addon-docs rule `source.code || dynamic snippet || originalSource`, and
 fingerprints each story's render/args/argTypes/play/decorators/tags/name/other parameters plus
 its `render(args)` output). It is a one-off measurement, not a repo script: the guard spec is the
-lasting check. The baseline was taken at `77eca9e3` before any story edit; its output and the
-before/after comparison go in the PR body.
+lasting check. The baseline was taken at `77eca9e3` before any story edit; the probe's source, its
+output and the before/after comparison are attached to the PR, so the bar can be re-run.
 
 Tolerances: none — graded by `yarn test && yarn typecheck && yarn lint` (exit 0) and the probe below.
 
@@ -79,36 +81,36 @@ gh pr list --repo egov-moldova/design-system --state open
 ## Global constraints
 
 - Base: `upstream/main` at `77eca9e3` (includes #174). No open PR touches story files.
-- In the 15 story files only `docs.source` and new `docsSource*` constants change. The 352
+- In the 15 story files only `docs.source` and snippet-only constants, data and helpers change. The 352
   stories that are correct today keep their resolved snippet byte for byte. Two unrelated
   story files (`mud-chip`, `mud-spinner`) get a comment correction only.
 - Commits: Conventional Commits, one per concern; no generated file staged.
 
 ## Tasks
 
-- [ ] Guard spec, written first and failing on the 87 stories.
+- [x] Guard spec, written first and failing on the 87 stories.
   Verify: `npx vitest run --project spec src/components/stories-docs-source.spec.ts`
-- [ ] Snippets, per component (verify: the guard lists none of the component's stories;
+- [x] Snippets, per component (verify: the guard lists none of the component's stories;
   `npx eslint <file> --max-warnings 0`; `npx prettier --check <file>`):
-  - [ ] Accordion Item (1) · Avatar (1) · Badge (1) · Tag (1) · Input/Text (1) · Date Picker (9)
-  - [ ] Input/Chip (12) · Input/File (7) · Checkbox (5)
-  - [ ] Modal (11) · Banner (3) · Stepper (7)
-  - [ ] Table (13) · Tabs (7) · Segmented Control (8)
-- [ ] `src/components/_agents/storybook-stories.md` and `.claude/agents/story-writer.md`
+  - [x] Accordion Item (1) · Avatar (1) · Badge (1) · Tag (1) · Input/Text (1) · Date Picker (9)
+  - [x] Input/Chip (12) · Input/File (7) · Checkbox (5)
+  - [x] Modal (11) · Banner (3) · Stepper (7)
+  - [x] Table (13) · Tabs (7) · Segmented Control (8)
+- [x] `src/components/_agents/storybook-stories.md` and `.claude/agents/story-writer.md`
   describe `'code'` correctly and require a source on every visible story; the preview
   comment is corrected. Verify: `grep -n "snapshots\|verbatim\|CAN omit\|preview.js:113"` on
   both files returns nothing.
-- [ ] Regression: the node-side probe's per-story output for the 352 stories matches the
+- [x] Regression: the node-side probe's per-story output for the 352 stories matches the
   baseline taken before any edit; the 87 now resolve to `code` or `dynamic+transform`.
   Verify: `yarn test`, `yarn typecheck`, `yarn lint`.
 
-## Execution matrix
+## Work split
 
-| Phase | Owner | Model | Effort | Wave |
-|---|---|---|---|---|
-| Guard, docs, preview comment | controller | session | default | 1 |
-| Snippets, 4 disjoint file groups | implementer ×4 | sonnet | default | 1 (parallel) |
-| Regression diff, checks, commits | controller | session | default | 2 |
+| Phase | Work | Parallel |
+|---|---|---|
+| 1 | Guard spec (failing first), rules, preview comment | with phase 2 |
+| 2 | Snippets, in 4 disjoint groups of story files (the task groups above) | 4 groups at once |
+| 3 | Regression diff against the baseline, checks, commits | after 1 and 2 |
 
 ## Not verified
 

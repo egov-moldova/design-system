@@ -173,14 +173,14 @@ parameters: {
   docs: {
     source: {
       type: 'dynamic',  // overrides the global 'code' from .storybook/preview.js
-      transform: (_code: string, { args }: { args: ComponentArgs }) =>
-        `<mud-component prop="${args.prop}">...</mud-component>`,
+      // docsSourceDefault(args) omits every attribute left at its @Prop default.
+      transform: (_code: string, { args }: { args: ComponentArgs }) => docsSourceDefault(args),
     },
   },
 },
 ```
 
-Under the global `'code'` the transform is never called. `type: 'dynamic'` per story makes Storybook call it, again on each args change. Build the markup in a `docsSourceDefault(args)` helper that omits attributes left at their `@Prop` default (`mud-button.stories.ts`). The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/mud-spinner/mud-spinner.stories.ts:70-81`.
+Under the global `'code'` the Code panel ignores the transform and shows the story object, while the Docs page's "Show code" applies it, so the two disagree. `type: 'dynamic'` per story makes both show the transform's output, re-run on each args change. Build the markup in a `docsSourceDefault(args)` helper that omits attributes left at their `@Prop` default (`mud-button.stories.ts`). The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Escape Controls text with `attr()` from `src/utils/story-docs-source.ts`. Reference: `docsSourceDefault` and the `Default` story in `src/components/mud-button/mud-button.stories.ts`.
 
 For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), a `transform` would receive the rendered demo (wrapper divs, inline styles, labels), and the global `'code'` shows the story object. Provide a static `code` containing one clean `<mud-component …></mud-component>` per variation:
 

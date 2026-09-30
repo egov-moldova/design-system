@@ -70,9 +70,9 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        // Override global `type: 'code'` (set in preview.js) — that mode shows this
-        // story object and never calls the transform. `'dynamic'` runs it, again
-        // whenever controls change, so the snippet stays in sync.
+        // Override global `type: 'code'` (set in preview.js) — under it the Code panel
+        // shows this story object and ignores the transform. `'dynamic'` shows the
+        // transform's output, re-run whenever controls change.
         type: 'dynamic',
         transform: (_code: string, { args }: { args: SpinnerArgs }) =>
           `<mud-spinner size="${args.size}" variant="${args.variant}"></mud-spinner>`,

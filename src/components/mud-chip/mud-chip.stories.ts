@@ -142,9 +142,9 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        // `type: 'dynamic'` runs the transform, again on every controls change;
-        // under the global `type: 'code'` (set in preview.js) the transform never
-        // runs and the panel shows this story object instead.
+        // `type: 'dynamic'` shows the transform's output in the Code panel, re-run on
+        // every controls change; under the global `type: 'code'` (set in preview.js)
+        // the Code panel ignores the transform and shows this story object instead.
         type: 'dynamic',
         transform: (_code: string, { args }: { args: ChipArgs }) => docsSourceDefault(args),
       },

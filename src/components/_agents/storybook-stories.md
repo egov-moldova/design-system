@@ -193,21 +193,33 @@ source decorator serialises a string result as escaped text (`&lt;mud-…&gt;`).
 For components where the docs panel snippet should reflect live Controls changes, provide a `transform` AND set `type: 'dynamic'`:
 
 ```typescript
+// Omits every attribute left at its `@Prop` default (`size="md"`, `variant="brand"`), so the
+// snippet is what a consumer would write.
+const docsSourceDefault = (args: SpinnerArgs) => {
+  const attrs = [
+    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.variant !== 'brand' ? `variant="${args.variant}"` : '',
+    args.label ? `label="${attr(args.label)}"` : '', // attr: src/utils/story-docs-source.ts
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return attrs ? `<mud-spinner ${attrs}></mud-spinner>` : '<mud-spinner></mud-spinner>';
+};
+
 parameters: {
   docs: {
     source: {
-      // Override the global `type: 'code'` (.storybook/preview.js), which shows this story
-      // object and never calls the transform. `'dynamic'` calls it, again on every Controls
-      // change, so the snippet stays in sync.
+      // Override the global `type: 'code'` (.storybook/preview.js): under it the Code panel
+      // shows this story object and ignores the transform. `'dynamic'` makes the Code panel
+      // and the Docs page both show the transform's output, re-run on every Controls change.
       type: 'dynamic',
-      transform: (_code: string, { args }: { args: SpinnerArgs }) =>
-        `<mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>`,
+      transform: (_code: string, { args }: { args: SpinnerArgs }) => docsSourceDefault(args),
     },
   },
 },
 ```
 
-**Why `type: 'dynamic'` is required**: under the global `'code'` the `transform` is never called. Setting `type: 'dynamic'` per story makes Storybook render the story, pass the result to the `transform`, and repeat that on every args change.
+**Why `type: 'dynamic'` is required**: under the global `'code'` the Code panel ignores the `transform` and shows the story object (`@storybook/addon-docs` `manager.js`), while the Docs page's "Show code" applies it to that object (`blocks.js`, `useCode`), so the two disagree. Setting `type: 'dynamic'` per story makes both show the `transform`'s output and re-run it on every args change.
 
 Build the markup in a `docsSourceDefault(args)` helper that omits every attribute left at the component's `@Prop` default, as `mud-button.stories.ts` does, so the snippet is what a consumer would write.
 
@@ -260,7 +272,7 @@ A property that is not an attribute (an array or object) goes in a `<script>` bl
 | `<Component {...args} />` JSX spread | `variant="${args.variant}"` (explicit attributes) | Web components consume attribute strings, not React props |
 | Inline `padding: 16px` | `padding: var(--spacing-16)` | See "Story Styling" — semantic tokens preferred |
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |
-| `parameters.docs.source.transform` without `type: 'dynamic'` | Add `type: 'dynamic'` | Otherwise the global `type: 'code'` never calls the transform and shows the story object |
+| `parameters.docs.source.transform` without `type: 'dynamic'` | Add `type: 'dynamic'` | Otherwise the Code panel ignores the transform and shows the story object, and disagrees with the Docs page |
 | A story with no `parameters.docs.source` at all | `code: docsSource<Story>`, or `type: 'dynamic'` + `transform` for an args-driven story | Otherwise the Code panel shows the story object; `stories-docs-source.spec.ts` fails |
 | `({ args }: any) =>` in transform | `({ args }: { args: ComponentArgs }) =>` | Type the destructure |
 | Grid/composite story with helper-laden render and no `docs.source.code` override | Add `parameters.docs.source.code = <curated multi-line consumer markup>` | Otherwise the "Show code" panel shows the story object (`render: () => …`, helper calls) — useless to consumers |
