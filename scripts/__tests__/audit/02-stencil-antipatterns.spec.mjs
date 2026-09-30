@@ -15,7 +15,13 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { PATTERNS, FILE_CHECKS, scanFile, analyzeComponent } from '../../audit/02-stencil-antipatterns.mjs';
+import {
+  PATTERNS,
+  FILE_CHECKS,
+  HYBRID_CONTENT_COMPONENTS,
+  scanFile,
+  analyzeComponent,
+} from '../../audit/02-stencil-antipatterns.mjs';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 const UNSAFE_HTML_ASSIGN = 'el.' + 'innerHTML = userInput;';
@@ -351,6 +357,56 @@ describe('02-stencil-antipatterns: file-level checks', () => {
     const tsx = `componentDidLoad() { window.addEventListener('resize', this.onResize); }`;
     const findings = scan({ content: tsx, kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-007-LIFECYCLE-LEAK').length, 1);
+  });
+});
+
+describe('02-stencil-antipatterns: ANTIPATTERN-026 hybrid content', () => {
+  const CODE = 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK';
+  const hits = (content, componentName = 'mud-fake') => scan({ content, componentName }).filter(f => f.code === CODE);
+
+  it('flags a text fallback inside a slot', () => {
+    assert.equal(hits('<slot name="label">{this.label}</slot>').length, 1);
+    assert.equal(hits('<slot name="title">\n  <h2 class="title">{this.titleText}</h2>\n</slot>').length, 1);
+  });
+
+  it('flags a sibling that renders text behind a has*Slot guard', () => {
+    assert.equal(
+      hits('<slot onSlotchange={this.onLabel} />\n{!this.hasLabelSlot && labelText ? labelText : null}').length,
+      1,
+    );
+    assert.equal(hits('<slot />\n{!this.hasLabelSlot ? <span>{this.label}</span> : null}').length, 1);
+  });
+
+  it('does not flag a default element whose only expressions are attributes', () => {
+    assert.deepEqual(hits('<slot name="icon">\n  <mud-icon name={iconName} size={24} />\n</slot>'), []);
+    assert.deepEqual(
+      hits('<slot name="next-icon" />\n{!this.hasNextIcon ? <mud-icon name="chevron-right" /> : null}'),
+      [],
+    );
+  });
+
+  it('does not flag a data render beside a slot', () => {
+    assert.deepEqual(hits('<slot></slot>\n{this.renderDataTabs()}'), []);
+  });
+
+  it('does not flag a slot mentioned in a comment', () => {
+    assert.deepEqual(
+      hits('/**\n * forwards a `<slot slot="trailing">` into this one, what {YOUR}\n * slot distributes </slot>\n */'),
+      [],
+    );
+  });
+
+  it('skips the components whose documented API is a hybrid, each with a reason', () => {
+    assert.deepEqual(hits('<slot name="label">{this.label}</slot>', 'mud-text-input'), []);
+    for (const [component, reason] of HYBRID_CONTENT_COMPONENTS) {
+      assert.match(component, /^mud-/);
+      assert.ok(reason.length > 0, `${component} has no reason`);
+    }
+  });
+
+  it('keeps the reported line number past a blanked comment', () => {
+    const [finding] = hits('/* one\n two */\n<slot name="label">{this.label}</slot>');
+    assert.equal(finding?.line, 3);
   });
 });
 

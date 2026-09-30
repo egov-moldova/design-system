@@ -46,9 +46,8 @@ const SEGMENT_ICON_SIZE = 20;
  *
  * @element mud-segmented-control
  *
- * @slot - Reserved for future declarative segments. Today, all segments come
- *   from the `segments` prop. The slot is rendered hidden so AT does not see
- *   accidental content twice.
+ * Segments come from the `segments` prop only; the component has no slot, so
+ * light-DOM children are not rendered.
  */
 @Component({
   tag: 'mud-segmented-control',
@@ -457,7 +456,6 @@ export class MudSegmentedControl {
             );
           })}
         </div>
-        <slot />
       </Host>
     );
   }

@@ -19,7 +19,7 @@ import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
  *
  * Pattern B (atom-display + interactive close): the optional close affordance
  * lives in shadow DOM with a real `button` role. The body is not interactive
- * apart from the optional inline link.
+ * apart from the optional actions (`actions` slot).
  *
  * `variant` selects the semantic color family — `info`, `warning`, or `error`
  * (Figma exposes no `success` for banners). `emphasis` selects the surface
@@ -38,6 +38,10 @@ import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
  * @slot icon-start - Optional override for the leading icon. When supplied,
  *                    suppresses both the `iconName` prop and the per-variant
  *                    default icon.
+ * @slot actions - Optional inline actions after the message, typically one
+ *                 `mud-link` (Figma's "Click here" is the link component, Primary,
+ *                 16, underlined; use `variant="white"` on `emphasis="strong"`).
+ *                 Replaces `linkText` / `linkHref` when filled.
  */
 @Component({
   tag: 'mud-banner',
@@ -70,10 +74,18 @@ export class MudBanner {
   /**
    * Optional inline link text rendered after the message (the Figma
    * "Click here" affordance). Pair with `linkHref` for a real destination.
+   *
+   * @deprecated A link built from props cannot take routing, `target` / `rel` or a
+   * click handler. Put a `mud-link` in the `actions` slot instead; `linkText` goes
+   * away in the next major.
    */
   @Prop() linkText?: string;
 
-  /** Href for the optional inline link. Defaults to `#` when omitted. */
+  /**
+   * Href for the optional inline link. Defaults to `#` when omitted.
+   *
+   * @deprecated Use the `actions` slot, as for `linkText`.
+   */
   @Prop() linkHref?: string;
 
   /**
@@ -95,6 +107,7 @@ export class MudBanner {
   @Prop() closeLabel?: string;
 
   @State() private hasIconStart: boolean = false;
+  @State() private hasActions: boolean = false;
 
   @Element() host!: HTMLMudBannerElement;
 
@@ -105,6 +118,7 @@ export class MudBanner {
   @Event() mudDismiss!: EventEmitter<void>;
 
   private stopLang?: () => void;
+  private warnedLinkDeprecated = false;
 
   connectedCallback() {
     this.stopLang = watchDocumentLang(
@@ -122,6 +136,15 @@ export class MudBanner {
     this.detectSlots();
   }
 
+  componentDidRender(): void {
+    if (this.hasLink() && !this.warnedLinkDeprecated) {
+      this.warnedLinkDeprecated = true;
+      console.warn(
+        '[mud-banner] `linkText` / `linkHref` are deprecated: put a <mud-link> in the `actions` slot instead. They go away in the next major.',
+      );
+    }
+  }
+
   /**
    * Built-in strings in the resolved locale, with the override props on top.
    */
@@ -133,14 +156,23 @@ export class MudBanner {
 
   private detectSlots(): void {
     let hasIconStart = false;
+    let hasActions = false;
     const children = this.host.childNodes as unknown as Node[];
     for (let i = 0; i < children.length; i += 1) {
       const node = children[i];
       if (!node || node.nodeType !== Node.ELEMENT_NODE) continue;
-      if ((node as Element).getAttribute('slot') === 'icon-start') hasIconStart = true;
+      const slot = (node as Element).getAttribute('slot');
+      if (slot === 'icon-start') hasIconStart = true;
+      if (slot === 'actions') hasActions = true;
     }
     this.hasIconStart = hasIconStart;
+    this.hasActions = hasActions;
   }
+
+  private onActionsSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasActions = slot.assignedElements({ flatten: true }).length > 0;
+  };
 
   private onIconSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
@@ -183,10 +215,13 @@ export class MudBanner {
     const role = this.resolveAriaRole();
     const ariaLive = this.resolveAriaLive();
     const lang = hostLang(this.host, this.locale);
+    // The actions slot replaces the deprecated link props when it is filled.
+    const showLink = this.hasLink() && !this.hasActions;
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
-      'has-link': this.hasLink(),
+      'has-link': showLink,
+      'has-actions': this.hasActions,
       'is-dismissible': this.dismissible,
     };
 
@@ -207,7 +242,11 @@ export class MudBanner {
             <slot />
           </p>
 
-          {this.hasLink() ? (
+          <span class="actions" part="actions">
+            <slot name="actions" onSlotchange={this.onActionsSlotChange} />
+          </span>
+
+          {showLink ? (
             <a class="link" part="link" href={this.linkHref ?? '#'}>
               {this.linkText}
             </a>

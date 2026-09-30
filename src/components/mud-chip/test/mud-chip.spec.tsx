@@ -16,6 +16,37 @@ const queryRemove = (root: Element | null | undefined): HTMLButtonElement | null
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 describe('mud-chip', () => {
+  describe('native aria-label', () => {
+    it('moves the host aria-label onto the internal control', async () => {
+      const { root } = await render(<mud-chip aria-label="Închide">X</mud-chip>);
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Închide');
+    });
+
+    it('wins over the deprecated label prop', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-chip aria-label="Nativ" label="Vechi">
+          X
+        </mud-chip>,
+      );
+      expect(root?.shadowRoot?.querySelector('.control')?.getAttribute('aria-label')).toBe('Nativ');
+      warn.mockRestore();
+    });
+
+    it('warns once that label is deprecated', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-chip label="Vechi">X</mud-chip>);
+      Object.assign(root as object, { label: 'Alt' });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([m]: unknown[]) =>
+        String(m).includes('[mud-chip] `label` as an accessible name is deprecated'),
+      );
+      expect(calls).toHaveLength(1);
+      warn.mockRestore();
+    });
+  });
+
   describe('defaults', () => {
     it('renders with default props reflected on host', async () => {
       const { root } = await render(<mud-chip>Apartament</mud-chip>);
@@ -269,18 +300,22 @@ describe('mud-chip', () => {
 
   describe('label rendering (slot-first)', () => {
     it('uses the label prop as aria-label on the internal button when no slot content', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip label="Apartament din prop"></mud-chip>);
       expect(queryControl(root)?.getAttribute('aria-label')).toBe('Apartament din prop');
       // .label span is empty when there is no slot content
       const labelSpan = root?.shadowRoot?.querySelector('.label');
       expect((labelSpan?.textContent ?? '').trim()).toBe('');
+      warn.mockRestore();
     });
 
     it('omits button aria-label when the slot provides visible content', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip label="ignored">Apartament</mud-chip>);
       // Light DOM holds the slotted text; AT reads the slotted content via the button's accessible name from its children.
       expect((root?.textContent ?? '').trim()).toBe('Apartament');
       expect(queryControl(root)?.getAttribute('aria-label')).toBeNull();
+      warn.mockRestore();
     });
 
     it('supports Romanian diacritics in slotted content', async () => {
@@ -308,17 +343,21 @@ describe('mud-chip', () => {
       warn.mockRestore();
     });
 
-    it('does not warn when label prop is provided', async () => {
+    it('does not ask for a label when the deprecated label prop is provided, but warns once that it is deprecated', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      await render(<mud-chip label="Apartament"></mud-chip>);
-      expect(warn).not.toHaveBeenCalled();
+      const { root, waitForChanges } = await render(<mud-chip label="Apartament"></mud-chip>);
+      Object.assign(root as object, { label: 'Casă' });
+      await waitForChanges();
+      const messages = warn.mock.calls.map(([m]: unknown[]) => String(m));
+      expect(messages.filter(m => m.includes('chips require a label'))).toHaveLength(0);
+      expect(messages.filter(m => m.includes('`label` as an accessible name is deprecated'))).toHaveLength(1);
       warn.mockRestore();
     });
 
     it('does not warn when default slot has content', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       await render(<mud-chip>Apartament</mud-chip>);
-      expect(warn).not.toHaveBeenCalled();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('chips require a label'))).toHaveLength(0);
       warn.mockRestore();
     });
   });
@@ -352,7 +391,7 @@ describe('mud-chip', () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       await render(<mud-chip aria-label="Apartament accesibil"></mud-chip>);
       // Warning should NOT fire — aria-label satisfies the accessible-name check.
-      expect(warn).not.toHaveBeenCalled();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('chips require a label'))).toHaveLength(0);
       warn.mockRestore();
     });
 
@@ -367,7 +406,7 @@ describe('mud-chip', () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       await render(<mud-chip aria-labelledby="external-label"></mud-chip>);
       // aria-labelledby branch in hasAccessibleName() — warning suppressed.
-      expect(warn).not.toHaveBeenCalled();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('chips require a label'))).toHaveLength(0);
       warn.mockRestore();
     });
 
@@ -377,7 +416,7 @@ describe('mud-chip', () => {
       // hasAccessibleName() that reads host.textContent is also exercised.
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-chip>Casă</mud-chip>);
-      expect(warn).not.toHaveBeenCalled();
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('chips require a label'))).toHaveLength(0);
       // Reload resolveLabelText() to ensure it returns textContent when both
       // label prop and aria-label are absent.
       const text = (root as unknown as { resolveLabelText: () => string }).resolveLabelText();

@@ -409,9 +409,9 @@ export class MudModal {
       // The image is the actual header bar; the title (when provided) is rendered
       // below the image inside renderBody (per Figma 358:16247 — image variants
       // show the title underneath the hero, not in a separate header bar).
-      // Slot-first content rule: when consumers project their own `<img>` or
-      // `<picture>` it wins; otherwise the `imageSrc` prop renders an `<img>`
-      // as the slot's fallback content.
+      // Hybrid content (slot-patterns.md): when consumers project their own
+      // `<img>` or `<picture>` it wins; otherwise the `imageSrc` prop renders an
+      // `<img>` as the slot's fallback content.
       return (
         <div class="header header-image">
           <slot name="image" onSlotchange={this.onImageSlotChange}>
@@ -435,7 +435,7 @@ export class MudModal {
           <div class="heading" id={this.titleId}>
             {/* Single slot path — when consumers provide a `slot="title"` child it
                 wins; otherwise the slot fallback renders the `titleText` prop as
-                an h2 (slot-first content rule, ANTIPATTERN-026 compliant). */}
+                an h2 (a hybrid, listed in ANTIPATTERN-026's allow-list). */}
             <slot name="title" onSlotchange={this.onTitleSlotChange}>
               <h2 class="title">{this.titleText}</h2>
             </slot>

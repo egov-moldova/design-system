@@ -619,7 +619,30 @@
             "color": "#0058D2",
             "textDecorationLine": "underline"
           },
-          "note": "The link layer is the link component 53:628 (Primary, 16: Medium, Underline=true). It is hidden in every master, so there is no reference image to diff."
+          "note": "The link layer is the link component 53:628 (Primary, 16: Medium, Underline=true). It is hidden in every master, so there is no reference image to diff. This is the deprecated linkText path; desktop-actions covers the actions slot that replaces it."
+        }
+      ]
+    },
+    {
+      "name": "desktop-actions",
+      "node": "106:1034",
+      "pixel": false,
+      "html": "<div style=\"width:1248px\"><mud-banner variant=\"info\" emphasis=\"subtle\" dismissible>Scheduled maintenance today. Some services may be temporarily unavailable. <mud-link slot=\"actions\" href=\"#\" size=\"md\">Click here</mud-link></mud-banner></div>",
+      "expect": [
+        {
+          "target": "mud-banner mud-link .control",
+          "styles": {
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "color": "#0058D2",
+            "textDecorationLine": "underline"
+          },
+          "note": "106:1034's link layer is an instance of the link component 53:628 (Style=Primary, Size=16: Medium, State=Default), so the actions slot takes a mud-link size=\"md\"; mud-link's own manifest (default-md) verifies 53:628 in full. The layer is hidden in every master, so there is no reference image to diff."
+        },
+        {
+          "target": "mud-banner .link",
+          "absent": true,
+          "note": "106:1034 has one link. With the actions slot filled, the deprecated link props render nothing."
         }
       ]
     },

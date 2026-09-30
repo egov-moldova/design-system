@@ -13,8 +13,8 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 // ---------- Slot-first markup helper ----------
 //
-// `label` prop is ARIA-only (see component JSDoc); visible content lives
-// exclusively in the `label` slot.
+// The `label` prop renders visible text; the `label` slot replaces it for rich
+// content. The stories use the slot.
 
 type CbOpts = {
   label?: string;
@@ -78,7 +78,8 @@ const meta: Meta<SwitchArgs> = {
     },
     label: {
       control: 'text',
-      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+      description:
+        'Visible label. The story slots it (`<span slot="label">…</span>`); the `label` prop renders the same text.',
     },
     name: { control: 'text', description: 'Form-control `name`.' },
     value: { control: 'text', description: 'Value submitted with the form when on.' },

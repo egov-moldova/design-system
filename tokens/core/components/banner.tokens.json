@@ -40,6 +40,13 @@
       "underlineOffset": { "$value": "{spacing.2}", "$type": "dimension" },
       "color": { "$value": "{color.text.brand.default}", "$type": "color" }
     },
+    "actions": {
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Between several actions in the actions slot. Figma shows one action only (the link component 53:628 in 106:1034); 12px matches mud-info-box's actions."
+      }
+    },
     "close": {
       "sizePointer": {
         "$value": "{spacing.32}",

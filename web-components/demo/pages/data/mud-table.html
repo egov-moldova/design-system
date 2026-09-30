@@ -13,15 +13,15 @@
         <div class="subsection">
           <h3>Zebra rows, sortable columns, custom status cell (slot)</h3>
           <p class="label">
-            <code>columns</code> + <code>rows</code> set via JS property. The <code>cell-status</code> slot is matched
-            per-row as <code>cell-status-{index}</code> so each row gets its own <code>mud-tag</code>.
+            <code>columns</code> + <code>rows</code> set via JS property. Each status cell is the slot
+            <code>cell-status-{rowId}</code>, so every row gets its own <code>mud-tag</code> and keeps it when sorted.
           </p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
             <mud-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Submitted requests">
-              <mud-tag slot="cell-status-0" variant="status" type="subtle" semantic="success">Approved</mud-tag>
-              <mud-tag slot="cell-status-1" variant="status" type="subtle" semantic="warning">In progress</mud-tag>
-              <mud-tag slot="cell-status-2" variant="status" type="subtle" semantic="danger">Rejected</mud-tag>
-              <mud-tag slot="cell-status-3" variant="status" type="subtle" semantic="brand">Confirmed</mud-tag>
+              <mud-tag slot="cell-status-1" variant="status" type="subtle" semantic="success">Approved</mud-tag>
+              <mud-tag slot="cell-status-2" variant="status" type="subtle" semantic="warning">In progress</mud-tag>
+              <mud-tag slot="cell-status-3" variant="status" type="subtle" semantic="danger">Rejected</mud-tag>
+              <mud-tag slot="cell-status-4" variant="status" type="subtle" semantic="brand">Confirmed</mud-tag>
             </mud-table>
           </div>
         </div>

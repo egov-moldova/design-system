@@ -8,7 +8,8 @@
         "node": "51:412",
         "reason": "Indeterminate/Focus/Medium — the ring is the same Focus Ring/Small the two focus states below pin, over the same brand fill indeterminate-md already pins."
       }
-    ]
+    ],
+    "fixtureNote": "The label-group fixtures slot their text; each has a -prop twin that passes the same text through the `label` / `supporting-text` props, which render it identically. The text itself is not asserted: it lives in the light DOM, and a shadow element wrapping a <slot> reports no textContent of its own."
   },
   "defaults": {
     "story": "components-checkbox--default",
@@ -251,6 +252,33 @@
       ]
     },
     {
+      "name": "label-md-prop",
+      "node": "13:131",
+      "pixel": false,
+      "html": "<mud-checkbox label=\"Transforming Services\"></mud-checkbox>",
+      "expect": [
+        {
+          "target": "mud-checkbox .root",
+          "styles": {
+            "columnGap": "12px",
+            "alignItems": "center"
+          },
+          "note": "Figma checkbox-label 13:131 puts spacing/12 between the box and the label, centred on each other. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        },
+        {
+          "target": "mud-checkbox .label",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "rgb(18, 18, 18)"
+          },
+          "note": "Figma 13:133 sets the label in Desktop/Body/Default 500 at #121212. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        }
+      ]
+    },
+    {
       "name": "label-sm",
       "node": "1512:8587",
       "pixel": false,
@@ -272,6 +300,31 @@
             "color": "rgb(18, 18, 18)"
           },
           "note": "Figma 1512:8589 drops the Small label to Desktop/Body/Small 500."
+        }
+      ]
+    },
+    {
+      "name": "label-sm-prop",
+      "node": "1512:8587",
+      "pixel": false,
+      "html": "<mud-checkbox size=\"sm\" label=\"Transforming Services\"></mud-checkbox>",
+      "expect": [
+        {
+          "target": "mud-checkbox .root",
+          "styles": {
+            "columnGap": "12px"
+          },
+          "note": "Figma 1512:8587 keeps spacing/12 at Small — the gap does not shrink with the box. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        },
+        {
+          "target": "mud-checkbox .label",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500",
+            "color": "rgb(18, 18, 18)"
+          },
+          "note": "Figma 1512:8589 drops the Small label to Desktop/Body/Small 500. The same text from the label / supporting-text props (#165 phase 3) renders identically."
         }
       ]
     },
@@ -301,6 +354,31 @@
       ]
     },
     {
+      "name": "label-supporting-md-prop",
+      "node": "13:143",
+      "pixel": false,
+      "html": "<mud-checkbox label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"></mud-checkbox>",
+      "expect": [
+        {
+          "target": "mud-checkbox .text",
+          "styles": {
+            "rowGap": "2px"
+          },
+          "note": "Figma 13:145 stacks label and supporting text with spacing/2. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        },
+        {
+          "target": "mud-checkbox .supporting",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "rgb(117, 117, 117)"
+          },
+          "note": "Figma 13:147 sets the Medium supporting text in Desktop/Body/Small at #757575. The same text from the label / supporting-text props (#165 phase 3) renders identically."
+        }
+      ]
+    },
+    {
       "name": "label-supporting-sm",
       "node": "1512:8611",
       "pixel": false,
@@ -315,6 +393,24 @@
             "color": "rgb(117, 117, 117)"
           },
           "note": "Figma 1512:8615 drops the Small supporting text to Desktop/Caption/Medium."
+        }
+      ]
+    },
+    {
+      "name": "label-supporting-sm-prop",
+      "node": "1512:8611",
+      "pixel": false,
+      "html": "<mud-checkbox size=\"sm\" label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"></mud-checkbox>",
+      "expect": [
+        {
+          "target": "mud-checkbox .supporting",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "rgb(117, 117, 117)"
+          },
+          "note": "Figma 1512:8615 drops the Small supporting text to Desktop/Caption/Medium. The same text from the label / supporting-text props (#165 phase 3) renders identically."
         }
       ]
     }

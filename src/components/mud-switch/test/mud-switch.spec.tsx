@@ -153,16 +153,15 @@ describe('mud-switch', () => {
         },
       }) as unknown as Event;
 
-    it('uses the label prop as input aria-label when no slot content', async () => {
+    it('renders the label prop as visible text that names the input', async () => {
       const { root } = await render(<mud-switch label="Notificări push"></mud-switch>);
-      // `.label-text` exists (always rendered) but is empty + hidden via host class.
-      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('');
-      expect(root?.classList.contains('has-label')).toBe(false);
-      // Prop falls back to the input's aria-label.
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Notificări push');
+      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('Notificări push');
+      expect(root?.classList.contains('has-label')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBe(queryLabelEl(root)?.id);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
-    it('flips has-label class + mirrors slot text onto input aria-label', async () => {
+    it('flips has-label class for slotted content and names the input through it', async () => {
       const { root } = await render(<mud-switch></mud-switch>);
       (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
         fakeSlotEvent('el', 'Slotted label'),
@@ -170,8 +169,8 @@ describe('mud-switch', () => {
       await flush();
       expect(root?.classList.contains('has-label')).toBe(true);
       expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeTruthy();
-      // Belt-and-suspenders: slotted text mirrored onto aria-label.
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Slotted label');
+      // No mirror of the slotted text onto aria-label: aria-labelledby names the input.
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
     });
 
     it('omits the visible label when no slot is provided', async () => {
@@ -233,9 +232,10 @@ describe('mud-switch', () => {
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
     });
 
-    it('falls back to the label prop as input aria-label', async () => {
-      const { root } = await render(<mud-switch label="Etichetă din prop"></mud-switch>);
-      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Etichetă din prop');
+    it('explicit aria-label overrides the visible label as the accessible name', async () => {
+      const { root } = await render(<mud-switch label="Etichetă vizibilă" aria-label="Nume"></mud-switch>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Nume');
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeNull();
     });
 
     it('strips consumer-set aria-label from the host (axe: aria-prohibited-attr)', async () => {

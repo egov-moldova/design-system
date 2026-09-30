@@ -9,7 +9,7 @@ Slot validation, valid-tag constants, and the rule against boolean slot-control 
 - Slot Validation Guards (pattern + example)
 - Valid Slot Element Constants (in the component's `.types.ts`)
 - No Boolean Props for Slot Visibility (CSS :empty rule)
-- No String Content Props as Slot Fallback (slot-first content rule)
+- Prop, Slot or Hybrid (content API rule, one meaning for `label`, collection precedence)
 - Dual Selector Pattern (slot with default content)
 
 ---
@@ -150,76 +150,68 @@ Does layout change based on slot content?
 
 ---
 
-## No String Content Props as Slot Fallback — Slot-First Content Rule
+## Prop, Slot or Hybrid — Content API Rule
 
-**CRITICAL**: When a slot accepts visible content, **the slot is the only content source**. Do not declare a parallel `@Prop() xxx?: string` that gets rendered as the slot's fallback child.
+Decided in [#165](https://github.com/egov-moldova/design-system/issues/165) (Option C of
+[`docs/backlog/2026-05-27-slot-first-content-refactor.md`](../../../docs/backlog/2026-05-27-slot-first-content-refactor.md),
+plus one meaning for `label`). Content a component supplies itself, its built-in copy, is a
+separate matter: see [`_agents/localization.md`](../../../_agents/localization.md).
 
-The reference components (`mud-button`, `mud-service-button`) follow the inverse pattern: visible content comes exclusively from the default `<slot>`; the `label` prop, when it exists, is used only as `aria-label` for icon-only mode.
+| Content | Channel | Examples |
+| --- | --- | --- |
+| Plain text the component must wire itself inside its shadow root (`<label for>`, `aria-describedby`, `aria-live`) | **Prop** | `errorText` |
+| Structured data (lists, form values) and configuration | **Prop** | `columns` / `rows`, `steps`, `segments`, `value`, `href` |
+| Rich content (links, icons, formatted text) | **Slot** | `mud-button`'s content, `actions` |
+| `mud-*` children the parent coordinates (keyboard, active state) | **Slot** (compound) | `mud-menu` → `mud-menu-item`, `mud-sidebar` |
+| Field labels and helper text, short plain text | **Hybrid**: a text prop renders, a slot overrides it | `mud-text-input` `label` / `helperText`, `mud-tag` `label` |
 
-### ❌ Forbidden — content prop with slot fallback
+### `label` always means visible text
 
-```typescript
-@Prop() label?: string;
+A `label` prop renders. It is never an accessible name alone. An accessible-name-only
+override comes from the native `aria-label` attribute on the host, which the component
+forwards to its internal control with `observeAriaLabel` (`src/utils/aria-label.ts`). The
+one exception is a group or container name (`mud-button-group`, `mud-accordion`,
+`mud-breadcrumb`, `mud-modal`, `mud-pagination`), where there is no visible text to show.
 
-render() {
-  const labelText = this.label?.trim();
-  return (
-    <span class="label">
-      <slot name="label">{labelText}</slot>  {/* ← content-prop-as-fallback */}
-    </span>
-  );
-}
-```
-
-**Problems:**
-- Two ways to set the same content — consumers must learn which wins.
-- Prop value can never live in light DOM, breaking copy/paste, screen-reader inspection, and `querySelector('mud-x [slot=label]')` discovery.
-- Rich content (links, icons, formatted text) requires the slot anyway, so the prop is a half-API.
-- Diverges from `mud-button` / `mud-service-button` where `label` is ARIA-only.
-
-### ✅ Allowed — slot is the sole content source
+### Hybrid — the documented pattern
 
 ```typescript
-render() {
-  return (
-    <span class="label">
-      <slot name="label" />
-    </span>
-  );
-}
-```
-
-```html
-<!-- consumer markup -->
-<mud-checkbox>
-  <span slot="label">Acord</span>
-</mud-checkbox>
-```
-
-### ✅ Allowed — prop is ARIA-only, matches reference
-
-```typescript
-/** Accessible name for icon-only / visually-hidden cases. NOT rendered as text. */
+/** Visible label. The `label` slot overrides it for rich content. */
 @Prop() label?: string;
 
 render() {
   return (
-    <Host>
-      <button class="control" aria-label={this.label}>
-        <slot />  {/* visible content lives here */}
-      </button>
-    </Host>
+    <label class="label" htmlFor={this.inputId}>
+      <slot name="label" onSlotchange={this.onLabelSlotChange}>
+        {this.label?.trim()}
+      </slot>
+    </label>
   );
 }
 ```
 
-### When is a string prop OK?
+When both are set, the slot wins. Keep the wiring (`for`, `aria-describedby`) on the
+component's own element, so it holds whichever source fills it.
 
-- ARIA-only (`label` for icon-only, `aria-label`, `aria-describedby`).
-- Form metadata (`name`, `value`, `placeholder`).
-- Non-rendered configuration (`href`, `type`, etc.).
-- **Never** as the source of visible text that has a matching `<slot>`.
+### Collections with two APIs: the prop wins
+
+A collection that takes both an array prop and declarative children (`mud-accordion`
+`items`, `mud-breadcrumb` `items`, `mud-tabs` `tabs`) renders the prop when both are set, and
+warns once with `console.warn`. Pick one API per instance.
 
 ### Detection
 
-`scripts/audit/02-stencil-antipatterns.mjs` flags pattern `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`: any `<slot ...>{...}</slot>` whose fallback expression dereferences a `this.*` prop. Audit verdict downgrades to **Review — partial** when this fires.
+`scripts/audit/02-stencil-antipatterns.mjs` reports `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`
+(warning) for a slot whose fallback renders text from a JSX expression, or for text rendered
+beside a slot behind a `has*Slot` guard, in any component not listed in
+`HYBRID_CONTENT_COMPONENTS` in the same file. The list names each hybrid and its reason. A new
+hybrid is added there deliberately, never silenced in place. Attribute values of a default
+element (`<slot name="icon"><mud-icon name={iconName} /></slot>`) are not text and do not count.
+
+### Not yet conforming
+
+Until the next major (#165):
+
+- `mud-button`, `mud-service-button`, `mud-chip`: `label` is still an accessible name only,
+  deprecated in favour of the native `aria-label`, which they forward; it goes away in the next
+  major.

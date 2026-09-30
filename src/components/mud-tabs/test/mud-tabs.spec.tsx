@@ -98,6 +98,66 @@ describe('mud-tabs', () => {
     });
   });
 
+  describe('mud-tab deprecated icon and badge slots', () => {
+    it('warns once, naming both slots, and still renders them', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-tab value="a" label="A">
+          <span slot="icon-start">i</span>
+          <span slot="badge">7</span>
+        </mud-tab>,
+      );
+      Object.assign(root as object, { label: 'B' });
+      await waitForChanges();
+      const calls = warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('[mud-tab]'));
+      expect(calls).toHaveLength(1);
+      expect(calls[0]?.[0]).toContain('"icon-start" and "badge" slots are deprecated');
+      expect(root?.shadowRoot?.querySelector('slot[name="badge"]')).not.toBeNull();
+      warn.mockRestore();
+    });
+
+    it('does not warn for iconName and badgeCount', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(<mud-tab value="a" label="A" iconName="filter" badgeCount={3}></mud-tab>);
+      expect(warn.mock.calls.filter(([m]: unknown[]) => String(m).includes('[mud-tab]'))).toHaveLength(0);
+      warn.mockRestore();
+    });
+  });
+
+  describe('two sources: the tabs prop wins', () => {
+    it('renders only the tabs prop, skips the children, and warns once', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-tabs>
+          <mud-tab value="copil" label="Copil"></mud-tab>
+        </mud-tabs>,
+      );
+      await setTabs(root, sampleTabs);
+      await setTabs(root, [...sampleTabs]);
+      const track = root?.shadowRoot?.querySelector('.track');
+      expect(track?.querySelector('slot:not([name])')).toBeNull();
+      expect(Array.from(track?.querySelectorAll('mud-tab') ?? []).map(t => t.getAttribute('value'))).toEqual(
+        sampleTabs.map(t => t.value),
+      );
+      const calls = warn.mock.calls.filter(([m]) => String(m).includes('Both `tabs` and <mud-tab> children'));
+      expect(calls).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it('renders the children through the slot, without a warning, when tabs is unset', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root } = await render(
+        <mud-tabs>
+          <mud-tab value="copil" label="Copil"></mud-tab>
+        </mud-tabs>,
+      );
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.track slot:not([name])')).not.toBeNull();
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('Both'))).toHaveLength(0);
+      warn.mockRestore();
+    });
+  });
+
   describe('selection + mudChange', () => {
     it('emits mudChange when an unselected tab is clicked', async () => {
       const onChange = vi.fn();

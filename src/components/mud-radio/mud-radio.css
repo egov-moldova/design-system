@@ -199,6 +199,24 @@
 /* Read-only stays full-contrast (per the input/checkbox convention) — only the
    cursor and toggle behaviour change. */
 
+/* ---------- Content column (text block + error message) ---------- */
+
+/*
+ * Figma "Container" (585:35248): the text block and the error message stack
+ * 6px apart. Hidden when it has nothing to show, so an unlabelled radio adds
+ * no `.layout` gap after the circle.
+ */
+.content {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  gap: var(--radio-error-message-margin-top);
+}
+
+:host(:not(.has-label):not(.has-supporting-text):not(.has-error-message)) .content {
+  display: none;
+}
+
 /* ---------- Text column (label + supporting) ---------- */
 
 .text {

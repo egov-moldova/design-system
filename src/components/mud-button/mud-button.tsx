@@ -1,5 +1,6 @@
 import { AttachInternals, Component, Element, Host, Prop, State, h } from '@stencil/core';
 
+import { observeAriaLabel } from '../../utils/aria-label';
 import type { SpinnerSize, SpinnerVariant } from '../mud-spinner/mud-spinner.types';
 import type { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './mud-button.types';
 
@@ -20,7 +21,7 @@ type SpinnerSizeForButton = Extract<SpinnerSize, 'xs' | 'sm'>;
  * @slot icon - When filled, switches the button into icon-only mode: the
  *               container becomes square with equal zero-padding, and any
  *               `icon-start`, `icon-end`, or default-slot label content
- *               is suppressed. Requires `label` (or `aria-label`) for AT.
+ *               is suppressed. Requires an `aria-label` for AT.
  */
 @Component({
   tag: 'mud-button',
@@ -85,7 +86,7 @@ export class MudButton {
    * Switches the button into icon-only mode: the container becomes square
    * with equal zero-padding, and `icon-start`/`icon-end`/default-slot
    * content is suppressed. Icon content should be placed in `slot="icon"`.
-   * Requires `label` (or `aria-label`) for screen readers.
+   * Requires an `aria-label` for screen readers.
    * @default false
    */
   @Prop({ reflect: true, attribute: 'icon-only' }) iconOnly: boolean = false;
@@ -126,8 +127,12 @@ export class MudButton {
   @Prop() value?: string;
 
   /**
-   * Accessible name. Required when the button has no visible text label
-   * (icon-only). Forwarded to `aria-label` on the internal control.
+   * Accessible name, forwarded to `aria-label` on the internal control. The host's
+   * native `aria-label` wins over it.
+   *
+   * @deprecated `label` means visible text everywhere else in the library. Set the
+   * native `aria-label` attribute instead (required when the button is icon-only);
+   * `label` goes away in the next major.
    */
   @Prop() label?: string;
 
@@ -135,17 +140,37 @@ export class MudButton {
   @State() private hasIconEnd: boolean = false;
   @State() private hasIcon: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  /** The host's native `aria-label`, moved onto the internal control. */
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLMudButtonElement;
 
   @AttachInternals() internals!: ElementInternals;
 
+  private stopAriaLabel?: () => void;
+  private warnedLabelDeprecated = false;
+
+  connectedCallback() {
+    this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+  }
+
+  disconnectedCallback() {
+    this.stopAriaLabel?.();
+  }
+
+  componentDidRender() {
+    if (this.label?.trim() && !this.warnedLabelDeprecated) {
+      this.warnedLabelDeprecated = true;
+      console.warn(
+        '[mud-button] `label` as an accessible name is deprecated: set the native `aria-label` attribute instead. It goes away in the next major.',
+      );
+    }
+  }
+
   componentDidLoad() {
     if (this.iconOnly) {
       if (!this.hasAccessibleName()) {
-        console.warn(
-          '[mud-button] icon-only buttons require a `label` prop (or `aria-label`) for screen-reader users.',
-        );
+        console.warn('[mud-button] icon-only buttons require an `aria-label` for screen-reader users.');
       }
       if (!this.hasIcon) {
         console.warn(
@@ -200,10 +225,14 @@ export class MudButton {
   }
 
   private hasAccessibleName(): boolean {
-    if (this.label && this.label.trim().length > 0) return true;
-    if (this.host.hasAttribute('aria-label')) return true;
+    if (this.accessibleName()) return true;
     if (this.host.hasAttribute('aria-labelledby')) return true;
     return false;
+  }
+
+  /** The control's accessible name: the host's native `aria-label`, else the deprecated `label`. */
+  private accessibleName(): string | undefined {
+    return this.resolvedAriaLabel ?? (this.label?.trim() || undefined);
   }
 
   private isInert(): boolean {
@@ -258,7 +287,7 @@ export class MudButton {
       'is-fieldset-disabled': this.fieldsetDisabled && !this.disabled,
     };
 
-    const labelAttr = this.label?.trim();
+    const labelAttr = this.accessibleName();
     const ariaBusy = this.loading ? 'true' : null;
     const ariaDisabled = effectivelyDisabled ? 'true' : null;
     const tabIndexAttr = effectivelyDisabled ? -1 : 0;

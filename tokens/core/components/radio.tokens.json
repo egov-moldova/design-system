@@ -98,6 +98,13 @@
       },
       "marginTop": { "$value": "{spacing.2}", "$type": "dimension" }
     },
+    "errorMessage": {
+      "marginTop": {
+        "$value": "{spacing.6}",
+        "$type": "dimension",
+        "$comment": "Figma radio-label Error (585:35229, 585:35232): the inline-message sits 6px under the label or supporting text, at both sizes."
+      }
+    },
     "gap": {
       "radioLabel": { "$value": "{spacing.12}", "$type": "dimension" }
     }

@@ -46,13 +46,6 @@ Give the group an accessible name via the native `aria-label` attribute
 | `mudChange` | Fires when the selected segment changes. `detail.value` is the new selection. | `CustomEvent<SegmentedControlChangeDetail>` |
 
 
-## Slots
-
-| Slot | Description                                                                                                                                                           |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|      | Reserved for future declarative segments. Today, all segments come from the `segments` prop. The slot is rendered hidden so AT does not see accidental content twice. |
-
-
 ## Shadow Parts
 
 | Part      | Description |

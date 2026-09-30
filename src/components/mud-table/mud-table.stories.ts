@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import { expect, waitFor } from 'storybook/test';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES } from './mud-table.types';
 import type { TableColumn, TableHeaderStyle, TableRowData, TableRowStyle } from './mud-table.types';
@@ -66,13 +67,15 @@ const statusTagMap: Record<string, { semantic: string; label: string }> = {
   anulat: { semantic: 'danger', label: 'Cancelled' },
 };
 
-const renderStatusSlot = (rowIndex: number, statusKey: string) => {
+// Cell slots are named `cell-{key}-{rowId}`, so the content follows its row when the
+// rows are sorted or filtered.
+const renderStatusSlot = (rowId: string, statusKey: string) => {
   const tag = statusTagMap[statusKey];
-  return /*html*/ `<mud-tag slot="cell-status-${rowIndex}" semantic="${tag.semantic}" size="sm">${tag.label}</mud-tag>`;
+  return /*html*/ `<mud-tag slot="cell-status-${rowId}" semantic="${tag.semantic}" size="sm">${tag.label}</mud-tag>`;
 };
 
-const renderRowActionsSlot = (rowIndex: number) => /*html*/ `
-  <span slot="cell-actions-${rowIndex}" style="display:inline-flex; gap: var(--spacing-4);">
+const renderRowActionsSlot = (rowId: string) => /*html*/ `
+  <span slot="cell-actions-${rowId}" style="display:inline-flex; gap: var(--spacing-4);">
     <mud-button appearance="text" size="sm">View</mud-button>
     <mud-button appearance="text" size="sm" variant="destructive">Delete</mud-button>
   </span>
@@ -321,12 +324,12 @@ export const Selectable: Story = {
 export const WithStatusBadges: Story = {
   name: 'WithStatusBadges',
   render: () => {
-    const tagSlots = baseRows.map((row, idx) => renderStatusSlot(idx, String(row.status))).join('');
+    const tagSlots = baseRows.map(row => renderStatusSlot(String(row.id), String(row.status))).join('');
     return wrap(
       group(
         'Status cells composed with `mud-tag`',
         renderTable('tbl-status', demoColumns, baseRows, { rowStyle: 'divided' }, tagSlots),
-        'Per-row slot name pattern: `cell-{key}-{index}` — drop in any element.',
+        "Per-cell slot name pattern: `cell-{key}-{rowId}`, where `rowId` is the row's `rowIdField` value. Drop in any element.",
       ),
     );
   },
@@ -336,7 +339,7 @@ export const WithActions: Story = {
   name: 'WithActions',
   render: () => {
     const columnsWithActions: TableColumn[] = [...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }];
-    const slots = baseRows.map((_, idx) => renderRowActionsSlot(idx)).join('');
+    const slots = baseRows.map(row => renderRowActionsSlot(String(row.id))).join('');
     return wrap(
       group(
         'Action cells composed with `mud-button appearance="text"`',
@@ -387,9 +390,9 @@ export const AllDataTypes: Story = {
       .map((row, idx) => {
         const tag = statusTagMap[String(row.status)];
         return /*html*/ `
-          <mud-tag slot="cell-status-${idx}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
-          <mud-checkbox slot="cell-verified-${idx}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmed"></mud-checkbox>
-          <mud-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Edit">
+          <mud-tag slot="cell-status-${row.id}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
+          <mud-checkbox slot="cell-verified-${row.id}" ${verifiedFlags[idx] ? 'checked' : ''} aria-label="Confirmed"></mud-checkbox>
+          <mud-button slot="cell-actions-${row.id}" appearance="text" size="sm" icon-only aria-label="Edit">
             <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
           </mud-button>
         `;
@@ -531,6 +534,46 @@ export const EdgeCases: Story = {
         ),
       ].join(''),
     );
+  },
+};
+
+// Browser-lane guard for the cell slots: the DOM assigns a slot name to the first slot
+// that carries it, so each row needs names of its own, and those names must follow the
+// row when the rows are reordered. The mock-doc spec lane cannot assign slots.
+export const CellSlotsFollowRows: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () =>
+    renderTable(
+      'tbl-cell-slots',
+      demoColumns,
+      baseRows.slice(0, 3),
+      {},
+      baseRows
+        .slice(0, 3)
+        .map(row => /*html*/ `<span slot="cell-status-${row.id}" data-row="${row.id}">${row.id}</span>`)
+        .join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      disable: true,
+      source: {
+        code: `<mud-table>\n  <span slot="cell-status-r1">r1</span>\n  <span slot="cell-status-r2">r2</span>\n  <span slot="cell-status-r3">r3</span>\n</mud-table>`,
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const table = canvasElement.querySelector('mud-table') as HTMLMudTableElement;
+    const assigned = () =>
+      Array.from(table.shadowRoot?.querySelectorAll('tbody tr') ?? []).map(tr => {
+        const slot = tr.querySelector('slot[name^="cell-status-"]') as HTMLSlotElement | null;
+        return slot?.assignedElements({ flatten: true }).map(el => el.getAttribute('data-row')) ?? [];
+      });
+
+    await waitFor(() => expect(assigned()).toEqual([['r1'], ['r2'], ['r3']]));
+
+    table.rows = [...baseRows.slice(0, 3)].reverse();
+    await waitFor(() => expect(assigned()).toEqual([['r3'], ['r2'], ['r1']]));
   },
 };
 

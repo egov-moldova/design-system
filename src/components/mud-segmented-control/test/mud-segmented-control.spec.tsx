@@ -32,6 +32,15 @@ const sampleSegments: SegmentedControlSegment[] = [
 
 describe('mud-segmented-control', () => {
   describe('defaults + prop reflection', () => {
+    it('has no slot, so light-DOM children are not rendered', async () => {
+      const { root } = await render(
+        <mud-segmented-control aria-label="Filtru">
+          <span>Ignorat</span>
+        </mud-segmented-control>,
+      );
+      expect(root?.shadowRoot?.querySelector('slot')).toBeNull();
+    });
+
     it('renders with default props reflected on the host', async () => {
       const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
       expect(root?.getAttribute('size')).toBe('md');

@@ -60,10 +60,9 @@ export class MudBreadcrumbItem {
   @Prop({ reflect: true }) loading: boolean = false;
 
   /**
-   * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb).
-   * If the slot contains visible text, that text is the accessible name — this prop
-   * is NOT applied as an `aria-label` override on the rendered element to preserve
-   * the slot-first content rule.
+   * Visible crumb text, rendered when the default slot is empty; the slot replaces
+   * it for rich content. Also the tooltip text when it is truncated, and the
+   * `label` of `mudSelect`'s detail.
    */
   @Prop() label?: string;
 
