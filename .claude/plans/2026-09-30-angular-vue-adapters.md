@@ -1,7 +1,7 @@
 # Angular and Vue adapters for `@egov-moldova/mud`
 
 **Execution**: workflow — `2026-09-30-angular-vue-adapters.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
-**Reviewed:** none
+**Reviewed:** preflight 335a20e3, critic 56c07731, critic 88abaf94 — the 3-round cap ended the loop on 2026-10-01 with round 3's findings folded in below without a further round; Dan's go to implement, 2026-10-01.
 
 ## Goal
 
@@ -29,18 +29,21 @@ Zero tolerance:
 - a change to the core's published `exports`, `files` or version (the one additive type
   re-export in Phase 0 is the owner-approved exception, 2026-10-01: it changes neither);
 - a console error in a fixture run;
-- a second runtime in a fixture run: any request for the core's lazy loader (`loader/`,
-  `dist/mud/`, `*.entry.js`). A double `customElements.define` cannot be observed, because every
-  Stencil define is guarded by `customElements.get`, so the network log is the check.
+- a second runtime in a fixture build: any module in the fixture's bundle graph that resolves
+  under `@egov-moldova/mud/loader`, `@egov-moldova/mud/dist/esm`, `@egov-moldova/mud/dist/cjs`
+  or `@egov-moldova/mud/dist/mud` (Vite `build.manifest`, `ng build --stats-json`). Neither a
+  double `customElements.define` nor a network request can be relied on: every Stencil define is
+  guarded by `customElements.get`, the lazy runtime skips tags already defined so it may request
+  nothing, and bundlers rename its chunks.
 
 Must pass:
 
 | Check | Bar |
 |---|---|
-| Vue fixture (latest Vue 3) | PASS on the common fixture checks below, all through `v-model` |
-| Angular fixture at 20 and at 22 | PASS on the common fixture checks below, through `ngModel`, plus `formControl` on select, a cleared numeric-input yielding a `null` model, and a bare boolean attribute compiling under `strictTemplates` with `inlineProperties: true` |
-| Proxy, shim and manifest guard in the runner | FAIL on any tracked file under a proxy output directory, a root `components/` directory, or a `workspace:` specifier in the `package.json` of any tarball the runner packed (read from the tarball, not from the source tree) |
-| Typed wrappers, Vue and Angular | each fixture typechecks with its framework's own checker (`vue-tsc --noEmit`, `ng build` under `strictTemplates`), AND the runner's negative case (one input bound to a wrongly typed value) FAILS to compile |
+| Vue fixture (Vue 3 at its `fixture/versions.json` pin) | PASS on the common fixture checks below, all through `v-model` |
+| Angular fixture at 20 (zone.js) and at 22 (zoneless) | PASS on the common fixture checks below, through `ngModel`, plus `formControl` on select, a cleared numeric-input yielding a `null` model, a phone-input country switch updating the model, and a bare boolean attribute compiling under `strictTemplates` with `inlineProperties: true` |
+| Proxy, shim and manifest guard in the runner | FAIL on any tracked file under the React, Vue or Angular proxy output directory (the list read from the shared `scripts/adapters/` module, not retyped), a root `components/` directory, or a `workspace:` specifier in the `package.json` of any tarball the runner packed (read from the tarball, not from the source tree) |
+| Typed wrappers, Vue and Angular | each fixture typechecks with its framework's own checker (`vue-tsc --noEmit`, `ng build` under `strictTemplates`), AND the runner's negative case (one input bound to a wrongly typed value) fails with exactly the type-mismatch diagnostic at that binding (TS2322, or Angular's template type error naming the input). Any other failure is a runner error, not a pass |
 | `yarn check.verify`, `yarn validate.package`, `yarn test:scripts`, `yarn docs:check` | green |
 | CI `Adapters` job | green on the PR |
 
@@ -49,17 +52,20 @@ Common fixture checks:
 - Upgrade: a shadow root is present.
 - Model binding both ways, once per distinct model shape: string on `mudInput` (text-input),
   string on `mudChange` (date-input, whose model must stay unchanged after a partial keystroke),
-  number (numeric-input), boolean (checkbox), select (select), array (input-chip).
+  number (numeric-input, including a value typed past `max` that the component clamps on blur:
+  the model holds the clamped value), boolean (checkbox), select (select), string array
+  (input-chip), file array (file-input, through Playwright `setInputFiles` on its inner input,
+  after the form initialised it with `null`).
 - Tokens: the README's documented imports, `@egov-moldova/mud/tokens/core.tokens.css` and
   `@egov-moldova/mud/styles.css`, resolve. Proven by a named semantic `--color-*` token read with
   `getComputedStyle` on a rendered `mud-*` host. `styles.css` alone defines no token.
-- Assets: through the documented per-framework asset step (Phases 3 and 4), `mud-icon`'s shadow
-  root contains an `<svg>`. "No 404" alone is not the check: with no asset path set, `mud-icon`
-  makes no request at all.
+- Assets: through the documented per-framework asset step (Phases 3 and 4), the shadow roots of
+  `mud-icon` and `mud-logo` each contain an `<svg>`. "No 404" alone is not the check: with no
+  asset path set, `mud-icon` makes no request at all.
 
 Every row of the form-control model map has an accessor (Angular) or a component model (Vue):
 17 of 17 components listed there. The fixtures drive one component per model shape, so the
-other eleven rows are configuration only. Their instrument is
+other ten rows are configuration only. Their instrument is
 `scripts/__tests__/adapter-form-models.spec.mjs` (Phase 3): it reads the one shared model map and
 fails on any row whose property or event `.storybook/custom-elements.json` does not declare
 for that tag, on any manifest emitter that is neither a row nor a stated exclusion, or on any
@@ -180,22 +186,51 @@ All 17 controls below set their model property before they emit, so reading
 which the generated `number` accessor turns into `NaN` (`parseFloat(undefined)`). Its accessor
 is therefore hand-written and maps `undefined`, `null` and `''` to `null`.
 
+Writing before emitting is not the whole contract: a model also goes stale when a component
+writes its property on a path that emits a DIFFERENT event. Two such paths exist, and the map's
+Event column lists every event that follows a user-driven write:
+
+- `mud-numeric-input` clamps and rounds on commit, writes `value` and emits only `mudChange`
+  (`mud-numeric-input.tsx:798-822`).
+- `mud-phone-input`'s country switch rewrites `value` to a new E.164 number and emits only
+  `mudCountryChange` (`mud-phone-input.tsx:693`).
+
+Angular listens to every listed event. Vue's generator binds ONE event per model
+(`@stencil/vue-output-target@0.14.3 dist/index.js:174`), so Vue binds numeric-input on
+`mudChange` (its model updates on commit, like date-input; owner decision, 2026-10-01) and
+phone-input on `mudInput`, leaving the country switch as a recorded Vue limitation (Not verified).
+
+Value holders that emit under another name are dispositioned too, so the definition above cannot
+silently miss a control: the spec lists every tag whose manifest declares a `value`, `checked`
+or `selected` member and is neither a row nor an exclusion, and fails until each one is stated
+as a row or an exclusion with a reason (for example `mud-chip`, a `selected` toggle emitting
+`mudSelect`).
+
 `date-input` and `time-input` bind on `mudChange`, not `mudInput`. Their `mudInput` carries the
 partially masked text while the user types (`mud-date-input.tsx:948-951`), which is not a value a
 form model should hold. They use the `select` accessor type, not `text`: the Angular generator
 merges every `valueAccessorConfigs` row of one `type` into ONE directive that listens to all of
 that type's events on all of its selectors
 (`@stencil/angular-output-target@1.5.0 dist/generate-value-accessors.js:12-28`). As `text` rows
-they would hear the `mudInput` of the text row. Every `select` row binds `mudChange`.
+they would hear the `mudInput` of the text row. Every `select` row binds `mudChange`. So the
+Angular type is DERIVED from the row's property and events, never stored beside them, and the
+spec asserts that every generated type binds one event set. A row cannot be typed into the wrong
+merge.
 
-| Model | Event | Components | Angular accessor |
-|---|---|---|---|
-| `value` (string) | `mudInput` | text-input, textarea, search-input, phone-input (E.164 on each keystroke) | `text` |
-| `value` (number) | `mudInput` | numeric-input | hand-written (`undefined`/`null`/`''` → `null`) |
-| `checked` | `mudChange` | checkbox, switch | `boolean` |
-| `value` | `mudChange` | select, radio-group, segmented-control, date-picker (`string \| string[]` in range mode, passed through as-is), time-picker, date-input, time-input, menu (`type="selection"`) | `select` |
-| `chips` (string[]) | `mudChange` | input-chip | hand-written |
-| `files` (File[]) | `mudChange` | file-input | hand-written |
+The same merge rules out the obvious derivation of one config per row: the generator appends one
+host entry per config (`generate-value-accessors.js:25`), so eight `select` rows would write
+`'(mudChange)'` eight times and fail with TS1117 (duplicate property). The derivation groups rows
+by (Angular type, event, property) into ONE config whose `elementSelectors` lists every tag.
+
+| Model | Events (Angular) | Event (Vue) | Components | Angular accessor |
+|---|---|---|---|---|
+| `value` (string) | `mudInput` | `mudInput` | text-input, textarea, search-input | `text` |
+| `value` (string) | `mudInput`, `mudCountryChange` | `mudInput` | phone-input (E.164 on each keystroke and on a country switch) | `text`, plus one `text` config for `mudCountryChange` on phone-input alone |
+| `value` (number) | `mudInput`, `mudChange` | `mudChange` | numeric-input | hand-written (`undefined`/`null`/`''` → `null`) |
+| `checked` | `mudChange` | `mudChange` | checkbox, switch | `boolean` |
+| `value` | `mudChange` | `mudChange` | select, radio-group, segmented-control, date-picker (`string \| string[]` in range mode, passed through as-is), time-picker, date-input, time-input, menu (`type="selection"`) | `select` |
+| `chips` (string[]) | `mudChange` | `mudChange` | input-chip | hand-written (`null`/`undefined` → `[]`) |
+| `files` (File[]) | `mudChange` | `mudChange` | file-input | hand-written (`null`/`undefined` → `[]`: Angular calls `writeValue(null)` on setup and on `reset()`, and `mud-file-input.tsx:830` reads `this.files.length` unguarded) |
 
 The generated Angular accessors always write `.value` (or `.checked` for `boolean`)
 (`angular-output-target/resources/control-value-accessors/value-accessor.ts:14`). That is why
@@ -276,14 +311,26 @@ never committed.
   - generate the Vue and Angular proxies with the pinned output targets (a scratch copy of
     `stencil.config.ts` carrying only those two targets, `customElementsDir: 'components'`, and
     `inlineProperties: true` for Angular);
-  - `tsc --noEmit` the Vue proxies under `moduleResolution: bundler`, with no `skipLibCheck`;
+  - `tsc --noEmit` the Vue proxies under `moduleResolution: bundler`, with no `skipLibCheck`.
+    The runtime's types import the optional peer `vue-router`
+    (`@stencil/vue-output-target@0.14.3 dist/types.d.ts:2`), so the spike installs it for types,
+    as Phase 3 will;
   - build a minimal ng-packagr 20 library in partial mode that imports two generated Angular
-    components through `@egov-moldova/mud/components/mud-*.js`, with no shim.
+    components through `@egov-moldova/mud/components/mud-*.js`, with no shim, and record how
+    ng-packagr treats the core as a dependency (peer, or `allowedNonPeerDependencies`);
+  - pack that library, grep its packed `package.json` for `workspace:`, and `ng build` it from a
+    throwaway Angular 22 app (zoneless, `strictTemplates`) that binds one input to a wrongly
+    typed value: the build must fail with the type-mismatch diagnostic, and pass once corrected.
+    Partial compilation defers template checking to the consumer, so the library build alone
+    proves nothing about `inlineProperties`.
 - [ ] Report each spike result with its command and exit status. STOP and report if the Angular
       library cannot resolve the `exports` subpaths without a shim, or if `inlineProperties: true`
-      does not compile: those are the two facts Phase 4 cannot work around.
-- Verify: `yarn build`, `yarn validate.package`, `yarn typecheck` and `yarn test` are green;
-  `grep -c "Components\|JSX" dist/types/index.d.ts` is non-zero; the three spike commands exit 0.
+      does not give typed inputs in the Angular 22 consumer: those are the two facts Phase 4
+      cannot work around.
+- Verify: `yarn build`, `yarn validate.package`, `yarn typecheck` and `yarn test` are green; a
+  scratch file `import type { Components, JSX, MudMenuCustomEvent } from '@egov-moldova/mud/components'`
+  passes `tsc --noEmit` against the packed core (it fails with TS2305 before this phase); the
+  spike commands exit as stated.
 
 ### Phase 1: Move `react/` and `web-components/` into `packages/`
 
@@ -339,10 +386,19 @@ deeper (`../../scripts/...`, `../../../dist/mud`, `"directory": "packages/web-co
 
 **Executor**: Sonnet 5.5 · high · Wave C · implementer (after Phase 1)
 
-Files: `stencil.config.ts`, root `package.json` (scripts, wireit), `scripts/__tests__/validate-package.spec.mjs`, `.prettierignore`, `packages/react/README.md` (it documents `stencil build --docs --react`, which this phase removes).
+Files: `stencil.config.ts`, root `package.json` (scripts, wireit), `scripts/__tests__/validate-package.spec.mjs`, `.prettierignore`, `packages/react/README.md` (it documents `stencil build --docs --react`, which this phase removes), `packages/react/.gitignore` and `packages/react/src/components/stencil-generated/.gitkeep` (deleted), `scripts/adapters/proxy-dirs.*` (new).
 
 - [ ] The React output target runs in every non-dev build, as `dist-custom-elements` already
       does, instead of only under `--react`. Remove the `--react` flag branch.
+- [ ] Delete the tracked `packages/react/src/components/stencil-generated/.gitkeep` and its `!`
+      negation in `packages/react/.gitignore`: the output target creates the directory, and the
+      runner's guard fails on any tracked file under a proxy directory.
+- [ ] The proxy output directories live in ONE module under `scripts/adapters/` (React here; Vue
+      and Angular added by Phases 3 and 4). `stencil.config.ts` reads each `outDir` from it, the
+      runner's guard reads its list from it, and a `validate-package.spec.mjs` case asserts that
+      the wireit `build` `output`, the `.gitignore` files and `.prettierignore` each carry every
+      directory. The build empties each proxy directory before Stencil writes it (`clean` is
+      `false` on the root build, so a renamed component would otherwise leave a stale proxy).
 - [ ] The wireit `build` entry declares the generated proxy directory as output.
       `build.react` becomes a wireit entry depending on `build` and runs only the workspace
       build. No second Stencil build.
@@ -357,59 +413,70 @@ Files: `stencil.config.ts`, root `package.json` (scripts, wireit), `scripts/__te
 
 **Executor**: Sonnet 5.5 · high · Wave D · implementer (after Phase 2)
 
-Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` (workspace, devDeps, `build.vue`, wireit `build` files and output), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `scripts/__tests__/validate-package.spec.mjs`, `scripts/__tests__/adapter-form-models.spec.mjs`.
+Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` (workspace, devDeps, `build.vue`, wireit `build` and `typecheck` files and output), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `Dockerfile` (the `packages/vue` manifest `COPY`, in the same commit as the workspace, so every commit's immutable install passes), `scripts/__tests__/validate-package.spec.mjs`, `scripts/__tests__/adapter-form-models.spec.mjs`.
 
 - [ ] The form-control model map lives in ONE module under `scripts/adapters/` that
       `stencil.config.ts` imports. The Vue `componentModels` here and the Angular
       `valueAccessorConfigs` in Phase 4 are both derived from it, never typed twice. Its rows
       carry the four exclusions with their reasons, so the spec reads them from the same module.
-      An `.mjs` module needs a hand-written declaration for the strict root `yarn typecheck`, the
-      precedent being `stencil-postcss.config.d.mts`; state the format chosen.
+      Write it as `.ts` with erasable syntax only: Stencil's config loader transpiles relative
+      `.ts` imports, and Node 24 imports it natively in the `node --test` spec, so no hand-written
+      declaration is needed (an `.mjs` would need one, as `stencil-postcss.config.d.mts` shows).
       `scripts/__tests__/adapter-form-models.spec.mjs` checks it against
       `.storybook/custom-elements.json`, as the acceptance bar states, and goes red when one
       row's event is renamed. It also derives the emitter set from that manifest (tags declaring
       a `mudInput` or `mudChange` event) and fails when that set, minus the four exclusions,
       differs from the map's tags.
-- [ ] Wireit `build`: add the model-map module (and its declaration) to `files`, and the Vue
-      proxy directory to `output`. Without the first, a map edit is a cache hit that restores
-      stale `componentModels`.
+- [ ] Wireit: add `scripts/adapters/**` to the `files` of `build` and `typecheck` (and of `test`
+      if the spec lane loads `stencil.config.ts`), and the Vue proxy directory to `build`
+      `output` through the shared proxy-directory module. Without the first, a map edit is a
+      cache hit that restores stale `componentModels`.
 - [ ] One `@stencil/vue-output-target` range: the root devDependency (the generator) and the
       `packages/vue` dependency (its `/runtime`) are the same `~0.14.3`, and a
       `scripts/__tests__/validate-package.spec.mjs` case fails when they differ.
 
 - [ ] `packages/vue`: `@egov-moldova/mud-vue`, `private: true`, peer `vue ^3.4.38`, dependency
-      `@stencil/vue-output-target` `~0.14.3` (for its `/runtime`), core as `workspace:^`. Built
-      with `tsc` to `dist/` (ESM + `.d.ts`). The proxies are git-ignored.
+      `@stencil/vue-output-target` `~0.14.3` (for its `/runtime`), core as `workspace:^`, and
+      `vue-router` as a devDependency for the runtime's types (README: a consumer type-checking
+      libraries without `skipLibCheck` needs it too). Built with `tsc` to `dist/` (ESM +
+      `.d.ts`). The proxies are git-ignored.
 - [ ] The Vue output target: `includeImportCustomElements: true`, `esModules: true`,
       `customElementsDir: 'components'`, and `componentModels` from the model map above.
-- [ ] A plugin exported as `Mud`, used as `app.use(Mud, { assetPath? })`, that calls the
-      standalone bundle's `setAssetPath`, with the same override contract as
-      `packages/react/src/index.ts`. Wrapped components need no `isCustomElement`. React's
-      default (`<origin>/node_modules/@egov-moldova/mud/dist/components/`) resolves only on a
-      Vite dev server, so the documented consumer step for a production build is: copy
-      `node_modules/@egov-moldova/mud/dist/components/assets` into the app's served output
-      (Vite `public/` or a copy plugin) and pass the matching `assetPath`. The fixture uses
-      exactly that documented step; the default is documented as dev-server only.
+- [ ] A plugin exported as `Mud`, used as `app.use(Mud, { assetPath })`, that calls the
+      standalone bundle's `setAssetPath`. `assetPath` is REQUIRED: React's default
+      (`<origin>/node_modules/@egov-moldova/mud/dist/components/`) resolves only on a Vite dev
+      server, so a default would leave the shortest call broken in every production build, and
+      relaxing a required option later is non-breaking while the reverse is not. The documented
+      consumer step: copy `node_modules/@egov-moldova/mud/dist/components/assets` into the app's
+      served output (Vite `public/` or a copy plugin) and pass the matching `assetPath`. The
+      fixture uses exactly that step. Wrapped components need no `isCustomElement`.
 - [ ] `scripts/adapters/consumer-fixture.mjs <framework> [--framework-version <major>]`, which:
   1. packs the core and the adapter;
   2. fails if any packed manifest carries a `workspace:` specifier, if `git ls-files` lists
-     anything under a proxy output directory, or if a root `components/` directory exists;
+     anything under a proxy output directory from the shared module, or if a root `components/`
+     directory exists;
   3. copies `packages/<framework>/fixture/` to a temp directory and installs the tarballs plus
-     the fixture's pinned dependencies with npm. The pins come from a per-major table in the
-     fixture (`fixture/versions.json`, keyed by major: framework packages, CLI or build tool,
-     `typescript`, `zone.js` where used), and the runner fails on a major the table lacks.
-     Angular 20.3 needs TypeScript `>=5.8 <6.0` and Angular 22 needs `>=6.0 <6.1`, so one pin set
-     cannot serve both, and the fixture's tsconfig must be valid under both;
+     the fixture's pinned dependencies with `npm install --ignore-scripts` (dropped per package
+     only if a pinned tool is shown to need its script, and that exception written beside the
+     pin). The pins come from a per-major table in the fixture (`fixture/versions.json`, keyed by
+     major: framework packages, CLI or build tool, `typescript`, `zone.js` where used, Playwright),
+     and the runner fails on a major the table lacks. Angular 20.3 needs TypeScript `>=5.8 <6.0`
+     and Angular 22 needs `>=6.0 <6.1`, so one pin set cannot serve both, and the fixture's
+     tsconfig must be valid under both. Angular 20 runs with zone.js and Angular 22 zoneless,
+     the default a new app of each major gets;
   4. typechecks and builds with the framework's own CLI (`vue-tsc --noEmit` then `vite build`
-     for Vue; `ng build` under `strictTemplates` for Angular);
+     with `build.manifest` for Vue; `ng build --stats-json` under `strictTemplates` for Angular),
+     then fails if the bundle graph contains a second-runtime module (acceptance bar);
   5. compiles the fixture's negative case (one wrapper input bound to a wrongly typed value,
-     kept outside the normal build) and fails if it compiles;
-  6. serves the build and runs a Playwright spec.
-- [ ] Vue fixture (Vite + `@vitejs/plugin-vue`, latest Vue 3). It imports
+     kept outside the normal build) and passes only on the type-mismatch diagnostic at that
+     binding; no failure, or any other failure, fails the run;
+  6. installs the pinned Playwright's Chromium (`npx playwright install --with-deps chromium`),
+     serves the build and runs the fixture's Playwright spec.
+- [ ] Vue fixture (Vite + `@vitejs/plugin-vue`, Vue 3 at its pin). It imports
       `@egov-moldova/mud/tokens/core.tokens.css` and `@egov-moldova/mud/styles.css` the way the
       README tells consumers to: tokens stay the consumer's import and are not bundled into the
       adapter. Its spec asserts every item in the bar's common fixture checks through `v-model`,
-      plus no console error and no lazy-loader request.
+      plus no console error.
 - Verify: `yarn build.vue`, `yarn test:scripts` (which runs the manifest spec) and
   `node scripts/adapters/consumer-fixture.mjs vue` are green; the fixture spec goes red when the
   plugin's `setAssetPath` call is removed.
@@ -418,7 +485,11 @@ Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` 
 
 **Executor**: Opus 5.5 · medium · Wave E · implementer (after Phase 3: extends its runner)
 
-Files: `packages/angular/**`, `stencil.config.ts` (Angular target), root `package.json` (workspace, devDeps, `build.angular`, wireit `build` output), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `scripts/__tests__/validate-package.spec.mjs`.
+Files: `packages/angular/**`, `stencil.config.ts` (Angular target), root `package.json` (workspace, devDeps, `build.angular`, wireit `build` output), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `Dockerfile` (the `packages/angular` manifest `COPY`), `scripts/__tests__/validate-package.spec.mjs`.
+
+- [ ] The core is a peer dependency of `packages/angular` or an `allowedNonPeerDependencies`
+      entry in `ng-package.json`, as Phase 0's spike measured. State the choice and how it
+      settles the `workspace:` rewrite below.
 
 - [ ] `packages/angular`: `@egov-moldova/mud-angular`, `private: true`, peers
       `@angular/core` and `@angular/forms` `^20.0.0 || ^21.0.0 || ^22.0.0`, built by ng-packagr
@@ -432,28 +503,34 @@ Files: `packages/angular/**`, `stencil.config.ts` (Angular target), root `packag
       target's own docs (`dist/types.d.ts`, `booleanAttributes`) say that without it the wrappers
       declare no typed inputs, which would make the typed-wrapper bar and the bare-boolean check
       pass while measuring nothing. If it does not compile under `strictTemplates` at 20 or 22,
-      STOP and report, as for the shim. Declare the Angular proxy directory as a wireit `build`
-      output.
-- [ ] Hand-written standalone accessors for `mud-input-chip` (`chips`), `mud-file-input`
-      (`files`) and `mud-numeric-input` (`undefined`/`null`/`''` → `null`, and a `null` model
-      written as `undefined`, not `''`).
-- [ ] The public API exports one documented bundle per form control (each component with its
-      accessor, plus one array of all of them), because the standalone barrel exports the
-      components alone and `MudTextInput` with `[(ngModel)]` but without its accessor throws "No
-      value accessor" at runtime. The fixture imports only these bundles.
-- [ ] `provideMud({ assetPath? })` as an environment provider that calls the standalone
-      `setAssetPath`. The documented consumer step for assets is an `angular.json` `assets` glob
-      from `node_modules/@egov-moldova/mud/dist/components/assets` with the matching
-      `assetPath`. The fixture uses exactly that step.
+      STOP and report, as for the shim. `valueAccessorConfigs` follow the grouping rule beside
+      the model map (one config per Angular type, event and property). Add the Angular proxy
+      directory to the shared proxy-directory module.
+- [ ] Hand-written standalone accessors for `mud-input-chip` (`chips`; `null`/`undefined` →
+      `[]`), `mud-file-input` (`files`; `null`/`undefined` → `[]`) and `mud-numeric-input`
+      (listening to `mudInput` and `mudChange`; `undefined`/`null`/`''` → `null`, and a `null`
+      model written as `undefined`, not `''`).
+- [ ] The public API exports every value accessor individually plus one `MUD_FORM_ACCESSORS`
+      array of all of them. The standalone barrel exports the components alone, so
+      `MudTextInput` with `[(ngModel)]` and no accessor throws "No value accessor" at runtime;
+      the accessors are scoped by tag selector, so importing the one array once covers all 17
+      controls. The fixture imports raw components plus `MUD_FORM_ACCESSORS`, the documented
+      path.
+- [ ] `provideMud({ assetPath })` as an environment provider that calls the standalone
+      `setAssetPath`, with `assetPath` REQUIRED for the reason Phase 3 gives. The documented
+      consumer step for assets is an `angular.json` `assets` glob from
+      `node_modules/@egov-moldova/mud/dist/components/assets` with the matching `assetPath`. The
+      fixture uses exactly that step.
 - [ ] The ng-packagr `dist/` manifest carries no `workspace:` specifier. Decide the mechanism;
       the runner's check from Phase 3 is the acceptance test.
 - [ ] Angular fixture (standalone app, `strictTemplates`), run at Angular 20 and 22 through
       `--framework-version`. Its spec asserts:
   - every item in the bar's common fixture checks through `[(ngModel)]`, with
     `tokens/core.tokens.css` and `styles.css` added in `angular.json` `styles`, plus the Vue
-    fixture's console and lazy-loader checks;
+    fixture's console check;
   - a reactive `formControl` on `mud-select`;
   - clearing `mud-numeric-input` leaves the model `null`;
+  - switching `mud-phone-input`'s country updates the model to the new E.164 value;
   - a bare boolean attribute (`<mud-button disabled>`) compiles.
 - Verify: `yarn build.angular` is green, and
   `node scripts/adapters/consumer-fixture.mjs angular --framework-version 20` and `… 22` are
@@ -463,20 +540,20 @@ Files: `packages/angular/**`, `stencil.config.ts` (Angular target), root `packag
 
 **Executor**: Sonnet 5.5 · high · Wave F · implementer (after Phases 3 and 4)
 
-Files: `.github/workflows/ci.yml`, `Dockerfile`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `AGENTS.md`, `_agents/environment-commands.md`, `.claude/skills/mud-design/SKILL.md`, `changes/<fragment>.md`.
+Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `AGENTS.md`, `_agents/environment-commands.md`, `.claude/skills/mud-design/SKILL.md`, `changes/<fragment>.md`.
 
 - [ ] CI job `Adapters`:
   1. `yarn tokens.build`;
   2. `yarn build`;
   3. `yarn build.vue`;
   4. `yarn build.angular`;
-  5. the fixture runner for vue, angular@20 and angular@22.
-- [ ] `Dockerfile`: `COPY` the two new workspace manifests (`packages/angular`,
-      `packages/vue`), otherwise the immutable install fails.
+  5. the fixture runner for vue, angular@20 and angular@22 (the runner installs its pinned
+     Chromium; cache the Playwright browser directory keyed by that pin).
 - [ ] Docs:
   - README: Angular and Vue usage marked "not yet published", like React, each with the token
-    imports, the asset step the fixture uses (Phases 3 and 4) and, for Angular, the
-    form-control bundles;
+    imports, the required `assetPath` and the asset step the fixture uses (Phases 3 and 4), for
+    Angular `MUD_FORM_ACCESSORS`, and for Vue the two binding notes (numeric-input updates its
+    model on commit; a phone-input country switch does not reach `v-model`);
   - CONTRIBUTING: workspace table and local `file:` installs;
   - STACK: the workspaces and the versions, plus the output-target pins;
   - AGENTS build reference and `_agents/environment-commands.md`: the new commands;
@@ -502,6 +579,9 @@ Files: `.github/workflows/ci.yml`, `Dockerfile`, `README.md`, `CONTRIBUTING.md`,
 - Angular 21. Partial compilation built with 20 and tested on 20 and 22 brackets it; 21 itself is
   not run.
 - Publishing. The packages stay private and the release pipelines are unchanged.
+- Vue: a `mud-phone-input` country switch does not reach `v-model`, because the component emits
+  only `mudCountryChange` there and Vue's generator binds one event per model. Recorded
+  limitation, documented in the README; the fix belongs in the core (Found).
 
 ## Self-refute log
 
@@ -532,6 +612,10 @@ Files: `.github/workflows/ci.yml`, `Dockerfile`, `README.md`, `CONTRIBUTING.md`,
   publishing, pin exactly (`workspace:*`) so adapter and core release as a pair.
 - Commit 27d81b96's message lists an `./assets/*` export key, but `package.json` `exports` has
   none today. The asset steps above therefore copy by filesystem path.
+- `mud-phone-input`'s `changeCountry` rewrites `value` and emits only `mudCountryChange`
+  (`mud-phone-input.tsx:693`); `mud-numeric-input`'s commit clamp writes `value` and emits only
+  `mudChange`. Emitting `mudInput` after every user-driven write would let every adapter bind one
+  event. Core issue to open.
 
 - #180 (opened 2026-09-30): the React adapter registers the same tags through two runtimes. Its
   build is `tsc || true`, its peer is React 18 only, and its comments still say `AGE` / `cor-*`.
