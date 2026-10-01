@@ -864,7 +864,14 @@ describe('every adapter compiles in strict mode (#180)', () => {
     );
 
   it('every packages/*/tsconfig*.json sets strict and turns no strict-family flag back off', () => {
-    assert.ok(adapterConfigs.length >= 5, `found ${adapterConfigs.length} adapter tsconfigs; expected at least 5`);
+    // One config per workspace package, so a deleted or renamed `tsconfig.json` cannot leave a
+    // package ungraded while another file keeps the total the same.
+    const ungraded = fs
+      .readdirSync(PACKAGES, { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'package.json')))
+      .filter(entry => !adapterConfigs.includes(path.join(PACKAGES, entry.name, 'tsconfig.json')))
+      .map(entry => `packages/${entry.name}`);
+    assert.deepEqual(ungraded, []);
     const lax = adapterConfigs.flatMap(file => {
       const options = readEffectiveOptions(file);
       // `noCheck: true` skips type checking while `tsc` still exits 0.
@@ -882,19 +889,26 @@ describe('every adapter compiles in strict mode (#180)', () => {
   it('the React build runs a program that resolves `react` to the React 19 types', () => {
     const react = path.join(PACKAGES, 'react');
     const build = JSON.parse(fs.readFileSync(path.join(react, 'package.json'), 'utf8')).scripts?.build ?? '';
-    assert.match(build, /tsc -p tsconfig\.react19\.json/, 'the React build no longer runs the React 19 program');
+    // Whole `&&` segments, so `echo tsc -p …` or `tsc -p … || true` cannot satisfy it (the
+    // masked-build spec above already rejects any non-`&&` operator).
+    const commands = build.split('&&').map(command => command.trim());
+    assert.ok(commands.includes('tsc'), 'the React build no longer runs the base `tsc` program');
+    assert.ok(commands.includes('tsc -p tsconfig.react19.json'), 'the React build no longer runs the React 19 program');
     // A `paths` target that does not exist makes TypeScript fall back to the React 18 types
-    // without a diagnostic, so the second `tsc` would pass while checking nothing new.
+    // without a diagnostic, so the second `tsc` would pass while checking nothing new. Both
+    // mappings matter: `react/*` carries `react/jsx-runtime`, which `jsx: react-jsx` imports.
     const options = readEffectiveOptions(path.join(react, 'tsconfig.react19.json'));
-    const target = options.paths?.react?.[0];
-    assert.ok(target, 'tsconfig.react19.json maps no `react` path');
-    const manifest = path.join(options.pathsBasePath ?? react, target, 'package.json');
-    assert.ok(
-      fs.existsSync(manifest),
-      `paths.react → ${target} holds no package.json; TypeScript falls back to React 18`,
-    );
-    const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-    assert.equal(pkg.name, '@types/react');
-    assert.match(pkg.version, /^19\./);
+    for (const key of ['react', 'react/*']) {
+      const target = options.paths?.[key]?.[0]?.replace(/\/\*$/, '');
+      assert.ok(target, `tsconfig.react19.json maps no \`${key}\` path`);
+      const manifest = path.join(options.pathsBasePath ?? react, target, 'package.json');
+      assert.ok(
+        fs.existsSync(manifest),
+        `paths["${key}"] → ${target} holds no package.json; TypeScript falls back to React 18`,
+      );
+      const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+      assert.equal(pkg.name, '@types/react');
+      assert.match(pkg.version, /^19\./);
+    }
   });
 });

@@ -22,10 +22,12 @@ export function toAssetBaseUrl(assetPath: string, baseURI: string): string {
   let absolute: URL;
   try {
     absolute = new URL(assetPath, baseURI);
-  } catch {
-    // An opaque base (`about:blank`, a srcdoc iframe) cannot resolve a relative path.
+  } catch (cause) {
+    // Either the path is malformed, or the base is opaque (`about:blank`, a srcdoc iframe) and
+    // cannot resolve a relative path: name both, and keep the original error's text (`lib` is
+    // ES2020, which has no `Error` `cause` option).
     throw new Error(
-      `[mud-react] cannot resolve assetPath "${assetPath}" against the document base "${baseURI}"; pass an absolute URL.`,
+      `[mud-react] cannot resolve assetPath "${assetPath}" against the document base "${baseURI}"; pass a well-formed absolute URL (${String(cause)}).`,
     );
   }
   if (!absolute.pathname.endsWith('/')) absolute.pathname += '/';
@@ -50,7 +52,7 @@ export function setupMud(options: MudSetupOptions): void {
   const assetPath: unknown = options?.assetPath;
   // A blank path would resolve to the document's own URL and 404 every asset without a message.
   if (typeof assetPath !== 'string' || assetPath.trim() === '') {
-    throw new Error('[mud-react] `setupMud({ assetPath })` needs a non-empty `assetPath`.');
+    throw new Error('[mud-react] `setupMud({ assetPath })` needs a non-blank `assetPath`.');
   }
   // A server render has no `document`, and no component fetches an asset there: skip the setup.
   if (typeof document === 'undefined') return;
@@ -70,7 +72,8 @@ export type DefineCustomElementsOptions = {
  * second call resets an explicit path to the dev default.
  */
 export function defineCustomElements(opts?: DefineCustomElementsOptions): Promise<void> {
-  if (opts?.assetPath !== undefined) {
+  // `null` meant "no override" to the old alias, which used `??`: keep that.
+  if (opts?.assetPath != null) {
     // Validated on the server too, so a bad path fails the server render, not only the hydration.
     setupMud({ assetPath: opts.assetPath });
   } else if (typeof document !== 'undefined') {
