@@ -189,6 +189,8 @@ yarn add file:/tmp/mud-core.tgz file:/tmp/mud-vue.tgz   # or the Angular tarball
 
 Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publishable package and is not a Yarn workspace, and the build already rewrote its `workspace:` range. Never `npm pack` a workspace root, which leaves `workspace:^` in the manifest.
 
+**Linking `mud-react` into another app.** `mud-react` ships its TypeScript source, so a link is enough. Run `yarn build.react`, then `npm link` in `packages/react/` and `npm link @egov-moldova/mud-react` in the consuming app. Re-run `yarn build.react` after a component's public API changes: the watch build does not regenerate the proxies. The consuming app must dedupe React (Vite: `resolve.dedupe: ['react', 'react-dom']`), because the linked `src/` otherwise resolves this repository's React 18, and a React 19 app then loads two copies of React.
+
 ### Script reference
 
 | Script | Purpose |

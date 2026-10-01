@@ -763,4 +763,41 @@ describe('the React workspace names only exported subpaths', () => {
     }
     assert.deepEqual(dead, []);
   });
+
+  // #180: the wrappers import the standalone bundle, so any other `@egov-moldova/mud` entry
+  // registers tags through a second Stencil runtime. The root specifier resolves to
+  // `dist/index.js`, which re-exports `dist/esm`, the lazy runtime, so it is allowed ONLY in an
+  // import the compiler erases: `import type { … }`, or every binding marked `type` — the shape
+  // the React output target writes for event-detail types (`stencilPackageName`).
+  // Limit: that erasure is the default; a consumer compiling this `src/` with
+  // `verbatimModuleSyntax` keeps `import {} from "@egov-moldova/mud"` and evaluates the lazy
+  // runtime's modules (no tag registered). A specifier assembled at runtime is outside any
+  // static read.
+  const STANDALONE_RE = /^@egov-moldova\/mud\/components(?:\/mud-[a-z0-9-]+\.js)?$/;
+  const ROOT_IMPORT_RE = /\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*["']@egov-moldova\/mud["']\s*;?/g;
+  const isTypeOnly = (typeKeyword, bindings) =>
+    Boolean(typeKeyword) ||
+    bindings
+      .split(',')
+      .map(binding => binding.trim())
+      .filter(Boolean)
+      .every(binding => /^type\s/.test(binding));
+
+  it('names only the standalone runtime, never the lazy loader (#180)', () => {
+    const files = walk(REACT_SRC);
+    assert.ok(files.length > 0, 'packages/react/src holds no .ts/.tsx files — the scan would grade nothing');
+
+    const lazy = [];
+    for (const file of files) {
+      const source = fs
+        .readFileSync(file, 'utf8')
+        .replace(ROOT_IMPORT_RE, (statement, typeKeyword, bindings) =>
+          isTypeOnly(typeKeyword, bindings) ? '' : statement,
+        );
+      for (const [, specifier] of source.matchAll(SPECIFIER_RE)) {
+        if (!STANDALONE_RE.test(specifier)) lazy.push(`${path.relative(PROJECT_ROOT, file)}: ${specifier}`);
+      }
+    }
+    assert.deepEqual(lazy, []);
+  });
 });

@@ -146,8 +146,45 @@ With a Content Security Policy, `font-src` must allow wherever `mud.css` is serv
 
 Releases up to and including 1.1.9 ship three static faces (400/500/700) instead, so semibold text renders bold there — pin a later release in the CDN examples above to get the variable face (see the [changelog](CHANGELOG.md)).
 
-####  React component wrappers
+#### React component wrappers
 > Not yet published. `@egov-moldova/mud-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
+
+Typed wrapper components for React 18 and 19 (peers `react ^18 || ^19`, `react-dom ^18 || ^19`). Event handlers are props (`onMudChange`), not `addEventListener` calls.
+
+```bash
+yarn add @egov-moldova/mud @egov-moldova/mud-react
+```
+
+```tsx
+// main.tsx
+import '@egov-moldova/mud/tokens/core.tokens.css'; // design tokens — your own import, not bundled
+import '@egov-moldova/mud/styles.css'; // fonts and resets
+
+import { setupMud } from '@egov-moldova/mud-react';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
+
+setupMud({ assetPath: `${import.meta.env.BASE_URL}mud/` });
+
+createRoot(document.getElementById('root')!).render(<App />);
+```
+
+```tsx
+// App.tsx
+import { MudTextInput } from '@egov-moldova/mud-react';
+import { useState } from 'react';
+
+export function App() {
+  const [name, setName] = useState('');
+  return <MudTextInput label="Name" value={name} onMudChange={event => setName(event.detail.value)} />;
+}
+```
+
+**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder, so copy the core's `dist/components/assets` to `mud/assets` in your build output (Vite: `public/mud/assets`, or a copy plugin). `setupMud` throws on an empty path and does nothing during a server render.
+
+The adapter loads one Stencil runtime, the standalone bundle, and `setupMud` only sets the asset path: **each wrapper registers its own element when it is imported.** A raw `<mud-x>` tag written in JSX without its wrapper stays an unknown element. Import the wrapper, or call `defineCustomElement` from `@egov-moldova/mud/components/mud-x.js`.
+
+`defineCustomElements()` is deprecated in favour of `setupMud`. It registers no element either; it only sets the asset path, defaulting to the `node_modules` URL of a Vite dev server.
 
 #### Vue component wrappers
 > Not yet published. `@egov-moldova/mud-vue` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
