@@ -4,6 +4,8 @@ import { describe, it } from 'node:test';
 
 import path from 'node:path';
 
+import ts from 'typescript';
+
 import {
   checkAbsolutePaths,
   checkBundleAssets,
@@ -823,5 +825,34 @@ describe('no adapter build masks a failure (#180)', () => {
       .filter(([, build]) => typeof build === 'string' && !propagates(build))
       .map(([name, build]) => `packages/${name}: ${build}`);
     assert.deepEqual(masked, []);
+  });
+});
+
+describe('every adapter compiles in strict mode (#180)', () => {
+  const PACKAGES = path.join(PROJECT_ROOT, 'packages');
+  // The compiler's own list, so a flag a TypeScript upgrade adds to `strict` is covered
+  // without editing this spec (5.9.3: nine flags, incl. `noImplicitThis`,
+  // `strictBuiltinIteratorReturn`). `optionDeclarations` is not in the public typings but is
+  // exported at runtime; the guard below fails loudly if an upgrade removes it.
+  const STRICT_FAMILY = (ts.optionDeclarations ?? []).filter(option => option.strictFlag).map(option => option.name);
+  assert.ok(STRICT_FAMILY.length >= 9, `typescript exposes ${STRICT_FAMILY.length} strict flags; expected at least 9`);
+
+  it('packages/*/tsconfig.json sets strict and turns no strict-family flag back off', () => {
+    const lax = fs
+      .readdirSync(PACKAGES, { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'tsconfig.json')))
+      .flatMap(entry => {
+        const options =
+          JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'tsconfig.json'), 'utf8')).compilerOptions ?? {};
+        // `noCheck: true` skips type checking while `tsc` still exits 0.
+        const off = [
+          ...STRICT_FAMILY.filter(flag => options[flag] === false),
+          ...(options.noCheck === true ? ['noCheck'] : []),
+        ];
+        return options.strict === true && off.length === 0
+          ? []
+          : [`packages/${entry.name}: strict=${options.strict} off=[${off.join(', ')}]`];
+      });
+    assert.deepEqual(lax, []);
   });
 });

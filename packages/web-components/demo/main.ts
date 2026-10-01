@@ -13,8 +13,8 @@ type Theme = 'light' | 'dark';
 
 type DemoLocale = 'ro-MD' | 'en-US' | 'ru-MD';
 
-const THEME_STORAGE_KEY = 'age-demo-theme';
-const LANG_STORAGE_KEY = 'age-demo-lang';
+const THEME_STORAGE_KEY = 'mud-demo-theme';
+const LANG_STORAGE_KEY = 'mud-demo-lang';
 
 /** Language pickers name the language in that language; `ro-MD` is the library default. */
 const LANG_OPTIONS: { value: DemoLocale; label: string; lang: string }[] = [
