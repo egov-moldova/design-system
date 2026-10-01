@@ -9,6 +9,14 @@ configured by one setup call shaped like the Vue and Angular adapters; its build
 error and typechecks against React 18 and 19; both adapter tsconfigs are strict; stale names are
 gone. A static guard keeps the second runtime from coming back.
 
+## Problem
+
+A React app using `@egov-moldova/mud-react` ships two Stencil runtimes, and whichever registers a
+tag first owns it. `mud-icon` and `mud-logo` registered by the lazy loader ignore the asset path
+the adapter set on the standalone bundle, so their SVGs resolve against the wrong base. The
+adapter's build is `tsc || true`, so neither CI nor the audit's `adapter-react` row can catch a
+type error, and the peers exclude React 19.
+
 ## Spec / issue
 
 egov-moldova/design-system#180. Found while planning #178.
@@ -40,8 +48,15 @@ egov-moldova/design-system#180. Found while planning #178.
   are the standalone runtime.
 - `@egov-moldova/mud/components` exports `setAssetPath`, `getAssetPath`, `setNonce`,
   `setPlatformOptions` (`dist/components/index.d.ts`).
-- `packages/react`: `tsc --noEmit -p .` → 0 errors; with `--strict` → 0 errors; against
-  `@types/react@19.3.0` + `@types/react-dom@19` via `paths`, strict → 0 errors (scratch probe).
+- `packages/react`: `tsc --noEmit -p .` → 0 errors; with `--strict` → 0 errors.
+- Type isolation (scratch probes, strict): with no `types` option the program auto-includes every
+  `node_modules/@types/*`, so a `paths`-mapped React 19 program ALSO loaded
+  `node_modules/@types/react` 18 (`--listFilesOnly`). With `"types": []`: the React 19 program
+  (`paths` → `@types/react@19.3.0`) loads only the 19 files, 0 errors; the React 18 program loads
+  only `@types/react` 18 + `@types/prop-types`, 0 errors. `src/` never imports `react-dom`.
+- `fnm exec --using=24 -- node --input-type=module -e "const m = await import('@egov-moldova/mud/components'); …"`
+  loads the standalone bundle under bare Node 24 (`setAssetPath`, `setNonce` are functions,
+  `document` is undefined): the Phase 1 spec can import `setup.ts`.
 - `@stencil/react-output-target@1.6.2` peers: `react ^18 || ^19`, `react-dom ^18 || ^19`.
 - `packages/web-components`: `tsc --noEmit` with `--strict --moduleResolution bundler --module esnext` → 0 errors.
 - CI job `adapters` runs `yarn build`, `build.vue`, `build.angular` and the fixtures; it never
@@ -94,9 +109,16 @@ Zero tolerance:
 - an adapter workspace `build` script that masks a failure (`|| true`, `|| exit 0`, `; true`);
 - a stale name: `git grep -n -w -E 'AGE|SIMSM|mdascal|cor-[a-z-]+|Cor[A-Z][A-Za-z]*' -- packages/react`
   and `git grep -n 'age-demo' -- packages/web-components` each print nothing (exit 1);
-- any byte difference in `packages/web-components/dist/` caused by Phase 3;
-- a `@types/react` 18 file in the React 19 program:
-  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json --listFilesOnly | grep -E '/@types/react(-dom)?/'`
+- any byte difference in `packages/web-components/dist/` caused by Phase 3: Phase 3 Step 1
+  snapshots `dist/` after a build on the unchanged tree, Step 4 rebuilds and
+  `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0 (`tsc` emit is
+  deterministic: no timestamps or hashes in its output);
+- a React 18 type file in the React 19 program, or none of the 19 files:
+  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json --listFilesOnly | grep '/node_modules/@types/react/'`
+  prints nothing (exit 1), and the same command piped to `grep -q '/node_modules/react-types-19/index.d.ts'`
+  exits 0;
+- a React 19 type file in the React 18 program:
+  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.json --listFilesOnly | grep '/react-types-19/'`
   prints nothing (exit 1).
 
 Each command exits 0, run as written from the repo root:
@@ -388,11 +410,19 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
   Expected: FAIL with `packages/react: tsc || true`.
 
 - [ ] **Step 2: React 19 types.** In `packages/react/package.json` `devDependencies` add
-  `"@types/react-19": "npm:@types/react@^19.3.0"` and `"@types/react-dom-19": "npm:@types/react-dom@^19.0.0"`;
-  run `fnm exec --using=24 -- yarn install`. Find where Yarn placed them
-  (`command ls node_modules/@types | grep -- -19`, else `packages/react/node_modules/@types`).
-- [ ] **Step 3: `packages/react/tsconfig.react19.json`** (paths relative to this file; adjust the
-  prefix to Step 2's location):
+  `"react-types-19": "npm:@types/react@^19.3.0"` — deliberately OUTSIDE the `@types` scope, so
+  no program auto-includes it as a global type package. No `react-dom` alias: `src/` never imports
+  `react-dom`. Run `fnm exec --using=24 -- yarn install`, then find the install:
+  `command ls -d node_modules/react-types-19 packages/react/node_modules/react-types-19 2>/dev/null`
+  (`nodeLinker: node-modules`; expected at the root).
+- [ ] **Step 3: strict, and no ambient type packages.** `packages/react/tsconfig.json`: delete
+  `strict: false`, `strictNullChecks: false`, `strictPropertyInitialization: false`,
+  `noImplicitAny: false`; add `"strict": true`, `"noEmitOnError": true` and `"types": []` (as
+  `packages/vue/tsconfig.json` does). `"types": []` stops the auto-inclusion of every
+  `node_modules/@types/*`, which otherwise loads React 18 into the React 19 program (measured,
+  Current state); explicit imports still resolve their own types.
+- [ ] **Step 4: `packages/react/tsconfig.react19.json`** (paths relative to this file; if Step 2
+  found the package under `packages/react/node_modules`, the prefix is `./node_modules/`):
 
   ```json
   {
@@ -402,24 +432,20 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
       "declaration": false,
       "declarationMap": false,
       "paths": {
-        "react": ["../../node_modules/@types/react-19"],
-        "react/*": ["../../node_modules/@types/react-19/*"],
-        "react-dom": ["../../node_modules/@types/react-dom-19"],
-        "react-dom/*": ["../../node_modules/@types/react-dom-19/*"]
+        "react": ["../../node_modules/react-types-19"],
+        "react/*": ["../../node_modules/react-types-19/*"]
       }
     }
   }
   ```
 
   The `paths` map applies to every import in the program, including `@stencil/react-output-target`'s
-  own declarations, so no 18 file may load: check with the acceptance bar's `--listFilesOnly` row.
-- [ ] **Step 4: strict.** `packages/react/tsconfig.json`: delete `strict: false`,
-  `strictNullChecks: false`, `strictPropertyInitialization: false`, `noImplicitAny: false`; add
-  `"strict": true` and `"noEmitOnError": true`.
+  own declarations; `"types": []` is inherited. A wrong prefix makes TypeScript fall back to the
+  18 types silently, which is why the acceptance bar checks both programs' file lists.
 - [ ] **Step 5: the build.** `packages/react/package.json` `scripts.build`:
   `"tsc && tsc -p tsconfig.react19.json"`. Root `package.json` `wireit["build.react"].files`: add
   `"packages/react/tsconfig.react19.json"`.
-- [ ] **Step 6: GREEN.** Acceptance bar command 1 and the `--listFilesOnly` row; the Step 1 test passes.
+- [ ] **Step 6: GREEN.** Acceptance bar command 1 and both `--listFilesOnly` rows; the Step 1 test passes.
   Prove the gate bites: append `export const broken: number = 'x';` to
   `packages/react/src/setup.ts`, run `fnm exec --using=24 -- yarn workspace @egov-moldova/mud-react build`
   → non-zero exit; remove the line.
@@ -501,7 +527,10 @@ PR leaves draft.
    `tsc` while the tsconfig turns strict back off. Fixed by Phase 3 Step 0 (strict spec over every
    `packages/*/tsconfig.json`). Second instance: `tsconfig.react19.json`'s `paths` pointing at a
    wrong directory falls back to normal resolution and typechecks against React 18 again, so
-   the React 19 check passes vacuously. Fixed by the acceptance bar's `--listFilesOnly` row.
+   the React 19 check passes vacuously. Third, found at preflight and then measured: without
+   `"types": []` every `@types/*` package is auto-included, so the 19 program also loaded the 18
+   types (and a `@types/react-19` alias would leak into the 18 program). Fixed by Phase 2 Step 3
+   (`"types": []`), Step 2 (alias outside `@types`) and the two `--listFilesOnly` rows, one per program.
 3. Numeric targets: none beyond "0 errors" and "exit 0"; each names its command, and every
    0-error claim under Current state was run on 2026-10-01 at `ed49b48b`.
 4. Two rules interacting: the masking regex and the React 19 config. `tsc && tsc -p tsconfig.react19.json`
