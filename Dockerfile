@@ -10,6 +10,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY packages/web-components/package.json ./packages/web-components/
 COPY packages/react/package.json ./packages/react/
 COPY packages/vue/package.json ./packages/vue/
+COPY packages/angular/package.json ./packages/angular/
 # yarn.lock resolves patched packages from these files, so the install fails without them
 COPY .yarn/patches ./.yarn/patches
 # react's postinstall runs scripts/git/install-hooks.mjs; with no .git it exits 0, but it must exist

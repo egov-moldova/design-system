@@ -26,6 +26,7 @@ import {
   REQUIRE_CAPABLE_SPECIFIERS,
   standaloneBundleDir,
 } from '../validate-package.mjs';
+import { pinWorkspaceRanges } from '../adapters/pin-workspace-ranges.mjs';
 import { PROXY_DIRS, PROXY_OUT_DIRS } from '../adapters/proxy-dirs.ts';
 
 const PKG = {
@@ -621,6 +622,46 @@ describe('the Vue output target has one range', () => {
     assert.ok(runtime, 'packages/vue/package.json has no @stencil/vue-output-target dependency');
     assert.equal(runtime, generator);
     assert.ok(generator.startsWith('~'), `the 0.x output target is pinned with ~, found ${generator}`);
+  });
+});
+
+describe("pinWorkspaceRanges (the Angular adapter build rewrites ng-packagr's manifest)", () => {
+  // ng-packagr copies `workspace:^` into `dist/package.json` verbatim and `dist/` is no Yarn
+  // workspace, so `yarn pack` cannot rewrite it. The build does, with Yarn's own mapping; the
+  // fixture runner's guard then reads the packed tarball. These cases pin the mapping.
+  const versions = new Map([['@egov-moldova/mud', '1.2.0-dev.1']]);
+
+  it("maps `^`, `~`, `*` and an explicit range the way Yarn's pack does", () => {
+    const manifest = {
+      peerDependencies: { '@egov-moldova/mud': 'workspace:^', '@angular/core': '^20.0.0' },
+      dependencies: { '@egov-moldova/mud': 'workspace:~' },
+      optionalDependencies: { '@egov-moldova/mud': 'workspace:*' },
+      devDependencies: { '@egov-moldova/mud': 'workspace:>=1.0.0' },
+    };
+    const rewritten = pinWorkspaceRanges(manifest, versions);
+    assert.equal(rewritten.length, 4);
+    assert.deepEqual(manifest, {
+      peerDependencies: { '@egov-moldova/mud': '^1.2.0-dev.1', '@angular/core': '^20.0.0' },
+      dependencies: { '@egov-moldova/mud': '~1.2.0-dev.1' },
+      optionalDependencies: { '@egov-moldova/mud': '1.2.0-dev.1' },
+      devDependencies: { '@egov-moldova/mud': '>=1.0.0' },
+    });
+  });
+
+  it('fails on a workspace: dependency that names no workspace, rather than shipping it', () => {
+    assert.throws(
+      () => pinWorkspaceRanges({ peerDependencies: { '@egov-moldova/other': 'workspace:^' } }, versions),
+      /not a workspace/,
+    );
+  });
+
+  it('keeps `workspace:^` in the Angular source manifest, so the core version lives only at the root', () => {
+    const angular = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'packages/angular/package.json'), 'utf8'));
+    assert.equal(angular.peerDependencies?.['@egov-moldova/mud'], 'workspace:^');
+    assert.match(
+      angular.scripts?.build ?? '',
+      /ng-packagr .*&& node \.\.\/\.\.\/scripts\/adapters\/pin-workspace-ranges\.mjs dist\/package\.json$/,
+    );
   });
 });
 

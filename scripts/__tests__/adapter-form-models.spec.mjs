@@ -239,3 +239,108 @@ describe('the Vue component models are derived from the same rows', () => {
     );
   });
 });
+
+describe('the Angular accessors reach the adapter: generated from the rows, or written by hand for them', () => {
+  // `yarn build` writes the generated accessors; the hand-written ones live beside them in
+  // `packages/angular/src/lib/accessors/`. A row the build stopped passing to the output target,
+  // a hand-written selector that drifted from its row, or an accessor left out of
+  // `MUD_FORM_ACCESSORS` would each compile and pass a fixture that never drives that component.
+  const generatedDir = path.join(PROJECT_ROOT, PROXY_DIRS.angular);
+  const handWrittenDir = path.join(PROJECT_ROOT, 'packages/angular/src/lib/accessors');
+  const read = file => fs.readFileSync(file, 'utf8');
+  const selectorsOf = source =>
+    (/selector:\s*'([^']+)'/.exec(source)?.[1] ?? '')
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(Boolean);
+  const hostEventsOf = source => [...source.matchAll(/'\((\w+)\)':\s*'([^']+)'/g)].map(m => [m[1], m[2]]);
+
+  it('derives the output target config from the rows', () => {
+    const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
+    assert.match(
+      config,
+      /valueAccessorConfigs:\s*angularValueAccessorConfigs\(\)/,
+      'stencil.config.ts does not derive the Angular accessors',
+    );
+    assert.match(config, /inlineProperties:\s*true/, 'the Angular wrappers declare no typed inputs');
+  });
+
+  it('generates one directive per accessor type, on exactly its tags and events', () => {
+    assert.ok(fs.existsSync(generatedDir), `${generatedDir} is missing: run \`yarn build\` first`);
+    const configs = angularValueAccessorConfigs();
+    const types = [...new Set(configs.map(config => config.type))].sort();
+    const files = fs
+      .readdirSync(generatedDir)
+      .filter(file => /^\w+-value-accessor\.ts$/.test(file))
+      .sort();
+    assert.deepEqual(
+      files,
+      types.map(type => `${type}-value-accessor.ts`),
+      'generated accessor files differ from the derived types',
+    );
+    for (const type of types) {
+      const source = read(path.join(generatedDir, `${type}-value-accessor.ts`));
+      const ofType = configs.filter(config => config.type === type);
+      assert.deepEqual(
+        [...new Set(selectorsOf(source))].sort(),
+        [...new Set(ofType.flatMap(config => config.elementSelectors))].sort(),
+        `${type}: selectors`,
+      );
+      assert.deepEqual(
+        hostEventsOf(source).sort(),
+        ofType.map(config => [config.event, `handleChangeEvent($event.target?.["${config.targetAttr}"])`]).sort(),
+        `${type}: host listeners`,
+      );
+    }
+  });
+
+  it('writes a hand-written accessor for every hand-written row, on its tags, events and property', () => {
+    const accessors = fs
+      .readdirSync(handWrittenDir)
+      .filter(file => file.endsWith('-value-accessor.ts'))
+      .map(file => read(path.join(handWrittenDir, file)));
+    const rows = FORM_MODEL_ROWS.filter(row => angularAccessorKind(row) === 'hand-written');
+    assert.equal(accessors.length, rows.length, 'one hand-written accessor per hand-written row');
+    for (const row of rows) {
+      const source = accessors.find(text => selectorsOf(text).some(tag => row.tags.includes(tag)));
+      assert.ok(source, `${row.id}: no hand-written accessor selects ${row.tags.join(', ')}`);
+      assert.deepEqual(selectorsOf(source).sort(), [...row.tags].sort(), `${row.id}: selectors`);
+      assert.deepEqual(
+        hostEventsOf(source).sort(),
+        row.events.map(event => [event, 'handleChange()']).sort(),
+        `${row.id}: host listeners`,
+      );
+      assert.match(
+        source,
+        new RegExp(`protected readonly property = '${row.property}';`),
+        `${row.id}: does not read and write \`${row.property}\``,
+      );
+    }
+  });
+
+  it('lists every accessor, generated and hand-written, in MUD_FORM_ACCESSORS, covering every row tag', () => {
+    const classOf = (dir, base) =>
+      fs
+        .readdirSync(dir)
+        .filter(file => file.endsWith('-value-accessor.ts'))
+        .map(file => read(path.join(dir, file)))
+        .map(source => ({
+          name: new RegExp(`export class (\\w+) extends ${base}`).exec(source)?.[1],
+          tags: selectorsOf(source),
+        }));
+    const all = [...classOf(generatedDir, 'ValueAccessor'), ...classOf(handWrittenDir, 'MudModelAccessor')];
+    const listed = /MUD_FORM_ACCESSORS = \[([^\]]*)\]/
+      .exec(read(path.join(PROJECT_ROOT, 'packages/angular/src/lib/form-accessors.ts')))?.[1]
+      ?.split(',')
+      .map(name => name.trim())
+      .filter(Boolean);
+    assert.ok(listed, 'packages/angular/src/lib/form-accessors.ts declares no MUD_FORM_ACCESSORS array');
+    assert.deepEqual([...listed].sort(), all.map(accessor => accessor.name).sort());
+    assert.deepEqual(
+      [...new Set(all.flatMap(accessor => accessor.tags))].sort(),
+      [...FORM_MODEL_TAGS].sort(),
+      'the accessors do not cover exactly the map components',
+    );
+    assert.equal(new Set(all.flatMap(accessor => accessor.tags)).size, EXPECTED_ROWS);
+  });
+});

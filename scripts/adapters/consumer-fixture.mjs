@@ -5,12 +5,15 @@
  *
  *   node scripts/adapters/consumer-fixture.mjs <framework> [--framework-version <major>]
  *
- * Prerequisite: `yarn build` and the adapter's own build (`yarn build.vue`), because the
+ * Prerequisite: `yarn build` and the adapter's own build (`yarn build.<framework>`), because the
  * runner packs what those wrote. Steps, in order; the first failure ends the run:
  *
  *   1. pack      `yarn pack` the core and the adapter into a temp directory. Yarn, not npm:
  *                only Yarn rewrites a `workspace:` specifier, so the guard below can see
- *                whether the rewrite happened.
+ *                whether the rewrite happened. An adapter whose publishable package is a
+ *                build directory (`packDirectory`: ng-packagr's `dist/`, which is not a Yarn
+ *                workspace) is packed with `npm pack` from that directory; its build owns the
+ *                `workspace:` rewrite, and the same guard checks it.
  *   2. guard     FAIL on a `workspace:` specifier in any packed manifest (read from the
  *                tarball, not from the source tree), on a tracked file under any proxy output
  *                directory (the list comes from `proxy-dirs.ts`, not retyped), and on a root
@@ -37,10 +40,21 @@
  * Adding a framework is one entry in `FRAMEWORKS` and a `fixture/` directory.
  */
 import { spawn } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import net from 'node:net';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PROXY_OUT_DIRS } from './proxy-dirs.ts';
@@ -69,12 +83,17 @@ const fail = (step, message) => {
  * @property {string} app        the temp copy of the fixture, with its node_modules
  * @property {(name: string) => string} bin   path of a binary installed in the fixture
  * @property {typeof run} run
+ * @property {{dependencies?: Record<string, string>, devDependencies?: Record<string, string>}} pins
+ *                               the requested major's row of `fixture/versions.json`
+ * @property {string} major
  */
 
 const FRAMEWORKS = {
   vue: {
     adapterPackage: '@egov-moldova/mud-vue',
     workspace: 'packages/vue',
+    /** A file the adapter build writes, relative to the workspace: its absence fails the preflight. */
+    built: 'dist/index.js',
 
     /** Typecheck with the framework's own checker, then build with its own bundler. */
     async build({ app, bin, run }) {
@@ -112,7 +131,88 @@ const FRAMEWORKS = {
     /** The command that serves the production build on `port`. */
     serve: ({ bin }, port) => [bin('vite'), ['preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort']],
   },
+
+  angular: {
+    adapterPackage: '@egov-moldova/mud-angular',
+    workspace: 'packages/angular',
+    built: 'dist/package.json',
+    /** ng-packagr writes the publishable package to `dist/`, which `npm pack` packs. */
+    packDirectory: 'dist',
+
+    /**
+     * `ng build` is the typecheck (`strictTemplates`) and the build in one. The zone.js polyfill is
+     * loaded exactly when the major's pins carry `zone.js`: Angular 20 runs on it, Angular 22 is
+     * zoneless by default and does not install it. `--stats-json` writes the esbuild metafile the
+     * second-runtime check reads.
+     */
+    async build({ app, bin, run, pins }) {
+      const file = join(app, 'angular.json');
+      const workspace = JSON.parse(readFileSync(file, 'utf8'));
+      workspace.projects.fixture.architect.build.options.polyfills = Object.hasOwn(pins.dependencies ?? {}, 'zone.js')
+        ? ['zone.js']
+        : [];
+      writeFileSync(file, JSON.stringify(workspace, null, 2));
+      await run('build', bin('ng'), ['build', '--stats-json'], { cwd: app, env: { NG_CLI_ANALYTICS: 'false' } });
+    },
+
+    /**
+     * Every input of the esbuild metafile: the whole module graph, tree-shaken modules included.
+     * The file is `browser-stats.json` from Angular 22 on, `stats.json` before; the keys are
+     * relative to the fixture root.
+     */
+    moduleIds({ app }) {
+      const stats = ['dist/fixture/browser-stats.json', 'dist/fixture/stats.json']
+        .map(file => join(app, file))
+        .find(file => existsSync(file));
+      if (!stats) fail('module graph', 'the build wrote neither dist/fixture/browser-stats.json nor stats.json');
+      const { inputs } = JSON.parse(readFileSync(stats, 'utf8'));
+      return Object.keys(inputs ?? {}).map(id => (isAbsolute(id) ? id : join(app, id)));
+    },
+
+    /**
+     * The negative case: a separate build configuration (`negative` in angular.json) with its own
+     * entry point and tsconfig, so the wrong binding never reaches the normal build, and its own
+     * `outputPath`, so the failing build cannot delete the output the browser step serves.
+     */
+    negative: {
+      file: 'negative/wrong-type.html',
+      marker: '@negative-binding',
+      command: ({ bin }) => [bin('ng'), ['build', '--configuration', 'negative']],
+      parse: parseEsbuildDiagnostics,
+      /** Angular reports a wrongly typed input binding as the TypeScript assignability error. */
+      codes: ['TS2322'],
+    },
+
+    /** The production output, served by the fixture's own static server (`ng serve` is a dev server). */
+    serve: ({ app }, port) => [process.execPath, [join(app, 'serve.mjs'), String(port)]],
+  },
 };
+
+/**
+ * `ng build` prints esbuild-style errors: a `✘ [ERROR] TSnnnn: message [plugin angular-compiler]`
+ * header, then the location as `    <file>:<line>:<column>:` on a following line. esbuild's column is
+ * 0-based; the runner's columns are 1-based. A template error carries a second location (the
+ * component's `templateUrl`) inside the same block, so diagnostics are counted by header, and the
+ * first location of each is the one reported.
+ */
+function parseEsbuildDiagnostics(output) {
+  // eslint-disable-next-line no-control-regex
+  const text = output.replace(/\u001b\[[0-9;]*m/g, '');
+  return text
+    .split(/^(?=\s*✘ \[ERROR\])/m)
+    .filter(block => /^\s*✘ \[ERROR\]/.test(block))
+    .map(block => {
+      const head = /✘ \[ERROR\] (?:([A-Z]+\d+): )?(.*?)(?: \[plugin [^\]]+\])?$/m.exec(block);
+      const at = /^\s+(\S.*?):(\d+):(\d+):$/m.exec(block);
+      return {
+        file: (at?.[1] ?? '').replaceAll('\\', '/'),
+        line: Number(at?.[2] ?? 0),
+        column: Number(at?.[3] ?? -1) + 1,
+        code: head?.[1] ?? 'unknown',
+        message: head?.[2] ?? '',
+      };
+    });
+}
 
 function parseTscDiagnostics(output) {
   return [...output.matchAll(/^(.+?)\((\d+),(\d+)\): error (TS\d+): (.*)$/gm)].map(match => ({
@@ -340,7 +440,7 @@ async function main() {
   const { major, pins } = loadPins(sourceFixture, requested);
   log(`${framework} ${requested ? '' : '(default major) '}major ${major}`);
 
-  for (const built of ['dist/components/index.js', `${spec.workspace}/dist/index.js`]) {
+  for (const built of ['dist/components/index.js', `${spec.workspace}/${spec.built}`]) {
     if (!existsSync(join(ROOT, built)))
       fail('preflight', `${built} is missing: run \`yarn build\` and \`yarn build.${framework}\` first`);
   }
@@ -355,10 +455,21 @@ async function main() {
     const coreTarball = join(tarballs, 'core.tgz');
     const adapterTarball = join(tarballs, 'adapter.tgz');
     await run('pack', 'yarn', ['pack', '--out', coreTarball], { cwd: ROOT, capture: true });
-    await run('pack', 'yarn', ['workspace', spec.adapterPackage, 'pack', '--out', adapterTarball], {
-      cwd: ROOT,
-      capture: true,
-    });
+    if (spec.packDirectory) {
+      const directory = join(ROOT, spec.workspace, spec.packDirectory);
+      await run('pack', 'npm', ['pack', directory, '--pack-destination', tarballs, '--ignore-scripts'], {
+        cwd: ROOT,
+        capture: true,
+      });
+      const packed = readdirSync(tarballs).filter(name => name.endsWith('.tgz') && name !== 'core.tgz');
+      if (packed.length !== 1) fail('pack', `npm pack wrote ${packed.length} tarballs: ${packed.join(', ')}`);
+      renameSync(join(tarballs, packed[0]), adapterTarball);
+    } else {
+      await run('pack', 'yarn', ['workspace', spec.adapterPackage, 'pack', '--out', adapterTarball], {
+        cwd: ROOT,
+        capture: true,
+      });
+    }
 
     // 2. guard
     for (const [name, tarball] of [
@@ -376,7 +487,7 @@ async function main() {
     const app = join(temp, 'app');
     cpSync(sourceFixture, app, {
       recursive: true,
-      filter: source => !/(^|\/)(node_modules|dist|module-graph\.json|versions\.json)$/.test(source),
+      filter: source => !/(^|\/)(node_modules|dist|\.angular|module-graph\.json|versions\.json)$/.test(source),
     });
     writeFileSync(
       join(app, 'package.json'),
@@ -397,7 +508,7 @@ async function main() {
       ),
     );
     await run('install', 'npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: app });
-    const ctx = { app, bin: name => join(app, 'node_modules/.bin', name), run };
+    const ctx = { app, bin: name => join(app, 'node_modules/.bin', name), run, pins, major };
 
     if (existsSync(join(app, 'node_modules', spec.adapterPackage, 'node_modules/@egov-moldova/mud'))) {
       fail('install', `${spec.adapterPackage} installed its own copy of the core: two runtimes would load`);

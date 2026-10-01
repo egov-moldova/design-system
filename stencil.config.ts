@@ -1,11 +1,12 @@
 // `Config` from `/internal` rather than the `@stencil/core` re-export (`StencilConfig`):
 // only the internal interface declares `buildDocs`, which the compiler reads at runtime.
 import type { Config, OutputTarget } from '@stencil/core/internal';
+import { angularOutputTarget as angular } from '@stencil/angular-output-target';
 import { postcss } from '@stencil/postcss';
 import { reactOutputTarget as react } from '@stencil/react-output-target';
 import { vueOutputTarget as vue } from '@stencil/vue-output-target';
 
-import { vueComponentModels } from './scripts/adapters/form-models';
+import { angularValueAccessorConfigs, vueComponentModels } from './scripts/adapters/form-models';
 import { PROXY_DIRS } from './scripts/adapters/proxy-dirs';
 import { stencilPostcssPlugins } from './stencil-postcss.config.mjs';
 // import postcssPresetEnv from 'postcss-preset-env';
@@ -116,6 +117,25 @@ if (!isDevMode) {
       esModules: true,
       customElementsDir: 'components',
       componentModels: vueComponentModels(),
+    }),
+    // Angular: standalone components over the same standalone bundle (`esModules` set explicitly,
+    // as for Vue: the target's code checks `=== true`). `inlineProperties` is REQUIRED, not a
+    // nicety: without it the wrappers declare no typed inputs, so `strictTemplates` checks no
+    // binding and `booleanAttributes`' transform has nothing to resolve. The library compiles the
+    // `@egov-moldova/mud/components/mud-*.js` imports through the `exports` map with
+    // `moduleResolution: bundler` (packages/angular/tsconfig.json), so no shim folder exists.
+    // `valueAccessorConfigs` is derived from the form-control model map, grouped into one config
+    // per (type, event, property); the rows the generator cannot serve (numeric, chips, files)
+    // get the hand-written accessors in packages/angular/src/lib/accessors/.
+    angular({
+      componentCorePackage: '@egov-moldova/mud',
+      directivesProxyFile: `${PROXY_DIRS.angular}/components.ts`,
+      outputType: 'standalone',
+      esModules: true,
+      customElementsDir: 'components',
+      booleanAttributes: true,
+      inlineProperties: true,
+      valueAccessorConfigs: angularValueAccessorConfigs(),
     }),
   );
 }

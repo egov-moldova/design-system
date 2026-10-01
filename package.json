@@ -33,7 +33,8 @@
   "workspaces": [
     "packages/web-components",
     "packages/react",
-    "packages/vue"
+    "packages/vue",
+    "packages/angular"
   ],
   "resolutions": {
     "undici-types": "~7.19.0",
@@ -63,6 +64,7 @@
     "build.web": "wireit",
     "build.react": "wireit",
     "build.vue": "wireit",
+    "build.angular": "wireit",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
     "demo.web.dev": "wireit",
@@ -250,7 +252,8 @@
         ".storybook/custom-elements.json",
         "src/components.d.ts",
         "packages/react/src/components/stencil-generated/**",
-        "packages/vue/src/components/stencil-generated/**"
+        "packages/vue/src/components/stencil-generated/**",
+        "packages/angular/src/lib/stencil-generated/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -286,6 +289,27 @@
       ],
       "output": [
         "packages/vue/dist/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.angular": {
+      "command": "yarn workspace @egov-moldova/mud-angular build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "packages/angular/src/**/*.ts",
+        "packages/angular/ng-package.json",
+        "packages/angular/tsconfig.json",
+        "packages/angular/package.json",
+        "packages/angular/LICENSE",
+        "scripts/adapters/pin-workspace-ranges.mjs",
+        "package.json"
+      ],
+      "output": [
+        "packages/angular/dist/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -570,6 +594,7 @@
     "@commitlint/config-conventional": "^21.0.1",
     "@playwright/test": "^1.63.0",
     "@prettier/plugin-oxc": "^0.1.4",
+    "@stencil/angular-output-target": "^1.5.0",
     "@stencil/eslint-plugin": "^1.4.0",
     "@stencil/postcss": "^2.1.0",
     "@stencil/react-output-target": "^1.6.2",

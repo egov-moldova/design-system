@@ -1,0 +1,47 @@
+{
+  "name": "@egov-moldova/mud-angular",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Angular adapter for the MUD Design System — typed standalone Angular wrappers and form value accessors around the Stencil-compiled mud-* custom elements.",
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json -c tsconfig.json && node ../../scripts/adapters/pin-workspace-ranges.mjs dist/package.json"
+  },
+  "peerDependencies": {
+    "@angular/core": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/forms": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@egov-moldova/mud": "workspace:^",
+    "rxjs": "^6.5.3 || ^7.4.0"
+  },
+  "dependencies": {
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/common": "~20.3.33",
+    "@angular/compiler": "~20.3.33",
+    "@angular/compiler-cli": "~20.3.33",
+    "@angular/core": "~20.3.33",
+    "@angular/forms": "~20.3.33",
+    "@angular/platform-browser": "~20.3.33",
+    "@egov-moldova/mud": "workspace:^",
+    "ng-packagr": "~20.3.2",
+    "rxjs": "^7.8.2",
+    "typescript": "^5.9.3"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
+  "keywords": [
+    "angular",
+    "web-components",
+    "custom-elements",
+    "design-system",
+    "stencil",
+    "mud"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
