@@ -597,24 +597,24 @@ describe('the React workspace names only exported subpaths', () => {
   // `the React output target names the exports key` above binds the CONFIG
   // (`stencil.config.ts`'s `customElementsDir`) to the `exports` key. It cannot
   // see the files that config produced: those are git-ignored
-  // (`react/.gitignore:6`), so a worktree whose last `yarn build.react` predates
+  // (`packages/react/.gitignore:6`), so a worktree whose last `yarn build.react` predates
   // an `exports` rename carries 56 wrappers holding a dead specifier that no
   // check reports. That is issue #23, and this is the half that reads the files.
   //
-  // The scan covers all of `react/src`, not just the generated subtree, so it
+  // The scan covers all of `packages/react/src`, not just the generated subtree, so it
   // never reports a pass over zero files: on a fresh clone the generated
-  // directory holds only `.gitkeep` and `react/src/index.ts` is still graded.
+  // directory holds only `.gitkeep` and `packages/react/src/index.ts` is still graded.
   // What that does NOT buy: where no build output is present — CI, and any
   // machine that has not run `yarn build.react` — the 56 wrappers this exists
   // for are absent and one file is graded. Making CI grade them means running
   // `yarn build.react` before `yarn test:scripts`, which is a `.github/` change.
-  const REACT_SRC = path.join(PROJECT_ROOT, 'react/src');
+  const REACT_SRC = path.join(PROJECT_ROOT, 'packages/react/src');
   // Anchored on the quote, not on `from`/`import`: `import("…")` has no space
   // before the quote and `require("…")` uses neither keyword, and a wrapper that
   // drifted into either would otherwise pass vacuously.
   //
   // What keeps it from firing on prose, stated exactly, because an earlier version
-  // of this comment got it wrong: `react/src/index.ts` carries three non-import
+  // of this comment got it wrong: `packages/react/src/index.ts` carries three non-import
   // mentions. Two (`:14`, `:42`) spell `/node_modules/@egov-moldova/mud/…`, so the
   // character after the quote is `/` and they do not match. The third (`:30`) is a
   // JSDoc mention delimited by BACKTICKS, and it is skipped only because backtick
@@ -627,7 +627,7 @@ describe('the React workspace names only exported subpaths', () => {
   const SOURCE_EXT = /\.tsx?$/;
 
   // `existsSync` before the recursion: without it a pruned, absent or renamed
-  // `react/` workspace dies on a raw ENOENT with a stack trace, instead of the
+  // `packages/react/` workspace dies on a raw ENOENT with a stack trace, instead of the
   // assertion below — which was written to diagnose exactly that case.
   const walk = dir =>
     !fs.existsSync(dir)
@@ -638,12 +638,12 @@ describe('the React workspace names only exported subpaths', () => {
           return entry.isFile() && SOURCE_EXT.test(full) ? [full] : [];
         });
 
-  it('every `@egov-moldova/mud` specifier under react/src resolves through the exports map', () => {
+  it('every `@egov-moldova/mud` specifier under packages/react/src resolves through the exports map', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
     const patterns = Object.keys(pkg.exports).map(exportsKeyPattern);
 
     const files = walk(REACT_SRC);
-    assert.ok(files.length > 0, 'react/src holds no .ts/.tsx files — the scan would grade nothing');
+    assert.ok(files.length > 0, 'packages/react/src holds no .ts/.tsx files — the scan would grade nothing');
 
     const dead = [];
     for (const file of files) {

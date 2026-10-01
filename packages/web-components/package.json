@@ -37,7 +37,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/egov-moldova/design-system.git",
-    "directory": "web-components"
+    "directory": "packages/web-components"
   },
   "keywords": [
     "web-components",

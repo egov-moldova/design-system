@@ -37,7 +37,7 @@ Status quo — the current 3-tier pipeline (palette → semantic → component) 
 Declarative dependency graphs + automatic parallelism + content-hashed caching across `tokens.build`, `build`, `lint`, `test`. Makes `yarn dev` reliably reproducible across machines and CI.
 
 ### Yarn 4 + workspaces
-Two workspaces: `web-components/` for the vanilla adapter and `react/` for the React wrappers. Pinned via `packageManager` field in `package.json` so every contributor / agent / CI run uses the same version.
+Two workspaces under `packages/`: `packages/web-components/` for the vanilla adapter and `packages/react/` for the React wrappers. Pinned via `packageManager` field in `package.json` so every contributor / agent / CI run uses the same version.
 
 ### Node ≥24
 Enforced via `engines`. Newer features (modern test runner, native fetch) and required by current toolchain versions.

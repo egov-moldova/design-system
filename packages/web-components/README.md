@@ -28,7 +28,7 @@ defineCustomElements();
 <mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
-`styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../README.md#fonts) section.
+`styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../../README.md#fonts) section.
 
 ## Usage — plain HTML with import map
 
@@ -90,7 +90,7 @@ The demo lives in [`demo/index.html`](./demo/index.html) and showcases `<mud-but
 
 ## Available components
 
-Every component published by `@egov-moldova/mud` is registered. The full list is browseable in [Storybook](../.storybook/). Highlights include:
+Every component published by `@egov-moldova/mud` is registered. The full list is browseable in [Storybook](../../.storybook/). Highlights include:
 
 - `<mud-button>` — primary action button
 - `<mud-text-input>`, `<mud-textarea>` — form fields

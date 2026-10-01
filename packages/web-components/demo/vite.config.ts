@@ -3,8 +3,8 @@ import { resolve, sep } from 'node:path';
 import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
 
-const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/mud');
-const GENERATED_TOKENS = resolve(__dirname, '../../tokens/generated');
+const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../../dist/mud');
+const GENERATED_TOKENS = resolve(__dirname, '../../../tokens/generated');
 
 // Multi-page build: the table of contents (index.html) + one page per component under
 // pages/<category>/<tag>.html. Dev server serves any .html by path already;
@@ -120,7 +120,7 @@ export default defineConfig(({ command }) => ({
     // scripts/check-dev-all.mjs sets this so a headless run never opens a browser window.
     open: process.env.MUD_DEMO_NO_OPEN ? false : '/index.html',
     fs: {
-      allow: [resolve(__dirname, '..'), resolve(__dirname, '../..')],
+      allow: [resolve(__dirname, '..'), resolve(__dirname, '../../..')],
     },
   },
   build: {

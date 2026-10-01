@@ -7,8 +7,8 @@ WORKDIR /app
 
 # Copy package files first for better layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY web-components/package.json ./web-components/
-COPY react/package.json ./react/
+COPY packages/web-components/package.json ./packages/web-components/
+COPY packages/react/package.json ./packages/react/
 # yarn.lock resolves patched packages from these files, so the install fails without them
 COPY .yarn/patches ./.yarn/patches
 # react's postinstall runs scripts/git/install-hooks.mjs; with no .git it exits 0, but it must exist

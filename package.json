@@ -31,8 +31,8 @@
     "./components/mud-*.js": "./dist/components/mud-*.js"
   },
   "workspaces": [
-    "web-components",
-    "react"
+    "packages/web-components",
+    "packages/react"
   ],
   "resolutions": {
     "undici-types": "~7.19.0",
@@ -257,12 +257,12 @@
         "build"
       ],
       "files": [
-        "web-components/src/**/*.ts",
-        "web-components/tsconfig.json",
-        "web-components/package.json"
+        "packages/web-components/src/**/*.ts",
+        "packages/web-components/tsconfig.json",
+        "packages/web-components/package.json"
       ],
       "output": [
-        "web-components/dist/**"
+        "packages/web-components/dist/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -288,11 +288,11 @@
         "build"
       ],
       "files": [
-        "web-components/demo/**",
-        "web-components/package.json"
+        "packages/web-components/demo/**",
+        "packages/web-components/package.json"
       ],
       "output": [
-        "web-components/demo/dist-demo/**"
+        "packages/web-components/demo/dist-demo/**"
       ],
       "packageLocks": [
         "yarn.lock"

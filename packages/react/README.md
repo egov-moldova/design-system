@@ -52,12 +52,12 @@ symlink.
 ```bash
 cd /Users/mdascal/Projects/corlab/age/age-design
 yarn install                # first time only
-yarn build.react            # runs `stencil build --docs --react` then `tsc` in react/
+yarn build.react            # runs `stencil build --docs --react` then `tsc` in packages/react/
 ```
 
 `yarn build.react` runs the Stencil build with the `--react` flag, which
-regenerates `react/src/components/stencil-generated/index.ts`, and then invokes
-`tsc` inside the `react/` workspace to produce `react/dist/`.
+regenerates `packages/react/src/components/stencil-generated/index.ts`, and then invokes
+`tsc` inside the `packages/react/` workspace to produce `packages/react/dist/`.
 
 ### 2. Register the global link
 
@@ -66,7 +66,7 @@ uses `npm link` (it just creates a node_modules symlink — package manager
 neutral on the consumer side):
 
 ```bash
-cd /Users/mdascal/Projects/corlab/age/age-design/react
+cd /Users/mdascal/Projects/corlab/age/age-design/packages/react
 npm link                    # registers @egov-moldova/mud-react globally
 ```
 
@@ -77,7 +77,7 @@ cd /Users/mdascal/Projects/corlab/amdm/apps/frontoffice
 npm link @egov-moldova/mud-react
 ```
 
-SIMSM now resolves `@egov-moldova/mud-react` to your local `react/dist/`.
+SIMSM now resolves `@egov-moldova/mud-react` to your local `packages/react/dist/`.
 
 ### Watch loop during development
 
@@ -90,7 +90,7 @@ methods), re-run:
 yarn build.react
 ```
 
-The SIMSM dev server will pick up the new `react/dist/` on its next HMR cycle.
+The SIMSM dev server will pick up the new `packages/react/dist/` on its next HMR cycle.
 
 ### Unlinking
 

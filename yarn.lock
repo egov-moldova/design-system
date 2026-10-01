@@ -1012,9 +1012,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@egov-moldova/mud-react@workspace:react":
+"@egov-moldova/mud-react@workspace:packages/react":
   version: 0.0.0-use.local
-  resolution: "@egov-moldova/mud-react@workspace:react"
+  resolution: "@egov-moldova/mud-react@workspace:packages/react"
   dependencies:
     "@egov-moldova/mud": "workspace:^"
     "@stencil/react-output-target": "npm:^1.6.2"
@@ -1029,9 +1029,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@egov-moldova/mud-web-components@workspace:web-components":
+"@egov-moldova/mud-web-components@workspace:packages/web-components":
   version: 0.0.0-use.local
-  resolution: "@egov-moldova/mud-web-components@workspace:web-components"
+  resolution: "@egov-moldova/mud-web-components@workspace:packages/web-components"
   dependencies:
     "@egov-moldova/mud": "workspace:^"
     typescript: "npm:^5.9.3"

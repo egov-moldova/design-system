@@ -62,8 +62,8 @@ This is a monorepo (Yarn workspaces) publishing three packages:
 | Package | Location | Description |
 | --- | --- | --- |
 | `@egov-moldova/mud` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
-| `@egov-moldova/mud-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
-| `@egov-moldova/mud-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud-web-components` | `packages/web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
+| `@egov-moldova/mud-react` | `packages/react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
 
 Key directories:
 
@@ -74,8 +74,8 @@ src/assets/         # fonts, icons, shared assets
 tokens/core/        # source design tokens (light) — Style Dictionary, DTCG format
 tokens/core.dark/   # source design tokens (dark)
 tokens/generated/   # build output — never hand-edit
-web-components/     # vanilla JS/HTML adapter package
-react/              # React adapter package (WIP)
+packages/web-components/  # vanilla JS/HTML adapter package
+packages/react/           # React adapter package (WIP)
 scripts/            # build tooling, token sync, audits
 .storybook/         # Storybook config + stories assets
 ```
@@ -105,7 +105,7 @@ Additional docs worth knowing about:
 6. **Run tests**: `yarn test` (see [Testing](#testing) below).
 7. **Commit** using [Conventional Commits](#commit-messages), **push**, and **open a PR**.
 
-### Vanilla adapter (`web-components/`)
+### Vanilla adapter (`packages/web-components/`)
 
 `@egov-moldova/mud-web-components` is a *thin* re-export of the Stencil
 loader — because Stencil already compiles to native custom elements, there is no
@@ -113,11 +113,11 @@ framework-specific build step. Two builds and a demo server:
 
 ```bash
 yarn build        # tokens + Stencil -> dist/, loader/, dist/types/
-yarn build.web    # depends on `build` (wireit orders it); runs tsc inside web-components/
+yarn build.web    # depends on `build` (wireit orders it); runs tsc inside packages/web-components/
 yarn demo.web     # http://localhost:5174 — live <mud-button> showcase
 ```
 
-`yarn build.web` compiles `web-components/src/index.ts` into:
+`yarn build.web` compiles `packages/web-components/src/index.ts` into:
 
 - `dist/index.js` — re-exports `defineCustomElements` and `setNonce` from the core loader
 - `dist/index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
@@ -135,7 +135,7 @@ You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`,
 `HTMLMudIconElement`, …).
 
 ```text
-web-components/
+packages/web-components/
 ├── src/index.ts              # defineCustomElements + type re-exports
 ├── demo/
 │   ├── index.html            # mud-button showcase
