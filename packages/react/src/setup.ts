@@ -29,7 +29,7 @@ export function toAssetBaseUrl(assetPath: string, baseURI: string): string {
  * once at startup, before the first render:
  *
  * ```ts
- * setupMud({ assetPath: import.meta.env.BASE_URL });
+ * setupMud({ assetPath: `${import.meta.env.BASE_URL}mud/` });
  * ```
  *
  * It registers no element: every wrapper registers its own element, and the elements it
