@@ -257,8 +257,12 @@ numeric-input's `undefined` passed through as Vue's empty model.
 - Generated proxies are git-ignored and never committed (the lesson of 6e557bf5).
 - No shim folders at the repo root: resolution goes through the core's `exports` map.
 - The core's published `package.json` `exports`, `files` and version stay unchanged.
-  `yarn validate.package` stays green. The one core change is Phase 0's additive type
-  re-export in `src/index.ts`; no other core source changes.
+  `yarn validate.package` stays green. The core changes are Phase 0's additive type
+  re-export in `src/index.ts` and one guard in `mud-file-input` that treats a `null` or
+  `undefined` `files` as `[]` (owner decision, 2026-10-01, after the verify round: Vue's generator
+  cannot convert a `null` model, and `mud-file-input.tsx:830` read `files.length` unguarded). The
+  guard ships with a spec case, and the Vue fixture then initialises file-input with `null` as the
+  bar states. No other core source changes.
 - No adapter build masks a type error: no `|| true`, no `skipLibCheck` or `@ts-nocheck` over the
   generated proxies. The adapter build is what proves every generated type import resolves.
 - The move of `react/` and `web-components/` changes paths only. The package names, manifests
