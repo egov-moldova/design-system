@@ -267,6 +267,54 @@
           "note": "List Item Types, 2nd-level (1523:4046): the child row pads 12px 16px 12px 56px."
         }
       ]
+    },
+    {
+      "name": "mobile-menu",
+      "node": "4816:15071",
+      "pixel": false,
+      "viewport": {
+        "width": 375,
+        "height": 900
+      },
+      "html": "<div style=\"width:375px\"><mud-sidebar><mud-sidebar-group><mud-sidebar-item icon=\"group\" label=\"Primary Label\" active></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item icon=\"group\" label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group><mud-sidebar-group heading=\"Heading\"><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item><mud-sidebar-item label=\"Primary Label\"></mud-sidebar-item></mud-sidebar-group></mud-sidebar></div>",
+      "expect": [
+        {
+          "target": "mud-sidebar mud-sidebar-item[active] .item",
+          "node": "4816:15071",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "backgroundColor": "#E8F0FB"
+          },
+          "note": "Mobile menu frame 4816:15071 (375px): the 10-row list is the same 48px sidebar-list-item with the first row Active (#E8F0FB). Design question, not pinned: the frame sets the icon rows to padding 12px 16px (icon at 16px) where Desktop pads 12px 16px 12px 24px, draws no stroke or radius, and its first \"Heading\" is a plain 16/24 text layer (4816:15208), not a group heading. The sidebar-list-item set has only State variants, so the 16px reads as an instance override, and the component has no mobile mode."
+        },
+        {
+          "target": "mud-sidebar mud-sidebar-group:nth-of-type(2) mud-sidebar-item:first-of-type .item",
+          "node": "4816:15071",
+          "styles": {
+            "boxHeight": "48px",
+            "paddingLeft": "24px",
+            "paddingRight": "16px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px"
+          },
+          "note": "Rows of the second section have no leading icon, so they pad 24px on the left (4816:15214)."
+        },
+        {
+          "target": "mud-sidebar mud-sidebar-group:nth-of-type(2) .heading",
+          "node": "4816:15071",
+          "styles": {
+            "paddingLeft": "24px",
+            "paddingTop": "20px",
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "4816:15211 pads 24px inline, 20px under the separator; the label is Desktop/Body/Small 500 in #757575 (4816:15213)."
+        }
+      ]
     }
   ]
 }
