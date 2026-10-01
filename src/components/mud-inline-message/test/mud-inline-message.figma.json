@@ -1,0 +1,390 @@
+{
+  "component": "mud-inline-message",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-inlinemessage--default",
+    "capture": {
+      "selector": "mud-inline-message",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "icon-none",
+      "node": "571:29829",
+      "html": "<mud-inline-message hide-icon>Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29829",
+          "styles": {
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29829",
+          "absent": true,
+          "note": "The icon-none instance (Icon=false) draws only the text."
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29829",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        }
+      ]
+    },
+    {
+      "name": "medium-info",
+      "node": "571:29785",
+      "html": "<mud-inline-message variant=\"info\" size=\"medium\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29785",
+          "styles": {
+            "boxHeight": "20px",
+            "columnGap": "6px"
+          },
+          "note": "Medium inline message: 20px icon, 6px gap, Desktop/Body/Small text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29785",
+          "styles": {
+            "color": "#0058D2",
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29785",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29785",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        }
+      ]
+    },
+    {
+      "name": "medium-warning",
+      "node": "571:29797",
+      "html": "<mud-inline-message variant=\"warning\" size=\"medium\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29797",
+          "styles": {
+            "boxHeight": "20px",
+            "columnGap": "6px"
+          },
+          "note": "Medium inline message: 20px icon, 6px gap, Desktop/Body/Small text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29797",
+          "styles": {
+            "color": "#DC6803",
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29797",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29797",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#B54708"
+          }
+        }
+      ]
+    },
+    {
+      "name": "medium-success",
+      "node": "571:29793",
+      "html": "<mud-inline-message variant=\"success\" size=\"medium\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29793",
+          "styles": {
+            "boxHeight": "20px",
+            "columnGap": "6px"
+          },
+          "note": "Medium inline message: 20px icon, 6px gap, Desktop/Body/Small text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29793",
+          "styles": {
+            "color": "#039855",
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29793",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29793",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          },
+          "note": "Figma colours the success text #039855 (text.positive.default, 3.73:1 on white); the component keeps text.positive.on-secondary (#027948, 5.2:1) for WCAG 1.4.3, so the text colour is deliberately not pinned. The icon is pinned at the Figma colour (non-text, 3:1)."
+        }
+      ]
+    },
+    {
+      "name": "medium-error",
+      "node": "571:29789",
+      "html": "<mud-inline-message variant=\"error\" size=\"medium\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29789",
+          "styles": {
+            "boxHeight": "20px",
+            "columnGap": "6px"
+          },
+          "note": "Medium inline message: 20px icon, 6px gap, Desktop/Body/Small text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29789",
+          "styles": {
+            "color": "#D92D20",
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29789",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29789",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#D92D20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "small-info",
+      "node": "571:29910",
+      "html": "<mud-inline-message variant=\"info\" size=\"small\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29910",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Small inline message: 16px icon, 4px gap, Desktop/Caption/Medium text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29910",
+          "styles": {
+            "color": "#0058D2",
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29910",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29910",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#383838"
+          }
+        }
+      ]
+    },
+    {
+      "name": "small-warning",
+      "node": "571:29914",
+      "html": "<mud-inline-message variant=\"warning\" size=\"small\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29914",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Small inline message: 16px icon, 4px gap, Desktop/Caption/Medium text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29914",
+          "styles": {
+            "color": "#DC6803",
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29914",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29914",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#B54708"
+          }
+        }
+      ]
+    },
+    {
+      "name": "small-success",
+      "node": "571:29918",
+      "html": "<mud-inline-message variant=\"success\" size=\"small\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29918",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Small inline message: 16px icon, 4px gap, Desktop/Caption/Medium text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29918",
+          "styles": {
+            "color": "#039855",
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29918",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29918",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          },
+          "note": "Figma colours the success text #039855 (text.positive.default, 3.73:1 on white); the component keeps text.positive.on-secondary (#027948, 5.2:1) for WCAG 1.4.3, so the text colour is deliberately not pinned. The icon is pinned at the Figma colour (non-text, 3:1)."
+        }
+      ]
+    },
+    {
+      "name": "small-error",
+      "node": "571:29922",
+      "html": "<mud-inline-message variant=\"error\" size=\"small\">Inline message</mud-inline-message>",
+      "expect": [
+        {
+          "target": "mud-inline-message",
+          "node": "571:29922",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          },
+          "note": "Small inline message: 16px icon, 4px gap, Desktop/Caption/Medium text."
+        },
+        {
+          "target": "mud-inline-message .icon",
+          "node": "571:29922",
+          "styles": {
+            "color": "#D92D20",
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .icon mud-icon",
+          "node": "571:29922",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-inline-message .text",
+          "node": "571:29922",
+          "styles": {
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#D92D20"
+          }
+        }
+      ]
+    }
+  ]
+}
