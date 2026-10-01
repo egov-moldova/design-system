@@ -131,7 +131,8 @@ Inputs no task can pin with a browser, most likely to bite first:
 Dispatch verdict: inline. Each phase would pass the brief-test, but the plan is three small
 phases over ~14 files with every design decision taken; a dispatch per phase costs more context
 than it saves. Order: Phase 1, then Phase 2 (strict mode compiles Phase 1's `setup.ts`; both edit
-`packages/react/package.json`), then Phase 3 (disjoint files). One commit per phase.
+`packages/react/package.json` and the validate-package spec), then Phase 3 (its strict spec
+needs Phase 2's strict React tsconfig to pass). One commit per phase.
 
 ## Phases
 
@@ -430,7 +431,37 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
 
 ### Phase 3: Vanilla adapter hygiene
 
-Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/main.ts`.
+Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/main.ts`,
+`scripts/__tests__/validate-package.spec.mjs`.
+
+- [ ] **Step 0: the strict spec, RED.** Append to `scripts/__tests__/validate-package.spec.mjs`
+  (after Phase 2's `no adapter build masks a failure` block, reusing its `PACKAGES` idea but in
+  its own `describe`):
+
+  ```js
+  describe('every adapter compiles in strict mode (#180)', () => {
+    const PACKAGES = path.join(PROJECT_ROOT, 'packages');
+    const STRICT_FAMILY = ['strictNullChecks', 'noImplicitAny', 'strictPropertyInitialization', 'strictFunctionTypes', 'strictBindCallApply', 'alwaysStrict', 'useUnknownInCatchVariables'];
+
+    it('packages/*/tsconfig.json sets strict and turns no strict-family flag back off', () => {
+      const lax = fs
+        .readdirSync(PACKAGES, { withFileTypes: true })
+        .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'tsconfig.json')))
+        .flatMap(entry => {
+          const options = JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'tsconfig.json'), 'utf8')).compilerOptions ?? {};
+          const off = STRICT_FAMILY.filter(flag => options[flag] === false);
+          return options.strict === true && off.length === 0 ? [] : [`packages/${entry.name}: strict=${options.strict} off=[${off.join(', ')}]`];
+        });
+      assert.deepEqual(lax, []);
+    });
+  });
+  ```
+
+  The four tsconfigs are plain JSON today (no comments); if `JSON.parse` throws on one, that file
+  gained a comment and the spec needs TypeScript's `readConfigFile`, not a regex.
+  Run `fnm exec --using=24 -- node --test --test-name-pattern='strict mode' scripts/__tests__/validate-package.spec.mjs`.
+  Expected: FAIL with `packages/web-components: strict=false off=[strictNullChecks, noImplicitAny, strictPropertyInitialization]`
+  (React is strict after Phase 2).
 
 - [ ] **Step 1: baseline.** `fnm exec --using=24 -- yarn build.web`, then
   `rm -rf "$TMPDIR/web-dist-before" && cp -R packages/web-components/dist "$TMPDIR/web-dist-before"`.
@@ -441,8 +472,8 @@ Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/ma
   `'mud-demo-lang'`. A stored preference under the old keys is dropped once; the demo falls back
   to `prefers-color-scheme` and `ro-MD`.
 - [ ] **Step 4: verify.** `fnm exec --using=24 -- yarn build.web`, then
-  `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0; acceptance bar 8 and
-  the `age-demo` grep. Commit `chore(web-components): strict tsconfig, bundler resolution, mud demo storage keys (#180)`.
+  `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0; Step 0's test passes;
+  acceptance bar 3 and 8 and the `age-demo` grep. Commit `chore(web-components): strict tsconfig, bundler resolution, mud demo storage keys (#180)`.
 
 ## Final verification
 
@@ -458,6 +489,25 @@ PR leaves draft.
 - React 19 at runtime: only its types are checked.
 - `setupMud` in a browser (the `document` branch): not run; `toAssetBaseUrl`, which it delegates
   to, is.
+
+## Self-refute log
+
+1. Does the fix reuse the defect's own mechanism class? No instance. The defect is a mixed
+   import nobody checked; the fix is a mechanical allowlist over every specifier in
+   `packages/react/src` (generated wrappers included), not a convention. Its blind spot — a
+   specifier assembled at runtime, or a lazy import reached transitively through
+   `@egov-moldova/mud/components` — is stated in the spec's existing comment and in Not verified.
+2. Can a rule's letter be met with its intent violated? Instance: the build gate is met by
+   `tsc` while the tsconfig turns strict back off. Fixed by Phase 3 Step 0 (strict spec over every
+   `packages/*/tsconfig.json`). Second instance: `tsconfig.react19.json`'s `paths` pointing at a
+   wrong directory falls back to normal resolution and typechecks against React 18 again, so
+   the React 19 check passes vacuously. Fixed by the acceptance bar's `--listFilesOnly` row.
+3. Numeric targets: none beyond "0 errors" and "exit 0"; each names its command, and every
+   0-error claim under Current state was run on 2026-10-01 at `ed49b48b`.
+4. Two rules interacting: the masking regex and the React 19 config. `tsc && tsc -p tsconfig.react19.json`
+   passes the regex while the second `tsc` could check nothing new (row 2's fallback); the
+   `--listFilesOnly` row is the check outside both. Scanned: the five zero-tolerance rows
+   pairwise; no other pair shares a blind spot.
 
 ## Found (outside this plan's scope)
 
