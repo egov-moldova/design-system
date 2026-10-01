@@ -1,0 +1,92 @@
+<script setup lang="ts">
+import {
+  MudCheckbox,
+  MudDateInput,
+  MudFileInput,
+  MudIcon,
+  MudInputChip,
+  MudLogo,
+  MudNumericInput,
+  MudSelect,
+  MudTextInput,
+} from '@egov-moldova/mud-vue';
+import { computed, ref } from 'vue';
+
+// One component per model shape of the form-control model map. Every control is bound with
+// `v-model` and shows its model in an `<output>`, so the spec reads both directions: the
+// element to the model, and a model write back onto the element.
+const text = ref('');
+const date = ref('');
+const num = ref<number | undefined>(undefined);
+const checked = ref(false);
+const fruit = ref('');
+const chips = ref<string[]>([]);
+// `[]`, never `null`: the component reads `files.length` unguarded, so a null model throws
+// (and the wrapper's prop type, `File[]`, rejects it under vue-tsc).
+const files = ref<File[]>([]);
+
+const fileNames = computed(() => files.value.map(file => file.name));
+</script>
+
+<template>
+  <main>
+    <h1>mud-vue consumer fixture</h1>
+
+    <section>
+      <h2>string on mudInput (text-input)</h2>
+      <MudTextInput v-model="text" data-testid="text" aria-label="Text" />
+      <output data-testid="text-model">{{ JSON.stringify(text) }}</output>
+      <button type="button" data-testid="text-set" @click="text = 'from model'">set model</button>
+    </section>
+
+    <section>
+      <h2>string on mudChange (date-input)</h2>
+      <MudDateInput v-model="date" data-testid="date" aria-label="Date" />
+      <output data-testid="date-model">{{ JSON.stringify(date) }}</output>
+      <button type="button" data-testid="date-set" @click="date = '01/02/2024'">set model</button>
+    </section>
+
+    <section>
+      <h2>number (numeric-input)</h2>
+      <MudNumericInput v-model="num" data-testid="numeric" aria-label="Number" :max="10" />
+      <output data-testid="numeric-model">{{ JSON.stringify(num ?? null) }}</output>
+      <button type="button" data-testid="numeric-set" @click="num = 7">set model</button>
+    </section>
+
+    <section>
+      <h2>boolean (checkbox)</h2>
+      <MudCheckbox v-model="checked" data-testid="checkbox" aria-label="Checkbox" />
+      <output data-testid="checkbox-model">{{ JSON.stringify(checked) }}</output>
+      <button type="button" data-testid="checkbox-set" @click="checked = true">set model</button>
+    </section>
+
+    <section>
+      <h2>select (select)</h2>
+      <MudSelect v-model="fruit" data-testid="select" aria-label="Fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </MudSelect>
+      <output data-testid="select-model">{{ JSON.stringify(fruit) }}</output>
+      <button type="button" data-testid="select-set" @click="fruit = 'pear'">set model</button>
+    </section>
+
+    <section>
+      <h2>string array (input-chip)</h2>
+      <MudInputChip v-model="chips" data-testid="chips" aria-label="Chips" />
+      <output data-testid="chips-model">{{ JSON.stringify(chips) }}</output>
+      <button type="button" data-testid="chips-set" @click="chips = ['x', 'y']">set model</button>
+    </section>
+
+    <section>
+      <h2>file array (file-input)</h2>
+      <MudFileInput v-model="files" data-testid="files" multiple />
+      <output data-testid="files-model">{{ JSON.stringify(fileNames) }}</output>
+    </section>
+
+    <section>
+      <h2>assets (icon, logo)</h2>
+      <MudIcon data-testid="icon" name="alarm" :size="24" />
+      <MudLogo data-testid="logo" />
+    </section>
+  </main>
+</template>

@@ -3,7 +3,9 @@
 import type { Config, OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
 import { reactOutputTarget as react } from '@stencil/react-output-target';
+import { vueOutputTarget as vue } from '@stencil/vue-output-target';
 
+import { vueComponentModels } from './scripts/adapters/form-models';
 import { PROXY_DIRS } from './scripts/adapters/proxy-dirs';
 import { stencilPostcssPlugins } from './stencil-postcss.config.mjs';
 // import postcssPresetEnv from 'postcss-preset-env';
@@ -101,6 +103,19 @@ if (!isDevMode) {
       // runtime instead. Keep the two together.
       customElementsDir: 'components',
       excludeComponents: [],
+    }),
+    // Vue: the standalone bundle only, with `esModules` set explicitly (the target's code checks
+    // `=== true`). The generated wrappers import `@egov-moldova/mud/components/mud-*.js`, so the
+    // `customElementsDir` pairing above applies here too. `componentModels` is derived from the
+    // form-control model map, the one list the Angular accessors derive from as well, and which
+    // `scripts/__tests__/adapter-form-models.spec.mjs` checks against the component manifest.
+    vue({
+      componentCorePackage: '@egov-moldova/mud',
+      proxiesFile: `${PROXY_DIRS.vue}/components.ts`,
+      includeImportCustomElements: true,
+      esModules: true,
+      customElementsDir: 'components',
+      componentModels: vueComponentModels(),
     }),
   );
 }

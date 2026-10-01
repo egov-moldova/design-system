@@ -608,6 +608,22 @@ describe('the proxy output directories agree across the build, git and Prettier'
   });
 });
 
+describe('the Vue output target has one range', () => {
+  // The root devDependency is the GENERATOR that writes the proxies; `packages/vue` depends on
+  // the same package for its `/runtime`, which those proxies import. They are two halves of one
+  // version (the target is 0.x, so a minor can break the generated call), and nothing but this
+  // case notices when one is bumped alone.
+  it('uses the same range for the root generator and the packages/vue runtime', () => {
+    const readPkg = file => JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8'));
+    const generator = readPkg('package.json').devDependencies?.['@stencil/vue-output-target'];
+    const runtime = readPkg('packages/vue/package.json').dependencies?.['@stencil/vue-output-target'];
+    assert.ok(generator, 'the root package.json has no @stencil/vue-output-target devDependency');
+    assert.ok(runtime, 'packages/vue/package.json has no @stencil/vue-output-target dependency');
+    assert.equal(runtime, generator);
+    assert.ok(generator.startsWith('~'), `the 0.x output target is pinned with ~, found ${generator}`);
+  });
+});
+
 describe('exportsKeyPattern', () => {
   // Three decisions live in this helper's JSDoc and none of them were pinned:
   // it was reached only through two assertions over the live `exports` map, which

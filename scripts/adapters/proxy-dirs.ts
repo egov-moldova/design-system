@@ -15,6 +15,7 @@
 // strips the types natively for the `.mjs` runner and the `node --test` specs.
 export const PROXY_DIRS = {
   react: 'packages/react/src/components/stencil-generated',
+  vue: 'packages/vue/src/components/stencil-generated',
 } as const;
 
 export const PROXY_OUT_DIRS: readonly string[] = Object.values(PROXY_DIRS);
