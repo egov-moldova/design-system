@@ -25,7 +25,7 @@ Form-associated components: `grep -rl 'formAssociated: true' src/components --in
 Two kinds exist:
 
 - **Value controls** (text input, checkbox, select, …) submit a value and need the full callback set.
-- **Submitters** (`mud-button`, `mud-service-button`) call `this.internals.form?.requestSubmit()`.
+- **Submitters** (`mud-button`) call `this.internals.form?.requestSubmit()`.
   They hold no state the browser restores, so they need no `formStateRestoreCallback`.
 
 ### Rules

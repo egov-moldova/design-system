@@ -47,7 +47,6 @@ Each row lists the React export, what it represents, and when to reach for it. *
 |---|---|---|
 | `MudButton` | Primary action button. Variants `primary`/`secondary`/`strict`/`neutral`/`destructive` × `sm`/`md`/`lg` × `rectangular`/`circular`. Slots for icon-start / icon-end, and a `badge` prop (`badge="mpay"`) or slot for an M-service logomark (the service button: `size="lg"`, `primary` or `neutral`). Supports `loading` state. | Every clickable action. CTAs, form submits, dialog actions, toolbar items. **Never** roll a `<button class="primary">` from scratch. |
 | `MudButtonGroup` | Container for related buttons, horizontal or vertical. | Toolbars where buttons are siblings (e.g. Save / Cancel), not for mutually-exclusive choices (use `MudSegmentedControl` or radios). |
-| `MudServiceButton` | **Deprecated** — use `MudButton` with `badge="<service>"`. | Nothing new; migrate existing uses. |
 | `MudLink` | Inline or standalone link. Variants, underline rules, external-indicator. | Every `<a>` that isn't a button. Internal nav, external references, "learn more". |
 
 ### Form input
