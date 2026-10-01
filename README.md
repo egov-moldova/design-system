@@ -193,7 +193,6 @@ Binding notes:
 
 - `mud-numeric-input` updates its `v-model` on commit (the `mudChange` event, on blur or Enter), not on every keystroke.
 - A `mud-phone-input` country switch does not reach `v-model`: the component emits only `mudCountryChange` there. Listen to that event if you need the country.
-- Initialise a `mud-file-input` model with `[]`, never `null`: the component reads `files.length` and crashes on `null`, and Vue offers no coercion hook.
 
 #### Angular component wrappers
 > Not yet published. `@egov-moldova/mud-angular` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.

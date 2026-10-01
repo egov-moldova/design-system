@@ -230,6 +230,9 @@ export class MudFileInput {
   }
 
   componentWillLoad() {
+    // A framework form model may start as `null` (Angular `writeValue(null)`, a Vue
+    // `ref(null)`); every reader below iterates `files`, so normalise it once here.
+    this.files ??= [];
     this.syncFormValue(this.files);
     this.syncValidity(this.files);
     // Static-capture affordance, the render-side counterpart of the
@@ -310,8 +313,14 @@ export class MudFileInput {
   }
 
   @Watch('files')
-  handleFilesChange(next: File[]) {
-    this.syncFormValue(next ?? []);
+  handleFilesChange(next: File[] | null | undefined) {
+    // A cleared model (`null` / `undefined`) means no files. Reassigning re-enters this
+    // watcher once with `[]`, so render and validity never see a non-array.
+    if (next == null) {
+      this.files = [];
+      return;
+    }
+    this.syncFormValue(next);
   }
 
   // `syncFormValue` publishes nothing while `name` is unset — and skips

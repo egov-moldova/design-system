@@ -8,8 +8,7 @@ import { MudModelAccessor } from './model-accessor';
  *
  * Hand-written because the generated accessors write `.value`, never `.files`. A `null` or
  * `undefined` model is the empty list: Angular calls `writeValue(null)` on setup and on
- * `reset()`, and the component reads `this.files.length` unguarded, so a `null` written
- * through would throw.
+ * `reset()`, and the element's `files` stays an array whatever core version it runs on.
  */
 @Directive({
   selector: 'mud-file-input',

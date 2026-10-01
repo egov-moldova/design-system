@@ -97,6 +97,9 @@ test('string array (input-chip), both ways', async ({ page }) => {
 });
 
 test('file array (file-input), through its inner input', async ({ page }) => {
+  // The model starts as `null`; the component must render it as an empty list.
+  await expect(model(page, 'files')).toHaveText('[]');
+  await expect.poll(() => host(page, 'files').evaluate(el => (el as unknown as { files: File[] }).files)).toEqual([]);
   await host(page, 'files')
     .locator('input[type="file"]')
     .setInputFiles([

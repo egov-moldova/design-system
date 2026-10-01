@@ -138,8 +138,8 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     vueEvent: 'mudChange',
     tags: ['mud-file-input'],
     note:
-      'Hand-written (`null`/`undefined` → `[]`): Angular calls `writeValue(null)` on setup and on `reset()`, and ' +
-      'mud-file-input.tsx:830 reads `this.files.length` unguarded.',
+      'Hand-written (`null`/`undefined` → `[]`): the generated accessors write `.value`, and Angular calls ' +
+      '`writeValue(null)` on setup and on `reset()`.',
   },
 ];
 

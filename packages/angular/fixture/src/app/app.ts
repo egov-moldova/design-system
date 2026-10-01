@@ -46,8 +46,7 @@ export class App {
   protected checked = false;
   protected fruit = '';
   protected chips: string[] = [];
-  // `null`, as a reactive form or `reset()` would leave it: the accessor turns it into `[]`,
-  // because the component reads `files.length` unguarded.
+  // `null`, as a reactive form or `reset()` would leave it: the accessor writes it as `[]`.
   protected files: File[] | null = null;
   protected phone = '';
   protected readonly fruitControl = new FormControl('', { nonNullable: true });

@@ -21,11 +21,11 @@ const num = ref<number | undefined>(undefined);
 const checked = ref(false);
 const fruit = ref('');
 const chips = ref<string[]>([]);
-// `[]`, never `null`: the component reads `files.length` unguarded, so a null model throws
-// (and the wrapper's prop type, `File[]`, rejects it under vue-tsc).
-const files = ref<File[]>([]);
+// Starts as `null`, the cleared-form state the acceptance bar names: the component treats a
+// `null` `files` as an empty list. The cast is only for vue-tsc, whose wrapper type is `File[]`.
+const files = ref(null as unknown as File[]);
 
-const fileNames = computed(() => files.value.map(file => file.name));
+const fileNames = computed(() => (files.value ?? []).map(file => file.name));
 </script>
 
 <template>
