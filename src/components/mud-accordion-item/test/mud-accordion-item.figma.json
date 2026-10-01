@@ -192,8 +192,7 @@
     {
       "name": "expanded-desktop",
       "node": "659:10919",
-      "pixel": false,
-      "html": "<div style=\"width:996px\"><mud-accordion-item breakpoint=\"desktop\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "html": "<div style=\"width:996px\"><mud-accordion-item breakpoint=\"desktop\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"><div style=\"height:196px\"></div></mud-accordion-item></div>",
       "expect": [
         {
           "target": "mud-accordion-item",
@@ -258,8 +257,22 @@
             "color": "#121212"
           },
           "note": "Colour sampled from the 2x export of 659:10919 at the minus glyph (996x324 -> x=972, y=64): solid #121212, no brand blue anywhere in the trigger column. The heading turns blue; the trigger does not."
+        },
+        {
+          "target": "mud-accordion-item .panel-inner",
+          "node": "659:10919",
+          "styles": {
+            "paddingTop": "0px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "paddingBottom": "0px",
+            "boxWidth": "996px",
+            "boxHeight": "196px"
+          },
+          "note": "Figma's Content Slot (EL-93e6e635) runs edge to edge with no padding; the content spaces itself (.accordion-content pads 12px at the bottom, each .service-item 24px)."
         }
-      ]
+      ],
+      "fixtureNote": "The Figma master (659:10919) is the header over an empty Content Slot 196px high, so the fixture slots a 196px empty block. The slot adds no padding in the design, and the panel adds none here."
     },
     {
       "name": "default-mobile",
@@ -367,8 +380,7 @@
     {
       "name": "expanded-mobile",
       "node": "1138:14724",
-      "pixel": false,
-      "html": "<div style=\"width:343px\"><mud-accordion-item breakpoint=\"mobile\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"></mud-accordion-item></div>",
+      "html": "<div style=\"width:343px\"><mud-accordion-item breakpoint=\"mobile\" open heading=\"Accordion Heading\" supporting-text=\"Supporting Text\"><div style=\"height:236px\"></div></mud-accordion-item></div>",
       "expect": [
         {
           "target": "mud-accordion-item",
@@ -416,8 +428,22 @@
             "color": "#121212"
           },
           "note": "Colour sampled from the 2x export of 1138:14724 at the minus glyph (x=319, y=55): solid #121212."
+        },
+        {
+          "target": "mud-accordion-item .panel-inner",
+          "node": "1138:14724",
+          "styles": {
+            "paddingTop": "0px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "paddingBottom": "0px",
+            "boxWidth": "343px",
+            "boxHeight": "236px"
+          },
+          "note": "Figma's Content Slot (EL-93e6e635) runs edge to edge with no padding; the content spaces itself (.accordion-content pads 12px at the bottom, each .service-item 24px)."
         }
-      ]
+      ],
+      "fixtureNote": "The Figma master (1138:14724) is the header over an empty Content Slot 236px high, so the fixture slots a 236px empty block. The slot adds no padding in the design, and the panel adds none here."
     }
   ]
 }
