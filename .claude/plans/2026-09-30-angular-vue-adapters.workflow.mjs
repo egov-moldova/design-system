@@ -3,13 +3,14 @@
 // which is the defect this file exists to remove.
 export const meta = {
   name: '2026-09-30-angular-vue-adapters',
-  description: 'Execute 2026-09-30-angular-vue-adapters — 5 phase(s) across 5 wave(s)',
+  description: 'Execute 2026-09-30-angular-vue-adapters — 6 phase(s) across 6 wave(s)',
   phases: [
     { title: 'Wave A', detail: '1 phase(s)' },
     { title: 'Wave B', detail: '1 phase(s)' },
     { title: 'Wave C', detail: '1 phase(s)' },
     { title: 'Wave D', detail: '1 phase(s)' },
     { title: 'Wave E', detail: '1 phase(s)' },
+    { title: 'Wave F', detail: '1 phase(s)' },
   ],
 };
 
@@ -20,7 +21,10 @@ const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg
 - Generated proxies are git-ignored and never committed (the lesson of 6e557bf5).
 - No shim folders at the repo root: resolution goes through the core's \`exports\` map.
 - The core's published \`package.json\` \`exports\`, \`files\` and version stay unchanged.
-  \`yarn validate.package\` stays green.
+  \`yarn validate.package\` stays green. The one core change is Phase 0's additive type
+  re-export in \`src/index.ts\`; no other core source changes.
+- No adapter build masks a type error: no \`|| true\`, no \`skipLibCheck\` or \`@ts-nocheck\` over the
+  generated proxies. The adapter build is what proves every generated type import resolves.
 - The move of \`react/\` and \`web-components/\` changes paths only. The package names, manifests
   and behaviour stay as they are; their defects are #180's, not this plan's.
 - Both new packages are \`private: true\`. No change to \`cd.yml\` or the release pipelines.
@@ -32,9 +36,37 @@ const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg
 const P1 =
   CONSTRAINTS +
   '\n\n' +
-  `## Phase 1: Move \`react/\` and \`web-components/\` into \`packages/\`
+  `## Phase 0: Core type export and proxy compile spike
 
 _Wave A._
+
+Files: \`src/index.ts\` (one line). The spike writes only under the session scratchpad and is
+never committed.
+
+- [ ] Add \`export type * from './components';\` to \`src/index.ts\`, with a one-line comment that
+      the Angular and Vue proxy generators import \`Components\`, \`JSX\`, the \`Mud*CustomEvent\`
+      interfaces and the event-detail types from \`@egov-moldova/mud/components\`. If a name
+      collides with an explicit export already in \`src/index.ts\`, keep the explicit one and report
+      the collision.
+- [ ] Spike, in the scratchpad, against a packed core tarball built from this commit:
+  - generate the Vue and Angular proxies with the pinned output targets (a scratch copy of
+    \`stencil.config.ts\` carrying only those two targets, \`customElementsDir: 'components'\`, and
+    \`inlineProperties: true\` for Angular);
+  - \`tsc --noEmit\` the Vue proxies under \`moduleResolution: bundler\`, with no \`skipLibCheck\`;
+  - build a minimal ng-packagr 20 library in partial mode that imports two generated Angular
+    components through \`@egov-moldova/mud/components/mud-*.js\`, with no shim.
+- [ ] Report each spike result with its command and exit status. STOP and report if the Angular
+      library cannot resolve the \`exports\` subpaths without a shim, or if \`inlineProperties: true\`
+      does not compile: those are the two facts Phase 4 cannot work around.
+- Verify: \`yarn build\`, \`yarn validate.package\`, \`yarn typecheck\` and \`yarn test\` are green;
+  \`grep -c "Components\\|JSX" dist/types/index.d.ts\` is non-zero; the three spike commands exit 0.`;
+
+const P2 =
+  CONSTRAINTS +
+  '\n\n' +
+  `## Phase 1: Move \`react/\` and \`web-components/\` into \`packages/\`
+
+_Wave B._
 
 Files:
 - the two workspace trees, moved with a plain \`mv\`; the controller stages the move;
@@ -67,6 +99,9 @@ deeper (\`../../scripts/...\`, \`../../../dist/mud\`, \`"directory": "packages/w
     \`:227\`;
   - \`install-hooks.mjs\`: it resolves \`.husky\` and \`.git\` from the workspace's cwd, which is
     now one level deeper.
+- [ ] \`scripts/__tests__/git-hooks.spec.mjs:127\` asserts \`workspaces.includes('react')\` and \`:130\`
+      the exact \`node ../scripts/git/install-hooks.mjs\` string. Rewrite both to the new shape
+      (the workspace entry and \`../../scripts/...\`).
 - [ ] Remove the Vitest \`react\` alias that #23 added (\`vitest.config.mts:173-202\`) and its note
       in \`.storybook/vitest.setup.ts\`: moving \`react/\` removes the cause #23 measured (its E2
       experiment). If the storybook lane goes red without the alias, keep the alias and report.
@@ -79,12 +114,12 @@ deeper (\`../../scripts/...\`, \`../../../dist/mud\`, \`"directory": "packages/w
   - \`yarn test.storybook\` is green;
   - the enumeration grep returns only historical records.`;
 
-const P2 =
+const P3 =
   CONSTRAINTS +
   '\n\n' +
   `## Phase 2: Unified proxy build
 
-_Wave B._
+_Wave C._
 
 Files: \`stencil.config.ts\`, root \`package.json\` (scripts, wireit), \`scripts/__tests__/validate-package.spec.mjs\`, \`.prettierignore\`, \`packages/react/README.md\` (it documents \`stencil build --docs --react\`, which this phase removes).
 
@@ -100,23 +135,32 @@ Files: \`stencil.config.ts\`, root \`package.json\` (scripts, wireit), \`scripts
   \`yarn build.react\` runs no \`stencil build\`; \`yarn validate.package\`, \`yarn test:scripts\` and
   \`yarn lint\` are green.`;
 
-const P3 =
+const P4 =
   CONSTRAINTS +
   '\n\n' +
   `## Phase 3: Vue adapter and the consumer-fixture runner
 
-_Wave C._
+_Wave D._
 
-Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.json\` (workspace, devDeps, \`build.vue\`), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`, \`scripts/__tests__/adapter-form-models.spec.mjs\`.
+Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.json\` (workspace, devDeps, \`build.vue\`, wireit \`build\` files and output), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`, \`scripts/__tests__/adapter-form-models.spec.mjs\`.
 
 - [ ] The form-control model map lives in ONE module under \`scripts/adapters/\` that
       \`stencil.config.ts\` imports. The Vue \`componentModels\` here and the Angular
-      \`valueAccessorConfigs\` in Phase 4 are both derived from it, never typed twice.
+      \`valueAccessorConfigs\` in Phase 4 are both derived from it, never typed twice. Its rows
+      carry the four exclusions with their reasons, so the spec reads them from the same module.
+      An \`.mjs\` module needs a hand-written declaration for the strict root \`yarn typecheck\`, the
+      precedent being \`stencil-postcss.config.d.mts\`; state the format chosen.
       \`scripts/__tests__/adapter-form-models.spec.mjs\` checks it against
       \`.storybook/custom-elements.json\`, as the acceptance bar states, and goes red when one
       row's event is renamed. It also derives the emitter set from that manifest (tags declaring
-      a \`mudInput\` or \`mudChange\` event) and fails when that set, minus the three exclusions
-      stated beside the map, differs from the map's tags.
+      a \`mudInput\` or \`mudChange\` event) and fails when that set, minus the four exclusions,
+      differs from the map's tags.
+- [ ] Wireit \`build\`: add the model-map module (and its declaration) to \`files\`, and the Vue
+      proxy directory to \`output\`. Without the first, a map edit is a cache hit that restores
+      stale \`componentModels\`.
+- [ ] One \`@stencil/vue-output-target\` range: the root devDependency (the generator) and the
+      \`packages/vue\` dependency (its \`/runtime\`) are the same \`~0.14.3\`, and a
+      \`scripts/__tests__/validate-package.spec.mjs\` case fails when they differ.
 
 - [ ] \`packages/vue\`: \`@egov-moldova/mud-vue\`, \`private: true\`, peer \`vue ^3.4.38\`, dependency
       \`@stencil/vue-output-target\` \`~0.14.3\` (for its \`/runtime\`), core as \`workspace:^\`. Built
@@ -124,36 +168,45 @@ Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.j
 - [ ] The Vue output target: \`includeImportCustomElements: true\`, \`esModules: true\`,
       \`customElementsDir: 'components'\`, and \`componentModels\` from the model map above.
 - [ ] A plugin exported as \`Mud\`, used as \`app.use(Mud, { assetPath? })\`, that calls the
-      standalone bundle's \`setAssetPath\`, with the same default and override contract as
-      \`packages/react/src/index.ts\`. Wrapped components need no \`isCustomElement\`.
+      standalone bundle's \`setAssetPath\`, with the same override contract as
+      \`packages/react/src/index.ts\`. Wrapped components need no \`isCustomElement\`. React's
+      default (\`<origin>/node_modules/@egov-moldova/mud/dist/components/\`) resolves only on a
+      Vite dev server, so the documented consumer step for a production build is: copy
+      \`node_modules/@egov-moldova/mud/dist/components/assets\` into the app's served output
+      (Vite \`public/\` or a copy plugin) and pass the matching \`assetPath\`. The fixture uses
+      exactly that documented step; the default is documented as dev-server only.
 - [ ] \`scripts/adapters/consumer-fixture.mjs <framework> [--framework-version <major>]\`, which:
   1. packs the core and the adapter;
   2. fails if any packed manifest carries a \`workspace:\` specifier, if \`git ls-files\` lists
      anything under a proxy output directory, or if a root \`components/\` directory exists;
   3. copies \`packages/<framework>/fixture/\` to a temp directory and installs the tarballs plus
-     the fixture's pinned dependencies with npm;
+     the fixture's pinned dependencies with npm. The pins come from a per-major table in the
+     fixture (\`fixture/versions.json\`, keyed by major: framework packages, CLI or build tool,
+     \`typescript\`, \`zone.js\` where used), and the runner fails on a major the table lacks.
+     Angular 20.3 needs TypeScript \`>=5.8 <6.0\` and Angular 22 needs \`>=6.0 <6.1\`, so one pin set
+     cannot serve both, and the fixture's tsconfig must be valid under both;
   4. typechecks and builds with the framework's own CLI (\`vue-tsc --noEmit\` then \`vite build\`
      for Vue; \`ng build\` under \`strictTemplates\` for Angular);
   5. compiles the fixture's negative case (one wrapper input bound to a wrongly typed value,
      kept outside the normal build) and fails if it compiles;
   6. serves the build and runs a Playwright spec.
 - [ ] Vue fixture (Vite + \`@vitejs/plugin-vue\`, latest Vue 3). It imports
-      \`@egov-moldova/mud/styles.css\` the way the README tells consumers to: tokens stay the
-      consumer's import and are not bundled into the adapter. Its spec asserts every item in the
-      bar's common fixture checks through \`v-model\`, plus no console error (including no
-      double-define).
+      \`@egov-moldova/mud/tokens/core.tokens.css\` and \`@egov-moldova/mud/styles.css\` the way the
+      README tells consumers to: tokens stay the consumer's import and are not bundled into the
+      adapter. Its spec asserts every item in the bar's common fixture checks through \`v-model\`,
+      plus no console error and no lazy-loader request.
 - Verify: \`yarn build.vue\`, \`yarn test:scripts\` (which runs the manifest spec) and
   \`node scripts/adapters/consumer-fixture.mjs vue\` are green; the fixture spec goes red when the
   plugin's \`setAssetPath\` call is removed.`;
 
-const P4 =
+const P5 =
   CONSTRAINTS +
   '\n\n' +
   `## Phase 4: Angular adapter
 
-_Wave D._
+_Wave E._
 
-Files: \`packages/angular/**\`, \`stencil.config.ts\` (Angular target), root \`package.json\` (workspace, devDeps, \`build.angular\`), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`.
+Files: \`packages/angular/**\`, \`stencil.config.ts\` (Angular target), root \`package.json\` (workspace, devDeps, \`build.angular\`, wireit \`build\` output), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`.
 
 - [ ] \`packages/angular\`: \`@egov-moldova/mud-angular\`, \`private: true\`, peers
       \`@angular/core\` and \`@angular/forms\` \`^20.0.0 || ^21.0.0 || ^22.0.0\`, built by ng-packagr
@@ -162,32 +215,44 @@ Files: \`packages/angular/**\`, \`stencil.config.ts\` (Angular target), root \`p
       library tsconfig's \`moduleResolution: bundler\`. No shim folder. If this cannot be made to
       work, STOP and report the measured failure — do not reintroduce the shim.
 - [ ] The Angular output target: \`outputType: 'standalone'\`, \`esModules: true\`,
-      \`customElementsDir: 'components'\`, \`booleanAttributes: true\`, and \`valueAccessorConfigs\`
-      from the model map. Try \`inlineProperties: true\` (experimental) and keep it only if the
-      fixture compiles under \`strictTemplates\`; record the result under Not verified.
-- [ ] Hand-written standalone accessors for \`mud-input-chip\` (\`chips\`) and \`mud-file-input\`
-      (\`files\`). Check \`mud-numeric-input\` against a \`null\` model: the generated accessor writes
-      \`''\` into a number prop. Use its own accessor if that misbehaves.
+      \`customElementsDir: 'components'\`, \`booleanAttributes: true\`, \`inlineProperties: true\`, and
+      \`valueAccessorConfigs\` from the model map. \`inlineProperties\` is required, not optional: the
+      target's own docs (\`dist/types.d.ts\`, \`booleanAttributes\`) say that without it the wrappers
+      declare no typed inputs, which would make the typed-wrapper bar and the bare-boolean check
+      pass while measuring nothing. If it does not compile under \`strictTemplates\` at 20 or 22,
+      STOP and report, as for the shim. Declare the Angular proxy directory as a wireit \`build\`
+      output.
+- [ ] Hand-written standalone accessors for \`mud-input-chip\` (\`chips\`), \`mud-file-input\`
+      (\`files\`) and \`mud-numeric-input\` (\`undefined\`/\`null\`/\`''\` → \`null\`, and a \`null\` model
+      written as \`undefined\`, not \`''\`).
+- [ ] The public API exports one documented bundle per form control (each component with its
+      accessor, plus one array of all of them), because the standalone barrel exports the
+      components alone and \`MudTextInput\` with \`[(ngModel)]\` but without its accessor throws "No
+      value accessor" at runtime. The fixture imports only these bundles.
 - [ ] \`provideMud({ assetPath? })\` as an environment provider that calls the standalone
-      \`setAssetPath\`, with the same default as the React adapter.
+      \`setAssetPath\`. The documented consumer step for assets is an \`angular.json\` \`assets\` glob
+      from \`node_modules/@egov-moldova/mud/dist/components/assets\` with the matching
+      \`assetPath\`. The fixture uses exactly that step.
 - [ ] The ng-packagr \`dist/\` manifest carries no \`workspace:\` specifier. Decide the mechanism;
       the runner's check from Phase 3 is the acceptance test.
 - [ ] Angular fixture (standalone app, \`strictTemplates\`), run at Angular 20 and 22 through
       \`--framework-version\`. Its spec asserts:
-  - every item in the bar's common fixture checks through \`[(ngModel)]\`, with \`styles.css\` added
-    in \`angular.json\` \`styles\`, plus the Vue fixture's console check;
+  - every item in the bar's common fixture checks through \`[(ngModel)]\`, with
+    \`tokens/core.tokens.css\` and \`styles.css\` added in \`angular.json\` \`styles\`, plus the Vue
+    fixture's console and lazy-loader checks;
   - a reactive \`formControl\` on \`mud-select\`;
+  - clearing \`mud-numeric-input\` leaves the model \`null\`;
   - a bare boolean attribute (\`<mud-button disabled>\`) compiles.
 - Verify: \`yarn build.angular\` is green, and
   \`node scripts/adapters/consumer-fixture.mjs angular --framework-version 20\` and \`… 22\` are
-  green.`;
+  green; the fixture spec goes red when \`provideMud\`'s \`setAssetPath\` call is removed.`;
 
-const P5 =
+const P6 =
   CONSTRAINTS +
   '\n\n' +
   `## Phase 5: CI, Docker and documentation
 
-_Wave E._
+_Wave F._
 
 Files: \`.github/workflows/ci.yml\`, \`Dockerfile\`, \`README.md\`, \`CONTRIBUTING.md\`, \`STACK.md\`, \`AGENTS.md\`, \`_agents/environment-commands.md\`, \`.claude/skills/mud-design/SKILL.md\`, \`changes/<fragment>.md\`.
 
@@ -200,7 +265,9 @@ Files: \`.github/workflows/ci.yml\`, \`Dockerfile\`, \`README.md\`, \`CONTRIBUTI
 - [ ] \`Dockerfile\`: \`COPY\` the two new workspace manifests (\`packages/angular\`,
       \`packages/vue\`), otherwise the immutable install fails.
 - [ ] Docs:
-  - README: Angular and Vue usage marked "not yet published", like React;
+  - README: Angular and Vue usage marked "not yet published", like React, each with the token
+    imports, the asset step the fixture uses (Phases 3 and 4) and, for Angular, the
+    form-control bundles;
   - CONTRIBUTING: workspace table and local \`file:\` installs;
   - STACK: the workspaces and the versions, plus the output-target pins;
   - AGENTS build reference and \`_agents/environment-commands.md\`: the new commands;
@@ -214,10 +281,10 @@ await parallel([
   () =>
     agent(P1, {
       agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
+      model: 'opus',
+      effort: 'medium',
       phase: 'Wave A',
-      label: 'Phase 1: Move `react/` and `web-components/` into `packages/`',
+      label: 'Phase 0: Core type export and proxy compile spike',
     }),
 ]);
 
@@ -229,8 +296,8 @@ await parallel([
       model: 'sonnet',
       effort: 'high',
       phase: 'Wave B',
-      label: 'Phase 2: Unified proxy build',
-    }), // after Phase 1
+      label: 'Phase 1: Move `react/` and `web-components/` into `packages/`',
+    }), // after Phase 0
 ]);
 
 phase('Wave C');
@@ -241,8 +308,8 @@ await parallel([
       model: 'sonnet',
       effort: 'high',
       phase: 'Wave C',
-      label: 'Phase 3: Vue adapter and the consumer-fixture runner',
-    }), // after Phase 2
+      label: 'Phase 2: Unified proxy build',
+    }), // after Phase 1
 ]);
 
 phase('Wave D');
@@ -250,11 +317,11 @@ await parallel([
   () =>
     agent(P4, {
       agentType: 'implementer',
-      model: 'opus',
-      effort: 'medium',
+      model: 'sonnet',
+      effort: 'high',
       phase: 'Wave D',
-      label: 'Phase 4: Angular adapter',
-    }), // after Phase 3: extends its runner
+      label: 'Phase 3: Vue adapter and the consumer-fixture runner',
+    }), // after Phase 2
 ]);
 
 phase('Wave E');
@@ -262,11 +329,23 @@ await parallel([
   () =>
     agent(P5, {
       agentType: 'implementer',
+      model: 'opus',
+      effort: 'medium',
+      phase: 'Wave E',
+      label: 'Phase 4: Angular adapter',
+    }), // after Phase 3: extends its runner
+]);
+
+phase('Wave F');
+await parallel([
+  () =>
+    agent(P6, {
+      agentType: 'implementer',
       model: 'sonnet',
       effort: 'high',
-      phase: 'Wave E',
+      phase: 'Wave F',
       label: 'Phase 5: CI, Docker and documentation',
     }), // after Phases 3 and 4
 ]);
 
-return { plan: '2026-09-30-angular-vue-adapters.md', phases: 5, waves: 5 };
+return { plan: '2026-09-30-angular-vue-adapters.md', phases: 6, waves: 6 };
