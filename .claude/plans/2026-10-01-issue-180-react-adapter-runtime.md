@@ -1,6 +1,6 @@
 # React adapter: one Stencil runtime, a build that can fail, adapter hygiene (#180)
 
-**Reviewed:** none
+**Reviewed:** preflight 3d4d5309, critic 867651f3, critic 27d547c4 — the 3-round cap ended the loop on 2026-10-01 with round 3's findings folded in below without a further round; awaiting Dan's go to implement.
 
 ## Goal
 
@@ -377,14 +377,19 @@ Interfaces produced:
     README section `#react-component-wrappers` and to CONTRIBUTING's framework-adapters section.
   - `README.md` § React component wrappers (keep the "Not yet published" note): peers
     `react ^18 || ^19`; install line; usage with the token/style imports, the asset copy step and
-    `setupMud({ assetPath })` before `createRoot`; a `<MudButton variant="primary" onMudClick={…}>`
-    example; the raw-tag note from `setupMud`'s JSDoc; `defineCustomElements` is deprecated in
-    favour of `setupMud`. Check the event prop name against the generated
-    `packages/react/src/components/stencil-generated/mud-button.ts` before writing it.
+    `setupMud({ assetPath })` before `createRoot`; a `<MudTextInput label="…" onMudChange={event => …}>`
+    example (`MudButton` declares no custom events: `mud-button.ts` has
+    `MudButtonEvents = NonNullable<unknown>`; `MudTextInputEvents` has `onMudChange`), reading the
+    value from `event.detail`; the raw-tag note from `setupMud`'s JSDoc; `defineCustomElements` is
+    deprecated in favour of `setupMud`. Re-read the generated
+    `packages/react/src/components/stencil-generated/mud-text-input.ts` for the detail's field names
+    before writing the handler.
   - `CONTRIBUTING.md` § Framework adapters: one short "Linking `mud-react` into another app"
     paragraph — `yarn build.react`, then `npm link` in `packages/react/` and
     `npm link @egov-moldova/mud-react` in the consuming app; re-run `yarn build.react` after a
-    component's public API changes (the watch build does not regenerate proxies). No personal paths.
+    component's public API changes (the watch build does not regenerate proxies); the consuming
+    app dedupes React (Vite `resolve.dedupe: ['react', 'react-dom']`), because the linked `src/`
+    otherwise resolves this repo's React 18 and a React 19 app loads two Reacts. No personal paths.
 - [ ] **Step 8: changelog fragment** `changes/issue-180-react-adapter.md`:
 
   ```markdown
@@ -397,8 +402,9 @@ Interfaces produced:
 
   **Migration:** call `setupMud({ assetPath })` once at startup. A raw `<mud-*>` tag written without its wrapper needs the wrapper imported, or `defineCustomElement` from `@egov-moldova/mud/components/mud-<name>.js`.
   ```
-- [ ] **Step 9: verify and commit.** Commands 3, 5, 6, 7 of the acceptance bar, and the first
-  stale-name grep. Commit `fix(react): register every element through the standalone bundle only (#180)`.
+- [ ] **Step 9: verify and commit.** First `fnm exec --using=24 -- npx prettier --write` over
+  this phase's Files (the code blocks above are not pre-formatted to the repo's print width).
+  Then commands 3, 5, 6, 7 of the acceptance bar, and the first stale-name grep. Commit `fix(react): register every element through the standalone bundle only (#180)`.
 
 ### Phase 2: Build gate, strict mode, React 19 typecheck, CI
 
@@ -415,7 +421,8 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
     // enumerated (`|| true`, `|| echo`, `; exit 0`, `; next-command`), so the positive shape is
     // asserted instead: commands chained by `&&` only. A legitimate `||` needs an explicit
     // exception here.
-    const MASK_RE = /;|\|\|/;
+    // Each `&&` segment must hold no other shell control operator: `;`, `|` (also `||`), `&`, newline.
+    const propagates = build => build.split('&&').every(segment => !/[;|&\n]/.test(segment));
     const PACKAGES = path.join(PROJECT_ROOT, 'packages');
 
     it('every packages/*/package.json build script propagates its exit status', () => {
@@ -423,7 +430,7 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
         .readdirSync(PACKAGES, { withFileTypes: true })
         .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'package.json')))
         .map(entry => [entry.name, JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'package.json'), 'utf8')).scripts?.build])
-        .filter(([, build]) => typeof build === 'string' && MASK_RE.test(build))
+        .filter(([, build]) => typeof build === 'string' && !propagates(build))
         .map(([name, build]) => `packages/${name}: ${build}`);
       assert.deepEqual(masked, []);
     });
@@ -479,7 +486,8 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
 - [ ] **Step 7: CI.** In `.github/workflows/ci.yml` job `adapters`, after the `yarn build` step and
   before `yarn build.vue`, a step named `Build the React adapter (typechecks against React 18 and 19)`
   running `yarn build.react`, in the style of its neighbours.
-- [ ] **Step 8: verify and commit.** Acceptance bar 1, 3, 4, 5. Commit
+- [ ] **Step 8: verify and commit.** `fnm exec --using=24 -- npx prettier --write` over this
+  phase's Files except `yarn.lock`, then acceptance bar 1, 3, 4, 5. Commit
   `build(react): fail on type errors, strict mode, typecheck against React 19 (#180)`.
 
 ### Phase 3: Vanilla adapter hygiene
@@ -489,12 +497,18 @@ Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/ma
 
 - [ ] **Step 0: the strict spec, RED.** Append to `scripts/__tests__/validate-package.spec.mjs`
   (after Phase 2's `no adapter build masks a failure` block, reusing its `PACKAGES` idea but in
-  its own `describe`):
+  its own `describe`), and add `import ts from 'typescript';` to the file's imports (`typescript`
+  is a root devDependency; its CommonJS default export carries `optionDeclarations`):
 
   ```js
   describe('every adapter compiles in strict mode (#180)', () => {
     const PACKAGES = path.join(PROJECT_ROOT, 'packages');
-    const STRICT_FAMILY = ['strictNullChecks', 'noImplicitAny', 'strictPropertyInitialization', 'strictFunctionTypes', 'strictBindCallApply', 'alwaysStrict', 'useUnknownInCatchVariables'];
+    // The compiler's own list, so a flag a TypeScript upgrade adds to `strict` is covered
+    // without editing this spec (5.9.3: nine flags, incl. `noImplicitThis`,
+    // `strictBuiltinIteratorReturn`). `optionDeclarations` is not in the public typings but is
+    // exported at runtime; the guard below fails loudly if an upgrade removes it.
+    const STRICT_FAMILY = (ts.optionDeclarations ?? []).filter(option => option.strictFlag).map(option => option.name);
+    assert.ok(STRICT_FAMILY.length >= 9, `typescript exposes ${STRICT_FAMILY.length} strict flags; expected at least 9`);
 
     it('packages/*/tsconfig.json sets strict and turns no strict-family flag back off', () => {
       const lax = fs
@@ -527,7 +541,8 @@ Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/ma
   to `prefers-color-scheme` and `ro-MD`.
 - [ ] **Step 4: verify.** `fnm exec --using=24 -- yarn build.web`, then
   `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0; Step 0's test passes;
-  acceptance bar 3 and 8 and the `age-demo` grep. Commit `chore(web-components): strict tsconfig, bundler resolution, mud demo storage keys (#180)`.
+  `fnm exec --using=24 -- npx prettier --write` over this phase's Files; acceptance bar 3, 5 and 8
+  and the `age-demo` grep. Commit `chore(web-components): strict tsconfig, bundler resolution, mud demo storage keys (#180)`.
 
 ## Final verification
 
@@ -551,6 +566,9 @@ PR leaves draft.
   runtime's modules, registering no tag).
 - The strict spec reads each tsconfig's declared options, not the effective ones: a future
   `extends` base turning a strict flag off would pass. No adapter tsconfig uses `extends` today.
+- Compiler flags on the `build` command line bypass both specs: `tsc --strict false`,
+  `tsc --noCheck` or `tsc -p tsconfig.lax.json` hold no shell operator and read no
+  `tsconfig.json` flag. No adapter build passes such a flag today; a reviewer reads `build`.
 
 ## Self-refute log
 
@@ -569,10 +587,13 @@ PR leaves draft.
    (`"types": []`), Step 2 (alias outside `@types`) and the two `--listFilesOnly` rows, one per program.
 3. Numeric targets: none beyond "0 errors" and "exit 0"; each names its command, and every
    0-error claim under Current state was run on 2026-10-01 at `ed49b48b`.
-4. Two rules interacting: the masking regex and the React 19 config. `tsc && tsc -p tsconfig.react19.json`
-   passes the regex while the second `tsc` could check nothing new (row 2's fallback); the
-   `--listFilesOnly` row is the check outside both. Scanned: the five zero-tolerance rows
-   pairwise; no other pair shares a blind spot.
+4. Two rules interacting: (a) the build-shape spec and the React 19 config —
+   `tsc && tsc -p tsconfig.react19.json` passes the shape while the second `tsc` could check
+   nothing new (row 2's fallback); the two `--listFilesOnly` rows are the checks outside both.
+   (b) The build-shape spec and the strict spec share one blind spot: a compiler flag on the
+   `build` command line (`--strict false`, `--noCheck`, `-p <lax config>`) passes both; stated
+   under Not verified (found at round 3). Scanned: the nine zero-tolerance rows pairwise at
+   27d547c4; no other pair shares a blind spot.
 
 ## Found (outside this plan's scope)
 
