@@ -63,7 +63,7 @@ Common fixture checks:
   `mud-icon` and `mud-logo` each contain an `<svg>`. "No 404" alone is not the check: with no
   asset path set, `mud-icon` makes no request at all.
 
-Every row of the form-control model map has an accessor (Angular) or a component model (Vue):
+Every row of the form-control model map has an accessor (Angular) or a component model or a hand-written wrapper (Vue):
 17 of 17 components listed there. The fixtures drive one component per model shape, so the
 other ten rows are configuration only. Their instrument is
 `scripts/__tests__/adapter-form-models.spec.mjs` (Phase 3): it reads the one shared model map and
@@ -561,8 +561,9 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 - [ ] Docs:
   - README: Angular and Vue usage marked "not yet published", like React, each with the token
     imports, the required `assetPath` and the asset step the fixture uses (Phases 3 and 4), for
-    Angular `MUD_FORM_ACCESSORS`, and for Vue the two binding notes (numeric-input updates its
-    model on commit; a phone-input country switch does not reach `v-model`);
+    Angular `MUD_FORM_ACCESSORS`, and for Vue the binding notes of the two hand-written
+    wrappers (numeric-input clears to empty, never `0`; a phone-input country switch reaches
+    `v-model`);
   - CONTRIBUTING: workspace table and local `file:` installs;
   - STACK: the workspaces and the versions, plus the output-target pins;
   - AGENTS build reference and `_agents/environment-commands.md`: the new commands;
@@ -590,10 +591,9 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 - Angular 21. Partial compilation built with 20 and tested on 20 and 22 brackets it; 21 itself is
   not run.
 - Publishing. The packages stay private and the release pipelines are unchanged. Before
-  publishing: the adapters' minimum core range must start at the first core release that ships
-  the Phase 0 type export and the two null guards (the packed `^1.2.0-dev.1` also admits
-  published 1.2.0-dev.2 and dev.3, which lack them), and the adapter manifests' `engines` and
-  build `scripts` need trimming.
+  publishing, see the core-range entry under Found (the packed `^1.2.0-dev.1` also admits
+  published 1.2.0-dev.2 and dev.3, which lack the Phase 0 type export and the two null guards),
+  and trim the adapter manifests' `engines` and build `scripts`.
 
 ## Self-refute log
 
@@ -621,13 +621,17 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 
 - Both adapters depend on the core as `workspace:^`, which packs as a caret range, while their
   proxies are generated from one exact core API. Harmless while they are private; before
-  publishing, pin exactly (`workspace:*`) so adapter and core release as a pair.
+  publishing, pin exactly (`workspace:*`) so adapter and core release as a pair. That one policy
+  also guarantees the minimum: the pinned core is the release that carries the type export and
+  the null guards.
 - Commit 27d81b96's message lists an `./assets/*` export key, but `package.json` `exports` has
   none today. The asset steps above therefore copy by filesystem path.
 - `mud-phone-input`'s `changeCountry` rewrites `value` and emits only `mudCountryChange`
   (`mud-phone-input.tsx:693`); `mud-numeric-input`'s commit clamp writes `value` and emits only
   `mudChange`. Emitting `mudInput` after every user-driven write would let every adapter bind one
-  event and retire the hand-written Vue wrappers and Angular accessor configs. Core issue to open.
+  event and retire the phone-input Vue wrapper and the `text|mudCountryChange` Angular config.
+  The numeric wrappers stay either way: Vue's `patchDOMProp` and the null/`NaN` handling do not
+  depend on which events fire. Core issue to open.
 - Deferred from the sentinel round (2026-10-01), as follow-ups: SHA-pinning the CI actions
   (repo-wide convention is tags), a CI matrix sharing one build artifact, covering the Vue and
   Angular adapters in `scripts/audit` (wave D smoke builds, integration-usage scan), checking

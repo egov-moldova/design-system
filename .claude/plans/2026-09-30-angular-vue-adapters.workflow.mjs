@@ -313,8 +313,9 @@ Files: \`.github/workflows/ci.yml\`, \`README.md\`, \`CONTRIBUTING.md\`, \`STACK
 - [ ] Docs:
   - README: Angular and Vue usage marked "not yet published", like React, each with the token
     imports, the required \`assetPath\` and the asset step the fixture uses (Phases 3 and 4), for
-    Angular \`MUD_FORM_ACCESSORS\`, and for Vue the two binding notes (numeric-input updates its
-    model on commit; a phone-input country switch does not reach \`v-model\`);
+    Angular \`MUD_FORM_ACCESSORS\`, and for Vue the binding notes of the two hand-written
+    wrappers (numeric-input clears to empty, never \`0\`; a phone-input country switch reaches
+    \`v-model\`);
   - CONTRIBUTING: workspace table and local \`file:\` installs;
   - STACK: the workspaces and the versions, plus the output-target pins;
   - AGENTS build reference and \`_agents/environment-commands.md\`: the new commands;
