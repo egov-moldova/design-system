@@ -34,12 +34,22 @@
   padding-inline-end: var(--menu-item-padding-inline-end-trailing);
 }
 
+/* A long label wraps onto a second line and is cut with an ellipsis there
+   (Figma 797:42690), the same two-line clamp as the select's helper text. */
+.label,
+.heading-label {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+}
+
 .label {
   flex: 1 1 0;
   min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .leading-icon {
@@ -93,7 +103,9 @@
 .separator {
   block-size: 1px;
   inline-size: 100%;
-  margin-block: var(--menu-heading-padding-block);
+  /* Figma: a 4px separator block (the line centred in it), then the heading gap. */
+  margin-block-start: var(--menu-heading-separator-inset);
+  margin-block-end: calc(var(--menu-heading-separator-inset) + var(--menu-heading-gap));
   background-color: var(--menu-heading-separator-color);
 }
 
