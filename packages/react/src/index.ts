@@ -1,5 +1,5 @@
 // Re-export every generated React wrapper produced by @stencil/react-output-target.
-// The proxy file is regenerated on every `yarn build.react` from the AGE root.
+// The proxy file is regenerated on every `yarn build` from the AGE root.
 export * from './components/stencil-generated/components';
 
 import { defineCustomElements as stencilDefineCustomElements } from '@egov-moldova/mud/loader';

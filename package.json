@@ -60,7 +60,7 @@
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
-    "build.react": "stencil build --docs --react && node scripts/copy-component-assets.mjs && yarn workspace @egov-moldova/mud-react build",
+    "build.react": "wireit",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
     "demo.web.dev": "wireit",
@@ -224,7 +224,7 @@
       ]
     },
     "build": {
-      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
+      "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
       "dependencies": [
         "tokens.build.prod"
       ],
@@ -239,13 +239,33 @@
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
-        "scripts/copy-component-assets.mjs"
+        "scripts/copy-component-assets.mjs",
+        "scripts/adapters/**"
       ],
       "output": [
         "dist/**",
         "loader/**",
         ".storybook/custom-elements.json",
-        "src/components.d.ts"
+        "src/components.d.ts",
+        "packages/react/src/components/stencil-generated/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.react": {
+      "command": "yarn workspace @egov-moldova/mud-react build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "packages/react/src/**/*.ts",
+        "packages/react/src/**/*.tsx",
+        "packages/react/tsconfig.json",
+        "packages/react/package.json"
+      ],
+      "output": [
+        "packages/react/dist/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -356,6 +376,7 @@
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
+        "scripts/adapters/**",
         "!src/components.d.ts"
       ],
       "output": [
@@ -456,7 +477,8 @@
         "tsconfig.json",
         "vitest.config.mts",
         "vitest-setup.ts",
-        "scripts/check-test-stderr.mjs"
+        "scripts/check-test-stderr.mjs",
+        "scripts/adapters/**"
       ],
       "output": [],
       "packageLocks": [
@@ -481,7 +503,8 @@
         "*.ts",
         "*.mjs",
         "*.d.mts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "scripts/adapters/**"
       ],
       "output": [],
       "packageLocks": [
