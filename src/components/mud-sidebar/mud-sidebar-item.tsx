@@ -101,6 +101,9 @@ export class MudSidebarItem {
 
   private renderContent() {
     return [
+      // A real element, not a ::before: axe cannot read a text background behind a pseudo-element
+      // and reports the item's contrast as "needs review".
+      this.active ? <span class="rail" aria-hidden="true"></span> : null,
       this.icon ? (
         <mud-icon
           class="icon"

@@ -150,6 +150,11 @@
           "$value": "{color.text.base.tertiary}",
           "$type": "color",
           "$comment": "Figma secondary label #757575, right-aligned."
+        },
+        "colorActive": {
+          "$value": "{color.text.base.secondary-on-color}",
+          "$type": "color",
+          "$comment": "Deliberate deviation from the Figma #757575, which is 4.01:1 on the active surface #E8F0FB and fails WCAG 1.4.3 for 14px text; #444444 is 8.48:1."
         }
       },
       "badge": {

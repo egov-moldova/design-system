@@ -264,6 +264,16 @@ describe('mud-sidebar-item', () => {
       expect(root?.getAttribute('value')).toBe('dashboard');
     });
 
+    it('draws the active rail as an element, not a pseudo-element', async () => {
+      const active = await render(<mud-sidebar-item active label="Home" />);
+      const rail = active.root?.shadowRoot?.querySelector('.item > .rail');
+      expect(rail).toBeTruthy();
+      expect(rail?.getAttribute('aria-hidden')).toBe('true');
+
+      const inactive = await render(<mud-sidebar-item label="Home" />);
+      expect(inactive.root?.shadowRoot?.querySelector('.rail')).toBeNull();
+    });
+
     it('reflects active=true to the host attribute', async () => {
       const { root } = await render(<mud-sidebar-item active label="Home" />);
       expect(root?.getAttribute('active')).toBe('');
