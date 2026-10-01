@@ -236,7 +236,7 @@ const renderStack = () => /*html*/ `
 
     <div>
       <p style="${cellLabelStyle} text-align: start; margin-top: 0;">5 collaborators with overflow indicator</p>
-      <div class="avatar-stack" aria-label="5 colleagues: Ion Popescu, Maria Pop, Andrei Ionescu and 2 more">
+      <div class="avatar-stack" role="group" aria-label="5 colleagues: Ion Popescu, Maria Pop, Andrei Ionescu and 2 more">
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ION}" name="Ion Popescu"></mud-avatar>
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_MARIA}" name="Maria Pop"></mud-avatar>
         <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ANDREI}" name="Andrei Ionescu"></mud-avatar>
@@ -334,8 +334,9 @@ const docsSourceWithBadge = /*html*/ `<!-- Compose mud-badge in the badge slot; 
   <mud-badge slot="badge" type="dot" variant="danger" size="md"></mud-badge>
 </mud-avatar>`;
 
-const docsSourceStack = /*html*/ `<!-- Avatar stack composition (no dedicated component) -->
-<div class="avatar-stack">
+const docsSourceStack = /*html*/ `<!-- Avatar stack composition (no dedicated component). The "+2" is hidden from
+     assistive technology, so the group names the whole set. -->
+<div class="avatar-stack" role="group" aria-label="5 colleagues: Ion Popescu, Maria Pop, Andrei Ionescu and 2 more">
   <mud-avatar type="photo" src="…" name="Ion Popescu"></mud-avatar>
   <mud-avatar type="photo" src="…" name="Maria Pop"></mud-avatar>
   <mud-avatar type="photo" src="…" name="Andrei Ionescu"></mud-avatar>
