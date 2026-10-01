@@ -149,7 +149,7 @@
             "boxWidth": "16px",
             "boxHeight": "16px"
           },
-          "note": "Figma 109:2526 places 16/cross-large at 16x16."
+          "note": "Figma 109:2526 places 16/cross-large at 16x16. The glyph is the cross-large icon; mud-icon scales its single 24px drawing to 16px, so the visible cross is 10px across where Figma's dedicated 16px drawing is 11px (measured on the 2x exports: 20px against 22px)."
         }
       ]
     },
