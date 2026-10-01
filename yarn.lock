@@ -1340,6 +1340,7 @@ __metadata:
     vue: "npm:^3.5.43"
     vue-router: "npm:^4.6.4"
   peerDependencies:
+    "@egov-moldova/mud": "workspace:^"
     vue: ^3.4.38
   languageName: unknown
   linkType: soft

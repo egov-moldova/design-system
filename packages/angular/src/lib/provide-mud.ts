@@ -26,6 +26,10 @@ export interface MudOptions {
  * ```ts
  * bootstrapApplication(App, { providers: [provideMud({ assetPath: 'mud/' })] });
  * ```
+ *
+ * It does not register the form value accessors: a component that binds a `mud-*` form control
+ * imports `MUD_FORM_ACCESSORS` next to `FormsModule` or `ReactiveFormsModule`, or `[(ngModel)]`
+ * and `formControl` throw `No value accessor`.
  */
 export function provideMud(options: MudOptions): EnvironmentProviders {
   const assetPath = options?.assetPath;
@@ -34,6 +38,9 @@ export function provideMud(options: MudOptions): EnvironmentProviders {
   }
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => {
+      // A server render has no `document` global (Angular's server platform injects its own, which
+      // the bundle never sees) and no component fetches an asset there: skip the setup.
+      if (typeof document === 'undefined') return;
       // The bundle's `getAssetPath` builds `new URL(path, assetPath)`, which throws on a relative
       // base, and `mud-icon` swallows that throw: the icon would stay blank with no error.
       const absolute = new URL(assetPath, document.baseURI);

@@ -45,11 +45,15 @@ export class App {
   protected num: number | null = null;
   protected checked = false;
   protected fruit = '';
-  protected chips: string[] = [];
+  // `null` too: the accessor writes it as `[]`, and the component must hold an empty list.
+  protected chips: string[] | null = null;
   // `null`, as a reactive form or `reset()` would leave it: the accessor writes it as `[]`.
   protected files: File[] | null = null;
   protected phone = '';
   protected readonly fruitControl = new FormControl('', { nonNullable: true });
+  // Reset to `null` by `reset()`: the accessors must hand the components an empty list.
+  protected readonly chipsControl = new FormControl<string[] | null>(null);
+  protected readonly filesControl = new FormControl<File[] | null>(null);
 
   /** Which change detection this build runs on: the runner loads zone.js only for majors that pin it. */
   protected readonly zone = 'Zone' in globalThis ? 'zone.js' : 'zoneless';
@@ -58,7 +62,7 @@ export class App {
     return JSON.stringify(value);
   }
 
-  protected fileNames(): string[] {
-    return (this.files ?? []).map(file => file.name);
+  protected fileNames(files: File[] | null = this.files): string[] {
+    return (files ?? []).map(file => file.name);
   }
 }

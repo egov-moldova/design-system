@@ -173,7 +173,10 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=12288
       STORYBOOK_DISABLE_TELEMETRY: 1
     steps:
+      # Nothing here pushes: the token is not left in .git/config for the fixture runs to read.
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
@@ -192,10 +195,12 @@ jobs:
           ")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      # The runner installs Chromium for that pin into this directory (with --with-deps, which
-      # always re-runs the apt step; only the browser download is cached).
-      - name: Cache the Playwright browser
-        uses: actions/cache@v5
+      # The runner installs Chromium for that pin into this directory (with --with-deps under CI,
+      # which always re-runs the apt step; only the browser download is cached). Every run
+      # restores it, and only a push to main saves it (same key), so a pull request can never
+      # write a cache entry that a later run on main would restore.
+      - name: Restore the Playwright browser
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
@@ -224,3 +229,23 @@ jobs:
 
       - name: Consumer fixture, Angular 22 (zoneless)
         run: node scripts/adapters/consumer-fixture.mjs angular --framework-version 22
+
+      - name: Save the Playwright browser
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # A failed run keeps its temp directory (the runner prints its path): the fixture copy, the
+      # build output and Playwright's traces (`trace: retain-on-failure`, in `test-results/`).
+      - name: Upload the failed fixture runs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adapter-fixtures
+          path: |
+            ${{ runner.temp }}/mud-fixture-*
+            !${{ runner.temp }}/mud-fixture-*/**/node_modules/**
+          if-no-files-found: ignore
+          retention-days: 7

@@ -244,7 +244,9 @@
         "tsconfig.json",
         "tsconfig.stencil.json",
         "scripts/copy-component-assets.mjs",
-        "scripts/adapters/**"
+        "scripts/adapters/clean-proxy-dirs.mjs",
+        "scripts/adapters/form-models.ts",
+        "scripts/adapters/proxy-dirs.ts"
       ],
       "output": [
         "dist/**",
@@ -420,7 +422,8 @@
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
-        "scripts/adapters/**",
+        "scripts/adapters/form-models.ts",
+        "scripts/adapters/proxy-dirs.ts",
         "!src/components.d.ts"
       ],
       "output": [
@@ -522,7 +525,8 @@
         "vitest.config.mts",
         "vitest-setup.ts",
         "scripts/check-test-stderr.mjs",
-        "scripts/adapters/**"
+        "scripts/adapters/form-models.ts",
+        "scripts/adapters/proxy-dirs.ts"
       ],
       "output": [],
       "packageLocks": [
@@ -548,7 +552,8 @@
         "*.mjs",
         "*.d.mts",
         "tsconfig.json",
-        "scripts/adapters/**"
+        "scripts/adapters/form-models.ts",
+        "scripts/adapters/proxy-dirs.ts"
       ],
       "output": [],
       "packageLocks": [

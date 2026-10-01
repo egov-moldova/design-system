@@ -20,13 +20,14 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@egov-moldova/mud": "workspace:^",
     "@stencil/vue-output-target": "~0.14.3"
   },
   "peerDependencies": {
+    "@egov-moldova/mud": "workspace:^",
     "vue": "^3.4.38"
   },
   "devDependencies": {
+    "@egov-moldova/mud": "workspace:^",
     "typescript": "^5.9.3",
     "vue": "^3.5.43",
     "vue-router": "^4.6.4"

@@ -7,6 +7,7 @@ import {
   MudInputChip,
   MudLogo,
   MudNumericInput,
+  MudPhoneInput,
   MudSelect,
   MudTextInput,
 } from '@egov-moldova/mud-vue';
@@ -17,10 +18,12 @@ import { computed, ref } from 'vue';
 // element to the model, and a model write back onto the element.
 const text = ref('');
 const date = ref('');
-const num = ref<number | undefined>(undefined);
+const num = ref<number | null | undefined>(undefined);
 const checked = ref(false);
 const fruit = ref('');
-const chips = ref<string[]>([]);
+// Starts as `null`, like `files`: the component treats a `null` `chips` as an empty list.
+const chips = ref(null as unknown as string[]);
+const phone = ref('');
 // Starts as `null`, the cleared-form state the acceptance bar names: the component treats a
 // `null` `files` as an empty list. The cast is only for vue-tsc, whose wrapper type is `File[]`.
 const files = ref(null as unknown as File[]);
@@ -51,6 +54,8 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
       <MudNumericInput v-model="num" data-testid="numeric" aria-label="Number" :max="10" />
       <output data-testid="numeric-model">{{ JSON.stringify(num ?? null) }}</output>
       <button type="button" data-testid="numeric-set" @click="num = 7">set model</button>
+      <button type="button" data-testid="numeric-null" @click="num = null">set null</button>
+      <button type="button" data-testid="numeric-undefined" @click="num = undefined">set undefined</button>
     </section>
 
     <section>
@@ -81,6 +86,12 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
       <h2>file array (file-input)</h2>
       <MudFileInput v-model="files" data-testid="files" multiple />
       <output data-testid="files-model">{{ JSON.stringify(fileNames) }}</output>
+    </section>
+
+    <section>
+      <h2>phone-input country switch</h2>
+      <MudPhoneInput v-model="phone" data-testid="phone" type="international" aria-label="Phone" />
+      <output data-testid="phone-model">{{ JSON.stringify(phone) }}</output>
     </section>
 
     <section>

@@ -7,6 +7,11 @@ packages/web-components/demo/dist-demo/
 scripts/__fixtures__/
 deploy/
 
+# Legacy root adapter folders (now under packages/): stale generated output in an existing clone
+# is not linted. Anchored, so packages/react and packages/web-components are still checked.
+/react/
+/web-components/
+
 # File Types
 *.md
 

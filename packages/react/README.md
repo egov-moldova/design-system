@@ -101,7 +101,7 @@ cd /Users/mdascal/Projects/corlab/amdm/apps/frontoffice
 npm unlink @egov-moldova/mud-react
 
 # In AGE
-cd /Users/mdascal/Projects/corlab/age/age-design/react
+cd /Users/mdascal/Projects/corlab/age/age-design/packages/react
 npm unlink
 ```
 

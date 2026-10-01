@@ -10,6 +10,7 @@ import {
   FORM_MODEL_ROWS,
   FORM_MODEL_TAGS,
   NON_EMITTING_VALUE_HOLDERS,
+  vueBindingKind,
   vueComponentModels,
 } from '../adapters/form-models.ts';
 import { PROXY_DIRS } from '../adapters/proxy-dirs.ts';
@@ -57,7 +58,6 @@ describe('the form-control model map matches the component manifest', () => {
   it('names a property and events that the manifest declares for every row component', () => {
     const problems = [];
     for (const row of FORM_MODEL_ROWS) {
-      assert.ok(row.events.includes(row.vueEvent), `${row.id}: vueEvent ${row.vueEvent} is not one of its events`);
       for (const tag of row.tags) {
         const declared = manifest.get(tag);
         if (!declared) {
@@ -164,6 +164,14 @@ describe('the Angular accessor type is derived from the row, never stored', () =
     const configs = angularValueAccessorConfigs();
     const keys = configs.map(config => `${config.type}|${config.event}|${config.targetAttr}`);
     assert.equal(new Set(keys).size, keys.length, 'two configs write the same host listener (TS1117)');
+    for (const type of new Set(configs.map(config => config.type))) {
+      const selectors = configs.filter(config => config.type === type).flatMap(config => config.elementSelectors);
+      assert.deepEqual(
+        selectors,
+        [...new Set(selectors)],
+        `${type}: the generator concatenates the selectors of a type, so a tag must be listed once`,
+      );
+    }
     const byKey = Object.fromEntries(
       configs.map(config => [`${config.type}|${config.event}`, config.elementSelectors]),
     );
@@ -173,37 +181,60 @@ describe('the Angular accessor type is derived from the row, never stored', () =
       'text|mudCountryChange',
       'text|mudInput',
     ]);
-    assert.deepEqual(byKey['text|mudCountryChange'], ['mud-phone-input']);
+    assert.deepEqual(byKey['text|mudCountryChange'], [], 'phone-input is selected once, on its first event');
+    assert.ok(byKey['text|mudInput'].includes('mud-phone-input'));
     assert.equal(byKey['select|mudChange'].length, 8);
     const generated = configs.flatMap(config => config.elementSelectors);
     const handWritten = FORM_MODEL_ROWS.filter(row => angularAccessorKind(row) === 'hand-written').flatMap(
       row => row.tags,
     );
     assert.deepEqual(
-      [...new Set([...generated, ...handWritten])].sort(),
+      [...generated, ...handWritten].sort(),
       [...FORM_MODEL_TAGS].sort(),
       'every row has a generated or a hand-written accessor',
     );
   });
 });
 
-describe('the Vue component models are derived from the same rows', () => {
-  it('carries each row component once, with the row event and property', () => {
+describe('the Vue binding is derived from the row, never stored', () => {
+  it('writes by hand exactly the rows with several events or a numeric value', () => {
+    assert.deepEqual(Object.fromEntries(FORM_MODEL_ROWS.map(row => [row.id, vueBindingKind(row)])), {
+      text: 'generated',
+      phone: 'hand-written',
+      numeric: 'hand-written',
+      boolean: 'generated',
+      select: 'generated',
+      chips: 'generated',
+      files: 'generated',
+    });
+    for (const row of FORM_MODEL_ROWS) assert.equal('vueEvent' in row, false, `${row.id} stores a Vue event`);
+  });
+});
+
+describe('the Vue component models are derived from the generated rows', () => {
+  const generatedRows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'generated');
+  const handWrittenRows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'hand-written');
+
+  it('carries each generated row component once, with its one event and its property', () => {
     const models = vueComponentModels();
     const byTag = new Map(models.flatMap(model => model.elements.map(tag => [tag, model])));
-    assert.equal(byTag.size, EXPECTED_ROWS);
-    for (const row of FORM_MODEL_ROWS) {
+    assert.equal(byTag.size, generatedRows.flatMap(row => row.tags).length);
+    for (const row of generatedRows) {
+      assert.equal(row.events.length, 1, `${row.id}: the generator binds one event`);
       for (const tag of row.tags) {
         assert.deepEqual(
           { event: byTag.get(tag)?.event, targetAttr: byTag.get(tag)?.targetAttr },
-          { event: row.vueEvent, targetAttr: row.property },
+          { event: row.events[0], targetAttr: row.property },
           tag,
         );
       }
     }
+    for (const row of handWrittenRows) {
+      for (const tag of row.tags) assert.equal(byTag.has(tag), false, `${tag} is hand-written: no generated model`);
+    }
   });
 
-  it('reaches the generated proxies: each one ends with its model property and event', () => {
+  it('reaches the generated proxies: each generated row ends with its model property and event', () => {
     // The strongest check that `stencil.config.ts` really passes the derived models to the
     // output target: the generated call carries them. `yarn build` writes these files.
     const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
@@ -214,29 +245,67 @@ describe('the Vue component models are derived from the same rows', () => {
     );
     const dir = path.join(PROJECT_ROOT, PROXY_DIRS.vue);
     assert.ok(fs.existsSync(dir), `${dir} is missing: run \`yarn build\` first`);
-    for (const row of FORM_MODEL_ROWS) {
+    const modelOf = tag =>
+      /'(value|checked|chips|files)', '(mud\w+)', undefined\);/.exec(
+        fs.readFileSync(path.join(dir, `${tag}.ts`), 'utf8'),
+      );
+    for (const row of generatedRows) {
       for (const tag of row.tags) {
-        const proxy = fs.readFileSync(path.join(dir, `${tag}.ts`), 'utf8');
-        assert.ok(
-          proxy.includes(`'${row.property}', '${row.vueEvent}', undefined);`),
-          `${tag}: the generated proxy does not bind ${row.property} on ${row.vueEvent}`,
+        const model = modelOf(tag);
+        assert.deepEqual(
+          [model?.[1], model?.[2]],
+          [row.property, row.events[0]],
+          `${tag}: the generated proxy does not bind ${row.property} on ${row.events[0]}`,
         );
       }
     }
-    const modelled = fs
-      .readdirSync(dir)
-      .filter(
-        file =>
-          file.startsWith('mud-') &&
-          /'(value|checked|chips|files)', 'mud(Input|Change)', undefined\);/.test(
-            fs.readFileSync(path.join(dir, file), 'utf8'),
-          ),
-      );
+    for (const row of handWrittenRows) {
+      for (const tag of row.tags) assert.equal(modelOf(tag), null, `${tag}: the generated proxy must carry no v-model`);
+    }
+    const modelled = fs.readdirSync(dir).filter(file => file.startsWith('mud-') && modelOf(file.replace(/\.ts$/, '')));
     assert.deepEqual(
       modelled.map(file => file.replace(/\.ts$/, '')).sort(),
-      [...FORM_MODEL_TAGS].sort(),
-      'a proxy carries a v-model that no row declares',
+      generatedRows.flatMap(row => row.tags).sort(),
+      'a proxy carries a v-model that no generated row declares',
     );
+  });
+});
+
+describe('the hand-written Vue wrappers match their rows and replace the generated ones', () => {
+  const wrappersDir = path.join(PROJECT_ROOT, 'packages/vue/src/wrappers');
+  const rows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'hand-written');
+  const sources = fs
+    .readdirSync(wrappersDir)
+    .filter(file => file !== 'define-model-wrapper.ts' && file.endsWith('.ts'))
+    .map(file => fs.readFileSync(path.join(wrappersDir, file), 'utf8'));
+  const pascal = tag =>
+    tag
+      .split('-')
+      .map(part => part[0].toUpperCase() + part.slice(1))
+      .join('');
+
+  it('has one wrapper per hand-written row, on its tag and listening to every event of the row', () => {
+    assert.equal(sources.length, rows.length, 'one hand-written wrapper per hand-written row');
+    for (const row of rows) {
+      assert.equal(row.tags.length, 1, `${row.id}: a hand-written wrapper serves one tag`);
+      const [tag] = row.tags;
+      const source = sources.find(text => text.includes(`tag: '${tag}'`));
+      assert.ok(source, `${row.id}: no wrapper declares tag '${tag}'`);
+      const events = /events:\s*\[([^\]]*)\]/
+        .exec(source)?.[1]
+        ?.match(/'(\w+)'/g)
+        ?.map(event => event.slice(1, -1));
+      assert.deepEqual(events, [...row.events], `${row.id}: the wrapper's events differ from the row`);
+      assert.equal(row.property, 'value', `${row.id}: the shared wrapper writes \`value\``);
+    }
+  });
+
+  it('exports each hand-written wrapper from the package under the generated name', () => {
+    const index = fs.readFileSync(path.join(PROJECT_ROOT, 'packages/vue/src/index.ts'), 'utf8');
+    for (const row of rows) {
+      const name = pascal(row.tags[0]);
+      assert.match(index, new RegExp(`export \\{ ${name} \\} from '\\./wrappers/`), `${name} is not exported by hand`);
+    }
   });
 });
 
@@ -282,9 +351,9 @@ describe('the Angular accessors reach the adapter: generated from the rows, or w
       const source = read(path.join(generatedDir, `${type}-value-accessor.ts`));
       const ofType = configs.filter(config => config.type === type);
       assert.deepEqual(
-        [...new Set(selectorsOf(source))].sort(),
-        [...new Set(ofType.flatMap(config => config.elementSelectors))].sort(),
-        `${type}: selectors`,
+        selectorsOf(source).sort(),
+        ofType.flatMap(config => config.elementSelectors).sort(),
+        `${type}: selectors (a duplicate fails here)`,
       );
       assert.deepEqual(
         hostEventsOf(source).sort(),

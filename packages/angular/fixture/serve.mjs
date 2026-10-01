@@ -27,7 +27,14 @@ const TYPES = {
 };
 
 createServer((request, response) => {
-  const path = decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname);
+  let path;
+  try {
+    path = decodeURIComponent(new URL(request.url ?? '/', 'http://localhost').pathname);
+  } catch {
+    // A malformed escape (`%E0%A4%A`) throws URIError; the request is the client's mistake.
+    response.writeHead(400).end();
+    return;
+  }
   let file = normalize(join(root, path));
   if (!file.startsWith(root + sep) && file !== root) {
     response.writeHead(403).end();

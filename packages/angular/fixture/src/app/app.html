@@ -49,6 +49,8 @@
     </mud-select>
     <output data-testid="select-rx-model">{{ json(fruitControl.value) }}</output>
     <button type="button" data-testid="select-rx-set" (click)="fruitControl.setValue('pear')">set model</button>
+    <button type="button" data-testid="select-rx-disable" (click)="fruitControl.disable()">disable</button>
+    <button type="button" data-testid="select-rx-enable" (click)="fruitControl.enable()">enable</button>
   </section>
 
   <section>
@@ -59,9 +61,24 @@
   </section>
 
   <section>
+    <h2>string array through a reactive formControl, reset</h2>
+    <mud-input-chip [formControl]="chipsControl" data-testid="chips-rx" aria-label="Chips (reactive)"></mud-input-chip>
+    <output data-testid="chips-rx-model">{{ json(chipsControl.value) }}</output>
+    <button type="button" data-testid="chips-rx-set" (click)="chipsControl.setValue(['x', 'y'])">set model</button>
+    <button type="button" data-testid="chips-rx-reset" (click)="chipsControl.reset()">reset</button>
+  </section>
+
+  <section>
     <h2>file array (file-input)</h2>
     <mud-file-input [(ngModel)]="files" data-testid="files" multiple></mud-file-input>
     <output data-testid="files-model">{{ json(fileNames()) }}</output>
+  </section>
+
+  <section>
+    <h2>file array through a reactive formControl, reset</h2>
+    <mud-file-input [formControl]="filesControl" data-testid="files-rx" multiple></mud-file-input>
+    <output data-testid="files-rx-model">{{ json(fileNames(filesControl.value)) }}</output>
+    <button type="button" data-testid="files-rx-reset" (click)="filesControl.reset()">reset</button>
   </section>
 
   <section>

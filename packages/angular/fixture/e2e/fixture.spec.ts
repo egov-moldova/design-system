@@ -40,7 +40,9 @@ test('upgrade: every wrapped host has a shadow root', async ({ page }) => {
     'select',
     'select-rx',
     'chips',
+    'chips-rx',
     'files',
+    'files-rx',
     'phone',
     'button',
     'icon',
@@ -126,7 +128,10 @@ for (const id of ['select', 'select-rx']) {
   });
 }
 
-test('string array (input-chip), both ways', async ({ page }) => {
+test('string array (input-chip), initialised with null, both ways', async ({ page }) => {
+  // The model starts as `null`; the accessor handed the component an empty list.
+  await expect(model(page, 'chips')).toHaveText('null');
+  await expect.poll(() => prop(page, 'chips', 'chips')).toEqual([]);
   const input = host(page, 'chips').locator('input.native');
   await input.fill('alpha');
   await input.press('Enter');
@@ -134,6 +139,25 @@ test('string array (input-chip), both ways', async ({ page }) => {
   await press(page, 'chips-set');
   await expect(model(page, 'chips')).toHaveText('["x","y"]');
   await expect.poll(() => prop(page, 'chips', 'chips')).toEqual(['x', 'y']);
+});
+
+test('string array (input-chip) through a formControl: reset() leaves an empty list', async ({ page }) => {
+  await expect.poll(() => prop(page, 'chips-rx', 'chips')).toEqual([]);
+  await press(page, 'chips-rx-set');
+  await expect.poll(() => prop(page, 'chips-rx', 'chips')).toEqual(['x', 'y']);
+  await press(page, 'chips-rx-reset');
+  await expect(model(page, 'chips-rx')).toHaveText('null');
+  await expect.poll(() => prop(page, 'chips-rx', 'chips')).toEqual([]);
+});
+
+test('file array (file-input) through a formControl: reset() leaves an empty list', async ({ page }) => {
+  await host(page, 'files-rx')
+    .locator('input[type="file"]')
+    .setInputFiles([{ name: 'c.txt', mimeType: 'text/plain', buffer: Buffer.from('c') }]);
+  await expect(model(page, 'files-rx')).toHaveText('["c.txt"]');
+  await press(page, 'files-rx-reset');
+  await expect(model(page, 'files-rx')).toHaveText('[]');
+  await expect.poll(() => prop(page, 'files-rx', 'files')).toEqual([]);
 });
 
 test('file array (file-input), initialised with null, through its inner input', async ({ page }) => {
@@ -159,6 +183,22 @@ test('phone-input: a country switch updates the model to the new E.164 value', a
   // The switch rewrites `value` and emits only mudCountryChange.
   await expect.poll(() => prop(page, 'phone', 'value')).toBe('+4060123456');
   await expect(model(page, 'phone')).toHaveText('"+4060123456"');
+});
+
+test('formControl.disable() and enable() reach the host as disabled', async ({ page }) => {
+  await expect.poll(() => prop(page, 'select-rx', 'disabled')).toBe(false);
+  await press(page, 'select-rx-disable');
+  await expect.poll(() => prop(page, 'select-rx', 'disabled')).toBe(true);
+  await press(page, 'select-rx-enable');
+  await expect.poll(() => prop(page, 'select-rx', 'disabled')).toBe(false);
+});
+
+test('blur marks the control touched', async ({ page }) => {
+  await expect(host(page, 'text')).toHaveClass(/ng-untouched/);
+  const input = host(page, 'text').locator('input');
+  await input.focus();
+  await input.blur();
+  await expect(host(page, 'text')).toHaveClass(/ng-touched/);
 });
 
 test('a bare boolean attribute compiles and reaches the component as true', async ({ page }) => {

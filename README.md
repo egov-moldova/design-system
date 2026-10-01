@@ -39,7 +39,7 @@ across public services.
 
 ## Packages
 
-This repository is a monorepo containing the following published packages:
+This repository is a monorepo containing the packages below. The core and the vanilla adapter are published; the React, Vue and Angular adapters are not yet published.
 
 | Package                                                                                                       | Description                                                                                                           |
 |---------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -187,12 +187,38 @@ const name = ref('');
 </template>
 ```
 
-**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder: copy `node_modules/@egov-moldova/mud/dist/components/assets` to `mud/assets` in your build output, with Vite's `public/` directory or a copy plugin. With the `mud/` folder used above, the files end up at `mud/assets/…` under your public base URL.
+**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder, so copy the core's `dist/components/assets` to `mud/assets` in your build output. With the Vite plugin below, and the `mud/` folder used above, the files end up at `mud/assets/…` under your public base URL:
+
+```ts
+// vite.config.ts — yarn add -D vite-plugin-static-copy
+import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'node_modules/@egov-moldova/mud/dist/components/assets',
+          dest: 'mud',
+          // The plugin keeps the source path: strip `node_modules/@egov-moldova/mud/dist/components/`.
+          rename: { stripBase: 5 },
+        },
+      ],
+    }),
+  ],
+});
+```
+
+Without a plugin, copy the folder into Vite's `public/` directory before `vite` and `vite build` run: `mkdir -p public/mud && cp -R node_modules/@egov-moldova/mud/dist/components/assets public/mud/assets`.
 
 Binding notes:
 
-- `mud-numeric-input` updates its `v-model` on commit (the `mudChange` event, on blur or Enter), not on every keystroke.
-- A `mud-phone-input` country switch does not reach `v-model`: the component emits only `mudCountryChange` there. Listen to that event if you need the country.
+- `mud-numeric-input` is `null` when empty. Its `v-model` follows every keystroke and the clamped value on commit. Setting the model to `null` or `undefined` empties the field, never `0`.
+- A `mud-phone-input` country switch updates the `v-model`.
+- `MudNumericInput` and `MudPhoneInput` are hand-written wrappers that replace the generated ones under the same export names.
 
 #### Angular component wrappers
 > Not yet published. `@egov-moldova/mud-angular` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
@@ -250,6 +276,7 @@ Binding notes:
 - `mud-numeric-input` is `null` when empty, and updates its model on every keystroke and again when it clamps the value on commit.
 - A `mud-phone-input` country switch updates the model.
 - A bare boolean attribute (`<mud-button disabled>`) compiles under `strictTemplates`.
+- Every Angular bundle includes all the wrappers, whichever ones the app imports: each wrapper defines its custom element when its class loads, so the package cannot be marked side-effect free.
 
 #### API
 

@@ -24,8 +24,8 @@
  *                a packaging defect, and no lockfile is read.
  *   4. build     the framework's own typecheck and build, then FAIL when the bundler's module
  *                graph holds a second runtime (`@egov-moldova/mud/loader` or `dist/esm`,
- *                `dist/cjs`, `dist/mud` JavaScript) or holds no core module at all (an empty
- *                graph would pass vacuously).
+ *                `dist/cjs`, `dist/mud` JavaScript, or a core copy nested inside an adapter) or
+ *                holds no core module at all (an empty graph would pass vacuously).
  *   5. negative  compile the fixture's negative case, kept outside the normal build: one
  *                wrapper input bound to a wrongly typed value. It passes ONLY on exactly one
  *                diagnostic of an accepted type-mismatch code, on the line under the
@@ -36,6 +36,12 @@
  *
  * The server and every long step run in their own process group, killed in `finally` and on
  * SIGINT/SIGTERM/exit, so no orphan outlives the runner.
+ *
+ * The temp directory lives under `RUNNER_TEMP` when it is set (GitHub Actions), and a failed run
+ * keeps it and prints its path, so CI can upload `mud-fixture-*` with the Playwright traces.
+ *
+ * Importing this module runs nothing: the guards below are exported for
+ * `scripts/__tests__/consumer-fixture.spec.mjs`, which drives each one RED with canned input.
  *
  * Adding a framework is one entry in `FRAMEWORKS` and a `fixture/` directory.
  */
@@ -57,17 +63,20 @@ import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { PROXY_OUT_DIRS } from './proxy-dirs.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** The Node-resolvable module ids that mean a SECOND runtime next to the standalone bundle. */
 const SECOND_RUNTIME = /@egov-moldova\/mud\/(loader|dist\/(esm|cjs|mud))\//;
+/** An adapter that installed its OWN core: `node_modules/@egov-moldova/mud-*\/node_modules/@egov-moldova/mud/`. */
+const NESTED_CORE = /\/node_modules\/@egov-moldova\/mud-[^/]+\/node_modules\/@egov-moldova\/mud\//;
 /** Only script modules count: the README's own `styles.css` and token imports resolve under `dist/mud`. */
 const SCRIPT_MODULE = /\.(?:[cm]?[jt]s|[jt]sx)(?:$|\?)/;
 const STANDALONE_RUNTIME = '/node_modules/@egov-moldova/mud/dist/components/';
 
-class RunnerError extends Error {}
+export class RunnerError extends Error {}
 
 const log = message => console.log(`[consumer-fixture] ${message}`);
 const fail = (step, message) => {
@@ -195,7 +204,7 @@ const FRAMEWORKS = {
  * component's `templateUrl`) inside the same block, so diagnostics are counted by header, and the
  * first location of each is the one reported.
  */
-function parseEsbuildDiagnostics(output) {
+export function parseEsbuildDiagnostics(output) {
   // eslint-disable-next-line no-control-regex
   const text = output.replace(/\u001b\[[0-9;]*m/g, '');
   return text
@@ -214,7 +223,7 @@ function parseEsbuildDiagnostics(output) {
     });
 }
 
-function parseTscDiagnostics(output) {
+export function parseTscDiagnostics(output) {
   return [...output.matchAll(/^(.+?)\((\d+),(\d+)\): error (TS\d+): (.*)$/gm)].map(match => ({
     file: match[1].replaceAll('\\', '/'),
     line: Number(match[2]),
@@ -243,12 +252,15 @@ function killAll() {
   live.clear();
 }
 
-process.on('exit', killAll);
-for (const signal of ['SIGINT', 'SIGTERM']) {
-  process.on(signal, () => {
-    killAll();
-    process.exit(130);
-  });
+/** Registered by `main()` only: importing the module for its guards must not touch the process. */
+function installProcessGuards() {
+  process.on('exit', killAll);
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    process.on(signal, () => {
+      killAll();
+      process.exit(130);
+    });
+  }
 }
 
 function start(command, args, { cwd, env = {}, capture = false } = {}) {
@@ -264,17 +276,24 @@ function start(command, args, { cwd, env = {}, capture = false } = {}) {
 }
 
 /**
- * Runs one command to completion in its own process group. Returns the captured output when
- * `capture` is set. A non-zero exit fails the step unless `allowFailure`; a timeout kills the group.
+ * Runs one command to completion in its own process group. Returns `stdout` and `stderr`, kept
+ * apart, when `capture` is set: a caller that parses a command's result reads `stdout` only, so a
+ * warning on stderr cannot corrupt it. A non-zero exit fails the step unless `allowFailure`; a
+ * timeout kills the group, and a captured step prints what it captured before failing.
  */
 async function run(step, command, args, { cwd, env, capture = false, allowFailure = false, timeout = 600_000 } = {}) {
   log(`${step}: ${[command.split('/').at(-1), ...args].join(' ')}`);
   const child = start(command, args, { cwd, env, capture });
-  let output = '';
+  let stdout = '';
+  let stderr = '';
   if (capture) {
-    child.stdout.on('data', chunk => (output += chunk));
-    child.stderr.on('data', chunk => (output += chunk));
+    child.stdout.on('data', chunk => (stdout += chunk));
+    child.stderr.on('data', chunk => (stderr += chunk));
   }
+  const showCaptured = () => {
+    if (stdout) console.error(stdout);
+    if (stderr) console.error(stderr);
+  };
   let timedOut = false;
   const timer = setTimeout(() => {
     timedOut = true;
@@ -282,18 +301,21 @@ async function run(step, command, args, { cwd, env, capture = false, allowFailur
   }, timeout);
   const status = await new Promise(resolveStatus => {
     child.once('error', error => {
-      output += String(error);
+      stderr += String(error);
       resolveStatus(127);
     });
     child.once('close', code => resolveStatus(code ?? 1));
   });
   clearTimeout(timer);
-  if (timedOut) fail(step, `timed out after ${timeout / 1000}s`);
+  if (timedOut) {
+    showCaptured();
+    fail(step, `timed out after ${timeout / 1000}s`);
+  }
   if (status !== 0 && !allowFailure) {
-    if (capture) console.error(output);
+    showCaptured();
     fail(step, `${command.split('/').at(-1)} exited ${status}`);
   }
-  return { status, output };
+  return { status, stdout, stderr };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -307,7 +329,7 @@ function parseArgs(argv) {
     if (rest[i] === '--framework-version' && rest[i + 1]) requested = rest[++i];
     else fail('usage', `unexpected argument ${rest[i]}`);
   }
-  if (!framework || !(framework in FRAMEWORKS)) {
+  if (!framework || !Object.hasOwn(FRAMEWORKS, framework)) {
     fail('usage', `consumer-fixture.mjs <${Object.keys(FRAMEWORKS).join('|')}> [--framework-version <major>]`);
   }
   return { framework, requested };
@@ -326,11 +348,12 @@ function loadPins(fixtureDir, requested) {
 
 /** Reads `package/package.json` out of a tarball, which is what a consumer's installer sees. */
 async function readPackedManifest(tarball) {
-  const { output } = await run('guard', 'tar', ['-xzOf', tarball, 'package/package.json'], { capture: true });
-  return JSON.parse(output);
+  const { stdout } = await run('guard', 'tar', ['-xzOf', tarball, 'package/package.json'], { capture: true });
+  return JSON.parse(stdout);
 }
 
-function workspaceSpecifiers(manifest) {
+/** Every `workspace:` specifier a packed manifest still carries: a consumer's installer cannot resolve one. */
+export function workspaceSpecifiers(manifest) {
   const found = [];
   for (const field of ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']) {
     for (const [name, range] of Object.entries(manifest[field] ?? {})) {
@@ -343,8 +366,8 @@ function workspaceSpecifiers(manifest) {
 async function guardTree() {
   const tracked = [];
   for (const dir of PROXY_OUT_DIRS) {
-    const { output } = await run('guard', 'git', ['ls-files', '--', dir], { cwd: ROOT, capture: true });
-    tracked.push(...output.split('\n').filter(Boolean));
+    const { stdout } = await run('guard', 'git', ['ls-files', '--', dir], { cwd: ROOT, capture: true });
+    tracked.push(...stdout.split('\n').filter(Boolean));
   }
   if (tracked.length > 0) fail('guard', `generated proxy files are tracked by git:\n  ${tracked.join('\n  ')}`);
   const shim = join(ROOT, 'components');
@@ -368,7 +391,7 @@ async function waitForServer(url, server) {
   for (let attempt = 0; attempt < 120; attempt++) {
     if (server.exitCode !== null) fail('serve', `the preview server exited ${server.exitCode}`);
     try {
-      if ((await fetch(url)).ok) return;
+      if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).ok) return;
     } catch {
       // Not listening yet.
     }
@@ -377,7 +400,12 @@ async function waitForServer(url, server) {
   fail('serve', `${url} did not answer within 30s`);
 }
 
-function checkSecondRuntime(ids, adapterPackage) {
+/**
+ * Fails unless the module graph holds the standalone runtime and the adapter, and holds no second
+ * runtime: the loader, the `dist/esm|cjs|mud` builds, or a core copy nested inside an adapter.
+ * Returns the number of script modules it read.
+ */
+export function checkSecondRuntime(ids, adapterPackage) {
   const scripts = ids.map(id => id.replaceAll('\\', '/')).filter(id => SCRIPT_MODULE.test(id));
   if (!scripts.some(id => id.includes(STANDALONE_RUNTIME))) {
     fail('second runtime', `the module graph holds no ${STANDALONE_RUNTIME} module: the check would pass vacuously`);
@@ -385,35 +413,34 @@ function checkSecondRuntime(ids, adapterPackage) {
   if (!scripts.some(id => id.includes(`/node_modules/${adapterPackage}/`))) {
     fail('second runtime', `the module graph holds no ${adapterPackage} module: the fixture does not use the adapter`);
   }
-  const second = scripts.filter(id => SECOND_RUNTIME.test(id));
+  const second = scripts.filter(id => SECOND_RUNTIME.test(id) || NESTED_CORE.test(id));
   if (second.length > 0) {
     fail('second runtime', `the bundle holds a second Stencil runtime:\n  ${[...new Set(second)].join('\n  ')}`);
   }
-  log(`second runtime: none in ${scripts.length} script modules`);
+  return scripts.length;
 }
 
-async function checkNegative(framework, ctx) {
-  const { file, marker, command, parse, codes } = FRAMEWORKS[framework].negative;
-  const lines = readFileSync(join(ctx.app, file), 'utf8').split('\n');
+/** The binding a `@negative-binding <name>` marker names, and the line the wrong binding sits on. */
+export function negativeTarget(lines, marker, file) {
   const markerIndex = lines.findIndex(line => line.includes(marker));
   if (markerIndex < 0) fail('negative', `${file} has no ${marker} marker`);
   // `<!-- @negative-binding <name>: ... -->` on its own line, directly above the wrong binding.
-  const binding = /^\s*([\w-]+)/.exec(
+  const binding = /^\s*([A-Za-z_][\w-]*)/.exec(
     lines[markerIndex].slice(lines[markerIndex].indexOf(marker) + marker.length),
   )?.[1];
   if (!binding) fail('negative', `the ${marker} marker in ${file} names no binding`);
-  const bindingLine = markerIndex + 2;
+  return { binding, bindingLine: markerIndex + 2 };
+}
 
-  const [bin, args] = command(ctx);
-  const { status, output } = await run('negative', bin, args, { cwd: ctx.app, capture: true, allowFailure: true });
-  const show = () => console.error(output);
-  if (status === 0) {
-    show();
-    fail('negative', `${file} compiled: a wrongly typed binding must fail the framework's checker`);
-  }
-  const diagnostics = parse(output);
+/**
+ * Passes ONLY on a failed compile with exactly one diagnostic, of an accepted code, in `file`, on
+ * the binding's line and at the named input. Anything else fails: no failure (the wrong binding
+ * compiled), zero or several diagnostics (another failure is a runner error), a wrong code, place
+ * or column. Returns the diagnostic.
+ */
+export function judgeNegative({ status, diagnostics, file, lines, binding, bindingLine, codes }) {
+  if (status === 0) fail('negative', `${file} compiled: a wrongly typed binding must fail the framework's checker`);
   if (diagnostics.length !== 1) {
-    show();
     fail('negative', `expected exactly one diagnostic, found ${diagnostics.length}: another failure is a runner error`);
   }
   const [diagnostic] = diagnostics;
@@ -426,14 +453,41 @@ async function checkNegative(framework, ctx) {
   const at = (lines[diagnostic.line - 1] ?? '').slice(diagnostic.column - 1);
   if (!at.startsWith(binding) && !at.startsWith(`:${binding}`))
     problems.push(`column ${diagnostic.column} is not at \`${binding}\``);
-  if (problems.length > 0) {
-    show();
-    fail('negative', `the one diagnostic is not the expected one: ${problems.join('; ')}`);
+  if (problems.length > 0) fail('negative', `the one diagnostic is not the expected one: ${problems.join('; ')}`);
+  return diagnostic;
+}
+
+async function checkNegative(framework, ctx) {
+  const { file, marker, command, parse, codes } = FRAMEWORKS[framework].negative;
+  const lines = readFileSync(join(ctx.app, file), 'utf8').split('\n');
+  const { binding, bindingLine } = negativeTarget(lines, marker, file);
+
+  const [bin, args] = command(ctx);
+  const { status, stdout, stderr } = await run('negative', bin, args, {
+    cwd: ctx.app,
+    capture: true,
+    allowFailure: true,
+  });
+  try {
+    // The checker may report on either stream, so the diagnostics are read from both.
+    const diagnostic = judgeNegative({
+      status,
+      diagnostics: parse(`${stdout}\n${stderr}`),
+      file,
+      lines,
+      binding,
+      bindingLine,
+      codes,
+    });
+    log(`negative: ${diagnostic.code} at ${file}:${diagnostic.line}:${diagnostic.column} (${binding})`);
+  } catch (error) {
+    console.error(stdout, stderr);
+    throw error;
   }
-  log(`negative: ${diagnostic.code} at ${file}:${diagnostic.line}:${diagnostic.column} (${binding})`);
 }
 
 async function main() {
+  installProcessGuards();
   const { framework, requested } = parseArgs(process.argv.slice(2));
   const spec = FRAMEWORKS[framework];
   const sourceFixture = join(ROOT, spec.workspace, 'fixture');
@@ -445,7 +499,8 @@ async function main() {
       fail('preflight', `${built} is missing: run \`yarn build\` and \`yarn build.${framework}\` first`);
   }
 
-  const temp = mkdtempSync(join(tmpdir(), `mud-fixture-${framework}-`));
+  // Under `RUNNER_TEMP` on GitHub Actions, where the workflow uploads `mud-fixture-*` on failure.
+  const temp = mkdtempSync(join(process.env.RUNNER_TEMP || tmpdir(), `mud-fixture-${framework}-`));
   let passed = false;
   let server;
   try {
@@ -522,13 +577,15 @@ async function main() {
 
     // 4. typecheck + build, then the second-runtime check
     await spec.build(ctx);
-    checkSecondRuntime(spec.moduleIds(ctx), spec.adapterPackage);
+    log(`second runtime: none in ${checkSecondRuntime(spec.moduleIds(ctx), spec.adapterPackage)} script modules`);
 
     // 5. negative case
     await checkNegative(framework, ctx);
 
     // 6. browser
-    await run('browser', ctx.bin('playwright'), ['install', '--with-deps', 'chromium'], { cwd: app });
+    // `--with-deps` installs system packages through the OS package manager (sudo): CI only.
+    const install = process.env.CI ? ['install', '--with-deps', 'chromium'] : ['install', 'chromium'];
+    await run('browser', ctx.bin('playwright'), install, { cwd: app });
     const port = await freePort();
     const url = `http://127.0.0.1:${port}`;
     const [serveBin, serveArgs] = spec.serve(ctx, port);
@@ -545,17 +602,19 @@ async function main() {
     }
     killAll();
     if (passed && !process.env.MUD_FIXTURE_KEEP) rmSync(temp, { recursive: true, force: true });
-    else console.error(`[consumer-fixture] kept ${temp}`);
+    else console.error(`[consumer-fixture] kept ${temp} (the fixture copy, its build output and Playwright traces)`);
   }
   log(`PASS ${framework}@${major}`);
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof RunnerError) {
-    console.error(`[consumer-fixture] FAIL ${error.message}`);
-    process.exit(1);
+if (isEntrypoint(import.meta.url)) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof RunnerError) {
+      console.error(`[consumer-fixture] FAIL ${error.message}`);
+      process.exit(1);
+    }
+    throw error;
   }
-  throw error;
 }

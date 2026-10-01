@@ -3,6 +3,7 @@
 //
 // ONE module, read by every consumer so the same fact is never typed twice:
 //   - `stencil.config.ts` derives the Vue `componentModels` from it (`vueComponentModels`);
+//     the Vue adapter writes the `hand-written` rows' wrappers by hand (`vueBindingKind`);
 //   - the Angular adapter derives its `valueAccessorConfigs` from it
 //     (`angularValueAccessorConfigs`), and writes the `hand-written` rows' accessors by hand;
 //   - `scripts/__tests__/adapter-form-models.spec.mjs` checks it against
@@ -19,8 +20,11 @@
 // so a row lists EVERY event that follows a user-driven write:
 //   - `mud-numeric-input` clamps and rounds on commit and emits only `mudChange`;
 //   - `mud-phone-input`'s country switch rewrites `value` and emits only `mudCountryChange`.
-// Angular listens to all of a row's events. Vue's generator binds ONE event per model, so
-// each row names it in `vueEvent`; the phone-input country switch is a recorded Vue limitation.
+// Both adapters listen to all of a row's events. Angular's generator merges every event of a
+// type into one directive, but Vue's generator binds ONE event per model, so a row with two
+// events is a hand-written Vue wrapper (`vueBindingKind`), as is a numeric row: Vue's
+// `patchDOMProp` writes `0` when a `null`/`undefined` prop meets an element whose `value` is a
+// number (`@vue/runtime-dom`), which would turn a cleared model into a zero.
 //
 // Erasable TypeScript only (no enums, namespaces or parameter properties): Stencil's config
 // loader transpiles this file when `stencil.config.ts` imports it, and Node 24 strips the
@@ -39,15 +43,16 @@ export type ModelValueType = 'string' | 'number' | 'boolean' | 'string[]' | 'Fil
 /** What the Angular adapter binds a row with: one of the generator's accessor types, or by hand. */
 export type AngularAccessorKind = 'text' | 'select' | 'boolean' | 'hand-written';
 
+/** What the Vue adapter binds a row with: the generated wrapper's `v-model`, or a wrapper by hand. */
+export type VueBindingKind = 'generated' | 'hand-written';
+
 export interface FormModelRow {
   /** Stable name of the model shape, used in spec failures. */
   readonly id: string;
   readonly property: ModelProperty;
   readonly valueType: ModelValueType;
-  /** Every event that follows a user-driven write of `property`; Angular listens to all of them. */
+  /** Every event that follows a user-driven write of `property`; both adapters listen to all of them. */
   readonly events: readonly string[];
-  /** The ONE event Vue's `v-model` binds. Always one of `events`. */
-  readonly vueEvent: string;
   /** The components that share this model shape. */
   readonly tags: readonly string[];
   /** Why the row looks the way it does, and the coercion a hand-written accessor owes. */
@@ -65,7 +70,6 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     property: 'value',
     valueType: 'string',
     events: ['mudInput'],
-    vueEvent: 'mudInput',
     tags: ['mud-text-input', 'mud-textarea', 'mud-search-input'],
     note: 'The model follows every keystroke.',
   },
@@ -74,30 +78,30 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     property: 'value',
     valueType: 'string',
     events: ['mudInput', 'mudCountryChange'],
-    vueEvent: 'mudInput',
     tags: ['mud-phone-input'],
     note:
       'E.164 on each keystroke and on a country switch. The switch rewrites `value` and emits only ' +
-      '`mudCountryChange` (mud-phone-input.tsx:693), which Vue cannot bind next to `mudInput`: recorded limitation.',
+      '`mudCountryChange` (mud-phone-input.tsx:693), so both adapters listen to both events: the Vue wrapper ' +
+      '(packages/vue/src/wrappers/phone-input.ts) is hand-written because the generator binds one event.',
   },
   {
     id: 'numeric',
     property: 'value',
     valueType: 'number',
     events: ['mudInput', 'mudChange'],
-    vueEvent: 'mudChange',
     tags: ['mud-numeric-input'],
     note:
-      'Clamps and rounds on commit and emits only `mudChange` (mud-numeric-input.tsx:798-822), so the model updates ' +
-      'on commit in Vue. It sets `value` to `undefined` on clear (mud-numeric-input.tsx:716-727,771-773), which the ' +
-      "generated `number` accessor turns into NaN: the Angular accessor is hand-written (`undefined`/`null`/`''` → `null`).",
+      'Clamps and rounds on commit and emits only `mudChange` (mud-numeric-input.tsx:798-822), so both adapters ' +
+      'listen to `mudInput` and `mudChange`. It sets `value` to `undefined` on clear (mud-numeric-input.tsx:716-727,' +
+      "771-773), which the generated Angular `number` accessor turns into NaN and Vue's `patchDOMProp` turns into " +
+      "`0` when a null model meets a numeric `value`: both adapters are hand-written (`undefined`/`null`/`''` → `null`; " +
+      'a null model is written back as `undefined`). The Vue wrapper is packages/vue/src/wrappers/numeric-input.ts.',
   },
   {
     id: 'boolean',
     property: 'checked',
     valueType: 'boolean',
     events: ['mudChange'],
-    vueEvent: 'mudChange',
     tags: ['mud-checkbox', 'mud-switch'],
     note: 'The model is `checked`, not `value`.',
   },
@@ -106,7 +110,6 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     property: 'value',
     valueType: 'passthrough',
     events: ['mudChange'],
-    vueEvent: 'mudChange',
     tags: [
       'mud-select',
       'mud-radio-group',
@@ -126,7 +129,6 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     property: 'chips',
     valueType: 'string[]',
     events: ['mudChange'],
-    vueEvent: 'mudChange',
     tags: ['mud-input-chip'],
     note: 'The generated accessors write `.value`, never `.chips`: hand-written (`null`/`undefined` → `[]`).',
   },
@@ -135,7 +137,6 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
     property: 'files',
     valueType: 'File[]',
     events: ['mudChange'],
-    vueEvent: 'mudChange',
     tags: ['mud-file-input'],
     note:
       'Hand-written (`null`/`undefined` → `[]`): the generated accessors write `.value`, and Angular calls ' +
@@ -203,6 +204,11 @@ export interface AngularValueAccessorConfig {
  * property) whose `elementSelectors` lists every tag, because the generator appends one host
  * entry per config and eight `select` configs would write `'(mudChange)'` eight times (TS1117).
  * `hand-written` rows are not in the list: their accessors are not generated.
+ *
+ * The generator also concatenates the selectors of every config of one type, so a tag is
+ * listed ONCE per type, on the config of its row's first event: `mud-phone-input` sits on
+ * `text|mudInput`, and `text|mudCountryChange` carries no selector of its own (an empty
+ * `elementSelectors` is valid input) yet still adds its host listener.
  */
 export function angularValueAccessorConfigs(
   rows: readonly FormModelRow[] = FORM_MODEL_ROWS,
@@ -214,11 +220,20 @@ export function angularValueAccessorConfigs(
     for (const event of row.events) {
       const key = `${type}|${event}|${row.property}`;
       const group = groups.get(key) ?? { elementSelectors: [], event, targetAttr: row.property, type };
-      group.elementSelectors.push(...row.tags);
+      if (event === row.events[0]) group.elementSelectors.push(...row.tags);
       groups.set(key, group);
     }
   }
   return [...groups.values()];
+}
+
+/**
+ * The Vue binding of a row, DERIVED from it and never stored beside it. The generator binds ONE
+ * event per model, so a row with several events is written by hand; so is a numeric row, whose
+ * generated `v-model` would write `0` for a cleared model (see the header).
+ */
+export function vueBindingKind(row: Pick<FormModelRow, 'valueType' | 'events'>): VueBindingKind {
+  return row.events.length > 1 || row.valueType === 'number' ? 'hand-written' : 'generated';
 }
 
 export interface VueComponentModel {
@@ -228,11 +243,16 @@ export interface VueComponentModel {
 }
 
 /**
- * The `componentModels` of the Vue output target (`ComponentModelConfig`): `event` is the row's
- * `vueEvent` and `targetAttr` its property. `eventAttr` is left unset on purpose: the runtime
- * then reads `event.target[targetAttr]` (`@stencil/vue-output-target/dist/runtime.js`), which
- * is exactly the contract every row keeps, and the same property is written back.
+ * The `componentModels` of the Vue output target (`ComponentModelConfig`), for the `generated`
+ * rows only: `event` is the row's one event and `targetAttr` its property. `hand-written` rows
+ * are left out, so their generated wrappers carry no `v-model` and the hand-written ones
+ * (`packages/vue/src/wrappers/`) replace them in the package's exports. `eventAttr` is left
+ * unset on purpose: the runtime then reads `event.target[targetAttr]`
+ * (`@stencil/vue-output-target/dist/runtime.js`), which is exactly the contract every row keeps,
+ * and the same property is written back.
  */
 export function vueComponentModels(rows: readonly FormModelRow[] = FORM_MODEL_ROWS): VueComponentModel[] {
-  return rows.map(row => ({ elements: [...row.tags], event: row.vueEvent, targetAttr: row.property }));
+  return rows
+    .filter(row => vueBindingKind(row) === 'generated')
+    .map(row => ({ elements: [...row.tags], event: row.events[0], targetAttr: row.property }));
 }

@@ -6,8 +6,8 @@ import { createApp } from 'vue';
 
 import App from './App.vue';
 
-// The documented asset step copies the core's `dist/components/assets` to `mud/assets` in
-// the served output (see vite.config.ts); `assetPath` is the URL of the folder that holds it.
+// The README's asset step (see vite.config.ts) serves the core's `dist/components/assets` as
+// `mud/assets`; `assetPath` is the URL of the folder that holds it.
 createApp(App)
   .use(Mud, { assetPath: `${import.meta.env.BASE_URL}mud/` })
   .mount('#app');

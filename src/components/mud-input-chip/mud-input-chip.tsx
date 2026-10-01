@@ -184,6 +184,9 @@ export class MudInputChip {
   }
 
   componentWillLoad() {
+    // A framework form model may start as `null` (Angular `writeValue(null)`, a Vue
+    // `ref(null)`); every reader below iterates `chips`, so normalise it once here.
+    this.chips ??= [];
     this.initialChips = [...this.chips];
     this.syncFormValue(this.chips);
     this.syncValidity(this.chips);
@@ -226,10 +229,15 @@ export class MudInputChip {
   }
 
   @Watch('chips')
-  handleChipsChange(next: string[]) {
-    const chips = next ?? [];
-    this.syncFormValue(chips);
-    this.syncValidity(chips);
+  handleChipsChange(next: string[] | null | undefined) {
+    // A cleared model (`null` / `undefined`) means no chips. Reassigning re-enters this
+    // watcher once with `[]`, so render and validity never see a non-array.
+    if (next == null) {
+      this.chips = [];
+      return;
+    }
+    this.syncFormValue(next);
+    this.syncValidity(next);
   }
 
   // `syncFormValue` publishes nothing while `name` is unset, so the name is an

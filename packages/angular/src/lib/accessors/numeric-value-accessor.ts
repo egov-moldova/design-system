@@ -3,16 +3,13 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { MudModelAccessor } from './model-accessor';
 
-const isEmpty = (value: unknown): value is null | undefined | '' =>
-  value === null || value === undefined || value === '';
-
 /**
  * `mud-numeric-input` ⇄ a `number | null` model.
  *
  * Hand-written because the component sets `value` to `undefined` on clear and on an empty or
- * ambiguous entry, which the generated `number` accessor turns into `NaN`. Here an empty value
- * (`undefined`, `null`, `''`) is a `null` model, and a `null` model is written back as
- * `undefined` (the component's own empty state), never `''`.
+ * ambiguous entry, which the generated `number` accessor turns into `NaN`. Here anything that is
+ * not a number (`undefined`, `null`, `''`) is a `null` model, and a model that is not a number is
+ * written back as `undefined` (the component's own empty state), never `''`.
  *
  * Listens to `mudInput` (each keystroke) AND `mudChange`: the component clamps and rounds on
  * commit, writes `value` and emits only `mudChange`, so a model bound to `mudInput` alone would
@@ -30,10 +27,10 @@ export class NumericValueAccessor extends MudModelAccessor<number | null, number
   protected readonly property = 'value';
 
   protected toModel(value: unknown): number | null {
-    return isEmpty(value) ? null : (value as number);
+    return typeof value === 'number' ? value : null;
   }
 
   protected toElement(model: unknown): number | undefined {
-    return isEmpty(model) ? undefined : (model as number);
+    return typeof model === 'number' ? model : undefined;
   }
 }

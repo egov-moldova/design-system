@@ -161,6 +161,8 @@ yarn build.vue       # compiles @egov-moldova/mud-vue (depends on `build`)
 yarn build.angular   # packages @egov-moldova/mud-angular with ng-packagr, partial mode (depends on `build`)
 ```
 
+`yarn dev` does not regenerate the proxies: its Stencil watch build skips the framework output targets. A change to a component's API (a prop, an event, a method) needs `yarn build` before the adapters, their specs and the fixtures see it.
+
 The Angular adapter is compiled with Angular 20 and supports `^20 || ^21 || ^22`. The proxies cover every `mud-*` component. Which properties and events bind to `v-model` and `ngModel` is one table, `scripts/adapters/form-models.ts`; `scripts/__tests__/adapter-form-models.spec.mjs` checks it against `.storybook/custom-elements.json`.
 
 **Consumer fixtures.** Each adapter has a small app in `packages/<framework>/fixture/`, outside the Yarn workspaces. The runner packs the core and the adapter, installs the tarballs into a temporary copy of the fixture (no workspace link and no lockfile, so a packaging defect cannot hide), typechecks and builds it with the framework's own toolchain, and drives it in Chromium.
@@ -172,7 +174,7 @@ node scripts/adapters/consumer-fixture.mjs angular --framework-version 20   # zo
 node scripts/adapters/consumer-fixture.mjs angular --framework-version 22   # zoneless
 ```
 
-Without `--framework-version` the runner uses the highest major in the fixture's `versions.json`. It installs Chromium for the pinned Playwright (`--with-deps` also runs the system package step, which needs sudo on Linux). The `Adapters` CI job runs the same commands.
+Without `--framework-version` the runner uses the highest major in the fixture's `versions.json`. It installs Chromium for the pinned Playwright (`--with-deps`, which runs the system package step and needs sudo on Linux, is added only when `CI` is set). A failed run keeps its temporary directory and prints the path (under `RUNNER_TEMP` when that is set); Playwright writes a trace there. The `Adapters` CI job runs the same commands.
 
 To try an adapter in another project without publishing, pack it the way the runner does and install the tarball with a `file:` specifier. Install the core tarball from the same build too, because the adapter's generated proxies match that exact core API:
 

@@ -110,6 +110,9 @@ if (!isDevMode) {
     // `customElementsDir` pairing above applies here too. `componentModels` is derived from the
     // form-control model map, the one list the Angular accessors derive from as well, and which
     // `scripts/__tests__/adapter-form-models.spec.mjs` checks against the component manifest.
+    // It lists only the rows the generator can bind (one event, no numeric value): the others
+    // (numeric, phone) are hand-written in packages/vue/src/wrappers/ and replace the generated
+    // wrappers of the same name in the package's exports.
     vue({
       componentCorePackage: '@egov-moldova/mud',
       proxiesFile: `${PROXY_DIRS.vue}/components.ts`,
@@ -127,6 +130,12 @@ if (!isDevMode) {
     // `valueAccessorConfigs` is derived from the form-control model map, grouped into one config
     // per (type, event, property); the rows the generator cannot serve (numeric, chips, files)
     // get the hand-written accessors in packages/angular/src/lib/accessors/.
+    //
+    // DEBT(angular-wrapper-side-effects): every generated wrapper defines its element when its
+    // class loads (`@ProxyCmp({ defineCustomElementFn })`), so the package cannot declare
+    // `"sideEffects": false` and an Angular bundle includes ALL wrappers, whichever the app
+    // imports. The honest version is wrappers that define their element on first use, so a
+    // bundler can drop the ones an app never imports.
     angular({
       componentCorePackage: '@egov-moldova/mud',
       directivesProxyFile: `${PROXY_DIRS.angular}/components.ts`,

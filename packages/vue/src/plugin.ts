@@ -30,6 +30,8 @@ export const Mud: Plugin<MudPluginOptions> = {
     if (typeof options?.assetPath !== 'string' || options.assetPath === '') {
       throw new Error('[mud-vue] `app.use(Mud, { assetPath })` needs a non-empty `assetPath`.');
     }
+    // A server render has no `document`, and no component fetches an asset there: skip the setup.
+    if (typeof document === 'undefined') return;
     // The bundle's `getAssetPath` builds `new URL(path, assetPath)`, which throws on a relative
     // base, and `mud-icon` swallows that throw: the icon would stay blank with no error.
     const absolute = new URL(options.assetPath, document.baseURI);
