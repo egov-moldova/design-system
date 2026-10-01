@@ -46,6 +46,11 @@ egov-moldova/design-system#180. Found while planning #178.
 - The root specifier `@egov-moldova/mud` resolves to `dist/index.js` = `export * from './esm/index.js'`,
   the lazy runtime. Only `@egov-moldova/mud/components` and `@egov-moldova/mud/components/mud-*.js`
   are the standalone runtime.
+- 37 of the generated wrappers ALSO import the root specifier, type-only:
+  `import { type MudXCustomEvent, type MudXDetail } from "@egov-moldova/mud";` (from
+  `stencilPackageName` at `stencil.config.ts:91`; `grep -rl 'from "@egov-moldova/mud";' packages/react/src/components/stencil-generated | wc -l` → 37).
+  The compiler erases them, so they load no runtime. The guard must allow exactly this shape:
+  its logic, run against the files on disk, reports only the two `/loader` imports in `index.ts`.
 - `@egov-moldova/mud/components` exports `setAssetPath`, `getAssetPath`, `setNonce`,
   `setPlatformOptions` (`dist/components/index.d.ts`).
 - `packages/react`: `tsc --noEmit -p .` → 0 errors; with `--strict` → 0 errors.
@@ -104,22 +109,19 @@ uses the wrapper. The README says so.
 
 Zero tolerance:
 
-- an `@egov-moldova/mud` specifier under `packages/react/src` other than
-  `@egov-moldova/mud/components` or `@egov-moldova/mud/components/mud-*.js`;
-- an adapter workspace `build` script that masks a failure (`|| true`, `|| exit 0`, `; true`);
-- a stale name: `git grep -n -w -E 'AGE|SIMSM|mdascal|cor-[a-z-]+|Cor[A-Z][A-Za-z]*' -- packages/react`
-  and `git grep -n 'age-demo' -- packages/web-components` each print nothing (exit 1);
-- any byte difference in `packages/web-components/dist/` caused by Phase 3: Phase 3 Step 1
-  snapshots `dist/` after a build on the unchanged tree, Step 4 rebuilds and
-  `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0 (`tsc` emit is
-  deterministic: no timestamps or hashes in its output);
-- a React 18 type file in the React 19 program, or none of the 19 files:
-  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json --listFilesOnly | grep '/node_modules/@types/react/'`
-  prints nothing (exit 1), and the same command piped to `grep -q '/node_modules/react-types-19/index.d.ts'`
-  exits 0;
-- a React 19 type file in the React 18 program:
-  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.json --listFilesOnly | grep '/react-types-19/'`
-  prints nothing (exit 1).
+- `yarn test:scripts` (spec `names only the standalone runtime`) fails on an `@egov-moldova/mud` specifier under `packages/react/src` other than
+  `@egov-moldova/mud/components`, `@egov-moldova/mud/components/mud-*.js`, or the root in a
+  type-only import statement;
+- `yarn test:scripts` (spec `no adapter build masks a failure`) fails on an adapter `build` script holding `;` or `||`;
+- `yarn test:scripts` (spec `every adapter compiles in strict mode`) fails on a lax adapter tsconfig;
+- `git grep -n -w -E 'AGE|SIMSM|mdascal|cor-[a-z-]+|Cor[A-Z][A-Za-z]*' -- packages/react` prints nothing (exit 1);
+- `git grep -n 'age-demo' -- packages/web-components` prints nothing (exit 1);
+- `diff -r "$TMPDIR/web-dist-before" packages/web-components/dist` exits 0 after Phase 3 Step 4
+  (Step 1 snapshots `dist/` from a build on the unchanged tree; `tsc` emit carries no timestamps
+  or hashes, and a scratch emit with the new options was byte-identical, measured at preflight);
+- `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json --listFilesOnly | grep '/node_modules/@types/react/'` prints nothing (exit 1);
+- `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json --listFilesOnly | grep -q '/node_modules/react-types-19/index.d.ts'` exits 0;
+- `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.json --listFilesOnly | grep '/react-types-19/'` prints nothing (exit 1).
 
 Each command exits 0, run as written from the repo root:
 
@@ -144,7 +146,7 @@ Inputs no task can pin with a browser, most likely to bite first:
 4. `setupMud` on a server (no `document`) must not throw for a valid path, and must still throw
    for an empty one. Pinned in Phase 1's spec (Node has no `document`).
 5. Calling setup twice with different paths: the last call wins (the old alias ignored the second
-   call). Documented in the JSDoc; not observable without stubbing Stencil's platform.
+   call). Documented in the JSDoc; observable only with `window`/`document` stubs (see Not verified).
 
 ## Execution
 
@@ -179,9 +181,23 @@ Interfaces produced:
 
   ```js
   // #180: the wrappers import the standalone bundle, so any other `@egov-moldova/mud` entry
-  // registers tags through a second Stencil runtime. The root specifier is not exempt: it
-  // resolves to `dist/index.js`, which re-exports `dist/esm`, the lazy runtime.
+  // registers tags through a second Stencil runtime. The root specifier resolves to
+  // `dist/index.js`, which re-exports `dist/esm`, the lazy runtime, so it is allowed ONLY in an
+  // import the compiler erases: `import type { … }`, or every binding marked `type` — the shape
+  // the React output target writes for event-detail types (`stencilPackageName`).
+  // Limit: that erasure is the default; a consumer compiling this `src/` with
+  // `verbatimModuleSyntax` keeps `import {} from "@egov-moldova/mud"` and evaluates the lazy
+  // runtime's modules (no tag registered). A specifier assembled at runtime is outside any
+  // static read.
   const STANDALONE_RE = /^@egov-moldova\/mud\/components(?:\/mud-[a-z0-9-]+\.js)?$/;
+  const ROOT_IMPORT_RE = /\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*["']@egov-moldova\/mud["']\s*;?/g;
+  const isTypeOnly = (typeKeyword, bindings) =>
+    Boolean(typeKeyword) ||
+    bindings
+      .split(',')
+      .map(binding => binding.trim())
+      .filter(Boolean)
+      .every(binding => /^type\s/.test(binding));
 
   it('names only the standalone runtime, never the lazy loader (#180)', () => {
     const files = walk(REACT_SRC);
@@ -189,7 +205,9 @@ Interfaces produced:
 
     const lazy = [];
     for (const file of files) {
-      const source = fs.readFileSync(file, 'utf8');
+      const source = fs
+        .readFileSync(file, 'utf8')
+        .replace(ROOT_IMPORT_RE, (statement, typeKeyword, bindings) => (isTypeOnly(typeKeyword, bindings) ? '' : statement));
       for (const [, specifier] of source.matchAll(SPECIFIER_RE)) {
         if (!STANDALONE_RE.test(specifier)) lazy.push(`${path.relative(PROJECT_ROOT, file)}: ${specifier}`);
       }
@@ -199,7 +217,10 @@ Interfaces produced:
   ```
 
   Run `fnm exec --using=24 -- node --test --test-name-pattern='lazy loader' scripts/__tests__/validate-package.spec.mjs`.
-  Expected: FAIL listing `packages/react/src/index.ts: @egov-moldova/mud/loader` (twice).
+  Expected: FAIL listing exactly `packages/react/src/index.ts: @egov-moldova/mud/loader` (twice) —
+  no generated wrapper (their 37 type-only root imports are stripped first; measured at
+  preflight). Then check the stripping cannot hide a value import: a scratch run of the same
+  logic over `import { A, type B } from "@egov-moldova/mud";` must still report the root.
 
 - [ ] **Step 2: the setup spec, RED.** Create `scripts/__tests__/react-adapter-setup.spec.mjs`:
 
@@ -390,8 +411,11 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
   ```js
   describe('no adapter build masks a failure (#180)', () => {
     // A `build` that swallows its exit status turns `yarn build.<adapter>`, the CI step and
-    // the audit's `adapter-*` rows into checks that cannot fail.
-    const MASK_RE = /\|\|\s*(?:true|exit\s+0|:)(?![\w-])|;\s*true(?![\w-])/;
+    // the audit's `adapter-*` rows into checks that cannot fail. Masking idioms cannot be
+    // enumerated (`|| true`, `|| echo`, `; exit 0`, `; next-command`), so the positive shape is
+    // asserted instead: commands chained by `&&` only. A legitimate `||` needs an explicit
+    // exception here.
+    const MASK_RE = /;|\|\|/;
     const PACKAGES = path.join(PROJECT_ROOT, 'packages');
 
     it('every packages/*/package.json build script propagates its exit status', () => {
@@ -448,7 +472,10 @@ Files: `packages/react/package.json`, `packages/react/tsconfig.json`,
 - [ ] **Step 6: GREEN.** Acceptance bar command 1 and both `--listFilesOnly` rows; the Step 1 test passes.
   Prove the gate bites: append `export const broken: number = 'x';` to
   `packages/react/src/setup.ts`, run `fnm exec --using=24 -- yarn workspace @egov-moldova/mud-react build`
-  → non-zero exit; remove the line.
+  → non-zero exit; then, with the line still there, run the React 19 program alone,
+  `fnm exec --using=24 -- npx tsc -p packages/react/tsconfig.react19.json` → non-zero exit
+  (the `&&` in the build stops at the first `tsc`, so only this run shows the 19 program
+  reports errors); remove the line.
 - [ ] **Step 7: CI.** In `.github/workflows/ci.yml` job `adapters`, after the `yarn build` step and
   before `yarn build.vue`, a step named `Build the React adapter (typechecks against React 18 and 19)`
   running `yarn build.react`, in the style of its neighbours.
@@ -475,7 +502,8 @@ Files: `packages/web-components/tsconfig.json`, `packages/web-components/demo/ma
         .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'tsconfig.json')))
         .flatMap(entry => {
           const options = JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'tsconfig.json'), 'utf8')).compilerOptions ?? {};
-          const off = STRICT_FAMILY.filter(flag => options[flag] === false);
+          // `noCheck: true` skips type checking while `tsc` still exits 0.
+          const off = [...STRICT_FAMILY.filter(flag => options[flag] === false), ...(options.noCheck === true ? ['noCheck'] : [])];
           return options.strict === true && off.length === 0 ? [] : [`packages/${entry.name}: strict=${options.strict} off=[${off.join(', ')}]`];
         });
       assert.deepEqual(lax, []);
@@ -513,8 +541,16 @@ PR leaves draft.
   Vue and Angular fixtures of #189, which set it the same way; the React wiring is one call,
   covered by typecheck and the spec's validation and server paths only.
 - React 19 at runtime: only its types are checked.
-- `setupMud` in a browser (the `document` branch): not run; `toAssetBaseUrl`, which it delegates
-  to, is.
+- `setupMud` in a browser (the `document` branch) and "last call wins": not run. They are
+  observable in Node only by stubbing `window` and `document` before the bundle is first
+  imported (the bundle captures `window` at evaluation); not taken, to keep the spec free of
+  platform stubs. `toAssetBaseUrl`, which the branch delegates to, is tested.
+- The runtime guard's blind spots: a specifier assembled at runtime; a lazy import reached
+  transitively through `@egov-moldova/mud/components`; a type-only root import kept by a
+  consumer that compiles this `src/` with `verbatimModuleSyntax` (it evaluates the lazy
+  runtime's modules, registering no tag).
+- The strict spec reads each tsconfig's declared options, not the effective ones: a future
+  `extends` base turning a strict flag off would pass. No adapter tsconfig uses `extends` today.
 
 ## Self-refute log
 
