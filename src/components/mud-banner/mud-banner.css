@@ -91,7 +91,8 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: inherit;
+  /* Figma paints the glyph #444444 on the light fills, not with the message text. */
+  color: var(--banner-close-color-default);
   cursor: pointer;
   border-radius: var(--banner-close-border-radius);
   transition: background-color 150ms ease;
@@ -162,6 +163,12 @@
 :host([emphasis='subtle'][variant='error']) {
   background: var(--banner-error-subtle-background);
   color: var(--banner-error-subtle-text);
+}
+
+/* White on the dark Strong fills. */
+:host([emphasis='strong'][variant='info']) .close,
+:host([emphasis='strong'][variant='error']) .close {
+  color: var(--banner-close-color-on-strong);
 }
 
 /* ---------- Icon color (Figma paints it per style, not with the text) ---------- */
