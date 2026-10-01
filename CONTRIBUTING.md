@@ -57,13 +57,15 @@ Storybook opens at `http://localhost:6007` with hot-reload — this is where you
 
 ## Repository Structure
 
-This is a monorepo (Yarn workspaces) publishing three packages:
+This is a monorepo (Yarn workspaces) with the core package and four adapters under `packages/`:
 
 | Package | Location | Description |
 | --- | --- | --- |
 | `@egov-moldova/mud` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
 | `@egov-moldova/mud-web-components` | `packages/web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
 | `@egov-moldova/mud-react` | `packages/react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud-vue` | `packages/vue/` | Vue adapter (typed wrappers, `v-model`) — **in progress**, not yet published |
+| `@egov-moldova/mud-angular` | `packages/angular/` | Angular adapter (standalone components, form value accessors) — **in progress**, not yet published |
 
 Key directories:
 
@@ -76,6 +78,8 @@ tokens/core.dark/   # source design tokens (dark)
 tokens/generated/   # build output — never hand-edit
 packages/web-components/  # vanilla JS/HTML adapter package
 packages/react/           # React adapter package (WIP)
+packages/vue/             # Vue adapter package (WIP)
+packages/angular/         # Angular adapter package (WIP)
 scripts/            # build tooling, token sync, audits
 .storybook/         # Storybook config + stories assets
 ```
@@ -147,6 +151,42 @@ packages/web-components/
 └── README.md
 ```
 
+### Framework adapters (`packages/react/`, `packages/vue/`, `packages/angular/`)
+
+One `yarn build` runs Stencil's React, Vue and Angular output targets next to the core build. They write the generated proxies under each package (`packages/{react,vue,angular}/src/.../stencil-generated/`). Those files are git-ignored and are never committed: the runner below fails on any tracked file there. Every adapter build depends on `yarn build`.
+
+```bash
+yarn build           # core + generated React, Vue and Angular proxies
+yarn build.vue       # compiles @egov-moldova/mud-vue (depends on `build`)
+yarn build.angular   # packages @egov-moldova/mud-angular with ng-packagr, partial mode (depends on `build`)
+```
+
+The Angular adapter is compiled with Angular 20 and supports `^20 || ^21 || ^22`. The proxies cover every `mud-*` component. Which properties and events bind to `v-model` and `ngModel` is one table, `scripts/adapters/form-models.ts`; `scripts/__tests__/adapter-form-models.spec.mjs` checks it against `.storybook/custom-elements.json`.
+
+**Consumer fixtures.** Each adapter has a small app in `packages/<framework>/fixture/`, outside the Yarn workspaces. The runner packs the core and the adapter, installs the tarballs into a temporary copy of the fixture (no workspace link and no lockfile, so a packaging defect cannot hide), typechecks and builds it with the framework's own toolchain, and drives it in Chromium.
+
+```bash
+yarn build && yarn build.vue && yarn build.angular
+node scripts/adapters/consumer-fixture.mjs vue
+node scripts/adapters/consumer-fixture.mjs angular --framework-version 20   # zone.js
+node scripts/adapters/consumer-fixture.mjs angular --framework-version 22   # zoneless
+```
+
+Without `--framework-version` the runner uses the highest major in the fixture's `versions.json`. It installs Chromium for the pinned Playwright (`--with-deps` also runs the system package step, which needs sudo on Linux). The `Adapters` CI job runs the same commands.
+
+To try an adapter in another project without publishing, pack it the way the runner does and install the tarball with a `file:` specifier. Install the core tarball from the same build too, because the adapter's generated proxies match that exact core API:
+
+```bash
+yarn pack --out /tmp/mud-core.tgz                                    # repo root
+yarn workspace @egov-moldova/mud-vue pack --out /tmp/mud-vue.tgz
+(cd packages/angular/dist && npm pack --pack-destination /tmp)       # ng-packagr's dist/ is the package
+
+# in the other project
+yarn add file:/tmp/mud-core.tgz file:/tmp/mud-vue.tgz   # or the Angular tarball
+```
+
+Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publishable package and is not a Yarn workspace, and the build already rewrote its `workspace:` range. Never `npm pack` a workspace root, which leaves `workspace:^` in the manifest.
+
 ### Script reference
 
 | Script | Purpose |
@@ -155,6 +195,9 @@ packages/web-components/
 | `yarn build` | Full build: tokens → Stencil components → `dist/`, `loader/` |
 | `yarn build.web` | Builds `@egov-moldova/mud-web-components` (depends on `build`) |
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
+| `yarn build.vue` | Builds `@egov-moldova/mud-vue` (depends on `build`) |
+| `yarn build.angular` | Builds `@egov-moldova/mud-angular` (depends on `build`) |
+| `node scripts/adapters/consumer-fixture.mjs <vue\|angular> [--framework-version <major>]` | Packs the core and the adapter, installs them into the consumer fixture and drives it in Chromium (after `build` and the adapter's own build) |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
 | `yarn lint` | ESLint + Stylelint (wireit-cached) + Prettier check over the whole repo (always runs, Prettier's own content cache); no fixes |
@@ -298,7 +341,7 @@ For example, with npm `latest` at `1.1.9`, development releases use valid SemVer
 
 The release pipeline runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, while the release pipeline publishes with npm. Run it yourself after `yarn build` before any emergency manual publish.
 
-The Azure release pipelines currently publish only the core `@egov-moldova/mud` package. They do not publish `@egov-moldova/mud-web-components` or the private React adapter.
+The Azure release pipelines currently publish only the core `@egov-moldova/mud` package. They do not publish `@egov-moldova/mud-web-components` or the private React, Vue and Angular adapters.
 
 ### Emergency manual publish (maintainers)
 

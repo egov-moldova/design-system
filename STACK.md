@@ -22,6 +22,9 @@ Versions below are copied from `package.json`; when they disagree, `package.json
 | Build orchestration | Wireit | `^0.14.13` |
 | Storybook templates | Lit | `^3.3.2` (Storybook only — not in components) |
 | Custom elements manifest | `@stencil/core` (`docs-custom-elements-manifest` output target) | `~4.45.0` |
+| Angular adapter | `@stencil/angular-output-target` + `ng-packagr` + Angular | `^1.5.0` / `~20.3.2` / `~20.3.33` (partial compilation, peers `^20 \|\| ^21 \|\| ^22`) |
+| Vue adapter | `@stencil/vue-output-target` + Vue | `~0.14.3` / peer `^3.4.38` (built against `^3.5.43`) |
+| React adapter | `@stencil/react-output-target` | `^1.6.2` |
 | Visual diffing | `pixelmatch` + `pngjs` + Playwright | `^7.1.0` / `^7.0.0` / `^1.63.0` |
 | Commits | `@commitlint/config-conventional` + Husky | `^21.0.1` / `^9.1.7` |
 
@@ -37,7 +40,7 @@ Status quo — the current 3-tier pipeline (palette → semantic → component) 
 Declarative dependency graphs + automatic parallelism + content-hashed caching across `tokens.build`, `build`, `lint`, `test`. Makes `yarn dev` reliably reproducible across machines and CI.
 
 ### Yarn 4 + workspaces
-Two workspaces under `packages/`: `packages/web-components/` for the vanilla adapter and `packages/react/` for the React wrappers. Pinned via `packageManager` field in `package.json` so every contributor / agent / CI run uses the same version.
+Four workspaces under `packages/`: `packages/web-components/` for the vanilla adapter, and `packages/react/`, `packages/vue/` and `packages/angular/` for the framework wrappers. The three framework adapters take their proxies from Stencil output targets in the one `yarn build`, and are private until published. The Vue output target is pinned with `~` because it is 0.x. Fixture apps that consume the packed adapters live in each package's `fixture/` and are not workspaces. Pinned via `packageManager` field in `package.json` so every contributor / agent / CI run uses the same version.
 
 ### Node ≥24
 Enforced via `engines`. Newer features (modern test runner, native fetch) and required by current toolchain versions.

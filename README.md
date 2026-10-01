@@ -46,6 +46,8 @@ This repository is a monorepo containing the following published packages:
 | [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud)                              | Core Stencil web components — framework-agnostic, Shadow DOM–isolated                                                 |
 | [`@egov-moldova/mud-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components)| Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage                                   |
 | `@egov-moldova/mud-react`                                                                           | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>React adapter — typed JSX wrapper components |
+| `@egov-moldova/mud-vue`                                                                             | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>Vue adapter — typed wrapper components with `v-model` |
+| `@egov-moldova/mud-angular`                                                                         | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>Angular adapter — typed standalone components and form value accessors |
 ---
 
 ## Getting Started
@@ -147,6 +149,109 @@ Releases up to and including 1.1.9 ship three static faces (400/500/700) instead
 ####  React component wrappers
 > Not yet published. `@egov-moldova/mud-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
 
+#### Vue component wrappers
+> Not yet published. `@egov-moldova/mud-vue` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
+
+Typed wrapper components for Vue 3 (peer `vue ^3.4.38`), with `v-model` on all 17 form controls. No `isCustomElement` option is needed.
+
+```bash
+yarn add @egov-moldova/mud @egov-moldova/mud-vue
+```
+
+Type-checking the library's declarations without `skipLibCheck` also needs `vue-router` installed: the generated types import it.
+
+```ts
+// main.ts
+import '@egov-moldova/mud/tokens/core.tokens.css'; // design tokens — your own import, not bundled
+import '@egov-moldova/mud/styles.css'; // fonts and resets
+
+import { Mud } from '@egov-moldova/mud-vue';
+import { createApp } from 'vue';
+import App from './App.vue';
+
+createApp(App)
+  .use(Mud, { assetPath: `${import.meta.env.BASE_URL}mud/` })
+  .mount('#app');
+```
+
+```vue
+<script setup lang="ts">
+import { MudTextInput } from '@egov-moldova/mud-vue';
+import { ref } from 'vue';
+
+const name = ref('');
+</script>
+
+<template>
+  <MudTextInput v-model="name" aria-label="Name" />
+</template>
+```
+
+**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder: copy `node_modules/@egov-moldova/mud/dist/components/assets` to `mud/assets` in your build output, with Vite's `public/` directory or a copy plugin. With the `mud/` folder used above, the files end up at `mud/assets/…` under your public base URL.
+
+Binding notes:
+
+- `mud-numeric-input` updates its `v-model` on commit (the `mudChange` event, on blur or Enter), not on every keystroke.
+- A `mud-phone-input` country switch does not reach `v-model`: the component emits only `mudCountryChange` there. Listen to that event if you need the country.
+- Initialise a `mud-file-input` model with `[]`, never `null`: the component reads `files.length` and crashes on `null`, and Vue offers no coercion hook.
+
+#### Angular component wrappers
+> Not yet published. `@egov-moldova/mud-angular` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
+
+Typed standalone components and form value accessors for Angular `^20 || ^21 || ^22`. `@egov-moldova/mud`, `@angular/core`, `@angular/forms` and `rxjs` are peers.
+
+```bash
+yarn add @egov-moldova/mud @egov-moldova/mud-angular
+```
+
+In `angular.json`, under `build.options`, add the tokens and global styles, and copy the component assets into the build output:
+
+```json
+"styles": ["@egov-moldova/mud/tokens/core.tokens.css", "@egov-moldova/mud/styles.css"],
+"assets": [
+  {
+    "glob": "**/*",
+    "input": "node_modules/@egov-moldova/mud/dist/components/assets",
+    "output": "mud/assets"
+  }
+]
+```
+
+```ts
+// main.ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideMud } from '@egov-moldova/mud-angular';
+import { App } from './app/app';
+
+bootstrapApplication(App, { providers: [provideMud({ assetPath: 'mud/' })] });
+```
+
+**`assetPath` is required.** It is the URL of the folder whose child is `assets/`, relative to `<base href>`: with the `assets` entry above, `mud/`.
+
+```ts
+// app.ts
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms'; // or ReactiveFormsModule
+import { MUD_FORM_ACCESSORS, MudTextInput } from '@egov-moldova/mud-angular';
+
+@Component({
+  selector: 'app-root',
+  imports: [FormsModule, MUD_FORM_ACCESSORS, MudTextInput],
+  template: `<mud-text-input [(ngModel)]="name" aria-label="Name"></mud-text-input>`,
+})
+export class App {
+  protected name = '';
+}
+```
+
+**Import `MUD_FORM_ACCESSORS` in every component that binds a `mud-*` form control.** Without it `[(ngModel)]` and `formControl` throw `No value accessor for form control`. Each accessor is also exported on its own (`TextValueAccessor`, `BooleanValueAccessor`, `SelectValueAccessor`, `NumericValueAccessor`, `ChipsValueAccessor`, `FilesValueAccessor`) if you want a narrower import.
+
+Binding notes:
+
+- `mud-numeric-input` is `null` when empty, and updates its model on every keystroke and again when it clamps the value on commit.
+- A `mud-phone-input` country switch updates the model.
+- A bare boolean attribute (`<mud-button disabled>`) compiles under `strictTemplates`.
+
 #### API
 
 - `defineCustomElements(opts?)` — registers every Stencil custom element on the current document; returns a `Promise<void>`
@@ -159,8 +264,8 @@ Because the components are native custom elements, they integrate with every mod
 
 - **React 18** sets every prop as a string attribute and does not bind `on*` handlers for custom events (`enableCustomElementPropertySupport` is off) — so pass objects/arrays and listen to `mud*` events through a `ref` and `addEventListener`, not through a prop.
 - **React 19+** treats unknown lowercase tags as custom elements and forwards props/attributes directly. Use `ref` for imperative APIs and standard `addEventListener` for events.
-- **Vue 3** needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('mud-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
-- **Angular 14+** needs `CUSTOM_ELEMENTS_SCHEMA` in the `NgModule`'s `schemas` array (or the standalone component's `schemas`). Use `(event)` bindings against the dispatched custom-event name.
+- **Vue 3** (without the wrapper package) needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('mud-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
+- **Angular 14+** (without the wrapper package) needs `CUSTOM_ELEMENTS_SCHEMA` in the `NgModule`'s `schemas` array (or the standalone component's `schemas`). Use `(event)` bindings against the dispatched custom-event name.
 - **Svelte**, **SolidJS**, **Lit** — work out of the box; no extra config required.
 
 ---

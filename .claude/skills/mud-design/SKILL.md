@@ -23,6 +23,8 @@ defineCustomElements();
 // works automatically. See AGE PR #32 for the asset-path mechanism.
 ```
 
+Vue and Angular wrapper packages exist but are not yet published. Once published, the setup is the same two style imports plus, in Vue, `app.use(Mud, { assetPath })` from `@egov-moldova/mud-vue`, and in Angular, `provideMud({ assetPath })` from `@egov-moldova/mud-angular` with the tokens and `styles.css` under `build.options.styles` in `angular.json`. `assetPath` is required in both. Until then use the vanilla setup above (`isCustomElement` in Vue, `CUSTOM_ELEMENTS_SCHEMA` in Angular).
+
 Tokens are CSS custom properties. Use them in your own CSS:
 
 ```css

@@ -120,6 +120,9 @@ yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-
 # Build (production / final verification)
 yarn build                     # Full production build with tokens, custom-elements, and docs
 yarn build.web                 # Build @egov-moldova/mud-web-components vanilla adapter
+yarn build.vue                 # Build @egov-moldova/mud-vue (generated proxies come from `yarn build`)
+yarn build.angular             # Build @egov-moldova/mud-angular with ng-packagr (partial mode)
+node scripts/adapters/consumer-fixture.mjs <vue|angular> [--framework-version <20|22>]  # Pack core + adapter, install into the fixture app, drive it in Chromium (after `yarn build` and the adapter build)
 yarn demo.web                  # Serve the @egov-moldova/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn validate.package          # Publish gate: every declared entrypoint present, no dev build, no leaked paths, packers agree
