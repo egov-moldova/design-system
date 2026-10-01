@@ -50,7 +50,11 @@ Common fixture checks:
 - Assets: `mud-icon` loads its SVG with no 404.
 
 Every row of the form-control model map has an accessor (Angular) or a component model (Vue):
-16 of 16 components listed there (`mud-radio` excluded by design).
+16 of 16 components listed there (`mud-radio` excluded by design). The fixtures drive one
+component per model shape, so the other ten rows are configuration only. Their instrument is
+`scripts/__tests__/adapter-form-models.spec.mjs` (Phase 3): it reads the one shared model map and
+fails on any row whose property or event `.storybook/custom-elements.json` does not declare
+for that tag, or on any count other than 16.
 
 ## Spec / issue
 
@@ -278,7 +282,14 @@ Files: `stencil.config.ts`, root `package.json` (scripts, wireit), `scripts/__te
 
 **Executor**: Sonnet 5.5 · high · Wave C · implementer (after Phase 2)
 
-Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` (workspace, devDeps, `build.vue`), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `scripts/__tests__/validate-package.spec.mjs`.
+Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` (workspace, devDeps, `build.vue`), `scripts/adapters/**`, `yarn.lock`, `.prettierignore`, `.gitignore` (proxy output), `scripts/__tests__/validate-package.spec.mjs`, `scripts/__tests__/adapter-form-models.spec.mjs`.
+
+- [ ] The form-control model map lives in ONE module under `scripts/adapters/` that
+      `stencil.config.ts` imports. The Vue `componentModels` here and the Angular
+      `valueAccessorConfigs` in Phase 4 are both derived from it, never typed twice.
+      `scripts/__tests__/adapter-form-models.spec.mjs` checks it against
+      `.storybook/custom-elements.json`, as the acceptance bar states, and goes red when one
+      row's event is renamed.
 
 - [ ] `packages/vue`: `@egov-moldova/mud-vue`, `private: true`, peer `vue ^3.4.38`, dependency
       `@stencil/vue-output-target` `~0.14.3` (for its `/runtime`), core as `workspace:^`. Built
@@ -301,8 +312,9 @@ Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` 
       consumer's import and are not bundled into the adapter. Its spec asserts every item in the
       bar's common fixture checks through `v-model`, plus no console error (including no
       double-define).
-- Verify: `yarn build.vue` and `node scripts/adapters/consumer-fixture.mjs vue` are green; the
-  spec goes red when the plugin's `setAssetPath` call is removed.
+- Verify: `yarn build.vue`, `yarn test:scripts` (which runs the manifest spec) and
+  `node scripts/adapters/consumer-fixture.mjs vue` are green; the fixture spec goes red when the
+  plugin's `setAssetPath` call is removed.
 
 ### Phase 4: Angular adapter
 
@@ -375,6 +387,27 @@ Files: `.github/workflows/ci.yml`, `Dockerfile`, `README.md`, `CONTRIBUTING.md`,
 - Angular 21. Partial compilation built with 20 and tested on 20 and 22 brackets it; 21 itself is
   not run.
 - Publishing. The packages stay private and the release pipelines are unchanged.
+
+## Self-refute log
+
+1. Does the fix reuse the defect's own mechanism class? No instance. The old adapters failed
+   on committed proxies and a shim folder. Here both are refused by a mechanism (`git ls-files`
+   and a directory check in the fixture runner), not by an author's promise, and the fixtures
+   install packed tarballs so a workspace symlink cannot mask a packaging defect.
+2. Can the letter be met with the intent violated? Instance: "16 of 16 rows have an accessor"
+   is met by configuration entries alone, while the fixtures exercise only six of them. A row
+   naming the wrong event passes. Fixed by the shared model map and its manifest spec (Phase 3,
+   acceptance bar).
+3. Does every numeric target have a denominator and an instrument outside what it grades?
+   "16 of 16" had its denominator only in this plan's own table. The manifest spec is the
+   outside instrument: Stencil writes the manifest from the decorators. Angular "20 and 22" is
+   graded by the fixture runner's `--framework-version`, outside the adapter build.
+4. Do two rules interact into an unintended pass? Scanned: tarball-only installs × the
+   `workspace:` check (ng-packagr's `dist/` manifest is the one packed, so the check sees it);
+   git-ignored proxies × wireit caching (the proxy directory is a declared `build` output, so
+   a cache hit restores it); "core `files` unchanged" × three new output targets (they write
+   under `packages/`, outside `dist/`, and `yarn validate.package` grades the packed core).
+   No instance.
 
 ## Found (outside this plan's scope)
 

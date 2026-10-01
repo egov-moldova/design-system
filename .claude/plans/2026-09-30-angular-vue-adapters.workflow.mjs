@@ -107,7 +107,14 @@ const P3 =
 
 _Wave C._
 
-Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.json\` (workspace, devDeps, \`build.vue\`), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`.
+Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.json\` (workspace, devDeps, \`build.vue\`), \`scripts/adapters/**\`, \`yarn.lock\`, \`.prettierignore\`, \`.gitignore\` (proxy output), \`scripts/__tests__/validate-package.spec.mjs\`, \`scripts/__tests__/adapter-form-models.spec.mjs\`.
+
+- [ ] The form-control model map lives in ONE module under \`scripts/adapters/\` that
+      \`stencil.config.ts\` imports. The Vue \`componentModels\` here and the Angular
+      \`valueAccessorConfigs\` in Phase 4 are both derived from it, never typed twice.
+      \`scripts/__tests__/adapter-form-models.spec.mjs\` checks it against
+      \`.storybook/custom-elements.json\`, as the acceptance bar states, and goes red when one
+      row's event is renamed.
 
 - [ ] \`packages/vue\`: \`@egov-moldova/mud-vue\`, \`private: true\`, peer \`vue ^3.4.38\`, dependency
       \`@stencil/vue-output-target\` \`~0.14.3\` (for its \`/runtime\`), core as \`workspace:^\`. Built
@@ -130,8 +137,9 @@ Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.j
       consumer's import and are not bundled into the adapter. Its spec asserts every item in the
       bar's common fixture checks through \`v-model\`, plus no console error (including no
       double-define).
-- Verify: \`yarn build.vue\` and \`node scripts/adapters/consumer-fixture.mjs vue\` are green; the
-  spec goes red when the plugin's \`setAssetPath\` call is removed.`;
+- Verify: \`yarn build.vue\`, \`yarn test:scripts\` (which runs the manifest spec) and
+  \`node scripts/adapters/consumer-fixture.mjs vue\` are green; the fixture spec goes red when the
+  plugin's \`setAssetPath\` call is removed.`;
 
 const P4 =
   CONSTRAINTS +
