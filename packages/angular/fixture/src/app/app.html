@@ -1,0 +1,114 @@
+<main>
+  <h1>mud-angular consumer fixture</h1>
+  <output data-testid="zone">{{ zone }}</output>
+
+  <section>
+    <h2>string on mudInput (text-input)</h2>
+    <mud-text-input [(ngModel)]="text" data-testid="text" aria-label="Text"></mud-text-input>
+    <output data-testid="text-model">{{ json(text) }}</output>
+    <button type="button" data-testid="text-set" (click)="text = 'from model'">set model</button>
+  </section>
+
+  <section>
+    <h2>string on mudChange (date-input)</h2>
+    <mud-date-input [(ngModel)]="date" data-testid="date" aria-label="Date"></mud-date-input>
+    <output data-testid="date-model">{{ json(date) }}</output>
+    <button type="button" data-testid="date-set" (click)="date = '01/02/2024'">set model</button>
+  </section>
+
+  <section>
+    <h2>number (numeric-input)</h2>
+    <mud-numeric-input [(ngModel)]="num" data-testid="numeric" aria-label="Number" [max]="10"></mud-numeric-input>
+    <output data-testid="numeric-model">{{ json(num) }}</output>
+    <output data-testid="numeric-type">{{ typeName(num) }}</output>
+    <button type="button" data-testid="numeric-set" (click)="num = 7">set model</button>
+    <button type="button" data-testid="numeric-null" (click)="num = null">set null</button>
+    <button type="button" data-testid="numeric-string" (click)="setNumericString()">set '5'</button>
+  </section>
+
+  <section>
+    <h2>number through a reactive formControl, disable</h2>
+    <mud-numeric-input
+      [formControl]="numControl"
+      data-testid="numeric-rx"
+      aria-label="Number (reactive)"
+    ></mud-numeric-input>
+    <output data-testid="numeric-rx-model">{{ json(numControl.value) }}</output>
+    <button type="button" data-testid="numeric-rx-disable" (click)="numControl.disable()">disable</button>
+    <button type="button" data-testid="numeric-rx-enable" (click)="numControl.enable()">enable</button>
+  </section>
+
+  <section>
+    <h2>boolean (checkbox)</h2>
+    <mud-checkbox [(ngModel)]="checked" data-testid="checkbox" aria-label="Checkbox"></mud-checkbox>
+    <output data-testid="checkbox-model">{{ json(checked) }}</output>
+    <button type="button" data-testid="checkbox-set" (click)="checked = true">set model</button>
+  </section>
+
+  <section>
+    <h2>select (select)</h2>
+    <mud-select [(ngModel)]="fruit" data-testid="select" aria-label="Fruit">
+      <option value="apple">Apple</option>
+      <option value="pear">Pear</option>
+    </mud-select>
+    <output data-testid="select-model">{{ json(fruit) }}</output>
+    <button type="button" data-testid="select-set" (click)="fruit = 'pear'">set model</button>
+  </section>
+
+  <section>
+    <h2>select through a reactive formControl</h2>
+    <mud-select [formControl]="fruitControl" data-testid="select-rx" aria-label="Fruit (reactive)">
+      <option value="apple">Apple</option>
+      <option value="pear">Pear</option>
+    </mud-select>
+    <output data-testid="select-rx-model">{{ json(fruitControl.value) }}</output>
+    <button type="button" data-testid="select-rx-set" (click)="fruitControl.setValue('pear')">set model</button>
+    <button type="button" data-testid="select-rx-disable" (click)="fruitControl.disable()">disable</button>
+    <button type="button" data-testid="select-rx-enable" (click)="fruitControl.enable()">enable</button>
+  </section>
+
+  <section>
+    <h2>string array (input-chip)</h2>
+    <mud-input-chip [(ngModel)]="chips" data-testid="chips" aria-label="Chips"></mud-input-chip>
+    <output data-testid="chips-model">{{ json(chips) }}</output>
+    <button type="button" data-testid="chips-set" (click)="chips = ['x', 'y']">set model</button>
+  </section>
+
+  <section>
+    <h2>string array through a reactive formControl, reset</h2>
+    <mud-input-chip [formControl]="chipsControl" data-testid="chips-rx" aria-label="Chips (reactive)"></mud-input-chip>
+    <output data-testid="chips-rx-model">{{ json(chipsControl.value) }}</output>
+    <button type="button" data-testid="chips-rx-set" (click)="chipsControl.setValue(['x', 'y'])">set model</button>
+    <button type="button" data-testid="chips-rx-reset" (click)="chipsControl.reset()">reset</button>
+  </section>
+
+  <section>
+    <h2>file array (file-input)</h2>
+    <mud-file-input [(ngModel)]="files" data-testid="files" multiple></mud-file-input>
+    <output data-testid="files-model">{{ json(fileNames()) }}</output>
+  </section>
+
+  <section>
+    <h2>file array through a reactive formControl, reset</h2>
+    <mud-file-input [formControl]="filesControl" data-testid="files-rx" multiple></mud-file-input>
+    <output data-testid="files-rx-model">{{ json(fileNames(filesControl.value)) }}</output>
+    <button type="button" data-testid="files-rx-reset" (click)="filesControl.reset()">reset</button>
+  </section>
+
+  <section>
+    <h2>phone-input country switch</h2>
+    <mud-phone-input [(ngModel)]="phone" data-testid="phone" type="international" aria-label="Phone"></mud-phone-input>
+    <output data-testid="phone-model">{{ json(phone) }}</output>
+  </section>
+
+  <section>
+    <h2>bare boolean attribute</h2>
+    <mud-button disabled data-testid="button">Disabled</mud-button>
+  </section>
+
+  <section>
+    <h2>assets (icon, logo)</h2>
+    <mud-icon data-testid="icon" name="alarm" [size]="24"></mud-icon>
+    <mud-logo data-testid="logo"></mud-logo>
+  </section>
+</main>

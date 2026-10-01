@@ -157,3 +157,107 @@ jobs:
 
       - name: Validate package
         run: yarn validate.package
+
+  # Builds the Vue and Angular adapters, packs them with the core, installs the tarballs into
+  # fixture apps outside the workspaces and drives each app in Chromium. See
+  # scripts/adapters/consumer-fixture.mjs for the steps and what each one fails on.
+  adapters:
+    name: Adapters
+    needs: [lint, typecheck]
+    # Headroom, not a budget: the shared build is ~10 min, an Angular 20 fixture build measured
+    # ~5 min on a loaded machine, and the runner caps every one of its steps at 600 s. Three
+    # runs at that cap, plus the two adapter builds, still fit.
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=12288
+      STORYBOOK_DISABLE_TELEMETRY: 1
+    steps:
+      # Nothing here pushes: the token is not left in .git/config for the fixture runs to read.
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Setup project
+        uses: ./.github/actions/setup-node-deps
+
+      # Both fixtures pin the same @playwright/test. Read it from versions.json instead of
+      # retyping it here, and fail when the rows disagree: one cache key cannot cover two.
+      - name: Read the pinned Playwright version
+        id: playwright
+        run: |
+          VERSION=$(node -e "
+            const rows = ['vue', 'angular'].flatMap(name =>
+              Object.values(JSON.parse(require('fs').readFileSync('packages/' + name + '/fixture/versions.json', 'utf8'))),
+            );
+            const pins = [...new Set(rows.map(row => row.devDependencies['@playwright/test']))];
+            if (pins.length !== 1) { console.error('fixtures pin different Playwright versions: ' + pins); process.exit(1); }
+            console.log(pins[0]);
+          ")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # The runner installs Chromium for that pin into this directory (with --with-deps under CI,
+      # which always re-runs the apt step; only the browser download is cached). Every run
+      # restores it, and only a push to main saves it (same key), so a pull request can never
+      # write a cache entry that a later run on main would restore.
+      - name: Restore the Playwright browser
+        id: playwright-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # Before `yarn build`, for the same reason as in the Build job.
+      - name: Build token CSS
+        run: yarn tokens.build
+
+      # Also generates the React, Vue and Angular proxies (git-ignored).
+      - name: Build Stencil components and tokens
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Build the React adapter (typechecks against React 18 and 19)
+        run: yarn build.react
+
+      - name: Build the Vue adapter
+        run: yarn build.vue
+
+      - name: Build the Angular adapter
+        run: yarn build.angular
+
+      - name: Consumer fixture, Vue
+        run: node scripts/adapters/consumer-fixture.mjs vue
+
+      - name: Consumer fixture, Angular 20 (zone.js)
+        run: node scripts/adapters/consumer-fixture.mjs angular --framework-version 20
+
+      - name: Consumer fixture, Angular 22 (zoneless)
+        run: node scripts/adapters/consumer-fixture.mjs angular --framework-version 22
+
+      # An exact hit already holds this key, and a cache key cannot be overwritten.
+      - name: Save the Playwright browser
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # This job must stay secret-free: the artifact uploads the runner's temp directory, so
+      # anything a step wrote there (an env file, a token in a config) would be published.
+      #
+      # A failed run keeps its temp directory (the runner prints its path): the fixture copy, its
+      # visible build output and Playwright's traces (`trace: retain-on-failure`, in
+      # `test-results/`). Hidden files are excluded on purpose (upload-artifact's default), so
+      # `dist/.vite/` is not in the artifact; the tarballs are excluded to keep it small.
+      - name: Upload the failed fixture runs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adapter-fixtures
+          path: |
+            ${{ runner.temp }}/mud-fixture-*
+            !${{ runner.temp }}/mud-fixture-*/**/node_modules/**
+            !${{ runner.temp }}/mud-fixture-*/**/*.tgz
+          if-no-files-found: ignore
+          include-hidden-files: false
+          retention-days: 7

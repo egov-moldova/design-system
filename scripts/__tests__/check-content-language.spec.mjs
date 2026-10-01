@@ -33,10 +33,10 @@ function fixtureRoot(pageHtml) {
   roots.push(root);
   fs.mkdirSync(path.join(root, 'src/components/mud-demo'), { recursive: true });
   fs.mkdirSync(path.join(root, 'scripts/eslint'), { recursive: true });
-  fs.mkdirSync(path.join(root, 'web-components/demo/pages/actions'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'packages/web-components/demo/pages/actions'), { recursive: true });
   fs.writeFileSync(path.join(root, 'src/components/mud-demo/mud-demo.messages.ts'), MESSAGES);
   fs.writeFileSync(path.join(root, 'scripts/eslint/content-language.allow.json'), JSON.stringify(ALLOW));
-  fs.writeFileSync(path.join(root, 'web-components/demo/pages/actions/mud-demo.html'), pageHtml);
+  fs.writeFileSync(path.join(root, 'packages/web-components/demo/pages/actions/mud-demo.html'), pageHtml);
   return root;
 }
 
@@ -107,8 +107,8 @@ describe('check-content-language.mjs over a fixture root', () => {
     assert.deepEqual(
       violations.map(v => [v.file, v.text]),
       [
-        ['web-components/demo/pages/actions/mud-demo.html', 'Salvează'],
-        ['web-components/demo/pages/actions/mud-demo.html', 'Forward'],
+        ['packages/web-components/demo/pages/actions/mud-demo.html', 'Salvează'],
+        ['packages/web-components/demo/pages/actions/mud-demo.html', 'Forward'],
       ],
     );
     const run = spawnSync(process.execPath, [CLI, '--root', root], { encoding: 'utf8' });

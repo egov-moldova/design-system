@@ -85,3 +85,6 @@ export type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './compone
 
 export { MUD_LOCALES } from './utils/locale';
 export type { MudLocale, LocaleProp } from './utils/locale';
+
+// The Angular and Vue proxy generators import `Components`, `JSX`, the `Mud*CustomEvent` interfaces and the event-detail types from `@egov-moldova/mud/components`.
+export type * from './components';

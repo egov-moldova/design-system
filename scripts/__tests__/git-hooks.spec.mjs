@@ -124,10 +124,10 @@ describe('hook installation', () => {
   });
 
   it('runs from the postinstall of a private workspace', () => {
-    assert.ok(readJson('package.json').workspaces.includes('react'));
-    const react = readJson('react/package.json');
+    assert.ok(readJson('package.json').workspaces.includes('packages/react'));
+    const react = readJson('packages/react/package.json');
     assert.equal(react.private, true);
-    assert.equal(react.scripts.postinstall, 'node ../scripts/git/install-hooks.mjs');
+    assert.equal(react.scripts.postinstall, 'node ../../scripts/git/install-hooks.mjs');
   });
 });
 
