@@ -196,9 +196,13 @@ Event column lists every event that follows a user-driven write:
   `mudCountryChange` (`mud-phone-input.tsx:693`).
 
 Angular listens to every listed event. Vue's generator binds ONE event per model
-(`@stencil/vue-output-target@0.14.3 dist/index.js:174`), so Vue binds numeric-input on
-`mudChange` (its model updates on commit, like date-input; owner decision, 2026-10-01) and
-phone-input on `mudInput`, leaving the country switch as a recorded Vue limitation (Not verified).
+(`@stencil/vue-output-target@0.14.3 dist/index.js:174`), but its runtime `defineContainer`
+accepts a list of update events (`dist/runtime.js:227`). So numeric-input and phone-input get
+hand-written Vue wrappers, as Angular has hand-written accessors: numeric-input listens to
+`mudInput` and `mudChange` and clears to empty rather than `0` (Vue's `patchDOMProp` writes `0`
+when a `null` prop meets a numeric property), and phone-input listens to `mudInput` and
+`mudCountryChange` (owner decision after the sentinel round, 2026-10-01; it supersedes the
+earlier commit-only numeric binding and the phone-input Vue limitation).
 
 Value holders that emit under another name are dispositioned too, so the definition above cannot
 silently miss a control: the spec lists every tag whose manifest declares a `value`, `checked`
@@ -225,8 +229,8 @@ by (Angular type, event, property) into ONE config whose `elementSelectors` list
 | Model | Events (Angular) | Event (Vue) | Components | Angular accessor |
 |---|---|---|---|---|
 | `value` (string) | `mudInput` | `mudInput` | text-input, textarea, search-input | `text` |
-| `value` (string) | `mudInput`, `mudCountryChange` | `mudInput` | phone-input (E.164 on each keystroke and on a country switch) | `text`, plus one `text` config for `mudCountryChange` on phone-input alone |
-| `value` (number) | `mudInput`, `mudChange` | `mudChange` | numeric-input | hand-written (`undefined`/`null`/`''` → `null`) |
+| `value` (string) | `mudInput`, `mudCountryChange` | `mudInput`, `mudCountryChange` (hand-written wrapper) | phone-input (E.164 on each keystroke and on a country switch) | `text`, plus one `text` config for `mudCountryChange` on phone-input alone |
+| `value` (number) | `mudInput`, `mudChange` | `mudInput`, `mudChange` (hand-written wrapper; `null` clears, never `0`) | numeric-input | hand-written (`undefined`/`null`/`''` → `null`) |
 | `checked` | `mudChange` | `mudChange` | checkbox, switch | `boolean` |
 | `value` | `mudChange` | `mudChange` | select, radio-group, segmented-control, date-picker (`string \| string[]` in range mode, passed through as-is), time-picker, date-input, time-input, menu (`type="selection"`) | `select` |
 | `chips` (string[]) | `mudChange` | `mudChange` | input-chip | hand-written (`null`/`undefined` → `[]`) |
@@ -247,7 +251,7 @@ numeric-input's `undefined` passed through as Vue's empty model.
 | Publish status | Publishable, no CD change · private like React · publishable plus a CD step | Private like React (owner, 2026-09-30) |
 | Consumption proof | Fixture apps in CI · typecheck and build only | Fixture apps in CI (owner, 2026-09-30) |
 | Workspace location | `packages/` for the two new ones only · root `angular/` + `vue/` with a Vitest alias for `vue` · all four adapters in `packages/` | All four in `packages/` (owner, 2026-09-30): one convention. A root `vue/` would repeat #23. Moving `react/` removes #23's root cause, and moving `web-components/` completes the move #23 deferred. |
-| Angular output type | `standalone` · `scam` · `component` (lazy loader) | `standalone` with `esModules: true`: the target's default, tree-shakable, and built on `dist-custom-elements` |
+| Angular output type | `standalone` · `scam` · `component` (lazy loader) | `standalone` with `esModules: true`: the target's default, built on `dist-custom-elements`. Not tree-shakable in practice: each generated wrapper defines its element when its class loads, so every Angular bundle carries all wrappers (found at the sentinel round; documented, `DEBT(angular-wrapper-side-effects)`) |
 | Vue registration | `includeImportCustomElements` (standalone bundle) · lazy loader | Standalone bundle with `esModules: true`. Never both runtimes: the React adapter mixes them, which is a defect (#180). |
 
 ## Global constraints
@@ -262,7 +266,8 @@ numeric-input's `undefined` passed through as Vue's empty model.
   `undefined` `files` as `[]` (owner decision, 2026-10-01, after the verify round: Vue's generator
   cannot convert a `null` model, and `mud-file-input.tsx:830` read `files.length` unguarded). The
   guard ships with a spec case, and the Vue fixture then initialises file-input with `null` as the
-  bar states. No other core source changes.
+  bar states. The same guard in `mud-input-chip` for `chips` (owner decision after the sentinel
+  round, 2026-10-01: a Vue `ref(null)` crashed it the same way). No other core source changes.
 - No adapter build masks a type error: no `|| true`, no `skipLibCheck` or `@ts-nocheck` over the
   generated proxies. The adapter build is what proves every generated type import resolves.
 - The move of `react/` and `web-components/` changes paths only. The package names, manifests
@@ -574,18 +579,21 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 ## Not verified (by design)
 
 - Server-side rendering (Angular SSR, Nuxt). The core has no hydrate output target, so the
-  adapters are client-only. This gets its own issue if needed.
+  adapters are client-only. `provideMud` and `Mud.install` skip the asset-path setup when there
+  is no `document`, so a server render no longer crashes at bootstrap; nothing beyond that is
+  run on a server.
 - Transitive dependency drift in the fixtures: they install pinned direct dependencies without a
-  lockfile, so a green run is not byte-reproducible, and unpinned transitive install scripts run
-  in the CI job (bounded by the workflow's `permissions: contents: read`). Accepted trade-off:
-  three lockfiles to refresh per framework release cost more than the drift while the packages
-  are private. Revisit before publishing.
+  lockfile, so a green run is not byte-reproducible, and transitive code runs in the CI job.
+  Risk accepted by Dan (2026-10-01, sentinel security finding) with mitigations: `npm install
+  --ignore-scripts`, `persist-credentials: false`, the Playwright cache saved only from `main`,
+  and `permissions: contents: read`. Revisit before publishing.
 - Angular 21. Partial compilation built with 20 and tested on 20 and 22 brackets it; 21 itself is
   not run.
-- Publishing. The packages stay private and the release pipelines are unchanged.
-- Vue: a `mud-phone-input` country switch does not reach `v-model`, because the component emits
-  only `mudCountryChange` there and Vue's generator binds one event per model. Recorded
-  limitation, documented in the README; the fix belongs in the core (Found).
+- Publishing. The packages stay private and the release pipelines are unchanged. Before
+  publishing: the adapters' minimum core range must start at the first core release that ships
+  the Phase 0 type export and the two null guards (the packed `^1.2.0-dev.1` also admits
+  published 1.2.0-dev.2 and dev.3, which lack them), and the adapter manifests' `engines` and
+  build `scripts` need trimming.
 
 ## Self-refute log
 
@@ -619,7 +627,13 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 - `mud-phone-input`'s `changeCountry` rewrites `value` and emits only `mudCountryChange`
   (`mud-phone-input.tsx:693`); `mud-numeric-input`'s commit clamp writes `value` and emits only
   `mudChange`. Emitting `mudInput` after every user-driven write would let every adapter bind one
-  event. Core issue to open.
+  event and retire the hand-written Vue wrappers and Angular accessor configs. Core issue to open.
+- Deferred from the sentinel round (2026-10-01), as follow-ups: SHA-pinning the CI actions
+  (repo-wide convention is tags), a CI matrix sharing one build artifact, covering the Vue and
+  Angular adapters in `scripts/audit` (wave D smoke builds, integration-usage scan), checking
+  `valueType` against the manifest, `yarn` scripts for the fixture runner, one shared
+  asset-path helper (two copies, below the Rule of Three), and measuring `yarn build` before and
+  after the three output targets.
 
 - #180 (opened 2026-09-30): the React adapter registers the same tags through two runtimes. Its
   build is `tsc || true`, its peer is React 18 only, and its comments still say `AGE` / `cor-*`.
