@@ -1,25 +1,31 @@
 :host {
   /* Color slots — overridden per [emphasis][variant] below (subtle/info default). */
   --_bg: var(--info-box-subtle-info-background);
-  --_text: var(--info-box-subtle-info-text);
   --_icon: var(--info-box-subtle-info-icon);
   --_close-icon: var(--info-box-subtle-info-close-icon);
 
+  /* Layout slots — the Figma Mobile layout overrides them under the media query. */
+  --_radius: var(--info-box-container-border-radius);
+  --_icon-size: var(--info-box-icon-size);
+  --_icon-padding-block-start: var(--info-box-icon-padding-block-start);
+  --_content-padding-block: var(--info-box-content-padding-block);
+  --_body-font-size: var(--info-box-body-font-size);
+  --_body-line-height: var(--info-box-body-line-height);
+
   display: flex;
   align-items: flex-start;
-  gap: var(--info-box-container-gap);
   inline-size: 100%;
   box-sizing: border-box;
-  padding-block: var(--info-box-container-padding-block);
-  padding-inline: var(--info-box-container-padding-inline);
-  border-radius: var(--info-box-container-border-radius);
+  /* The icon column and the content carry their own padding (Figma Bone frame). */
+  padding-inline-start: var(--info-box-container-padding-inline-start);
+  border-radius: var(--_radius);
 
   background-color: var(--_bg);
-  color: var(--_text);
+  color: var(--info-box-body-color);
 
   font-family: var(--info-box-body-font-family);
-  font-size: var(--info-box-body-font-size);
-  line-height: var(--info-box-body-line-height);
+  font-size: var(--_body-font-size);
+  line-height: var(--_body-line-height);
   font-weight: var(--info-box-body-font-weight);
 }
 
@@ -27,56 +33,48 @@
 
 :host([emphasis='subtle'][variant='info']) {
   --_bg: var(--info-box-subtle-info-background);
-  --_text: var(--info-box-subtle-info-text);
   --_icon: var(--info-box-subtle-info-icon);
   --_close-icon: var(--info-box-subtle-info-close-icon);
 }
 
 :host([emphasis='subtle'][variant='info-moderate']) {
   --_bg: var(--info-box-subtle-info-moderate-background);
-  --_text: var(--info-box-subtle-info-moderate-text);
   --_icon: var(--info-box-subtle-info-moderate-icon);
   --_close-icon: var(--info-box-subtle-info-moderate-close-icon);
 }
 
 :host([emphasis='subtle'][variant='warning']) {
   --_bg: var(--info-box-subtle-warning-background);
-  --_text: var(--info-box-subtle-warning-text);
   --_icon: var(--info-box-subtle-warning-icon);
   --_close-icon: var(--info-box-subtle-warning-close-icon);
 }
 
 :host([emphasis='subtle'][variant='error']) {
   --_bg: var(--info-box-subtle-error-background);
-  --_text: var(--info-box-subtle-error-text);
   --_icon: var(--info-box-subtle-error-icon);
   --_close-icon: var(--info-box-subtle-error-close-icon);
 }
 
 :host([emphasis='strong'][variant='info']) {
   --_bg: var(--info-box-strong-info-background);
-  --_text: var(--info-box-strong-info-text);
   --_icon: var(--info-box-strong-info-icon);
   --_close-icon: var(--info-box-strong-info-close-icon);
 }
 
 :host([emphasis='strong'][variant='info-moderate']) {
   --_bg: var(--info-box-strong-info-moderate-background);
-  --_text: var(--info-box-strong-info-moderate-text);
   --_icon: var(--info-box-strong-info-moderate-icon);
   --_close-icon: var(--info-box-strong-info-moderate-close-icon);
 }
 
 :host([emphasis='strong'][variant='warning']) {
   --_bg: var(--info-box-strong-warning-background);
-  --_text: var(--info-box-strong-warning-text);
   --_icon: var(--info-box-strong-warning-icon);
   --_close-icon: var(--info-box-strong-warning-close-icon);
 }
 
 :host([emphasis='strong'][variant='error']) {
   --_bg: var(--info-box-strong-error-background);
-  --_text: var(--info-box-strong-error-text);
   --_icon: var(--info-box-strong-error-icon);
   --_close-icon: var(--info-box-strong-error-close-icon);
 }
@@ -88,30 +86,31 @@
   min-inline-size: 0;
   display: flex;
   align-items: flex-start;
-  gap: var(--info-box-container-gap);
 }
 
-/* ---------- leading icon ---------- */
+/* ---------- leading icon column ---------- */
 
 .icon {
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--info-box-icon-size);
-  /* Match the body line box so the icon aligns with the first line of text. */
-  block-size: var(--info-box-body-line-height);
+  display: flex;
+  box-sizing: content-box;
+  padding-block-start: var(--_icon-padding-block-start);
+  padding-block-end: var(--info-box-icon-padding-block-end);
+  padding-inline-start: var(--info-box-icon-padding-inline-start);
   color: var(--_icon);
 }
 
 .icon mud-icon {
   --icon-color: currentcolor;
+  /* `size` picks the 24px drawing; the box shrinks to 20px in the Mobile layout. */
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
 }
 
 ::slotted([slot='icon-start']) {
   display: inline-flex;
-  inline-size: var(--info-box-icon-size);
-  block-size: var(--info-box-icon-size);
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
   color: var(--_icon);
 }
 
@@ -119,14 +118,25 @@
   --icon-color: currentcolor;
 }
 
-/* ---------- content stack ---------- */
+/* ---------- content ---------- */
 
 .content {
   flex: 1 1 auto;
   min-inline-size: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--info-box-container-stack-gap);
+  gap: var(--info-box-container-gap);
+  padding-block: var(--_content-padding-block);
+  padding-inline-start: var(--info-box-content-padding-inline-start);
+  padding-inline-end: var(--info-box-content-padding-inline-end);
+}
+
+/* Heading and body read as one block, closer together than the actions below. */
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--info-box-container-text-gap);
+  min-inline-size: 0;
 }
 
 .title {
@@ -135,12 +145,8 @@
   font-size: var(--info-box-heading-font-size);
   line-height: var(--info-box-heading-line-height);
   font-weight: var(--info-box-heading-font-weight);
-  color: inherit;
-}
-
-/* Heading sits directly above the body with a tighter gap than the stack. */
-:host(.has-title) .body {
-  margin-block-start: calc(var(--info-box-container-heading-gap) - var(--info-box-container-stack-gap));
+  letter-spacing: var(--info-box-heading-letter-spacing);
+  color: var(--info-box-heading-color);
 }
 
 .body {
@@ -153,10 +159,10 @@
 /* ---------- actions (inline link / button group) ---------- */
 
 .actions {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--spacing-12);
+  column-gap: var(--spacing-12);
 }
 
 :host(:not(.has-actions)) .actions {
@@ -165,6 +171,11 @@
 
 ::slotted([slot='actions']) {
   color: inherit;
+}
+
+/* Figma sets a button 8px lower than a link (574:32452 against 574:32434). */
+::slotted(mud-button[slot='actions']) {
+  margin-block-start: var(--info-box-content-actions-offset);
 }
 
 /* ---------- close button ---------- */
@@ -178,6 +189,9 @@
      40px on touch (below). The × glyph stays 16px; only the hit area grows. */
   inline-size: var(--info-box-close-size-pointer);
   block-size: var(--info-box-close-size-pointer);
+  margin-block-start: var(--info-box-close-margin-block-start);
+  margin-inline-start: var(--info-box-close-margin-inline-start);
+  margin-inline-end: var(--info-box-close-margin-inline-end);
   padding: 0;
 
   border: 0;
@@ -228,6 +242,19 @@
   inline-size: 100%;
   block-size: 100%;
   pointer-events: none;
+}
+
+/* ---------- Mobile layout (Figma 101:1903) ---------- */
+
+@media (max-width: 640px) {
+  :host {
+    --_radius: var(--info-box-container-border-radius-mobile);
+    --_icon-size: var(--info-box-icon-size-mobile);
+    --_icon-padding-block-start: var(--info-box-icon-padding-block-start-mobile);
+    --_content-padding-block: var(--info-box-content-padding-block-mobile);
+    --_body-font-size: var(--info-box-body-font-size-mobile);
+    --_body-line-height: var(--info-box-body-line-height-mobile);
+  }
 }
 
 /* ---------- reduced motion ---------- */

@@ -187,16 +187,18 @@ export class MudInfoBox {
                 <mud-icon
                   name={iconName}
                   variant={hasIconVariant(iconName, 'filled') ? 'filled' : 'outlined'}
-                  size={20}
+                  size={24}
                 />
               </slot>
             </span>
           ) : null}
 
           <div class="content">
-            {hasTitle ? <p class="title">{this.titleText}</p> : null}
-            <div class="body">
-              <slot />
+            <div class="text">
+              {hasTitle ? <p class="title">{this.titleText}</p> : null}
+              <div class="body">
+                <slot />
+              </div>
             </div>
             <div class="actions">
               <slot name="actions" onSlotchange={this.onActionsSlotChange} />

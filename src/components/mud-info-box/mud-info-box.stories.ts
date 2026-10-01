@@ -210,7 +210,7 @@ const renderVariations = () => /*html*/ `
       <span style="${captionStyle}">w/ link</span>
       <mud-info-box variant="info-moderate" emphasis="subtle">
         ${DEMO_BODY}
-        <mud-link slot="actions" href="#" size="sm">Learn more</mud-link>
+        <mud-link slot="actions" href="#" size="md">Learn more</mud-link>
       </mud-info-box>
     </div>
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
@@ -225,7 +225,7 @@ const renderVariations = () => /*html*/ `
       <mud-info-box variant="info-moderate" emphasis="subtle">
         ${DEMO_BODY}
         <mud-button slot="actions" size="sm">Confirm your identity</mud-button>
-        <mud-link slot="actions" href="#" size="sm">Learn more</mud-link>
+        <mud-link slot="actions" href="#" size="md">Learn more</mud-link>
       </mud-info-box>
     </div>
   </div>
@@ -236,7 +236,7 @@ const docsSourceVariations = /*html*/ `<mud-info-box variant="info-moderate" hid
 <mud-info-box variant="info-moderate">
   …
   <mud-button slot="actions" size="sm">Confirm your identity</mud-button>
-  <mud-link slot="actions" href="#" size="sm">Learn more</mud-link>
+  <mud-link slot="actions" href="#" size="md">Learn more</mud-link>
 </mud-info-box>`;
 export const Variations: Story = {
   render: renderVariations,
@@ -251,7 +251,7 @@ const renderWithHeading = () => /*html*/ `
     <mud-info-box variant="info" emphasis="subtle" title-text="Understanding Your Digital Identity">
       Digital identity is the foundation of accessing modern government services online. It ensures that your
       personal information is secure, verifiable, and only accessible to you.
-      <mud-link slot="actions" href="#" size="sm">Learn more</mud-link>
+      <mud-link slot="actions" href="#" size="md">Learn more</mud-link>
     </mud-info-box>
   </div>
 `;
@@ -264,7 +264,7 @@ export const WithHeading: Story = {
       source: {
         code: `<mud-info-box variant="info" title-text="Understanding Your Digital Identity">
   Digital identity is the foundation of accessing modern government services online…
-  <mud-link slot="actions" href="#" size="sm">Learn more</mud-link>
+  <mud-link slot="actions" href="#" size="md">Learn more</mud-link>
 </mud-info-box>`,
       },
     },
@@ -303,7 +303,7 @@ const renderEdgeCases = () => /*html*/ `
       <mud-info-box variant="warning" emphasis="strong" title-text="Session about to expire" closable>
         Save your changes to avoid losing data. You will be signed out automatically in 2 minutes.
         <mud-button slot="actions" size="sm">Extend session</mud-button>
-        <mud-link slot="actions" href="#" size="sm">Details</mud-link>
+        <mud-link slot="actions" href="#" size="md">Details</mud-link>
       </mud-info-box>
     </div>
     <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
