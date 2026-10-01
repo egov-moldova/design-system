@@ -508,6 +508,68 @@
           }
         }
       ]
+    },
+    {
+      "name": "edge-label",
+      "node": "454:5607",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .label-text",
+          "node": "454:5607",
+          "styles": {
+            "boxHeight": "20px",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis",
+            "whiteSpace": "nowrap"
+          },
+          "note": "Figma 454:5607 and its caption 454:5709: the top label is cut on the first line. Figma writes the cut into the text itself (\"…heart...\"), so no pixel diff is possible; the long label is the fixture."
+        }
+      ]
+    },
+    {
+      "name": "edge-input-text",
+      "node": "454:5611",
+      "capture": {
+        "selector": "mud-select",
+        "bleed": 0
+      },
+      "mask": [],
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" value=\"a\"><option value=\"a\">Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .trigger",
+          "node": "454:5611",
+          "styles": {
+            "textOverflow": "ellipsis",
+            "whiteSpace": "nowrap"
+          },
+          "note": "Figma 454:5611 and its caption 454:5711: text beyond the field is cut before the chevron. The capture is the whole 282x76 frame (label and control) and the default trigger mask is lifted so the cut is compared. The cut falls at the same character as in Figma; the 1.87% diff is glyph anti-aliasing of the 16px text."
+        }
+      ]
+    },
+    {
+      "name": "edge-assistive-text",
+      "node": "454:5652",
+      "capture": {
+        "selector": "mud-select",
+        "bleed": 0
+      },
+      "mask": [],
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" helper-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery, providing citizens with easy access to essential information.\"><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .assistive-text",
+          "node": "454:5652",
+          "styles": {
+            "boxHeight": "40px",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
+          },
+          "note": "Figma 454:5652 and its caption 454:5713: the assistive text is cut on its second line (2 x 20px). Figma cuts the second line mid-word (\"…delivery, provi…\"); Chromium's line clamp breaks before the word that does not fit (\"…delivery,…\"). overflow-wrap: anywhere did not change that, so it is a text-engine difference, not a style one, and the 0.78% diff is that line."
+        }
+      ]
     }
   ]
 }
