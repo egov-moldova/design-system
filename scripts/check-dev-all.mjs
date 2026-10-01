@@ -218,9 +218,9 @@ function assert(condition, message) {
 
 /** First page under demo/pages/* named for the tag, so a category move never breaks this. */
 function demoPage(tag) {
-  const [rel] = globSync(`web-components/demo/pages/*/${tag}.html`, { cwd: ROOT });
+  const [rel] = globSync(`packages/web-components/demo/pages/*/${tag}.html`, { cwd: ROOT });
   assert(rel, `no demo page for ${tag}`);
-  return `${DEMO}/${rel.replace('web-components/demo/', '')}`;
+  return `${DEMO}/${rel.replace('packages/web-components/demo/', '')}`;
 }
 
 async function storybookEntry(title, type) {

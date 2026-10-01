@@ -1,0 +1,3 @@
+# Playwright output of a fixture run. The runner works in a temp copy, but a run started by hand
+# writes it here.
+test-results/

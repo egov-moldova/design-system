@@ -10,6 +10,8 @@ applied to the latest published major version of each package on npm.
 | `@egov-moldova/mud` | latest `1.x` |
 | `@egov-moldova/mud-web-components` | latest `1.x` |
 | `@egov-moldova/mud-react` | not yet published |
+| `@egov-moldova/mud-vue` | not yet published |
+| `@egov-moldova/mud-angular` | not yet published |
 
 Older major versions are not patched — please upgrade to the latest release
 before reporting an issue.
@@ -46,8 +48,8 @@ for this repository.
 In scope:
 
 - The published npm packages (`@egov-moldova/mud`,
-  `@egov-moldova/mud-web-components`, and the in-progress `@egov-moldova/mud-react`
-  adapter)
+  `@egov-moldova/mud-web-components`, and the in-progress `@egov-moldova/mud-react`,
+  `@egov-moldova/mud-vue` and `@egov-moldova/mud-angular` adapters)
 - Build tooling in `scripts/` that runs as part of the publish pipeline
 - The Storybook deployment configuration (`Dockerfile`, `docker-compose.yml`,
   `.github/workflows/`) to the extent it affects the integrity of published
