@@ -216,6 +216,9 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: Build the React adapter (typechecks against React 18 and 19)
+        run: yarn build.react
+
       - name: Build the Vue adapter
         run: yarn build.vue
 

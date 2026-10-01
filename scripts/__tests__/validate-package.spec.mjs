@@ -801,3 +801,27 @@ describe('the React workspace names only exported subpaths', () => {
     assert.deepEqual(lazy, []);
   });
 });
+
+describe('no adapter build masks a failure (#180)', () => {
+  // A `build` that swallows its exit status turns `yarn build.<adapter>`, the CI step and
+  // the audit's `adapter-*` rows into checks that cannot fail. Masking idioms cannot be
+  // enumerated (`|| true`, `|| echo`, `; exit 0`, `; next-command`), so the positive shape is
+  // asserted instead: commands chained by `&&` only. A legitimate `||` needs an explicit
+  // exception here.
+  // Each `&&` segment must hold no other shell control operator: `;`, `|` (also `||`), `&`, newline.
+  const propagates = build => build.split('&&').every(segment => !/[;|&\n]/.test(segment));
+  const PACKAGES = path.join(PROJECT_ROOT, 'packages');
+
+  it('every packages/*/package.json build script propagates its exit status', () => {
+    const masked = fs
+      .readdirSync(PACKAGES, { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'package.json')))
+      .map(entry => [
+        entry.name,
+        JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'package.json'), 'utf8')).scripts?.build,
+      ])
+      .filter(([, build]) => typeof build === 'string' && !propagates(build))
+      .map(([name, build]) => `packages/${name}: ${build}`);
+    assert.deepEqual(masked, []);
+  });
+});

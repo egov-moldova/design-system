@@ -157,6 +157,7 @@ One `yarn build` runs Stencil's React, Vue and Angular output targets next to th
 
 ```bash
 yarn build           # core + generated React, Vue and Angular proxies
+yarn build.react     # typechecks @egov-moldova/mud-react against React 18 and 19, fails on a type error (depends on `build`)
 yarn build.vue       # compiles @egov-moldova/mud-vue (depends on `build`)
 yarn build.angular   # packages @egov-moldova/mud-angular with ng-packagr, partial mode (depends on `build`)
 ```
@@ -199,6 +200,7 @@ Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publi
 | `yarn build` | Full build: tokens → Stencil components → `dist/`, `loader/` |
 | `yarn build.web` | Builds `@egov-moldova/mud-web-components` (depends on `build`) |
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
+| `yarn build.react` | Typechecks `@egov-moldova/mud-react` against React 18 and 19 (depends on `build`) |
 | `yarn build.vue` | Builds `@egov-moldova/mud-vue` (depends on `build`) |
 | `yarn build.angular` | Builds `@egov-moldova/mud-angular` (depends on `build`) |
 | `node scripts/adapters/consumer-fixture.mjs <vue\|angular> [--framework-version <major>]` | Packs the core and the adapter, installs them into the consumer fixture and drives it in Chromium (after `build` and the adapter's own build) |

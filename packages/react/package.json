@@ -17,7 +17,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsc || true",
+    "build": "tsc && tsc -p tsconfig.react19.json",
     "postinstall": "node ../../scripts/git/install-hooks.mjs",
     "prepare": "echo 'skip build on link; Vite consumes src directly'"
   },
@@ -34,6 +34,7 @@
     "@types/react-dom": "^18.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-types-19": "npm:@types/react@^19.3.0",
     "typescript": "^5.9.3"
   },
   "engines": {

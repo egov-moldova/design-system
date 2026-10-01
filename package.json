@@ -270,6 +270,7 @@
         "packages/react/src/**/*.ts",
         "packages/react/src/**/*.tsx",
         "packages/react/tsconfig.json",
+        "packages/react/tsconfig.react19.json",
         "packages/react/package.json"
       ],
       "output": [

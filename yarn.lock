@@ -1323,10 +1323,11 @@ __metadata:
     "@types/react-dom": "npm:^18.3.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
+    react-types-19: "npm:@types/react@^19.3.0"
     typescript: "npm:^5.9.3"
   peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
   languageName: unknown
   linkType: soft
 
@@ -9060,6 +9061,15 @@ __metadata:
   dependencies:
     "@emotion/unitless": "npm:^0.10.0"
   checksum: 10c0/34a595004b8ea2f98f4a812eee630978beaff1e45f8598a242bc7a8081dbcc7cca1d0cf1ca135632070f6fb97920a0c4036504c7143e7be2244281f1efd72def
+  languageName: node
+  linkType: hard
+
+"react-types-19@npm:@types/react@^19.3.0":
+  version: 19.3.0
+  resolution: "@types/react@npm:19.3.0"
+  dependencies:
+    csstype: "npm:^3.2.2"
+  checksum: 10c0/fbcabf303f935ca9f36ed2dcf81751cf84744098c5a683c8a62a0fa7edd31714b48d5c46b12fd0014f7f2dfe4d9ec6de428a850748eec719a70294e51029551b
   languageName: node
   linkType: hard
 

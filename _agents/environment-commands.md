@@ -156,6 +156,7 @@ yarn dx:clean                  # Clean all build artifacts
 # Build (production / final verification)
 yarn build                     # Full build: tokens + custom-elements + Stencil + docs (4GB RAM)
 yarn build.web                 # Build @egov-moldova/mud-web-components vanilla adapter
+yarn build.react               # Typecheck @egov-moldova/mud-react against React 18 and 19 (fails on a type error)
 yarn build.vue                 # Build @egov-moldova/mud-vue (generated proxies come from `yarn build`)
 yarn build.angular             # Build @egov-moldova/mud-angular with ng-packagr (partial mode)
 node scripts/adapters/consumer-fixture.mjs <vue|angular> [--framework-version <20|22>]  # Pack core + adapter, install into the fixture app, drive it in Chromium (after `yarn build` and the adapter build)
