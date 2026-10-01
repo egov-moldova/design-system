@@ -119,6 +119,18 @@ test('number (numeric-input): a numeric string model reads as that number', asyn
   await expect(host(page, 'numeric').locator('input.native')).toHaveValue('5');
 });
 
+test("number (numeric-input): a commit after a form model of the string '5' emits the number 5", async ({ page }) => {
+  await press(page, 'numeric-string');
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(5);
+  await expect(page.locator('[data-testid="numeric-type"]')).toHaveText('string');
+  // The dedupe baseline is the model the form passed, so the commit of 5 is not swallowed.
+  const input = host(page, 'numeric').locator('input.native');
+  await input.focus();
+  await input.blur();
+  await expect(page.locator('[data-testid="numeric-type"]')).toHaveText('number');
+  await expect(model(page, 'numeric')).toHaveText('5');
+});
+
 test('boolean (checkbox), both ways', async ({ page }) => {
   await host(page, 'checkbox').locator('label.root').click();
   await expect(model(page, 'checkbox')).toHaveText('true');

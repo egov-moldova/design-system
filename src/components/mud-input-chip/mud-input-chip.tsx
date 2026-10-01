@@ -251,7 +251,8 @@ export class MudInputChip {
   // watcher already ran, and nothing runs again when the name arrives.
   @Watch('name')
   handleNameChange() {
-    this.syncFormValue(this.chips);
+    // `chips` can still be null before the watchers are active, when a framework sets it before upgrade.
+    this.syncFormValue(this.chips ?? []);
   }
 
   formDisabledCallback(disabled: boolean) {

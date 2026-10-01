@@ -5,16 +5,15 @@ import { defineModelWrapper } from './define-model-wrapper.js';
 
 /**
  * The one numeric coercion, identical to the Angular accessor's (`numeric-value-accessor.ts`):
- * a finite number passes; a string that is a finite number once trimmed becomes that number
- * (Stencil parsed a numeric string before the adapter, so `'5'` must keep meaning 5); anything
- * else (`null`, `undefined`, `''`, `NaN`, `±Infinity`, any other type) is empty, which is `null`.
+ * a finite number passes; a string is parsed like Stencil (`parseFloat` of the trimmed text, the
+ * rule Stencil applies to a string set on a `number` prop, so `'5'` keeps meaning 5 and `'12px'`
+ * means 12) and kept only when finite; anything else (`null`, `undefined`, `''`, `'abc'`, `NaN`,
+ * `±Infinity`, any other type) is empty, which is `null`.
  */
 function toNumberOrNull(value: unknown): number | null {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
   if (typeof value !== 'string') return null;
-  const text = value.trim();
-  if (text === '') return null;
-  const parsed = Number(text);
+  const parsed = parseFloat(value.trim());
   return Number.isFinite(parsed) ? parsed : null;
 }
 

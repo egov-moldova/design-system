@@ -128,6 +128,27 @@ test('number (numeric-input): a numeric string model reads as that number', asyn
   await expect(host(page, 'numeric').locator('input.native')).toHaveValue('5');
 });
 
+test("number (numeric-input): a commit after a parent model of the string '5' emits the number 5", async ({ page }) => {
+  await page.locator('button[data-testid="numeric-string"]').click();
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(5);
+  await expect(page.locator('[data-testid="numeric-type"]')).toHaveText('string');
+  // The dedupe baseline is the model the parent passed, so the commit of 5 is not swallowed.
+  const input = host(page, 'numeric').locator('input.native');
+  await input.focus();
+  await input.blur();
+  await expect(page.locator('[data-testid="numeric-type"]')).toHaveText('number');
+  await expect(model(page, 'numeric')).toHaveText('5');
+});
+
+test('number (numeric-input): typed past max, the clamp emit is not swallowed by the dedupe', async ({ page }) => {
+  const input = host(page, 'numeric').locator('input.native');
+  await input.fill('15');
+  await expect(model(page, 'numeric')).toHaveText('15');
+  await input.blur();
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(10);
+  await expect(model(page, 'numeric')).toHaveText('10');
+});
+
 test('number (numeric-input): one commit emits update:modelValue once, not once per event', async ({ page }) => {
   const input = host(page, 'numeric').locator('input.native');
   await input.fill('5');

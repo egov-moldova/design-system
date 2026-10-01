@@ -64,6 +64,8 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
       />
       <output data-testid="numeric-model">{{ JSON.stringify(num ?? null) }}</output>
       <output data-testid="numeric-emits">{{ numEmits }}</output>
+      <!-- The runtime type of the model: a parent model `'5'` must become the number 5 on a commit. -->
+      <output data-testid="numeric-type">{{ typeof num }}</output>
       <button type="button" data-testid="numeric-set" @click="num = 7">set model</button>
       <!-- A numeric string, as a form library or a query string hands it over: it must read as 5. -->
       <button type="button" data-testid="numeric-string" @click="num = '5' as unknown as number">set '5'</button>

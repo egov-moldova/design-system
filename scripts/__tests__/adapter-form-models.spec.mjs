@@ -301,6 +301,25 @@ describe('the hand-written Vue wrappers match their rows and replace the generat
     }
   });
 
+  it('passes the generated component of its own tag: the imported identifier is the `generated:` one', () => {
+    for (const row of rows) {
+      const [tag] = row.tags;
+      const source = sources.find(text => text.includes(`/stencil-generated/${tag}.js'`));
+      assert.ok(source, `${row.id}: no wrapper wraps the generated ${tag}`);
+      const specifiers = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*'[^']*/stencil-generated/${tag}\\.js'`).exec(
+        source,
+      )?.[1];
+      assert.ok(specifiers, `${row.id}: no named import from stencil-generated/${tag}.js`);
+      assert.ok(!specifiers.includes(','), `${row.id}: import exactly one identifier from ${tag}.js`);
+      const local = specifiers
+        .trim()
+        .split(/\s+as\s+/)
+        .pop();
+      const passed = /defineModelWrapper\b[^(]*\(\{[^}]*?\bgenerated:\s*(\w+)/s.exec(source)?.[1];
+      assert.equal(passed, local, `${row.id}: \`generated:\` is not the component imported from ${tag}.js`);
+    }
+  });
+
   it('exports each hand-written wrapper from the package under the generated name', () => {
     const index = fs.readFileSync(path.join(PROJECT_ROOT, 'packages/vue/src/index.ts'), 'utf8');
     for (const row of rows) {

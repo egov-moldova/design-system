@@ -216,7 +216,7 @@ Without a plugin, copy the folder into Vite's `public/` directory before `vite` 
 
 Binding notes:
 
-- `mud-numeric-input` is `null` when empty. Its `v-model` follows every keystroke and the clamped value on commit. Setting the model to `null` or `undefined` empties the field, never `0`. A numeric string such as `'5'` is read as 5; `''`, `NaN`, `±Infinity` and any other value empty the field.
+- `mud-numeric-input` is `null` when empty. Its `v-model` follows every keystroke and the clamped value on commit. Setting the model to `null` or `undefined` empties the field, never `0`. A string is parsed like Stencil (`parseFloat`), so `'5'` is read as 5 and `'12px'` as 12; `''`, `'abc'`, `NaN`, `±Infinity` and any other value empty the field.
 - A `mud-phone-input` country switch updates the `v-model`.
 - `MudNumericInput` and `MudPhoneInput` are hand-written wrappers that replace the generated ones under the same export names.
 
@@ -273,7 +273,7 @@ export class App {
 
 Binding notes:
 
-- `mud-numeric-input` is `null` when empty, and updates its model on every keystroke and again when it clamps the value on commit. A numeric string such as `'5'` is read as 5; `''`, `NaN`, `±Infinity` and any other value empty the field.
+- `mud-numeric-input` is `null` when empty, and updates its model on every keystroke and again when it clamps the value on commit. A string is parsed like Stencil (`parseFloat`), so `'5'` is read as 5 and `'12px'` as 12; `''`, `'abc'`, `NaN`, `±Infinity` and any other value empty the field.
 - A `mud-phone-input` country switch updates the model.
 - A bare boolean attribute (`<mud-button disabled>`) compiles under `strictTemplates`.
 - Every Angular bundle includes all the wrappers, whichever ones the app imports: each wrapper defines its custom element when its class loads, so the package cannot be marked side-effect free.

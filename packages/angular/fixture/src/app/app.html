@@ -20,6 +20,7 @@
     <h2>number (numeric-input)</h2>
     <mud-numeric-input [(ngModel)]="num" data-testid="numeric" aria-label="Number" [max]="10"></mud-numeric-input>
     <output data-testid="numeric-model">{{ json(num) }}</output>
+    <output data-testid="numeric-type">{{ typeName(num) }}</output>
     <button type="button" data-testid="numeric-set" (click)="num = 7">set model</button>
     <button type="button" data-testid="numeric-null" (click)="num = null">set null</button>
     <button type="button" data-testid="numeric-string" (click)="setNumericString()">set '5'</button>

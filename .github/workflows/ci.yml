@@ -256,4 +256,5 @@ jobs:
             !${{ runner.temp }}/mud-fixture-*/**/node_modules/**
             !${{ runner.temp }}/mud-fixture-*/**/*.tgz
           if-no-files-found: ignore
+          include-hidden-files: false
           retention-days: 7

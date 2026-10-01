@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
@@ -57,6 +58,16 @@ describe('the framework-version pin lookup', () => {
   it('defaults to the highest major and accepts a listed one', () => {
     const { major } = loadPins(fixtureDir, undefined);
     assert.equal(loadPins(fixtureDir, major).major, major);
+  });
+
+  it('defaults to the highest numeric key of the fixture versions.json', () => {
+    for (const framework of ['vue', 'angular']) {
+      const dir = join(PROJECT_ROOT, `packages/${framework}/fixture`);
+      const keys = Object.keys(JSON.parse(readFileSync(join(dir, 'versions.json'), 'utf8')));
+      const highest = Math.max(...keys.map(Number));
+      assert.ok(Number.isFinite(highest), `${framework}: versions.json lists no numeric major`);
+      assert.equal(String(loadPins(dir, undefined).major), String(highest), framework);
+    }
   });
 
   it('rejects an unlisted major, including the names every object inherits', () => {

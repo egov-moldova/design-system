@@ -66,6 +66,11 @@ export class App {
     this.num = '5' as unknown as number;
   }
 
+  /** The runtime type of a model: a form model `'5'` must become the number 5 on a commit. */
+  protected typeName(value: unknown): string {
+    return typeof value;
+  }
+
   protected json(value: unknown): string {
     return JSON.stringify(value);
   }

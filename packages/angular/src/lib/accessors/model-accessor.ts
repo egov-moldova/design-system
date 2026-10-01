@@ -20,7 +20,10 @@ export abstract class MudModelAccessor<TModel, TElement> implements ControlValue
 
   private onChange: (value: TModel) => void = () => undefined;
   private onTouched: () => void = () => undefined;
-  private lastValue: TModel | undefined;
+  // The last model written to the element or emitted. A write records the RAW model the form
+  // passed, not its coerced form: a form model `'5'` followed by a commit of 5 must emit 5, so the
+  // form's model becomes the number the element holds.
+  private lastValue: unknown;
 
   /** The element property that holds the model. */
   protected abstract readonly property: string;
@@ -32,9 +35,8 @@ export abstract class MudModelAccessor<TModel, TElement> implements ControlValue
   protected abstract toElement(model: unknown): TElement;
 
   writeValue(model: unknown): void {
-    const value = this.toElement(model);
-    this.lastValue = this.toModel(value);
-    this.host[this.property] = value;
+    this.lastValue = model;
+    this.host[this.property] = this.toElement(model);
   }
 
   /** Bound by each subclass to every event that follows a user-driven write of `property`. */

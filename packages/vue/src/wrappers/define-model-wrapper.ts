@@ -62,14 +62,16 @@ export function defineModelWrapper<Props, TModel>(
       const current = () => props.modelValue ?? props.value;
       // The model last written to the element or emitted: one commit can fire `mudInput` and then
       // `mudChange` with the same value, which must reach the app once (as Angular's
-      // `MudModelAccessor.handleChange` does).
-      let lastModel: TModel | undefined;
+      // `MudModelAccessor.handleChange` does). A write records the RAW model the parent passed, not
+      // its coerced form: a parent model `'5'` followed by a commit of 5 must emit 5, so the
+      // parent's model becomes the number the element holds.
+      let lastModel: unknown;
       const write = () => {
         const el = element();
         if (!el) return;
-        const value = options.toElement(current());
-        lastModel = options.toModel(value);
-        el.value = value;
+        const model: unknown = current();
+        lastModel = model;
+        el.value = options.toElement(model);
       };
       onMounted(write);
       watch(current, write, { flush: 'post' });

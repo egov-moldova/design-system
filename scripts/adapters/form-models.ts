@@ -95,9 +95,9 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
       'listen to `mudInput` and `mudChange`. It sets `value` to `undefined` on clear (mud-numeric-input.tsx:716-727,' +
       "771-773), which the generated Angular `number` accessor turns into NaN and Vue's `patchDOMProp` turns into " +
       '`0` when a null model meets a numeric `value`: both adapters are hand-written with ONE coercion, identical in ' +
-      'both: a finite number passes; a string that is a finite number once trimmed becomes that number (Stencil ' +
-      "parsed `'5'` before the adapters, so it must keep meaning 5); everything else (`null`, `undefined`, `''`, " +
-      '`NaN`, `±Infinity`, any other type) is empty, a `null` model that is written back to the element as ' +
+      "both: a finite number passes; a string is parsed like Stencil (`parseFloat` of the trimmed text, so `'5'` " +
+      "keeps meaning 5 and `'12px'` means 12) and kept only when finite; everything else (`null`, `undefined`, `''`, " +
+      "`'abc'`, `NaN`, `±Infinity`, any other type) is empty, a `null` model that is written back to the element as " +
       '`undefined`. The Vue wrapper is packages/vue/src/wrappers/numeric-input.ts.',
   },
   {
