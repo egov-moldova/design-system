@@ -114,7 +114,9 @@ Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.j
       \`valueAccessorConfigs\` in Phase 4 are both derived from it, never typed twice.
       \`scripts/__tests__/adapter-form-models.spec.mjs\` checks it against
       \`.storybook/custom-elements.json\`, as the acceptance bar states, and goes red when one
-      row's event is renamed.
+      row's event is renamed. It also derives the emitter set from that manifest (tags declaring
+      a \`mudInput\` or \`mudChange\` event) and fails when that set, minus the three exclusions
+      stated beside the map, differs from the map's tags.
 
 - [ ] \`packages/vue\`: \`@egov-moldova/mud-vue\`, \`private: true\`, peer \`vue ^3.4.38\`, dependency
       \`@stencil/vue-output-target\` \`~0.14.3\` (for its \`/runtime\`), core as \`workspace:^\`. Built
@@ -130,8 +132,11 @@ Files: \`packages/vue/**\`, \`stencil.config.ts\` (Vue target), root \`package.j
      anything under a proxy output directory, or if a root \`components/\` directory exists;
   3. copies \`packages/<framework>/fixture/\` to a temp directory and installs the tarballs plus
      the fixture's pinned dependencies with npm;
-  4. builds with the framework's own CLI;
-  5. serves the build and runs a Playwright spec.
+  4. typechecks and builds with the framework's own CLI (\`vue-tsc --noEmit\` then \`vite build\`
+     for Vue; \`ng build\` under \`strictTemplates\` for Angular);
+  5. compiles the fixture's negative case (one wrapper input bound to a wrongly typed value,
+     kept outside the normal build) and fails if it compiles;
+  6. serves the build and runs a Playwright spec.
 - [ ] Vue fixture (Vite + \`@vitejs/plugin-vue\`, latest Vue 3). It imports
       \`@egov-moldova/mud/styles.css\` the way the README tells consumers to: tokens stay the
       consumer's import and are not bundled into the adapter. Its spec asserts every item in the

@@ -35,7 +35,8 @@ Must pass:
 |---|---|
 | Vue fixture (latest Vue 3) | PASS on the common fixture checks below, all through `v-model` |
 | Angular fixture at 20 and at 22 | PASS on the common fixture checks below, through `ngModel`, plus `formControl` on select and a bare boolean attribute compiling under `strictTemplates` |
-| Proxy and shim guard in the runner | FAIL on any tracked file under a proxy output directory, or a root `components/` directory |
+| Proxy, shim and manifest guard in the runner | FAIL on any tracked file under a proxy output directory, a root `components/` directory, or a `workspace:` specifier in the `package.json` of any tarball the runner packed (read from the tarball, not from the source tree) |
+| Typed wrappers, Vue and Angular | each fixture typechecks with its framework's own checker (`vue-tsc --noEmit`, `ng build` under `strictTemplates`), AND the runner's negative case (one input bound to a wrongly typed value) FAILS to compile |
 | `yarn check.verify`, `yarn validate.package`, `yarn test:scripts`, `yarn docs:check` | green |
 | CI `Adapters` job | green on the PR |
 
@@ -137,6 +138,20 @@ category key, not a path, and stays. `.github/`, `.gitignore`, `tsconfig.json`, 
 Stylelint configs and `.storybook/main.ts` carry no workspace path.
 
 ### Form-control model map
+
+A form control here is a component that emits `mudInput` or `mudChange` carrying its value.
+Three emitters are excluded: `mud-radio`, whose value `mud-radio-group` owns, and `mud-pagination`
+and `mud-tabs`, which emit navigation and not a form value. `formAssociated` is not the rule:
+`mud-button` and `mud-service-button` are form-associated without holding a value, and
+`mud-radio-group`, `mud-date-picker` and `mud-time-picker` hold one without being form-associated.
+
+```derived
+$ git grep -l -E "@Event\(\)[^;]*(mudChange|mudInput)|(mudChange|mudInput)!?:\s*EventEmitter" -- 'src/components/*.tsx' | sed -E 's#src/components/([^/]+)/.*#\1#' | sort -u | tr '\n' ' '
+mud-checkbox mud-date-input mud-date-picker mud-file-input mud-input-chip mud-numeric-input mud-pagination mud-phone-input mud-radio mud-radio-group mud-search-input mud-segmented-control mud-select mud-switch mud-tabs mud-text-input mud-textarea mud-time-input mud-time-picker
+```
+
+19 emitters minus 3 excluded = 16 rows. A new emitter changes this set, and
+`adapter-form-models.spec.mjs` compares the map against it (Phase 3).
 
 All 16 controls below set their model property before they emit, so reading
 `event.target[prop]` is correct. This was read in each component's emit path on 2026-09-30.
@@ -289,7 +304,9 @@ Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` 
       `valueAccessorConfigs` in Phase 4 are both derived from it, never typed twice.
       `scripts/__tests__/adapter-form-models.spec.mjs` checks it against
       `.storybook/custom-elements.json`, as the acceptance bar states, and goes red when one
-      row's event is renamed.
+      row's event is renamed. It also derives the emitter set from that manifest (tags declaring
+      a `mudInput` or `mudChange` event) and fails when that set, minus the three exclusions
+      stated beside the map, differs from the map's tags.
 
 - [ ] `packages/vue`: `@egov-moldova/mud-vue`, `private: true`, peer `vue ^3.4.38`, dependency
       `@stencil/vue-output-target` `~0.14.3` (for its `/runtime`), core as `workspace:^`. Built
@@ -305,8 +322,11 @@ Files: `packages/vue/**`, `stencil.config.ts` (Vue target), root `package.json` 
      anything under a proxy output directory, or if a root `components/` directory exists;
   3. copies `packages/<framework>/fixture/` to a temp directory and installs the tarballs plus
      the fixture's pinned dependencies with npm;
-  4. builds with the framework's own CLI;
-  5. serves the build and runs a Playwright spec.
+  4. typechecks and builds with the framework's own CLI (`vue-tsc --noEmit` then `vite build`
+     for Vue; `ng build` under `strictTemplates` for Angular);
+  5. compiles the fixture's negative case (one wrapper input bound to a wrongly typed value,
+     kept outside the normal build) and fails if it compiles;
+  6. serves the build and runs a Playwright spec.
 - [ ] Vue fixture (Vite + `@vitejs/plugin-vue`, latest Vue 3). It imports
       `@egov-moldova/mud/styles.css` the way the README tells consumers to: tokens stay the
       consumer's import and are not bundled into the adapter. Its spec asserts every item in the
