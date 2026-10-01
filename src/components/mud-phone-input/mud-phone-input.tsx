@@ -1026,7 +1026,7 @@ export class MudPhoneInput {
           {isInternational ? (
             <div ref={el => (this.listboxEl = el)} class="listbox-popover" part="listbox-popover" hidden={!isOpen}>
               <div class="listbox-search" part="listbox-search">
-                <mud-icon class="listbox-search-icon" name="search" size={16} />
+                <mud-icon class="listbox-search-icon" name="search" size={20} />
                 <input
                   ref={el => (this.searchInputEl = el)}
                   class="listbox-search-input"
@@ -1086,12 +1086,16 @@ export class MudPhoneInput {
                         onClick={this.handleOptionClick(index)}
                         onMouseEnter={this.handleOptionPointerEnter(index)}
                       >
-                        <span class="option-flag" aria-hidden="true">
-                          {opt.flag()}
+                        <span class="option-main">
+                          <span class="option-flag" aria-hidden="true">
+                            {opt.flag()}
+                          </span>
+                          <span class="option-text">
+                            <span class="option-name">{this.displayName(opt)}</span>
+                            <span class="option-code">{opt.code}</span>
+                          </span>
                         </span>
-                        <span class="option-name">{this.displayName(opt)}</span>
-                        <span class="option-code">{opt.code}</span>
-                        {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={16} /> : null}
+                        {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={24} /> : null}
                       </div>
                     );
                   })
