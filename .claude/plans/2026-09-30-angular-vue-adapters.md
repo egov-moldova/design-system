@@ -622,8 +622,9 @@ Files: `.github/workflows/ci.yml`, `README.md`, `CONTRIBUTING.md`, `STACK.md`, `
 - Both adapters depend on the core as `workspace:^`, which packs as a caret range, while their
   proxies are generated from one exact core API. Harmless while they are private; before
   publishing, pin exactly (`workspace:*`) so adapter and core release as a pair. That one policy
-  also guarantees the minimum: the pinned core is the release that carries the type export and
-  the null guards.
+  also guarantees the minimum, but only once the core version is bumped past the published
+  1.2.0-dev.3: the local `1.2.0-dev.1` is already on the registry without the type export and
+  the null guards, so an exact pin taken today would name that build.
 - Commit 27d81b96's message lists an `./assets/*` export key, but `package.json` `exports` has
   none today. The asset steps above therefore copy by filesystem path.
 - `mud-phone-input`'s `changeCountry` rewrites `value` and emits only `mudCountryChange`
