@@ -52,7 +52,7 @@ export function setupMud(options: MudSetupOptions): void {
   const assetPath: unknown = options?.assetPath;
   // A blank path would resolve to the document's own URL and 404 every asset without a message.
   if (typeof assetPath !== 'string' || assetPath.trim() === '') {
-    throw new Error('[mud-react] `setupMud({ assetPath })` needs a non-blank `assetPath`.');
+    throw new Error('[mud-react] `setupMud({ assetPath })` needs a non-blank string `assetPath`.');
   }
   // A server render has no `document`, and no component fetches an asset there: skip the setup.
   if (typeof document === 'undefined') return;
@@ -60,7 +60,7 @@ export function setupMud(options: MudSetupOptions): void {
 }
 
 export type DefineCustomElementsOptions = {
-  /** See {@link MudSetupOptions.assetPath}. Defaults to `<origin>/node_modules/@egov-moldova/mud/dist/components/`, which only a dev server that exposes `node_modules` serves. */
+  /** See {@link MudSetupOptions.assetPath}. Defaults to `<origin>/node_modules/@egov-moldova/mud/dist/components/`, which only a dev server that exposes `node_modules` serves. `undefined` and `null` both mean "use the default"; any other non-string or blank value throws. */
   assetPath?: string;
 };
 

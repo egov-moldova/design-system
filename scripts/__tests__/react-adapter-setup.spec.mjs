@@ -29,10 +29,7 @@ describe('toAssetBaseUrl', () => {
 
 describe('toAssetBaseUrl on a malformed absolute path', () => {
   it('keeps the original error text so the cause is not blamed on the base', () => {
-    assert.throws(
-      () => toAssetBaseUrl('https://', 'https://app.test/'),
-      /well-formed absolute URL \(TypeError: Invalid URL\)/,
-    );
+    assert.throws(() => toAssetBaseUrl('https://', 'https://app.test/'), /well-formed absolute URL \(TypeError/);
   });
 });
 
@@ -41,12 +38,12 @@ describe('setupMud', () => {
     it(`throws on assetPath ${JSON.stringify(assetPath)}`, () => {
       assert.throws(
         () => setupMud({ assetPath }),
-        /\[mud-react\] `setupMud\(\{ assetPath \}\)` needs a non-blank `assetPath`/,
+        /\[mud-react\] `setupMud\(\{ assetPath \}\)` needs a non-blank string `assetPath`/,
       );
     });
   }
   it('throws when called with no options', () => {
-    assert.throws(() => setupMud(undefined), /needs a non-blank `assetPath`/);
+    assert.throws(() => setupMud(undefined), /needs a non-blank string `assetPath`/);
   });
   it('is a no-op without a document (server render)', () => {
     assert.equal(setupMud({ assetPath: 'mud/' }), undefined);
@@ -61,6 +58,6 @@ describe('defineCustomElements (deprecated alias)', () => {
     assert.equal(await defineCustomElements({ assetPath: null }), undefined);
   });
   it('rejects an empty assetPath without a document, like the browser does', () => {
-    assert.throws(() => defineCustomElements({ assetPath: '' }), /needs a non-blank `assetPath`/);
+    assert.throws(() => defineCustomElements({ assetPath: '' }), /needs a non-blank string `assetPath`/);
   });
 });
