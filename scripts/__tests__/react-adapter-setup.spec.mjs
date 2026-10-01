@@ -19,10 +19,16 @@ describe('toAssetBaseUrl', () => {
   it('resolves a root-relative path against the origin', () => {
     assert.equal(toAssetBaseUrl('/static/mud', 'https://app.test/a/b'), 'https://app.test/static/mud/');
   });
+  it('names the path and the base when the base is opaque', () => {
+    assert.throws(
+      () => toAssetBaseUrl('mud/', 'about:blank'),
+      /\[mud-react\] cannot resolve assetPath "mud\/" against the document base "about:blank"/,
+    );
+  });
 });
 
 describe('setupMud', () => {
-  for (const assetPath of ['', undefined, null, 42]) {
+  for (const assetPath of ['', '   ', undefined, null, 42]) {
     it(`throws on assetPath ${JSON.stringify(assetPath)}`, () => {
       assert.throws(
         () => setupMud({ assetPath }),
@@ -41,5 +47,8 @@ describe('setupMud', () => {
 describe('defineCustomElements (deprecated alias)', () => {
   it('resolves without a document and without options', async () => {
     assert.equal(await defineCustomElements(), undefined);
+  });
+  it('rejects an empty assetPath without a document, like the browser does', () => {
+    assert.throws(() => defineCustomElements({ assetPath: '' }), /needs a non-empty `assetPath`/);
   });
 });

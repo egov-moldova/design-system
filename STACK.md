@@ -24,7 +24,7 @@ Versions below are copied from `package.json`; when they disagree, `package.json
 | Custom elements manifest | `@stencil/core` (`docs-custom-elements-manifest` output target) | `~4.45.0` |
 | Angular adapter | `@stencil/angular-output-target` + `ng-packagr` + Angular | `^1.5.0` / `~20.3.2` / `~20.3.33` (partial compilation, peers `^20 \|\| ^21 \|\| ^22`). `rollup-plugin-dts` (LGPL-3.0-only) arrives at build time only, through `ng-packagr`; it is not shipped in the adapter |
 | Vue adapter | `@stencil/vue-output-target` + Vue | `~0.14.3` / peer `^3.4.38` (built against `^3.5.43`) |
-| React adapter | `@stencil/react-output-target` | `^1.6.2` |
+| React adapter | `@stencil/react-output-target` | `^1.6.2` (peers `react`/`react-dom` `^18 \|\| ^19`, built against 18; `react-types-19` is an alias of `@types/react@^19.3.0` that the second `tsc` program resolves `react` to) |
 | Visual diffing | `pixelmatch` + `pngjs` + Playwright | `^7.1.0` / `^7.0.0` / `^1.63.0` |
 | Commits | `@commitlint/config-conventional` + Husky | `^21.0.1` / `^9.1.7` |
 

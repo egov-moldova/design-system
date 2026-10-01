@@ -19,7 +19,15 @@ export interface MudSetupOptions {
  * throw, so the icon would stay blank with no error.
  */
 export function toAssetBaseUrl(assetPath: string, baseURI: string): string {
-  const absolute = new URL(assetPath, baseURI);
+  let absolute: URL;
+  try {
+    absolute = new URL(assetPath, baseURI);
+  } catch {
+    // An opaque base (`about:blank`, a srcdoc iframe) cannot resolve a relative path.
+    throw new Error(
+      `[mud-react] cannot resolve assetPath "${assetPath}" against the document base "${baseURI}"; pass an absolute URL.`,
+    );
+  }
   if (!absolute.pathname.endsWith('/')) absolute.pathname += '/';
   return absolute.href;
 }
@@ -40,7 +48,8 @@ export function toAssetBaseUrl(assetPath: string, baseURI: string): string {
  */
 export function setupMud(options: MudSetupOptions): void {
   const assetPath: unknown = options?.assetPath;
-  if (typeof assetPath !== 'string' || assetPath === '') {
+  // A blank path would resolve to the document's own URL and 404 every asset without a message.
+  if (typeof assetPath !== 'string' || assetPath.trim() === '') {
     throw new Error('[mud-react] `setupMud({ assetPath })` needs a non-empty `assetPath`.');
   }
   // A server render has no `document`, and no component fetches an asset there: skip the setup.
@@ -56,14 +65,16 @@ export type DefineCustomElementsOptions = {
 /**
  * @deprecated Use {@link setupMud}, which requires `assetPath`. This alias registers no
  * element either (see `setupMud`); it only sets the asset path, defaulting to the
- * `node_modules` URL of a Vite dev server. Kept so linked consumers keep compiling.
+ * `node_modules` URL of a Vite dev server. Kept so linked consumers keep compiling. Unlike the
+ * old alias it is not idempotent: a later call replaces the path an earlier one set, so a bare
+ * second call resets an explicit path to the dev default.
  */
 export function defineCustomElements(opts?: DefineCustomElementsOptions): Promise<void> {
-  if (typeof document !== 'undefined') {
-    setupMud({
-      assetPath:
-        opts?.assetPath ?? new URL('/node_modules/@egov-moldova/mud/dist/components/', window.location.origin).href,
-    });
+  if (opts?.assetPath !== undefined) {
+    // Validated on the server too, so a bad path fails the server render, not only the hydration.
+    setupMud({ assetPath: opts.assetPath });
+  } else if (typeof document !== 'undefined') {
+    setupMud({ assetPath: new URL('/node_modules/@egov-moldova/mud/dist/components/', window.location.origin).href });
   }
   return Promise.resolve();
 }

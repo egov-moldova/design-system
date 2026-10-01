@@ -723,12 +723,12 @@ describe('the React workspace names only exported subpaths', () => {
   // drifted into either would otherwise pass vacuously.
   //
   // What keeps it from firing on prose, stated exactly, because an earlier version
-  // of this comment got it wrong: `packages/react/src/index.ts` carries three non-import
-  // mentions. Two (`:14`, `:42`) spell `/node_modules/@egov-moldova/mud/…`, so the
-  // character after the quote is `/` and they do not match. The third (`:30`) is a
-  // JSDoc mention delimited by BACKTICKS, and it is skipped only because backtick
-  // is not in the `["']` class — not because of any path shape. A future doc
-  // mention written with real quotes WOULD be reported, and that is the known edge.
+  // of this comment got it wrong: the non-import mentions in `packages/react/src` come in
+  // two kinds. Those spelling `/node_modules/@egov-moldova/mud/…` have `/` as the
+  // character after the quote, so they do not match. JSDoc mentions delimited by
+  // BACKTICKS are skipped only because backtick is not in the `["']` class — not because
+  // of any path shape. A future doc mention written with real quotes WOULD be reported,
+  // and that is the known edge.
   //
   // A specifier assembled at runtime from fragments is outside what any static
   // check reads, and outside what this one claims.
@@ -837,22 +837,64 @@ describe('every adapter compiles in strict mode (#180)', () => {
   const STRICT_FAMILY = (ts.optionDeclarations ?? []).filter(option => option.strictFlag).map(option => option.name);
   assert.ok(STRICT_FAMILY.length >= 9, `typescript exposes ${STRICT_FAMILY.length} strict flags; expected at least 9`);
 
-  it('packages/*/tsconfig.json sets strict and turns no strict-family flag back off', () => {
-    const lax = fs
-      .readdirSync(PACKAGES, { withFileTypes: true })
-      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'tsconfig.json')))
-      .flatMap(entry => {
-        const options =
-          JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'tsconfig.json'), 'utf8')).compilerOptions ?? {};
-        // `noCheck: true` skips type checking while `tsc` still exits 0.
-        const off = [
-          ...STRICT_FAMILY.filter(flag => options[flag] === false),
-          ...(options.noCheck === true ? ['noCheck'] : []),
-        ];
-        return options.strict === true && off.length === 0
-          ? []
-          : [`packages/${entry.name}: strict=${options.strict} off=[${off.join(', ')}]`];
-      });
+  // The EFFECTIVE options, `extends` resolved: `tsconfig.react19.json` declares no `strict` of
+  // its own and a base turning a flag off would otherwise be invisible. The unrecoverable
+  // diagnostic throws, so a config the compiler cannot read fails here, not as a silent pass.
+  const readEffectiveOptions = file =>
+    ts.getParsedCommandLineOfConfigFile(
+      file,
+      {},
+      {
+        ...ts.sys,
+        onUnRecoverableConfigFileDiagnostic: diagnostic => {
+          throw new Error(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+        },
+      },
+    ).options;
+  // Every `packages/<name>/tsconfig*.json`, not just `tsconfig.json`: a build can compile with
+  // `tsc -p <other config>`.
+  const adapterConfigs = fs
+    .readdirSync(PACKAGES, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .flatMap(entry =>
+      fs
+        .readdirSync(path.join(PACKAGES, entry.name))
+        .filter(name => /^tsconfig(\..+)?\.json$/.test(name))
+        .map(name => path.join(PACKAGES, entry.name, name)),
+    );
+
+  it('every packages/*/tsconfig*.json sets strict and turns no strict-family flag back off', () => {
+    assert.ok(adapterConfigs.length >= 5, `found ${adapterConfigs.length} adapter tsconfigs; expected at least 5`);
+    const lax = adapterConfigs.flatMap(file => {
+      const options = readEffectiveOptions(file);
+      // `noCheck: true` skips type checking while `tsc` still exits 0.
+      const off = [
+        ...STRICT_FAMILY.filter(flag => options[flag] === false),
+        ...(options.noCheck === true ? ['noCheck'] : []),
+      ];
+      return options.strict === true && off.length === 0
+        ? []
+        : [`${path.relative(PROJECT_ROOT, file)}: strict=${options.strict} off=[${off.join(', ')}]`];
+    });
     assert.deepEqual(lax, []);
+  });
+
+  it('the React build runs a program that resolves `react` to the React 19 types', () => {
+    const react = path.join(PACKAGES, 'react');
+    const build = JSON.parse(fs.readFileSync(path.join(react, 'package.json'), 'utf8')).scripts?.build ?? '';
+    assert.match(build, /tsc -p tsconfig\.react19\.json/, 'the React build no longer runs the React 19 program');
+    // A `paths` target that does not exist makes TypeScript fall back to the React 18 types
+    // without a diagnostic, so the second `tsc` would pass while checking nothing new.
+    const options = readEffectiveOptions(path.join(react, 'tsconfig.react19.json'));
+    const target = options.paths?.react?.[0];
+    assert.ok(target, 'tsconfig.react19.json maps no `react` path');
+    const manifest = path.join(options.pathsBasePath ?? react, target, 'package.json');
+    assert.ok(
+      fs.existsSync(manifest),
+      `paths.react → ${target} holds no package.json; TypeScript falls back to React 18`,
+    );
+    const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    assert.equal(pkg.name, '@types/react');
+    assert.match(pkg.version, /^19\./);
   });
 });
