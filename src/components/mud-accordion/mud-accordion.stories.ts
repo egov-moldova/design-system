@@ -206,30 +206,35 @@ const docsSourceWithTrailingContent = /*html*/ `<mud-accordion mode="multiple">
 </mud-accordion>`;
 
 // ---------------------------------------------------------------------------
-// Panel list — matches the Figma "expanded" state: the open panel reveals a
-// list of rows, each with a heading + supporting text and a trailing label.
-// The label is dropped below the 768px breakpoint, per the mobile design.
+// Panel list — the Figma "expanded" state (Accordion page 670:5171): the panel
+// runs edge to edge and the content spaces itself. Here that is .accordion-content,
+// which pads 12px at the bottom, holding .service-item rows (padding 24, gap 24,
+// radius 12): a heading, a supporting text and a tag. The tag is dropped below
+// the 768px breakpoint.
 // ---------------------------------------------------------------------------
 
 const panelListStyles = /*css*/ `
+  /* Figma .accordion-content (275:8260): 12px below the last row. The panel adds none. */
   .mud-accordion-panel-list {
     display: flex;
     flex-direction: column;
-    /* Rows separated by whitespace only — no dividers, per the design. */
-    gap: var(--spacing-32);
-    /* Inset is provided by the accordion panel itself (panel-inner). */
+    padding-block-end: var(--spacing-12);
   }
+  /* Figma .service-item (659:10895): a white row padded 24 with a 24 gap, radius 12. */
   .mud-accordion-panel-row {
     display: flex;
-    /* Label is vertically centered on the heading + supporting block. */
     align-items: center;
     justify-content: space-between;
-    gap: var(--spacing-16);
+    gap: var(--spacing-24);
+    padding: var(--spacing-24);
+    border-radius: var(--border-radius-12);
+    background: var(--color-background-base-default);
   }
   .mud-accordion-panel-row__text {
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
-    gap: var(--spacing-8);
+    gap: var(--spacing-6);
     min-inline-size: 0;
   }
   .mud-accordion-panel-row__label {
@@ -238,16 +243,16 @@ const panelListStyles = /*css*/ `
   .mud-accordion-panel-row__heading {
     font-family: var(--font-family-primary);
     font-size: var(--font-size-16);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     line-height: var(--line-height-24);
     color: var(--color-text-base-default);
   }
   .mud-accordion-panel-row__supporting {
     font-family: var(--font-family-primary);
-    font-size: var(--font-size-14);
-    font-weight: var(--font-weight-regular);
-    line-height: var(--line-height-20);
-    color: var(--color-text-base-tertiary);
+    font-size: var(--font-size-16);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-24);
+    color: var(--color-text-base-secondary);
   }
   @media (max-width: 767.98px) {
     .mud-accordion-panel-row__label {
@@ -273,7 +278,7 @@ const renderPanelRows = (rows: typeof panelRows) => /*html*/ `
             <span class="mud-accordion-panel-row__heading">${row.heading}</span>
             <span class="mud-accordion-panel-row__supporting">${row.supporting}</span>
           </div>
-          <mud-tag class="mud-accordion-panel-row__label" variant="info" type="subtle" semantic="neutral" size="sm">${row.label}</mud-tag>
+          <mud-tag class="mud-accordion-panel-row__label" type="subtle" semantic="neutral" size="md">${row.label}</mud-tag>
         </div>`,
       )
       .join('')}
@@ -306,7 +311,7 @@ const docsSourceWithPanelList = /*html*/ `<mud-accordion mode="single">
           <span class="panel-row__heading">Identity card</span>
           <span class="panel-row__supporting">Identity document valid on the submission date</span>
         </div>
-        <mud-tag variant="info" type="subtle" semantic="neutral" size="sm">Required</mud-tag>
+        <mud-tag type="subtle" semantic="neutral" size="md">Required</mud-tag>
       </div>
       <!-- ...more rows -->
     </div>
@@ -475,9 +480,17 @@ const docsSourceEdgeCases = /*html*/ `<!-- Single item -->
   <mud-accordion-item heading="Mobile version" supporting-text="...">...</mud-accordion-item>
 </mud-accordion>`;
 
+// The panel adds no padding (Figma Content Slot): the content spaces itself, and
+// .accordion-content pads 12px at the bottom. Stories whose panel is plain text get
+// that 12px here. A decorator, not a global rule, so the manifest fixtures and the
+// audit measure the component itself.
+const PANEL_SPACING = /*css*/ `mud-accordion-item::part(panel) { padding-block-end: var(--spacing-12); }`;
+const withPanelSpacing = (story: () => unknown) => `<style>${PANEL_SPACING}</style>${String(story())}`;
+
 const meta: Meta<AccordionArgs> = {
   title: 'Components/Accordion',
   component: 'mud-accordion',
+  decorators: [withPanelSpacing],
   argTypes: {
     mode: {
       control: 'select',

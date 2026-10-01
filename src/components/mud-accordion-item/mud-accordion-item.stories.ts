@@ -72,9 +72,17 @@ const docsSourceStates = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Disabled" disabled>Panel body.</mud-accordion-item>
 </mud-accordion>`;
 
+// The panel adds no padding (Figma Content Slot): the content spaces itself, and
+// .accordion-content pads 12px at the bottom. Stories whose panel is plain text get
+// that 12px here. A decorator, not a global rule, so the manifest fixtures and the
+// audit measure the component itself.
+const PANEL_SPACING = /*css*/ `mud-accordion-item::part(panel) { padding-block-end: var(--spacing-12); }`;
+const withPanelSpacing = (story: () => unknown) => `<style>${PANEL_SPACING}</style>${String(story())}`;
+
 const meta: Meta<AccordionItemArgs> = {
   title: 'Components/Accordion Item',
   component: 'mud-accordion-item',
+  decorators: [withPanelSpacing],
   // The item's API table is rendered on the Accordion docs page (mud-accordion.mdx),
   // because the item is not usable outside a `mud-accordion`. A second autodocs page
   // would compete with it for the same content.

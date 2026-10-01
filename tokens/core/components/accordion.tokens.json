@@ -2,7 +2,10 @@
   "accordion": {
     "item": {
       "borderColor": {
-        "default": { "$value": "{color.border.base.default}", "$type": "color" }
+        "default": {
+          "$value": "{color.border.base.default}",
+          "$type": "color"
+        }
       },
       "borderWidth": {
         "$value": "{borderWidth.1}",
@@ -17,11 +20,20 @@
         "$type": "cubicBezier"
       },
       "paddingBlock": {
-        "desktop": { "$value": "{spacing.32}", "$type": "dimension" },
-        "mobile": { "$value": "{spacing.24}", "$type": "dimension" }
+        "desktop": {
+          "$value": "{spacing.32}",
+          "$type": "dimension"
+        },
+        "mobile": {
+          "$value": "{spacing.24}",
+          "$type": "dimension"
+        }
       },
       "paddingInline": {
-        "tinted": { "$value": "{spacing.20}", "$type": "dimension" }
+        "tinted": {
+          "$value": "{spacing.20}",
+          "$type": "dimension"
+        }
       },
       "gap": {
         "$value": "{spacing.12}",
@@ -29,9 +41,18 @@
       },
       "container": {
         "background": {
-          "default": { "$value": "{color.background.base.default}", "$type": "color" },
-          "hover": { "$value": "{color.background.base.secondary}", "$type": "color" },
-          "trailSites": { "$value": "{color.background.brand.secondary}", "$type": "color" }
+          "default": {
+            "$value": "{color.background.base.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{color.background.base.secondary}",
+            "$type": "color"
+          },
+          "trailSites": {
+            "$value": "{color.background.brand.secondary}",
+            "$type": "color"
+          }
         }
       },
       "heading": {
@@ -44,21 +65,42 @@
           "$type": "fontWeight"
         },
         "fontSize": {
-          "desktop": { "$value": "{fontSize.24}", "$type": "dimension" },
-          "mobile": { "$value": "{fontSize.22}", "$type": "dimension" }
+          "desktop": {
+            "$value": "{fontSize.24}",
+            "$type": "dimension"
+          },
+          "mobile": {
+            "$value": "{fontSize.22}",
+            "$type": "dimension"
+          }
         },
         "lineHeight": {
-          "desktop": { "$value": "{lineHeight.32}", "$type": "dimension" },
-          "mobile": { "$value": "{lineHeight.30}", "$type": "dimension" }
+          "desktop": {
+            "$value": "{lineHeight.32}",
+            "$type": "dimension"
+          },
+          "mobile": {
+            "$value": "{lineHeight.30}",
+            "$type": "dimension"
+          }
         },
         "letterSpacing": {
           "$value": "-0.01em",
           "$type": "dimension"
         },
         "color": {
-          "default": { "$value": "{color.text.base.default}", "$type": "color" },
-          "open": { "$value": "{color.text.brand.default}", "$type": "color" },
-          "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+          "default": {
+            "$value": "{color.text.base.default}",
+            "$type": "color"
+          },
+          "open": {
+            "$value": "{color.text.brand.default}",
+            "$type": "color"
+          },
+          "disabled": {
+            "$value": "{color.text.disabled.default}",
+            "$type": "color"
+          }
         },
         "gap": {
           "$value": "{spacing.8}",
@@ -83,8 +125,14 @@
           "$type": "fontWeight"
         },
         "color": {
-          "default": { "$value": "{color.text.base.tertiary}", "$type": "color" },
-          "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+          "default": {
+            "$value": "{color.text.base.tertiary}",
+            "$type": "color"
+          },
+          "disabled": {
+            "$value": "{color.text.disabled.default}",
+            "$type": "color"
+          }
         }
       },
       "trigger": {
@@ -101,24 +149,21 @@
           "$type": "dimension"
         },
         "color": {
-          "default": { "$value": "{color.icon.base.default}", "$type": "color" },
-          "open": { "$value": "{color.icon.base.default}", "$type": "color" },
-          "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
+          "default": {
+            "$value": "{color.icon.base.default}",
+            "$type": "color"
+          },
+          "open": {
+            "$value": "{color.icon.base.default}",
+            "$type": "color"
+          },
+          "disabled": {
+            "$value": "{color.icon.disabled.default}",
+            "$type": "color"
+          }
         }
       },
       "panel": {
-        "paddingBlockEnd": {
-          "$value": "{spacing.32}",
-          "$type": "dimension"
-        },
-        "paddingInlineStart": {
-          "$value": "{spacing.24}",
-          "$type": "dimension"
-        },
-        "paddingInlineEnd": {
-          "$value": "{spacing.48}",
-          "$type": "dimension"
-        },
         "fontFamily": {
           "$value": "{fontFamily.primary}",
           "$type": "fontFamily"
@@ -143,6 +188,18 @@
           "trailSites": {
             "$value": "{color.text.base.default-on-color}",
             "$type": "color"
+          }
+        },
+        "$comment": "Figma Content Slot (EL-93e6e635, 10747 page 670:5171): the panel carries no padding. The content brings its own: in the design, .accordion-content pads 12px at the bottom and each .service-item pads 24px.",
+        "trailSites": {
+          "$comment": "The trail-sites appearance is not on the Accordion page (670:5171), so its panel keeps the inset it had before the default panel dropped its padding. Its start inset is the tinted header's (_padding-inline).",
+          "paddingBlockEnd": {
+            "$value": "{spacing.32}",
+            "$type": "dimension"
+          },
+          "paddingInlineEnd": {
+            "$value": "{spacing.48}",
+            "$type": "dimension"
           }
         }
       },
