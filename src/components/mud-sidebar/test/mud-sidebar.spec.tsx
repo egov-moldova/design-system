@@ -264,6 +264,27 @@ describe('mud-sidebar-item', () => {
       expect(root?.getAttribute('value')).toBe('dashboard');
     });
 
+    it('shows the label when the only default-slot content is whitespace (expandable item)', async () => {
+      const { root } = await render(
+        <mud-sidebar-item label="Documents" expandable>
+          {'\n  '}
+          <mud-sidebar-item slot="children" label="Drafts"></mud-sidebar-item>
+          {'\n'}
+        </mud-sidebar-item>,
+      );
+      const label = root?.shadowRoot?.querySelector('button.item .label');
+      expect(label?.textContent?.trim()).toBe('Documents');
+      // The text is drawn by the component, not left to the slot's fallback, which whitespace suppresses.
+      expect(label?.querySelector('slot')?.textContent).toBe('');
+    });
+
+    it('lets slotted text override the label prop', async () => {
+      const { root } = await render(<mud-sidebar-item label="Prop label">Slotted label</mud-sidebar-item>);
+      const label = root?.shadowRoot?.querySelector('.label');
+      expect(label?.textContent?.trim()).toBe('');
+      expect(root?.textContent?.trim()).toBe('Slotted label');
+    });
+
     it('draws the active rail as an element, not a pseudo-element', async () => {
       const active = await render(<mud-sidebar-item active label="Home" />);
       const rail = active.root?.shadowRoot?.querySelector('.item > .rail');
