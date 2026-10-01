@@ -1,5 +1,4 @@
 import type { JSX } from '@egov-moldova/mud/components';
-import { defineCustomElement } from '@egov-moldova/mud/components/mud-phone-input.js';
 
 import { MudPhoneInput as Generated } from '../components/stencil-generated/mud-phone-input.js';
 import { defineModelWrapper } from './define-model-wrapper.js';
@@ -11,8 +10,6 @@ import { defineModelWrapper } from './define-model-wrapper.js';
  */
 export const MudPhoneInput = defineModelWrapper<JSX.MudPhoneInput, string>({
   name: 'MudPhoneInput',
-  tag: 'mud-phone-input',
-  define: defineCustomElement,
   generated: Generated,
   events: ['mudInput', 'mudCountryChange'],
   toModel: value => (typeof value === 'string' ? value : ''),

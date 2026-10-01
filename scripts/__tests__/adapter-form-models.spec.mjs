@@ -289,8 +289,9 @@ describe('the hand-written Vue wrappers match their rows and replace the generat
     for (const row of rows) {
       assert.equal(row.tags.length, 1, `${row.id}: a hand-written wrapper serves one tag`);
       const [tag] = row.tags;
-      const source = sources.find(text => text.includes(`tag: '${tag}'`));
-      assert.ok(source, `${row.id}: no wrapper declares tag '${tag}'`);
+      // The wrapper wraps the generated component of its tag, imported from `stencil-generated/<tag>.js`.
+      const source = sources.find(text => text.includes(`/stencil-generated/${tag}.js'`));
+      assert.ok(source, `${row.id}: no wrapper wraps the generated ${tag}`);
       const events = /events:\s*\[([^\]]*)\]/
         .exec(source)?.[1]
         ?.match(/'(\w+)'/g)
@@ -361,6 +362,21 @@ describe('the Angular accessors reach the adapter: generated from the rows, or w
         `${type}: host listeners`,
       );
     }
+  });
+
+  it('lists mud-phone-input once in the generated text accessor, which listens to both its events', () => {
+    // `text|mudCountryChange` has no selector of its own (the generator takes one event per config
+    // and merges per type), so the tag must come from `text|mudInput` alone, and the host must
+    // still carry both listeners.
+    const source = read(path.join(generatedDir, 'text-value-accessor.ts'));
+    assert.equal(selectorsOf(source).filter(tag => tag === 'mud-phone-input').length, 1);
+    assert.equal((source.match(/mud-phone-input/g) ?? []).length, 1);
+    assert.deepEqual(
+      hostEventsOf(source)
+        .map(([event]) => event)
+        .sort(),
+      ['mudCountryChange', 'mudInput'],
+    );
   });
 
   it('writes a hand-written accessor for every hand-written row, on its tags, events and property', () => {

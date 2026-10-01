@@ -200,6 +200,7 @@ jobs:
       # restores it, and only a push to main saves it (same key), so a pull request can never
       # write a cache entry that a later run on main would restore.
       - name: Restore the Playwright browser
+        id: playwright-cache
         uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
@@ -230,15 +231,21 @@ jobs:
       - name: Consumer fixture, Angular 22 (zoneless)
         run: node scripts/adapters/consumer-fixture.mjs angular --framework-version 22
 
+      # An exact hit already holds this key, and a cache key cannot be overwritten.
       - name: Save the Playwright browser
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.playwright-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
 
-      # A failed run keeps its temp directory (the runner prints its path): the fixture copy, the
-      # build output and Playwright's traces (`trace: retain-on-failure`, in `test-results/`).
+      # This job must stay secret-free: the artifact uploads the runner's temp directory, so
+      # anything a step wrote there (an env file, a token in a config) would be published.
+      #
+      # A failed run keeps its temp directory (the runner prints its path): the fixture copy, its
+      # visible build output and Playwright's traces (`trace: retain-on-failure`, in
+      # `test-results/`). Hidden files are excluded on purpose (upload-artifact's default), so
+      # `dist/.vite/` is not in the artifact; the tarballs are excluded to keep it small.
       - name: Upload the failed fixture runs
         if: failure()
         uses: actions/upload-artifact@v4
@@ -247,5 +254,6 @@ jobs:
           path: |
             ${{ runner.temp }}/mud-fixture-*
             !${{ runner.temp }}/mud-fixture-*/**/node_modules/**
+            !${{ runner.temp }}/mud-fixture-*/**/*.tgz
           if-no-files-found: ignore
           retention-days: 7

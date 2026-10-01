@@ -22,6 +22,19 @@
     <output data-testid="numeric-model">{{ json(num) }}</output>
     <button type="button" data-testid="numeric-set" (click)="num = 7">set model</button>
     <button type="button" data-testid="numeric-null" (click)="num = null">set null</button>
+    <button type="button" data-testid="numeric-string" (click)="setNumericString()">set '5'</button>
+  </section>
+
+  <section>
+    <h2>number through a reactive formControl, disable</h2>
+    <mud-numeric-input
+      [formControl]="numControl"
+      data-testid="numeric-rx"
+      aria-label="Number (reactive)"
+    ></mud-numeric-input>
+    <output data-testid="numeric-rx-model">{{ json(numControl.value) }}</output>
+    <button type="button" data-testid="numeric-rx-disable" (click)="numControl.disable()">disable</button>
+    <button type="button" data-testid="numeric-rx-enable" (click)="numControl.enable()">enable</button>
   </section>
 
   <section>

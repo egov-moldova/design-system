@@ -52,7 +52,7 @@ export interface FormModelRow {
   readonly property: ModelProperty;
   readonly valueType: ModelValueType;
   /** Every event that follows a user-driven write of `property`; both adapters listen to all of them. */
-  readonly events: readonly string[];
+  readonly events: readonly [string, ...string[]];
   /** The components that share this model shape. */
   readonly tags: readonly string[];
   /** Why the row looks the way it does, and the coercion a hand-written accessor owes. */
@@ -94,8 +94,11 @@ export const FORM_MODEL_ROWS: readonly FormModelRow[] = [
       'Clamps and rounds on commit and emits only `mudChange` (mud-numeric-input.tsx:798-822), so both adapters ' +
       'listen to `mudInput` and `mudChange`. It sets `value` to `undefined` on clear (mud-numeric-input.tsx:716-727,' +
       "771-773), which the generated Angular `number` accessor turns into NaN and Vue's `patchDOMProp` turns into " +
-      "`0` when a null model meets a numeric `value`: both adapters are hand-written (`undefined`/`null`/`''` → `null`; " +
-      'a null model is written back as `undefined`). The Vue wrapper is packages/vue/src/wrappers/numeric-input.ts.',
+      '`0` when a null model meets a numeric `value`: both adapters are hand-written with ONE coercion, identical in ' +
+      'both: a finite number passes; a string that is a finite number once trimmed becomes that number (Stencil ' +
+      "parsed `'5'` before the adapters, so it must keep meaning 5); everything else (`null`, `undefined`, `''`, " +
+      '`NaN`, `±Infinity`, any other type) is empty, a `null` model that is written back to the element as ' +
+      '`undefined`. The Vue wrapper is packages/vue/src/wrappers/numeric-input.ts.',
   },
   {
     id: 'boolean',
@@ -209,6 +212,12 @@ export interface AngularValueAccessorConfig {
  * listed ONCE per type, on the config of its row's first event: `mud-phone-input` sits on
  * `text|mudInput`, and `text|mudCountryChange` carries no selector of its own (an empty
  * `elementSelectors` is valid input) yet still adds its host listener.
+ *
+ * That empty-selector config exists because an entry takes ONE `event` and the generator merges
+ * entries per type: a second event of a type can only be added as its own entry. The directive
+ * therefore also listens to `mudCountryChange` on every other `text` tag; that listener is inert
+ * there, since none of them emits it (`scripts/__tests__/adapter-form-models.spec.mjs` checks
+ * the generated `text-value-accessor.ts`).
  */
 export function angularValueAccessorConfigs(
   rows: readonly FormModelRow[] = FORM_MODEL_ROWS,

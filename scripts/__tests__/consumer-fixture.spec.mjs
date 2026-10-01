@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
+
+import { PROJECT_ROOT } from '../validate-package.mjs';
 
 // Importing the runner must run nothing: no `main()`, no signal handler. A regression here would
 // start a real fixture run (pack, install, browser) from inside this spec.
@@ -8,7 +11,9 @@ const {
   RunnerError,
   checkSecondRuntime,
   judgeNegative,
+  loadPins,
   negativeTarget,
+  parseArgs,
   parseEsbuildDiagnostics,
   parseTscDiagnostics,
   workspaceSpecifiers,
@@ -25,6 +30,39 @@ describe('importing the consumer-fixture runner', () => {
       ['SIGINT', 'SIGTERM'].map(signal => process.listenerCount(signal)),
       signalsBefore,
     );
+  });
+});
+
+describe('the argument parser', () => {
+  it('reads a framework and an optional major', () => {
+    assert.deepEqual(parseArgs(['vue']), { framework: 'vue', requested: undefined });
+    assert.deepEqual(parseArgs(['angular', '--framework-version', '22']), { framework: 'angular', requested: '22' });
+  });
+
+  it('rejects an unknown framework, including the names every object inherits', () => {
+    for (const framework of ['react', 'constructor', '__proto__', 'toString', undefined]) {
+      assert.throws(() => parseArgs([framework].filter(Boolean)), rejects(/usage/), String(framework));
+    }
+  });
+
+  it('rejects a stray argument and a --framework-version with no value', () => {
+    assert.throws(() => parseArgs(['vue', '--nope']), rejects(/unexpected argument --nope/));
+    assert.throws(() => parseArgs(['vue', '--framework-version']), rejects(/unexpected argument/));
+  });
+});
+
+describe('the framework-version pin lookup', () => {
+  const fixtureDir = join(PROJECT_ROOT, 'packages/vue/fixture');
+
+  it('defaults to the highest major and accepts a listed one', () => {
+    const { major } = loadPins(fixtureDir, undefined);
+    assert.equal(loadPins(fixtureDir, major).major, major);
+  });
+
+  it('rejects an unlisted major, including the names every object inherits', () => {
+    for (const major of ['0', 'constructor', '__proto__', 'hasOwnProperty']) {
+      assert.throws(() => loadPins(fixtureDir, major), rejects(/has no major/), major);
+    }
   });
 });
 
@@ -178,6 +216,26 @@ describe('the negative-case judge', () => {
 
   it('passes exactly one diagnostic of an accepted code, on the binding line, at the input', () => {
     assert.deepEqual(judgeNegative({ ...target, status: 1, diagnostics: [diagnostic] }), diagnostic);
+  });
+
+  it('passes the Vue form: a `:maxLength` binding, at the colon or at the input name', () => {
+    const vueFile = 'negative/WrongType.vue';
+    const vueLines = [
+      '<!-- @negative-binding maxLength: the one wrong binding below. -->',
+      '<MudTextInput aria-label="Text" :maxLength="\'ten\'" />',
+    ];
+    const vueTarget = { ...target, file: vueFile, lines: vueLines };
+    assert.deepEqual(negativeTarget(vueLines, '@negative-binding', vueFile), { binding: 'maxLength', bindingLine: 2 });
+    // vue-tsc may report the column of the `:` or of the name that follows it.
+    const colon = vueLines[1].indexOf(':maxLength') + 1;
+    for (const column of [colon, colon + 1]) {
+      const vueDiagnostic = { ...diagnostic, file: vueFile, column };
+      assert.deepEqual(judgeNegative({ ...vueTarget, status: 1, diagnostics: [vueDiagnostic] }), vueDiagnostic);
+    }
+    assert.throws(
+      () => judgeNegative({ ...vueTarget, status: 1, diagnostics: [{ ...diagnostic, file: vueFile, column: 1 }] }),
+      rejects(/column 1 is not at `maxLength`/),
+    );
   });
 
   it('fails when the wrong binding compiled', () => {

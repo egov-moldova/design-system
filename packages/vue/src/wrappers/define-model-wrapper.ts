@@ -1,4 +1,4 @@
-import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
+import type { StencilVueComponent } from '@stencil/vue-output-target/runtime';
 import {
   type Component,
   type ComponentPublicInstance,
@@ -13,20 +13,19 @@ import {
 /**
  * The hand-written Vue wrappers: the rows of the form-control model map
  * (`scripts/adapters/form-models.ts`) whose `vueBindingKind` is `hand-written`.
- * `scripts/__tests__/adapter-form-models.spec.mjs` asserts each wrapper listens to exactly its row's events.
+ * `scripts/__tests__/adapter-form-models.spec.mjs` asserts each wrapper wraps its row's generated
+ * component and listens to exactly its row's events.
  */
 export interface ModelWrapperOptions<TModel> {
   /** The wrapper name, for devtools and warnings. */
   name: string;
-  /** The custom element's tag. */
-  tag: string;
-  /** The element's `defineCustomElement` from the standalone bundle. */
-  define: () => void;
   /**
-   * The generated wrapper of the same component. Only its `props` and `emits` are read, so a
-   * prop the component gains is forwarded without this file naming it.
+   * The generated wrapper of the same component, rendered as is: it registers the custom element
+   * when it is imported and forwards every prop and event, so a prop the component gains needs no
+   * edit here. It carries no `v-model` (a hand-written row has none generated), and this wrapper
+   * never hands it `value`.
    */
-  generated: unknown;
+  generated: Component;
   /** Every event that follows a user-driven write of `value`: the row's `events`. */
   events: readonly string[];
   /** The element's `value` as the `v-model` value. */
@@ -45,17 +44,12 @@ const handlerKey = (event: string): string => `on${event[0].toUpperCase()}${even
  *  - it passes `value` through the vnode, so `patchDOMProp` (`@vue/runtime-dom`) rewrites a
  *    `null`/`undefined` model as `0` on an element whose `value` is a number.
  *
- * The inner container therefore has NO model: `value` is not one of its props, and this
- * component sets `element.value = toElement(model)` after mount and whenever the model changes.
+ * The generated component is therefore rendered WITHOUT `value`: this component sets
+ * `element.value = toElement(model)` after mount and whenever the model changes.
  */
 export function defineModelWrapper<Props, TModel>(
   options: ModelWrapperOptions<TModel>,
 ): StencilVueComponent<Props, TModel | null | undefined> {
-  const generated = options.generated as { props: Record<string, unknown>; emits: string[] };
-  const props = Object.keys(generated.props).filter(key => key !== 'value' && key !== 'modelValue');
-  const emits = generated.emits.filter(event => event !== 'update:modelValue');
-  const Inner = defineContainer<Props, TModel>(options.tag, options.define, props, emits) as unknown as Component;
-
   return defineComponent({
     name: options.name,
     inheritAttrs: false,
@@ -66,9 +60,16 @@ export function defineModelWrapper<Props, TModel>(
       const inner = ref<ComponentPublicInstance | null>(null);
       const element = () => inner.value?.$el as (HTMLElement & { value?: unknown }) | undefined;
       const current = () => props.modelValue ?? props.value;
+      // The model last written to the element or emitted: one commit can fire `mudInput` and then
+      // `mudChange` with the same value, which must reach the app once (as Angular's
+      // `MudModelAccessor.handleChange` does).
+      let lastModel: TModel | undefined;
       const write = () => {
         const el = element();
-        if (el) el.value = options.toElement(current());
+        if (!el) return;
+        const value = options.toElement(current());
+        lastModel = options.toModel(value);
+        el.value = value;
       };
       onMounted(write);
       watch(current, write, { flush: 'post' });
@@ -81,11 +82,15 @@ export function defineModelWrapper<Props, TModel>(
           (e: Event) => {
             const el = element();
             // A bubbled event of a descendant is not this element's change.
-            if (el && e.target === el) emit('update:modelValue', options.toModel(el.value));
+            if (!el || e.target !== el) return;
+            const model = options.toModel(el.value);
+            if (model === lastModel) return;
+            lastModel = model;
+            emit('update:modelValue', model);
           },
         ]),
       );
-      return () => h(Inner, { ...mergeProps(listeners, attrs), ref: inner }, slots);
+      return () => h(options.generated, { ...mergeProps(listeners, attrs), ref: inner }, slots);
     },
   }) as unknown as StencilVueComponent<Props, TModel | null | undefined>;
 }

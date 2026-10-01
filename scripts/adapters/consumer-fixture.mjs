@@ -322,7 +322,7 @@ async function run(step, command, args, { cwd, env, capture = false, allowFailur
 // Steps
 // ---------------------------------------------------------------------------------------------
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const [framework, ...rest] = argv;
   let requested;
   for (let i = 0; i < rest.length; i++) {
@@ -336,7 +336,7 @@ function parseArgs(argv) {
 }
 
 /** The pins of one major. With no `--framework-version`, the table's highest major is the default. */
-function loadPins(fixtureDir, requested) {
+export function loadPins(fixtureDir, requested) {
   const table = JSON.parse(readFileSync(join(fixtureDir, 'versions.json'), 'utf8'));
   const majors = Object.keys(table).sort((a, b) => Number(a) - Number(b));
   const major = requested ?? majors.at(-1);
@@ -388,7 +388,9 @@ function freePort() {
 }
 
 async function waitForServer(url, server) {
-  for (let attempt = 0; attempt < 120; attempt++) {
+  // A wall-clock bound: each attempt can itself take up to its 2s fetch timeout.
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
     if (server.exitCode !== null) fail('serve', `the preview server exited ${server.exitCode}`);
     try {
       if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).ok) return;
@@ -413,6 +415,7 @@ export function checkSecondRuntime(ids, adapterPackage) {
   if (!scripts.some(id => id.includes(`/node_modules/${adapterPackage}/`))) {
     fail('second runtime', `the module graph holds no ${adapterPackage} module: the fixture does not use the adapter`);
   }
+  // NESTED_CORE catches a core nested deeper than the install step's directory guard in `main()` looks.
   const second = scripts.filter(id => SECOND_RUNTIME.test(id) || NESTED_CORE.test(id));
   if (second.length > 0) {
     fail('second runtime', `the bundle holds a second Stencil runtime:\n  ${[...new Set(second)].join('\n  ')}`);

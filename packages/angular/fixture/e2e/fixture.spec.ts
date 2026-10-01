@@ -13,7 +13,12 @@ const test = base.extend<{ page: Page }>({
       if (message.type() === 'error') errors.push(message.text());
     });
     page.on('pageerror', error => errors.push(String(error)));
-    page.on('requestfailed', request => errors.push(`request failed: ${request.url()}`));
+    page.on('requestfailed', request => {
+      // The browser aborts a request it no longer needs (a navigation, a cancelled prefetch):
+      // that is not a failure of the page.
+      if (request.failure()?.errorText === 'net::ERR_ABORTED') return;
+      errors.push(`request failed: ${request.url()}`);
+    });
     await page.goto('/');
     await use(page);
     expect(errors, 'console errors').toEqual([]);
@@ -36,6 +41,7 @@ test('upgrade: every wrapped host has a shadow root', async ({ page }) => {
     'text',
     'date',
     'numeric',
+    'numeric-rx',
     'checkbox',
     'select',
     'select-rx',
@@ -105,6 +111,12 @@ test('number (numeric-input): clearing the field leaves a null model, and a null
   await expect(model(page, 'numeric')).toHaveText('null');
   // A null model reaches the element as undefined (its own empty state), not ''.
   await expect.poll(() => host(page, 'numeric').evaluate(el => 'value' in el && el.value === undefined)).toBe(true);
+});
+
+test('number (numeric-input): a numeric string model reads as that number', async ({ page }) => {
+  await press(page, 'numeric-string');
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(5);
+  await expect(host(page, 'numeric').locator('input.native')).toHaveValue('5');
 });
 
 test('boolean (checkbox), both ways', async ({ page }) => {
@@ -193,12 +205,30 @@ test('formControl.disable() and enable() reach the host as disabled', async ({ p
   await expect.poll(() => prop(page, 'select-rx', 'disabled')).toBe(false);
 });
 
+test('formControl.disable() and enable() reach a numeric-input (hand-written accessor) as disabled', async ({
+  page,
+}) => {
+  await expect.poll(() => prop(page, 'numeric-rx', 'disabled')).toBe(false);
+  await press(page, 'numeric-rx-disable');
+  await expect.poll(() => prop(page, 'numeric-rx', 'disabled')).toBe(true);
+  await press(page, 'numeric-rx-enable');
+  await expect.poll(() => prop(page, 'numeric-rx', 'disabled')).toBe(false);
+});
+
 test('blur marks the control touched', async ({ page }) => {
   await expect(host(page, 'text')).toHaveClass(/ng-untouched/);
   const input = host(page, 'text').locator('input');
   await input.focus();
   await input.blur();
   await expect(host(page, 'text')).toHaveClass(/ng-touched/);
+});
+
+test('blur marks a numeric-input (hand-written accessor) touched', async ({ page }) => {
+  await expect(host(page, 'numeric-rx')).toHaveClass(/ng-untouched/);
+  const input = host(page, 'numeric-rx').locator('input.native');
+  await input.focus();
+  await input.blur();
+  await expect(host(page, 'numeric-rx')).toHaveClass(/ng-touched/);
 });
 
 test('a bare boolean attribute compiles and reaches the component as true', async ({ page }) => {

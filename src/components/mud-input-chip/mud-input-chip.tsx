@@ -73,6 +73,10 @@ export class MudInputChip {
   /**
    * Confirmed chip values. Two-way bound: assigning a new array rerenders
    * the list. Consumer mutations through events should set this prop.
+   *
+   * `null` and `undefined` are accepted and normalised to `[]`, so a cleared form model
+   * leaves an empty list. The type stays `string[]`: a framework binding of a nullable
+   * model needs a cast.
    * @default []
    */
   @Prop({ mutable: true }) chips: string[] = [];
@@ -247,7 +251,7 @@ export class MudInputChip {
   // watcher already ran, and nothing runs again when the name arrives.
   @Watch('name')
   handleNameChange() {
-    this.syncFormValue(this.chips ?? []);
+    this.syncFormValue(this.chips);
   }
 
   formDisabledCallback(disabled: boolean) {

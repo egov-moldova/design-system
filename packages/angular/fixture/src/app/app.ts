@@ -50,6 +50,9 @@ export class App {
   // `null`, as a reactive form or `reset()` would leave it: the accessor writes it as `[]`.
   protected files: File[] | null = null;
   protected phone = '';
+  // The hand-written numeric accessor has its own base class: disabled and touched are driven
+  // through a reactive control, as the select's are.
+  protected readonly numControl = new FormControl<number | null>(null);
   protected readonly fruitControl = new FormControl('', { nonNullable: true });
   // Reset to `null` by `reset()`: the accessors must hand the components an empty list.
   protected readonly chipsControl = new FormControl<string[] | null>(null);
@@ -57,6 +60,11 @@ export class App {
 
   /** Which change detection this build runs on: the runner loads zone.js only for majors that pin it. */
   protected readonly zone = 'Zone' in globalThis ? 'zone.js' : 'zoneless';
+
+  /** A numeric string, as a form library or a query string hands it over: it must read as 5. */
+  protected setNumericString(): void {
+    this.num = '5' as unknown as number;
+  }
 
   protected json(value: unknown): string {
     return JSON.stringify(value);

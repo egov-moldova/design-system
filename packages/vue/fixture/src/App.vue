@@ -19,6 +19,10 @@ import { computed, ref } from 'vue';
 const text = ref('');
 const date = ref('');
 const num = ref<number | null | undefined>(undefined);
+// Counts the `update:modelValue` emissions of `num`: one commit must reach the app once.
+const numEmits = ref(0);
+// Seeded with a value at mount, so the wrapper's write after mount is what puts it on the element.
+const numSeeded = ref<number | null>(7);
 const checked = ref(false);
 const fruit = ref('');
 // Starts as `null`, like `files`: the component treats a `null` `chips` as an empty list.
@@ -51,11 +55,27 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
 
     <section>
       <h2>number (numeric-input)</h2>
-      <MudNumericInput v-model="num" data-testid="numeric" aria-label="Number" :max="10" />
+      <MudNumericInput
+        v-model="num"
+        data-testid="numeric"
+        aria-label="Number"
+        :max="10"
+        @update:model-value="numEmits += 1"
+      />
       <output data-testid="numeric-model">{{ JSON.stringify(num ?? null) }}</output>
+      <output data-testid="numeric-emits">{{ numEmits }}</output>
       <button type="button" data-testid="numeric-set" @click="num = 7">set model</button>
+      <!-- A numeric string, as a form library or a query string hands it over: it must read as 5. -->
+      <button type="button" data-testid="numeric-string" @click="num = '5' as unknown as number">set '5'</button>
       <button type="button" data-testid="numeric-null" @click="num = null">set null</button>
       <button type="button" data-testid="numeric-undefined" @click="num = undefined">set undefined</button>
+    </section>
+
+    <section>
+      <h2>number seeded at mount (numeric-input)</h2>
+      <MudNumericInput v-model="numSeeded" data-testid="numeric-seeded" aria-label="Seeded number" />
+      <output data-testid="numeric-seeded-model">{{ JSON.stringify(numSeeded) }}</output>
+      <button type="button" data-testid="numeric-seeded-null" @click="numSeeded = null">set null</button>
     </section>
 
     <section>
@@ -92,6 +112,7 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
       <h2>phone-input country switch</h2>
       <MudPhoneInput v-model="phone" data-testid="phone" type="international" aria-label="Phone" />
       <output data-testid="phone-model">{{ JSON.stringify(phone) }}</output>
+      <button type="button" data-testid="phone-set" @click="phone = '+37360654321'">set model</button>
     </section>
 
     <section>

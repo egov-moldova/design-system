@@ -244,9 +244,9 @@
         "tsconfig.json",
         "tsconfig.stencil.json",
         "scripts/copy-component-assets.mjs",
-        "scripts/adapters/clean-proxy-dirs.mjs",
-        "scripts/adapters/form-models.ts",
-        "scripts/adapters/proxy-dirs.ts"
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [
         "dist/**",
@@ -422,8 +422,9 @@
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
-        "scripts/adapters/form-models.ts",
-        "scripts/adapters/proxy-dirs.ts",
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs",
         "!src/components.d.ts"
       ],
       "output": [
@@ -525,8 +526,9 @@
         "vitest.config.mts",
         "vitest-setup.ts",
         "scripts/check-test-stderr.mjs",
-        "scripts/adapters/form-models.ts",
-        "scripts/adapters/proxy-dirs.ts"
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [],
       "packageLocks": [
@@ -552,8 +554,9 @@
         "*.mjs",
         "*.d.mts",
         "tsconfig.json",
-        "scripts/adapters/form-models.ts",
-        "scripts/adapters/proxy-dirs.ts"
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [],
       "packageLocks": [

@@ -13,7 +13,12 @@ const test = base.extend<{ page: Page }>({
       if (message.type() === 'error') errors.push(message.text());
     });
     page.on('pageerror', error => errors.push(String(error)));
-    page.on('requestfailed', request => errors.push(`request failed: ${request.url()}`));
+    page.on('requestfailed', request => {
+      // The browser aborts a request it no longer needs (a navigation, a cancelled prefetch):
+      // that is not a failure of the page.
+      if (request.failure()?.errorText === 'net::ERR_ABORTED') return;
+      errors.push(`request failed: ${request.url()}`);
+    });
     await page.goto('/');
     await use(page);
     expect(errors, 'console errors').toEqual([]);
@@ -27,7 +32,19 @@ const prop = (page: Page, id: string, name: string) =>
   host(page, id).evaluate((el, key) => (el as unknown as Record<string, unknown>)[key], name);
 
 test('upgrade: every wrapped host has a shadow root', async ({ page }) => {
-  for (const id of ['text', 'date', 'numeric', 'checkbox', 'select', 'chips', 'files', 'phone', 'icon', 'logo']) {
+  for (const id of [
+    'text',
+    'date',
+    'numeric',
+    'numeric-seeded',
+    'checkbox',
+    'select',
+    'chips',
+    'files',
+    'phone',
+    'icon',
+    'logo',
+  ]) {
     await expect.poll(() => host(page, id).evaluate(el => el.shadowRoot !== null), { message: id }).toBe(true);
   }
 });
@@ -92,9 +109,34 @@ for (const cleared of ['null', 'undefined']) {
   });
 }
 
-test('number (numeric-input): an empty model at mount leaves the element empty', async ({ page }) => {
-  await expect.poll(() => prop(page, 'numeric', 'value')).toBeUndefined();
-  await expect(host(page, 'numeric').locator('input.native')).toHaveValue('');
+test('number (numeric-input): a model seeded at mount reaches the element, and a null model then clears it', async ({
+  page,
+}) => {
+  // Discriminating: the generated wrapper has no `v-model` for this row, so a seeded model never
+  // reaches the element through it. Only the wrapper's own write after mount puts the 7 there.
+  await expect.poll(() => prop(page, 'numeric-seeded', 'value')).toBe(7);
+  await expect(host(page, 'numeric-seeded').locator('input.native')).toHaveValue('7');
+  await page.locator('button[data-testid="numeric-seeded-null"]').click();
+  await expect.poll(() => prop(page, 'numeric-seeded', 'value')).toBeUndefined();
+  await expect(host(page, 'numeric-seeded').locator('input.native')).toHaveValue('');
+  await expect(model(page, 'numeric-seeded')).toHaveText('null');
+});
+
+test('number (numeric-input): a numeric string model reads as that number', async ({ page }) => {
+  await page.locator('button[data-testid="numeric-string"]').click();
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(5);
+  await expect(host(page, 'numeric').locator('input.native')).toHaveValue('5');
+});
+
+test('number (numeric-input): one commit emits update:modelValue once, not once per event', async ({ page }) => {
+  const input = host(page, 'numeric').locator('input.native');
+  await input.fill('5');
+  await expect(model(page, 'numeric')).toHaveText('5');
+  // The blur commit fires mudChange with the value mudInput already announced.
+  await input.blur();
+  await expect.poll(() => prop(page, 'numeric', 'value')).toBe(5);
+  await expect(model(page, 'numeric')).toHaveText('5');
+  await expect(page.locator('[data-testid="numeric-emits"]')).toHaveText('1');
 });
 
 test('boolean (checkbox), both ways', async ({ page }) => {
@@ -155,6 +197,12 @@ test('phone-input: a country switch updates the model to the new E.164 value', a
   // The switch rewrites `value` and emits only mudCountryChange: the model must follow it.
   await expect.poll(() => prop(page, 'phone', 'value')).toBe('+4060123456');
   await expect(model(page, 'phone')).toHaveText('"+4060123456"');
+});
+
+test('phone-input: a model written from code reaches the element', async ({ page }) => {
+  await press(page, 'phone');
+  await expect.poll(() => prop(page, 'phone', 'value')).toBe('+37360654321');
+  await expect(model(page, 'phone')).toHaveText('"+37360654321"');
 });
 
 test('tokens: a semantic token from core.tokens.css reaches a rendered host', async ({ page }) => {
