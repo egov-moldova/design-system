@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 /**
- * `yarn svg:flags` — vendor the flagpack-core "large" flag set into `mud-phone-input`.
+ * `yarn svg:flags` — vendor the flag-icons "4x3" flag set into `mud-phone-input`.
  *
- * Source: https://github.com/Yummygum/flagpack-core, folder `svg/l` (32 x 24, MIT). The files
- * are optimised with SVGO (`svgo.config.flags.js`) and written to
- * `src/components/mud-phone-input/assets/flags/<CODE>.svg`, together with the upstream
+ * Source: https://github.com/lipis/flag-icons, folder `flags/4x3` (640 x 480, MIT). It is the
+ * set the Figma Foundations "Flags" frame (3950:138) is made of: the 1024px bitmaps there are
+ * pixel-identical to the `flags/1x1` drawings of the same release. The 4x3 drawings are used
+ * because the flag is shown in a 20 x 14 box, where they show the whole flag.
+ *
+ * The files are optimised with SVGO (`svgo.config.flags.js`) and written to
+ * `src/components/mud-phone-input/assets/flags/<code>.svg`, together with the upstream
  * `LICENSE` and a `SOURCE.json` that pins the upstream commit. Stencil copies the whole
  * `assets/` folder to `dist/`, so the licence travels with the flags.
  *
  *   yarn svg:flags                        # fetch the pinned commit and sync
- *   yarn svg:flags --from <checkout>      # use a local flagpack-core checkout
+ *   yarn svg:flags --from <checkout>      # use a local flag-icons checkout
  *   yarn svg:flags --ref <sha>            # sync another upstream commit (then update PINNED_COMMIT)
  *
  * Idempotent: a second run with the same input changes nothing. Files that upstream no longer
@@ -33,16 +37,18 @@ const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(here, '..', '..');
 
-export const REPOSITORY = 'https://github.com/Yummygum/flagpack-core';
-export const PINNED_COMMIT = '6e57695337a46831d3772ab4945d7a7f8e25d5c1';
-export const SOURCE_FOLDER = 'svg/l';
+export const REPOSITORY = 'https://github.com/lipis/flag-icons';
+/** The commit of the `v7.5.0` tag. */
+export const PINNED_COMMIT = '7aa5b2bdddd570ece62c812c0cb588ccdc099e2e';
+export const SOURCE_FOLDER = 'flags/4x3';
 export const OUT_DIR = path.join(ROOT, 'src/components/mud-phone-input/assets/flags');
 
-/** `MD`, `RO`, and the sub-national flags upstream names `GB-SCT`, `BQ-BO`. */
-export const FLAG_CODE = /^[A-Z]{2}(?:-[A-Z]{2,3})?$/;
+/** `md`, `ro`, the sub-national `gb-sct`, `sh-ac`, and the groups upstream names `eac`, `cefta`, `asean`. */
+export const FLAG_CODE = /^[a-z]{2,5}(?:-[a-z]{2,3})?$/;
 
 /** What a flag drawing may never contain: it is third-party markup shown on every consumer's page. */
-const FORBIDDEN = [/<script/i, /<style/i, /<image/i, /<foreignObject/i, /xlink:href/i, /\bhref\s*=/i, /\son\w+\s*=/i];
+// A `href` may only point inside the file (`<use href="#a">`): anything else is a request.
+const FORBIDDEN = [/<script/i, /<style/i, /<image/i, /<foreignObject/i, /\bhref\s*=\s*["'](?!#)/i, /\son\w+\s*=/i];
 
 export class InputError extends Error {}
 
@@ -84,7 +90,7 @@ function writeIfChanged(file, text) {
 /** Mirror `checkout/svg/l` into `outDir`. Returns what changed. */
 export function syncFlags({ checkout, commit, outDir = OUT_DIR }) {
   const sourceDir = path.join(checkout, SOURCE_FOLDER);
-  if (!fs.existsSync(sourceDir)) throw new InputError(`${sourceDir} does not exist: is this a flagpack-core checkout?`);
+  if (!fs.existsSync(sourceDir)) throw new InputError(`${sourceDir} does not exist: is this a flag-icons checkout?`);
   const licenseFile = path.join(checkout, 'LICENSE');
   if (!fs.existsSync(licenseFile))
     throw new InputError(`${licenseFile} does not exist: the licence must travel with the files`);
@@ -144,7 +150,7 @@ function git(cwd, ...args) {
 
 /** A shallow checkout of exactly `ref`, in a temporary folder. */
 function fetchCommit(ref) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flagpack-core-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flag-icons-'));
   git(dir, 'init', '-q');
   git(dir, 'fetch', '-q', '--depth', '1', REPOSITORY, ref);
   git(dir, 'checkout', '-q', 'FETCH_HEAD');
@@ -161,9 +167,7 @@ function main(argv) {
       console.warn(`note: ${checkout} is at ${commit}, not the pinned ${opts.ref}; SOURCE.json records ${commit}`);
     }
     const { count, changed, removed } = syncFlags({ checkout, commit });
-    console.log(
-      `flags: ${count} files from flagpack-core@${commit.slice(0, 7)} (${changed} written, ${removed} removed)`,
-    );
+    console.log(`flags: ${count} files from flag-icons@${commit.slice(0, 7)} (${changed} written, ${removed} removed)`);
   } finally {
     if (fetched) fs.rmSync(checkout, { recursive: true, force: true });
   }
