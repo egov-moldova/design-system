@@ -73,12 +73,33 @@ const countryDisplayName = (country: PhoneCountry, tag: string): string => {
   return country.name;
 };
 
+const defaultListCache = new Map<string, PhoneCountry[]>();
+
+/**
+ * Every country for `tag`: Moldova first, the rest sorted by the locale's collator on the displayed
+ * name. The data is static, so the sort (245 names) runs once per locale, not on every render.
+ */
+const defaultCountryList = (tag: string): PhoneCountry[] => {
+  const cached = defaultListCache.get(tag);
+  if (cached) return cached;
+  const rest = DEFAULT_COUNTRY_ORDER.filter(iso => iso !== 'MD')
+    .map(iso => COUNTRIES[iso])
+    .filter((country): country is PhoneCountry => Boolean(country));
+  // One `countryDisplayName` call per country for the whole sort, not one per comparison.
+  const nameByIso = new Map(rest.map(country => [country.iso, countryDisplayName(country, tag)]));
+  const collator = collatorFor(tag);
+  rest.sort((a, b) => collator.compare(nameByIso.get(a.iso) ?? a.name, nameByIso.get(b.iso) ?? b.name));
+  const list = [COUNTRIES.MD, ...rest];
+  defaultListCache.set(tag, list);
+  return list;
+};
+
 /**
  * Phone Input — phone-number entry molecule with country-code prefix and
  * format mask. The most Moldova-specific input in the family: it ships a
- * default `+373` country, a curated diaspora-relevant country list with
- * SVG flags (flag-icons, shipped as local assets), and Romanian-voice
- * placeholder + error copy.
+ * default `+373` country, every country that has a numbering plan (245)
+ * with its SVG flag (flag-icons, shipped as local assets), and
+ * Romanian-voice placeholder + error copy.
  *
  * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
  * inside shadow DOM alongside an inline country trigger that either
@@ -187,8 +208,9 @@ export class MudPhoneInput {
   @Prop({ reflect: true, attribute: 'default-country' }) defaultCountry: string = 'MD';
 
   /**
-   * Optional whitelist of ISO codes to surface in the dropdown. Defaults
-   * to the curated 15-country Moldova-diaspora list when omitted.
+   * Optional whitelist of ISO codes to surface in the dropdown, in the given
+   * order. Defaults to every country when omitted (Moldova first, the rest
+   * sorted by the displayed name).
    */
   @Prop() countries?: string[];
 
@@ -230,6 +252,8 @@ export class MudPhoneInput {
   /** The host's `aria-label` (attribute or native `ariaLabel` property), mirrored to the internal control when no visible label is present. */
   @State() private resolvedAriaLabel?: string;
   @State() private searchQuery: string = '';
+  /** ISO codes of the rows whose flag was asked for: those that came near the visible part of the list. */
+  @State() private shownFlags: ReadonlySet<string> = new Set();
 
   @Element() host!: HTMLMudPhoneInputElement;
 
@@ -275,6 +299,8 @@ export class MudPhoneInput {
   private initialCountry: string = 'MD';
   private triggerEl?: HTMLButtonElement;
   private listboxEl?: HTMLElement;
+  private listEl?: HTMLElement;
+  private flagObserver?: IntersectionObserver;
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
@@ -292,9 +318,49 @@ export class MudPhoneInput {
     );
   }
 
+  componentDidRender() {
+    this.observeRowFlags();
+  }
+
   disconnectedCallback() {
     this.stopAriaLabel?.();
     this.stopLang?.();
+    this.flagObserver?.disconnect();
+    this.flagObserver = undefined;
+  }
+
+  /**
+   * The list holds every country, and a flag is a file: asking for all of them when it opens would
+   * fetch about 500 KB for rows nobody sees (the browser's own `loading="lazy"` reaches 1250px past
+   * the page, not past the scrolling list). A row's flag is asked for once the row is within two rows
+   * of the visible part of the list, and kept once it was. Without `IntersectionObserver` every row
+   * shows its flag at once.
+   */
+  private observeRowFlags() {
+    this.flagObserver?.disconnect();
+    this.flagObserver = undefined;
+    const list = this.listEl;
+    if (typeof IntersectionObserver === 'undefined' || !list || this.listboxEl?.hidden !== false) return;
+    const pending = Array.from(list.querySelectorAll<HTMLElement>('.option')).filter(
+      row => !this.shownFlags.has(row.dataset.iso ?? ''),
+    );
+    if (pending.length === 0) return;
+    const observer = new IntersectionObserver(
+      entries => {
+        const near = entries
+          .filter(entry => entry.isIntersecting)
+          .map(entry => (entry.target as HTMLElement).dataset.iso ?? '')
+          .filter(iso => iso !== '' && !this.shownFlags.has(iso));
+        if (near.length > 0) this.shownFlags = new Set([...this.shownFlags, ...near]);
+      },
+      { root: list, rootMargin: '96px 0px' },
+    );
+    pending.forEach(row => observer.observe(row));
+    this.flagObserver = observer;
+  }
+
+  private rowFlagUrl(iso: string): string | undefined {
+    return typeof IntersectionObserver === 'undefined' || this.shownFlags.has(iso) ? flagUrl(iso) : undefined;
   }
 
   /** Built-in strings in the resolved locale. This component has no override props —
@@ -463,28 +529,14 @@ export class MudPhoneInput {
 
   /**
    * The active country list. An explicit `countries` whitelist keeps the caller's
-   * order verbatim; the default curated list keeps Moldova first and sorts the rest
-   * by `Intl.Collator` on the resolved display name.
+   * order verbatim; the default list is every country, Moldova first, the rest
+   * sorted by `Intl.Collator` on the resolved display name. Callers must not mutate it.
    */
   private activeCountries(): PhoneCountry[] {
     if (this.countries && this.countries.length > 0) {
       return this.countries.map(iso => COUNTRIES[iso]).filter((c): c is PhoneCountry => Boolean(c));
     }
-    const tag = this.displayTag();
-    const collator = collatorFor(tag);
-    const [moldova, rest] = DEFAULT_COUNTRY_ORDER.reduce<[PhoneCountry[], PhoneCountry[]]>(
-      ([md, others], iso) => {
-        const country = COUNTRIES[iso];
-        if (!country) return [md, others];
-        if (iso === 'MD') return [[...md, country], others];
-        return [md, [...others, country]];
-      },
-      [[], []],
-    );
-    // One `countryDisplayName` call per country for the whole sort, not one per comparison.
-    const nameByIso = new Map(rest.map(country => [country.iso, countryDisplayName(country, tag)]));
-    rest.sort((a, b) => collator.compare(nameByIso.get(a.iso) ?? a.name, nameByIso.get(b.iso) ?? b.name));
-    return [...moldova, ...rest];
+    return defaultCountryList(this.displayTag());
   }
 
   /**
@@ -551,7 +603,11 @@ export class MudPhoneInput {
   private detectCountryFromValue(value: string): string | undefined {
     if (!value || !value.startsWith('+')) return undefined;
     const digitsOnly = value.replace(/\D/g, '');
-    const sorted = [...this.activeCountries()].sort((a, b) => b.code.length - a.code.length);
+    // The longest code first, and the main country of a shared code before the others: a pasted
+    // `+1...` is the United States, not Anguilla, which only comes first in the alphabet.
+    const sorted = [...this.activeCountries()].sort(
+      (a, b) => b.code.length - a.code.length || Number(b.main) - Number(a.main),
+    );
     for (const country of sorted) {
       const codeDigits = country.code.replace(/\D/g, '');
       if (digitsOnly.startsWith(codeDigits)) return country.iso;
@@ -1059,6 +1115,7 @@ export class MudPhoneInput {
                 ) : null}
               </div>
               <div
+                ref={el => (this.listEl = el)}
                 id={this.listboxId}
                 class="listbox"
                 part="listbox"
@@ -1090,7 +1147,15 @@ export class MudPhoneInput {
                         onMouseEnter={this.handleOptionPointerEnter(index)}
                       >
                         <span class="option-flag" aria-hidden="true">
-                          <img src={flagUrl(opt.iso)} alt="" decoding="async" draggable={false} />
+                          {/* The file is asked for when the row comes near the view (observeRowFlags); `lazy` is the
+                              fallback for a browser without IntersectionObserver. */}
+                          <img
+                            src={this.rowFlagUrl(opt.iso)}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                          />
                         </span>
                         <span class="option-name">{this.displayName(opt)}</span>
                         <span class="option-code">{opt.code}</span>

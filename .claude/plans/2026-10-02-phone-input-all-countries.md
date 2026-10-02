@@ -59,16 +59,34 @@ whitelist still limits it.
       the rows, write `mud-phone-input.countries.ts`; pure functions covered by
       `scripts/__tests__/sync-countries.spec.mjs`.
       Verify: second run writes nothing; the 15 hand-set windows are reproduced.
-- [ ] Generated table, merged with the 15 rows in `mud-phone-input.data.ts`; `main` on `PhoneCountry`;
+- [x] Generated table, merged with the 15 rows in `mud-phone-input.data.ts`; `main` on `PhoneCountry`;
       `detectCountryFromValue` prefers it; `AC`/`TA` flag aliases; default list cached per locale;
       option flags `loading="lazy"`.
       Verify: invariants spec over every row (flag file exists, mask digits equal `maxLen`, one main
       per calling code, calling codes valid), detection spec for the shared codes.
-- [ ] Specs, stories and docs stop saying "15"; changelog fragment.
+- [x] Specs, stories and docs stop saying "15"; changelog fragment.
       Verify: spec project, storybook project for the component, `yarn lint`, `yarn docs:check`,
       `yarn changelog.check`.
-- [ ] Browser: open the list, count requests for flag files before scrolling, search, keyboard, a
+- [x] Browser: open the list, count requests for flag files before scrolling, search, keyboard, a
       pasted `+1` / `+7` / `+44` number; style parity and pixel diff of `mud-phone-input`.
+
+## Measured
+
+- Table: 245 rows, 14 KB (4 KB gzip). The generated length window equals the 15 hand-set rows (15 of
+  15); their masks match for 11 and differ for UA, GB, DE, ES, which keep their own.
+- Opening the list used to request 68 flag files (496 KB raw) with the browser's own
+  `loading="lazy"`, which reaches 1250px past the page, not past the scrolling list. A flag is now
+  asked for when its row is within two rows of the visible part of the list
+  (`IntersectionObserver` on `.listbox`): opening requests 8 files, 55 KB raw; a 60-row keyboard
+  walk loads the highlighted row's flag.
+- Package: validate.package passes (2358 files).
+
+## Found on the way, not changed here
+
+- The dial code of the highlighted row is `#757575` on `#f5f5f5`: 4.22:1, under the 4.5:1 AA needs.
+  It is the same pair as before this change, and a token decision.
+- A pasted `+7 7xx` (Kazakhstan), `+1 242` (Bahamas) or other number of a shared code is read as the
+  main country; the other countries of the code are chosen from the list.
 
 ## Not verified
 
