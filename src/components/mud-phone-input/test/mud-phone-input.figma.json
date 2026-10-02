@@ -398,7 +398,7 @@
     },
     "fixtureNote": "Every fixture pins the component to the 282px the Figma set draws at (3318:18167) and passes the English placeholder the frames show. The set's country is Moldova, which is also the component's default.",
     "mask": ["mud-phone-input .flag"],
-    "maskNote": "Figma draws the flag as the 🇲🇩 emoji (3318:18569); the component shows flagpack-core SVG flags, because a regional-indicator pair has no glyph on Windows at all. The two will never match pixel for pixel, so the flag is masked and its box is pinned by style parity instead."
+    "maskNote": "Figma draws the flag as the 🇲🇩 emoji (3318:18569); the component shows the SVG flags of flag-icons (the set the Foundations Flags frame 3950:138 is made of), because a regional-indicator pair has no glyph on Windows at all. The two will never match pixel for pixel, so the flag is masked and its box is pinned by style parity instead."
   },
   "states": [
     {

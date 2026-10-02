@@ -201,14 +201,14 @@ describe('mud-phone-input', () => {
     it('renders the flag file of the current country as a decorative image (local mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
       const img = queryFlag(root)?.querySelector('img');
-      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/MD.svg');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
       expect(img?.getAttribute('alt')).toBe('');
     });
 
     it('renders the flag file of the current country as a decorative image (international mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
       const img = queryFlag(root)?.querySelector('img');
-      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/MD.svg');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
       expect(img?.getAttribute('alt')).toBe('');
     });
 
@@ -225,7 +225,7 @@ describe('mud-phone-input', () => {
       const trigger = queryTrigger(root);
       expect(trigger?.textContent).toContain(dial);
       expect(trigger?.querySelector('.flag img')?.getAttribute('src')).toBe(
-        `https://cdn.test/build/assets/flags/${iso}.svg`,
+        `https://cdn.test/build/assets/flags/${iso.toLowerCase()}.svg`,
       );
     });
 
