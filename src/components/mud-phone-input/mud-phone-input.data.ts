@@ -1,6 +1,4 @@
-import type { h } from '@stencil/core';
-
-import { PHONE_FLAGS } from './mud-phone-input.flags';
+import { GENERATED_COUNTRIES } from './mud-phone-input.countries';
 
 /** One row in the country list. Data, never copy — the guard lints only `.tsx`. */
 export interface PhoneCountry {
@@ -18,81 +16,74 @@ export interface PhoneCountry {
   mask: string;
   /** Inclusive minimum digit count of the local segment. */
   minLen: number;
-  /** Inclusive maximum digit count of the local segment. */
+  /** Inclusive maximum digit count of the local segment. Equals the number of `X` in `mask`. */
   maxLen: number;
-  /** Inline SVG renderer for the country flag glyph. */
-  flag: () => ReturnType<typeof h>;
+  /**
+   * True for the one country that owns its dial code (`US` for `+1`, `RU` for `+7`, `GB` for `+44`).
+   * A pasted `+1...` number has no way to tell the 25 countries that share the code apart, so it
+   * is read as the main one.
+   */
+  main: boolean;
 }
 
 /**
- * Curated list of countries relevant to the Moldovan e-Gov audience: the
- * home market plus the diaspora destinations seen in the registry data.
- * Moldova is always shown first; the rest are sorted at render time by the
- * component (`Intl.Collator` on the resolved display name).
- *
- * The map is hand-rolled — `libphonenumber-js` would pull in ~140KB to
- * cover countries we don't serve. The `mask` uses `X` for required digits
- * and literal spaces as visual separators; the formatter respects each
- * country's local-segment length window (`minLen` / `maxLen`). Each row
- * carries an inline SVG `flag` glyph from `mud-phone-input.flags.ts`.
+ * Rows set by hand before the table was generated: the home market plus the diaspora destinations
+ * seen in the registry data. They win over the generated row of the same country, so nothing that
+ * worked for them changes — their masks included, which differ from the generated ones for
+ * UA, GB, DE and ES. Their length windows are the generated ones
+ * (`test/mud-phone-input.countries.spec.ts` pins that), and `main` comes from the generated row.
  */
-export const COUNTRIES: Record<string, PhoneCountry> = {
-  MD: { iso: 'MD', code: '+373', name: 'Moldova', mask: 'XXX XX XXX', minLen: 8, maxLen: 8, flag: PHONE_FLAGS.MD },
-  RO: { iso: 'RO', code: '+40', name: 'Romania', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9, flag: PHONE_FLAGS.RO },
-  RU: { iso: 'RU', code: '+7', name: 'Russia', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10, flag: PHONE_FLAGS.RU },
-  UA: { iso: 'UA', code: '+380', name: 'Ukraine', mask: 'XX XXX XX XX', minLen: 9, maxLen: 9, flag: PHONE_FLAGS.UA },
-  US: {
-    iso: 'US',
-    code: '+1',
-    name: 'United States',
-    mask: 'XXX XXX XXXX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.US,
-  },
-  GB: {
-    iso: 'GB',
-    code: '+44',
-    name: 'United Kingdom',
-    mask: 'XXXX XXX XXX',
-    minLen: 10,
-    maxLen: 10,
-    flag: PHONE_FLAGS.GB,
-  },
-  DE: {
-    iso: 'DE',
-    code: '+49',
-    name: 'Germany',
-    mask: 'XXX XXXX XXXX',
-    minLen: 10,
-    maxLen: 11,
-    flag: PHONE_FLAGS.DE,
-  },
-  FR: { iso: 'FR', code: '+33', name: 'France', mask: 'X XX XX XX XX', minLen: 9, maxLen: 9, flag: PHONE_FLAGS.FR },
-  IT: { iso: 'IT', code: '+39', name: 'Italy', mask: 'XXX XXX XXXX', minLen: 9, maxLen: 10, flag: PHONE_FLAGS.IT },
-  ES: { iso: 'ES', code: '+34', name: 'Spain', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9, flag: PHONE_FLAGS.ES },
-  PT: {
-    iso: 'PT',
-    code: '+351',
-    name: 'Portugal',
-    mask: 'XXX XXX XXX',
-    minLen: 9,
-    maxLen: 9,
-    flag: PHONE_FLAGS.PT,
-  },
-  IL: { iso: 'IL', code: '+972', name: 'Israel', mask: 'XX XXX XXXX', minLen: 9, maxLen: 9, flag: PHONE_FLAGS.IL },
-  TR: { iso: 'TR', code: '+90', name: 'Turkey', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10, flag: PHONE_FLAGS.TR },
-  BG: {
-    iso: 'BG',
-    code: '+359',
-    name: 'Bulgaria',
-    mask: 'XX XXX XXXX',
-    minLen: 8,
-    maxLen: 9,
-    flag: PHONE_FLAGS.BG,
-  },
-  GR: { iso: 'GR', code: '+30', name: 'Greece', mask: 'XXX XXX XXXX', minLen: 10, maxLen: 10, flag: PHONE_FLAGS.GR },
-};
+const CURATED: ReadonlyArray<Omit<PhoneCountry, 'main'>> = [
+  { iso: 'MD', code: '+373', name: 'Moldova', mask: 'XXX XX XXX', minLen: 8, maxLen: 8 },
+  { iso: 'RO', code: '+40', name: 'Romania', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
+  { iso: 'RU', code: '+7', name: 'Russia', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10 },
+  { iso: 'UA', code: '+380', name: 'Ukraine', mask: 'XX XXX XX XX', minLen: 9, maxLen: 9 },
+  { iso: 'US', code: '+1', name: 'United States', mask: 'XXX XXX XXXX', minLen: 10, maxLen: 10 },
+  { iso: 'GB', code: '+44', name: 'United Kingdom', mask: 'XXXX XXX XXX', minLen: 10, maxLen: 10 },
+  { iso: 'DE', code: '+49', name: 'Germany', mask: 'XXX XXXX XXXX', minLen: 10, maxLen: 11 },
+  { iso: 'FR', code: '+33', name: 'France', mask: 'X XX XX XX XX', minLen: 9, maxLen: 9 },
+  { iso: 'IT', code: '+39', name: 'Italy', mask: 'XXX XXX XXXX', minLen: 9, maxLen: 10 },
+  { iso: 'ES', code: '+34', name: 'Spain', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
+  { iso: 'PT', code: '+351', name: 'Portugal', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
+  { iso: 'IL', code: '+972', name: 'Israel', mask: 'XX XXX XXXX', minLen: 9, maxLen: 9 },
+  { iso: 'TR', code: '+90', name: 'Turkey', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10 },
+  { iso: 'BG', code: '+359', name: 'Bulgaria', mask: 'XX XXX XXXX', minLen: 8, maxLen: 9 },
+  { iso: 'GR', code: '+30', name: 'Greece', mask: 'XXX XXX XXXX', minLen: 10, maxLen: 10 },
+];
 
-/** Curated iteration order, Moldova first — the fallback order used before any locale sort. */
+const generated: PhoneCountry[] = GENERATED_COUNTRIES.map(([iso, code, name, mask, minLen, maxLen, main]) => ({
+  iso,
+  code,
+  name,
+  mask,
+  minLen,
+  maxLen,
+  main: main === 1,
+}));
+
+const curated: PhoneCountry[] = CURATED.map(row => ({
+  ...row,
+  main: generated.find(country => country.iso === row.iso)?.main ?? false,
+}));
+
+/**
+ * Every country that has a phone numbering plan (245 regions), keyed by ISO code. The curated rows
+ * come first, then the rest by ISO code; the component sorts for display by the locale's collator.
+ *
+ * The rest is generated by `yarn countries.sync` from libphonenumber's metadata, not typed: a
+ * hand-written table of 245 countries is not something a government form can trust. Only the
+ * facts are used. `libphonenumber-js` itself (~140 KB) is not a runtime dependency.
+ * The mask follows the grouping of an example mobile number, and the length window is the
+ * mobile-number length, which is also how the curated rows were set. The `mask` uses `X` for
+ * required digits and literal spaces as visual separators; the formatter respects each
+ * country's local-segment length window (`minLen` / `maxLen`).
+ */
+export const COUNTRIES: Record<string, PhoneCountry> = Object.fromEntries(
+  [...curated, ...generated.filter(country => !curated.some(row => row.iso === country.iso))].map(country => [
+    country.iso,
+    country,
+  ]),
+);
+
+/** Iteration order, Moldova first, then the other curated countries — the order used before any locale sort. */
 export const DEFAULT_COUNTRY_ORDER = Object.keys(COUNTRIES);

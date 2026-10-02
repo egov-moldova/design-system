@@ -1,12 +1,19 @@
+import { setAssetPath } from '@stencil/core';
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-phone-input';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { COUNTRIES } from '../mud-phone-input.data';
+import { flagAssetPath } from '../mud-phone-input.flags';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../mud-phone-input.types';
+
+// `getAssetPath` throws outside a lazy-bundle host, so a flag would have no `src`: give the
+// component the base a real host registers.
+setAssetPath('https://cdn.test/build/');
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -22,6 +29,9 @@ const queryListbox = (root: Element | null | undefined): HTMLElement | null =>
 
 const queryOptions = (root: Element | null | undefined): HTMLElement[] =>
   Array.from(root?.shadowRoot?.querySelectorAll('.option') ?? []) as HTMLElement[];
+
+const optionFor = (root: Element | null | undefined, iso: string): HTMLElement | undefined =>
+  queryOptions(root).find(option => option.getAttribute('data-iso') === iso);
 
 const queryLabel = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('label.label') ?? null) as HTMLElement | null;
@@ -192,18 +202,18 @@ describe('mud-phone-input', () => {
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('renders an inline SVG flag glyph for the current country (local mode)', async () => {
+    it('renders the flag file of the current country as a decorative image (local mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
-      const flag = queryFlag(root);
-      expect(flag).toBeTruthy();
-      expect(flag?.querySelector('svg')).toBeTruthy();
+      const img = queryFlag(root)?.querySelector('img');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
+      expect(img?.getAttribute('alt')).toBe('');
     });
 
-    it('renders an inline SVG flag glyph for the current country (international mode)', async () => {
+    it('renders the flag file of the current country as a decorative image (international mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
-      const flag = queryFlag(root);
-      expect(flag).toBeTruthy();
-      expect(flag?.querySelector('svg')).toBeTruthy();
+      const img = queryFlag(root)?.querySelector('img');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
+      expect(img?.getAttribute('alt')).toBe('');
     });
 
     it.each([
@@ -218,7 +228,9 @@ describe('mud-phone-input', () => {
       );
       const trigger = queryTrigger(root);
       expect(trigger?.textContent).toContain(dial);
-      expect(trigger?.querySelector('.flag svg')).toBeTruthy();
+      expect(trigger?.querySelector('.flag img')?.getAttribute('src')).toBe(
+        `https://cdn.test/build/assets/flags/${iso.toLowerCase()}.svg`,
+      );
     });
 
     it('draws no chevron on a read-only international chip', async () => {
@@ -363,18 +375,126 @@ describe('mud-phone-input', () => {
       expect(listbox?.hasAttribute('hidden')).toBe(false);
     });
 
-    it('renders the curated diaspora list (15 entries) when no countries prop is set', async () => {
+    it('renders every country when no countries prop is set, Moldova first', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
       const options = queryOptions(root);
-      expect(options.length).toBe(15);
+      expect(options.length).toBe(Object.keys(COUNTRIES).length);
+      expect(options.length).toBeGreaterThan(200);
       expect(options[0].getAttribute('data-iso')).toBe('MD');
+      expect(new Set(options.map(option => option.getAttribute('data-iso'))).size).toBe(options.length);
     });
 
-    it('each option carries an inline SVG flag glyph', async () => {
+    it('sorts the rest by the displayed name', async () => {
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" locale="en-US" open></mud-phone-input>,
+      );
+      const names = queryOptions(root)
+        .slice(1)
+        .map(option => option.querySelector('.option-name')?.textContent ?? '');
+      expect(names).toEqual([...names].sort(new Intl.Collator('en-US').compare));
+    });
+
+    describe('flags of a long list', () => {
+      /** A stand-in for the browser's IntersectionObserver, which the test DOM does not have. */
+      const stubObserver = () => {
+        const created: FakeObserver[] = [];
+        class FakeObserver {
+          observed: Element[] = [];
+          constructor(
+            readonly callback: (entries: Array<{ isIntersecting: boolean; target: Element }>) => void,
+            readonly options?: IntersectionObserverInit,
+          ) {
+            created.push(this);
+          }
+          observe(element: Element) {
+            this.observed.push(element);
+          }
+          unobserve() {}
+          disconnect() {
+            this.observed = [];
+          }
+        }
+        vi.stubGlobal('IntersectionObserver', FakeObserver);
+        return created;
+      };
+      const flagOf = (row: Element) => row.querySelector('.option-flag img');
+
+      it('asks for the flag of a row only once the row comes near the visible part of the list', async () => {
+        const created = stubObserver();
+        try {
+          const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
+          const rows = queryOptions(root);
+          expect(rows.some(row => flagOf(row)?.hasAttribute('src'))).toBe(false);
+          // The trigger shows the country at once: it is always in view.
+          expect(queryFlag(root)?.querySelector('img')?.getAttribute('src')).toContain('/flags/md.svg');
+
+          const observer = created[created.length - 1];
+          expect(observer.options?.root).toBe(root?.shadowRoot?.querySelector('.listbox'));
+          expect(observer.observed.length).toBe(rows.length);
+
+          observer.callback([
+            { isIntersecting: true, target: rows[0] },
+            { isIntersecting: true, target: rows[1] },
+            { isIntersecting: false, target: rows[2] },
+          ]);
+          await flush();
+          expect(flagOf(rows[0])?.getAttribute('src')).toContain('/flags/md.svg');
+          expect(flagOf(rows[1])?.getAttribute('src')).toContain(
+            flagAssetPath(rows[1].getAttribute('data-iso') ?? '').slice(2),
+          );
+          expect(flagOf(rows[2])?.hasAttribute('src')).toBe(false);
+
+          // A row that was asked for is not watched again.
+          const latest = created[created.length - 1];
+          expect(latest.observed).not.toContain(rows[0]);
+          expect(latest.observed).toContain(rows[2]);
+        } finally {
+          vi.unstubAllGlobals();
+        }
+      });
+
+      it('watches nothing while the list is closed', async () => {
+        const created = stubObserver();
+        try {
+          await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
+          expect(created.every(observer => observer.observed.length === 0)).toBe(true);
+        } finally {
+          vi.unstubAllGlobals();
+        }
+      });
+    });
+
+    it('lets a country that only the full list has be chosen', async () => {
+      const onCountryChange = vi.fn();
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" open onMudCountryChange={onCountryChange}></mud-phone-input>,
+      );
+      const uzbekistan = queryOptions(root).find(option => option.getAttribute('data-iso') === 'UZ');
+      expect(uzbekistan?.querySelector('.option-code')?.textContent).toBe('+998');
+      uzbekistan?.click();
+      await flush();
+      expect(onCountryChange.mock.calls[0][0].detail.countryCode).toBe('UZ');
+      expect(queryTrigger(root)?.textContent).toContain('+998');
+    });
+
+    it('loads the flag of a listed country lazily, but not the one on the trigger', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
       const options = queryOptions(root);
       for (const opt of options) {
-        expect(opt.querySelector('.option-flag svg')).toBeTruthy();
+        expect(opt.querySelector('.option-flag img')?.getAttribute('loading')).toBe('lazy');
+      }
+      expect(queryFlag(root)?.querySelector('img')?.hasAttribute('loading')).toBe(false);
+    });
+
+    it("each option carries its country's flag file as a decorative image", async () => {
+      const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
+      const options = queryOptions(root);
+      for (const opt of options) {
+        const img = opt.querySelector('.option-flag img');
+        expect(img?.getAttribute('src')).toBe(
+          `https://cdn.test/build/${flagAssetPath(opt.getAttribute('data-iso') ?? '').slice(2)}`,
+        );
+        expect(img?.getAttribute('alt')).toBe('');
       }
     });
 
@@ -391,10 +511,7 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open onMudCountryChange={onCountryChange}></mud-phone-input>,
       );
-      // Sorted order (Moldova first, then Intl.Collator on the ro-MD display name):
-      // MD, BG, FR, DE, GR, IL, IT, PT, GB, RO, RU, ES, US, TR, UA — RO sits at index 9.
-      const options = queryOptions(root);
-      options[9].click();
+      optionFor(root, 'RO')?.click();
       await flush();
       expect(onCountryChange).toHaveBeenCalledTimes(1);
       expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: 'RO' });
@@ -405,9 +522,7 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open value="+37362123456"></mud-phone-input>,
       );
-      // RO sits at index 9 in the sorted default list (see previous test's comment).
-      const options = queryOptions(root);
-      options[9].click();
+      optionFor(root, 'RO')?.click();
       await flush();
       const native = queryNative(root);
       expect(native?.value).toBe('621 234 56');
@@ -429,12 +544,14 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open onMudCountryChange={onCountryChange}></mud-phone-input>,
       );
+      // ArrowDown from MD (index 0) highlights index 1, the first country by displayed name.
+      const second = queryOptions(root)[1].getAttribute('data-iso');
       pressKey(root, 'ArrowDown');
       await flush();
       pressKey(root, 'Enter');
       await flush();
-      // ArrowDown from MD (index 0) highlights index 1 — Bulgaria in the sorted default list.
-      expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: 'BG' });
+      expect(second).not.toBe('MD');
+      expect(onCountryChange.mock.calls[0][0].detail).toEqual({ countryCode: second });
       expect(root?.hasAttribute('open')).toBe(false);
     });
 
@@ -460,9 +577,7 @@ describe('mud-phone-input', () => {
 
     it('emits a live-region announcement when the country changes', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
-      // RO sits at index 9 in the sorted default list (see earlier comment in this block).
-      const options = queryOptions(root);
-      options[9].click();
+      optionFor(root, 'RO')?.click();
       await flush();
       const live = queryLive(root);
       expect(live?.textContent).toContain('România');
@@ -505,6 +620,31 @@ describe('mud-phone-input', () => {
       expect(stub.preventDefaultCalled).toBe(true);
       expect(queryTrigger(root)?.textContent).toContain('+44');
       expect(queryLive(root)?.textContent ?? '').toBe('');
+    });
+
+    // Countries share a calling code; a pasted number cannot say which one, so it is the main one,
+    // not the first by name (Anguilla, Kazakhstan, Guernsey, Åland ...).
+    it.each([
+      ['+14155552671', 'US', '+1'],
+      ['+79161234567', 'RU', '+7'],
+      ['+447911123456', 'GB', '+44'],
+      ['+358401234567', 'FI', '+358'],
+      ['+61412345678', 'AU', '+61'],
+      ['+4791234567', 'NO', '+47'],
+      ['+212612345678', 'MA', '+212'],
+      ['+262692123456', 'RE', '+262'],
+      ['+590690123456', 'GP', '+590'],
+      ['+5999 5181234', 'CW', '+599'],
+      ['+998901234567', 'UZ', '+998'],
+    ])('reads a pasted %s as %s, the main country of %s', async (pasted, iso, code) => {
+      const onCountryChange = vi.fn();
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" onMudCountryChange={onCountryChange}></mud-phone-input>,
+      );
+      firePaste(root, pasted);
+      await flush();
+      expect(onCountryChange.mock.calls[0][0].detail.countryCode).toBe(iso);
+      expect(queryTrigger(root)?.textContent).toContain(code);
     });
 
     it('local mode does NOT auto-switch country on E.164 paste — strips prefix only', async () => {
