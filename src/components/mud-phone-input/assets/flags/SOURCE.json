@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/Yummygum/flagpack-core",
+  "commit": "6e57695337a46831d3772ab4945d7a7f8e25d5c1",
+  "folder": "svg/l",
+  "license": "MIT",
+  "optimiser": "svgo (svgo.config.flags.js)",
+  "count": 254
+}
