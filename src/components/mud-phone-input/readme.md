@@ -10,7 +10,7 @@
 Phone Input — phone-number entry molecule with country-code prefix and
 format mask. The most Moldova-specific input in the family: it ships a
 default `+373` country, a curated diaspora-relevant country list with
-SVG flags (flagpack-core, shipped as local assets), and Romanian-voice
+SVG flags (flag-icons, shipped as local assets), and Romanian-voice
 placeholder + error copy.
 
 Pattern B (molecule, form-associated): renders its own `<input type="tel">`
