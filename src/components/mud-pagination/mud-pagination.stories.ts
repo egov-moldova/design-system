@@ -152,23 +152,23 @@ export const ManyPages: Story = {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
       <div>
         <p style="${cellLabelStyle}">first page — no leading ellipsis</p>
-        <mud-pagination current-page="1" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 1 of 27" current-page="1" total-pages="27"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 3 — leading overflow appears</p>
-        <mud-pagination current-page="3" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 3 of 27" current-page="3" total-pages="27"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 12 — leading + trailing overflow</p>
-        <mud-pagination current-page="12" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 12 of 27" current-page="12" total-pages="27"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 25 — trailing overflow only</p>
-        <mud-pagination current-page="25" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 25 of 27" current-page="25" total-pages="27"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">last page — no trailing ellipsis</p>
-        <mud-pagination current-page="27" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 27 of 27" current-page="27" total-pages="27"></mud-pagination>
       </div>
     </div>
   `,
@@ -177,11 +177,11 @@ export const ManyPages: Story = {
     docs: {
       source: {
         code: /*html*/ `<!-- Leading + trailing ellipsis examples -->
-<mud-pagination current-page="1" total-pages="27"></mud-pagination>
-<mud-pagination current-page="3" total-pages="27"></mud-pagination>
-<mud-pagination current-page="12" total-pages="27"></mud-pagination>
-<mud-pagination current-page="25" total-pages="27"></mud-pagination>
-<mud-pagination current-page="27" total-pages="27"></mud-pagination>`,
+<mud-pagination aria-label="Pagination, page 1 of 27" current-page="1" total-pages="27"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 3 of 27" current-page="3" total-pages="27"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 12 of 27" current-page="12" total-pages="27"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 25 of 27" current-page="25" total-pages="27"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 27 of 27" current-page="27" total-pages="27"></mud-pagination>`,
       },
     },
   },
@@ -216,11 +216,11 @@ export const SizeSmall: Story = {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
       <div>
         <p style="${cellLabelStyle}">page 2 of 5 — mobile breakpoint</p>
-        <mud-pagination size="sm" current-page="2" total-pages="5"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 2 of 5" size="sm" current-page="2" total-pages="5"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 12 of 27 — leading + trailing overflow</p>
-        <mud-pagination size="sm" current-page="12" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 12 of 27" size="sm" current-page="12" total-pages="27"></mud-pagination>
       </div>
     </div>
   `,
@@ -228,7 +228,7 @@ export const SizeSmall: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: `<mud-pagination size="sm" current-page="2" total-pages="5"></mud-pagination>`,
+        code: `<mud-pagination aria-label="Pagination, page 2 of 5" size="sm" current-page="2" total-pages="5"></mud-pagination>`,
       },
     },
   },
@@ -242,11 +242,11 @@ export const SizeMedium: Story = {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
       <div>
         <p style="${cellLabelStyle}">page 2 of 7 — desktop breakpoint</p>
-        <mud-pagination size="md" current-page="2" total-pages="7"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 2 of 7" size="md" current-page="2" total-pages="7"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 12 of 27 — with ellipses</p>
-        <mud-pagination size="md" current-page="12" total-pages="27"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 12 of 27" size="md" current-page="12" total-pages="27"></mud-pagination>
       </div>
     </div>
   `,
@@ -254,7 +254,7 @@ export const SizeMedium: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: `<mud-pagination size="md" current-page="2" total-pages="7"></mud-pagination>`,
+        code: `<mud-pagination aria-label="Pagination, page 2 of 7" size="md" current-page="2" total-pages="7"></mud-pagination>`,
       },
     },
   },
@@ -295,23 +295,23 @@ export const EdgeCases: Story = {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
       <div>
         <p style="${cellLabelStyle}">first page — Previous button hidden</p>
-        <mud-pagination current-page="1" total-pages="7"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 1 of 7" current-page="1" total-pages="7"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">last page — Next button hidden</p>
-        <mud-pagination current-page="7" total-pages="7"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 7 of 7" current-page="7" total-pages="7"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">two pages — both ends reachable in a single step</p>
-        <mud-pagination current-page="1" total-pages="2"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 1 of 2" current-page="1" total-pages="2"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">sm size at first page — icon-only next only</p>
-        <mud-pagination size="sm" current-page="1" total-pages="5"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 1 of 5" size="sm" current-page="1" total-pages="5"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">sm size at last page — icon-only prev only</p>
-        <mud-pagination size="sm" current-page="5" total-pages="5"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 5 of 5" size="sm" current-page="5" total-pages="5"></mud-pagination>
       </div>
     </div>
   `,
@@ -320,9 +320,9 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: /*html*/ `<!-- Boundary behavior — prev/next hidden at edges per Figma spec -->
-<mud-pagination current-page="1" total-pages="7"></mud-pagination>
-<mud-pagination current-page="7" total-pages="7"></mud-pagination>
-<mud-pagination size="sm" current-page="1" total-pages="5"></mud-pagination>`,
+<mud-pagination aria-label="Pagination, page 1 of 7" current-page="1" total-pages="7"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 7 of 7" current-page="7" total-pages="7"></mud-pagination>
+<mud-pagination aria-label="Pagination, page 1 of 5" size="sm" current-page="1" total-pages="5"></mud-pagination>`,
       },
     },
   },
@@ -342,11 +342,11 @@ export const OverflowActive: Story = {
       </p>
       <div>
         <p style="${cellLabelStyle}">page 10 of 20 — leading + trailing dropdowns</p>
-        <mud-pagination current-page="10" total-pages="20"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 10 of 20" current-page="10" total-pages="20"></mud-pagination>
       </div>
       <div>
         <p style="${cellLabelStyle}">page 1 of 40 — the trailing dropdown collapses ~34 pages and scrolls inside</p>
-        <mud-pagination current-page="1" total-pages="40"></mud-pagination>
+        <mud-pagination aria-label="Pagination, page 1 of 40" current-page="1" total-pages="40"></mud-pagination>
       </div>
     </div>
   `,
@@ -354,9 +354,9 @@ export const OverflowActive: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: /*html*/ `<mud-pagination current-page="10" total-pages="20"></mud-pagination>
+        code: /*html*/ `<mud-pagination aria-label="Pagination, page 10 of 20" current-page="10" total-pages="20"></mud-pagination>
 <!-- Large range: the … dropdown caps its height and scrolls inside -->
-<mud-pagination current-page="1" total-pages="40"></mud-pagination>`,
+<mud-pagination aria-label="Pagination, page 1 of 40" current-page="1" total-pages="40"></mud-pagination>`,
       },
     },
   },

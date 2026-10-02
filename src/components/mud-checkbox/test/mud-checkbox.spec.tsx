@@ -144,6 +144,27 @@ describe('mud-checkbox', () => {
     });
   });
 
+  describe('error message with supporting text', () => {
+    it('keeps the supporting text and shows the error message under it (Figma 340:10817)', async () => {
+      const { root } = await render(
+        <mud-checkbox label="x" supporting-text="Nota." invalid error-text="Câmp obligatoriu."></mud-checkbox>,
+      );
+      expect(root?.classList.contains('has-supporting')).toBe(true);
+      expect(root?.classList.contains('has-error')).toBe(true);
+      expect(root?.shadowRoot?.querySelector('.supporting')?.textContent?.trim()).toBe('Nota.');
+      expect(root?.shadowRoot?.querySelector('.error')).toBeTruthy();
+    });
+
+    it('describes the input with the supporting text and then the error message', async () => {
+      const { root } = await render(
+        <mud-checkbox label="x" supporting-text="Nota." invalid error-text="Câmp obligatoriu."></mud-checkbox>,
+      );
+      const supporting = root?.shadowRoot?.querySelector('.supporting')?.id;
+      const error = root?.shadowRoot?.querySelector('.error')?.id;
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(`${supporting} ${error}`);
+    });
+  });
+
   describe('a11y semantics', () => {
     it('does not set aria-checked when checked (native checked attribute conveys state)', async () => {
       const { root } = await render(<mud-checkbox label="x" checked></mud-checkbox>);

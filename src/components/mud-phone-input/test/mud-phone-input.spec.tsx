@@ -221,6 +221,12 @@ describe('mud-phone-input', () => {
       expect(trigger?.querySelector('.flag svg')).toBeTruthy();
     });
 
+    it('draws no chevron on a read-only international chip', async () => {
+      const { root } = await render(<mud-phone-input type="international" readonly></mud-phone-input>);
+      expect(root?.shadowRoot?.querySelector('.country-trigger')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.country-trigger-chevron')).toBeNull();
+    });
+
     it('renders chevron icon ONLY in international mode', async () => {
       const { root: intl } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
       const { root: local } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
@@ -619,9 +625,10 @@ describe('mud-phone-input', () => {
       const { root } = await render(<mud-phone-input label="x" readonly value="+37362123456"></mud-phone-input>);
       const icon = queryValidIcon(root);
       expect(icon).toBeTruthy();
-      // Must reference a real icon in the set (`circle-checkmark`), not a
-      // transposed name — otherwise the glyph silently fails to paint.
-      expect(icon?.getAttribute('name')).toBe('circle-checkmark');
+      // Figma 7854:6805: the plain 24/checkmark-small, not a circled check. The
+      // name must exist in the icon set, or the glyph silently fails to paint.
+      expect(icon?.getAttribute('name')).toBe('checkmark-small');
+      expect(icon?.getAttribute('size')).toBe('24');
     });
 
     it('readonly with invalid value does NOT surface the checkmark', async () => {

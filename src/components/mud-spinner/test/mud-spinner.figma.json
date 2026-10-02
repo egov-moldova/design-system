@@ -1,0 +1,409 @@
+{
+  "component": "mud-spinner",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-spinner--default",
+    "capture": {
+      "selector": "mud-spinner",
+      "bleed": 0
+    }
+  },
+  "states": [
+    {
+      "name": "xs-brand",
+      "node": "44:422",
+      "html": "<mud-spinner size=\"xs\" variant=\"brand\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:422",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:422",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(0, 88, 210) 0deg, rgb(0, 88, 210) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 2.5px), rgb(0, 0, 0) calc(100% - 1.5px))"
+          },
+          "note": "Figma 44:422 is a 16px ring 2px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #0058D2. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "sm-brand",
+      "node": "44:438",
+      "html": "<mud-spinner size=\"sm\" variant=\"brand\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:438",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:438",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(0, 88, 210) 0deg, rgb(0, 88, 210) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3px), rgb(0, 0, 0) calc(100% - 2px))"
+          },
+          "note": "Figma 44:438 is a 20px ring 2.5px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #0058D2. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2.5px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "md-brand",
+      "node": "44:462",
+      "html": "<mud-spinner size=\"md\" variant=\"brand\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:462",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:462",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(0, 88, 210) 0deg, rgb(0, 88, 210) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3.5px), rgb(0, 0, 0) calc(100% - 2.5px))"
+          },
+          "note": "Figma 44:462 is a 32px ring 3px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #0058D2. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-brand",
+      "node": "44:466",
+      "html": "<mud-spinner size=\"lg\" variant=\"brand\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:466",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:466",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(0, 88, 210) 0deg, rgb(0, 88, 210) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 4.25px), rgb(0, 0, 0) calc(100% - 3.25px))"
+          },
+          "note": "Figma 44:466 is a 40px ring 3.75px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #0058D2. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3.75px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "xs-dark",
+      "node": "44:426",
+      "html": "<mud-spinner size=\"xs\" variant=\"dark\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:426",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:426",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(18, 18, 18) 0deg, rgb(18, 18, 18) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 2.5px), rgb(0, 0, 0) calc(100% - 1.5px))"
+          },
+          "note": "Figma 44:426 is a 16px ring 2px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #121212. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2px inner edge. Figma colours this one #383838 where the other three Dark sizes are #121212; it looks like a slip in the design, so the component keeps #121212."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "sm-dark",
+      "node": "44:442",
+      "html": "<mud-spinner size=\"sm\" variant=\"dark\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:442",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:442",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(18, 18, 18) 0deg, rgb(18, 18, 18) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3px), rgb(0, 0, 0) calc(100% - 2px))"
+          },
+          "note": "Figma 44:442 is a 20px ring 2.5px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #121212. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2.5px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "md-dark",
+      "node": "44:470",
+      "html": "<mud-spinner size=\"md\" variant=\"dark\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:470",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:470",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(18, 18, 18) 0deg, rgb(18, 18, 18) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3.5px), rgb(0, 0, 0) calc(100% - 2.5px))"
+          },
+          "note": "Figma 44:470 is a 32px ring 3px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #121212. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "lg-dark",
+      "node": "44:474",
+      "html": "<mud-spinner size=\"lg\" variant=\"dark\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:474",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:474",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(18, 18, 18) 0deg, rgb(18, 18, 18) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 4.25px), rgb(0, 0, 0) calc(100% - 3.25px))"
+          },
+          "note": "Figma 44:474 is a 40px ring 3.75px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #121212. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3.75px inner edge."
+        }
+      ]
+    },
+    {
+      "name": "xs-light",
+      "node": "44:414",
+      "html": "<mud-spinner size=\"xs\" variant=\"light\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:414",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:414",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 2.5px), rgb(0, 0, 0) calc(100% - 1.5px))"
+          },
+          "note": "Figma 44:414 is a 16px ring 2px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "sm-light",
+      "node": "44:430",
+      "html": "<mud-spinner size=\"sm\" variant=\"light\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:430",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:430",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3px), rgb(0, 0, 0) calc(100% - 2px))"
+          },
+          "note": "Figma 44:430 is a 20px ring 2.5px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2.5px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "md-light",
+      "node": "44:446",
+      "html": "<mud-spinner size=\"md\" variant=\"light\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:446",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:446",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3.5px), rgb(0, 0, 0) calc(100% - 2.5px))"
+          },
+          "note": "Figma 44:446 is a 32px ring 3px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "lg-light",
+      "node": "44:450",
+      "html": "<mud-spinner size=\"lg\" variant=\"light\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:450",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:450",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 4.25px), rgb(0, 0, 0) calc(100% - 3.25px))"
+          },
+          "note": "Figma 44:450 is a 40px ring 3.75px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3.75px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "xs-light-on-color",
+      "node": "44:418",
+      "html": "<mud-spinner size=\"xs\" variant=\"light-on-color\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:418",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:418",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 2.5px), rgb(0, 0, 0) calc(100% - 1.5px))"
+          },
+          "note": "Figma 44:418 is a 16px ring 2px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "sm-light-on-color",
+      "node": "44:434",
+      "html": "<mud-spinner size=\"sm\" variant=\"light-on-color\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:434",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:434",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3px), rgb(0, 0, 0) calc(100% - 2px))"
+          },
+          "note": "Figma 44:434 is a 20px ring 2.5px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 2.5px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "md-light-on-color",
+      "node": "44:454",
+      "html": "<mud-spinner size=\"md\" variant=\"light-on-color\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:454",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:454",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 3.5px), rgb(0, 0, 0) calc(100% - 2.5px))"
+          },
+          "note": "Figma 44:454 is a 32px ring 3px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "lg-light-on-color",
+      "node": "44:458",
+      "html": "<mud-spinner size=\"lg\" variant=\"light-on-color\" style=\"--spinner-transition-duration: 0s\"></mud-spinner>",
+      "expect": [
+        {
+          "target": "mud-spinner",
+          "node": "44:458",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px"
+          }
+        },
+        {
+          "target": "mud-spinner .arc",
+          "node": "44:458",
+          "styles": {
+            "backgroundImage": "conic-gradient(from 90deg, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 270deg, rgba(0, 0, 0, 0) 270deg, rgba(0, 0, 0, 0) 360deg)",
+            "maskImage": "radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - 4.25px), rgb(0, 0, 0) calc(100% - 3.25px))"
+          },
+          "note": "Figma 44:458 is a 40px ring 3.75px thick: a 270deg arc with flat ends that starts at 3 o'clock and runs clockwise, its gap in the top-right quarter, filled #FFFFFF. The ring is a conic fill cut by a radial mask; the mask ramp is 1px wide, centred on the 3.75px inner edge. The glyph is white for a dark or brand surface, so a whole-component pixel diff against the transparent export would compare white with white; style parity pins the colour."
+        }
+      ],
+      "pixel": false
+    }
+  ]
+}

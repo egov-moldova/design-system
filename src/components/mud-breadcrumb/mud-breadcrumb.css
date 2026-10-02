@@ -132,9 +132,10 @@
 
 .crumb--link:focus-visible {
   outline: none;
+  /* Figma Focus Ring/Small: a 1px white halo inside a blue band that ends 3px out. */
   box-shadow:
-    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
-    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+    0 0 0 var(--breadcrumb-focus-ring-offset) var(--focus-ring-color-inner),
+    0 0 0 var(--breadcrumb-focus-ring-width) var(--focus-ring-color-outer);
 }
 
 .crumb--active {
@@ -182,9 +183,10 @@
 
 .overflow-trigger:focus-visible {
   outline: none;
+  /* Figma Focus Ring/Small: a 1px white halo inside a blue band that ends 3px out. */
   box-shadow:
-    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
-    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+    0 0 0 var(--breadcrumb-focus-ring-offset) var(--focus-ring-color-inner),
+    0 0 0 var(--breadcrumb-focus-ring-width) var(--focus-ring-color-outer);
 }
 
 .crumb-item--overflow {
@@ -201,8 +203,8 @@
   margin: 0;
   padding: var(--breadcrumb-menu-padding);
   list-style: none;
+  gap: var(--breadcrumb-menu-gap);
   background: var(--breadcrumb-menu-background);
-  border: var(--breadcrumb-menu-border-width) solid var(--breadcrumb-menu-border-color);
   border-radius: var(--breadcrumb-menu-border-radius);
   box-shadow: var(--breadcrumb-menu-shadow);
   min-width: var(--breadcrumb-menu-min-width);
@@ -219,7 +221,8 @@
 .overflow-menu-item {
   display: block;
   width: 100%;
-  padding-inline: var(--breadcrumb-menu-item-padding-inline);
+  padding-inline-start: var(--breadcrumb-menu-item-padding-inline-start);
+  padding-inline-end: var(--breadcrumb-menu-item-padding-inline-end);
   padding-block: var(--breadcrumb-menu-item-padding-block);
   border: none;
   background: var(--breadcrumb-menu-item-background-default);
@@ -228,6 +231,7 @@
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+  font-weight: var(--breadcrumb-menu-item-font-weight);
   border-radius: var(--breadcrumb-menu-item-border-radius);
   text-decoration: none;
   cursor: pointer;

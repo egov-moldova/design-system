@@ -126,23 +126,23 @@ const renderAllStates = () => {
       <p style="${sectionLabelStyle}">Per-item states sampled from Figma node 81:713 — enabled / hover / focus / active / disabled / visited.</p>
       <div>
         <p style="${headingStyle}">enabled (default)</p>
-        ${renderBreadcrumb(baseArgs, demoItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, enabled' }, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">hover &amp; focus — interact with the trail below</p>
-        ${renderBreadcrumb(baseArgs, demoItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, hover and focus' }, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">visited</p>
-        ${renderBreadcrumb(baseArgs, visitedItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, visited' }, visitedItems)}
       </div>
       <div>
         <p style="${headingStyle}">disabled (Home unreachable)</p>
-        ${renderBreadcrumb(baseArgs, disabledItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, disabled' }, disabledItems)}
       </div>
       <div>
         <p style="${headingStyle}">active — last crumb, aria-current="page", medium weight</p>
-        ${renderBreadcrumb(baseArgs, demoItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, active' }, demoItems)}
       </div>
     </div>
   `;
@@ -159,9 +159,9 @@ const renderOverflow = () => {
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
       <p style="${sectionLabelStyle}">Overflow — 8 items, max-visible=5. The middle 5 collapse into the "…" menu. Click the trigger to reveal the dropdown.</p>
-      ${renderBreadcrumb(baseArgs, overflowItems)}
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, max-visible 5' }, overflowItems)}
       <p style="${sectionLabelStyle}">Tighter — max-visible=4 keeps only the first item, "…", and the last two.</p>
-      ${renderBreadcrumb({ ...baseArgs, maxVisible: 4 }, overflowItems)}
+      ${renderBreadcrumb({ ...baseArgs, maxVisible: 4, ariaLabel: 'Breadcrumb, max-visible 4' }, overflowItems)}
     </div>
   `;
 };
@@ -195,11 +195,11 @@ const renderMobile = () => {
       <p style="${sectionLabelStyle}">Mobile collapses to a single back link to the parent page. Resize the viewport below 640px to preview, or use a container that mimics phone width.</p>
       <div style="max-width: 320px; border: 1px dashed var(--color-border-base-default); border-radius: 8px; padding: var(--spacing-12);">
         <p style="${headingStyle}">simulated mobile (container = 320px)</p>
-        ${renderBreadcrumb(baseArgs, demoItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, simulated mobile' }, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">at full width — desktop trail is visible</p>
-        ${renderBreadcrumb(baseArgs, demoItems)}
+        ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, full width' }, demoItems)}
       </div>
     </div>
   `;
@@ -220,14 +220,14 @@ const renderWithCustomSeparator = () => {
       <p style="${sectionLabelStyle}">Custom separator via the <code>separator</code> slot — render a forward slash, a middot, or any inline content.</p>
       <div>
         <p style="${headingStyle}">slash separator</p>
-        <mud-breadcrumb id="${id1}" max-visible="${baseArgs.maxVisible}">
+        <mud-breadcrumb id="${id1}" max-visible="${baseArgs.maxVisible}" aria-label="Breadcrumb, slash separator">
           <span slot="separator" style="color: var(--color-text-base-tertiary); width: 12px; text-align: center;">/</span>
         </mud-breadcrumb>
         ${setItemsScript(id1, demoItems)}
       </div>
       <div>
         <p style="${headingStyle}">middot separator</p>
-        <mud-breadcrumb id="${id2}" max-visible="${baseArgs.maxVisible}">
+        <mud-breadcrumb id="${id2}" max-visible="${baseArgs.maxVisible}" aria-label="Breadcrumb, middot separator">
           <span slot="separator" style="color: var(--color-text-base-tertiary); width: 16px; text-align: center;">·</span>
         </mud-breadcrumb>
         ${setItemsScript(id2, demoItems)}
@@ -247,12 +247,12 @@ const renderEdgeCases = () => {
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
       <p style="${sectionLabelStyle}">Two items only — single parent link plus active page.</p>
-      ${renderBreadcrumb(baseArgs, [
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, two items' }, [
         { label: 'Home', href: '/' },
         { label: 'Profile', active: true },
       ])}
       <p style="${sectionLabelStyle}">Single item — only the active page (no separator).</p>
-      ${renderBreadcrumb(baseArgs, [{ label: 'Home', active: true }])}
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, single item' }, [{ label: 'Home', active: true }])}
     </div>
   `;
 };
@@ -269,15 +269,15 @@ const renderLongLabels = () => {
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
       <p style="${sectionLabelStyle}">Labels longer than 30 characters truncate with an ellipsis at the per-crumb level and surface the full text in a <code>mud-tooltip</code> on hover/focus (Figma "Best Practices").</p>
       <p style="${headingStyle}">Hover the truncated crumb to reveal the tooltip with the full label.</p>
-      ${renderBreadcrumb(baseArgs, longLabelItems)}
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, truncated label' }, longLabelItems)}
       <p style="${headingStyle}">Labels exactly at the 30-character threshold do NOT get a tooltip — they fit inline.</p>
-      ${renderBreadcrumb(baseArgs, [
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, label at the threshold' }, [
         { label: 'Home', href: '/' },
         { label: 'Exactly thirty characters here', href: '/borderline' },
         { label: 'Payment details', active: true },
       ])}
       <p style="${headingStyle}">A very long label in the active position also gets the tooltip treatment.</p>
-      ${renderBreadcrumb(baseArgs, [
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, long active label' }, [
         { label: 'Home', href: '/' },
         { label: 'Services', href: '/servicii' },
         {
@@ -300,9 +300,9 @@ const renderWithLeadingIcon = () => {
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
       <p style="${sectionLabelStyle}">Per Figma "w/ leading-icon" — set <code>iconStart</code> on a crumb (or slot a <code>&lt;mud-icon slot="icon-start"&gt;</code> child in slot mode) to render an inline icon before the label.</p>
-      ${renderBreadcrumb(baseArgs, leadingIconItems)}
+      ${renderBreadcrumb({ ...baseArgs, ariaLabel: 'Breadcrumb, leading icon' }, leadingIconItems)}
       <p style="${headingStyle}">Slot-mode equivalent — declare the icon as a slotted child.</p>
-      <mud-breadcrumb>
+      <mud-breadcrumb aria-label="Breadcrumb, leading icon in slot mode">
         <mud-breadcrumb-item href="/">
           <mud-icon slot="icon-start" name="home-line"></mud-icon>
           Home

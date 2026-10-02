@@ -1,0 +1,720 @@
+{
+  "component": "mud-info-box",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2,
+    "skip": []
+  },
+  "defaults": {
+    "story": "components-infobox--default",
+    "viewport": {
+      "width": 1280,
+      "height": 600
+    },
+    "capture": {
+      "selector": "mud-info-box",
+      "bleed": "auto"
+    }
+  },
+  "states": [
+    {
+      "name": "desktop-subtle-info",
+      "node": "101:1879",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info\" emphasis=\"subtle\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "101:1879",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "101:1879",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#757575"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "101:1879",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "101:1879",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "101:1879",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-subtle-moderate",
+      "node": "101:1914",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\" emphasis=\"subtle\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "101:1914",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "101:1914",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#0058D2"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "101:1914",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "101:1914",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "101:1914",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-subtle-warning",
+      "node": "255:6504",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"warning\" emphasis=\"subtle\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "255:6504",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "255:6504",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#DC6803"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "255:6504",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "255:6504",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "255:6504",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-subtle-error",
+      "node": "255:6540",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"error\" emphasis=\"subtle\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "255:6540",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "255:6540",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#D92D20"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "255:6540",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "255:6540",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "255:6540",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-strong-info",
+      "node": "5664:1658",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info\" emphasis=\"strong\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "5664:1658",
+          "styles": {
+            "backgroundColor": "#E8F0FB",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "5664:1658",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#0058D2"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "5664:1658",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "5664:1658",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "5664:1658",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-strong-warning",
+      "node": "8230:2388",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"warning\" emphasis=\"strong\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "8230:2388",
+          "styles": {
+            "backgroundColor": "#FEEFC6",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "8230:2388",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#DC6803"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "8230:2388",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "8230:2388",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "8230:2388",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "desktop-strong-error",
+      "node": "8230:2403",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"error\" emphasis=\"strong\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "8230:2403",
+          "styles": {
+            "backgroundColor": "#FEE4E2",
+            "borderTopLeftRadius": "8px",
+            "boxWidth": "690px",
+            "boxHeight": "72px",
+            "paddingLeft": "8px"
+          },
+          "note": "Figma Desktop frame: an 8px Bone, then the icon, text and close columns; the surface is a radius-8 auto-layout box, 72px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "8230:2403",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "paddingRight": "0px",
+            "boxWidth": "32px",
+            "color": "#D92D20"
+          },
+          "note": "The Icon frame pads 24 0 16 8 around a 24x24 icon; its colour is sampled from the 2x export of this frame."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "8230:2403",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/circle-info-filled, 24/warning-filled and 24/circle-error-filled are 24x24 on Desktop."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "8230:2403",
+          "styles": {
+            "paddingTop": "24px",
+            "paddingBottom": "24px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "The Text Container pads 24 16 24 12."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "8230:2403",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          },
+          "note": "The message is Desktop/Body/Default in #383838."
+        }
+      ]
+    },
+    {
+      "name": "mobile-subtle-moderate",
+      "node": "101:1903",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-info-box variant=\"info-moderate\" emphasis=\"subtle\">Message</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "101:1903",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "12px",
+            "boxWidth": "375px",
+            "boxHeight": "60px",
+            "paddingLeft": "8px"
+          },
+          "note": "The Mobile frame is radius 12 and 60px high for one line."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "101:1903",
+          "styles": {
+            "paddingTop": "20px",
+            "paddingBottom": "16px",
+            "paddingLeft": "8px",
+            "boxWidth": "28px",
+            "color": "#0058D2"
+          },
+          "note": "Mobile's Icon frame pads 20 0 16 8 around a 20x20 icon (EL-2c443c06, 20/circle-info-filled)."
+        },
+        {
+          "target": "mud-info-box .icon mud-icon",
+          "node": "101:1903",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          }
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "101:1903",
+          "styles": {
+            "paddingTop": "20px",
+            "paddingBottom": "20px",
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          },
+          "note": "Mobile's Text Container pads 20 16 20 12 (EL-89cb45c8)."
+        },
+        {
+          "target": "mud-info-box .body",
+          "node": "101:1903",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Mobile steps the message down to Desktop/Body/Small."
+        }
+      ]
+    },
+    {
+      "name": "icon-none",
+      "node": "574:32469",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\" hide-icon>For enhanced security, always use two-factor authentication when accessing<br>your digital identity or personal records online.</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "574:32469",
+          "styles": {
+            "boxHeight": "96px",
+            "paddingLeft": "8px"
+          },
+          "note": "icon-none drops the Icon frame; the text starts 8 + 12 = 20px in."
+        },
+        {
+          "target": "mud-info-box .icon",
+          "node": "574:32469",
+          "absent": true,
+          "note": "The icon-none frame has no Icon frame."
+        },
+        {
+          "target": "mud-info-box .content",
+          "node": "574:32469",
+          "styles": {
+            "paddingLeft": "12px",
+            "paddingRight": "16px"
+          }
+        }
+      ],
+      "note": ""
+    },
+    {
+      "name": "heading",
+      "node": "574:32401",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\" title-text=\"Understanding Your Digital Identity\">For enhanced security, always use two-factor authentication when accessing<br>your digital identity or personal records online.</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "574:32401",
+          "styles": {
+            "boxHeight": "128px"
+          },
+          "note": "24 + 26 (heading) + 6 + 48 (two lines) + 24."
+        },
+        {
+          "target": "mud-info-box .title",
+          "node": "574:32401",
+          "styles": {
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600",
+            "color": "#121212",
+            "letterSpacing": "-0.18px"
+          },
+          "note": "The heading is Desktop/Heading/H5, 18/26 SemiBold, #121212."
+        },
+        {
+          "target": "mud-info-box .text",
+          "node": "574:32401",
+          "styles": {
+            "rowGap": "6px"
+          },
+          "note": "6px between the heading and the message (EL-760dc509)."
+        }
+      ],
+      "note": ""
+    },
+    {
+      "name": "closable",
+      "node": "574:32414",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\" closable>For enhanced security, always use two-factor authentication when accessing your digital identity or personal records online.</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "574:32414",
+          "styles": {
+            "boxHeight": "96px"
+          }
+        },
+        {
+          "target": "mud-info-box .close",
+          "node": "574:32414",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "marginTop": "10px",
+            "marginRight": "10px",
+            "marginLeft": "2px",
+            "color": "#444444"
+          },
+          "note": "Close Button frame (EL-e0706ff6) pads 16 16 16 8 around a 20x20 box holding the 16px glyph, so the glyph centre sits 26px from the top and the right edge. The 32x32 pointer target (Target Sizes, 578:33506) is centred on it, 10px from the edge. The glyph is #444444 (sampled)."
+        },
+        {
+          "target": "mud-info-box .close-icon",
+          "node": "574:32414",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "link",
+      "node": "574:32434",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\">For enhanced security, always use two-factor authentication when accessing<br>your digital identity or personal records online.<mud-link slot=\"actions\" href=\"#\" size=\"md\">Learn more</mud-link></mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "574:32434",
+          "styles": {
+            "boxHeight": "132px"
+          },
+          "note": "24 + 48 + 12 + 24 (the link) + 24: a link sits straight under the text, 12px below it; the 8px padding belongs to the Button frame."
+        },
+        {
+          "target": "mud-info-box .actions",
+          "node": "574:32434",
+          "styles": {
+            "paddingTop": "0px"
+          }
+        }
+      ],
+      "note": ""
+    },
+    {
+      "name": "action",
+      "node": "574:32452",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\">For enhanced security, always use two-factor authentication when accessing<br>your digital identity or personal records online.<mud-button slot=\"actions\" size=\"sm\">Confirm your identity</mud-button></mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "574:32452",
+          "styles": {
+            "boxHeight": "148px"
+          },
+          "note": "24 + 48 + 12 + 8 (Button frame padding) + 32 (button-filled-rectangular Small) + 24."
+        }
+      ],
+      "note": ""
+    },
+    {
+      "name": "actions",
+      "node": "9353:10741",
+      "html": "<div style=\"width:690px\"><mud-info-box variant=\"info-moderate\">For enhanced security, always use two-factor authentication when accessing<br>your digital identity or personal records online.<mud-button slot=\"actions\" size=\"sm\">Confirm your identity</mud-button><mud-button slot=\"actions\" size=\"sm\" appearance=\"text\">Learn more</mud-button></mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "9353:10741",
+          "styles": {
+            "boxHeight": "148px"
+          },
+          "note": "A filled and a text button side by side, 12px apart, in one 8px-padded row."
+        },
+        {
+          "target": "mud-info-box .actions",
+          "node": "9353:10741",
+          "styles": {
+            "columnGap": "12px"
+          }
+        }
+      ],
+      "note": ""
+    },
+    {
+      "name": "mobile-closable",
+      "node": "578:33427",
+      "viewport": {
+        "width": 375,
+        "height": 600
+      },
+      "html": "<div style=\"width:375px\"><mud-info-box variant=\"info-moderate\" closable>For enhanced security, always use two-factor authentication when accessing your digital identity or personal records online.</mud-info-box></div>",
+      "expect": [
+        {
+          "target": "mud-info-box",
+          "node": "578:33427",
+          "styles": {
+            "borderTopLeftRadius": "12px",
+            "boxWidth": "375px"
+          }
+        },
+        {
+          "target": "mud-info-box .close",
+          "node": "578:33427",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px",
+            "marginTop": "10px",
+            "marginRight": "10px"
+          },
+          "note": "Mobile uses the same Close Button frame; the 40x40 touch target (578:33504) applies on coarse pointers, which the audit does not emulate."
+        }
+      ]
+    }
+  ]
+}

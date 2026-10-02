@@ -34,7 +34,6 @@ export const CATEGORIES: Category[] = [
     components: [
       { tag: 'mud-button', blurb: 'Primary action — variants × appearances × sizes' },
       { tag: 'mud-button-group', blurb: 'Grouped buttons — horizontal / vertical' },
-      { tag: 'mud-service-button', blurb: 'Deprecated: use mud-button with badge="<service>"' },
       { tag: 'mud-link', blurb: 'Inline / standalone hyperlink' },
       { tag: 'mud-chip', blurb: 'Filter / input chip' },
     ],

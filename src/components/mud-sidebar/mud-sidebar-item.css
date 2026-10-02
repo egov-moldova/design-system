@@ -52,6 +52,12 @@
   color: var(--sidebar-item-secondary-color);
 }
 
+/* The active surface is a coloured fill, so the secondary label takes the on-colour grey: the
+   neutral one is 4.01:1 on it, below the 4.5:1 that 14px text needs. */
+:host([active]) .secondary {
+  color: var(--sidebar-item-secondary-color-active);
+}
+
 .tag {
   flex: none;
 }
@@ -101,7 +107,7 @@
   font-weight: var(--sidebar-item-font-weight-active);
 }
 
-:host([active]) .item::before {
+:host([active]) .rail {
   content: '';
   position: absolute;
   inset-block: 0;

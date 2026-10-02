@@ -23,11 +23,6 @@
   --_flag-width: var(--phone-input-flag-width-md);
   --_flag-height: var(--phone-input-flag-height-md);
 
-  --_option-min-block-size: var(--phone-input-option-min-block-size-md);
-  --_option-font-size: var(--phone-input-option-font-size-md);
-  --_option-line-height: var(--phone-input-option-line-height-md);
-  --_option-icon-size: var(--phone-input-option-icon-size-md);
-
   --_bg: var(--phone-input-default-background-default);
   --_text: var(--phone-input-default-text-default);
   --_text-placeholder: var(--phone-input-default-text-placeholder);
@@ -60,10 +55,6 @@
   --_trigger-chevron-size: var(--phone-input-country-trigger-chevron-size-lg);
   --_flag-width: var(--phone-input-flag-width-lg);
   --_flag-height: var(--phone-input-flag-height-lg);
-  --_option-min-block-size: var(--phone-input-option-min-block-size-lg);
-  --_option-font-size: var(--phone-input-option-font-size-lg);
-  --_option-line-height: var(--phone-input-option-line-height-lg);
-  --_option-icon-size: var(--phone-input-option-icon-size-lg);
 }
 
 /* ---------- Variant token overrides ----------
@@ -295,6 +286,17 @@ button.country-trigger:disabled {
   cursor: default;
 }
 
+/* Read-only (Figma 7854:6799, 6173:6079): a white chip with a full-strength dial
+   code and the Local chip's 12px trailing padding. The International trigger is a
+   disabled <button> here, so undo the disabled recolor. */
+:host(.is-readonly:not(.is-disabled)) .country-trigger,
+:host(.is-readonly:not(.is-disabled)) button.country-trigger:disabled {
+  padding-inline-end: var(--phone-input-country-trigger-padding-inline-end-local);
+  background-color: var(--phone-input-country-trigger-background-read-only);
+  color: var(--phone-input-default-text-read-only);
+  -webkit-text-fill-color: var(--phone-input-default-text-read-only);
+}
+
 .country-trigger-code {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -434,14 +436,9 @@ button.country-trigger:disabled {
  */
 .valid-icon {
   flex-shrink: 0;
-  inline-size: var(--phone-input-valid-icon-size-md);
-  block-size: var(--phone-input-valid-icon-size-md);
+  inline-size: var(--phone-input-valid-icon-size);
+  block-size: var(--phone-input-valid-icon-size);
   color: var(--phone-input-valid-icon-color);
-}
-
-:host([size='lg']) .valid-icon {
-  inline-size: var(--phone-input-valid-icon-size-lg);
-  block-size: var(--phone-input-valid-icon-size-lg);
 }
 
 /* ---------- Listbox popover ---------- */
@@ -458,7 +455,8 @@ button.country-trigger:disabled {
   flex-direction: column;
   padding: var(--phone-input-listbox-padding);
   background-color: var(--phone-input-listbox-background);
-  border: var(--phone-input-listbox-border-width) solid var(--phone-input-listbox-border-color);
+  /* Figma selection-menu (10747:2452): a fill and Drop Shadow/300, no stroke. */
+  border: 0;
   border-radius: var(--phone-input-listbox-border-radius);
   box-shadow: var(--phone-input-listbox-shadow);
 }
@@ -501,6 +499,8 @@ button.country-trigger:disabled {
 
 .listbox-search-icon {
   flex-shrink: 0;
+  inline-size: var(--phone-input-listbox-search-icon-size);
+  block-size: var(--phone-input-listbox-search-icon-size);
   color: var(--_text-placeholder);
 }
 
@@ -512,8 +512,8 @@ button.country-trigger:disabled {
   background: transparent;
   outline: none;
   font-family: var(--phone-input-option-font-family);
-  font-size: var(--_option-font-size);
-  line-height: var(--_option-line-height);
+  font-size: var(--phone-input-option-font-size);
+  line-height: var(--phone-input-option-line-height);
   color: var(--phone-input-option-text-default);
   padding: 0;
 }
@@ -531,7 +531,7 @@ button.country-trigger:disabled {
   inline-size: var(--spacing-20);
   block-size: var(--spacing-20);
   padding: 0;
-  background: transparent;
+  background: var(--phone-input-listbox-search-clear-background);
   border: 0;
   border-radius: var(--border-radius-full);
   color: var(--_text-placeholder);
@@ -573,8 +573,8 @@ button.country-trigger:disabled {
 
 .listbox-empty {
   padding: var(--spacing-8) var(--spacing-12);
-  font-size: var(--_option-font-size);
-  line-height: var(--_option-line-height);
+  font-size: var(--phone-input-option-font-size);
+  line-height: var(--phone-input-option-line-height);
   color: var(--_text-placeholder);
 }
 
@@ -584,15 +584,15 @@ button.country-trigger:disabled {
   display: flex;
   align-items: center;
   gap: var(--phone-input-option-gap);
-  min-block-size: var(--_option-min-block-size);
+  min-block-size: var(--phone-input-option-min-block-size);
   padding-block: var(--phone-input-option-padding-block);
   padding-inline: var(--phone-input-option-padding-inline);
   border-radius: var(--phone-input-option-border-radius);
   color: var(--phone-input-option-text-default);
   font-family: var(--phone-input-option-font-family);
-  font-size: var(--_option-font-size);
-  line-height: var(--_option-line-height);
-  font-weight: var(--phone-input-option-font-weight-default);
+  font-size: var(--phone-input-option-font-size);
+  line-height: var(--phone-input-option-line-height);
+  font-weight: var(--phone-input-option-font-weight);
   cursor: pointer;
   user-select: none;
   transition:
@@ -606,8 +606,10 @@ button.country-trigger:disabled {
 
 .option.is-selected {
   background-color: var(--phone-input-option-background-selected);
+}
+
+.option.is-selected .option-name {
   color: var(--phone-input-option-text-selected);
-  font-weight: var(--phone-input-option-font-weight-selected);
 }
 
 .option.is-selected.is-highlighted {
@@ -632,29 +634,41 @@ button.country-trigger:disabled {
   block-size: 100%;
 }
 
-.option-name {
+/* Figma 10758:2617: the flag and the name-and-code group share the row, and the
+   check sits at its end (10758:2622). */
+.option-main {
+  display: flex;
   flex: 1 1 auto;
+  align-items: center;
+  gap: var(--phone-input-option-main-gap);
+  min-inline-size: 0;
+}
+
+.option-text {
+  display: flex;
+  align-items: center;
+  gap: var(--phone-input-option-text-gap);
+  min-inline-size: 0;
+}
+
+.option-name {
   min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--phone-input-option-name-color);
 }
 
 .option-code {
   flex-shrink: 0;
-  min-inline-size: var(--phone-input-option-dial-code-min-inline-size);
-  text-align: end;
   color: var(--phone-input-option-dial-code-color);
+  font-weight: var(--phone-input-option-dial-code-font-weight);
   font-variant-numeric: tabular-nums;
 }
 
-.option.is-selected .option-code {
-  color: inherit;
-}
-
 .option-check {
-  inline-size: var(--_option-icon-size);
-  block-size: var(--_option-icon-size);
+  inline-size: var(--phone-input-option-icon-size);
+  block-size: var(--phone-input-option-icon-size);
   flex-shrink: 0;
   color: var(--phone-input-option-check-color);
 }

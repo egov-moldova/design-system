@@ -245,7 +245,7 @@ export const AllVariants: Story = {
 };
 ```
 
-Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`.
+Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories).
 
 A property that is not an attribute (an array or object) goes in a `<script>` block on an element `id`, as in `mud-breadcrumb.stories.ts`. A form or contract story shows what a consumer would write (the `<form>` with the field), not the probe scaffolding.
 

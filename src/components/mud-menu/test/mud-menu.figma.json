@@ -87,9 +87,10 @@
             "paddingLeft": "16px",
             "paddingRight": "24px",
             "columnGap": "12px",
-            "borderTopLeftRadius": "8px"
+            "borderTopLeftRadius": "8px",
+            "boxHeight": "44px"
           },
-          "note": "Figma 172:2947 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State."
+          "note": "Figma 172:2947 lays the row out as padding 12px 24px 12px 16px with a 12px gap at radius 8 — the same box in every variant of the set; only the fill and the ring change with State. The Target Sizes section (2809:40471) sets the menu cell height at 44px: 12 + 20 + 12."
         },
         {
           "target": "mud-menu-item .item",
@@ -401,6 +402,72 @@
             "backgroundColor": "#D9D9D9"
           },
           "note": "Figma 403:21610 is a separator instance wrapping a 1px #D9D9D9 line."
+        }
+      ]
+    },
+    {
+      "name": "option-label-truncation",
+      "node": "797:42690",
+      "capture": {
+        "selector": "mud-menu .panel",
+        "bleed": "auto"
+      },
+      "html": "<div style=\"width:270px\"><mud-menu open><mud-menu-item>Option 1</mud-menu-item><mud-menu-item>This is a very long menu option that will likely not fit within a single line container</mud-menu-item><mud-menu-item>Option 3</mud-menu-item><mud-menu-item>Option 4</mud-menu-item><mud-menu-item>Option 5</mud-menu-item><mud-menu-item>Option 6</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu .panel",
+          "node": "797:42690",
+          "styles": {
+            "boxWidth": "270px",
+            "boxHeight": "320px"
+          },
+          "note": "Figma 797:42690 (588x688 at 2x with a 12px shadow bleed) is a 270px panel 320px high: five 44px rows and one 64px row, 4px gaps, 8px padding."
+        },
+        {
+          "target": "mud-menu-item:nth-child(2) .item",
+          "node": "797:42690",
+          "styles": {
+            "boxHeight": "64px"
+          },
+          "note": "The long label wraps onto a second line and is cut with an ellipsis there: 12 + 2 x 20 + 12 = 64."
+        },
+        {
+          "target": "mud-menu-item:nth-child(2) .label",
+          "node": "797:42690",
+          "styles": {
+            "boxHeight": "40px",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heading-truncation",
+      "node": "2486:42613",
+      "capture": {
+        "selector": "mud-menu .panel",
+        "bleed": "auto"
+      },
+      "html": "<div style=\"width:270px\"><mud-menu open style=\"--menu-panel-max-block-size: none\"><mud-menu-item>Option 1</mud-menu-item><mud-menu-item>Option 2</mud-menu-item><mud-menu-item>Option 3</mud-menu-item><mud-menu-item heading>This is a very long heading that will likely not fit within a single line container</mud-menu-item><mud-menu-item>Option 4</mud-menu-item><mud-menu-item>Option 5</mud-menu-item><mud-menu-item>Option 6</mud-menu-item></mud-menu></div>",
+      "expect": [
+        {
+          "target": "mud-menu .panel",
+          "node": "2486:42613",
+          "styles": {
+            "boxWidth": "270px",
+            "boxHeight": "360px"
+          },
+          "note": "Figma 2486:42613 is 588x768 at 2x with the same 12px bleed: a 270px panel 360px high, the heading block taking two clamped lines. The fixture lifts the 320px scroll threshold (menu.panel.maxBlockSize): Figma draws this frame at 360px, which the component would scroll. Whether the threshold should sit above 360px is a design question."
+        },
+        {
+          "target": "mud-menu-item[heading] .heading-label",
+          "node": "2486:42613",
+          "styles": {
+            "boxHeight": "40px",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
+          }
         }
       ]
     }

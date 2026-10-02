@@ -392,12 +392,18 @@
   background-color: transparent;
 }
 
+/* A long label wraps onto a second line and is cut with an ellipsis there
+   (Figma 797:42585, 797:42582), as in mud-menu. */
 .option-label {
   flex: 1 1 auto;
   min-inline-size: 0;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .option-check {

@@ -65,6 +65,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ]
     },
@@ -116,6 +123,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ]
     },
@@ -167,6 +181,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ]
     },
@@ -218,6 +239,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "The 16/cross-large glyph is white on the dark Strong fills (Info, Error)."
         }
       ]
     },
@@ -269,6 +297,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ]
     },
@@ -320,6 +355,13 @@
             "boxHeight": "16px"
           },
           "note": "16/cross-large glyph (3044:24437). The clickable target is checked in target-pointer."
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "The 16/cross-large glyph is white on the dark Strong fills (Info, Error)."
         }
       ]
     },
@@ -366,6 +408,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
@@ -413,6 +462,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
@@ -460,6 +516,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
@@ -507,6 +570,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "The 16/cross-large glyph is white on the dark Strong fills (Info, Error)."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
@@ -554,6 +624,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#444444"
+          },
+          "note": "The 16/cross-large glyph is #444444 (color.icon.base.secondary) on the light fills, Subtle and Strong Warning, whatever the style; sampled from the 2x export of this frame."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
@@ -601,6 +678,13 @@
             "boxWidth": "24px",
             "boxHeight": "24px"
           }
+        },
+        {
+          "target": "mud-banner .close",
+          "styles": {
+            "color": "#FFFFFF"
+          },
+          "note": "The 16/cross-large glyph is white on the dark Strong fills (Info, Error)."
         }
       ],
       "note": "Figma draws the close inside a 4px-padded Icon Container (24x24); the Target Sizes frame 578:33410 asks for 40x40 on touch. The component follows the 40x40 guidance, so the captured height differs from this frame."
