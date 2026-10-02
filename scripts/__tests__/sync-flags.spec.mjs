@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { after, describe, it } from 'node:test';
 
-import { FLAG_CODE, InputError, listFlagCodes, optimiseFlag, syncFlags } from '../flags/sync-flags.mjs';
+import { FLAG_CODE, InputError, listFlagCodes, loadOverrides, optimiseFlag, syncFlags } from '../flags/sync-flags.mjs';
 
 const dirs = [];
 after(() => {
@@ -126,5 +126,83 @@ describe('sync-flags — syncFlags', () => {
       () => syncFlags({ checkout: tmp(), commit: 'a'.repeat(40), outDir: path.join(tmp(), 'f') }),
       InputError,
     );
+  });
+});
+
+const BLUE =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"><rect width="640" height="480" fill="#0046ae"/></svg>';
+const ENTRY = {
+  source: 'https://example.test/md.svg',
+  license: 'Public domain',
+  reason: 'the upstream arms are wrong',
+};
+
+/** An overrides folder: `files` maps a code to its drawing, `registry` is overrides.json. */
+function overridesDir(files, registry) {
+  const dir = tmp();
+  for (const [code, svg] of Object.entries(files)) fs.writeFileSync(path.join(dir, `${code}.svg`), svg);
+  if (registry) fs.writeFileSync(path.join(dir, 'overrides.json'), JSON.stringify(registry));
+  return dir;
+}
+
+describe('sync-flags — loadOverrides', () => {
+  it('is empty for a folder that does not exist', () => {
+    assert.deepEqual(loadOverrides(path.join(tmp(), 'none')), {});
+  });
+
+  it('returns each drawing with where it comes from', () => {
+    const loaded = loadOverrides(overridesDir({ md: BLUE }, { md: ENTRY }));
+    assert.deepEqual(Object.keys(loaded), ['md']);
+    assert.equal(loaded.md.svg, BLUE);
+    assert.equal(loaded.md.license, 'Public domain');
+  });
+
+  for (const key of ['source', 'license', 'reason']) {
+    it(`refuses an override without "${key}": it must not be anonymous`, () => {
+      const incomplete = { ...ENTRY, [key]: '' };
+      assert.throws(() => loadOverrides(overridesDir({ md: BLUE }, { md: incomplete })), new RegExp(key));
+    });
+  }
+
+  it('refuses a drawing that overrides.json does not list', () => {
+    assert.throws(() => loadOverrides(overridesDir({ md: BLUE }, {})), InputError);
+  });
+
+  it('refuses an entry without a drawing', () => {
+    assert.throws(() => loadOverrides(overridesDir({}, { md: ENTRY })), /md\.svg is missing/);
+  });
+});
+
+describe('sync-flags — syncFlags with an override', () => {
+  const run = (codes, outDir, overrides) =>
+    syncFlags({ checkout: checkout(codes), commit: 'a'.repeat(40), outDir, overridesDir: overrides });
+
+  it('writes the override instead of the upstream drawing, and records where it comes from', () => {
+    const out = path.join(tmp(), 'flags');
+    run(['md', 'ro'], out, overridesDir({ md: BLUE }, { md: ENTRY }));
+    assert.match(fs.readFileSync(path.join(out, 'md.svg'), 'utf8'), /#0046ae/);
+    assert.match(fs.readFileSync(path.join(out, 'ro.svg'), 'utf8'), /#d9071e/i);
+    const source = JSON.parse(fs.readFileSync(path.join(out, 'SOURCE.json'), 'utf8'));
+    assert.deepEqual(source.overrides, { md: ENTRY });
+  });
+
+  it('is idempotent with an override', () => {
+    const out = path.join(tmp(), 'flags');
+    const overrides = overridesDir({ md: BLUE }, { md: ENTRY });
+    run(['md', 'ro'], out, overrides);
+    assert.deepEqual(run(['md', 'ro'], out, overrides), { count: 2, changed: 0, removed: 0 });
+  });
+
+  it('refuses an override for a flag that upstream does not have', () => {
+    assert.throws(
+      () => run(['ro'], path.join(tmp(), 'flags'), overridesDir({ md: BLUE }, { md: ENTRY })),
+      /does not have/,
+    );
+  });
+
+  it('records no overrides block when there are none', () => {
+    const out = path.join(tmp(), 'flags');
+    run(['md'], out, tmp());
+    assert.equal(JSON.parse(fs.readFileSync(path.join(out, 'SOURCE.json'), 'utf8')).overrides, undefined);
   });
 });

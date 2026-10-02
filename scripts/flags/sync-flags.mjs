@@ -16,6 +16,11 @@
  *   yarn svg:flags --from <checkout>      # use a local flag-icons checkout
  *   yarn svg:flags --ref <sha>            # sync another upstream commit (then update PINNED_COMMIT)
  *
+ * Overrides: `scripts/flags/overrides/<code>.svg` replaces the upstream drawing of that code, for a
+ * flag whose upstream art is wrong. `overrides.json` must say, for each, where it comes from, its
+ * licence and why it replaces the upstream one; `SOURCE.json` repeats that, so the vendored folder
+ * never holds a file whose origin is unknown.
+ *
  * Idempotent: a second run with the same input changes nothing. Files that upstream no longer
  * has are removed, so the folder always mirrors one upstream commit.
  *
@@ -42,6 +47,7 @@ export const REPOSITORY = 'https://github.com/lipis/flag-icons';
 export const PINNED_COMMIT = '7aa5b2bdddd570ece62c812c0cb588ccdc099e2e';
 export const SOURCE_FOLDER = 'flags/4x3';
 export const OUT_DIR = path.join(ROOT, 'src/components/mud-phone-input/assets/flags');
+export const OVERRIDES_DIR = path.join(here, 'overrides');
 
 /** `md`, `ro`, the sub-national `gb-sct`, `sh-ac`, and the groups upstream names `eac`, `cefta`, `asean`. */
 export const FLAG_CODE = /^[a-z]{2,5}(?:-[a-z]{2,3})?$/;
@@ -81,6 +87,32 @@ export function listFlagCodes(dir) {
     .sort();
 }
 
+/**
+ * The flags in `dir` that replace an upstream one: `{ code: { svg, source, license, reason } }`.
+ * Every file needs a registry entry and every entry a file, so an override cannot be anonymous.
+ */
+export function loadOverrides(dir) {
+  if (!fs.existsSync(dir)) return {};
+  const registryFile = path.join(dir, 'overrides.json');
+  const registry = fs.existsSync(registryFile) ? JSON.parse(fs.readFileSync(registryFile, 'utf8')) : {};
+  const codes = listFlagCodes(dir);
+  const result = {};
+  for (const code of codes) {
+    const entry = registry[code];
+    for (const key of ['source', 'license', 'reason']) {
+      if (!entry || typeof entry[key] !== 'string' || entry[key].trim() === '') {
+        throw new InputError(`overrides/${code}.svg needs "${key}" in overrides.json: say where it comes from`);
+      }
+    }
+    result[code] = { svg: fs.readFileSync(path.join(dir, `${code}.svg`), 'utf8'), ...entry };
+  }
+  for (const code of Object.keys(registry)) {
+    if (!codes.includes(code))
+      throw new InputError(`overrides.json lists "${code}" but overrides/${code}.svg is missing`);
+  }
+  return result;
+}
+
 function writeIfChanged(file, text) {
   if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return false;
   fs.writeFileSync(file, text);
@@ -88,7 +120,7 @@ function writeIfChanged(file, text) {
 }
 
 /** Mirror `checkout/svg/l` into `outDir`. Returns what changed. */
-export function syncFlags({ checkout, commit, outDir = OUT_DIR }) {
+export function syncFlags({ checkout, commit, outDir = OUT_DIR, overridesDir = OVERRIDES_DIR }) {
   const sourceDir = path.join(checkout, SOURCE_FOLDER);
   if (!fs.existsSync(sourceDir)) throw new InputError(`${sourceDir} does not exist: is this a flag-icons checkout?`);
   const licenseFile = path.join(checkout, 'LICENSE');
@@ -98,10 +130,18 @@ export function syncFlags({ checkout, commit, outDir = OUT_DIR }) {
   const codes = listFlagCodes(sourceDir);
   if (codes.length === 0) throw new InputError(`${sourceDir} holds no .svg files`);
 
+  const overrides = loadOverrides(overridesDir);
+  for (const code of Object.keys(overrides)) {
+    if (!codes.includes(code)) {
+      throw new InputError(`overrides/${code}.svg replaces a flag that flag-icons does not have: remove it`);
+    }
+  }
+
   fs.mkdirSync(outDir, { recursive: true });
   let changed = 0;
   for (const code of codes) {
-    const optimised = optimiseFlag(code, fs.readFileSync(path.join(sourceDir, `${code}.svg`), 'utf8'));
+    const drawing = overrides[code]?.svg ?? fs.readFileSync(path.join(sourceDir, `${code}.svg`), 'utf8');
+    const optimised = optimiseFlag(code, drawing);
     if (writeIfChanged(path.join(outDir, `${code}.svg`), optimised)) changed++;
   }
 
@@ -121,6 +161,11 @@ export function syncFlags({ checkout, commit, outDir = OUT_DIR }) {
     license: 'MIT',
     optimiser: 'svgo (svgo.config.flags.js)',
     count: codes.length,
+    ...(Object.keys(overrides).length > 0 && {
+      overrides: Object.fromEntries(
+        Object.entries(overrides).map(([code, { source, license, reason }]) => [code, { source, license, reason }]),
+      ),
+    }),
   };
   writeIfChanged(path.join(outDir, 'SOURCE.json'), `${JSON.stringify(source, null, 2)}\n`);
   return { count: codes.length, changed, removed };
