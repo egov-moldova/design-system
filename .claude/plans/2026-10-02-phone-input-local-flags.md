@@ -42,28 +42,37 @@ on size, option C on cost.
 
 ## Tasks
 
-- [ ] Vendoring script `scripts/flags/sync-flagpack.mjs` with `svgo.config.flags.js`: reads a
+- [x] Vendoring script `scripts/flags/sync-flagpack.mjs` with `svgo.config.flags.js`: reads a
       flagpack-core checkout (`--from <dir>`) or clones the pinned commit, optimises `svg/l`,
       writes `assets/flags/<CODE>.svg`, `LICENSE` and `SOURCE.json`.
       Verify: `node scripts/flags/sync-flagpack.mjs --from <checkout>` twice leaves `git status`
       unchanged (idempotent).
-- [ ] Add the 254 files, `LICENSE` and `SOURCE.json` under
+- [x] Add the 254 files, `LICENSE` and `SOURCE.json` under
       `src/components/mud-phone-input/assets/flags/`.
       Verify: 254 `.svg` files, total size under 1 MB, none with `<script>`, `<style>` or an
       embedded `<image>`.
-- [ ] `mud-phone-input`: `assetsDirs: ['assets']`, a `flagAssetPath(iso)` helper replaces
+- [x] `mud-phone-input`: `assetsDirs: ['assets']`, a `flagAssetPath(iso)` helper replaces
       `mud-phone-input.flags.ts`, both flag spots render `<img alt="">`, `.flag img` and
-      `.option-flag img` fill the box with `object-fit: cover`, `PhoneCountry` loses `flag`.
+      `.option-flag img` fill the box with `object-fit: cover`, `PhoneCountry` loses `flag`. flagpack-core has no `GB.svg` (the United Kingdom is `GB-UKM`), so
+      the helper maps that one name.
       Verify: spec project for `mud-phone-input`; `yarn build` copies
       `dist/mud/assets/flags/MD.svg` and `dist/components/assets/flags/MD.svg`.
-- [ ] Specs: every `COUNTRIES` key has an asset file; every asset name is a safe code; the
+- [x] Specs: every `COUNTRIES` key has an asset file; every asset name is a safe code; the
       trigger and every option render an `img` whose path names the right file; the licence and
       source record sit next to the files.
-- [ ] Story, docs and JSDoc stop saying "inline SVG"; one changelog fragment.
+- [x] Story, docs and JSDoc stop saying "inline SVG"; one changelog fragment.
       Verify: `yarn changelog.check`, `yarn lint`, `yarn docs:check`.
-- [ ] Visual: the Moldova, Romania, Ukraine and United States flags in the trigger and the
+- [x] Visual: the Moldova, Romania, Ukraine and United States flags in the trigger and the
       listbox compared with the old rendering; style parity and pixel diff of
       `mud-phone-input` against the existing manifest.
+
+## Measured
+
+- Set: 254 files, 2.08 MB raw, 0.70 MB after SVGO; 210 KB gzip per copy.
+- The build already copies `assets/` three times (`dist/mud`, `dist/components`,
+  `dist/collection`), so the packed tarball grows by about 630 KB (2242 KB with the flags).
+- Pixel diff of `mud-phone-input` is unchanged by the swap (1.66 to 1.84% on four states, flag
+  masked); style parity 0 errors; all flags load in the 18 stories; `validate.package` passes.
 
 ## Not verified
 
