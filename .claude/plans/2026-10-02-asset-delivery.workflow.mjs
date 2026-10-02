@@ -23,8 +23,10 @@ const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg
   shell's default Node is 26.
 - Stencil \`~4.45.0\` with the repo patch (\`.yarn/patches/@stencil-core-npm-4.45.0-*.patch\`); SVGO
   \`^4.1.0\`; no new runtime dependency in any published package.
-- Never touch \`src/components.d.ts\`, component \`readme.md\` files (generated) or
-  \`packages/*/src/**/stencil-generated/**\` by hand; never stage with \`git add -A\` / \`git add .\`.
+- Never edit \`src/components.d.ts\`, component \`readme.md\` files (generated) or
+  \`packages/*/src/**/stencil-generated/**\` by hand; never stage with \`git add -A\` / \`git add .\`. A task
+  that changes a component's JSDoc (Tasks 3, 4) runs \`yarn build\` and stages the regenerated
+  \`readme.md\` of that component BY NAME in its own commit.
 - Locale-first (\`AGENTS.md\` rule 13): no new user-facing string literal.
 - Token-first: no new hard-coded colour or size in component CSS (\`yarn lint.colors\`).
 - The seven inline glyphs that are NOT identical to the icon set stay exactly as they are:
@@ -729,7 +731,9 @@ _Wave I._
 - [ ] **Step 2:** \`fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001\`
   → exit 0. The phone-input tolerance (0.1 % of a story's pixels) admits the raster difference between an
   \`<img>\` and an inline \`svg\` of the same drawing; anything above it, or any difference elsewhere, is a
-  regression to fix, not to tolerate.
+  regression to fix, not to tolerate. The denominator is the \`#storybook-root\` element capture, not
+  the 1280×800 viewport: a phone-input story captures at most ~300×400 px (120 000 px → 120 px at
+  0.1 %), so one wrong flag (20×14 = 280 px) still fails it.
 - [ ] **Step 3:** run every row of the acceptance bar below, as written.
 - [ ] **Step 4:** fill \`## Deviations\` (or write "none").`;
 

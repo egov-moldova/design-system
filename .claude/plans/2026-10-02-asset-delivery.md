@@ -77,8 +77,10 @@ being called); the fixtures assert that assets render and that unused assets are
   shell's default Node is 26.
 - Stencil `~4.45.0` with the repo patch (`.yarn/patches/@stencil-core-npm-4.45.0-*.patch`); SVGO
   `^4.1.0`; no new runtime dependency in any published package.
-- Never touch `src/components.d.ts`, component `readme.md` files (generated) or
-  `packages/*/src/**/stencil-generated/**` by hand; never stage with `git add -A` / `git add .`.
+- Never edit `src/components.d.ts`, component `readme.md` files (generated) or
+  `packages/*/src/**/stencil-generated/**` by hand; never stage with `git add -A` / `git add .`. A task
+  that changes a component's JSDoc (Tasks 3, 4) runs `yarn build` and stages the regenerated
+  `readme.md` of that component BY NAME in its own commit.
 - Locale-first (`AGENTS.md` rule 13): no new user-facing string literal.
 - Token-first: no new hard-coded colour or size in component CSS (`yarn lint.colors`).
 - The seven inline glyphs that are NOT identical to the icon set stay exactly as they are:
@@ -772,7 +774,9 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
 - [ ] **Step 2:** `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001`
   → exit 0. The phone-input tolerance (0.1 % of a story's pixels) admits the raster difference between an
   `<img>` and an inline `svg` of the same drawing; anything above it, or any difference elsewhere, is a
-  regression to fix, not to tolerate.
+  regression to fix, not to tolerate. The denominator is the `#storybook-root` element capture, not
+  the 1280×800 viewport: a phone-input story captures at most ~300×400 px (120 000 px → 120 px at
+  0.1 %), so one wrong flag (20×14 = 280 px) still fails it.
 - [ ] **Step 3:** run every row of the acceptance bar below, as written.
 - [ ] **Step 4:** fill `## Deviations` (or write "none").
 
@@ -795,6 +799,15 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
 | 13 | No asset path machinery | `! test -e scripts/copy-component-assets.mjs && ! grep -rqE "assetsDirs\|getAssetPath" src --include='*.tsx' --include='*.ts'` | exit 0 |
 | 14 | Visual regression | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001` | exit 0 |
 | 15 | Consumer docs | `! grep -nE "assetPath\|resourcesUrl\|dist/components/assets\|copy-component-assets\|setupMud\|provideMud\|app\.use\(Mud\|vite-plugin-static-copy" README.md INTEGRATION.md CONTRIBUTING.md packages/react/README.md packages/vue/README.md packages/angular/README.md packages/web-components/README.md .claude/skills/mud-design/SKILL.md` | exit 0 |
+
+## Self-refute log
+
+| # | Question | Instance found, and where it is fixed — or what was scanned |
+| --- | --- | --- |
+| 1 | Does the fix reuse the defect's own mechanism class? | The defect is a manual step a consumer must remember. No fix relies on anyone remembering: the generator is a Wireit dependency with `--check` (Task 1), seeding is enforced by `src/utils/test/seeded-icons.spec.ts` (Task 6), zero-config is enforced by fixtures that contain no asset setup (Task 13), and the baseline's untouched-tree precondition is a command (`git diff --stat 448dc20d -- src` empty, Task 0 step 5), not a promise. |
+| 2 | Can a rule's letter be met with its intent violated? | (a) Row 14's phone-input tolerance, read against a full-viewport denominator, would let a wrong 20×14 flag pass (280 px of 1 024 000) — fixed by stating the element-capture denominator in Task 15 step 2. (b) Fixture assertion 3 probes three never-shown assets, so another unused asset could still be downloaded — accepted: the spike measured the mechanism over the whole catalog, and a per-chunk assertion cannot tell a statically seeded icon in its own esbuild chunk from a lazy one. (c) Row 13 could pass while a test still calls `setAssetPath` — scanned: the only users are the phone-input specs Task 5 rewrites. |
+| 3 | Has every numeric target a denominator, a minimum n, and an instrument outside what it grades? | Row 14: denominator = pixels of the `#storybook-root` capture, n = every story of the 22 listed components, instrument = pixelmatch over captures, independent of the code under change. The 0.1 % figure is a stated budget, not a measurement; its worst case is derived in Task 15 step 2. Map-size and chunk numbers in the spec come from the spike, which is outside this plan's code. |
+| 4 | Do two of the plan's own rules interact into an unintended pass? | (a) "Never touch generated readmes" × Tasks 3/4 changing JSDoc: the build regenerates the readme, and without a rule it would either stay stale or be swept up unnamed — fixed in Global Constraints (stage it by name in the task's commit). (b) Task 7's revert-on-difference × row 14: a reverted Task 7 leaves the checkbox inline, which row 14 then compares against an inline baseline — consistent. (c) Seeding (Task 6) × fixture assertion 3: seeded icons enter main chunks by design, so the never-shown probes are chosen outside the seeded set (`umbrella`, `msign-logo-with-verb`, `jp`) — consistent. |
 
 ## Deviations
 
