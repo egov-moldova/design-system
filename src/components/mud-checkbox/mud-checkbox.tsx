@@ -108,10 +108,10 @@ export class MudCheckbox {
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
   /**
-   * Plain-text error message shown below the label when `invalid` is set.
+   * Plain-text error message shown below the label and the supporting text when `invalid` is set.
    * Pairs with the filled `circle-error` icon and is wired to the control via
-   * `aria-describedby`. When present (and `invalid`) it replaces the supporting
-   * text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
+   * `aria-describedby`, after the supporting text. Mirrors the `errorText` convention of
+   * `mud-text-input` / `mud-textarea`.
    */
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
@@ -333,13 +333,16 @@ export class MudCheckbox {
     const supportingText = this.supportingText?.trim() || undefined;
     const showLabel = this.hasLabelSlot || labelText !== undefined;
     const showError = this.hasErrorMessage();
-    // An error message takes the supporting text's place when the field is invalid.
-    const showSupporting = (this.hasSupportingSlot || supportingText !== undefined) && !showError;
+    // Figma keeps the supporting text and draws the error message under it (340:10817).
+    const showSupporting = this.hasSupportingSlot || supportingText !== undefined;
     // The host's native aria-label overrides the accessible name; otherwise a
     // visible label names the input through aria-labelledby.
     const ariaLabelAttr = this.resolvedAriaLabel;
     const ariaLabelledbyAttr = ariaLabelAttr ? undefined : showLabel ? this.labelId : this.ariaLabelledby;
-    const ariaDescribedbyAttr = showError ? this.errorId : showSupporting ? this.supportingId : undefined;
+    const ariaDescribedbyAttr =
+      [showSupporting ? this.supportingId : undefined, showError ? this.errorId : undefined]
+        .filter(Boolean)
+        .join(' ') || undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,

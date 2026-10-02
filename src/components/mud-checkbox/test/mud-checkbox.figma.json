@@ -413,6 +413,148 @@
           "note": "Figma 1512:8615 drops the Small supporting text to Desktop/Caption/Medium. The same text from the label / supporting-text props (#165 phase 3) renders identically."
         }
       ]
+    },
+    {
+      "name": "error-label-md",
+      "node": "340:10810",
+      "html": "<mud-checkbox invalid label=\"Transforming Services\" error-text=\"Error message\"></mud-checkbox>",
+      "capture": {
+        "selector": "mud-checkbox",
+        "bleed": 0
+      },
+      "expect": [
+        {
+          "target": "mud-checkbox .text",
+          "node": "340:10810",
+          "styles": {
+            "boxHeight": "46px"
+          },
+          "note": "Label group Error Message=true (340:10828): the 24px label, 6px (340:10854), then the 16px message: 46px."
+        },
+        {
+          "target": "mud-checkbox .error",
+          "node": "340:10858",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-checkbox .error-icon",
+          "node": "340:10858",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px",
+            "color": "#D92D20"
+          }
+        },
+        {
+          "target": "mud-checkbox .error-text",
+          "node": "340:10858",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#D92D20"
+          },
+          "note": "The error message is the inline-message Style=Error, Size=Small (132:4110): a 16px circle-error-filled and Desktop/Caption/Medium 12/16 in #D92D20, 4px apart (340:10858)."
+        }
+      ]
+    },
+    {
+      "name": "error-supporting-md",
+      "node": "340:10817",
+      "html": "<div style=\"width:361px\"><mud-checkbox invalid label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\" error-text=\"Error message\"></mud-checkbox></div>",
+      "capture": {
+        "selector": "mud-checkbox",
+        "bleed": 0
+      },
+      "expect": [
+        {
+          "target": "mud-checkbox .supporting",
+          "node": "340:10817",
+          "styles": {
+            "boxHeight": "40px",
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Figma 340:10836 keeps the supporting text and adds the error message under it: the error does not replace the supporting text."
+        },
+        {
+          "target": "mud-checkbox .text",
+          "node": "340:10817",
+          "styles": {
+            "boxHeight": "88px"
+          },
+          "note": "24 label + 2 + 40 supporting (two lines in 325px) = 66, then 6 and the 16px message: 88px."
+        },
+        {
+          "target": "mud-checkbox .error",
+          "node": "340:10883",
+          "styles": {
+            "boxHeight": "16px",
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-checkbox .error-text",
+          "node": "340:10883",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": "400",
+            "color": "#D92D20"
+          },
+          "note": "The error message is the inline-message Style=Error, Size=Small (132:4110): a 16px circle-error-filled and Desktop/Caption/Medium 12/16 in #D92D20, 4px apart (340:10858)."
+        }
+      ]
+    },
+    {
+      "name": "disabled-label-md",
+      "node": "337:10503",
+      "pixel": false,
+      "html": "<mud-checkbox disabled label=\"Transforming Services\"></mud-checkbox>",
+      "expect": [
+        {
+          "target": "mud-checkbox .label",
+          "node": "337:10503",
+          "styles": {
+            "color": "#B2B2B2",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500"
+          },
+          "note": "Disabled label group 13:137: the label is #B2B2B2 (fill_83b5cb91, 13:139)."
+        }
+      ]
+    },
+    {
+      "name": "disabled-label-supporting-md",
+      "node": "337:10524",
+      "pixel": false,
+      "html": "<div style=\"width:361px\"><mud-checkbox disabled label=\"Transforming Services\" supporting-text=\"Moldova’s digital evolution is at the heart of seamless public service delivery.\"></mud-checkbox></div>",
+      "expect": [
+        {
+          "target": "mud-checkbox .label",
+          "node": "337:10524",
+          "styles": {
+            "color": "#B2B2B2"
+          }
+        },
+        {
+          "target": "mud-checkbox .supporting",
+          "node": "337:10524",
+          "styles": {
+            "color": "#B2B2B2",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "Disabled with supporting text (13:153): both lines are #B2B2B2."
+        }
+      ]
     }
   ]
 }

@@ -23,6 +23,11 @@
           "$comment": "WCAG/Figma coarse-pointer minimum 36×36 (Figma 2822:1230 Target)."
         }
       },
+      "touchRowInset": {
+        "$value": "{spacing.6}",
+        "$type": "dimension",
+        "$comment": "Touch Devices: the target of a checkbox with a label reaches 6px past the whole row, 216 x 36 for the 204 x 24 row and 373 x 78 for the 361 x 66 one (2822:1233, 2822:1236)."
+      },
       "borderRadius": {
         "sm": {
           "$value": "{borderRadius.6}",
@@ -257,6 +262,31 @@
           "$value": "{color.border.disabled.default}",
           "$type": "color"
         }
+      }
+    },
+    "error": {
+      "fontSize": {
+        "$value": "{fontSize.12}",
+        "$type": "dimension",
+        "$comment": "The error message is the inline-message Error, Size=Small: Desktop/Caption/Medium 12/16 (340:10858)."
+      },
+      "lineHeight": {
+        "$value": "{lineHeight.16}",
+        "$type": "dimension"
+      },
+      "iconSize": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Between the 16px icon and the message text (340:10858)."
+      },
+      "spacing": {
+        "$value": "{spacing.6}",
+        "$type": "dimension",
+        "$comment": "Between the label or supporting text and the message (340:10854)."
       }
     }
   }
