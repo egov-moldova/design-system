@@ -96,7 +96,7 @@ D, approved by Dan on 2026-10-02 together with:
 | --- | --- | --- |
 | `scripts/assets/build-asset-modules.mjs` (new; called by `svg:icons` and `svg:flags`, and by the logo set) | Reads `assets/` of each owner, writes `generated/<name>.ts` (`export default '<svg…>'`) and `generated/index.ts` (the map), sanitized and id-prefixed. `--check` fails on drift, like `build-registry.mjs --check` today. | svgo (already a dev dependency) |
 | `src/utils/svg-assets.ts` (new) | The one loader: `seedSvg(kind, key, markup)` (sync), `cachedSvg(kind, key)`, `loadSvg(kind, key, map)` (async, deduped, stale-result-safe). Returns a sanitized `Element`. | `svg-sanitizer.ts` |
-| `mud-icon` | Resolves `name` + `variant` (+ size drawing, cycle 2) through the loader; keeps its public props, warnings, a11y and `variant` fallback. | loader, icon map |
+| `mud-icon` | Resolves `name` + `variant` through the loader; keeps its public props, warnings, a11y and `variant` fallback. | loader, icon map |
 | `mud-logo` | Same, for logos; keeps `mudLogoError` (`reason: 'fetch-failed'` now means the import failed). | loader, logo map |
 | `mud-phone-input` | Renders a flag as inline SVG through the loader; keeps #191's `IntersectionObserver` gating, so a row's flag module is imported only near the visible list. | loader, flag map |
 | Components with fixed internal icons (33 use `<mud-icon>`; 26 distinct static names today) | `import` the icon module, `seedSvg` in `componentWillLoad`. | loader, the icon's module |
@@ -118,8 +118,8 @@ import { MudIcon, MudSelect } from '@egov-moldova/mud-react';
 <MudIcon name="calendar" />   // one small chunk, requested only when shown
 ```
 
-Same for Vue (`app.use(Mud)`), Angular (`provideMud()`), web-components (`defineCustomElements()`)
-and a CDN `<script type="module">` — no options.
+Vue and Angular import their components the same way, with no plugin or provider; web-components
+calls `defineCustomElements()`; a CDN `<script type="module">` needs nothing more.
 
 ### Published layout
 
@@ -202,6 +202,26 @@ The implementation plan turns each row into a command; at design level the bar i
 | Figma conformance unchanged | pixel-perfect checks pass for `mud-icon`, `mud-logo`, `mud-phone-input`, `mud-checkbox` and every component that switches to a seeded icon |
 | Project gates | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn build`, `yarn validate.package` pass |
 | Docs | the doc sweep grep finds no instruction to copy assets or pass an asset path |
+
+## Revisions after review
+
+Decided by Dan on 2026-10-02, after the implementation plan's critique round; they supersede the
+sections above where they disagree.
+
+1. **No seeding** (supersedes decision 3 and the seeding unit in § Units). Stencil awaits
+   `componentWillLoad`, so an icon loaded through `import()` is never painted half-loaded; seeding
+   only saved one small request on a component's first appearance, at the cost of edits in ~31
+   components and the download of conditional glyphs never shown. Every icon loads through
+   `import()`; seeding stays available as a later, additive change.
+2. **The generated modules are committed** (supersedes "Generated modules are committed? No" in
+   § Units), guarded by the generator's `--check`, like `icon-names.ts` today: a fresh clone, the
+   editor and every script resolve them with no build step.
+3. **The `mud-checkbox` tick and dash stay inline** (narrows decision 5): they paint synchronously
+   today, and through an unseeded `mud-icon` the tick would wait for a chunk on the first check.
+4. **The flag-icons licence ships as a file** (`dist/mud/licenses/flag-icons.txt`) and as a preserved
+   comment in the flag map, since no SVG file carries it any more.
+5. **The hook installer moves to a private `tooling/hooks` workspace**, not the repo root: the root
+   manifest is the published core.
 
 ## Not verified
 
