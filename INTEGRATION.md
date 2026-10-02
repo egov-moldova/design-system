@@ -32,7 +32,7 @@ After `yarn build`, the relevant artifacts live in `dist/mud/`:
 | `tokens/core.tokens.css` | Light-theme CSS variables (palette + semantic). | **Yes** |
 | `tokens/core.dark.tokens.css` | Dark-theme overrides, scoped under `[data-theme='dark']`. | Recommended |
 | `p-*.js` chunks | One per component, lazy-loaded by the entry. | Auto-served alongside the entry |
-| `assets/` | SVG sprites (used by `mud-icon`, `mud-logo`, …). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `mud.esm.js` |
+| `assets/` | SVG files (used by `mud-icon`, `mud-logo`, and the country flags of `mud-phone-input` under `assets/flags/`). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `mud.esm.js` |
 | `assets/fonts/` | The Onest variable font (`onest-variable.woff2`, weights 100–900). Requested by `mud.css` through a relative URL. | **Yes** — keep relative to `mud.css` |
 
 > **Critical:** ship the *entire* `dist/mud/` directory as one unit. The lazy loader uses `import.meta.url` to locate chunks and assets — moving or renaming individual files will break asset resolution at runtime.
@@ -383,6 +383,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `mud.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
 - **Compression**: enable Brotli/gzip on `.js`, `.css`, `.svg`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
 - **Fonts under CSP**: `mud.css` loads `assets/fonts/onest-variable.woff2` relative to itself, so `font-src` must allow the origin `mud.css` is served from (`'self'` when self-hosted, the CDN origin otherwise).
+- **Flags under CSP**: `mud-phone-input` shows each country flag as an `<img>` of `assets/flags/<CODE>.svg`, so `img-src` must allow the origin `mud.esm.js` is served from (`'self'` when self-hosted, the CDN origin otherwise).
 - **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egov-moldova/mud/loader` before the loader runs:
 
   ```html
