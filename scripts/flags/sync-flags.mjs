@@ -148,6 +148,16 @@ function git(cwd, ...args) {
   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] }).trim();
 }
 
+/** The commit a local checkout is at: `SOURCE.json` records it, so a folder that is not a git checkout is refused. */
+function checkoutCommit(dir) {
+  if (!fs.existsSync(dir)) throw new InputError(`--from ${dir} does not exist`);
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: dir, encoding: 'utf8', stdio: 'pipe' }).trim();
+  } catch {
+    throw new InputError(`--from ${dir} is not a git checkout: SOURCE.json needs the upstream commit`);
+  }
+}
+
 /** A shallow checkout of exactly `ref`, in a temporary folder. */
 function fetchCommit(ref) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flag-icons-'));
@@ -162,7 +172,7 @@ function main(argv) {
   const fetched = opts.from === undefined;
   const checkout = fetched ? fetchCommit(opts.ref) : opts.from;
   try {
-    const commit = fetched ? opts.ref : git(checkout, 'rev-parse', 'HEAD');
+    const commit = fetched ? opts.ref : checkoutCommit(checkout);
     if (!fetched && commit !== opts.ref) {
       console.warn(`note: ${checkout} is at ${commit}, not the pinned ${opts.ref}; SOURCE.json records ${commit}`);
     }
