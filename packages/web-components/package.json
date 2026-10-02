@@ -1,0 +1,51 @@
+{
+  "name": "@egov-moldova/mud-web-components",
+  "version": "1.0.5",
+  "description": "Vanilla HTML / JS adapter for MUD Design System web components",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc",
+    "demo": "vite --config demo/vite.config.ts",
+    "demo.build": "vite build --config demo/vite.config.ts",
+    "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@egov-moldova/mud": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/egov-moldova/design-system.git",
+    "directory": "packages/web-components"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "html",
+    "vanilla",
+    "design-system",
+    "stencil"
+  ],
+  "license": "MIT"
+}

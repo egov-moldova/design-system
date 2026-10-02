@@ -97,13 +97,13 @@ Use this template; populate from the JSON envelopes above:
 The script-driven path fails open if any of these hold; fall back to manual `Glob`/`Grep`:
 
 - Component name was renamed and the script can't find it (`07` returns 0 usages but you know it exists somewhere).
-- The codebase has callsites outside the default scan globs (e.g. raw HTML files outside `web-components/`, third-party consumers).
+- The codebase has callsites outside the default scan globs (e.g. raw HTML files outside `packages/web-components/`, third-party consumers).
 - `apiChanges` describes very nuanced attribute changes (e.g. value-format changes inside a string prop) that require reading actual JSX.
 
 ## Constraints
 
 - **Read-only**: never edit, write, or delete any source file.
-- **Scope** (default in `07`): `src/**`, `web-components/**`. Excludes `node_modules`, `dist`, `loader`, `.stencil`, `.wireit`, `storybook-static`, `coverage`, `.yarn`.
+- **Scope** (default in `07`): `src/**`, `packages/web-components/**`. Excludes `node_modules`, `dist`, `loader`, `.stencil`, `.wireit`, `storybook-static`, `coverage`, `.yarn`.
 - **Trust file content over file name**: a component file may exist but not be exported. `07.exports.customEventType` reflects what `src/index.ts` actually re-exports.
 
 ## Failure modes

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import husky from 'husky';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-// Husky resolves `.husky` and `.git` from the cwd, and the workspace runs this from react/.
+// Husky resolves `.husky` and `.git` from the cwd, and the workspace runs this from packages/react/.
 process.chdir(root);
 
 const message = husky();

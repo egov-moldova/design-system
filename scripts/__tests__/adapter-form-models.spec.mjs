@@ -1,0 +1,450 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, it } from 'node:test';
+
+import {
+  angularAccessorKind,
+  angularValueAccessorConfigs,
+  FORM_MODEL_EXCLUSIONS,
+  FORM_MODEL_ROWS,
+  FORM_MODEL_TAGS,
+  NON_EMITTING_VALUE_HOLDERS,
+  vueBindingKind,
+  vueComponentModels,
+} from '../adapters/form-models.ts';
+import { PROXY_DIRS } from '../adapters/proxy-dirs.ts';
+import { PROJECT_ROOT } from '../validate-package.mjs';
+
+// The form-control model map (`scripts/adapters/form-models.ts`) is the ONE list both framework
+// adapters derive their form binding from: Vue's `componentModels` and Angular's
+// `valueAccessorConfigs`. A row that names an event the component does not emit still compiles
+// and still passes a fixture that never drives that component, so this spec is the instrument
+// for the other rows. Its ground truth is `.storybook/custom-elements.json`, which Stencil
+// writes from the decorators, not a grep: a grep misses `@Event({ eventName: 'mudChange' })`.
+
+const MANIFEST_PATH = path.join(PROJECT_ROOT, '.storybook/custom-elements.json');
+const EXPECTED_ROWS = 17;
+const VALUE_MEMBERS = ['value', 'checked', 'selected'];
+
+function readManifest() {
+  assert.ok(fs.existsSync(MANIFEST_PATH), `${MANIFEST_PATH} is missing: run \`yarn build\` first`);
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  /** @type {Map<string, {members: Set<string>, events: Set<string>}>} */
+  const tags = new Map();
+  for (const mod of manifest.modules) {
+    for (const decl of mod.declarations ?? []) {
+      if (!decl.tagName) continue;
+      tags.set(decl.tagName, {
+        members: new Set((decl.members ?? []).map(member => member.name)),
+        events: new Set((decl.events ?? []).map(event => event.name)),
+      });
+    }
+  }
+  return tags;
+}
+
+const manifest = readManifest();
+const emitters = [...manifest].filter(([, c]) => c.events.has('mudInput') || c.events.has('mudChange')).map(([t]) => t);
+const excluded = FORM_MODEL_EXCLUSIONS.map(entry => entry.tag);
+const dispositioned = NON_EMITTING_VALUE_HOLDERS.map(entry => entry.tag);
+
+describe('the form-control model map matches the component manifest', () => {
+  it(`has ${EXPECTED_ROWS} components across its rows, each in exactly one row`, () => {
+    assert.equal(FORM_MODEL_TAGS.length, EXPECTED_ROWS, `rows carry ${FORM_MODEL_TAGS.length} components`);
+    assert.equal(new Set(FORM_MODEL_TAGS).size, FORM_MODEL_TAGS.length, 'a component appears in two rows');
+  });
+
+  it('names a property and events that the manifest declares for every row component', () => {
+    const problems = [];
+    for (const row of FORM_MODEL_ROWS) {
+      for (const tag of row.tags) {
+        const declared = manifest.get(tag);
+        if (!declared) {
+          problems.push(`${row.id}: ${tag} is not in the manifest`);
+          continue;
+        }
+        if (!declared.members.has(row.property)) problems.push(`${row.id}: ${tag} declares no \`${row.property}\``);
+        for (const event of row.events) {
+          if (!declared.events.has(event)) problems.push(`${row.id}: ${tag} declares no \`${event}\` event`);
+        }
+      }
+    }
+    assert.deepEqual(problems, []);
+  });
+
+  it('accounts for every mudInput/mudChange emitter: a row or a stated exclusion, nothing else', () => {
+    const accounted = new Set([...FORM_MODEL_TAGS, ...excluded]);
+    assert.deepEqual(
+      emitters.filter(tag => !accounted.has(tag)),
+      [],
+      'emitters that are neither a row nor an exclusion',
+    );
+    assert.deepEqual(
+      [...accounted].filter(tag => !emitters.includes(tag)),
+      [],
+      'map components that no longer emit mudInput or mudChange',
+    );
+    assert.deepEqual(
+      emitters.filter(tag => !excluded.includes(tag)).sort(),
+      [...FORM_MODEL_TAGS].sort(),
+      'the manifest emitter set, minus the exclusions, differs from the map',
+    );
+  });
+
+  it('states a reason for every exclusion, and no excluded tag is also a row', () => {
+    for (const { tag, reason } of FORM_MODEL_EXCLUSIONS) {
+      assert.ok(reason.length > 0, `${tag}: exclusion has no reason`);
+      assert.ok(!FORM_MODEL_TAGS.includes(tag), `${tag} is both a row and an exclusion`);
+    }
+    assert.equal(FORM_MODEL_EXCLUSIONS.length, 4);
+  });
+
+  it('dispositions every other component that declares a value, checked or selected member', () => {
+    const holders = [...manifest].filter(([, c]) => VALUE_MEMBERS.some(name => c.members.has(name))).map(([t]) => t);
+    const accounted = new Set([...FORM_MODEL_TAGS, ...excluded, ...dispositioned]);
+    assert.deepEqual(
+      holders.filter(tag => !accounted.has(tag)),
+      [],
+      'value holders that are neither a row, an exclusion nor a stated non-emitting holder: add one with a reason',
+    );
+    assert.deepEqual(
+      dispositioned.filter(tag => !holders.includes(tag)),
+      [],
+      'stated non-emitting holders that no longer declare a value, checked or selected member',
+    );
+    assert.deepEqual(
+      dispositioned.filter(tag => emitters.includes(tag)),
+      [],
+      'a stated non-emitting holder emits mudInput or mudChange: it is a row or an exclusion',
+    );
+    for (const { tag, reason } of NON_EMITTING_VALUE_HOLDERS) assert.ok(reason.length > 0, `${tag}: no reason`);
+  });
+});
+
+describe('the Angular accessor type is derived from the row, never stored', () => {
+  const kinds = Object.fromEntries(FORM_MODEL_ROWS.map(row => [row.id, angularAccessorKind(row)]));
+
+  it('gives every row of the plan the accessor kind its table states', () => {
+    assert.deepEqual(kinds, {
+      text: 'text',
+      phone: 'text',
+      numeric: 'hand-written',
+      boolean: 'boolean',
+      select: 'select',
+      chips: 'hand-written',
+      files: 'hand-written',
+    });
+    for (const row of FORM_MODEL_ROWS) assert.equal('type' in row, false, `${row.id} stores an accessor type`);
+  });
+
+  it('binds one event set per generated type, so a row cannot be typed into the wrong merge', () => {
+    const primary = { text: 'mudInput', select: 'mudChange', boolean: 'mudChange' };
+    for (const row of FORM_MODEL_ROWS) {
+      const kind = angularAccessorKind(row);
+      if (kind === 'hand-written') continue;
+      assert.equal(row.events[0], primary[kind], `${row.id}: a ${kind} row must lead with ${primary[kind]}`);
+      const extras = row.events.slice(1);
+      assert.deepEqual(
+        extras.filter(event => event !== 'mudCountryChange'),
+        [],
+        `${row.id}: only mudCountryChange may follow the primary event of a generated type`,
+      );
+    }
+    // A select or boolean directive hears ONLY mudChange: any other event would reach a
+    // component whose model that event does not mean.
+    const configs = angularValueAccessorConfigs();
+    for (const type of ['select', 'boolean']) {
+      const events = new Set(configs.filter(config => config.type === type).map(config => config.event));
+      assert.deepEqual([...events], ['mudChange'], `the ${type} directive must bind mudChange alone`);
+    }
+  });
+
+  it('groups rows into one config per (type, event, property), never one per row', () => {
+    const configs = angularValueAccessorConfigs();
+    const keys = configs.map(config => `${config.type}|${config.event}|${config.targetAttr}`);
+    assert.equal(new Set(keys).size, keys.length, 'two configs write the same host listener (TS1117)');
+    for (const type of new Set(configs.map(config => config.type))) {
+      const selectors = configs.filter(config => config.type === type).flatMap(config => config.elementSelectors);
+      assert.deepEqual(
+        selectors,
+        [...new Set(selectors)],
+        `${type}: the generator concatenates the selectors of a type, so a tag must be listed once`,
+      );
+    }
+    const byKey = Object.fromEntries(
+      configs.map(config => [`${config.type}|${config.event}`, config.elementSelectors]),
+    );
+    assert.deepEqual(Object.keys(byKey).sort(), [
+      'boolean|mudChange',
+      'select|mudChange',
+      'text|mudCountryChange',
+      'text|mudInput',
+    ]);
+    assert.deepEqual(byKey['text|mudCountryChange'], [], 'phone-input is selected once, on its first event');
+    assert.ok(byKey['text|mudInput'].includes('mud-phone-input'));
+    assert.equal(byKey['select|mudChange'].length, 8);
+    const generated = configs.flatMap(config => config.elementSelectors);
+    const handWritten = FORM_MODEL_ROWS.filter(row => angularAccessorKind(row) === 'hand-written').flatMap(
+      row => row.tags,
+    );
+    assert.deepEqual(
+      [...generated, ...handWritten].sort(),
+      [...FORM_MODEL_TAGS].sort(),
+      'every row has a generated or a hand-written accessor',
+    );
+  });
+});
+
+describe('the Vue binding is derived from the row, never stored', () => {
+  it('writes by hand exactly the rows with several events or a numeric value', () => {
+    assert.deepEqual(Object.fromEntries(FORM_MODEL_ROWS.map(row => [row.id, vueBindingKind(row)])), {
+      text: 'generated',
+      phone: 'hand-written',
+      numeric: 'hand-written',
+      boolean: 'generated',
+      select: 'generated',
+      chips: 'generated',
+      files: 'generated',
+    });
+    for (const row of FORM_MODEL_ROWS) assert.equal('vueEvent' in row, false, `${row.id} stores a Vue event`);
+  });
+});
+
+describe('the Vue component models are derived from the generated rows', () => {
+  const generatedRows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'generated');
+  const handWrittenRows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'hand-written');
+
+  it('carries each generated row component once, with its one event and its property', () => {
+    const models = vueComponentModels();
+    const byTag = new Map(models.flatMap(model => model.elements.map(tag => [tag, model])));
+    assert.equal(byTag.size, generatedRows.flatMap(row => row.tags).length);
+    for (const row of generatedRows) {
+      assert.equal(row.events.length, 1, `${row.id}: the generator binds one event`);
+      for (const tag of row.tags) {
+        assert.deepEqual(
+          { event: byTag.get(tag)?.event, targetAttr: byTag.get(tag)?.targetAttr },
+          { event: row.events[0], targetAttr: row.property },
+          tag,
+        );
+      }
+    }
+    for (const row of handWrittenRows) {
+      for (const tag of row.tags) assert.equal(byTag.has(tag), false, `${tag} is hand-written: no generated model`);
+    }
+  });
+
+  it('reaches the generated proxies: each generated row ends with its model property and event', () => {
+    // The strongest check that `stencil.config.ts` really passes the derived models to the
+    // output target: the generated call carries them. `yarn build` writes these files.
+    const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
+    assert.match(
+      config,
+      /componentModels:\s*vueComponentModels\(\)/,
+      'stencil.config.ts does not derive the Vue models',
+    );
+    const dir = path.join(PROJECT_ROOT, PROXY_DIRS.vue);
+    assert.ok(fs.existsSync(dir), `${dir} is missing: run \`yarn build\` first`);
+    const modelOf = tag =>
+      /'(value|checked|chips|files)', '(mud\w+)', undefined\);/.exec(
+        fs.readFileSync(path.join(dir, `${tag}.ts`), 'utf8'),
+      );
+    for (const row of generatedRows) {
+      for (const tag of row.tags) {
+        const model = modelOf(tag);
+        assert.deepEqual(
+          [model?.[1], model?.[2]],
+          [row.property, row.events[0]],
+          `${tag}: the generated proxy does not bind ${row.property} on ${row.events[0]}`,
+        );
+      }
+    }
+    for (const row of handWrittenRows) {
+      for (const tag of row.tags) assert.equal(modelOf(tag), null, `${tag}: the generated proxy must carry no v-model`);
+    }
+    const modelled = fs.readdirSync(dir).filter(file => file.startsWith('mud-') && modelOf(file.replace(/\.ts$/, '')));
+    assert.deepEqual(
+      modelled.map(file => file.replace(/\.ts$/, '')).sort(),
+      generatedRows.flatMap(row => row.tags).sort(),
+      'a proxy carries a v-model that no generated row declares',
+    );
+  });
+});
+
+describe('the hand-written Vue wrappers match their rows and replace the generated ones', () => {
+  const wrappersDir = path.join(PROJECT_ROOT, 'packages/vue/src/wrappers');
+  const rows = FORM_MODEL_ROWS.filter(row => vueBindingKind(row) === 'hand-written');
+  const sources = fs
+    .readdirSync(wrappersDir)
+    .filter(file => file !== 'define-model-wrapper.ts' && file.endsWith('.ts'))
+    .map(file => fs.readFileSync(path.join(wrappersDir, file), 'utf8'));
+  const pascal = tag =>
+    tag
+      .split('-')
+      .map(part => part[0].toUpperCase() + part.slice(1))
+      .join('');
+
+  it('has one wrapper per hand-written row, on its tag and listening to every event of the row', () => {
+    assert.equal(sources.length, rows.length, 'one hand-written wrapper per hand-written row');
+    for (const row of rows) {
+      assert.equal(row.tags.length, 1, `${row.id}: a hand-written wrapper serves one tag`);
+      const [tag] = row.tags;
+      // The wrapper wraps the generated component of its tag, imported from `stencil-generated/<tag>.js`.
+      const source = sources.find(text => text.includes(`/stencil-generated/${tag}.js'`));
+      assert.ok(source, `${row.id}: no wrapper wraps the generated ${tag}`);
+      const events = /events:\s*\[([^\]]*)\]/
+        .exec(source)?.[1]
+        ?.match(/'(\w+)'/g)
+        ?.map(event => event.slice(1, -1));
+      assert.deepEqual(events, [...row.events], `${row.id}: the wrapper's events differ from the row`);
+      assert.equal(row.property, 'value', `${row.id}: the shared wrapper writes \`value\``);
+    }
+  });
+
+  it('passes the generated component of its own tag: the imported identifier is the `generated:` one', () => {
+    for (const row of rows) {
+      const [tag] = row.tags;
+      const source = sources.find(text => text.includes(`/stencil-generated/${tag}.js'`));
+      assert.ok(source, `${row.id}: no wrapper wraps the generated ${tag}`);
+      const specifiers = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*'[^']*/stencil-generated/${tag}\\.js'`).exec(
+        source,
+      )?.[1];
+      assert.ok(specifiers, `${row.id}: no named import from stencil-generated/${tag}.js`);
+      assert.ok(!specifiers.includes(','), `${row.id}: import exactly one identifier from ${tag}.js`);
+      const local = specifiers
+        .trim()
+        .split(/\s+as\s+/)
+        .pop();
+      const passed = /defineModelWrapper\b[^(]*\(\{[^}]*?\bgenerated:\s*(\w+)/s.exec(source)?.[1];
+      assert.equal(passed, local, `${row.id}: \`generated:\` is not the component imported from ${tag}.js`);
+    }
+  });
+
+  it('exports each hand-written wrapper from the package under the generated name', () => {
+    const index = fs.readFileSync(path.join(PROJECT_ROOT, 'packages/vue/src/index.ts'), 'utf8');
+    for (const row of rows) {
+      const name = pascal(row.tags[0]);
+      assert.match(index, new RegExp(`export \\{ ${name} \\} from '\\./wrappers/`), `${name} is not exported by hand`);
+    }
+  });
+});
+
+describe('the Angular accessors reach the adapter: generated from the rows, or written by hand for them', () => {
+  // `yarn build` writes the generated accessors; the hand-written ones live beside them in
+  // `packages/angular/src/lib/accessors/`. A row the build stopped passing to the output target,
+  // a hand-written selector that drifted from its row, or an accessor left out of
+  // `MUD_FORM_ACCESSORS` would each compile and pass a fixture that never drives that component.
+  const generatedDir = path.join(PROJECT_ROOT, PROXY_DIRS.angular);
+  const handWrittenDir = path.join(PROJECT_ROOT, 'packages/angular/src/lib/accessors');
+  const read = file => fs.readFileSync(file, 'utf8');
+  const selectorsOf = source =>
+    (/selector:\s*'([^']+)'/.exec(source)?.[1] ?? '')
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(Boolean);
+  const hostEventsOf = source => [...source.matchAll(/'\((\w+)\)':\s*'([^']+)'/g)].map(m => [m[1], m[2]]);
+
+  it('derives the output target config from the rows', () => {
+    const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
+    assert.match(
+      config,
+      /valueAccessorConfigs:\s*angularValueAccessorConfigs\(\)/,
+      'stencil.config.ts does not derive the Angular accessors',
+    );
+    assert.match(config, /inlineProperties:\s*true/, 'the Angular wrappers declare no typed inputs');
+  });
+
+  it('generates one directive per accessor type, on exactly its tags and events', () => {
+    assert.ok(fs.existsSync(generatedDir), `${generatedDir} is missing: run \`yarn build\` first`);
+    const configs = angularValueAccessorConfigs();
+    const types = [...new Set(configs.map(config => config.type))].sort();
+    const files = fs
+      .readdirSync(generatedDir)
+      .filter(file => /^\w+-value-accessor\.ts$/.test(file))
+      .sort();
+    assert.deepEqual(
+      files,
+      types.map(type => `${type}-value-accessor.ts`),
+      'generated accessor files differ from the derived types',
+    );
+    for (const type of types) {
+      const source = read(path.join(generatedDir, `${type}-value-accessor.ts`));
+      const ofType = configs.filter(config => config.type === type);
+      assert.deepEqual(
+        selectorsOf(source).sort(),
+        ofType.flatMap(config => config.elementSelectors).sort(),
+        `${type}: selectors (a duplicate fails here)`,
+      );
+      assert.deepEqual(
+        hostEventsOf(source).sort(),
+        ofType.map(config => [config.event, `handleChangeEvent($event.target?.["${config.targetAttr}"])`]).sort(),
+        `${type}: host listeners`,
+      );
+    }
+  });
+
+  it('lists mud-phone-input once in the generated text accessor, which listens to both its events', () => {
+    // `text|mudCountryChange` has no selector of its own (the generator takes one event per config
+    // and merges per type), so the tag must come from `text|mudInput` alone, and the host must
+    // still carry both listeners.
+    const source = read(path.join(generatedDir, 'text-value-accessor.ts'));
+    assert.equal(selectorsOf(source).filter(tag => tag === 'mud-phone-input').length, 1);
+    assert.equal((source.match(/mud-phone-input/g) ?? []).length, 1);
+    assert.deepEqual(
+      hostEventsOf(source)
+        .map(([event]) => event)
+        .sort(),
+      ['mudCountryChange', 'mudInput'],
+    );
+  });
+
+  it('writes a hand-written accessor for every hand-written row, on its tags, events and property', () => {
+    const accessors = fs
+      .readdirSync(handWrittenDir)
+      .filter(file => file.endsWith('-value-accessor.ts'))
+      .map(file => read(path.join(handWrittenDir, file)));
+    const rows = FORM_MODEL_ROWS.filter(row => angularAccessorKind(row) === 'hand-written');
+    assert.equal(accessors.length, rows.length, 'one hand-written accessor per hand-written row');
+    for (const row of rows) {
+      const source = accessors.find(text => selectorsOf(text).some(tag => row.tags.includes(tag)));
+      assert.ok(source, `${row.id}: no hand-written accessor selects ${row.tags.join(', ')}`);
+      assert.deepEqual(selectorsOf(source).sort(), [...row.tags].sort(), `${row.id}: selectors`);
+      assert.deepEqual(
+        hostEventsOf(source).sort(),
+        row.events.map(event => [event, 'handleChange()']).sort(),
+        `${row.id}: host listeners`,
+      );
+      assert.match(
+        source,
+        new RegExp(`protected readonly property = '${row.property}';`),
+        `${row.id}: does not read and write \`${row.property}\``,
+      );
+    }
+  });
+
+  it('lists every accessor, generated and hand-written, in MUD_FORM_ACCESSORS, covering every row tag', () => {
+    const classOf = (dir, base) =>
+      fs
+        .readdirSync(dir)
+        .filter(file => file.endsWith('-value-accessor.ts'))
+        .map(file => read(path.join(dir, file)))
+        .map(source => ({
+          name: new RegExp(`export class (\\w+) extends ${base}`).exec(source)?.[1],
+          tags: selectorsOf(source),
+        }));
+    const all = [...classOf(generatedDir, 'ValueAccessor'), ...classOf(handWrittenDir, 'MudModelAccessor')];
+    const listed = /MUD_FORM_ACCESSORS = \[([^\]]*)\]/
+      .exec(read(path.join(PROJECT_ROOT, 'packages/angular/src/lib/form-accessors.ts')))?.[1]
+      ?.split(',')
+      .map(name => name.trim())
+      .filter(Boolean);
+    assert.ok(listed, 'packages/angular/src/lib/form-accessors.ts declares no MUD_FORM_ACCESSORS array');
+    assert.deepEqual([...listed].sort(), all.map(accessor => accessor.name).sort());
+    assert.deepEqual(
+      [...new Set(all.flatMap(accessor => accessor.tags))].sort(),
+      [...FORM_MODEL_TAGS].sort(),
+      'the accessors do not cover exactly the map components',
+    );
+    assert.equal(new Set(all.flatMap(accessor => accessor.tags)).size, EXPECTED_ROWS);
+  });
+});

@@ -275,6 +275,23 @@ describe('mud-file-input', () => {
       expect(queryFileItems(root)?.length).toBe(2);
     });
 
+    it('treats a null files model at load as an empty list', async () => {
+      const { root } = await render(<mud-file-input label="x" files={null as unknown as File[]}></mud-file-input>);
+      expect((root as unknown as { files: File[] }).files).toEqual([]);
+      expect(queryFileItems(root)?.length ?? 0).toBe(0);
+    });
+
+    it.each([null, undefined])('treats a %s files assignment as clearing the list', async cleared => {
+      const { root } = await render(<mud-file-input label="x" multiple></mud-file-input>);
+      const host = root as unknown as { files: File[] | null | undefined };
+      host.files = [makeFile('a.pdf', 100)];
+      await flush();
+      host.files = cleared;
+      await flush();
+      expect(host.files).toEqual([]);
+      expect(queryFileItems(root)?.length ?? 0).toBe(0);
+    });
+
     it('accepts dropped files and emits mudChange + mudDrop', async () => {
       const onChange = vi.fn();
       const onDrop = vi.fn();

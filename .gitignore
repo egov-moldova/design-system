@@ -12,6 +12,10 @@ coverage/
 reports/
 
 node_bin/
+# Legacy root adapter folders: the adapters now live under packages/. An existing clone can still
+# hold stale generated output there; anchored, so packages/react and packages/web-components stay tracked.
+/react/
+/web-components/
 # Dependency directories
 
 node_modules/
