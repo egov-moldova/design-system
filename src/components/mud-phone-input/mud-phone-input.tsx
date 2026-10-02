@@ -15,6 +15,7 @@ import {
 
 import { COUNTRIES, DEFAULT_COUNTRY_ORDER } from './mud-phone-input.data';
 import type { PhoneCountry } from './mud-phone-input.data';
+import { flagUrl } from './mud-phone-input.flags';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';
 import type {
   PhoneInputChangeDetail,
@@ -76,7 +77,8 @@ const countryDisplayName = (country: PhoneCountry, tag: string): string => {
  * Phone Input — phone-number entry molecule with country-code prefix and
  * format mask. The most Moldova-specific input in the family: it ships a
  * default `+373` country, a curated diaspora-relevant country list with
- * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
+ * SVG flags (flagpack-core, shipped as local assets), and Romanian-voice
+ * placeholder + error copy.
  *
  * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
  * inside shadow DOM alongside an inline country trigger that either
@@ -95,6 +97,7 @@ const countryDisplayName = (country: PhoneCountry, tag: string): string => {
   styleUrl: 'mud-phone-input.css',
   shadow: { delegatesFocus: true },
   formAssociated: true,
+  assetsDirs: ['assets'],
 })
 export class MudPhoneInput {
   /**
@@ -866,7 +869,7 @@ export class MudPhoneInput {
   private renderFlag(country: PhoneCountry) {
     return (
       <span class="flag" part="flag" aria-hidden="true">
-        {country.flag()}
+        <img src={flagUrl(country.iso)} alt="" decoding="async" draggable={false} />
       </span>
     );
   }
@@ -1087,7 +1090,7 @@ export class MudPhoneInput {
                         onMouseEnter={this.handleOptionPointerEnter(index)}
                       >
                         <span class="option-flag" aria-hidden="true">
-                          {opt.flag()}
+                          <img src={flagUrl(opt.iso)} alt="" decoding="async" draggable={false} />
                         </span>
                         <span class="option-name">{this.displayName(opt)}</span>
                         <span class="option-code">{opt.code}</span>
