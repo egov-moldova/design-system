@@ -38,6 +38,20 @@ describe('mud-phone-input flags', () => {
       expect(source.count).toBe(flagFiles.size);
     });
 
+    it('says where every replaced flag comes from, under which licence and why', () => {
+      const source = JSON.parse(readFileSync(path.join(FLAGS_DIR, 'SOURCE.json'), 'utf8')) as {
+        overrides?: Record<string, { source: string; license: string; reason: string }>;
+      };
+      const overrides = source.overrides ?? {};
+      expect(Object.keys(overrides)).toContain('md');
+      for (const [code, entry] of Object.entries(overrides)) {
+        expect(flagFiles.has(`${code}.svg`), code).toBe(true);
+        for (const key of ['source', 'license', 'reason'] as const) {
+          expect(entry[key].trim(), `${code}.${key}`).not.toBe('');
+        }
+      }
+    });
+
     it('holds plain vector drawings: no script, style sheet, raster or reference to another file', () => {
       for (const file of flagFiles) {
         const svg = readFileSync(path.join(FLAGS_DIR, file), 'utf8');
