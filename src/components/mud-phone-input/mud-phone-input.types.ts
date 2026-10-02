@@ -14,16 +14,12 @@ export type PhoneInputType = (typeof PHONE_INPUT_TYPES)[number];
 export type PhoneCountryCode = string;
 
 /**
- * One row in the country list. The Moldovan diaspora list is curated for
- * the e-Gov audience — additional ITU-T E.164 entries can be threaded
- * through the `countries` prop without changing the runtime contract.
+ * One row in the country list: ISO code, dial code, mask and length window.
+ * The table covers every country with a numbering plan; the `countries` prop
+ * limits the list to a chosen few.
  *
- * Flags ship inline as small SVG strings so the component has zero
- * asset-path resolution dependencies — works in every framework and
- * every server-rendered context. Each flag is hand-drawn at 20×16
- * viewBox using semantic-iconographic stripes (2-3 horizontal or
- * vertical bands per ISO 3166-1 + canonical emblem hint where
- * essential to identification — e.g. Romania, Italy, Germany).
+ * Flags are SVG files under `assets/flags/`, named by the lower-case ISO code
+ * and shown through an `<img>` (see `mud-phone-input.flags.ts`).
  *
  * The row itself lives in `mud-phone-input.data.ts` (data, not copy — the
  * `mud/no-hardcoded-copy` guard lints only `.tsx`); this re-exports its type.

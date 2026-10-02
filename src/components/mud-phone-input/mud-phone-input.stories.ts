@@ -172,7 +172,7 @@ export const International: Story = {
     docs: {
       description: {
         story:
-          'International mode reveals the chevron on the country trigger; clicking opens a listbox of 15 countries with flags, Romanian names, and dial codes.',
+          'International mode reveals the chevron on the country trigger; clicking opens a listbox of every country with its flag, name in the page language, and dial code; the search field narrows it.',
       },
       source: {
         type: 'dynamic',
@@ -404,7 +404,7 @@ export const OpenDropdown: Story = {
     </style>
     <div style="padding: var(--spacing-24); display: flex; gap: var(--spacing-48); align-items: flex-start; min-height: 800px;">
       <div style="display: flex; flex-direction: column; gap: var(--spacing-8); width: 320px;">
-        <span style="${cellLabelStyle}">Listbox open — all 15 country flags visible</span>
+        <span style="${cellLabelStyle}">Listbox open — every country, scrolls</span>
         <mud-phone-input id="mud-phone-input-open-fixture" type="international" size="lg" label="Phone number" open></mud-phone-input>
       </div>
     </div>
@@ -420,7 +420,7 @@ export const OpenDropdown: Story = {
     docs: {
       description: {
         story:
-          'Open listbox shows all 15 countries side-by-side with their flags. Moldova (MD) is at the top — the home market — followed by the curated diaspora list (RO, RU, UA, US, GB, DE, FR, IT, ES, PT, IL, TR, BG, GR). Each row pairs the flag, Romanian country name, and E.164 dial code.',
+          'Open listbox lists every country (245) with its flag, name in the page language and dial code. Moldova (MD) is at the top, the home market; the rest follow in alphabetical order of the displayed name. The search field narrows the list by name, dial code or ISO code. Each flag is a file that loads when its row scrolls into view, so opening the list requests only the rows on screen.',
       },
       source: {
         code: '<mud-phone-input size="lg" type="international" label="Phone number" open></mud-phone-input>',
