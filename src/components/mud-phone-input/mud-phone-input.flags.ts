@@ -5,7 +5,9 @@ import { getAssetPath } from '@stencil/core';
  *
  * One SVG per flag under `assets/flags/`, vendored from flag-icons (`yarn svg:flags`; MIT, the
  * licence and the pinned upstream commit sit next to the files). It is the set the Figma
- * Foundations "Flags" frame (3950:138) is made of. `assetsDirs` on the component ships the
+ * Foundations "Flags" frame (3950:138) is made of, except `md`: that coat of arms is a rough
+ * drawing, so `scripts/flags/overrides/` replaces it with the Commons flag drawn after the law
+ * (`SOURCE.json` says where each replaced flag comes from). `assetsDirs` on the component ships the
  * folder with the build, and the flag is shown through an `<img>`: it is fetched only when a
  * country is on screen, cached by the browser, and its `id`s cannot clash with the page's.
  */

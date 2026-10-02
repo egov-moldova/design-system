@@ -12,6 +12,10 @@ set ship (about 1.9 MB in `dist/`), and a flag is requested only when its countr
 (the 15 listed flags are about 24 KB compressed). The country list, dial codes and masks are
 unchanged.
 
+The Moldova flag is the exception: the coat of arms in flag-icons (and in the Figma frame) is a
+rough drawing, so it is replaced by the Wikimedia Commons *Flag of Moldova* (public domain, drawn
+after Law no. 217 of 2010), with the bands in `#0046AE`, `#FFD200` and `#CC092F`.
+
 **Migration:** nothing to change when `dist/mud/` is served as one unit, which `mud-icon` already
 needs. A strict Content-Security-Policy needs `img-src` to allow the origin that serves
 `assets/flags/` (the origin of `mud.esm.js`); `img-src data:` is no longer needed for the Moldova

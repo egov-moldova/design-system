@@ -41,6 +41,15 @@ Greece) and `1x1` is cropped to its middle 70%; the Figma phone input draws emoj
 full rectangles. `SOURCE_FOLDER` in the script is the one line to change to follow the Foundations
 frame literally.
 
+The Moldova flag is the one exception. The coat of arms in flag-icons (and so in the Figma frame)
+is a rough drawing: a leaf-like branch, club-shaped talons, a misplaced beak and eye. At the
+maintainer's request `scripts/flags/overrides/md.svg` replaces it with the Wikimedia Commons
+`Flag_of_Moldova.svg` (public domain, drawn after Law no. 217 of 17 September 2010): the bands
+are `#0046AE`, `#FFD200`, `#CC092F`, and the arms are scaled uniformly to 60% of the flag height
+on three equal bands. `overrides.json` has to give the source, licence and reason of every
+override, and `SOURCE.json` repeats them. This moves the Moldova flag away from the Foundations
+frame on purpose.
+
 ## Global constraints
 
 - Branch `feat/phone-input-flag-icons`, cut from `upstream/main`.
@@ -83,6 +92,8 @@ frame literally.
 - Set: 271 files, 2.0 MB raw, 1.9 MB after SVGO (flag-icons is already optimised), 610 KB gzip
   per copy; flagpack-core was 0.7 MB. Lowering SVGO's `floatPrecision` to 0 halves it but changes
   about 60 of 271 drawings by more than 0.5% of their pixels (Scotland 19%), so it is not used.
+- Moldova, the flag every field shows by default: 26 KB raw, 10 KB gzip with the Commons arms
+  (flag-icons: 11 KB raw, 3 KB gzip).
 - What a user downloads: the 15 listed flags are 102 KB raw, 23.5 KB gzip (Spain alone is 79 KB
   raw, 15 KB gzip, because of its coat of arms); flagpack-core's 15 were 30 KB, 10 KB gzip.
 - The build already copies `assets/` three times (`dist/mud`, `dist/components`,
