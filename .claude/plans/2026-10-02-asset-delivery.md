@@ -2,7 +2,7 @@
 
 **Execution**: workflow — `2026-10-02-asset-delivery.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
 
-**Status:** ready for review
+**Status:** planned (unbuilt) — awaiting Dan's review
 **Reviewed:** none
 **Spec:** `.claude/plans/2026-10-02-asset-delivery-design.md` (approved by Dan on 2026-10-02)
 **Branch:** `danzubco/asset-delivery-on-191` — PR #191 head `2d13b3d2` + the PR #190 branch (which
@@ -22,6 +22,16 @@ Published SVG files, the copy step and every asset-path API disappear.
 **Tech stack:** Stencil 4.45 (`dist`, `dist-custom-elements`, React/Vue/Angular output targets), SVGO 4
 (`prefixIds`, `removeScripts`, `removeAttrs`), Vitest + `@stencil/vitest` (spec lane), `node:test`
 (`yarn test:scripts`), Playwright 1.63 + pixelmatch 7 (fixtures, visual regression), Wireit.
+
+## Problem
+
+A consumer of the design system sees blank icons, logos and flags — with no error — whenever one of
+three manual steps is missed: copy the core's asset folder into the app, call the adapter's asset
+setup (`setupMud`, `app.use(Mud, …)`, `provideMud(…)`, or the loader's `resourcesUrl`), and point it at
+the right URL. The web-components README path already 404s every icon (Chromium probe, 2026-10-02);
+PR #191 moves the phone-input flags onto the same path; and with no `sideEffects` declared, a
+3-component React app ships every component (216 KB gzip measured, 91 KB with `sideEffects`). The
+spec's `## Problem, measured` table carries the evidence for each.
 
 ## Execution matrix
 
@@ -166,16 +176,20 @@ describe('compareImages', () => {
 
 - [ ] **Step 2: Run it to verify it fails** — `fnm exec --using=24 -- node --test scripts/__tests__/story-regression.spec.mjs`
   → FAIL, module not found.
-- [ ] **Step 3: Implement** `scripts/assets/story-regression.mjs`:
+- [ ] **Step 3: Implement** `scripts/assets/story-regression.mjs`, reusing the pixel-perfect audit's
+  shared helpers rather than re-writing them — `diffImages` from `scripts/audit/lib/image-diff.mjs`,
+  `storyUrl` from `scripts/audit/lib/storybook-helpers.mjs`, `launchBrowser` from
+  `scripts/audit/lib/browser-context.mjs`, `captureState` from `scripts/audit/lib/state-page.mjs`
+  (read each signature there first):
   - `storiesFor(index, componentDirs)` — the ids of `type: 'story'` entries whose `importPath` lies in
     `src/components/<dir>/`.
-  - `compareImages(a, b)` — `pixelmatch(a.data, b.data, diff.data, w, h, { threshold: 0.1 })`, returns
+  - `compareImages(a, b)` — a thin wrapper over `diffImages` with threshold 0.1, returning
     `{ ratio: differing / (w*h), diff }`; different sizes → `ratio: 1`.
   - `capture`: serves `storybook-static/` with `vite preview --outDir storybook-static --port 6110`
-    (Vite is a dev dependency), reads `storybook-static/index.json`, opens each
-    `iframe.html?id=<id>&viewMode=story` in Chromium at 1280×800, waits until every `mud-icon`,
-    `mud-logo` and `.flag` element in every open shadow root holds an `svg` or 5 s pass, then
-    screenshots the `#storybook-root` element to `<outDir>/<id>.png`.
+    (Vite is a dev dependency), reads `storybook-static/index.json`, opens each story through
+    `storyUrl` in Chromium at 1280×800, waits until every `mud-icon`, `mud-logo` and `.flag` element in
+    every open shadow root holds an `svg` or 5 s pass, then captures the `#storybook-root` element to
+    `<outDir>/<id>.png`.
   - `compare`: pairs files by name, applies the default tolerance 0 and any `--tolerance`.
   - Default component list: `mud-icon,mud-logo,mud-phone-input,mud-checkbox` plus every component
     seeded in Task 6 (`mud-time-input,mud-numeric-input,mud-menu,mud-date-picker,mud-textarea,mud-pagination,mud-date-input,mud-text-input,mud-sidebar,mud-breadcrumb,mud-select,mud-chip,mud-search-input,mud-file-item,mud-input-chip,mud-tabs,mud-file-input,mud-modal`).
@@ -573,10 +587,27 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
   `.svg`)
 - Modify: `scripts/__tests__/validate-package.spec.mjs` (the two checks; delete the `checkBundleAssets` cases)
 - Modify: `INTEGRATION.md` line 403 troubleshooting row (no asset path left to get wrong)
+- Create: `scripts/assets/check-asset-delivery.mjs` — the acceptance bar's negative checks as one script,
+  so no bar row depends on a `grep` pasted out of a markdown table. Exit 0 = clean, 1 = violations
+  (each printed as `path:line: <pattern>`), 2 = usage or I/O error (a missing file or an unreadable
+  tarball fails the row instead of passing it). `--root <dir>` (default: repo root) for the spec.
+  - `--source`: fails when `scripts/copy-component-assets.mjs` exists, when `assetsDirs`,
+    `getAssetPath` or `setAssetPath(` appears in `src/**/*.{ts,tsx}`, `packages/*/src/**/*.{ts,tsx}`
+    (excluding `stencil-generated/`) or `stencil.config.ts`, or when `.storybook/main.mjs` still maps
+    `mud-icon/assets` / `mud-logo/assets`.
+  - `--docs`: over every tracked `*.md` / `*.mdx` (`git ls-files`) except `.claude/plans/**`,
+    `changes/**`, `CHANGELOG.md` and `**/_archive/**`, fails on any consumer instruction to set up
+    assets: `assetPath`, `setupMud`, `provideMud`, `app.use(Mud`, `dist/components/assets`,
+    `public/mud/assets`, `copy-component-assets`, `vite-plugin-static-copy`.
+  - `--packed <tgz> [<tgz>…]`: fails on any `*.svg` entry in any listed tarball.
+- Create: `scripts/__tests__/check-asset-delivery.spec.mjs` — for each mode, a positive control (a temp
+  root seeded with one forbidden string, or a tarball holding `package/x.svg`, is reported with exit 1),
+  a clean temp root exits 0, and a missing tarball exits 2.
 
 - [ ] **Step 1: Write the failing check tests** (`node:test`): `checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg'])`
   returns one problem; `checkNoPublishedSvg(['dist/mud/assets/fonts/onest-variable.woff2'])` returns none;
-  `checkAssetModules` reports a manifest key with no marker in a fixture file list.
+  `checkAssetModules` reports a manifest key with no marker in a fixture file list; and the
+  `check-asset-delivery.spec.mjs` controls above.
 - [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
 - [ ] **Step 3: Implement** the Files list.
 - [ ] **Step 4: Measure duplication.** Record in the plan's `## Deviations` (or confirm none): the
@@ -586,8 +617,8 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
   without breaking `dist/types/index.d.ts`; otherwise leave it and record the measured cost. Do not
   remove the `dist/cjs` or `dist/collection` outputs: whether they have consumers is a separate question
   this plan only records (`grep` the exports map and the adapters for each).
-- [ ] **Step 5: Run** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts`
-  → exit 0; `ls dist/components/assets dist/mud/assets/outlined 2>&1 | grep -c "No such file"` → 2.
+- [ ] **Step 5: Run** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --source`
+  → exit 0.
 - [ ] **Step 6: Commit** — `build: publish no SVG files, drop the asset copy step, declare sideEffects`.
 
 ---
@@ -608,14 +639,18 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
 - Modify: root `package.json` `workspaces` (add `"tooling/hooks"`), `scripts/git/install-hooks.mjs`
   header comment (now run by the private `tooling/hooks` workspace, which is never published, so the
   install script cannot reach a consumer)
+- Modify: `scripts/__tests__/git-hooks.spec.mjs` § "hook installation" (lines 113-132) — it already
+  forbids install/pack lifecycle scripts on the root and pins the hook to the React workspace's
+  `postinstall`; extend it rather than adding a second spec.
 
 **Interfaces:** removes `setupMud`, `defineCustomElements`, `toAssetBaseUrl`, `MudSetupOptions`,
 `DefineCustomElementsOptions` from `@egov-moldova/mud-react`.
 
-- [ ] **Step 1: Failing check** — add to `scripts/__tests__/` (`node:test`) `published-manifests.spec.mjs`:
-  for every workspace whose `package.json` has no `"private": true` OR is one of the four adapters,
-  assert no `preinstall` / `install` / `postinstall` script; and assert `tooling/hooks/package.json`
-  is `private: true` with that `postinstall`.
+- [ ] **Step 1: Failing check** — in `git-hooks.spec.mjs`: the existing root-lifecycle test now loops over
+  the root AND the four adapter manifests (`packages/{react,vue,angular,web-components}/package.json`,
+  all destined for the registry); "runs from the postinstall of a private workspace" now asserts
+  `workspaces` includes `tooling/hooks`, `tooling/hooks/package.json` is `private: true`, and its
+  `postinstall` is `node ../../scripts/git/install-hooks.mjs`.
 - [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
 - [ ] **Step 3: Implement**; `fnm exec --using=24 -- yarn install` must still print
   `husky - …` / install the merge driver (run it and read the output).
@@ -704,6 +739,23 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
    web-components loader pages assert instead that the `mud-stepper` chunk is never requested.
 5. web-components only: `loader.html` on the deep subpath and `importmap.html` render (1)–(2) with no
    `resourcesUrl`; `esm-side-effect.html` registers `mud-button` (`customElements.get('mud-button')`).
+6. web-components only: `static/one-icon.html` (the loader page with a single `<mud-icon name="umbrella">`
+   and nothing else) receives exactly one network response that carries a `data-mud-asset` marker.
+
+Each assertion is one Playwright test with a fixed title, so its absence is detectable:
+
+| Assertion | Test title (exact) | Fixtures |
+| --- | --- | --- |
+| 1 | `assets: named icon, logo and flag render` | all four |
+| 2 | `assets: a component's own icon renders` | all four |
+| 3 | `assets: never-shown assets are not downloaded` | all four |
+| 4 | `bundle: an unimported component is not bundled` | all four |
+| 5 | `cdn: loader page on a deep subpath renders`, `cdn: import map page renders`, `side effects: mud.esm.js import registers elements` | web-components |
+| 6 | `assets: one shown icon downloads exactly one asset chunk` | web-components |
+
+- Create: `scripts/__tests__/fixture-coverage.spec.mjs` — reads each `packages/<framework>/fixture/e2e/fixture.spec.ts`
+  and fails when a title from the table above is missing from a fixture it applies to. A fixture run
+  only proves the tests that exist; this proves they exist.
 
 - [ ] **Step 1: Write the React fixture's e2e first** and run it against the current tree to see it
   fail where expected: `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react`
@@ -759,7 +811,7 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
 - [ ] **Step 3: Run the examples.** Each README framework snippet is copied verbatim from the matching
   fixture's `src/` (Task 13), so the fixtures are what proves the snippets work; diff each snippet
   against its fixture file.
-- [ ] **Step 4: Run** the consumer-doc grep of the acceptance bar → exit 0.
+- [ ] **Step 4: Run** `fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --docs` → exit 0.
 - [ ] **Step 5: Commit** — `docs: icons, logos and flags load on their own — usage per framework, with examples`.
 
 ---
@@ -777,35 +829,128 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
   regression to fix, not to tolerate. The denominator is the `#storybook-root` element capture, not
   the 1280×800 viewport: a phone-input story captures at most ~300×400 px (120 000 px → 120 px at
   0.1 %), so one wrong flag (20×14 = 280 px) still fails it.
-- [ ] **Step 3:** run every row of the acceptance bar below, as written.
-- [ ] **Step 4:** fill `## Deviations` (or write "none").
+- [ ] **Step 3:** pack the five tarballs row 15 reads, from the built tree:
+  `fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz"`,
+  `fnm exec --using=24 -- yarn workspace @egov-moldova/mud-react pack --out "$TMPDIR/mud-react.tgz"`,
+  `fnm exec --using=24 -- yarn workspace @egov-moldova/mud-vue pack --out "$TMPDIR/mud-vue.tgz"`,
+  `fnm exec --using=24 -- yarn workspace @egov-moldova/mud-web-components pack --out "$TMPDIR/mud-web-components.tgz"`,
+  and Angular from its built package: `(cd packages/angular/dist && fnm exec --using=24 -- npm pack --pack-destination "$TMPDIR")`
+  then `mv "$TMPDIR"/egov-moldova-mud-angular-*.tgz "$TMPDIR/mud-angular.tgz"`.
+- [ ] **Step 4:** run every row of the acceptance bar below, as written.
+- [ ] **Step 5:** fill `## Deviations` (or write "none").
 
 ## Acceptance bar
 
 | # | Criterion | Command (as run) | Tolerance |
 | --- | --- | --- | --- |
-| 1 | Generator in sync | `fnm exec --using=24 -- node scripts/assets/build-asset-modules.mjs --check` | the command succeeds |
-| 2 | Lint | `fnm exec --using=24 -- yarn lint` | the command succeeds |
-| 3 | Types | `fnm exec --using=24 -- yarn typecheck` | the command succeeds |
-| 4 | Spec lane | `fnm exec --using=24 -- yarn test` | the command succeeds |
-| 5 | Script tests | `fnm exec --using=24 -- yarn test:scripts` | the command succeeds |
-| 6 | Build + package gate | `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package` | the command succeeds |
-| 7 | Adapter builds | `fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- yarn build.angular && fnm exec --using=24 -- yarn build.web` | the command succeeds |
-| 8 | React fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react --framework-version 18` | the command succeeds |
-| 9 | Vue fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue` | the command succeeds |
-| 10 | Angular fixtures | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22` | the command succeeds |
-| 11 | web-components fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs web-components` | the command succeeds |
-| 12 | No published SVG | `fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz" && ! tar -tzf "$TMPDIR/mud-core.tgz" \| grep -q '\.svg$'` | the command succeeds |
-| 13 | No asset path machinery | `! test -e scripts/copy-component-assets.mjs && ! grep -rqE "assetsDirs\|getAssetPath" src --include='*.tsx' --include='*.ts'` | the command succeeds |
-| 14 | Visual regression | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001` | the command succeeds |
-| 15 | Consumer docs | `! grep -nE "assetPath\|resourcesUrl\|dist/components/assets\|copy-component-assets\|setupMud\|provideMud\|app\.use\(Mud\|vite-plugin-static-copy" README.md INTEGRATION.md CONTRIBUTING.md packages/react/README.md packages/vue/README.md packages/angular/README.md packages/web-components/README.md .claude/skills/mud-design/SKILL.md` | the command succeeds |
+| 1 | Generator in sync | `fnm exec --using=24 -- node scripts/assets/build-asset-modules.mjs --check` | exit status zero: no stale, missing or extra generated module |
+| 2 | Lint | `fnm exec --using=24 -- yarn lint` | exit status zero: no ESLint, Stylelint or Prettier finding |
+| 3 | Types | `fnm exec --using=24 -- yarn typecheck` | exit status zero: no TypeScript error |
+| 4 | Spec lane | `fnm exec --using=24 -- yarn test` | exit status zero: every spec passes, no unexpected stderr |
+| 5 | Script tests (incl. `fixture-coverage`, `check-asset-delivery`, `git-hooks`, `validate-package` specs) | `fnm exec --using=24 -- yarn test:scripts` | exit status zero |
+| 6 | Build and package gate | `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package` | exit status zero for both, in order |
+| 7 | Adapter builds | `fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- yarn build.angular && fnm exec --using=24 -- yarn build.web` | exit status zero for all four |
+| 8 | Zero-config rendering — React 18 and 19 | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react --framework-version 18` | both runs end `PASS react@<major>`; the four shared fixture tests ran and passed |
+| 9 | Zero-config rendering — Vue | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue` | ends `PASS vue@<major>`; the four shared tests ran and passed |
+| 10 | Zero-config rendering — Angular 20 and 22 | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22` | both runs end `PASS angular@<major>`; the four shared tests ran and passed |
+| 11 | Zero-config rendering — web-components, plain module page, CDN shape | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs web-components` | ends `PASS web-components@<major>`; all eight web-components fixture tests ran and passed |
+| 12 | Only shown assets downloaded | rows 8-11, plus `fnm exec --using=24 -- node --test scripts/__tests__/fixture-coverage.spec.mjs` (the tests exist in every fixture) | no never-shown asset marker in any fixture's network log; exactly one asset-carrying response on the web-components one-icon page |
+| 13 | Only imported components bundled | rows 8-11, plus the `fixture-coverage` spec of row 12 | the unimported component's tag appears in no emitted file of any bundled fixture, and its chunk is never requested on the loader pages |
+| 14 | Visual parity | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001` | no differing pixel in any story outside `mud-phone-input`; each `mud-phone-input` story within the budget the Proof phase derives; no story missing on either side |
+| 15 | No published SVG, in any of the five packages | `fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --packed "$TMPDIR/mud-core.tgz" "$TMPDIR/mud-react.tgz" "$TMPDIR/mud-vue.tgz" "$TMPDIR/mud-angular.tgz" "$TMPDIR/mud-web-components.tgz"` (packed by Task 15 step 3) | no `.svg` entry in any tarball; a missing tarball fails the row |
+| 16 | No asset-path machinery left | `fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --source` | no violation across `src/`, `packages/*/src/`, `stencil.config.ts`, `.storybook/main.mjs` and the copy script |
+| 17 | Consumer docs | `fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --docs` | no asset-setup instruction in any tracked `.md` / `.mdx` outside plans, changelog fragments and archives |
+
+## Reuse ledger
+
+Swept 2026-10-02 at `fd6859a1`. Homes for every unit: `scripts/` (incl. `scripts/audit/lib/`,
+`scripts/icons/`, `scripts/flags/`, `scripts/adapters/`, `scripts/lib/`), `scripts/__tests__/`,
+`src/utils/`, `packages/*/fixture/`, root `package.json` scripts, installed dev dependencies (`svgo`,
+`pixelmatch`, `pngjs`, `playwright`, `vite`). Tiers covered: name, path and functional (read the
+candidate's exports); dependency tier by `package.json`.
+
+## reuse-candidates: story-regression
+
+- `scripts/audit/11-pixel-diff-states.mjs` · functional · rejected-because it diffs captures against
+  Figma exports per state manifest, not two capture sets; **reused instead**: its shared helpers in
+  `scripts/audit/lib/` (`diffImages`, `storyUrl`, `launchBrowser`, `captureState`).
+
+## reuse-candidates: story-regression.spec
+
+- none in `scripts/__tests__/` covers a capture-vs-capture comparison · new spec for the new script.
+
+## reuse-candidates: build-asset-modules
+
+- `scripts/icons/build-registry.mjs` · functional (scans the same icon folders) · extend rejected-because
+  it emits the manifest and `icon-names.ts` with a `--check` contract its own spec pins; the new script
+  reads the same folders plus logos and flags and writes a different output tree. It reuses
+  `scripts/lib/is-entrypoint.mjs` and mirrors the registry's `--check` and safe-name rules.
+- `scripts/flags/sync-flags.mjs` · functional (SVGO over flags) · rejected-because it vendors upstream
+  files into `assets/flags/`; the generator consumes its output.
+
+## reuse-candidates: svgo.asset-modules
+
+- `svgo.config.flags.js`, `svgo.config.icons.fill.js`, `svgo.config.icons.size.js` · name · rejected-because
+  each rewrites source files in place with geometry plugins; the module build must not change geometry
+  and adds per-asset `prefixIds` and the root marker.
+
+## reuse-candidates: build-asset-modules.spec
+
+- none · new spec for the new script.
+
+## reuse-candidates: svg-assets
+
+- `src/utils/svg-sanitizer.ts` · functional (parses SVG) · **reused** for sanitizing; the cache and the
+  import map are a new concern.
+- `src/components/mud-icon/mud-icon.providers.ts`, `src/components/mud-logo/mud-logo.providers.ts` ·
+  functional (cache + dedupe + evict-on-failure) · merged into the loader and deleted (Tasks 3-4): two
+  copies of the same cache today become one.
+
+## reuse-candidates: svg-assets.spec
+
+- the two providers' cache cases in `mud-icon.spec.tsx` / `mud-logo.spec.tsx` · functional · moved here.
+
+## reuse-candidates: seeded-icons.spec
+
+- none · new structural spec (fixed `<mud-icon name>` must have a seed).
+
+## reuse-candidates: check-asset-delivery
+
+- `scripts/validate-package.mjs` · functional (packed-file checks) · **extended** for the core tarball
+  (`checkNoPublishedSvg`, Task 8); the new script covers the four adapter tarballs, the source tree and
+  the docs, which `validate.package` does not read.
+
+## reuse-candidates: check-asset-delivery.spec
+
+- none · new spec for the new script.
+
+## reuse-candidates: fixture-coverage.spec
+
+- `scripts/__tests__/consumer-fixture.spec.mjs` · path · rejected-because it unit-tests the runner's
+  helpers; title coverage of the e2e files is a separate check.
+
+## reuse-candidates: package
+
+- `packages/react/package.json` `postinstall` · functional (current hook installer) · rejected-because
+  that package will be published; the private `tooling/hooks` workspace keeps the same installer
+  (`scripts/git/install-hooks.mjs`, unchanged) out of every published manifest.
+
+## reuse-candidates: fixture
+
+- `packages/vue/fixture/`, `packages/angular/fixture/` and `scripts/adapters/consumer-fixture.mjs` ·
+  functional · **extended**: the React and web-components fixtures copy their layout and register as
+  `FRAMEWORKS` entries of the existing runner.
+
+## reuse-candidates: asset-delivery
+
+- `changes/README.md` fragment format · **reused** as specified.
 
 ## Self-refute log
 
 | # | Question | Instance found, and where it is fixed — or what was scanned |
 | --- | --- | --- |
 | 1 | Does the fix reuse the defect's own mechanism class? | The defect is a manual step a consumer must remember. No fix relies on anyone remembering: the generator is a Wireit dependency with `--check` (Task 1), seeding is enforced by `src/utils/test/seeded-icons.spec.ts` (Task 6), zero-config is enforced by fixtures that contain no asset setup (Task 13), and the baseline's untouched-tree precondition is a command (`git diff --stat 448dc20d -- src` empty, Task 0 step 5), not a promise. |
-| 2 | Can a rule's letter be met with its intent violated? | (a) Row 14's phone-input tolerance, read against a full-viewport denominator, would let a wrong 20×14 flag pass (280 px of 1 024 000) — fixed by stating the element-capture denominator in Task 15 step 2. (b) Fixture assertion 3 probes three never-shown assets, so another unused asset could still be downloaded — accepted: the spike measured the mechanism over the whole catalog, and a per-chunk assertion cannot tell a statically seeded icon in its own esbuild chunk from a lazy one. (c) Row 13 could pass while a test still calls `setAssetPath` — scanned: the only users are the phone-input specs Task 5 rewrites. |
+| 2 | Can a rule's letter be met with its intent violated? | (a) Row 14's phone-input tolerance, read against a full-viewport denominator, would let a wrong 20×14 flag pass (280 px of 1 024 000) — fixed by stating the element-capture denominator in Task 15 step 2. (b) Fixture assertion 3 probes three never-shown assets, so another unused asset could still be downloaded — accepted: the spike measured the mechanism over the whole catalog, and a per-chunk assertion cannot tell a statically seeded icon in its own esbuild chunk from a lazy one. (c) The negative checks were first written as `! grep` cells, which pass when grep itself errors and whose `\|` turns literal when copied out of a markdown table — moved into `scripts/assets/check-asset-delivery.mjs` (exit 2 on any I/O error, positive controls in its spec), rows 15-17. (d) A fixture run proves only the tests it contains — `scripts/__tests__/fixture-coverage.spec.mjs` fails when a required test title is absent (rows 12-13). |
 | 3 | Has every numeric target a denominator, a minimum n, and an instrument outside what it grades? | Row 14: denominator = pixels of the `#storybook-root` capture, n = every story of the 22 listed components, instrument = pixelmatch over captures, independent of the code under change. The 0.1 % figure is a stated budget, not a measurement; its worst case is derived in Task 15 step 2. Map-size and chunk numbers in the spec come from the spike, which is outside this plan's code. |
 | 4 | Do two of the plan's own rules interact into an unintended pass? | (a) "Never touch generated readmes" × Tasks 3/4 changing JSDoc: the build regenerates the readme, and without a rule it would either stay stale or be swept up unnamed — fixed in Global Constraints (stage it by name in the task's commit). (b) Task 7's revert-on-difference × row 14: a reverted Task 7 leaves the checkbox inline, which row 14 then compares against an inline baseline — consistent. (c) Seeding (Task 6) × fixture assertion 3: seeded icons enter main chunks by design, so the never-shown probes are chosen outside the seeded set (`umbrella`, `msign-logo-with-verb`, `jp`) — consistent. |
 

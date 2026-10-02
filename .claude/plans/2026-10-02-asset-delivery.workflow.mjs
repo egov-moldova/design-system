@@ -15,7 +15,7 @@ export const meta = {
     { title: 'Wave H', detail: '1 phase(s)' },
     { title: 'Wave I', detail: '1 phase(s)' },
   ],
-};
+}
 
 const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg)
 
@@ -36,12 +36,9 @@ const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg
   spec lists (adapter asset APIs, published SVG files).
 - Commits: Conventional Commits (\`commitlint\`), header ≤ 100 characters, one commit per task, staged
   paths named explicitly.
-- \`CHANGELOG.md\` is not edited; one fragment under \`changes/\` (\`changes/README.md\`).`;
+- \`CHANGELOG.md\` is not edited; one fragment under \`changes/\` (\`changes/README.md\`).`
 
-const P1 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 0 — Baseline
+const P1 = CONSTRAINTS + '\n\n' + `## Phase 0 — Baseline
 
 _Wave A._
 
@@ -99,16 +96,20 @@ describe('compareImages', () => {
 
 - [ ] **Step 2: Run it to verify it fails** — \`fnm exec --using=24 -- node --test scripts/__tests__/story-regression.spec.mjs\`
   → FAIL, module not found.
-- [ ] **Step 3: Implement** \`scripts/assets/story-regression.mjs\`:
+- [ ] **Step 3: Implement** \`scripts/assets/story-regression.mjs\`, reusing the pixel-perfect audit's
+  shared helpers rather than re-writing them — \`diffImages\` from \`scripts/audit/lib/image-diff.mjs\`,
+  \`storyUrl\` from \`scripts/audit/lib/storybook-helpers.mjs\`, \`launchBrowser\` from
+  \`scripts/audit/lib/browser-context.mjs\`, \`captureState\` from \`scripts/audit/lib/state-page.mjs\`
+  (read each signature there first):
   - \`storiesFor(index, componentDirs)\` — the ids of \`type: 'story'\` entries whose \`importPath\` lies in
     \`src/components/<dir>/\`.
-  - \`compareImages(a, b)\` — \`pixelmatch(a.data, b.data, diff.data, w, h, { threshold: 0.1 })\`, returns
+  - \`compareImages(a, b)\` — a thin wrapper over \`diffImages\` with threshold 0.1, returning
     \`{ ratio: differing / (w*h), diff }\`; different sizes → \`ratio: 1\`.
   - \`capture\`: serves \`storybook-static/\` with \`vite preview --outDir storybook-static --port 6110\`
-    (Vite is a dev dependency), reads \`storybook-static/index.json\`, opens each
-    \`iframe.html?id=<id>&viewMode=story\` in Chromium at 1280×800, waits until every \`mud-icon\`,
-    \`mud-logo\` and \`.flag\` element in every open shadow root holds an \`svg\` or 5 s pass, then
-    screenshots the \`#storybook-root\` element to \`<outDir>/<id>.png\`.
+    (Vite is a dev dependency), reads \`storybook-static/index.json\`, opens each story through
+    \`storyUrl\` in Chromium at 1280×800, waits until every \`mud-icon\`, \`mud-logo\` and \`.flag\` element in
+    every open shadow root holds an \`svg\` or 5 s pass, then captures the \`#storybook-root\` element to
+    \`<outDir>/<id>.png\`.
   - \`compare\`: pairs files by name, applies the default tolerance 0 and any \`--tolerance\`.
   - Default component list: \`mud-icon,mud-logo,mud-phone-input,mud-checkbox\` plus every component
     seeded in Task 6 (\`mud-time-input,mud-numeric-input,mud-menu,mud-date-picker,mud-textarea,mud-pagination,mud-date-input,mud-text-input,mud-sidebar,mud-breadcrumb,mud-select,mud-chip,mud-search-input,mud-file-item,mud-input-chip,mud-tabs,mud-file-input,mud-modal\`).
@@ -119,12 +120,9 @@ describe('compareImages', () => {
 - [ ] **Step 6: Commit** — \`git add scripts/assets/story-regression.mjs scripts/__tests__/story-regression.spec.mjs .gitignore\`;
   \`test(assets): story regression capture and compare, baseline before the asset change\`.
 
----`;
+---`
 
-const P2 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 1 — Generator and loader
+const P2 = CONSTRAINTS + '\n\n' + `## Phase 1 — Generator and loader
 
 _Wave B._
 
@@ -285,12 +283,9 @@ describe('svg-assets', () => {
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** — \`feat(utils): one SVG loader for seeded and import()-loaded assets\`.
 
----`;
+---`
 
-const P3 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 2 — Owners
+const P3 = CONSTRAINTS + '\n\n' + `## Phase 2 — Owners
 
 _Wave C._
 
@@ -402,12 +397,9 @@ it('discards a drawing whose name changed while it was importing', async () => {
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** — \`feat(phone-input): flags render inline through import(), no asset path\`.
 
----`;
+---`
 
-const P4 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 3 — Seeding
+const P4 = CONSTRAINTS + '\n\n' + `## Phase 3 — Seeding
 
 _Wave D._
 
@@ -492,12 +484,9 @@ The two drawings are identical to \`checkmark-small\` and \`minus-small\` (path 
   does not match stays inline).
 - [ ] **Step 5: Commit** (only when step 4 passed) — \`refactor(checkbox): tick and dash through mud-icon, same drawings\`.
 
----`;
+---`
 
-const P5 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 4 — Package and build
+const P5 = CONSTRAINTS + '\n\n' + `## Phase 4 — Package and build
 
 _Wave E._
 
@@ -518,10 +507,27 @@ _Wave E._
   \`.svg\`)
 - Modify: \`scripts/__tests__/validate-package.spec.mjs\` (the two checks; delete the \`checkBundleAssets\` cases)
 - Modify: \`INTEGRATION.md\` line 403 troubleshooting row (no asset path left to get wrong)
+- Create: \`scripts/assets/check-asset-delivery.mjs\` — the acceptance bar's negative checks as one script,
+  so no bar row depends on a \`grep\` pasted out of a markdown table. Exit 0 = clean, 1 = violations
+  (each printed as \`path:line: <pattern>\`), 2 = usage or I/O error (a missing file or an unreadable
+  tarball fails the row instead of passing it). \`--root <dir>\` (default: repo root) for the spec.
+  - \`--source\`: fails when \`scripts/copy-component-assets.mjs\` exists, when \`assetsDirs\`,
+    \`getAssetPath\` or \`setAssetPath(\` appears in \`src/**/*.{ts,tsx}\`, \`packages/*/src/**/*.{ts,tsx}\`
+    (excluding \`stencil-generated/\`) or \`stencil.config.ts\`, or when \`.storybook/main.mjs\` still maps
+    \`mud-icon/assets\` / \`mud-logo/assets\`.
+  - \`--docs\`: over every tracked \`*.md\` / \`*.mdx\` (\`git ls-files\`) except \`.claude/plans/**\`,
+    \`changes/**\`, \`CHANGELOG.md\` and \`**/_archive/**\`, fails on any consumer instruction to set up
+    assets: \`assetPath\`, \`setupMud\`, \`provideMud\`, \`app.use(Mud\`, \`dist/components/assets\`,
+    \`public/mud/assets\`, \`copy-component-assets\`, \`vite-plugin-static-copy\`.
+  - \`--packed <tgz> [<tgz>…]\`: fails on any \`*.svg\` entry in any listed tarball.
+- Create: \`scripts/__tests__/check-asset-delivery.spec.mjs\` — for each mode, a positive control (a temp
+  root seeded with one forbidden string, or a tarball holding \`package/x.svg\`, is reported with exit 1),
+  a clean temp root exits 0, and a missing tarball exits 2.
 
 - [ ] **Step 1: Write the failing check tests** (\`node:test\`): \`checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg'])\`
   returns one problem; \`checkNoPublishedSvg(['dist/mud/assets/fonts/onest-variable.woff2'])\` returns none;
-  \`checkAssetModules\` reports a manifest key with no marker in a fixture file list.
+  \`checkAssetModules\` reports a manifest key with no marker in a fixture file list; and the
+  \`check-asset-delivery.spec.mjs\` controls above.
 - [ ] **Step 2: Run** \`fnm exec --using=24 -- yarn test:scripts\` → FAIL.
 - [ ] **Step 3: Implement** the Files list.
 - [ ] **Step 4: Measure duplication.** Record in the plan's \`## Deviations\` (or confirm none): the
@@ -531,16 +537,13 @@ _Wave E._
   without breaking \`dist/types/index.d.ts\`; otherwise leave it and record the measured cost. Do not
   remove the \`dist/cjs\` or \`dist/collection\` outputs: whether they have consumers is a separate question
   this plan only records (\`grep\` the exports map and the adapters for each).
-- [ ] **Step 5: Run** \`fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts\`
-  → exit 0; \`ls dist/components/assets dist/mud/assets/outlined 2>&1 | grep -c "No such file"\` → 2.
+- [ ] **Step 5: Run** \`fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --source\`
+  → exit 0.
 - [ ] **Step 6: Commit** — \`build: publish no SVG files, drop the asset copy step, declare sideEffects\`.
 
----`;
+---`
 
-const P6 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 5 — Adapters
+const P6 = CONSTRAINTS + '\n\n' + `## Phase 5 — Adapters
 
 _Wave F._
 
@@ -556,14 +559,18 @@ _Wave F._
 - Modify: root \`package.json\` \`workspaces\` (add \`"tooling/hooks"\`), \`scripts/git/install-hooks.mjs\`
   header comment (now run by the private \`tooling/hooks\` workspace, which is never published, so the
   install script cannot reach a consumer)
+- Modify: \`scripts/__tests__/git-hooks.spec.mjs\` § "hook installation" (lines 113-132) — it already
+  forbids install/pack lifecycle scripts on the root and pins the hook to the React workspace's
+  \`postinstall\`; extend it rather than adding a second spec.
 
 **Interfaces:** removes \`setupMud\`, \`defineCustomElements\`, \`toAssetBaseUrl\`, \`MudSetupOptions\`,
 \`DefineCustomElementsOptions\` from \`@egov-moldova/mud-react\`.
 
-- [ ] **Step 1: Failing check** — add to \`scripts/__tests__/\` (\`node:test\`) \`published-manifests.spec.mjs\`:
-  for every workspace whose \`package.json\` has no \`"private": true\` OR is one of the four adapters,
-  assert no \`preinstall\` / \`install\` / \`postinstall\` script; and assert \`tooling/hooks/package.json\`
-  is \`private: true\` with that \`postinstall\`.
+- [ ] **Step 1: Failing check** — in \`git-hooks.spec.mjs\`: the existing root-lifecycle test now loops over
+  the root AND the four adapter manifests (\`packages/{react,vue,angular,web-components}/package.json\`,
+  all destined for the registry); "runs from the postinstall of a private workspace" now asserts
+  \`workspaces\` includes \`tooling/hooks\`, \`tooling/hooks/package.json\` is \`private: true\`, and its
+  \`postinstall\` is \`node ../../scripts/git/install-hooks.mjs\`.
 - [ ] **Step 2: Run** \`fnm exec --using=24 -- yarn test:scripts\` → FAIL.
 - [ ] **Step 3: Implement**; \`fnm exec --using=24 -- yarn install\` must still print
   \`husky - …\` / install the merge driver (run it and read the output).
@@ -608,12 +615,9 @@ _Wave F._
   a subfolder: icons render (checked in Task 13's fixture as well).
 - [ ] **Step 3: Commit** — \`fix(web-components): demo uses its own adapter, no asset copy plugins\`.
 
----`;
+---`
 
-const P7 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 6 — Consumer fixtures
+const P7 = CONSTRAINTS + '\n\n' + `## Phase 6 — Consumer fixtures
 
 _Wave G._
 
@@ -655,6 +659,23 @@ _Wave G._
    web-components loader pages assert instead that the \`mud-stepper\` chunk is never requested.
 5. web-components only: \`loader.html\` on the deep subpath and \`importmap.html\` render (1)–(2) with no
    \`resourcesUrl\`; \`esm-side-effect.html\` registers \`mud-button\` (\`customElements.get('mud-button')\`).
+6. web-components only: \`static/one-icon.html\` (the loader page with a single \`<mud-icon name="umbrella">\`
+   and nothing else) receives exactly one network response that carries a \`data-mud-asset\` marker.
+
+Each assertion is one Playwright test with a fixed title, so its absence is detectable:
+
+| Assertion | Test title (exact) | Fixtures |
+| --- | --- | --- |
+| 1 | \`assets: named icon, logo and flag render\` | all four |
+| 2 | \`assets: a component's own icon renders\` | all four |
+| 3 | \`assets: never-shown assets are not downloaded\` | all four |
+| 4 | \`bundle: an unimported component is not bundled\` | all four |
+| 5 | \`cdn: loader page on a deep subpath renders\`, \`cdn: import map page renders\`, \`side effects: mud.esm.js import registers elements\` | web-components |
+| 6 | \`assets: one shown icon downloads exactly one asset chunk\` | web-components |
+
+- Create: \`scripts/__tests__/fixture-coverage.spec.mjs\` — reads each \`packages/<framework>/fixture/e2e/fixture.spec.ts\`
+  and fails when a title from the table above is missing from a fixture it applies to. A fixture run
+  only proves the tests that exist; this proves they exist.
 
 - [ ] **Step 1: Write the React fixture's e2e first** and run it against the current tree to see it
   fail where expected: \`fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react\`
@@ -666,12 +687,9 @@ _Wave G._
   preflight demands) → every run ends \`PASS <framework>@<major>\`.
 - [ ] **Step 4: Commit** — \`test(adapters): zero-config fixtures for React and web-components, no asset copy anywhere\`.
 
----`;
+---`
 
-const P8 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 7 — Documentation
+const P8 = CONSTRAINTS + '\n\n' + `## Phase 7 — Documentation
 
 _Wave H._
 
@@ -713,15 +731,12 @@ _Wave H._
 - [ ] **Step 3: Run the examples.** Each README framework snippet is copied verbatim from the matching
   fixture's \`src/\` (Task 13), so the fixtures are what proves the snippets work; diff each snippet
   against its fixture file.
-- [ ] **Step 4: Run** the consumer-doc grep of the acceptance bar → exit 0.
+- [ ] **Step 4: Run** \`fnm exec --using=24 -- node scripts/assets/check-asset-delivery.mjs --docs\` → exit 0.
 - [ ] **Step 5: Commit** — \`docs: icons, logos and flags load on their own — usage per framework, with examples\`.
 
----`;
+---`
 
-const P9 =
-  CONSTRAINTS +
-  '\n\n' +
-  `## Phase 8 — Proof
+const P9 = CONSTRAINTS + '\n\n' + `## Phase 8 — Proof
 
 _Wave I._
 
@@ -734,109 +749,59 @@ _Wave I._
   regression to fix, not to tolerate. The denominator is the \`#storybook-root\` element capture, not
   the 1280×800 viewport: a phone-input story captures at most ~300×400 px (120 000 px → 120 px at
   0.1 %), so one wrong flag (20×14 = 280 px) still fails it.
-- [ ] **Step 3:** run every row of the acceptance bar below, as written.
-- [ ] **Step 4:** fill \`## Deviations\` (or write "none").`;
+- [ ] **Step 3:** pack the five tarballs row 15 reads, from the built tree:
+  \`fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz"\`,
+  \`fnm exec --using=24 -- yarn workspace @egov-moldova/mud-react pack --out "$TMPDIR/mud-react.tgz"\`,
+  \`fnm exec --using=24 -- yarn workspace @egov-moldova/mud-vue pack --out "$TMPDIR/mud-vue.tgz"\`,
+  \`fnm exec --using=24 -- yarn workspace @egov-moldova/mud-web-components pack --out "$TMPDIR/mud-web-components.tgz"\`,
+  and Angular from its built package: \`(cd packages/angular/dist && fnm exec --using=24 -- npm pack --pack-destination "$TMPDIR")\`
+  then \`mv "$TMPDIR"/egov-moldova-mud-angular-*.tgz "$TMPDIR/mud-angular.tgz"\`.
+- [ ] **Step 4:** run every row of the acceptance bar below, as written.
+- [ ] **Step 5:** fill \`## Deviations\` (or write "none").`
 
-phase('Wave A');
+phase('Wave A')
 await parallel([
-  () =>
-    agent(P1, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave A',
-      label: 'Phase 0 — Baseline',
-    }), // first: the baseline must come from the untouched tree
-]);
+  () => agent(P1, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave A', label: 'Phase 0 — Baseline' }), // first: the baseline must come from the untouched tree
+])
 
-phase('Wave B');
+phase('Wave B')
 await parallel([
-  () =>
-    agent(P2, {
-      agentType: 'implementer',
-      model: 'opus',
-      effort: 'medium',
-      phase: 'Wave B',
-      label: 'Phase 1 — Generator and loader',
-    }), // after Phase 0; Task 2 consumes Task 1's map type
-]);
+  () => agent(P2, { agentType: 'implementer', model: 'opus', effort: 'medium', phase: 'Wave B', label: 'Phase 1 — Generator and loader' }), // after Phase 0; Task 2 consumes Task 1's map type
+])
 
-phase('Wave C');
+phase('Wave C')
 await parallel([
-  () =>
-    agent(P3, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave C',
-      label: 'Phase 2 — Owners',
-    }), // after Phase 1; Tasks 3, 4, 5 own disjoint folders
-]);
+  () => agent(P3, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave C', label: 'Phase 2 — Owners' }), // after Phase 1; Tasks 3, 4, 5 own disjoint folders
+])
 
-phase('Wave D');
+phase('Wave D')
 await parallel([
-  () =>
-    agent(P4, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave D',
-      label: 'Phase 3 — Seeding',
-    }), // after Phase 2; Task 6 edits `mud-phone-input.tsx` after Task 5
-]);
+  () => agent(P4, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave D', label: 'Phase 3 — Seeding' }), // after Phase 2; Task 6 edits `mud-phone-input.tsx` after Task 5
+])
 
-phase('Wave E');
+phase('Wave E')
 await parallel([
-  () =>
-    agent(P5, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave E',
-      label: 'Phase 4 — Package and build',
-    }), // after Phase 3; shares `package.json` with Phases 1 and 5
-]);
+  () => agent(P5, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave E', label: 'Phase 4 — Package and build' }), // after Phase 3; shares `package.json` with Phases 1 and 5
+])
 
-phase('Wave F');
+phase('Wave F')
 await parallel([
-  () =>
-    agent(P6, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave F',
-      label: 'Phase 5 — Adapters',
-    }), // after Phase 4; root `package.json` workspaces
-]);
+  () => agent(P6, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave F', label: 'Phase 5 — Adapters' }), // after Phase 4; root `package.json` workspaces
+])
 
-phase('Wave G');
+phase('Wave G')
 await parallel([
-  () =>
-    agent(P7, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'high',
-      phase: 'Wave G',
-      label: 'Phase 6 — Consumer fixtures',
-    }), // after Phase 5; consumes the removed adapter APIs
-]);
+  () => agent(P7, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave G', label: 'Phase 6 — Consumer fixtures' }), // after Phase 5; consumes the removed adapter APIs
+])
 
-phase('Wave H');
+phase('Wave H')
 await parallel([
-  () =>
-    agent(P8, {
-      agentType: 'implementer',
-      model: 'sonnet',
-      effort: 'medium',
-      phase: 'Wave H',
-      label: 'Phase 7 — Documentation',
-    }), // after Phase 6; snippets come from the fixtures
-]);
+  () => agent(P8, { agentType: 'implementer', model: 'sonnet', effort: 'medium', phase: 'Wave H', label: 'Phase 7 — Documentation' }), // after Phase 6; snippets come from the fixtures
+])
 
-phase('Wave I');
+phase('Wave I')
 await parallel([
-  () =>
-    agent(P9, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave I', label: 'Phase 8 — Proof' }), // last; runs the full bar
-]);
+  () => agent(P9, { agentType: 'implementer', model: 'sonnet', effort: 'high', phase: 'Wave I', label: 'Phase 8 — Proof' }), // last; runs the full bar
+])
 
-return { plan: '2026-10-02-asset-delivery.md', phases: 9, waves: 9 };
+return { plan: '2026-10-02-asset-delivery.md', phases: 9, waves: 9 }
