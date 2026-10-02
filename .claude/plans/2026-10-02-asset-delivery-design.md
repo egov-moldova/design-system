@@ -222,6 +222,12 @@ sections above where they disagree.
    comment in the flag map, since no SVG file carries it any more.
 5. **The hook installer moves to a private `tooling/hooks` workspace**, not the repo root: the root
    manifest is the published core.
+6. **The guards live in tools that already run in CI**, not in a new script: the source guard is an
+   ESLint rule (`yarn lint`), the docs guard a rule of `scripts/docs/check-ai-docs.mjs`
+   (`yarn docs:check`, consumer docs only, so contributor docs can still name the forbidden API), and
+   the packed-SVG guard part of the consumer-fixture runner, which checks the core and every adapter
+   tarball on each run. The four fixtures share one e2e file, and the runner fails on a missing or
+   skipped required test.
 
 ## Not verified
 
