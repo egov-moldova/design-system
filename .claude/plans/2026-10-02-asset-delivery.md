@@ -782,23 +782,23 @@ The two drawings are identical to `checkmark-small` and `minus-small` (path data
 
 ## Acceptance bar
 
-| # | Row | Command (as run) | Threshold |
+| # | Criterion | Command (as run) | Tolerance |
 | --- | --- | --- | --- |
-| 1 | Generator in sync | `fnm exec --using=24 -- node scripts/assets/build-asset-modules.mjs --check` | exit 0 |
-| 2 | Lint | `fnm exec --using=24 -- yarn lint` | exit 0 |
-| 3 | Types | `fnm exec --using=24 -- yarn typecheck` | exit 0 |
-| 4 | Spec lane | `fnm exec --using=24 -- yarn test` | exit 0 |
-| 5 | Script tests | `fnm exec --using=24 -- yarn test:scripts` | exit 0 |
-| 6 | Build + package gate | `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package` | exit 0 |
-| 7 | Adapter builds | `fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- yarn build.angular && fnm exec --using=24 -- yarn build.web` | exit 0 |
-| 8 | React fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react --framework-version 18` | exit 0 |
-| 9 | Vue fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue` | exit 0 |
-| 10 | Angular fixtures | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22` | exit 0 |
-| 11 | web-components fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs web-components` | exit 0 |
-| 12 | No published SVG | `fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz" && ! tar -tzf "$TMPDIR/mud-core.tgz" \| grep -q '\.svg$'` | exit 0 |
-| 13 | No asset path machinery | `! test -e scripts/copy-component-assets.mjs && ! grep -rqE "assetsDirs\|getAssetPath" src --include='*.tsx' --include='*.ts'` | exit 0 |
-| 14 | Visual regression | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001` | exit 0 |
-| 15 | Consumer docs | `! grep -nE "assetPath\|resourcesUrl\|dist/components/assets\|copy-component-assets\|setupMud\|provideMud\|app\.use\(Mud\|vite-plugin-static-copy" README.md INTEGRATION.md CONTRIBUTING.md packages/react/README.md packages/vue/README.md packages/angular/README.md packages/web-components/README.md .claude/skills/mud-design/SKILL.md` | exit 0 |
+| 1 | Generator in sync | `fnm exec --using=24 -- node scripts/assets/build-asset-modules.mjs --check` | the command succeeds |
+| 2 | Lint | `fnm exec --using=24 -- yarn lint` | the command succeeds |
+| 3 | Types | `fnm exec --using=24 -- yarn typecheck` | the command succeeds |
+| 4 | Spec lane | `fnm exec --using=24 -- yarn test` | the command succeeds |
+| 5 | Script tests | `fnm exec --using=24 -- yarn test:scripts` | the command succeeds |
+| 6 | Build + package gate | `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package` | the command succeeds |
+| 7 | Adapter builds | `fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- yarn build.angular && fnm exec --using=24 -- yarn build.web` | the command succeeds |
+| 8 | React fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react --framework-version 18` | the command succeeds |
+| 9 | Vue fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue` | the command succeeds |
+| 10 | Angular fixtures | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22` | the command succeeds |
+| 11 | web-components fixture | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs web-components` | the command succeeds |
+| 12 | No published SVG | `fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz" && ! tar -tzf "$TMPDIR/mud-core.tgz" \| grep -q '\.svg$'` | the command succeeds |
+| 13 | No asset path machinery | `! test -e scripts/copy-component-assets.mjs && ! grep -rqE "assetsDirs\|getAssetPath" src --include='*.tsx' --include='*.ts'` | the command succeeds |
+| 14 | Visual regression | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --tolerance mud-phone-input=0.001` | the command succeeds |
+| 15 | Consumer docs | `! grep -nE "assetPath\|resourcesUrl\|dist/components/assets\|copy-component-assets\|setupMud\|provideMud\|app\.use\(Mud\|vite-plugin-static-copy" README.md INTEGRATION.md CONTRIBUTING.md packages/react/README.md packages/vue/README.md packages/angular/README.md packages/web-components/README.md .claude/skills/mud-design/SKILL.md` | the command succeeds |
 
 ## Self-refute log
 
