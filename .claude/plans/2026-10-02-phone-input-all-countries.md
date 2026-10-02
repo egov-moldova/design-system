@@ -19,7 +19,7 @@ a source that can be trusted in a government form.
 whose metadata is Google's libphonenumber (Apache-2.0) and ships with its `LICENSE.Apache`. Per region:
 
 - calling code and the main region of each code (`country_calling_codes[code][0]`): 12 codes are
-  shared (+1 by 25 regions, +7, +39, +44, +47, +61, +212, +262, +358, +590, +599, +672);
+  shared (+1 by 25 regions, +7, +39, +44, +47, +61, +212, +262, +290, +358, +590, +599);
 - length window = the lengths of the **mobile** number type (its own list, else the region's);
 - mask = the grouping of the library's own example mobile number in international format.
 
@@ -55,7 +55,7 @@ whitelist still limits it.
 
 ## Tasks
 
-- [ ] `scripts/countries/sync-countries.mjs`: fetch the pinned package, verify its integrity, derive
+- [x] `scripts/countries/sync-countries.mjs`: fetch the pinned package, verify its integrity, derive
       the rows, write `mud-phone-input.countries.ts`; pure functions covered by
       `scripts/__tests__/sync-countries.spec.mjs`.
       Verify: second run writes nothing; the 15 hand-set windows are reproduced.
