@@ -49,7 +49,9 @@
 /* Figma draws the spinner as a 270deg ring with flat ends, its gap in the top-right quarter
    (44:422 and its siblings). A conic fill cut into a ring by a radial mask gives that shape at the
    exact stroke width, including 2.5px and 3.75px, which a CSS border cannot draw (Chromium rounds
-   a border down to a whole device pixel). The 1px ramp in the mask is the edge's anti-aliasing. */
+   a border down to a whole device pixel). The 1px ramp in the mask is the edge's anti-aliasing.
+   A mask reads only alpha, so its opaque stop is `CanvasText`, a system colour that is always
+   opaque: no hex, and no theme colour the mask would depend on. */
 .arc {
   position: absolute;
   inset: 0;
@@ -60,12 +62,12 @@
   -webkit-mask: radial-gradient(
     farthest-side,
     transparent calc(100% - var(--_stroke-width) - 0.5px),
-    #000 calc(100% - var(--_stroke-width) + 0.5px)
+    CanvasText calc(100% - var(--_stroke-width) + 0.5px)
   );
   mask: radial-gradient(
     farthest-side,
     transparent calc(100% - var(--_stroke-width) - 0.5px),
-    #000 calc(100% - var(--_stroke-width) + 0.5px)
+    CanvasText calc(100% - var(--_stroke-width) + 0.5px)
   );
   animation: spinner-rotate var(--spinner-transition-duration) var(--spinner-transition-timing-function) infinite;
 }
