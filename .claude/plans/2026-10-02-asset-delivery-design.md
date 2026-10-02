@@ -2,8 +2,11 @@
 
 **Status:** draft for review
 **Reviewed:** none
-**Branch:** `danzubco/asset-delivery-on-191` (worktree `asset-delivery-on-191`), based on PR #191 head `2d13b3d2`
-**Plans that follow from it:** cycle 1 below gets its own implementation plan; cycle 2 gets its own design note once cycle 1 lands.
+**Branch:** `danzubco/asset-delivery-on-191` (worktree `asset-delivery-on-191`), based on PR #191 head `2d13b3d2`,
+with the PR #190 branch (`danzubco/react-adapter-registers-every-tag-through-two-st`, which contains PR #189)
+merged in, so the change covers the core AND the four adapters in one place. The PR is stacked on #189 → #190
+and #191; none of them is closed.
+**Plan that follows from it:** one implementation plan, `2026-10-02-asset-delivery.md`.
 
 ## Goal
 
@@ -68,11 +71,20 @@ D, approved by Dan on 2026-10-02 together with:
    Every other icon, every logo and every flag loads through `import()`.
 4. **Inline SVG in the shadow root.** No `fetch`, no `<img>`, no `data:` URL. Runtime sanitization
    stays as defence in depth (`src/utils/svg-sanitizer.ts`).
-5. **The inline SVGs in other components move into `mud-icon`**, except two accepted exceptions:
-   the animated plus/minus of `mud-accordion-item` and the colored glyph of `mud-file-item`.
-6. **Compatibility.** `setAssetPath`, `setupMud`, the Vue `Mud` plugin's `assetPath`, Angular
-   `provideMud({ assetPath })` and the loader's `resourcesUrl` keep being accepted and become
-   no-ops for icons, logos and flags — a minor release.
+5. **An inline SVG moves into `mud-icon` only when its drawing is identical to one in the icon set**;
+   any other stays inline in its component, because merging a different drawing breaks the
+   component's Figma conformance. Measured 2026-10-02 (path data compared against every file in
+   `mud-icon/assets/`): only the `mud-checkbox` tick (`checkmark-small`) and dash (`minus-small`) are
+   identical, so only they move — and only if the checkbox still passes its pixel-perfect check.
+   The close glyphs of `mud-info-box` (3→13), `mud-toast` / `mud-banner` (3.333→12.667) and
+   `mud-tooltip` (3.5→12.5), the `mud-link` external arrow, the animated `mud-accordion-item`
+   plus/minus and the colored `mud-file-item` glyph stay inline.
+6. **No asset configuration anywhere.** The adapters were never published (`private`, `0.0.1`), and
+   `setupMud` / `defineCustomElements` (React), the `Mud` plugin (Vue) and `provideMud` (Angular) do
+   nothing but set the asset path, so they are **removed**, not deprecated. The published
+   web-components adapter keeps `defineCustomElements(opts?)` unchanged; `resourcesUrl` is simply no
+   longer needed. The core keeps exporting Stencil's `setAssetPath` (runtime API), which no MUD
+   component reads any more.
 7. **`sideEffects`** is declared, listing every entry that is imported for its effect.
 8. **Package duplication** of the generated modules is reduced where Stencil allows it.
 
@@ -112,10 +124,13 @@ and a CDN `<script type="module">` — no options.
 ### Published layout
 
 - The generated modules ship inside every Stencil output, as chunks.
-- Raw SVG files: `dist/components/assets` (the copy script) is removed — nothing resolves against it
-  any more. `dist/mud/assets` (from `assetsDirs`) stays for **one minor release**, documented as
-  deprecated, because an application may reference an SVG by URL directly; it is removed in the next
-  major. `validate.package`'s `checkBundleAssets` changes accordingly.
+- Raw SVG files are **no longer published**: `assetsDirs` goes from `mud-icon`, `mud-logo` and
+  `mud-phone-input`, and `scripts/copy-component-assets.mjs` goes with `dist/components/assets`.
+  `dist/mud/assets/fonts/` stays — `styles.css` loads the Onest font from it. An application that
+  referenced an SVG by URL breaks; the changelog says so and shows the replacement (`<mud-icon>`,
+  `<mud-logo>`). The version number is decided at release, as always. `validate.package`'s
+  `checkBundleAssets` is replaced by a check that every icon, logo and flag in the manifests has
+  its module in each Stencil output.
 - Duplication: drop the per-module `.d.ts` files the generated modules produce (one declaration for
   each map is enough); whether `dist/cjs` and `dist/collection` have consumers is checked, not assumed.
 
@@ -133,50 +148,65 @@ and a CDN `<script type="module">` — no options.
 - Generator: `--check` drift spec; sanitization spec (a `<script>`, an `on*` attribute and an external
   `href` are stripped); id-prefix spec (two flags with the same internal id render side by side
   without collision).
-- **Zero-config consumer probe** (new script, run in CI): packs the core, installs it into a temp
-  directory with no lockfile, then in Chromium drives (1) a Vite production build, (2) the lazy
-  loader from a plain HTML page on a deep subpath with no `resourcesUrl`, (3) an import map. Each
-  asserts: internal icon present on first render, `<mud-icon name>` rendered, a logo and a flag
-  rendered, only the shown asset chunks requested, no console error.
-- `sideEffects`: the same probe asserts an unused component's tag is absent from the Vite main chunk
-  and the probe page still registers its elements through `mud.esm.js` (a side-effect-only import).
+- **Consumer fixtures, zero-config** — the existing runner `scripts/adapters/consumer-fixture.mjs`
+  (from #189: packs core + adapter, installs with no lockfile, builds with the framework's own
+  toolchain, drives Chromium) is extended, not duplicated: React and web-components fixtures are
+  added beside Vue and Angular; the Vue and Angular fixtures drop their asset copy steps and their
+  `assetPath` setup; the runner's "packed core carries `dist/components/assets`" assertion is
+  inverted. Every fixture asserts: an internal icon present on first render, `<mud-icon name>`, a
+  logo and a flag rendered, only the shown asset chunks requested, an unused component's tag absent
+  from the main chunk (`sideEffects`), no console error. The web-components fixture also runs the
+  loader from a plain HTML page on a deep subpath with no `resourcesUrl`, and an import map.
+- `sideEffects` is declared on the core and on all four adapters; the web-components fixture keeps
+  a side-effect-only `import '@egov-moldova/mud/mud.esm.js'` page so a wrong list fails it.
 - Pixel-perfect check for every component whose rendering path changes (repo rule): `mud-icon`,
   `mud-logo`, `mud-phone-input` flags, and each component that switches to a seeded icon.
 
-## Scope by cycle
+## Scope
 
-**Cycle 1 — this branch, its own implementation plan.** Generator, loader, `mud-icon`, `mud-logo`,
-flags, seeding of the existing fixed-name internal icons, `sideEffects` on the core package,
-removal of the copy script and `dist/components/assets`, deprecation of `dist/mud/assets`, the
-zero-config probe, docs (README asset sections, `INTEGRATION.md`, changelog fragment).
+One plan, on this branch, after merging the #190 branch in. Nothing is left for a later cycle.
 
-**Cycle 2 — absorb the inline glyphs (decision 5).** Needs a design note of its own because the
-seven glyphs are **not** one drawing: the close glyph is drawn 3→13 in `mud-info-box`, 3.333→12.667
-in `mud-toast` / `mud-banner` and 3.5→12.5 in `mud-tooltip`; `mud-link` needs an em-relative size and
-`mud-checkbox` a sync paint. It adds per-size drawings to the icon model and an `inherit` size to
-`IconSize` (public contract), and each geometry must be confirmed against its Figma node before two
-are merged — a visual change otherwise.
+**Core.** Generator, loader, `mud-icon`, `mud-logo`, flags (#191's `IntersectionObserver` gating
+kept), seeding of every fixed-name internal icon, the checkbox tick/dash (pixel-perfect gated),
+`sideEffects`, removal of `assetsDirs`, of the copy script and of every published SVG, the
+`validate.package` check, package duplication reduced.
 
-**Adapter follow-ups — on their own branches, not here.** The adapters live in `react/` and
-`web-components/` on this base, and PR #189 moves them to `packages/`; editing them here would
-conflict with #189 and #190.
+**Adapters** (all under `packages/` after the merge).
 
-| Branch | Change |
+| Adapter | Change |
 | --- | --- |
-| #190 (React) | `setupMud` becomes optional (no throw without `assetPath`); README drops the copy step; fix the `postinstall: node ../../scripts/git/install-hooks.mjs` that breaks every external install; `sideEffects` on the adapter. |
-| #189 (Vue, Angular) | `app.use(Mud)` and `provideMud()` accept no options; README drops the copy step; `sideEffects` on both adapters; the consumer fixtures stop copying assets and assert an icon renders. |
-| web-components (after #189's move) | README drops `resourcesUrl` / copy guidance; the demo imports its own adapter and drops `serveDesignSystemAssets` / `copyDesignSystemAssetsToBuild`. |
+| React | remove `setupMud`, `defineCustomElements` and `toAssetBaseUrl`; remove the `postinstall` that runs `../../scripts/git/install-hooks.mjs` (it breaks every install outside the monorepo — present on `main` already) and keep the hook installation at the repo root; `sideEffects`; new consumer fixture. |
+| Vue | remove the `Mud` plugin (asset path only); `sideEffects`; fixture drops `vite-plugin-static-copy` and `app.use(Mud, …)`. |
+| Angular | remove `provideMud` (asset path only); `sideEffects`; fixture drops the `assets` glob in `angular.json` and `provideMud(…)`. |
+| web-components | `defineCustomElements()` unchanged; `sideEffects`; new consumer fixture (bundler, plain HTML on a deep subpath, import map, side-effect-only import); the demo imports its own adapter and drops `serveDesignSystemAssets` / `copyDesignSystemAssetsToBuild`. |
 
-These are small once cycle 1 lands, since the adapters only stop requiring what the core no longer
-needs. Order: cycle 1 merges after #191; the adapter follow-ups go in whichever of #189/#190 is still
-open then, or as one follow-up PR after they merge.
+**Docs — rewritten to describe how things are used now, with examples.** Root `README.md`
+(consumer usage per framework, with a working snippet each: install, one CSS import, a component
+with an icon, a logo, a phone input), `packages/*/README.md`, `INTEGRATION.md`, `CONTRIBUTING.md`
+(how to add an icon / logo / flag, what the generator does, the fixtures), the `mud-design` skill,
+the `stencil-compliance` references that teach `getAssetPath`, the PWA precache note, and a
+changelog fragment naming the breaking removals (published SVGs, `setupMud`, `Mud`, `provideMud`).
+A doc sweep closes on a grep: no consumer-facing text tells anyone to copy assets or pass an asset
+path.
+
+## Acceptance bar
+
+The implementation plan turns each row into a command; at design level the bar is:
+
+| Row | Threshold |
+| --- | --- |
+| Zero-config rendering | every consumer fixture (React, Vue, Angular 20 and 22, web-components) renders an internal icon on first render, a named icon, a logo and a flag with no asset setup in the fixture |
+| Only shown assets downloaded | each fixture's network log holds exactly the asset chunks of what the page shows |
+| Only imported components bundled | an unused component's tag is absent from each bundled fixture's main chunk |
+| No published SVG, no copy step | the packed core contains no `*.svg`; `copy-component-assets.mjs` and every `assetsDirs` are gone |
+| Figma conformance unchanged | pixel-perfect checks pass for `mud-icon`, `mud-logo`, `mud-phone-input`, `mud-checkbox` and every component that switches to a seeded icon |
+| Project gates | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn build`, `yarn validate.package` pass |
+| Docs | the doc sweep grep finds no instruction to copy assets or pass an asset path |
 
 ## Not verified
 
-- Angular CLI's own build (the spike used esbuild, which it wraps), Next.js / SSR, Storybook, and
-  consumer test runners (Vitest/Jest in an application) — the cycle-1 probe covers Vite and the
-  loader only.
-- The real React wrappers (`@stencil/react-output-target`) over the new mechanism; they import the
-  same per-component modules the Vite probe imported.
+- Next.js / SSR, Storybook as a consumer, webpack in a real application, and consumer test runners
+  (Vitest/Jest in an application): the fixtures cover Vite (React, Vue, web-components), Angular
+  CLI 20 and 22, plain HTML and an import map; the spike alone covered webpack.
 - PWA precaching: a service worker that precaches every emitted file downloads every asset chunk;
   documented as a consumer note, not tested.
