@@ -1,12 +1,18 @@
+import { setAssetPath } from '@stencil/core';
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-phone-input';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { flagAssetPath } from '../mud-phone-input.flags';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../mud-phone-input.types';
+
+// `getAssetPath` throws outside a lazy-bundle host, so a flag would have no `src`: give the
+// component the base a real host registers.
+setAssetPath('https://cdn.test/build/');
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -192,18 +198,18 @@ describe('mud-phone-input', () => {
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('renders an inline SVG flag glyph for the current country (local mode)', async () => {
+    it('renders the flag file of the current country as a decorative image (local mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
-      const flag = queryFlag(root);
-      expect(flag).toBeTruthy();
-      expect(flag?.querySelector('svg')).toBeTruthy();
+      const img = queryFlag(root)?.querySelector('img');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/MD.svg');
+      expect(img?.getAttribute('alt')).toBe('');
     });
 
-    it('renders an inline SVG flag glyph for the current country (international mode)', async () => {
+    it('renders the flag file of the current country as a decorative image (international mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
-      const flag = queryFlag(root);
-      expect(flag).toBeTruthy();
-      expect(flag?.querySelector('svg')).toBeTruthy();
+      const img = queryFlag(root)?.querySelector('img');
+      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/MD.svg');
+      expect(img?.getAttribute('alt')).toBe('');
     });
 
     it.each([
@@ -218,7 +224,9 @@ describe('mud-phone-input', () => {
       );
       const trigger = queryTrigger(root);
       expect(trigger?.textContent).toContain(dial);
-      expect(trigger?.querySelector('.flag svg')).toBeTruthy();
+      expect(trigger?.querySelector('.flag img')?.getAttribute('src')).toBe(
+        `https://cdn.test/build/assets/flags/${iso}.svg`,
+      );
     });
 
     it('draws no chevron on a read-only international chip', async () => {
@@ -370,11 +378,15 @@ describe('mud-phone-input', () => {
       expect(options[0].getAttribute('data-iso')).toBe('MD');
     });
 
-    it('each option carries an inline SVG flag glyph', async () => {
+    it("each option carries its country's flag file as a decorative image", async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
       const options = queryOptions(root);
       for (const opt of options) {
-        expect(opt.querySelector('.option-flag svg')).toBeTruthy();
+        const img = opt.querySelector('.option-flag img');
+        expect(img?.getAttribute('src')).toBe(
+          `https://cdn.test/build/${flagAssetPath(opt.getAttribute('data-iso') ?? '').slice(2)}`,
+        );
+        expect(img?.getAttribute('alt')).toBe('');
       }
     });
 
