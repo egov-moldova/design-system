@@ -18,6 +18,30 @@ export const meta = {
 
 const CONSTRAINTS = `## Global Constraints (from the plan — they bind this leg)
 
+- **Approvals already given — these gates are cleared for this plan, and only for what it lists.**
+  Dan approved, on 2026-10-02, the spec and this plan, which covers the repo's human-oversight gates
+  (\`_agents/workflow-rules.md\` § Human Oversight Gates) for exactly these items:
+  - build/tooling configuration: the \`package.json\` changes (new scripts, \`svg:icons\` / \`svg:flags\`
+    chaining, \`sideEffects\`, the \`build\` command, the new workspace), \`stencil.config.ts\`,
+    \`eslint.config.mjs\`, \`.storybook/main.mjs\`, \`vitest.config.mts\`, \`.gitattributes\`,
+    \`.prettierignore\`, \`.github/workflows/ci.yml\` (Adapters job) and the \`tooling/hooks\` workspace;
+  - breaking changes: no SVG file published; \`setupMud\`, React \`defineCustomElements\`, Vue \`Mud\`,
+    Angular \`provideMud\` removed (the adapters were never published).
+  Anything outside these lists — another config file, another public API change, a version bump —
+  still stops with \`## Needs Dan\`.
+- **Figma-first does not apply** (\`AGENTS.md\` § Figma-First Rule): this is a delivery change that must
+  not move a pixel, proven by row 14 against the pre-change baseline; the one rendering change (flags
+  \`<img>\` → inline \`svg\`) gets its Figma pixel-perfect check before merge, outside this plan (see
+  \`## Not verified\`). No task asks for a Figma link; none may stop to ask for one.
+- No \`git push\`, no PR, no branch other than \`danzubco/asset-delivery-on-191\`: publishing is Dan's.
+- Never commit with \`--no-verify\`: the pre-commit hook runs \`yarn lint\` and \`yarn typecheck\`, and a
+  task whose commit it refuses is not done.
+- Never run \`yarn format\` (it rewrites the whole repo, \`AGENTS.md\` rule 11); format only the files a
+  task touched (\`npx prettier --write <paths>\`).
+- Never run \`git clean\` or delete \`.asset-regression/\`: Task 0's baseline lives there (git-ignored) and
+  Task 13 compares against it.
+- The consumer-fixture runs install packages from the npm registry and download Chromium for the
+  pinned Playwright: they need network access.
 - Node 24 (\`.nvmrc\`): every \`yarn\` / \`node\` command runs as \`fnm exec --using=24 -- <command>\`. The
   shell's default Node is 26.
 - Stencil \`~4.45.0\` with the repo patch (\`.yarn/patches/@stencil-core-npm-4.45.0-*.patch\`); SVGO

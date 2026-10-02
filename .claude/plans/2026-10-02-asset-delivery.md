@@ -2,8 +2,8 @@
 
 **Execution**: workflow — `2026-10-02-asset-delivery.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
 
-**Status:** planned (unbuilt) — awaiting Dan's review
-**Reviewed:** critic @ dad8cc14 — the 3-round cap (preflight, critic, critic) ended the loop; every round-3 finding is folded below; Dan's go: pending
+**Status:** planned (unbuilt) — approved by Dan on 2026-10-02
+**Reviewed:** preflight fd6859a1, critic 83111aa6, critic dad8cc14 — the 3-round cap ended the loop; every round-3 finding is folded below; Dan's go: 2026-10-02
 **Spec:** `.claude/plans/2026-10-02-asset-delivery-design.md` (approved by Dan on 2026-10-02; its
 `## Revisions after review` section records the decisions Dan changed afterwards)
 **Branch:** `danzubco/asset-delivery-on-191` — PR #191 head `2d13b3d2` + the PR #190 branch (which
@@ -97,6 +97,30 @@ refined by Dan on 2026-10-02 after the plan's critique rounds:
 
 ## Global Constraints
 
+- **Approvals already given — these gates are cleared for this plan, and only for what it lists.**
+  Dan approved, on 2026-10-02, the spec and this plan, which covers the repo's human-oversight gates
+  (`_agents/workflow-rules.md` § Human Oversight Gates) for exactly these items:
+  - build/tooling configuration: the `package.json` changes (new scripts, `svg:icons` / `svg:flags`
+    chaining, `sideEffects`, the `build` command, the new workspace), `stencil.config.ts`,
+    `eslint.config.mjs`, `.storybook/main.mjs`, `vitest.config.mts`, `.gitattributes`,
+    `.prettierignore`, `.github/workflows/ci.yml` (Adapters job) and the `tooling/hooks` workspace;
+  - breaking changes: no SVG file published; `setupMud`, React `defineCustomElements`, Vue `Mud`,
+    Angular `provideMud` removed (the adapters were never published).
+  Anything outside these lists — another config file, another public API change, a version bump —
+  still stops with `## Needs Dan`.
+- **Figma-first does not apply** (`AGENTS.md` § Figma-First Rule): this is a delivery change that must
+  not move a pixel, proven by row 14 against the pre-change baseline; the one rendering change (flags
+  `<img>` → inline `svg`) gets its Figma pixel-perfect check before merge, outside this plan (see
+  `## Not verified`). No task asks for a Figma link; none may stop to ask for one.
+- No `git push`, no PR, no branch other than `danzubco/asset-delivery-on-191`: publishing is Dan's.
+- Never commit with `--no-verify`: the pre-commit hook runs `yarn lint` and `yarn typecheck`, and a
+  task whose commit it refuses is not done.
+- Never run `yarn format` (it rewrites the whole repo, `AGENTS.md` rule 11); format only the files a
+  task touched (`npx prettier --write <paths>`).
+- Never run `git clean` or delete `.asset-regression/`: Task 0's baseline lives there (git-ignored) and
+  Task 13 compares against it.
+- The consumer-fixture runs install packages from the npm registry and download Chromium for the
+  pinned Playwright: they need network access.
 - Node 24 (`.nvmrc`): every `yarn` / `node` command runs as `fnm exec --using=24 -- <command>`. The
   shell's default Node is 26.
 - Stencil `~4.45.0` with the repo patch (`.yarn/patches/@stencil-core-npm-4.45.0-*.patch`); SVGO
@@ -941,10 +965,10 @@ Required titles per framework: tests 1-4 for every framework; tests 5-8 in addit
 | 9 | Zero-config rendering — Vue | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue` | ends `PASS vue@<major>` under the same rule |
 | 10 | Zero-config rendering — Angular 20 and 22 | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22` | both runs end `PASS angular@<major>` under the same rule |
 | 11 | Zero-config rendering — web-components, plain module page, CDN shapes | `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs web-components` | ends `PASS web-components@<major>` under the same rule, with the eight web-components tests |
-| 12 | Only shown assets downloaded | rows 8-11 (tests 3 and 8) | every asset marker in a network log belongs to an asset the page renders; no probe marker appears; the one-icon page receives exactly one asset-carrying response |
-| 13 | Only imported components bundled | rows 8-11 (test 4) | `mud-stepper` appears in no emitted file of the React, Vue and Angular fixtures; its entry chunk is never requested on the web-components pages |
+| 12 | Only shown assets downloaded | the row 8-11 runs of `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs <framework>` (tests 3 and 8 of their JSON reports) | every asset marker in a network log belongs to an asset the page renders; no probe marker appears; the one-icon page receives exactly one asset-carrying response |
+| 13 | Only imported components bundled | the row 8-11 runs of `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs <framework>` (test 4 of their JSON reports) | `mud-stepper` appears in no emitted file of the React, Vue and Angular fixtures; its entry chunk is never requested on the web-components pages |
 | 14 | Visual parity | `fnm exec --using=24 -- node scripts/assets/story-regression.mjs compare .asset-regression/baseline .asset-regression/after --budget mud-phone-input=279px` | no differing pixel in any story outside `mud-phone-input`; fewer differing pixels than one 20×14 flag box in each `mud-phone-input` story; no story present on one side only; one clock on both sides |
-| 15 | No published SVG, in any of the five packages | rows 8-11 (the runner checks the core and the adapter tarball of every run) and row 6 (`validate.package` on the core) | no `.svg` entry in any packed tarball |
+| 15 | No published SVG, in any of the five packages | the row 8-11 runs of `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs <framework>` (its guard checks the core and the adapter tarball of every run) and row 6's `fnm exec --using=24 -- yarn validate.package` (the core) | no `.svg` entry in any packed tarball |
 | 16 | No asset-path machinery left | row 2, plus `fnm exec --using=24 -- node -e "process.exit(require('node:fs').existsSync('scripts/copy-component-assets.mjs') ? 1 : 0)"` | no lint finding from the asset-API guard; the copy script does not exist |
 | 17 | Consumer docs | `fnm exec --using=24 -- yarn docs:check` | no `asset-setup` hit (nor any other rule's) in the consumer docs |
 

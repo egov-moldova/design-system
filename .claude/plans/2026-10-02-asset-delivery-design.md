@@ -1,7 +1,7 @@
 # Asset delivery — design
 
-**Status:** draft for review
-**Reviewed:** none
+**Status:** approved by Dan on 2026-10-02 (with the `## Revisions after review` below)
+**Reviewed:** critic dad8cc14 — read as the implementation plan's spec in its critique rounds
 **Branch:** `danzubco/asset-delivery-on-191` (worktree `asset-delivery-on-191`), based on PR #191 head `2d13b3d2`,
 with the PR #190 branch (`danzubco/react-adapter-registers-every-tag-through-two-st`, which contains PR #189)
 merged in, so the change covers the core AND the four adapters in one place. The PR is stacked on #189 → #190
