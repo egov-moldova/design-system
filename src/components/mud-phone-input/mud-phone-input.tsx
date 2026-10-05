@@ -37,6 +37,8 @@ let phoneInputInstanceCounter = 0;
 
 /** Imports one flag module per country, on first use, and hands out clones of the sanitized drawing. */
 const flagLoader = createSvgLoader(FLAG_MODULES);
+/** How long a flag whose import failed waits before a render may ask for it again. */
+const FLAG_RETRY_MS = 10_000;
 
 const displayNamesCache = new Map<string, Intl.DisplayNames>();
 
@@ -307,8 +309,10 @@ export class MudPhoneInput {
   private listboxEl?: HTMLElement;
   private listEl?: HTMLElement;
   private flagObserver?: IntersectionObserver;
-  /** Flag keys being imported, or whose import failed; neither is asked for again by `drawFlags`. */
-  private flagRequests = new Map<string, 'pending' | 'failed'>();
+  /** Flag keys being imported (`'pending'`), or whose import failed (the time it failed). */
+  private flagRequests = new Map<string, 'pending' | number>();
+  /** Flag keys already warned about, so a flag that keeps failing warns once. */
+  private warnedFlags = new Set<string>();
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
@@ -396,9 +400,11 @@ export class MudPhoneInput {
         return;
       }
       // This runs on every render (each keystroke, each highlight move), so a key already being
-      // imported, or whose import failed, is not asked for again here: offline, that would fire a
-      // new import per shown flag per render. A failed key is retried when the list opens again.
-      if (this.flagRequests.has(key)) return;
+      // imported is not asked for again, and a key whose import failed only once FLAG_RETRY_MS has
+      // passed: offline, asking on every render would fire an import per shown flag per keystroke,
+      // and never asking again would leave the flag blank after the network returns.
+      const request = this.flagRequests.get(key);
+      if (request === 'pending' || (request !== undefined && Date.now() - request < FLAG_RETRY_MS)) return;
       this.flagRequests.set(key, 'pending');
       void flagLoader.load(key).then(loaded => {
         if (loaded) {
@@ -406,18 +412,13 @@ export class MudPhoneInput {
           this.flagLoads += 1;
           return;
         }
-        this.flagRequests.set(key, 'failed');
+        this.flagRequests.set(key, Date.now());
+        if (this.warnedFlags.has(key)) return;
+        this.warnedFlags.add(key);
         console.warn(
           `[mud-phone-input] Failed to load flag: key="${key}" (${flagLoader.failure(key) ?? 'unknown cause'})`,
         );
       });
-    });
-  }
-
-  /** Lets every flag whose import failed be asked for again, on the next render. */
-  private retryFailedFlags() {
-    this.flagRequests.forEach((state, key) => {
-      if (state === 'failed') this.flagRequests.delete(key);
     });
   }
 
@@ -770,7 +771,6 @@ export class MudPhoneInput {
     this.open = next;
 
     if (next) {
-      this.retryFailedFlags();
       this.searchQuery = '';
       this.primeHighlight();
       if (opts?.emit) this.mudOpen.emit();

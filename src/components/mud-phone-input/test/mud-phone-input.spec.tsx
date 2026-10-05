@@ -229,35 +229,48 @@ describe('mud-phone-input', () => {
       expect(queryFlag(root)?.querySelectorAll('svg')).toHaveLength(1);
     });
 
-    it('warns once when a flag cannot be imported, does not re-import it on each render, and retries when the list opens', async () => {
+    // `type="local"`: a field whose list never opens must still get its flag back.
+    it('warns once when a flag cannot be imported, does not re-import it on each render, and retries after 10 s', async () => {
       clearSvgCaches();
       const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
       const realPw = flags.pw;
       const pw = vi.spyOn(flags, 'pw').mockRejectedValue(new Error('offline'));
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const start = Date.now();
+      const now = vi.spyOn(Date, 'now').mockReturnValue(start);
+      const input = (root: Element | null | undefined) => root?.shadowRoot?.querySelector('input');
       try {
         const { root, waitForChanges } = await render(
-          <mud-phone-input label="x" type="international" default-country="PW"></mud-phone-input>,
+          <mud-phone-input label="x" type="local" default-country="PW"></mud-phone-input>,
         );
         await waitForAssetLoad(() =>
           expect(warn).toHaveBeenCalledWith(
             '[mud-phone-input] Failed to load flag: key="pw" (the import failed: offline)',
           ),
         );
-        root!.setAttribute('placeholder', 'one');
-        await waitForChanges();
-        root!.setAttribute('placeholder', 'two');
-        await waitForChanges();
+        for (const text of ['one', 'two']) {
+          root!.setAttribute('placeholder', text);
+          await waitForChanges();
+          expect(input(root)?.getAttribute('placeholder')).toBe(text);
+        }
         expect(pw).toHaveBeenCalledTimes(1);
+
+        now.mockReturnValue(start + 10_000);
+        root!.setAttribute('placeholder', 'three');
+        await waitForChanges();
+        await waitForAssetLoad(() => expect(pw).toHaveBeenCalledTimes(2));
         expect(warn).toHaveBeenCalledTimes(1);
 
         pw.mockImplementation(realPw!);
-        queryTriggerButton(root)?.click();
+        now.mockReturnValue(start + 20_000);
+        root!.setAttribute('placeholder', 'four');
+        await waitForChanges();
         await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
-        expect(pw).toHaveBeenCalledTimes(2);
       } finally {
         pw.mockRestore();
         warn.mockRestore();
+        now.mockRestore();
+        clearSvgCaches();
       }
     });
 
