@@ -151,6 +151,18 @@ packages/web-components/
 └── README.md
 ```
 
+### Icons, logos and flags
+
+`mud-icon`, `mud-logo` and the flags of `mud-phone-input` render ES modules, one per drawing, that they `import()` on demand through `src/utils/svg-assets.ts`. No SVG file is published and no component resolves an asset URL: ESLint forbids `getAssetPath`, `setAssetPath` and `assetsDirs` in `src/`. The generated modules live in `src/generated/`, are committed like `icon-names.ts`, and are never edited by hand. `node scripts/assets/build-asset-modules.mjs --check` fails on any stale, missing or extra module, and on a drawing that carries a `style` attribute, a script, an event handler or an outside reference.
+
+| To add | Do |
+| --- | --- |
+| An icon | Drop the SVG into `src/components/mud-icon/assets/outlined/` or `…/filled/`, then run `yarn svg:icons`. It normalizes the drawing, rebuilds `icons.manifest.json` and `icon-names.ts`, and regenerates the modules. |
+| A logo | Drop the SVG into `src/components/mud-logo/assets/`, append its bare name to `LOGO_NAMES` in `src/components/mud-logo/mud-logo.types.ts`, then run `yarn assets.generate`. |
+| A flag | Run `yarn svg:flags` (it vendors the pinned flag-icons set into `src/components/mud-phone-input/assets/flags/` and regenerates the modules). |
+
+Commit the source SVGs and the regenerated `src/generated/` together. After a change to any SVG, `yarn assets.generate` brings the modules back in sync.
+
 ### Framework adapters (`packages/react/`, `packages/vue/`, `packages/angular/`)
 
 One `yarn build` runs Stencil's React, Vue and Angular output targets next to the core build. They write the generated proxies under each package (`packages/{react,vue,angular}/src/.../stencil-generated/`). Those files are git-ignored and are never committed: the runner below fails on any tracked file there. Every adapter build depends on `yarn build`.
@@ -166,14 +178,19 @@ yarn build.angular   # packages @egov-moldova/mud-angular with ng-packagr, parti
 
 The Angular adapter is compiled with Angular 20 and supports `^20 || ^21 || ^22`. The proxies cover every `mud-*` component. Which properties and events bind to `v-model` and `ngModel` is one table, `scripts/adapters/form-models.ts`; `scripts/__tests__/adapter-form-models.spec.mjs` checks it against `.storybook/custom-elements.json`.
 
-**Consumer fixtures.** Each adapter has a small app in `packages/<framework>/fixture/`, outside the Yarn workspaces. The runner packs the core and the adapter, installs the tarballs into a temporary copy of the fixture (no workspace link and no lockfile, so a packaging defect cannot hide), typechecks and builds it with the framework's own toolchain, and drives it in Chromium.
+**Consumer fixtures.** Each adapter, and the vanilla adapter, has a small app in `packages/<framework>/fixture/`, outside the Yarn workspaces. The README's framework examples are copied from the `src/` of these apps, so a fixture that passes proves the example works: change the two together. The runner packs the core and the adapter, installs the tarballs into a temporary copy of the fixture (no workspace link and no lockfile, so a packaging defect cannot hide), typechecks and builds it with the framework's own toolchain, and drives it in Chromium.
 
 ```bash
-yarn build && yarn build.vue && yarn build.angular
+yarn build && yarn build.react && yarn build.vue && yarn build.angular && yarn build.web
+node scripts/adapters/consumer-fixture.mjs react                            # React 19
+node scripts/adapters/consumer-fixture.mjs react --framework-version 18
 node scripts/adapters/consumer-fixture.mjs vue
 node scripts/adapters/consumer-fixture.mjs angular --framework-version 20   # zone.js
 node scripts/adapters/consumer-fixture.mjs angular --framework-version 22   # zoneless
+node scripts/adapters/consumer-fixture.mjs web-components                   # lazy loader, import map, script tag, deep path
 ```
+
+Every fixture app renders the same four elements (`data-testid` `asset-icon`, `asset-logo`, `asset-phone`, `asset-select`), and one shared file, `scripts/adapters/fixture-e2e/assets.spec.ts`, asserts asset delivery for all of them: the named icon, logo and flag render, a component's own icon renders, and an asset no component on the page draws is never downloaded. The runner copies it into the temporary app, so a new adapter fixture needs the four elements and nothing else to get those checks.
 
 Without `--framework-version` the runner uses the highest major in the fixture's `versions.json`. It installs Chromium for the pinned Playwright (`--with-deps`, which runs the system package step and needs sudo on Linux, is added only when `CI` is set). A failed run keeps its temporary directory and prints the path (under `RUNNER_TEMP` when that is set); Playwright writes a trace there. The `Adapters` CI job runs the same commands.
 
@@ -190,7 +207,7 @@ yarn add file:/tmp/mud-core.tgz file:/tmp/mud-vue.tgz   # or the Angular tarball
 
 Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publishable package and is not a Yarn workspace, and the build already rewrote its `workspace:` range. Never `npm pack` a workspace root, which leaves `workspace:^` in the manifest.
 
-**Linking `mud-react` into another app.** `mud-react` ships its TypeScript source, so a link is enough. Run `yarn build.react`, then `npm link` in `packages/react/` and `npm link @egov-moldova/mud-react` in the consuming app. Re-run `yarn build.react` after a component's public API changes: the watch build does not regenerate the proxies. The consuming app must dedupe React (Vite: `resolve.dedupe: ['react', 'react-dom', '@egov-moldova/mud']`, the last so the app and the linked adapter share one component runtime and one asset path), because the linked `src/` otherwise resolves this repository's React 18, and a React 19 app then loads two copies of React.
+**Linking `mud-react` into another app.** `mud-react` ships its TypeScript source, so a link is enough. Run `yarn build.react`, then `npm link` in `packages/react/` and `npm link @egov-moldova/mud-react` in the consuming app. Re-run `yarn build.react` after a component's public API changes: the watch build does not regenerate the proxies. The consuming app must dedupe React (Vite: `resolve.dedupe: ['react', 'react-dom', '@egov-moldova/mud']`, the last so the app and the linked adapter share one component runtime), because the linked `src/` otherwise resolves this repository's React 18, and a React 19 app then loads two copies of React.
 
 ### Script reference
 
@@ -203,7 +220,10 @@ Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publi
 | `yarn build.react` | Typechecks `@egov-moldova/mud-react` against React 18 and 19 (depends on `build`) |
 | `yarn build.vue` | Builds `@egov-moldova/mud-vue` (depends on `build`) |
 | `yarn build.angular` | Builds `@egov-moldova/mud-angular` (depends on `build`) |
-| `node scripts/adapters/consumer-fixture.mjs <vue\|angular> [--framework-version <major>]` | Packs the core and the adapter, installs them into the consumer fixture and drives it in Chromium (after `build` and the adapter's own build) |
+| `node scripts/adapters/consumer-fixture.mjs <react\|vue\|angular\|web-components> [--framework-version <major>]` | Packs the core and the adapter, installs them into the consumer fixture and drives it in Chromium (after `build` and the adapter's own build) |
+| `yarn svg:icons` | Normalizes the icon SVGs, rebuilds `icons.manifest.json` and `icon-names.ts`, regenerates `src/generated/` |
+| `yarn svg:flags` | Syncs the vendored flag-icons set and regenerates `src/generated/` |
+| `yarn assets.generate` | Regenerates `src/generated/` from the icon, logo and flag SVGs (`--check` on `node scripts/assets/build-asset-modules.mjs` fails on drift) |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
 | `yarn lint` | ESLint + Stylelint (wireit-cached) + Prettier check over the whole repo (always runs, Prettier's own content cache); no fixes |

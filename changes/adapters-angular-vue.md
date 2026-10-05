@@ -7,4 +7,4 @@ Two workspace packages, `@egov-moldova/mud-angular` and `@egov-moldova/mud-vue`,
 
 The core adds one type re-export, so the generated proxies can import the component types from `@egov-moldova/mud/components`. Its `exports`, `files` and version are unchanged. `yarn build` now also generates the React, Vue and Angular proxies, which are git-ignored.
 
-The React and vanilla adapters moved to `packages/react` and `packages/web-components`. Their package names are unchanged. Two manifest fields changed with the move: the `postinstall` path of `@egov-moldova/mud-react` (`node ../../scripts/git/install-hooks.mjs`) and the `repository.directory` of `@egov-moldova/mud-web-components` (`packages/web-components`).
+The React and vanilla adapters moved to `packages/react` and `packages/web-components`. Their package names are unchanged. The `repository.directory` of `@egov-moldova/mud-web-components` changed with the move (`packages/web-components`). The Git hook installer that `@egov-moldova/mud-react` ran as a `postinstall` script now belongs to the private `tooling/hooks` workspace, so installing the React adapter runs no script.

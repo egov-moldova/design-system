@@ -28,6 +28,8 @@ defineCustomElements();
 <mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
+Icons, logos and country flags load on their own, only when shown: there is nothing to copy or configure. Use `defineCustomElements()` from this package in a bundler. Do not `import '@egov-moldova/mud/mud.esm.js'` from a bundled app: it registers the elements, but the component chunks 404, because that build resolves them against its own URL, which a bundler does not emit. `mud.esm.js` is for a `<script type="module">` tag with the whole `dist/mud/` served.
+
 `styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../../README.md#fonts) section.
 
 ## Usage — plain HTML with import map
@@ -63,7 +65,7 @@ defineCustomElements();
 </html>
 ```
 
-Serve `node_modules/@egov-moldova/mud/dist/mud/` as a whole: `mud.css` requests its font from `assets/fonts/` beside it.
+Serve `node_modules/@egov-moldova/mud/dist/mud/` as a whole: `mud.css` requests its font from `assets/fonts/` beside it. Icons, logos and flags are chunks in the same loader build and need no folder of their own.
 
 ## Usage — CDN via jsDelivr
 
@@ -100,6 +102,8 @@ Every component published by `@egov-moldova/mud` is registered. The full list is
 ## API
 
 `defineCustomElements(opts?: { resourcesUrl?: string; syncQueue?: boolean })` — registers every Stencil custom element on the current document. Returns a `Promise<void>` that resolves once all elements are registered.
+
+MUD's own assets need no base URL, so call it with no argument.
 
 `setNonce(nonce: string)` — set a CSP nonce that Stencil applies to injected `<style>` tags.
 

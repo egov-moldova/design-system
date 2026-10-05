@@ -83,6 +83,8 @@ Paste directly into any HTML page's `<head>` — it self-registers every `mud-*`
   <script type="module" src="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.1.5/dist/mud/mud.esm.js"></script>
 ```
 
+`mud.esm.js` loads its component chunks, and every icon, logo and flag, from the folder it sits in, so the CDN path above is all it needs. Self-hosting it means serving the whole `dist/mud/` folder, not the one file: the chunks and the font live beside it.
+
 **Option B — Import Map**
 
 For a locally installed package (`yarn add @egov-moldova/mud`) served by a static server that exposes `node_modules/` — resolves the bare specifier via the browser's native import map instead of a bundler, while still using the explicit `defineCustomElements()` pattern.
@@ -134,6 +136,10 @@ yarn add @egov-moldova/mud @egov-moldova/mud-web-components
   defineCustomElements();
 ```
 
+Icons, logos and flags need no step of their own: see [Icons, logos and flags](#icons-logos-and-flags).
+
+> **Do not import `@egov-moldova/mud/mud.esm.js` from a bundled app.** It registers the elements, but the component chunks 404: the script-tag build resolves each `./<id>.entry.js` against its own URL, and a bundler never emits those files. In a bundler use `defineCustomElements()` as above, or a framework adapter below. `mud.esm.js` is for a `<script type="module">` tag, from a CDN or with the whole `dist/mud/` served.
+
 #### Fonts
 
 `styles.css` brings the Onest typeface with it — no `@font-face` of your own, no font files to copy. It declares one variable WOFF2 face (weights 100–900) referenced by a relative URL, so it resolves wherever `dist/mud/` goes:
@@ -146,6 +152,18 @@ With a Content Security Policy, `font-src` must allow wherever `mud.css` is serv
 
 Releases up to and including 1.1.9 ship three static faces (400/500/700) instead, so semibold text renders bold there — pin a later release in the CDN examples above to get the variable face (see the [changelog](CHANGELOG.md)).
 
+#### Icons, logos and flags
+
+`mud-icon`, `mud-logo` and the country flags of `mud-phone-input` load automatically, and only when they are shown: each drawing is a small JavaScript module that the component imports the first time it needs it. There is no asset step: no folder to copy, no path to set, no plugin or provider to install, and no SVG files in the package.
+
+The drawings are hashed chunks named `p-<hash>.js`. If you serve `dist/mud/` yourself, keep the whole folder together (see [Without a bundler](#without-a-bundler)).
+
+The country flags come from [flag-icons](https://github.com/lipis/flag-icons) (MIT). Its licence notice ships as `dist/mud/licenses/flag-icons.txt` and as a `/*! */` comment in the flag chunk.
+
+**Service workers / PWA.** A service worker that precaches every file downloads every icon, logo and flag chunk (about 2.9 MB) when it installs, although a page shows only a few of them. The chunk names are hashed, so a file-name glob cannot single them out. Precache the app shell and route the remaining JavaScript chunks through runtime caching (in Workbox, a `CacheFirst` strategy), or filter the precache entries by content in `manifestTransforms`.
+
+**Content Security Policy.** The drawings arrive as JavaScript modules, so `script-src` covers them, and they carry no `style` attribute. No `img-src` or `connect-src` entry is needed for them. Fonts are the exception: see [Fonts](#fonts).
+
 #### React component wrappers
 > Not yet published. `@egov-moldova/mud-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
 
@@ -155,41 +173,47 @@ Typed wrapper components for React 18 and 19 (peers `react ^18 || ^19`, `react-d
 yarn add @egov-moldova/mud @egov-moldova/mud-react
 ```
 
+Import the design tokens and the global styles once, then render the components. There is no setup call: [icons, logos and flags](#icons-logos-and-flags) load on their own.
+
 ```tsx
 // main.tsx
-import '@egov-moldova/mud/tokens/core.tokens.css'; // design tokens — your own import, not bundled
-import '@egov-moldova/mud/styles.css'; // fonts and resets
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/styles.css';
 
-import { setupMud } from '@egov-moldova/mud-react';
 import { createRoot } from 'react-dom/client';
-import { App } from './App';
 
-setupMud({ assetPath: `${import.meta.env.BASE_URL}mud/` });
+import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(<App />);
 ```
 
 ```tsx
 // App.tsx
-import { MudTextInput } from '@egov-moldova/mud-react';
-import { useState } from 'react';
+import { MudIcon, MudLogo, MudPhoneInput, MudSelect } from '@egov-moldova/mud-react';
 
 export function App() {
-  const [name, setName] = useState('');
-  return <MudTextInput label="Name" value={name} onMudInput={event => setName(event.detail.value)} />;
+  return (
+    <main>
+      <MudIcon data-testid="asset-icon" name="calendar" size={24} />
+      <MudLogo data-testid="asset-logo" name="mpass-logo-with-name" />
+      <MudPhoneInput data-testid="asset-phone" aria-label="Phone" />
+      <MudSelect data-testid="asset-select" aria-label="Fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </MudSelect>
+    </main>
+  );
 }
 ```
 
-**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder, so copy the core's `dist/components/assets` to `mud/assets` in your build output (Vite: `public/mud/assets`, or a copy plugin). `setupMud` throws on an empty path and does nothing during a server render. Without the call, `mud-icon` and `mud-logo` stay blank and report no error. Call `setupMud`, not the re-exported `setAssetPath`: only `setupMud` turns a relative path into the absolute directory URL the components need.
+The `data-testid` attributes are how this repository's browser tests find each element; leave them out in your app.
 
-The adapter loads one Stencil runtime, the standalone bundle, and `setupMud` only sets the asset path: **each wrapper registers its own element when it is imported.** A raw `<mud-x>` tag written in JSX without its wrapper stays an unknown element. Import the wrapper, or call `defineCustomElement` from `@egov-moldova/mud/components/mud-x.js`.
-
-`defineCustomElements()` is deprecated in favour of `setupMud`. It registers no element either; it only sets the asset path, defaulting to the `node_modules` URL of a Vite dev server.
+**Each wrapper registers its own element when it is imported.** A raw `<mud-x>` tag written in JSX without its wrapper stays an unknown element. Import the wrapper, or call `defineCustomElement` from `@egov-moldova/mud/components/mud-x.js`. The adapter also re-exports `setNonce` for a Content Security Policy nonce.
 
 #### Vue component wrappers
 > Not yet published. `@egov-moldova/mud-vue` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
 
-Typed wrapper components for Vue 3 (peer `vue ^3.4.38`), with `v-model` on all 17 form controls. No `isCustomElement` option is needed.
+Typed wrapper components for Vue 3 (peer `vue ^3.4.38`), with `v-model` on all 17 form controls. No `isCustomElement` option is needed, and no plugin to install: [icons, logos and flags](#icons-logos-and-flags) load on their own.
 
 ```bash
 yarn add @egov-moldova/mud @egov-moldova/mud-vue
@@ -199,57 +223,43 @@ Type-checking the library's declarations without `skipLibCheck` also needs `vue-
 
 ```ts
 // main.ts
-import '@egov-moldova/mud/tokens/core.tokens.css'; // design tokens — your own import, not bundled
-import '@egov-moldova/mud/styles.css'; // fonts and resets
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/styles.css';
 
-import { Mud } from '@egov-moldova/mud-vue';
 import { createApp } from 'vue';
+
 import App from './App.vue';
 
-createApp(App)
-  .use(Mud, { assetPath: `${import.meta.env.BASE_URL}mud/` })
-  .mount('#app');
+createApp(App).mount('#app');
 ```
 
 ```vue
+<!-- App.vue -->
 <script setup lang="ts">
-import { MudTextInput } from '@egov-moldova/mud-vue';
-import { ref } from 'vue';
-
-const name = ref('');
+import {
+  MudIcon,
+  MudLogo,
+  MudPhoneInput,
+  MudSelect,
+} from '@egov-moldova/mud-vue';
 </script>
 
 <template>
-  <MudTextInput v-model="name" aria-label="Name" />
+  <main>
+    <section>
+      <MudIcon data-testid="asset-icon" name="calendar" :size="24" />
+      <MudLogo data-testid="asset-logo" name="mpass-logo-with-name" />
+      <MudPhoneInput data-testid="asset-phone" aria-label="Asset phone" />
+      <MudSelect data-testid="asset-select" aria-label="Asset fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </MudSelect>
+    </section>
+  </main>
 </template>
 ```
 
-**`assetPath` is required.** `mud-icon` and `mud-logo` fetch their SVGs from `<assetPath>assets/…`, so pass the URL of the folder whose child is `assets/`. A relative URL resolves against the document base. The app must serve that folder, so copy the core's `dist/components/assets` to `mud/assets` in your build output. With the Vite plugin below, and the `mud/` folder used above, the files end up at `mud/assets/…` under your public base URL:
-
-```ts
-// vite.config.ts — yarn add -D vite-plugin-static-copy
-import vue from '@vitejs/plugin-vue';
-import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-
-export default defineConfig({
-  plugins: [
-    vue(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'node_modules/@egov-moldova/mud/dist/components/assets',
-          dest: 'mud',
-          // The plugin keeps the source path: strip `node_modules/@egov-moldova/mud/dist/components/`.
-          rename: { stripBase: 5 },
-        },
-      ],
-    }),
-  ],
-});
-```
-
-Without a plugin, copy the folder into Vite's `public/` directory before `vite` and `vite build` run: `rm -rf public/mud/assets && mkdir -p public/mud && cp -R node_modules/@egov-moldova/mud/dist/components/assets public/mud/assets`. The `rm -rf` keeps a second run from nesting `assets/assets`.
+The `data-testid` attributes are how this repository's browser tests find each element; leave them out in your app. Bind a form control with `v-model`, for example `<MudSelect v-model="fruit" aria-label="Fruit">`.
 
 Binding notes:
 
@@ -266,47 +276,64 @@ Typed standalone components and form value accessors for Angular `^20 || ^21 || 
 yarn add @egov-moldova/mud @egov-moldova/mud-angular
 ```
 
-In `angular.json`, under `build.options`, add the tokens and global styles, and copy the component assets into the build output:
+In `angular.json`, under `build.options`, add the tokens and the global styles. There is nothing to copy into the build output, and no provider to add: [icons, logos and flags](#icons-logos-and-flags) load on their own.
 
 ```json
-"styles": ["@egov-moldova/mud/tokens/core.tokens.css", "@egov-moldova/mud/styles.css"],
-"assets": [
-  {
-    "glob": "**/*",
-    "input": "node_modules/@egov-moldova/mud/dist/components/assets",
-    "output": "mud/assets"
-  }
-]
+"styles": ["@egov-moldova/mud/tokens/core.tokens.css", "@egov-moldova/mud/styles.css"]
 ```
 
 ```ts
 // main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideMud } from '@egov-moldova/mud-angular';
+
 import { App } from './app/app';
 
-bootstrapApplication(App, { providers: [provideMud({ assetPath: 'mud/' })] });
+bootstrapApplication(App).catch((error: unknown) => console.error(error));
 ```
-
-**`assetPath` is required.** It is the URL of the folder whose child is `assets/`, relative to `<base href>`: with the `assets` entry above, `mud/`.
 
 ```ts
 // app.ts
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // or ReactiveFormsModule
-import { MUD_FORM_ACCESSORS, MudTextInput } from '@egov-moldova/mud-angular';
+import {
+  MudIcon,
+  MudLogo,
+  MudPhoneInput,
+  MudSelect,
+} from '@egov-moldova/mud-angular';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, MUD_FORM_ACCESSORS, MudTextInput],
-  template: `<mud-text-input [(ngModel)]="name" aria-label="Name"></mud-text-input>`,
+  imports: [
+    MudIcon,
+    MudLogo,
+    MudPhoneInput,
+    MudSelect,
+  ],
+  templateUrl: './app.html',
 })
 export class App {
-  protected name = '';
+  // …
 }
 ```
 
-**Import `MUD_FORM_ACCESSORS` in every component that binds a `mud-*` form control.** Without it `[(ngModel)]` and `formControl` throw `No value accessor for form control`. Each accessor is also exported on its own (`TextValueAccessor`, `BooleanValueAccessor`, `SelectValueAccessor`, `NumericValueAccessor`, `ChipsValueAccessor`, `FilesValueAccessor`) if you want a narrower import.
+```html
+<!-- app.html -->
+<main>
+  <section>
+    <mud-icon data-testid="asset-icon" name="calendar" [size]="24"></mud-icon>
+    <mud-logo data-testid="asset-logo" name="mpass-logo-with-name"></mud-logo>
+    <mud-phone-input data-testid="asset-phone" aria-label="Asset phone"></mud-phone-input>
+    <mud-select data-testid="asset-select" aria-label="Asset fruit">
+      <option value="apple">Apple</option>
+      <option value="pear">Pear</option>
+    </mud-select>
+  </section>
+</main>
+```
+
+The `data-testid` attributes are how this repository's browser tests find each element; leave them out in your app.
+
+**Import `MUD_FORM_ACCESSORS` in every component that binds a `mud-*` form control** with `[(ngModel)]` or `formControl`, next to `FormsModule` or `ReactiveFormsModule`. Without it they throw `No value accessor for form control`. Each accessor is also exported on its own (`TextValueAccessor`, `BooleanValueAccessor`, `SelectValueAccessor`, `NumericValueAccessor`, `ChipsValueAccessor`, `FilesValueAccessor`) if you want a narrower import.
 
 Binding notes:
 

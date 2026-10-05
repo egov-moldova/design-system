@@ -145,7 +145,7 @@ yarn format                    # Auto-fix code style
 # Utilities
 npx stencil generate           # Stencil component generator scaffolding (not wired as a yarn script)
 yarn tokens.audit              # Debug missing token references
-yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json and icon-names.ts
+yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json, icon-names.ts and src/generated/
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.
