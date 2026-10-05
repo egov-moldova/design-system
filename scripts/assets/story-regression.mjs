@@ -98,15 +98,21 @@ const splitList = value => (value ? value.split(',').filter(Boolean) : undefined
  * (`pending`) and which flag images finished loading without a drawing (`broken`).
  *   - `mud-icon`, `mud-logo`: done once its shadow root holds an `svg` or an `img` with naturalWidth > 0.
  *   - `.flag img`, and `.option-flag img` the phone-input list asked for (it carries a `src`): done once
- *     `naturalWidth > 0`; `complete` with naturalWidth 0 is broken.
+ *     `naturalWidth > 0`; `complete` with naturalWidth 0 is broken. That is the flag of a build before
+ *     the asset change, so a baseline captured from one still waits for its flags.
+ *   - `.flag[data-iso]`, the trigger's inline flag box: done once it holds an `svg`. A list row's
+ *     `.option-flag[data-iso]` is not counted: it stays empty until the row nears the visible part of
+ *     the list, so waiting for it would hold every capture until the deadline.
  */
 function inspectAssets() {
   const hosts = [];
   const flagImgs = [];
+  const flagBoxes = [];
   const visit = root => {
     for (const el of root.querySelectorAll('*')) {
       if (el.tagName === 'MUD-ICON' || el.tagName === 'MUD-LOGO') hosts.push(el);
       if (el.tagName === 'IMG' && el.closest('.flag, .option-flag') && el.hasAttribute('src')) flagImgs.push(el);
+      if (el.matches('.flag[data-iso]')) flagBoxes.push(el);
       if (el.shadowRoot) visit(el.shadowRoot);
     }
   };
@@ -116,7 +122,8 @@ function inspectAssets() {
     return root.querySelector('svg') !== null || [...root.querySelectorAll('img')].some(i => i.naturalWidth > 0);
   };
   const pendingHosts = hosts.filter(h => !drawn(h)).length;
-  const pendingFlags = flagImgs.filter(i => !i.complete).length;
+  const pendingFlags =
+    flagImgs.filter(i => !i.complete).length + flagBoxes.filter(box => box.querySelector('svg') === null).length;
   const broken = flagImgs.filter(i => i.complete && i.naturalWidth === 0).map(i => i.getAttribute('src'));
   return { pending: pendingHosts + pendingFlags, broken };
 }
