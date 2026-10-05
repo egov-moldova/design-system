@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 
 import vue from '@vitejs/plugin-vue';
 import { defineConfig, type Plugin } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 
@@ -25,23 +24,7 @@ function recordModuleGraph(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    // The asset recipe of the README (Vue section), verbatim: the components fetch their SVGs from
-    // `<assetPath>assets/...`, so the app serves the core's `dist/components/assets` under `mud/`
-    // and passes `assetPath: '<base>mud/'` to `app.use(Mud, ...)` (see `src/main.ts`).
-    viteStaticCopy({
-      targets: [
-        {
-          src: 'node_modules/@egov-moldova/mud/dist/components/assets',
-          dest: 'mud',
-          // The plugin keeps the source path: strip `node_modules/@egov-moldova/mud/dist/components/`.
-          rename: { stripBase: 5 },
-        },
-      ],
-    }),
-    recordModuleGraph(),
-  ],
+  plugins: [vue(), recordModuleGraph()],
   build: {
     // The runner reads `dist/.vite/manifest.json` and `module-graph.json` for a second runtime.
     manifest: true,

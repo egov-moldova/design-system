@@ -6,6 +6,3 @@ export * from './components/stencil-generated/components.js';
 // takes precedence over `export *`. See `scripts/adapters/form-models.ts` (`vueBindingKind`).
 export { MudNumericInput } from './wrappers/numeric-input.js';
 export { MudPhoneInput } from './wrappers/phone-input.js';
-
-export { Mud } from './plugin.js';
-export type { MudPluginOptions } from './plugin.js';
