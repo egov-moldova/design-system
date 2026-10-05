@@ -21,13 +21,6 @@
             "browser": "src/main.ts",
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "node_modules/@egov-moldova/mud/dist/components/assets",
-                "output": "mud/assets"
-              }
-            ],
             "styles": ["@egov-moldova/mud/tokens/core.tokens.css", "@egov-moldova/mud/styles.css"]
           },
           "configurations": {

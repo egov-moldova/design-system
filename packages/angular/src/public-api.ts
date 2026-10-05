@@ -8,6 +8,3 @@ export { SelectValueAccessor } from './lib/stencil-generated/select-value-access
 export { TextValueAccessor } from './lib/stencil-generated/text-value-accessor';
 export { ChipsValueAccessor, FilesValueAccessor, NumericValueAccessor } from './lib/accessors';
 export { MUD_FORM_ACCESSORS } from './lib/form-accessors';
-
-export { provideMud } from './lib/provide-mud';
-export type { MudOptions } from './lib/provide-mud';

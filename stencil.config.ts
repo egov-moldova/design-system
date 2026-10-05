@@ -129,12 +129,6 @@ if (!isDevMode) {
     // `valueAccessorConfigs` is derived from the form-control model map, grouped into one config
     // per (type, event, property); the rows the generator cannot serve (numeric, chips, files)
     // get the hand-written accessors in packages/angular/src/lib/accessors/.
-    //
-    // DEBT(angular-wrapper-side-effects): every generated wrapper defines its element when its
-    // class loads (`@ProxyCmp({ defineCustomElementFn })`), so the package cannot declare
-    // `"sideEffects": false` and an Angular bundle includes ALL wrappers, whichever the app
-    // imports. The honest version is wrappers that define their element on first use, so a
-    // bundler can drop the ones an app never imports.
     angular({
       componentCorePackage: '@egov-moldova/mud',
       directivesProxyFile: `${PROXY_DIRS.angular}/components.ts`,

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
 import { expect, test as base, type Locator, type Page } from '@playwright/test';
 
@@ -269,4 +269,17 @@ test('assets: mud-icon and mud-logo each render an svg in their shadow root', as
       .poll(() => host(page, id).evaluate(el => el.shadowRoot?.querySelector('svg') != null), { message: id })
       .toBe(true);
   }
+});
+
+test('bundle: an unimported component is not bundled', () => {
+  // The runner copies the fixture into a temp directory and runs this spec from it, so the
+  // production build the browser serves is `dist/fixture/browser` under the working directory.
+  const output = resolve(process.cwd(), 'dist/fixture/browser');
+  const files = readdirSync(output, { recursive: true, withFileTypes: true }).filter(entry => entry.isFile());
+  expect(files.length, `no build output under ${output}`).toBeGreaterThan(0);
+  // The fixture never imports `mud-stepper`: any file naming it carries a wrapper nobody asked for.
+  const carriers = files
+    .map(entry => join(entry.parentPath, entry.name))
+    .filter(file => readFileSync(file, 'utf8').includes('mud-stepper'));
+  expect(carriers, 'files of the build output that contain mud-stepper').toEqual([]);
 });
