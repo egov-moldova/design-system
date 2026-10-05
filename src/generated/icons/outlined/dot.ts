@@ -1,0 +1,1 @@
+export default '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" data-mud-asset="icon:outlined/dot"><circle cx="3" cy="3" r="3" fill="currentColor" transform="translate(5 5)"/></svg>';

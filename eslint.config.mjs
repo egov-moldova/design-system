@@ -22,6 +22,7 @@ export default tseslint.config(
       '**/*.md',
       '**/*.css',
       'src/components.d.ts',
+      'src/generated/**',
       'custom-elements.json',
       '.storybook/stories/assets/core.tokens.json',
     ],

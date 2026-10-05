@@ -142,6 +142,7 @@ export default defineVitestConfig({
         'src/**/*.enums.ts',
         'src/**/*.constants.ts',
         'src/assets/**',
+        'src/generated/**',
         'dist/**',
         'node_modules/**',
       ],
