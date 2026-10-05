@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Installs the Husky hooks, then registers the merge driver.
 //
-// Run by the `postinstall` of the private `react` workspace, not the root package: Yarn runs
-// every workspace's `postinstall` on `yarn install`, while a root install script would travel
+// Run by the `postinstall` of the private `tooling/hooks` workspace, not the root package: Yarn
+// runs every workspace's `postinstall` on `yarn install`, while a root install script would travel
 // with @egov-moldova/mud — `npm publish` sends the on-disk package.json as the registry
-// manifest, so consumers would see an install script for a component library.
+// manifest, so consumers would see an install script for a component library. The workspace is
+// never published, so the install script cannot reach a consumer.
 // Idempotent; safe to re-run by hand from any directory. `HUSKY=0` skips the hooks.
 
 import { spawnSync } from 'node:child_process';
@@ -13,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import husky from 'husky';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-// Husky resolves `.husky` and `.git` from the cwd, and the workspace runs this from packages/react/.
+// Husky resolves `.husky` and `.git` from the cwd, and the workspace runs this from tooling/hooks/.
 process.chdir(root);
 
 const message = husky();

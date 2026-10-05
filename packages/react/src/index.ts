@@ -5,6 +5,4 @@
 // never the lazy loader (#180).
 export * from './components/stencil-generated/components';
 
-export { defineCustomElements, setupMud } from './setup';
-export type { DefineCustomElementsOptions, MudSetupOptions } from './setup';
-export { setAssetPath, setNonce } from '@egov-moldova/mud/components';
+export { setNonce } from '@egov-moldova/mud/components';

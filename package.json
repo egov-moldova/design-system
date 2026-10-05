@@ -34,7 +34,8 @@
     "packages/web-components",
     "packages/react",
     "packages/vue",
-    "packages/angular"
+    "packages/angular",
+    "tooling/hooks"
   ],
   "resolutions": {
     "undici-types": "~7.19.0",

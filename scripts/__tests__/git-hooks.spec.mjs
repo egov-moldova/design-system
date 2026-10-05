@@ -123,11 +123,25 @@ describe('hook installation', () => {
     );
   });
 
+  // These run on a consumer's machine when the adapter is installed. `prepare` stays allowed:
+  // packages/web-components builds its dist/ with it before publishing.
+  it('no adapter manifest declares a preinstall, install or postinstall script', () => {
+    const lifecycle = ['preinstall', 'install', 'postinstall'];
+    for (const adapter of ['react', 'vue', 'angular', 'web-components']) {
+      const rel = `packages/${adapter}/package.json`;
+      assert.deepEqual(
+        Object.keys(readJson(rel).scripts ?? {}).filter(s => lifecycle.includes(s)),
+        [],
+        rel,
+      );
+    }
+  });
+
   it('runs from the postinstall of a private workspace', () => {
-    assert.ok(readJson('package.json').workspaces.includes('packages/react'));
-    const react = readJson('packages/react/package.json');
-    assert.equal(react.private, true);
-    assert.equal(react.scripts.postinstall, 'node ../../scripts/git/install-hooks.mjs');
+    assert.ok(readJson('package.json').workspaces.includes('tooling/hooks'));
+    const hooks = readJson('tooling/hooks/package.json');
+    assert.equal(hooks.private, true);
+    assert.equal(hooks.scripts.postinstall, 'node ../../scripts/git/install-hooks.mjs');
   });
 });
 

@@ -1416,6 +1416,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@egov-moldova/repo-hooks@workspace:tooling/hooks":
+  version: 0.0.0-use.local
+  resolution: "@egov-moldova/repo-hooks@workspace:tooling/hooks"
+  languageName: unknown
+  linkType: soft
+
 "@emnapi/core@npm:1.11.0":
   version: 1.11.0
   resolution: "@emnapi/core@npm:1.11.0"

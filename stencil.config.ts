@@ -64,7 +64,7 @@ if (hasDocs) {
 
 // The standalone custom-elements bundle is part of the published contract —
 // `package.json` declares `exports["./components"]` unconditionally and
-// `packages/react/src/index.ts` imports `setAssetPath` from it. It is therefore built
+// `packages/react/src/index.ts` re-exports `setNonce` from it. It is therefore built
 // for every non-dev build: what the package contains must not depend on which
 // flag CI happened to pass.
 //
