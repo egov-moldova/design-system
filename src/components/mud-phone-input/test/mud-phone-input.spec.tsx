@@ -4,6 +4,8 @@ import '../mud-phone-input';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { FLAG_MODULES } from '../../../generated/flags';
+import { clearSvgCaches } from '../../../utils/svg-assets';
 import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { COUNTRIES } from '../mud-phone-input.data';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
@@ -225,6 +227,38 @@ describe('mud-phone-input', () => {
       await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'ro')).toBeTruthy());
       expect(drawing(queryFlag(root), 'md')).toBeNull();
       expect(queryFlag(root)?.querySelectorAll('svg')).toHaveLength(1);
+    });
+
+    it('warns once when a flag cannot be imported, does not re-import it on each render, and retries when the list opens', async () => {
+      clearSvgCaches();
+      const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
+      const realPw = flags.pw;
+      const pw = vi.spyOn(flags, 'pw').mockRejectedValue(new Error('offline'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      try {
+        const { root, waitForChanges } = await render(
+          <mud-phone-input label="x" type="international" default-country="PW"></mud-phone-input>,
+        );
+        await waitForAssetLoad(() =>
+          expect(warn).toHaveBeenCalledWith(
+            '[mud-phone-input] Failed to load flag: key="pw" (the import failed: offline)',
+          ),
+        );
+        root!.setAttribute('placeholder', 'one');
+        await waitForChanges();
+        root!.setAttribute('placeholder', 'two');
+        await waitForChanges();
+        expect(pw).toHaveBeenCalledTimes(1);
+        expect(warn).toHaveBeenCalledTimes(1);
+
+        pw.mockImplementation(realPw!);
+        queryTriggerButton(root)?.click();
+        await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
+        expect(pw).toHaveBeenCalledTimes(2);
+      } finally {
+        pw.mockRestore();
+        warn.mockRestore();
+      }
     });
 
     it.each([

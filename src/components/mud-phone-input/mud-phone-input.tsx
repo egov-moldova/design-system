@@ -258,8 +258,8 @@ export class MudPhoneInput {
   @State() private searchQuery: string = '';
   /** ISO codes of the rows whose flag was asked for: those that came near the visible part of the list. */
   @State() private shownFlags: ReadonlySet<string> = new Set();
-  /** Flag keys whose module has resolved: each change re-renders so `drawFlags` can pick the drawing up. */
-  @State() private loadedFlags: ReadonlySet<string> = new Set();
+  /** Bumped when a flag module resolves, so `drawFlags` runs again and picks the drawing up. */
+  @State() private flagLoads = 0;
 
   @Element() host!: HTMLMudPhoneInputElement;
 
@@ -307,6 +307,8 @@ export class MudPhoneInput {
   private listboxEl?: HTMLElement;
   private listEl?: HTMLElement;
   private flagObserver?: IntersectionObserver;
+  /** Flag keys being imported, or whose import failed; neither is asked for again by `drawFlags`. */
+  private flagRequests = new Map<string, 'pending' | 'failed'>();
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
@@ -376,7 +378,7 @@ export class MudPhoneInput {
    * are unkeyed and the trigger's span is the same element across country changes. So a box is
    * matched on the `data-mud-asset` marker of its drawing, never on being empty, and a box that is
    * not shown (a row the observer has not reported) is cleared rather than left with the old flag.
-   * A drawing that is not loaded yet leaves the box empty; `loadedFlags` re-renders it once it is.
+   * A drawing that is not loaded yet leaves the box empty; `flagLoads` re-renders it once it is.
    */
   private drawFlags() {
     const boxes = this.host.shadowRoot?.querySelectorAll<HTMLElement>('.flag[data-iso], .option-flag[data-iso]');
@@ -393,9 +395,29 @@ export class MudPhoneInput {
         box.appendChild(drawing);
         return;
       }
+      // This runs on every render (each keystroke, each highlight move), so a key already being
+      // imported, or whose import failed, is not asked for again here: offline, that would fire a
+      // new import per shown flag per render. A failed key is retried when the list opens again.
+      if (this.flagRequests.has(key)) return;
+      this.flagRequests.set(key, 'pending');
       void flagLoader.load(key).then(loaded => {
-        if (loaded) this.loadedFlags = new Set([...this.loadedFlags, key]);
+        if (loaded) {
+          this.flagRequests.delete(key);
+          this.flagLoads += 1;
+          return;
+        }
+        this.flagRequests.set(key, 'failed');
+        console.warn(
+          `[mud-phone-input] Failed to load flag: key="${key}" (${flagLoader.failure(key) ?? 'unknown cause'})`,
+        );
       });
+    });
+  }
+
+  /** Lets every flag whose import failed be asked for again, on the next render. */
+  private retryFailedFlags() {
+    this.flagRequests.forEach((state, key) => {
+      if (state === 'failed') this.flagRequests.delete(key);
     });
   }
 
@@ -748,6 +770,7 @@ export class MudPhoneInput {
     this.open = next;
 
     if (next) {
+      this.retryFailedFlags();
       this.searchQuery = '';
       this.primeHighlight();
       if (opts?.emit) this.mudOpen.emit();
