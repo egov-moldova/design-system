@@ -48,6 +48,7 @@ const SAFE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
 /** What no emitted drawing may carry: it is appended inline to a shadow root on every consumer's page. */
 const FORBIDDEN = [
   [/\sstyle\s*=/i, 'a style attribute'],
+  [/<style/i, 'a style element'],
   [/<script/i, 'a script'],
   [/\son[a-z]+\s*=/i, 'an event handler'],
   [/\s(?:href|xlink:href|src)\s*=\s*["'](?!#)/i, 'a reference out of the file'],
