@@ -53,6 +53,26 @@ describe('createSvgLoader', () => {
     expect(loader.failure('outlined/f')).toBeUndefined();
   });
 
+  it('names no cause for an unknown key, and names a rejection that is not an Error', async () => {
+    const loader = createSvgLoader({ 'outlined/i': () => Promise.reject('chunk gone') });
+    expect(await loader.load('outlined/nope')).toBeNull();
+    expect(loader.failure('outlined/nope')).toBeUndefined();
+    expect(await loader.load('outlined/i')).toBeNull();
+    expect(loader.failure('outlined/i')).toBe('the import failed: chunk gone');
+  });
+
+  it('does not record the failure of an import that started before a clear', async () => {
+    let reject!: (reason: Error) => void;
+    const load = vi.fn(() => new Promise<{ default: string }>((_, r) => (reject = r)));
+    const loader = createSvgLoader({ 'outlined/j': load });
+    const stale = loader.load('outlined/j');
+    await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(1));
+    clearSvgCaches();
+    reject(new Error('offline'));
+    await stale;
+    expect(loader.failure('outlined/j')).toBeUndefined();
+  });
+
   it('evicts a thunk that throws synchronously, so the next call retries', async () => {
     let calls = 0;
     const loader = createSvgLoader({
