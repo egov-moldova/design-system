@@ -2,7 +2,7 @@
 
 **Execution**: workflow — `2026-10-02-asset-delivery.workflow.mjs` (generated from this plan by tools/plan-to-workflow.mjs; regenerate, never edit)
 
-**Status:** planned (unbuilt) — approved by Dan on 2026-10-02
+**Status:** implemented on 2026-10-05 — approved by Dan on 2026-10-02
 **Reviewed:** preflight fd6859a1, critic 83111aa6, critic dad8cc14 — the 3-round cap ended the loop; every round-3 finding is folded below; Dan's go: 2026-10-02
 **Spec:** `.claude/plans/2026-10-02-asset-delivery-design.md` (approved by Dan on 2026-10-02; its
 `## Revisions after review` section records the decisions Dan changed afterwards)
@@ -1091,6 +1091,62 @@ Task 6), `eslint.config.mjs` (the source guard, Task 6), `scripts/__tests__/git-
 - The Angular CLI probe stays in Task 9 rather than right after Task 3: until Task 6 the runner asserts
   published SVGs, and until Task 9 the Angular fixture copies them, so an earlier run would fail for
   reasons unrelated to `import()`.
+
+- Task 0 step 6: the largest `mud-phone-input` capture is `components-input-phone--open-dropdown`,
+  1248 × 800 (18 phone-input stories, 462 stories in the baseline, clock `2026-10-02T12:00:00Z`).
+- Task 0: `capture` loads each story one at a time under reduced motion, at least twice (up to 5 times
+  when the loads differ) and keeps the most frequent rendering — `mud-tooltip` positions its bubble
+  from a one-frame measurement and Chromium anti-aliases overlay text differently between loads. A
+  story whose loads still differ records its largest same-size difference as `noise` in the manifest,
+  and `compare` allows `max(--budget, noise)` for it; the committed baseline recorded no noise, so
+  the budget stays exactly the plan's.
+- Task 6 step 4, measured after the task: `yarn pack` = 7,222,595 bytes, 3920 files, 0 SVG. The
+  `448dc20d` pack was not measured (it needs a second checkout); the same tree before the
+  `dist/collection` exclusion below packed 4442 files, 522 of them SVG (~2.96 MB unpacked).
+  `dist/types/generated/**` holds one `.d.ts` per asset module — 525 files, 3.1 MB raw, 0.88 MB
+  gzip, ~75% of `dist/types` — each declaring its drawing as a string-literal type; Stencil 4.45
+  has no per-folder declaration switch, so it is left as the plan says. `dist/cjs` is `main` /
+  `exports["."].require`; `dist/collection` is the `collection` field; no adapter references either.
+- Task 6: Stencil copies `**/*.svg` into `dist/collection` unconditionally, so `package.json` `files`
+  gains `"!dist/collection/**/*.svg"` — without it 522 SVGs stay published.
+- Task 6: the flag-icons `/*! … */` notice is emitted inside the flag map's initializer
+  (`FLAG_MODULES: SvgModuleMap = /*! … */ {`): placed before the erased `import type` TypeScript
+  dropped it, and placed before the declaration Terser dropped it when merging declarations. It now
+  survives in `dist/components`, `dist/esm`, `dist/cjs` and `dist/mud`.
+- Task 9: ng-packagr already writes `"sideEffects": false` into `packages/angular/dist/package.json`,
+  so the source manifest is unchanged. The bundle test passes on Angular 20 and 22: the
+  `DEBT(angular-wrapper-side-effects)` comment is deleted.
+- Tasks 9 and 11: on this machine `$TMPDIR` holds ~700k leaked entries and esbuild's per-file
+  resolve walks it, so an Angular fixture build under the default temp dir times out after 600 s.
+  The fixture runs set `RUNNER_TEMP=/tmp/mud-fx-run` (the runner honours it; CI sets it anyway).
+- Task 11 test 7: a Vite-bundled `import '@egov-moldova/mud/mud.esm.js'` registers the elements,
+  but the script-tag build resolves its lazy `./<id>.entry.js` chunks against its own URL, which the
+  bundler does not emit, so they 404. The test asserts registration (Review Focus 5) and allows
+  exactly those console errors; the docs tell bundler users to use an adapter instead.
+- Task 11 deleted `scripts/__tests__/readme-vue-asset-recipe.spec.mjs`: it mirrored the README's
+  `viteStaticCopy` recipe against the Vue fixture, and Task 8 removed the recipe.
+- Outside the Files lists, fixed because the change made them false: the `mud-phone-input.types.ts`
+  and `mud-segmented-control.types.ts` comments, `scripts/adapters/proxy-dirs.ts`,
+  `scripts/flags/sync-flags.mjs`, `AGENTS.md` (`svg:icons` line), `changes/adapters-angular-vue.md`,
+  and two script specs the earlier phases broke (`package-scripts-paths.spec.mjs` now follows
+  `mud-icon` to `src/generated/icons`; `story-regression.mjs` uses `isEntrypoint`).
+- Code review: an invalid `variant` made `mud-icon`'s stale-load guard discard every load (fixed,
+  with a spec); the generator now also refuses a `<style>` element. Both landed after the Task 13
+  Storybook build, which no story exercises (no story sets an invalid variant).
+- Task 13, row 14 as written exits 1: 462 stories compared, 2 over budget. Every
+  `mud-phone-input` story is within its 279 px budget.
+  - `components-input-textarea--with-character-counter`: the after capture grew to the 1280×800
+    viewport; a re-capture of `mud-textarea` and `mud-tabs` (`capture .asset-regression/after-recheck
+    --components mud-tabs,mud-textarea`, then `compare … --components mud-tabs,mud-textarea`) matches
+    the baseline at 0 px — a one-off layout flake.
+  - `components-tabs--states`: 816 px on both captures. The only difference is a keyboard focus ring
+    on the "unselected: focus" row's second tab, present after and absent in the baseline. The story
+    calls `tab.focus()` from an inline script two animation frames after insertion, on two tab lists
+    at once; whether the call lands depends on when `mud-tab` has hydrated. No component pixel
+    changed; the story's own race resolved differently. Not fixed: making the story deterministic
+    changes the story itself and still cannot match a baseline that shows no focus ring.
+- Task 13, row 10 ran with `RUNNER_TEMP=/tmp/mud-fx-run` (the temp-dir issue above): both Angular
+  runs ended `PASS`.
 
 (filled further during implementation)
 
