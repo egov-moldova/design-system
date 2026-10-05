@@ -185,8 +185,10 @@ export class MudIcon {
 
     const element = await icons.load(key);
 
-    // Guard: props changed during the async import — discard the stale result
-    if (this.name !== requestedName || this.variant !== requestedVariant) return;
+    // Guard: props changed during the async import — discard the stale result. The variant is
+    // compared normalised, as `requestedVariant` is, or an invalid one would discard every load.
+    const currentVariant = isIconVariant(this.variant) ? this.variant : 'outlined';
+    if (this.name !== requestedName || currentVariant !== requestedVariant) return;
 
     if (!element) {
       console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant}`);

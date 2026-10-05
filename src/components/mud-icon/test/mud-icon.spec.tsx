@@ -75,6 +75,12 @@ describe('mud-icon', () => {
     );
   });
 
+  it('an invalid variant warns and draws the outlined drawing on a cold cache', async () => {
+    const { root } = await render(<mud-icon name="calendar" variant={'bogus' as IconVariant} />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
   it('reflects interactive + disabled flags', async () => {
     const name = ICON_NAMES[0];
     const { root } = await render(<mud-icon name={name} interactive disabled />);
