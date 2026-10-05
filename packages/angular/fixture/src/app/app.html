@@ -106,9 +106,15 @@
     <mud-button disabled data-testid="button">Disabled</mud-button>
   </section>
 
+  <!-- The page contract of scripts/adapters/fixture-e2e: the same four test ids in every fixture app. -->
   <section>
-    <h2>assets (icon, logo)</h2>
-    <mud-icon data-testid="icon" name="alarm" [size]="24"></mud-icon>
-    <mud-logo data-testid="logo"></mud-logo>
+    <h2>assets (icon, logo, flag, a component's own icon)</h2>
+    <mud-icon data-testid="asset-icon" name="calendar" [size]="24"></mud-icon>
+    <mud-logo data-testid="asset-logo" name="mpass-logo-with-name"></mud-logo>
+    <mud-phone-input data-testid="asset-phone" aria-label="Asset phone"></mud-phone-input>
+    <mud-select data-testid="asset-select" aria-label="Asset fruit">
+      <option value="apple">Apple</option>
+      <option value="pear">Pear</option>
+    </mud-select>
   </section>
 </main>

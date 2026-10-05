@@ -158,15 +158,15 @@ jobs:
       - name: Validate package
         run: yarn validate.package
 
-  # Builds the Vue and Angular adapters, packs them with the core, installs the tarballs into
-  # fixture apps outside the workspaces and drives each app in Chromium. See
+  # Builds the React, Vue, Angular and web-components adapters, packs them with the core, installs the
+  # tarballs into fixture apps outside the workspaces and drives each app in Chromium. See
   # scripts/adapters/consumer-fixture.mjs for the steps and what each one fails on.
   adapters:
     name: Adapters
     needs: [lint, typecheck]
     # Headroom, not a budget: the shared build is ~10 min, an Angular 20 fixture build measured
-    # ~5 min on a loaded machine, and the runner caps every one of its steps at 600 s. Three
-    # runs at that cap, plus the two adapter builds, still fit.
+    # ~5 min on a loaded machine, and the runner caps every one of its steps at 600 s. The cap
+    # is for a hang: the six fixture runs and four adapter builds are expected well below it.
     timeout-minutes: 45
     runs-on: ubuntu-latest
     env:
@@ -180,13 +180,13 @@ jobs:
       - name: Setup project
         uses: ./.github/actions/setup-node-deps
 
-      # Both fixtures pin the same @playwright/test. Read it from versions.json instead of
-      # retyping it here, and fail when the rows disagree: one cache key cannot cover two.
+      # Every fixture pins the same @playwright/test. Read it from versions.json instead of
+      # retyping it here, and fail when the rows disagree: one cache key cannot cover several.
       - name: Read the pinned Playwright version
         id: playwright
         run: |
           VERSION=$(node -e "
-            const rows = ['vue', 'angular'].flatMap(name =>
+            const rows = ['react', 'vue', 'angular', 'web-components'].flatMap(name =>
               Object.values(JSON.parse(require('fs').readFileSync('packages/' + name + '/fixture/versions.json', 'utf8'))),
             );
             const pins = [...new Set(rows.map(row => row.devDependencies['@playwright/test']))];
@@ -225,6 +225,15 @@ jobs:
       - name: Build the Angular adapter
         run: yarn build.angular
 
+      - name: Build the web-components adapter
+        run: yarn build.web
+
+      - name: Consumer fixture, React 19
+        run: node scripts/adapters/consumer-fixture.mjs react
+
+      - name: Consumer fixture, React 18
+        run: node scripts/adapters/consumer-fixture.mjs react --framework-version 18
+
       - name: Consumer fixture, Vue
         run: node scripts/adapters/consumer-fixture.mjs vue
 
@@ -233,6 +242,9 @@ jobs:
 
       - name: Consumer fixture, Angular 22 (zoneless)
         run: node scripts/adapters/consumer-fixture.mjs angular --framework-version 22
+
+      - name: Consumer fixture, web components (lazy loader, CDN shapes)
+        run: node scripts/adapters/consumer-fixture.mjs web-components
 
       # An exact hit already holds this key, and a cache key cannot be overwritten.
       - name: Save the Playwright browser

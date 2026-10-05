@@ -117,10 +117,16 @@ const fileNames = computed(() => (files.value ?? []).map(file => file.name));
       <button type="button" data-testid="phone-set" @click="phone = '+37360654321'">set model</button>
     </section>
 
+    <!-- The page contract of scripts/adapters/fixture-e2e: the same four test ids in every fixture app. -->
     <section>
-      <h2>assets (icon, logo)</h2>
-      <MudIcon data-testid="icon" name="alarm" :size="24" />
-      <MudLogo data-testid="logo" />
+      <h2>assets (icon, logo, flag, a component's own icon)</h2>
+      <MudIcon data-testid="asset-icon" name="calendar" :size="24" />
+      <MudLogo data-testid="asset-logo" name="mpass-logo-with-name" />
+      <MudPhoneInput data-testid="asset-phone" aria-label="Asset phone" />
+      <MudSelect data-testid="asset-select" aria-label="Asset fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </MudSelect>
     </section>
   </main>
 </template>

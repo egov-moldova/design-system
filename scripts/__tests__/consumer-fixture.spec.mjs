@@ -9,14 +9,18 @@ import { PROJECT_ROOT } from '../validate-package.mjs';
 // start a real fixture run (pack, install, browser) from inside this spec.
 const signalsBefore = ['SIGINT', 'SIGTERM'].map(signal => process.listenerCount(signal));
 const {
+  ASSET_TITLES,
+  CDN_TITLES,
   RunnerError,
   checkSecondRuntime,
   judgeNegative,
+  judgeReport,
   loadPins,
   negativeTarget,
   parseArgs,
   parseEsbuildDiagnostics,
   parseTscDiagnostics,
+  reportedTests,
   workspaceSpecifiers,
 } = await import('../adapters/consumer-fixture.mjs');
 
@@ -37,11 +41,13 @@ describe('importing the consumer-fixture runner', () => {
 describe('the argument parser', () => {
   it('reads a framework and an optional major', () => {
     assert.deepEqual(parseArgs(['vue']), { framework: 'vue', requested: undefined });
+    assert.deepEqual(parseArgs(['react', '--framework-version', '18']), { framework: 'react', requested: '18' });
+    assert.deepEqual(parseArgs(['web-components']), { framework: 'web-components', requested: undefined });
     assert.deepEqual(parseArgs(['angular', '--framework-version', '22']), { framework: 'angular', requested: '22' });
   });
 
   it('rejects an unknown framework, including the names every object inherits', () => {
-    for (const framework of ['react', 'constructor', '__proto__', 'toString', undefined]) {
+    for (const framework of ['svelte', 'constructor', '__proto__', 'toString', undefined]) {
       assert.throws(() => parseArgs([framework].filter(Boolean)), rejects(/usage/), String(framework));
     }
   });
@@ -285,5 +291,72 @@ describe('the negative-case judge', () => {
         rejects(pattern),
       );
     }
+  });
+});
+
+describe('the Playwright report verdict', () => {
+  const spec = (title, status) => ({ title, tests: [{ status, results: [] }] });
+  const report = (titles, overrides = {}) => ({
+    suites: [
+      {
+        title: 'assets.spec.ts',
+        specs: titles.slice(0, 2).map(title => spec(title, 'expected')),
+        // Playwright nests a `describe` as a child suite: its specs count too.
+        suites: [{ title: 'group', specs: titles.slice(2).map(title => spec(title, 'expected')) }],
+      },
+    ],
+    errors: [],
+    ...overrides,
+  });
+
+  it('passes a report in which every test ended expected and every required title ran', () => {
+    assert.equal(judgeReport(report(ASSET_TITLES), ASSET_TITLES), ASSET_TITLES.length);
+    const all = [...ASSET_TITLES, ...CDN_TITLES];
+    assert.equal(judgeReport(report(all), all), all.length);
+  });
+
+  it('reads the tests of nested suites', () => {
+    assert.deepEqual(
+      reportedTests(report(ASSET_TITLES)).map(test => test.title),
+      ASSET_TITLES,
+    );
+  });
+
+  it('fails a skipped test, which Playwright exits 0 on', () => {
+    const skipped = report(ASSET_TITLES);
+    skipped.suites[0].specs[0] = spec(ASSET_TITLES[0], 'skipped');
+    assert.throws(
+      () => judgeReport(skipped, ASSET_TITLES),
+      rejects(/"assets: named icon, logo and flag render" ended skipped/),
+    );
+  });
+
+  it('fails an unexpected or flaky test', () => {
+    for (const status of ['unexpected', 'flaky']) {
+      const bad = report(ASSET_TITLES);
+      bad.suites[0].specs[1] = spec(ASSET_TITLES[1], status);
+      assert.throws(() => judgeReport(bad, ASSET_TITLES), rejects(new RegExp(`ended ${status}`)), status);
+    }
+  });
+
+  it('fails a required title that did not run', () => {
+    const [, ...missing] = ASSET_TITLES;
+    assert.throws(
+      () => judgeReport(report(missing), ASSET_TITLES),
+      rejects(/required test "assets: named icon, logo and flag render" did not run/),
+    );
+  });
+
+  it('requires the cdn and side-effect titles of web-components on top of the asset titles', () => {
+    const all = [...ASSET_TITLES, ...CDN_TITLES];
+    assert.throws(() => judgeReport(report(ASSET_TITLES), all), rejects(/required test "cdn: loader page/));
+  });
+
+  it('fails an empty report and an error outside any test', () => {
+    assert.throws(() => judgeReport({ suites: [], errors: [] }, ASSET_TITLES), rejects(/holds no test/));
+    assert.throws(
+      () => judgeReport(report(ASSET_TITLES, { errors: [{ message: 'boom' }] }), ASSET_TITLES),
+      rejects(/1 error\(s\) outside any test/),
+    );
   });
 });

@@ -42,8 +42,10 @@ test('upgrade: every wrapped host has a shadow root', async ({ page }) => {
     'chips',
     'files',
     'phone',
-    'icon',
-    'logo',
+    'asset-icon',
+    'asset-logo',
+    'asset-phone',
+    'asset-select',
   ]) {
     await expect.poll(() => host(page, id).evaluate(el => el.shadowRoot !== null), { message: id }).toBe(true);
   }
@@ -240,12 +242,4 @@ test('tokens: a semantic token from core.tokens.css reaches a rendered host', as
     token,
   );
   expect(computed).toBe(declared);
-});
-
-test('assets: mud-icon and mud-logo each render an svg in their shadow root', async ({ page }) => {
-  for (const id of ['icon', 'logo']) {
-    await expect
-      .poll(() => host(page, id).evaluate(el => el.shadowRoot?.querySelector('svg') != null), { message: id })
-      .toBe(true);
-  }
 });

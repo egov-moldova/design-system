@@ -34,7 +34,11 @@
  *                `@negative-binding` marker, at the named input. No failure, or any other
  *                failure, fails the run.
  *   6. browser   install the pinned Playwright's Chromium, serve the production build on a
- *                free port, run the fixture's Playwright spec, then stop the server.
+ *                free port, run the fixture's Playwright specs, then stop the server. The runner
+ *                then reads Playwright's JSON report and FAILS unless every test ended `expected`
+ *                (a skipped or `fixme` test is not a pass) and every title the framework requires
+ *                ran (`judgeReport`). `scripts/adapters/fixture-e2e/` is copied into the app's
+ *                `e2e/` first: the asset tests are written once, for every framework.
  *
  * The server and every long step run in their own process group, killed in `finally` and on
  * SIGINT/SIGTERM/exit, so no orphan outlives the runner.
@@ -45,7 +49,11 @@
  * Importing this module runs nothing: the guards below are exported for
  * `scripts/__tests__/consumer-fixture.spec.mjs`, which drives each one RED with canned input.
  *
- * Adding a framework is one entry in `FRAMEWORKS` and a `fixture/` directory.
+ * Adding a framework is one entry in `FRAMEWORKS`, a `fixture/` directory and a page that renders
+ * the contract of `scripts/adapters/fixture-e2e/asset-checks.ts`.
+ *
+ * `web-components` has no framework: its `versions.json` row is keyed by the adapter's major, and its
+ * adapter is the lazy loader itself, so it has no second-runtime check and no negative case.
  */
 import { spawn } from 'node:child_process';
 import {
@@ -81,6 +89,21 @@ const STANDALONE_RUNTIME = '/node_modules/@egov-moldova/mud/dist/components/';
 
 export class RunnerError extends Error {}
 
+/** Tests 1-4 of `fixture-e2e/assets.spec.ts`: every framework's app page runs them. */
+export const ASSET_TITLES = [
+  'assets: named icon, logo and flag render',
+  "assets: a component's own icon renders",
+  'assets: never-shown assets are not downloaded',
+  'bundle: an unimported component is not bundled',
+];
+/** Tests 5-8 of the web-components fixture's own spec: the delivery shapes only the lazy loader has. */
+export const CDN_TITLES = [
+  'cdn: loader page on a deep subpath renders',
+  'cdn: import map and script-tag pages render',
+  'side effects: mud.esm.js import registers elements',
+  'assets: one shown icon downloads exactly one asset chunk',
+];
+
 const log = message => console.log(`[consumer-fixture] ${message}`);
 const fail = (step, message) => {
   throw new RunnerError(`${step}: ${message}`);
@@ -100,12 +123,61 @@ const fail = (step, message) => {
  * @property {string} major
  */
 
+/**
+ * Every module a Vite build put in the graph, from the fixture's own build output: the
+ * `module-graph.json` its `vite.config.ts` plugin writes, plus `build.manifest`'s entries.
+ */
+function viteModuleIds({ app }) {
+  const ids = new Set();
+  const graph = join(app, 'module-graph.json');
+  if (!existsSync(graph)) fail('module graph', 'the build wrote no module-graph.json');
+  for (const id of JSON.parse(readFileSync(graph, 'utf8'))) ids.add(id);
+  // `build.manifest` lists entries and dynamic entries by source path.
+  const manifest = join(app, 'dist/.vite/manifest.json');
+  if (!existsSync(manifest)) fail('module graph', 'the build wrote no dist/.vite/manifest.json');
+  for (const [key, entry] of Object.entries(JSON.parse(readFileSync(manifest, 'utf8')))) {
+    ids.add(key);
+    if (entry.src) ids.add(entry.src);
+  }
+  return [...ids];
+}
+
 const FRAMEWORKS = {
-  vue: {
-    adapterPackage: '@egov-moldova/mud-vue',
-    workspace: 'packages/vue',
+  'react': {
+    adapterPackage: '@egov-moldova/mud-react',
+    workspace: 'packages/react',
     /** A file the adapter build writes, relative to the workspace: its absence fails the preflight. */
     built: 'dist/index.js',
+    /** Titles the Playwright run must report, beyond all being `expected`. */
+    required: ASSET_TITLES,
+
+    /** Typecheck with `tsc`, then build with Vite. */
+    async build({ app, bin, run }) {
+      await run('typecheck', bin('tsc'), ['--noEmit'], { cwd: app });
+      await run('build', bin('vite'), ['build'], { cwd: app });
+    },
+
+    moduleIds: viteModuleIds,
+
+    /** The negative case: a `MudTextInput` whose `value` is a number, outside the normal build. */
+    negative: {
+      file: 'negative/wrong-type.tsx',
+      marker: '@negative-binding',
+      command: ({ bin }) => [bin('tsc'), ['--noEmit', '--pretty', 'false', '-p', 'tsconfig.negative.json']],
+      /** `tsc` prints `path(line,col): error TSnnnn: message`. */
+      parse: parseTscDiagnostics,
+      /** A wrong value for a typed prop is TS2322, and nothing else is the diagnostic we want. */
+      codes: ['TS2322'],
+    },
+
+    serve: ({ bin }, port) => [bin('vite'), ['preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort']],
+  },
+
+  'vue': {
+    adapterPackage: '@egov-moldova/mud-vue',
+    workspace: 'packages/vue',
+    built: 'dist/index.js',
+    required: ASSET_TITLES,
 
     /** Typecheck with the framework's own checker, then build with its own bundler. */
     async build({ app, bin, run }) {
@@ -113,21 +185,7 @@ const FRAMEWORKS = {
       await run('build', bin('vite'), ['build'], { cwd: app });
     },
 
-    /** Every module the bundler put in the graph, from the fixture's own build output. */
-    moduleIds({ app }) {
-      const ids = new Set();
-      const graph = join(app, 'module-graph.json');
-      if (!existsSync(graph)) fail('module graph', 'the build wrote no module-graph.json');
-      for (const id of JSON.parse(readFileSync(graph, 'utf8'))) ids.add(id);
-      // `build.manifest` lists entries and dynamic entries by source path.
-      const manifest = join(app, 'dist/.vite/manifest.json');
-      if (!existsSync(manifest)) fail('module graph', 'the build wrote no dist/.vite/manifest.json');
-      for (const [key, entry] of Object.entries(JSON.parse(readFileSync(manifest, 'utf8')))) {
-        ids.add(key);
-        if (entry.src) ids.add(entry.src);
-      }
-      return [...ids];
-    },
+    moduleIds: viteModuleIds,
 
     /** The negative case: one input bound to a wrongly typed value, outside the normal build. */
     negative: {
@@ -144,10 +202,11 @@ const FRAMEWORKS = {
     serve: ({ bin }, port) => [bin('vite'), ['preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort']],
   },
 
-  angular: {
+  'angular': {
     adapterPackage: '@egov-moldova/mud-angular',
     workspace: 'packages/angular',
     built: 'dist/package.json',
+    required: ASSET_TITLES,
     /** ng-packagr writes the publishable package to `dist/`, which `npm pack` packs. */
     packDirectory: 'dist',
 
@@ -196,6 +255,26 @@ const FRAMEWORKS = {
     },
 
     /** The production output, served by the fixture's own static server (`ng serve` is a dev server). */
+    serve: ({ app }, port) => [process.execPath, [join(app, 'serve.mjs'), String(port)]],
+  },
+
+  'web-components': {
+    adapterPackage: '@egov-moldova/mud-web-components',
+    workspace: 'packages/web-components',
+    built: 'dist/index.js',
+    required: [...ASSET_TITLES, ...CDN_TITLES],
+
+    /** Typecheck with `tsc`, then build the two pages (`index.html`, `side-effect.html`) with Vite. */
+    async build({ app, bin, run }) {
+      await run('typecheck', bin('tsc'), ['--noEmit'], { cwd: app });
+      await run('build', bin('vite'), ['build'], { cwd: app });
+    },
+
+    // No `moduleIds`: the adapter IS the core's lazy loader, which the second-runtime check forbids.
+    moduleIds: null,
+    negative: null,
+
+    /** The Vite build, the hand-written pages and the installed packages, from the fixture's own server. */
     serve: ({ app }, port) => [process.execPath, [join(app, 'serve.mjs'), String(port)]],
   },
 };
@@ -472,8 +551,45 @@ export function judgeNegative({ status, diagnostics, file, lines, binding, bindi
   return diagnostic;
 }
 
+/** Every test of a Playwright JSON report, with the status Playwright gave it. */
+export function reportedTests(report) {
+  const tests = [];
+  const walk = suite => {
+    for (const spec of suite.specs ?? []) {
+      for (const test of spec.tests ?? []) tests.push({ title: spec.title, status: test.status });
+    }
+    for (const child of suite.suites ?? []) walk(child);
+  };
+  for (const suite of report.suites ?? []) walk(suite);
+  return tests;
+}
+
+/**
+ * The verdict of a Playwright run, from its JSON report. A zero exit is not enough: a test marked
+ * `skip` or `fixme` exits 0 and reads as a pass. Passes ONLY when the report holds a test, every test
+ * ended `expected`, none was skipped, no error sits outside a test, and every title in `required` ran.
+ * Returns the number of tests.
+ */
+export function judgeReport(report, required) {
+  const tests = reportedTests(report);
+  if (tests.length === 0) fail('playwright', 'the report holds no test');
+  const problems = [];
+  const notExpected = tests.filter(test => test.status !== 'expected');
+  for (const test of notExpected) problems.push(`"${test.title}" ended ${test.status}, not expected`);
+  const titles = new Set(tests.map(test => test.title));
+  for (const title of required) if (!titles.has(title)) problems.push(`required test "${title}" did not run`);
+  if ((report.errors ?? []).length > 0) problems.push(`${report.errors.length} error(s) outside any test`);
+  if (problems.length > 0) fail('playwright', `the report is not all-expected:\n  ${problems.join('\n  ')}`);
+  return tests.length;
+}
+
 async function checkNegative(framework, ctx) {
-  const { file, marker, command, parse, codes } = FRAMEWORKS[framework].negative;
+  const { negative } = FRAMEWORKS[framework];
+  if (negative === null) {
+    log('negative: none for this framework');
+    return;
+  }
+  const { file, marker, command, parse, codes } = negative;
   const lines = readFileSync(join(ctx.app, file), 'utf8').split('\n');
   const { binding, bindingLine } = negativeTarget(lines, marker, file);
 
@@ -565,6 +681,8 @@ async function main() {
       recursive: true,
       filter: source => !/(^|\/)(node_modules|dist|\.angular|module-graph\.json|versions\.json)$/.test(source),
     });
+    // The asset tests are written once and run in every app, beside the fixture's own spec.
+    cpSync(join(ROOT, 'scripts/adapters/fixture-e2e'), join(app, 'e2e'), { recursive: true });
     writeFileSync(
       join(app, 'package.json'),
       JSON.stringify(
@@ -592,7 +710,11 @@ async function main() {
 
     // 4. typecheck + build, then the second-runtime check
     await spec.build(ctx);
-    log(`second runtime: none in ${checkSecondRuntime(spec.moduleIds(ctx), spec.adapterPackage)} script modules`);
+    if (spec.moduleIds) {
+      log(`second runtime: none in ${checkSecondRuntime(spec.moduleIds(ctx), spec.adapterPackage)} script modules`);
+    } else {
+      log('second runtime: not checked (the adapter is the lazy loader)');
+    }
 
     // 5. negative case
     await checkNegative(framework, ctx);
@@ -607,7 +729,13 @@ async function main() {
     log(`serve: ${url}`);
     server = start(serveBin, serveArgs, { cwd: app });
     await waitForServer(url, server);
-    await run('playwright', ctx.bin('playwright'), ['test'], { cwd: app, env: { FIXTURE_URL: url } });
+    const reportFile = join(temp, 'playwright-report.json');
+    await run('playwright', ctx.bin('playwright'), ['test', '--reporter=json,list'], {
+      cwd: app,
+      env: { FIXTURE_URL: url, FIXTURE_FRAMEWORK: framework, PLAYWRIGHT_JSON_OUTPUT_NAME: reportFile },
+    });
+    if (!existsSync(reportFile)) fail('playwright', `the run wrote no JSON report at ${reportFile}`);
+    log(`playwright: ${judgeReport(JSON.parse(readFileSync(reportFile, 'utf8')), spec.required)} tests, all expected`);
     passed = true;
   } finally {
     if (server) {
