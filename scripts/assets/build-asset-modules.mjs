@@ -9,7 +9,7 @@
  *
  * and `src/generated/{icons,logos,flags}/index.ts` exporting `ICON_MODULES`, `LOGO_MODULES` and
  * `FLAG_MODULES`, each a `SvgModuleMap` (`src/utils/svg-assets.ts`). Each module is
- * `export default '<svg …>';`; the transform is `svgo.asset-modules.mjs`.
+ * `const svg: string = '<svg …>'; export default svg;`; the transform is `svgo.asset-modules.mjs`.
  *
  * The output is committed, like `icon-names.ts`: a fresh clone, the editor and every script resolve
  * it with no build step. `src/generated/` belongs to this script — a file there with no source is
@@ -18,8 +18,9 @@
  *   yarn assets.generate                                     # write
  *   node scripts/assets/build-asset-modules.mjs --check      # write nothing; exit 1 on drift
  *
- * `--check` exits 1 when any output would differ (stale, missing or extra file) or when any module
- * carries a `style` attribute, a script, an event handler or a reference out of its own file
+ * `--check` exits 1 when any output would differ (stale, missing or extra file), when any module
+ * carries a `style` attribute, a script, an event handler or a reference out of its own file, or
+ * when a drawing references an id it never defines and is not in `KNOWN_DANGLING`
  * (run by scripts/__tests__/build-asset-modules.spec.mjs).
  */
 import fs from 'node:fs';
@@ -54,7 +55,29 @@ const FORBIDDEN = [
   [/\s(?:href|xlink:href|src)\s*=\s*["'](?!#)/i, 'a reference out of the file'],
 ];
 
+/**
+ * Drawings allowed to reference ids they never define, each with the reason. A browser paints a
+ * missing `url(#…)` as nothing, so such a drawing silently loses the shapes that use it. An entry
+ * expires: the run fails once its drawing defines every id it references, or no longer exists.
+ */
+const KNOWN_DANGLING = new Map([
+  [
+    'flag:sh-ac',
+    'flag-icons 7.5.0 ships 96 shading gradients referenced but not defined; Chromium renders the flag ' +
+      'correctly without them (checked 2026-10-05 at 640×480 and 20×14)',
+  ],
+]);
+
 const relative = file => path.relative(ROOT, file).split(path.sep).join('/');
+
+/** Ids a drawing references through `url(#…)` or `href="#…"` but never defines, sorted. */
+export function danglingReferences(markup) {
+  const defined = new Set([...markup.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]));
+  const referenced = new Set(
+    [...markup.matchAll(/url\(\s*['"]?#([^'")\s]+)|\s(?:xlink:)?href="#([^"]+)"/g)].map(match => match[1] ?? match[2]),
+  );
+  return [...referenced].filter(id => !defined.has(id)).sort();
+}
 
 function svgFiles(dir) {
   if (!fs.existsSync(dir)) throw new Error(`[assets] missing source directory: ${relative(dir)}`);
@@ -126,7 +149,11 @@ export function transformSvg(svg, asset) {
 
 const LINE_SEPARATORS = new RegExp('[\\u2028\\u2029]', 'g');
 
-/** One default-exported single-quoted string literal. */
+/**
+ * One single-quoted string literal, default-exported. The `: string` annotation is what keeps the
+ * drawing out of the published types: without it Stencil declares the default export as the whole
+ * markup as a literal type, publishing every drawing a second time under `dist/types/generated/`.
+ */
 export function toModuleSource(markup) {
   const literal = markup
     .replace(/\\/g, '\\\\')
@@ -135,7 +162,7 @@ export function toModuleSource(markup) {
     .replace(/\n/g, '\\n')
     // U+2028 / U+2029 end a line inside a string literal in older parsers.
     .replace(LINE_SEPARATORS, char => `\\u${char.charCodeAt(0).toString(16)}`);
-  return `export default '${literal}';\n`;
+  return `const svg: string = '${literal}';\nexport default svg;\n`;
 }
 
 function indexSource(set, keys) {
@@ -158,6 +185,8 @@ export function buildOutputs() {
   const outputs = new Map();
   const unsafe = [];
   const forbidden = [];
+  const dangling = [];
+  const expired = new Set(KNOWN_DANGLING.keys());
 
   for (const set of SETS) {
     const sources = set.sources();
@@ -172,6 +201,10 @@ export function buildOutputs() {
       for (const [pattern, what] of FORBIDDEN) {
         if (pattern.test(markup)) forbidden.push(`${set.kind}:${key} (${what})`);
       }
+      const asset = `${set.kind}:${key}`;
+      const missingIds = danglingReferences(markup);
+      if (missingIds.length && KNOWN_DANGLING.has(asset)) expired.delete(asset);
+      else if (missingIds.length) dangling.push(`${asset} (${missingIds.length}, e.g. #${missingIds[0]})`);
       outputs.set(`${set.dir}/${key}.ts`, toModuleSource(markup));
     }
     outputs.set(
@@ -186,6 +219,16 @@ export function buildOutputs() {
   if (unsafe.length) throw new Error(`[assets] refusing unsafe asset key(s): ${unsafe.join(', ')}`);
   if (forbidden.length)
     throw new Error(`[assets] refusing drawing(s) the transform left unsafe: ${forbidden.join(', ')}`);
+  if (dangling.length)
+    throw new Error(
+      `[assets] refusing drawing(s) that reference ids they never define: ${dangling.join(', ')} — ` +
+        'fix the source SVG, or list it in KNOWN_DANGLING with the reason',
+    );
+  if (expired.size)
+    throw new Error(
+      `[assets] KNOWN_DANGLING lists drawing(s) that no longer reference a missing id, or no longer ` +
+        `exist: ${[...expired].join(', ')} — remove the entry`,
+    );
   return outputs;
 }
 

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { describe, it } from 'node:test';
 
-import { toModuleSource, transformSvg } from '../assets/build-asset-modules.mjs';
+import { danglingReferences, toModuleSource, transformSvg } from '../assets/build-asset-modules.mjs';
 
 describe('transformSvg', () => {
   it('strips scripts, event handlers and external references', () => {
@@ -50,8 +50,22 @@ describe('transformSvg', () => {
 });
 
 describe('toModuleSource', () => {
-  it('emits one default-exported string literal', () => {
-    assert.equal(toModuleSource('<svg a="1"/>'), 'export default \'<svg a="1"/>\';\n');
+  it('emits one default-exported string, typed string so the declaration does not repeat the drawing', () => {
+    assert.equal(toModuleSource('<svg a="1"/>'), 'const svg: string = \'<svg a="1"/>\';\nexport default svg;\n');
+  });
+});
+
+describe('danglingReferences', () => {
+  it('finds url(#…) and href="#…" references with no matching id', () => {
+    assert.deepEqual(
+      danglingReferences(
+        '<svg><path id="a"/><path fill="url(#a)"/><path fill="url(#b)"/><path mask="url(\'#c\')"/><use href="#d"/><use xlink:href="#a"/></svg>',
+      ),
+      ['b', 'c', 'd'],
+    );
+  });
+  it('passes a drawing whose every reference is defined', () => {
+    assert.deepEqual(danglingReferences('<svg><linearGradient id="g"/><path fill="url(#g)"/></svg>'), []);
   });
 });
 

@@ -1,1 +1,2 @@
-export default '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" data-mud-asset="icon:filled/flash"><path fill="currentColor" d="M14 2.401c0-1.484-1.925-2.067-2.748-.832L3.186 13.668c-.664.997.05 2.332 1.248 2.332H10v5.599c0 1.484 1.925 2.067 2.748.832l8.066-12.099C21.478 9.335 20.764 8 19.566 8H14z"/></svg>';
+const svg: string = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" data-mud-asset="icon:filled/flash"><path fill="currentColor" d="M14 2.401c0-1.484-1.925-2.067-2.748-.832L3.186 13.668c-.664.997.05 2.332 1.248 2.332H10v5.599c0 1.484 1.925 2.067 2.748.832l8.066-12.099C21.478 9.335 20.764 8 19.566 8H14z"/></svg>';
+export default svg;

@@ -1107,6 +1107,13 @@ Task 6), `eslint.config.mjs` (the source guard, Task 6), `scripts/__tests__/git-
   gzip, ~75% of `dist/types` — each declaring its drawing as a string-literal type; Stencil 4.45
   has no per-folder declaration switch, so it is left as the plan says. `dist/cjs` is `main` /
   `exports["."].require`; `dist/collection` is the `collection` field; no adapter references either.
+  Follow-up 2026-10-05: each module now declares `const svg: string`, so its declaration is
+  `declare const svg: string;` — `dist/types/generated/**` 3,116,419 → 24,861 bytes (525 files),
+  `yarn pack` 7,222,595 → 6,389,313 bytes.
+- Follow-up 2026-10-05: the generator refuses a drawing that references an id it never defines.
+  The one drawing that does, `flag:sh-ac` (flag-icons 7.5.0 ships 96 shading gradients referenced
+  but not defined), is listed in `KNOWN_DANGLING`; it renders correctly in Chromium at 640×480 and
+  20×14, and the entry fails the run once the source is fixed.
 - Task 6: Stencil copies `**/*.svg` into `dist/collection` unconditionally, so `package.json` `files`
   gains `"!dist/collection/**/*.svg"` — without it 522 SVGs stay published.
 - Task 6: the flag-icons `/*! … */` notice is emitted inside the flag map's initializer
