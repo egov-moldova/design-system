@@ -6,6 +6,7 @@
  *
  * The output is appended inline to a shadow root on every consumer's page, so it must carry:
  *   - no script, no event handler, no reference that leaves the file (a request, a navigation);
+ *   - no `cursor`: a drawing needs no pointer of its own, and `cursor` takes `image-set()` URLs;
  *   - no `style` attribute, so a strict `style-src-attr` CSP still allows it;
  *   - ids prefixed with the asset key, so two drawings in one shadow root never resolve each
  *     other's `url(#…)` / `href="#…"`.
@@ -121,7 +122,7 @@ export function configFor({ kind, key }) {
     multipass: false,
     plugins: [
       'removeScripts',
-      { name: 'removeAttrs', params: { attrs: '(on.*)' } },
+      { name: 'removeAttrs', params: { attrs: '(on.*|cursor)' } },
       'convertStyleToAttrs',
       removeRemainingStyle({ kind, key }),
       removeExternalReferences,

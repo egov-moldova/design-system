@@ -58,12 +58,6 @@ const FORBIDDEN = [
   [/<script/i, 'a script'],
   [/\son[a-z]+\s*=/i, 'an event handler'],
   [/\s(?:href|xlink:href|src)\s*=\s*["'](?!#)/i, 'a reference out of the file'],
-  // The lookahead also refuses a quote or a space, so backtracking over the optional parts cannot
-  // turn a local `url( #g)` into a refusal; an empty `url()` is refused.
-  [/url\(\s*['"]?\s*(?!['"\s#])/i, 'a url() out of the file'],
-  // CSS resolves escapes in a function name (`u\72l(` is `url(`), which the pattern above cannot
-  // see; no drawing needs a backslash in an attribute value.
-  [/="[^"]*\\[^"]*"/, 'a backslash escape in an attribute value'],
   // An animation can retarget an `href` the transform made local; the others load or navigate.
   [
     /<(?:animate|animateMotion|animateTransform|set|foreignObject|image|a|iframe|object|embed)[\s/>]/i,
@@ -71,9 +65,57 @@ const FORBIDDEN = [
   ],
 ];
 
-/** The reasons, from `FORBIDDEN`, that a drawing may not be emitted; empty when it may. */
+/**
+ * An attribute value may call only these CSS functions (lower-cased), besides `url()` to a fragment
+ * of the same file: the transforms and colours the drawings use. An ALLOWLIST, because every
+ * denylist round found another function that loads a URL (`url(`, then `u\72l(`, then `image-set(`).
+ * Measured 2026-10-05 over the 522 drawings: `matrix`, `url`, `scale`, `translate`, `rotate`, `skewY`.
+ */
+const ALLOWED_FUNCTIONS = new Set([
+  'matrix',
+  'translate',
+  'scale',
+  'rotate',
+  'skewx',
+  'skewy',
+  'rgb',
+  'rgba',
+  'hsl',
+  'hsla',
+]);
+
+/** `url(#id)`, `url('#id')`, `url( #id )`: a fragment of the same file, the id in group 2. */
+const LOCAL_URL_SOURCE = String.raw`url\(\s*(['"]?)\s*#([A-Za-z_][\w.:-]*)\s*\1\s*\)`;
+const LOCAL_URL_AT_START = new RegExp(`^${LOCAL_URL_SOURCE}`, 'i');
+
+/** Every attribute value of a drawing, in either quote style. */
+const attributeValues = markup =>
+  [...markup.matchAll(/\s[\w:-]+\s*=\s*(?:"([^"]*)"|'([^']*)')/g)].map(match => match[1] ?? match[2]);
+
+/** Why an attribute value may not be emitted: a CSS escape, a non-local `url()`, a function off the allowlist. */
+function attributeValueProblems(markup) {
+  const problems = new Set();
+  for (const value of attributeValues(markup)) {
+    // CSS resolves escapes in a function name (`u\72l(` is `url(`); no drawing needs a backslash.
+    if (value.includes('\\')) problems.add('a backslash escape in an attribute value');
+    for (const call of value.matchAll(/([a-z-]*)\s*\(/gi)) {
+      const name = call[1].toLowerCase();
+      if (name === 'url') {
+        if (!LOCAL_URL_AT_START.test(value.slice(call.index))) problems.add('a url() out of the file');
+      } else if (!ALLOWED_FUNCTIONS.has(name)) {
+        problems.add('a function other than url(#id), a transform or a colour');
+      }
+    }
+  }
+  return [...problems];
+}
+
+/** The reasons (`FORBIDDEN`, then the attribute-value allowlist) that a drawing may not be emitted; empty when it may. */
 export function forbiddenIn(markup) {
-  return FORBIDDEN.filter(([pattern]) => pattern.test(markup)).map(([, what]) => what);
+  return [
+    ...FORBIDDEN.filter(([pattern]) => pattern.test(markup)).map(([, what]) => what),
+    ...attributeValueProblems(markup),
+  ];
 }
 
 /**
@@ -94,9 +136,12 @@ const relative = file => path.relative(ROOT, file).split(path.sep).join('/');
 /** Ids a drawing references through `url(#…)` or `href="#…"` but never defines, sorted. */
 export function danglingReferences(markup) {
   const defined = new Set([...markup.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]));
-  const referenced = new Set(
-    [...markup.matchAll(/url\(\s*['"]?#([^'")\s]+)|\s(?:xlink:)?href="#([^"]+)"/g)].map(match => match[1] ?? match[2]),
-  );
+  // `url(#id)` through the same parse `forbiddenIn` accepts, so a reference one of them allows the
+  // other cannot miss (`url(' #g')`).
+  const referenced = new Set([
+    ...[...markup.matchAll(new RegExp(LOCAL_URL_SOURCE, 'gi'))].map(match => match[2]),
+    ...[...markup.matchAll(/\s(?:xlink:)?href="#([^"]+)"/g)].map(match => match[1]),
+  ]);
   return [...referenced].filter(id => !defined.has(id)).sort();
 }
 

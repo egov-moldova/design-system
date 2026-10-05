@@ -122,6 +122,52 @@ describe('forbiddenIn', () => {
     });
   }
 
+  // Round-3 bypasses: each is a function that loads a URL without the literal `url(`, or a raw
+  // (not svgo-serialized) spelling the earlier patterns let through.
+  for (const [name, value, reason] of [
+    [
+      'image-set()',
+      `image-set('https://evil.test/x.png' 1x)`,
+      'a function other than url(#id), a transform or a colour',
+    ],
+    [
+      '-webkit-image-set()',
+      `-webkit-image-set('https://evil.test/x.png' 1x)`,
+      'a function other than url(#id), a transform or a colour',
+    ],
+    ['a quote, a space, then the other quote', `url(' "evil.svg#a')`, 'a url() out of the file'],
+  ]) {
+    it(`refuses ${name} in an attribute value, in either quote style`, () => {
+      assert.ok(forbiddenIn(wrap(`<rect fill="${value.replace(/"/g, '&quot;')}"/>`)).includes(reason), name);
+      assert.ok(forbiddenIn(wrap(`<rect fill='${value.replace(/'/g, '&apos;')}'/>`)).includes(reason), name);
+    });
+  }
+
+  it('refuses a CSS escape in a single-quoted attribute value', () => {
+    assert.ok(
+      forbiddenIn(wrap(`<rect fill='u\\72l(https://evil.test/x.svg#a)'/>`)).includes(
+        'a backslash escape in an attribute value',
+      ),
+    );
+  });
+
+  it('accepts the transforms and colours the drawings use', () => {
+    assert.deepEqual(
+      forbiddenIn(
+        wrap('<g transform="matrix(1 0 0 1 2 3)translate(1)scale(.5)rotate(45)skewY(2)" fill="rgb(1,2,3)"/>'),
+      ),
+      [],
+    );
+  });
+
+  it('strips cursor in the transform, so image-set() through it never reaches the check', () => {
+    const out = transformSvg(wrap(`<rect cursor="image-set('https://evil.test/x.png' 1x), auto"/>`), {
+      kind: 'flag',
+      key: 'xx',
+    });
+    assert.doesNotMatch(out, /cursor|image-set/);
+  });
+
   it('accepts a local url() with a space before the fragment, and an element whose name only starts like one', () => {
     assert.deepEqual(forbiddenIn(wrap('<path fill="url( #g)" d="M0 0h1"/><altGlyph/>')), []);
     assert.deepEqual(forbiddenIn(wrap(`<path fill="url('#g')" d="M0 0h1"/>`)), []);
@@ -129,6 +175,10 @@ describe('forbiddenIn', () => {
 });
 
 describe('danglingReferences', () => {
+  it('sees a local url() with a space inside its quotes, as forbiddenIn accepts it', () => {
+    assert.deepEqual(danglingReferences(`<svg><path fill="url(' #grad')"/></svg>`), ['grad']);
+  });
+
   it('finds url(#…) and href="#…" references with no matching id', () => {
     assert.deepEqual(
       danglingReferences(
