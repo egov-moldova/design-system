@@ -9,13 +9,14 @@
 
 Brand logo for Moldovan M-products.
 
-Each `name` resolves to a single self-contained SVG asset under `./assets/`.
-The component fetches and renders that SVG into shadow DOM; the host's
+Each `name` resolves to a single self-contained SVG drawing generated from
+`./assets/`. The component imports that drawing on demand and renders it
+into shadow DOM; the host's
 dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
 exported from Figma — so a future asset with non-standard dimensions
 "just works" without a CSS contract change.
 
-Consumers that need to reserve layout space before the async fetch
+Consumers that need to reserve layout space before the async import
 resolves (e.g. above-the-fold marketing, dense grids) should wrap the
 logo in a sized container — `mud-button` does this for its `badge`
 slot (24 × 24).
@@ -29,9 +30,9 @@ slot (24 × 24).
 
 ## Events
 
-| Event          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Type                                                                  |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `mudLogoError` | Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures. | `CustomEvent<{ name: string; reason: "unknown" \| "fetch-failed"; }>` |
+| Event          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Type                                                                  |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `mudLogoError` | Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the import of its drawing failed (`'fetch-failed'`, e.g. offline or a chunk that a redeploy removed). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures. | `CustomEvent<{ name: string; reason: "unknown" \| "fetch-failed"; }>` |
 
 
 ## Dependencies

@@ -1,20 +1,24 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { fetchLogoSvg, resolveLogoAssetUrl } from './mud-logo.providers';
 import { LOGO_NAMES, type LogoName } from './mud-logo.types';
+import { LOGO_MODULES } from '../../generated/logos';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { createSvgLoader } from '../../utils/svg-assets';
+
+const logos = createSvgLoader(LOGO_MODULES);
 
 /**
  * Brand logo for Moldovan M-products.
  *
- * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
- * The component fetches and renders that SVG into shadow DOM; the host's
+ * Each `name` resolves to a single self-contained SVG drawing generated from
+ * `./assets/`. The component imports that drawing on demand and renders it
+ * into shadow DOM; the host's
  * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
  * exported from Figma — so a future asset with non-standard dimensions
  * "just works" without a CSS contract change.
  *
- * Consumers that need to reserve layout space before the async fetch
+ * Consumers that need to reserve layout space before the async import
  * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
  * logo in a sized container — `mud-button` does this for its `badge`
  * slot (24 × 24).
@@ -25,7 +29,6 @@ import { observeAriaLabel } from '../../utils/aria-label';
   tag: 'mud-logo',
   styleUrl: 'mud-logo.css',
   shadow: true,
-  assetsDirs: ['assets'],
 })
 export class MudLogo {
   /**
@@ -51,9 +54,10 @@ export class MudLogo {
 
   /**
    * Emitted when an asset fails to load — either because the `name` is not
-   * in the manifest (`'unknown'`) or because the SVG fetch failed
-   * (`'fetch-failed'`). Lets consumers react in production where `console.warn`
-   * is invisible (telemetry, fallback UI, etc.).
+   * in the manifest (`'unknown'`) or because the import of its drawing failed
+   * (`'fetch-failed'`, e.g. offline or a chunk that a redeploy removed). Lets
+   * consumers react in production where `console.warn` is invisible
+   * (telemetry, fallback UI, etc.).
    *
    * Note: events emitted during `componentWillLoad` (initial mount) fire
    * before consumer listeners can attach to a freshly-inserted host. Attach
@@ -112,20 +116,9 @@ export class MudLogo {
 
     if (this.svgCacheKey === requestedName) return;
 
-    const url = resolveLogoAssetUrl(requestedName);
-    if (!url) {
-      // `resolveLogoAssetUrl` returns null when Stencil's getAssetPath cannot
-      // construct a URL (e.g. vitest browser-mode without a registered base).
-      // Treat it as a fetch failure — same downstream effect as the existing
-      // null-element path below.
-      this.mudLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
-      this.svgCacheKey = '';
-      this.svgElement = null;
-      return;
-    }
-    const element = await fetchLogoSvg(url);
+    const element = await logos.load(requestedName);
 
-    // Guard: prop changed during async fetch
+    // Guard: prop changed during the async import
     if (this.name !== requestedName) return;
 
     if (!element) {

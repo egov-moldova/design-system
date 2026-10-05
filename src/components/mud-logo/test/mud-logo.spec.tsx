@@ -1,35 +1,27 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
-import { setAssetPath } from '@stencil/core';
 
 import '../mud-logo';
-import { clearLogoSvgCache, fetchLogoSvg, resolveLogoAssetUrl } from '../mud-logo.providers';
+import { LOGO_MODULES } from '../../../generated/logos';
+import { clearSvgCaches } from '../../../utils/svg-assets';
 import { LOGO_NAMES } from '../mud-logo.types';
 
-function makeFetchMock() {
-  return vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/([a-z-]+)\.svg$/);
-    if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[1]}" viewBox="0 0 40 40"></svg>`, {
-      status: 200,
-      headers: { 'Content-Type': 'image/svg+xml' },
-    });
-  });
-}
+type ModuleThunks = Record<string, () => Promise<{ default: string }>>;
+const modules = LOGO_MODULES as ModuleThunks;
+
+const marker = (root: Element | null | undefined) =>
+  root?.shadowRoot?.querySelector('svg')?.getAttribute('data-mud-asset');
 
 describe('mud-logo', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    setAssetPath('http://localhost/');
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    fetchSpy = makeFetchMock();
-    clearLogoSvgCache();
+    clearSvgCaches();
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    fetchSpy.mockRestore();
+    vi.restoreAllMocks();
   });
 
   it('renders with the default name (mpay-logo-logomark-only)', async () => {
@@ -72,8 +64,8 @@ describe('mud-logo', () => {
   });
 
   it('renders inline SVG markup in shadow DOM for a known logo', async () => {
-    const { root, waitForChanges } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await waitForChanges();
+    const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
     const inner = root?.shadowRoot?.querySelector('.svg-logo')?.innerHTML ?? '';
     expect(inner.toLowerCase()).toContain('<svg');
   });
@@ -116,86 +108,76 @@ describe('mud-logo', () => {
     expect(detail).toEqual({ name: 'nope', reason: 'unknown' });
   });
 
-  it('emits mudLogoError with reason="fetch-failed" when the SVG cannot be loaded (Issue 7)', async () => {
-    fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));
+  it('renders the drawing of a valid name', async () => {
+    const { root } = await render(<mud-logo name="mpass-logo-with-name" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
+  });
 
+  it('emits mudLogoError with reason="fetch-failed" when the import fails (Issue 7)', async () => {
+    vi.spyOn(modules, 'mpay-logo-logomark-only').mockRejectedValueOnce(new Error('offline'));
     const errorSpy = vi.fn();
     document.addEventListener('mudLogoError', errorSpy);
 
-    const { waitForChanges } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await waitForChanges();
+    await render(<mud-logo name="mpay-logo-logomark-only" />);
 
     document.removeEventListener('mudLogoError', errorSpy);
-    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledTimes(1);
     const detail = (errorSpy.mock.calls[0][0] as CustomEvent).detail;
     expect(detail).toEqual({ name: 'mpay-logo-logomark-only', reason: 'fetch-failed' });
   });
 
-  it('cache hit: fetch called only once for two instances with the same name', async () => {
-    const renders = await Promise.all([
-      render(<mud-logo name="mpay-logo-logomark-only" />),
-      render(<mud-logo name="mpay-logo-logomark-only" />),
-    ]);
-    await renders[0].waitForChanges();
-    await renders[1].waitForChanges();
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-  });
+  it('graceful degrade: a failed import warns once and leaves .svg-logo empty', async () => {
+    vi.spyOn(modules, 'mpay-logo-logomark-only').mockRejectedValueOnce(new Error('offline'));
 
-  it('graceful degrade: fetch 404 → warn + .svg-logo empty', async () => {
-    fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));
-
-    const { root, waitForChanges } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await waitForChanges();
-    expect(warnSpy).toHaveBeenCalled();
+    const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toContain('Failed to load SVG');
     expect(root?.shadowRoot?.querySelector('.svg-logo')?.children.length ?? 0).toBe(0);
   });
 
-  it('cache eviction on failure: a transient 404 does not lock out future retries (Issue 1)', async () => {
-    // First call: 404 → null result → cache must evict
-    fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('', { status: 404 }));
-    // `resolveLogoAssetUrl` is `string | null` to absorb getAssetPath URL
-    // parse errors in non-lazy-bundle hosts (e.g. vitest browser-mode). The
-    // mock-doc spec env always returns a string, so the non-null assertion
-    // is safe here.
-    const url = resolveLogoAssetUrl('mpay-logo-logomark-only')!;
-    const first = await fetchLogoSvg(url);
-    expect(first).toBeNull();
-    // Drain microtask so the cache-eviction `.then` runs.
-    await new Promise(r => setTimeout(r, 0));
+  it('a failed import is not cached: the next render imports again and draws', async () => {
+    vi.spyOn(modules, 'mpay-logo-logomark-only').mockRejectedValueOnce(new Error('offline'));
+    const first = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    expect(marker(first.root)).toBeUndefined();
 
-    // Second call: backend recovered → should re-fetch (cache was evicted).
-    fetchSpy.mockResolvedValueOnce(
-      new Response('<svg viewBox="0 0 40 40"></svg>', {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      }),
-    );
-    const second = await fetchLogoSvg(url);
-    expect(second).not.toBeNull();
-    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    const second = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    await vi.waitFor(() => expect(marker(second.root)).toBe('logo:mpay-logo-logomark-only'));
   });
 
-  it('onNameChange: changing to a different name loads the new SVG', async () => {
-    const { root, waitForChanges } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+  it('never lets a superseded import replace the latest name', async () => {
+    const { root, waitForChanges } = await render(<mud-logo name="mpass-logo-with-name" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
+    let release!: (m: { default: string }) => void;
+    vi.spyOn(modules, 'mcloud-logo-with-name').mockReturnValueOnce(new Promise(r => (release = r)));
+    root!.setAttribute('name', 'mcloud-logo-with-name');
+    root!.setAttribute('name', 'msign-logo-with-name');
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:msign-logo-with-name'));
+    release({ default: '<svg xmlns="http://www.w3.org/2000/svg" data-mud-asset="logo:mcloud-logo-with-name"></svg>' });
+    await new Promise(r => setTimeout(r, 0));
     await waitForChanges();
+    expect(marker(root)).toBe('logo:msign-logo-with-name');
+  });
+
+  it('renders a second instance of a loaded logo without importing again', async () => {
+    const first = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    await vi.waitFor(() => expect(marker(first.root)).toBe('logo:mpay-logo-logomark-only'));
+    const spy = vi.spyOn(modules, 'mpay-logo-logomark-only');
+    const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('onNameChange: changing to a different name draws the new logo', async () => {
+    const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
 
     (root as unknown as { name: string }).name = 'mpass-logo-logomark-only';
-    await waitForChanges();
-
-    const calls = fetchSpy.mock.calls.map((args: unknown[]) => String(args[0]));
-    expect(calls.some((url: string) => url.includes('mpass-logo-logomark-only.svg'))).toBe(true);
+    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-logomark-only'));
   });
 
-  it('every LOGO_NAMES entry resolves to a valid asset URL', () => {
+  it('every LOGO_NAMES entry has a generated module', () => {
     for (const name of LOGO_NAMES) {
-      // `resolveLogoAssetUrl` is `string | null` in non-lazy-bundle hosts; in
-      // the mock-doc spec env it always returns a string — assert that.
-      const url = resolveLogoAssetUrl(name);
-      expect(url).not.toBeNull();
-      expect(url).toContain(`${name}.svg`);
+      expect(Object.hasOwn(LOGO_MODULES, name)).toBe(true);
     }
   });
 
