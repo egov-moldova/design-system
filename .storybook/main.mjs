@@ -51,6 +51,9 @@ export default {
     { from: '../src/assets/fonts', to: 'assets/fonts' },
     { from: '../src/components/mud-icon/assets', to: 'assets/assets' },
     { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
+    // The phone-input flags resolve through getAssetPath('./assets/flags/…') to /assets/assets/flags/…;
+    // without this every flag 404s in the production build.
+    { from: '../src/components/mud-phone-input/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
   // The manager bundle receives every key of this preset as a build-time
