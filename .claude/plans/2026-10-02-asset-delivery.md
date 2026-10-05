@@ -7,7 +7,8 @@
 **Spec:** `.claude/plans/2026-10-02-asset-delivery-design.md` (approved by Dan on 2026-10-02; its
 `## Revisions after review` section records the decisions Dan changed afterwards)
 **Branch:** `danzubco/asset-delivery-on-191` — PR #191 head `2d13b3d2` + the PR #190 branch (which
-contains PR #189) merged at `448dc20d`. The PR this branch opens is stacked on #189 → #190 and #191.
+contains PR #189) merged at `448dc20d`; `upstream/main` merged at `e4cc354f` (2026-10-05). One PR
+carries #189, #190 and this change (Dan, 2026-10-05; `## Deviations`).
 
 **Goal:** every consumer of `@egov-moldova/mud` — React, Vue, Angular, the web-components adapter, a
 plain module page and a CDN import — renders every icon, logo and flag with no asset configuration,
@@ -205,7 +206,7 @@ the capture covers all stories rather than a list that could miss one.
   visual regression is screenshot assertions in the existing \`storybook\` Vitest project, which can
   hold a baseline once icons render there through import()` — and CONTRIBUTING does not document it.
 
-- [ ] **Step 1: Write the failing test** — `scripts/__tests__/story-regression.spec.mjs` (`node:test`):
+- [x] **Step 1: Write the failing test** — `scripts/__tests__/story-regression.spec.mjs` (`node:test`):
 
 ```js
 import assert from 'node:assert/strict';
@@ -258,8 +259,8 @@ describe('budgetFor', () => {
 });
 ```
 
-- [ ] **Step 2: Run it to verify it fails** — `fnm exec --using=24 -- node --test scripts/__tests__/story-regression.spec.mjs` → FAIL, module not found.
-- [ ] **Step 3: Implement** `scripts/assets/story-regression.mjs`, reusing the pixel-perfect audit's
+- [x] **Step 2: Run it to verify it fails** — `fnm exec --using=24 -- node --test scripts/__tests__/story-regression.spec.mjs` → FAIL, module not found.
+- [x] **Step 3: Implement** `scripts/assets/story-regression.mjs`, reusing the pixel-perfect audit's
   shared helpers rather than re-writing them — `diffImages` from `scripts/audit/lib/image-diff.mjs`,
   `storyUrl` from `scripts/audit/lib/storybook-helpers.mjs`, `launchBrowser` from
   `scripts/audit/lib/browser-context.mjs`, `captureState` and the fixed-clock support
@@ -279,19 +280,19 @@ describe('budgetFor', () => {
     then captures the `#storybook-root` element. A flag `img` that finished loading with
     `naturalWidth === 0` fails the capture (exit 1, story id named): a broken baseline is an error,
     never an image.
-- [ ] **Step 4: Run it to verify it passes** — same command → PASS.
-- [ ] **Step 5: Capture the baseline from the untouched tree:**
+- [x] **Step 4: Run it to verify it passes** — same command → PASS.
+- [x] **Step 5: Capture the baseline from the untouched tree:**
   `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/assets/story-regression.mjs capture .asset-regression/baseline`
   — only after `git diff --stat 448dc20d -- src` prints nothing, and with the `staticDirs` entry above
   in place.
-- [ ] **Step 6: Record the phone-input budget.** Write the largest `mud-phone-input` capture (story id,
+- [x] **Step 6: Record the phone-input budget.** Write the largest `mud-phone-input` capture (story id,
   width × height) from `.asset-regression/baseline/manifest.json` under `## Deviations`. The budget Task
   13 applies is **279 differing pixels per `mud-phone-input` story**: one fewer than one 20×14 flag box
   (the derived block under the acceptance bar). It bounds the rasterization drift between an `<img>`
   and an inline `svg` of the same drawing, and a box that renders empty, or a drawing of another size,
   exceeds it. It does NOT prove which country a box shows — two flags can differ in fewer pixels —
   that identity is pinned by Task 5's marker specs.
-- [ ] **Step 7: Commit** — `scripts/assets/story-regression.mjs`, `scripts/__tests__/story-regression.spec.mjs`,
+- [x] **Step 7: Commit** — `scripts/assets/story-regression.mjs`, `scripts/__tests__/story-regression.spec.mjs`,
   `.gitignore`, `.storybook/main.mjs`; `test(assets): story regression capture and compare, baseline before the asset change`.
 
 ---
@@ -324,7 +325,7 @@ export function createSvgLoader(map: SvgModuleMap): SvgLoader;
 export function clearSvgCaches(): void;
 ```
 
-- [ ] **Step 1: Write the failing spec** `src/utils/test/svg-assets.spec.ts`:
+- [x] **Step 1: Write the failing spec** `src/utils/test/svg-assets.spec.ts`:
 
 ```ts
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -373,14 +374,14 @@ describe('createSvgLoader', () => {
 });
 ```
 
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/utils/test/svg-assets.spec.ts` → FAIL.
-- [ ] **Step 3: Implement**: each loader closes over its map and two `Map`s (parsed `Element`s,
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/utils/test/svg-assets.spec.ts` → FAIL.
+- [x] **Step 3: Implement**: each loader closes over its map and two `Map`s (parsed `Element`s,
   in-flight promises); it reads `map[key]` at call time after `Object.hasOwn(map, key)`, so a
   prototype member is never invoked and a test can spy on one entry; it sanitizes once at insertion and
   clones on every read; a rejected import deletes its in-flight entry and resolves to null; a
   module-level `Set` of loaders backs `clearSvgCaches`.
-- [ ] **Step 4: Run** → PASS.
-- [ ] **Step 5: Commit** — `src/utils/svg-assets.ts`, `src/utils/test/svg-assets.spec.ts`;
+- [x] **Step 4: Run** → PASS.
+- [x] **Step 5: Commit** — `src/utils/svg-assets.ts`, `src/utils/test/svg-assets.spec.ts`;
   `feat(utils): one SVG loader factory for import()-loaded assets`.
 
 ### Task 2: Asset module generator
@@ -416,7 +417,7 @@ describe('createSvgLoader', () => {
 - `--check`: writes nothing, exits 1 when any output would differ (stale, missing or extra file) or
   when any generated module contains `style=`.
 
-- [ ] **Step 1: Write the failing tests** in `scripts/__tests__/build-asset-modules.spec.mjs`:
+- [x] **Step 1: Write the failing tests** in `scripts/__tests__/build-asset-modules.spec.mjs`:
 
 ```js
 import assert from 'node:assert/strict';
@@ -466,8 +467,8 @@ describe('committed output', () => {
 });
 ```
 
-- [ ] **Step 2: Run** `fnm exec --using=24 -- node --test scripts/__tests__/build-asset-modules.spec.mjs` → FAIL.
-- [ ] **Step 3: Implement.** `svgo.asset-modules.mjs` exports `configFor({ kind, key })`:
+- [x] **Step 2: Run** `fnm exec --using=24 -- node --test scripts/__tests__/build-asset-modules.spec.mjs` → FAIL.
+- [x] **Step 3: Implement.** `svgo.asset-modules.mjs` exports `configFor({ kind, key })`:
   `multipass: false`, plugins `removeScripts`, `{ name: 'removeAttrs', params: { attrs: '(on.*)' } }`,
   `convertStyleToAttrs`, a local plugin that drops `marker:none` declarations and then any empty or
   remaining `style` attribute, a local plugin that deletes any `href` / `xlink:href` / `src` not
@@ -480,10 +481,10 @@ describe('committed output', () => {
   keys); it writes the modules and the three index files with `() => import('./<path>')` entries,
   deletes outputs with no source, and honours `--check`. Export `transformSvg` and `toModuleSource`
   for the spec; guard the CLI with `isEntrypoint` (`scripts/lib/is-entrypoint.mjs`).
-- [ ] **Step 4: Generate and check:** `fnm exec --using=24 -- yarn assets.generate && fnm exec --using=24 -- node --test scripts/__tests__/build-asset-modules.spec.mjs && fnm exec --using=24 -- yarn typecheck`
+- [x] **Step 4: Generate and check:** `fnm exec --using=24 -- yarn assets.generate && fnm exec --using=24 -- node --test scripts/__tests__/build-asset-modules.spec.mjs && fnm exec --using=24 -- yarn typecheck`
   → exit 0; `find src/generated/icons -name '*.ts' ! -name index.ts | wc -l` equals
   `find src/components/mud-icon/assets -name '*.svg' | wc -l`.
-- [ ] **Step 5: Commit** — the files named above plus `src/generated/` (by path);
+- [x] **Step 5: Commit** — the files named above plus `src/generated/` (by path);
   `build(assets): generate one sanitized ES module per icon, logo and flag`.
 
 ---
@@ -519,7 +520,7 @@ describe('committed output', () => {
 - Produces: unchanged public API of `mud-icon` (`name`, `variant`, `size`, `color`, `interactive`,
   `disabled`, warnings, a11y behaviour).
 
-- [ ] **Step 1: Rewrite the spec to the real modules.** Delete `makeFetchMock` and every `fetchSpy`
+- [x] **Step 1: Rewrite the spec to the real modules.** Delete `makeFetchMock` and every `fetchSpy`
   assertion; call `clearSvgCaches()` in `afterEach`. Replace the fetch-URL assertions with the drawing
   itself, and make the race real by holding the import:
 
@@ -557,14 +558,14 @@ it('renders a second instance of a loaded icon without importing again', async (
   The spy replaces only the timing of one module import, never the component's rendering
   (`TESTING.md`'s zero-mock rule is about `mud-*` rendering). Keep the existing `name="constructor"`
   and filled-only fallback cases, now asserting on `data-mud-asset`.
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-icon` → FAIL.
-- [ ] **Step 3: Implement.** In `loadSvg()`: keep the variant and name guards and the fallback warning;
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-icon` → FAIL.
+- [x] **Step 3: Implement.** In `loadSvg()`: keep the variant and name guards and the fallback warning;
   compute `key = \`${resolvedVariant}/${requestedName}\``; `const hit = icons.cached(key)` → set
   `svgElement` and return synchronously; otherwise `await icons.load(key)`, keep the stale-result guard
   (discard unless `this.name`/`this.variant` still match), warn `[mud-icon] Failed to load SVG: …` on
   null. Remove `assetsDirs`. Then edit the eight listed specs.
-- [ ] **Step 4: Run** `fnm exec --using=24 -- yarn test` and `fnm exec --using=24 -- yarn typecheck` → exit 0.
-- [ ] **Step 5: Commit** — `feat(icon): load drawings through import(), no asset path and no fetch`.
+- [x] **Step 4: Run** `fnm exec --using=24 -- yarn test` and `fnm exec --using=24 -- yarn typecheck` → exit 0.
+- [x] **Step 5: Commit** — `feat(icon): load drawings through import(), no asset path and no fetch`.
 
 ### Task 4: `mud-logo` loads through the loader
 
@@ -580,15 +581,15 @@ it('renders a second instance of a loaded icon without importing again', async (
 - Produces: unchanged `mud-logo` API; `mudLogoError` keeps `reason: 'unknown' | 'fetch-failed'`
   (`'fetch-failed'` now means the import failed — said in the event JSDoc).
 
-- [ ] **Step 1: Rewrite the spec** to the real modules with `vi.waitFor`: `data-mud-asset="logo:<name>"`
+- [x] **Step 1: Rewrite the spec** to the real modules with `vi.waitFor`: `data-mud-asset="logo:<name>"`
   for a valid name; `mudLogoError` `{ reason: 'unknown' }` for an invalid one; the race with a held
   import exactly as Task 3 step 1 (render `mpass-logo-with-name`, hold `mcloud-logo-with-name`, switch
   to `msign-logo-with-name`, wait for `logo:msign-logo-with-name`, release, assert it is still there).
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-logo` → FAIL.
-- [ ] **Step 3: Implement** — `await logos.load(name)`; null → `mudLogoError` `'fetch-failed'`; remove
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-logo` → FAIL.
+- [x] **Step 3: Implement** — `await logos.load(name)`; null → `mudLogoError` `'fetch-failed'`; remove
   `assetsDirs`.
-- [ ] **Step 4: Run** → PASS.
-- [ ] **Step 5: Commit** — `feat(logo): load logos through import(), no asset path and no fetch`.
+- [x] **Step 4: Run** → PASS.
+- [x] **Step 5: Commit** — `feat(logo): load logos through import(), no asset path and no fetch`.
 
 ### Task 5: Flags render inline through the loader
 
@@ -619,7 +620,7 @@ it('renders a second instance of a loaded icon without importing again', async (
 - Consumes: `FLAG_MODULES`, `createSvgLoader`.
 - Produces: `flagKey(iso: string): string`.
 
-- [ ] **Step 1: Update the specs** (assert with `vi.waitFor`). `flags.spec.ts`: `flagKey('MD') === 'md'`,
+- [x] **Step 1: Update the specs** (assert with `vi.waitFor`). `flags.spec.ts`: `flagKey('MD') === 'md'`,
   `flagKey('AC') === 'sh-ac'`, and "every country in `COUNTRIES` has a key in `FLAG_MODULES`" (replaces
   the file-exists check). `mud-phone-input.spec.tsx`:
   - the trigger flag holds `svg[data-mud-asset="flag:md"]`;
@@ -629,10 +630,10 @@ it('renders a second instance of a loaded icon without importing again', async (
   - an open list shows flags only for rows the observer reported (keep #191's observer test, assert
     on `svg` instead of `img`);
   - two boxes showing the same country both hold an `svg`.
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-phone-input` → FAIL.
-- [ ] **Step 3: Implement** as listed under Files.
-- [ ] **Step 4: Run** → PASS.
-- [ ] **Step 5: Commit** — `feat(phone-input): flags render inline through import(), no asset path`.
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test.dev src/components/mud-phone-input` → FAIL.
+- [x] **Step 3: Implement** as listed under Files.
+- [x] **Step 4: Run** → PASS.
+- [x] **Step 5: Commit** — `feat(phone-input): flags render inline through import(), no asset path`.
 
 ---
 
@@ -675,23 +676,23 @@ it('renders a second instance of a loaded icon without importing again', async (
   every fixture run in CI checks all five packages
 - Modify: `INTEGRATION.md` line 403 troubleshooting row (no asset path left to get wrong)
 
-- [ ] **Step 1: Write the failing tests** (`node:test`): `checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg'])`
+- [x] **Step 1: Write the failing tests** (`node:test`): `checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg'])`
   returns one problem; `checkNoPublishedSvg(['dist/mud/assets/fonts/onest-variable.woff2'])` returns none;
   `checkAssetModules` reports a manifest key with no marker in a fixture file list, including one
   missing only from `dist/mud/`; `checkFlagLicense` reports a missing licence file and a flag-map chunk
   without `flag-icons`.
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
-- [ ] **Step 3: Implement** the Files list.
-- [ ] **Step 4: Measure duplication.** Record under `## Deviations`: the packed size and file count from
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
+- [x] **Step 3: Implement** the Files list.
+- [x] **Step 4: Measure duplication.** Record under `## Deviations`: the packed size and file count from
   `fnm exec --using=24 -- yarn pack --out "$TMPDIR/mud-core.tgz"` at `448dc20d` and after this task. If
   `dist/types/generated/**` holds one `.d.ts` per asset module, exclude `src/generated/**` from
   Stencil's type emission only if Stencil 4.45 supports it without breaking `dist/types/index.d.ts`;
   otherwise leave it and record the measured cost. Do not remove the `dist/cjs` or `dist/collection`
   outputs: whether they have consumers is a separate question this plan only records (`grep` the
   exports map and the adapters for each).
-- [ ] **Step 5: Run** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- yarn lint`
+- [x] **Step 5: Run** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn validate.package && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- yarn lint`
   → exit 0.
-- [ ] **Step 6: Commit** — `build: publish no SVG files, drop the asset copy step, declare sideEffects`.
+- [x] **Step 6: Commit** — `build: publish no SVG files, drop the asset copy step, declare sideEffects`.
 
 ---
 
@@ -720,7 +721,7 @@ it('renders a second instance of a loaded icon without importing again', async (
 **Interfaces:** removes `setupMud`, `defineCustomElements`, `toAssetBaseUrl`, `MudSetupOptions`,
 `DefineCustomElementsOptions` from `@egov-moldova/mud-react`.
 
-- [ ] **Step 1: Failing check** — in `git-hooks.spec.mjs`:
+- [x] **Step 1: Failing check** — in `git-hooks.spec.mjs`:
   - the root test is unchanged (the root manifest is the published core: no install or pack script);
   - a new test asserts that none of the four adapter manifests
     (`packages/{react,vue,angular,web-components}/package.json`) declares `preinstall`, `install` or
@@ -729,11 +730,11 @@ it('renders a second instance of a loaded icon without importing again', async (
   - "runs from the postinstall of a private workspace" now asserts `workspaces` includes
     `tooling/hooks`, `tooling/hooks/package.json` is `private: true`, and its `postinstall` is
     `node ../../scripts/git/install-hooks.mjs`.
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
-- [ ] **Step 3: Implement**; `fnm exec --using=24 -- yarn install` must print `husky - …` and register
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn test:scripts` → FAIL.
+- [x] **Step 3: Implement**; `fnm exec --using=24 -- yarn install` must print `husky - …` and register
   the merge driver (run it and read the output).
-- [ ] **Step 4: Run** `fnm exec --using=24 -- yarn install --immutable && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- yarn build.react` → exit 0.
-- [ ] **Step 5: Commit** (with `yarn.lock`) — `fix(react)!: drop the asset setup API and the postinstall that breaks external installs`.
+- [x] **Step 4: Run** `fnm exec --using=24 -- yarn install --immutable && fnm exec --using=24 -- yarn test:scripts && fnm exec --using=24 -- yarn build.react` → exit 0.
+- [x] **Step 5: Commit** (with `yarn.lock`) — `fix(react)!: drop the asset setup API and the postinstall that breaks external installs`.
 
 ### Task 8: Vue — remove the `Mud` plugin
 
@@ -743,12 +744,12 @@ it('renders a second instance of a loaded icon without importing again', async (
 - Modify: `packages/vue/fixture/src/main.ts` (no `Mud`), `packages/vue/fixture/vite.config.ts` (no
   `vite-plugin-static-copy`), and the fixture's `package.json` template if it lists that plugin
 
-- [ ] **Step 1: Run** `grep -rn "plugin\|MudPluginOptions\|app.use(Mud\|static-copy" packages/vue --include='*.ts' --include='*.vue' --include='*.json'`
+- [x] **Step 1: Run** `grep -rn "plugin\|MudPluginOptions\|app.use(Mud\|static-copy" packages/vue --include='*.ts' --include='*.vue' --include='*.json'`
   — every hit is removed here.
-- [ ] **Step 2: Implement.**
-- [ ] **Step 3: Run** `fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue`
+- [x] **Step 2: Implement.**
+- [x] **Step 3: Run** `fnm exec --using=24 -- yarn build.vue && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs vue`
   → exit 0 (the existing "mud-icon and mud-logo each render an svg" test now passes with no asset setup).
-- [ ] **Step 4: Commit** — `feat(vue)!: remove the Mud plugin, no asset path to set`.
+- [x] **Step 4: Commit** — `feat(vue)!: remove the Mud plugin, no asset path to set`.
 
 ### Task 9: Angular — remove `provideMud`, settle the recorded tree-shaking limitation
 
@@ -770,9 +771,9 @@ Phase 3 the runner still asserted published SVGs, and before this task the fixtu
   `mud-stepper`, which the fixture does not import); Task 11 later moves it into the shared file
 - Modify: `stencil.config.ts` lines 134-138 — only when step 3 passes: the `DEBT` comment goes
 
-- [ ] **Step 1: Implement** the removals and the fixture edits.
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn build.angular` → exit 0.
-- [ ] **Step 3: Measure:** `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22`.
+- [x] **Step 1: Implement** the removals and the fixture edits.
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn build.angular` → exit 0.
+- [x] **Step 3: Measure:** `fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 20 && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs angular --framework-version 22`.
   - Both pass → delete the `DEBT` comment and commit.
   - The bundle test fails (the limitation still holds) → the controller restores `stencil.config.ts`,
     keeps the rest of the task, and the stage ends with `## Needs Dan`: the choice is an
@@ -780,7 +781,7 @@ Phase 3 the runner still asserted published SVGs, and before this task the fixtu
     generated proxies) or a documented Angular exception to "bundles only the components it imports",
     in which case Dan amends rows 10 and 13 before the stage resumes. A failure for any other reason
     (an asset not rendering) is a defect to fix in this task.
-- [ ] **Step 4: Commit** — `feat(angular)!: remove provideMud, no asset path to set`.
+- [x] **Step 4: Commit** — `feat(angular)!: remove provideMud, no asset path to set`.
 
 ### Task 10: web-components — demo on its own adapter, `sideEffects`
 
@@ -791,10 +792,10 @@ Phase 3 the runner still asserted published SVGs, and before this task the fixtu
   `copyDesignSystemAssetsToBuild` and their comments go; `base: './'` stays)
 - Modify: `packages/web-components/package.json` (`"sideEffects": false`)
 
-- [ ] **Step 1: Implement.**
-- [ ] **Step 2: Run** `fnm exec --using=24 -- yarn build.web && fnm exec --using=24 -- yarn workspace @egov-moldova/mud-web-components demo.build`
+- [x] **Step 1: Implement.**
+- [x] **Step 2: Run** `fnm exec --using=24 -- yarn build.web && fnm exec --using=24 -- yarn workspace @egov-moldova/mud-web-components demo.build`
   → exit 0.
-- [ ] **Step 3: Commit** — `fix(web-components): demo uses its own adapter, no asset copy plugins`.
+- [x] **Step 3: Commit** — `fix(web-components): demo uses its own adapter, no asset copy plugins`.
 
 ---
 
@@ -857,16 +858,16 @@ Phase 3 the runner still asserted published SVGs, and before this task the fixtu
 
 Required titles per framework: tests 1-4 for every framework; tests 5-8 in addition for web-components.
 
-- [ ] **Step 1: Write the shared file and the React fixture first**, and run against the current tree to
+- [x] **Step 1: Write the shared file and the React fixture first**, and run against the current tree to
   see it fail where expected: `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn build.react && fnm exec --using=24 -- node scripts/adapters/consumer-fixture.mjs react`
   → FAIL until the runner knows `react`.
-- [ ] **Step 2: Implement** the runner changes, both new fixtures, the page contract in Vue and Angular,
+- [x] **Step 2: Implement** the runner changes, both new fixtures, the page contract in Vue and Angular,
   and the runner spec cases.
-- [ ] **Step 3: Run each:** `node scripts/adapters/consumer-fixture.mjs react`, `react --framework-version 18`,
+- [x] **Step 3: Run each:** `node scripts/adapters/consumer-fixture.mjs react`, `react --framework-version 18`,
   `vue`, `angular --framework-version 20`, `angular --framework-version 22`, `web-components`
   (each prefixed `fnm exec --using=24 --`, after `yarn build.react|vue|angular|web` as the runner's
   preflight demands) → every run ends `PASS <framework>@<major>`; then `fnm exec --using=24 -- yarn test:scripts` → exit 0.
-- [ ] **Step 4: Commit** — `test(adapters): zero-config fixtures for React and web-components, one shared asset test file`.
+- [x] **Step 4: Commit** — `test(adapters): zero-config fixtures for React and web-components, one shared asset test file`.
 
 ---
 
@@ -927,14 +928,14 @@ Required titles per framework: tests 1-4 for every framework; tests 5-8 in addit
   copy step and the asset-path / `setupMud` / `Mud` / `provideMud` / `resourcesUrl` setup; replace any
   `<img src=".../assets/...svg">` with `<mud-icon>` / `<mud-logo>`.
 
-- [ ] **Step 1: Write the rule's spec cases**, then run `fnm exec --using=24 -- yarn docs:check` — it lists
+- [x] **Step 1: Write the rule's spec cases**, then run `fnm exec --using=24 -- yarn docs:check` — it lists
   every consumer-doc hit to rewrite.
-- [ ] **Step 2: Implement the rule and rewrite** the files above.
-- [ ] **Step 3: Snippets come from the fixtures.** Each README framework snippet is copied verbatim from
+- [x] **Step 2: Implement the rule and rewrite** the files above.
+- [x] **Step 3: Snippets come from the fixtures.** Each README framework snippet is copied verbatim from
   the matching fixture's `src/` (Task 11), so the fixtures prove the snippets work; diff each snippet
   against its fixture file.
-- [ ] **Step 4: Run** `fnm exec --using=24 -- yarn docs:check && fnm exec --using=24 -- yarn test:scripts` → exit 0.
-- [ ] **Step 5: Commit** — `docs: icons, logos and flags load on their own — usage per framework, with examples`.
+- [x] **Step 4: Run** `fnm exec --using=24 -- yarn docs:check && fnm exec --using=24 -- yarn test:scripts` → exit 0.
+- [x] **Step 5: Commit** — `docs: icons, logos and flags load on their own — usage per framework, with examples`.
 
 ---
 
@@ -944,11 +945,11 @@ Required titles per framework: tests 1-4 for every framework; tests 5-8 in addit
 
 ### Task 13: Visual regression and the full bar
 
-- [ ] **Step 1:** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/assets/story-regression.mjs capture .asset-regression/after`
-- [ ] **Step 2:** run row 14 as written. A story over budget, or present on one side only, is a
+- [x] **Step 1:** `fnm exec --using=24 -- yarn build && fnm exec --using=24 -- yarn sp.build && fnm exec --using=24 -- node scripts/assets/story-regression.mjs capture .asset-regression/after`
+- [x] **Step 2:** run row 14 as written. A story over budget, or present on one side only, is a
   regression to fix, not to tolerate.
-- [ ] **Step 3:** run every row of the acceptance bar below, as written.
-- [ ] **Step 4:** fill `## Deviations` (or write "none").
+- [x] **Step 3:** run every row of the acceptance bar below, as written.
+- [x] **Step 4:** fill `## Deviations` (or write "none").
 
 ## Acceptance bar
 
@@ -1154,8 +1155,23 @@ Task 6), `eslint.config.mjs` (the source guard, Task 6), `scripts/__tests__/git-
     changes the story itself and still cannot match a baseline that shows no focus ring.
 - Task 13, row 10 ran with `RUNNER_TEMP=/tmp/mud-fx-run` (the temp-dir issue above): both Angular
   runs ended `PASS`.
-
-(filled further during implementation)
+- 2026-10-05, Dan: one PR instead of three. `upstream/main` (#188, and #191 as merged after its
+  rebase) is merged in at `e4cc354f`; the PR closes #178, #180 and #192, and #189 / #190 close in its
+  favour. On main, `mud-service-button` is gone: its demo page and its form-model row go too.
+- 2026-10-05, row 10 decision: `RUNNER_TEMP` accepted. It is the dedicated, per-run temp root CI
+  provides, so a run does not depend on what else the host's `$TMPDIR` holds. All six fixture runs
+  (React 18/19, Vue 3, Angular 20/22, web-components 1) end `PASS` with it after the merge; the CI
+  `Adapters` job is the run of the written command on a clean runner.
+- 2026-10-05, row 14 decision: the baseline is re-captured from `upstream/main`, with the tabs story
+  made deterministic on both sides (`98f607cb`: focus once mud-tabs has set the tab's tabindex). The
+  written command exits 2: on main the 18 `mud-phone-input` stories fail to capture, because their
+  flags 404 (`/assets/assets/flags/md.svg`, the asset path this change removes). Every other story,
+  438 of them, compares within budget; the one 1 px difference (`components-button--touch-target`)
+  re-captured twice at 0 px. `mud-phone-input` is measured against Figma instead (`yarn
+  audit:component mud-phone-input --depth standard`, references from `scripts/audit/figma-refs.mjs`):
+  style parity PASS; pixel diff WARN at 0.53-1.84 % per state, with the flag box masked. The diff is
+  in the `+373` weight, the trigger chevron and the placeholder offset, none of which this change
+  touches (its CSS diff against main is the flag `img` → `svg` rules only).
 
 ## Not verified
 
