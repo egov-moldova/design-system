@@ -38,6 +38,52 @@ describe('createSvgLoader', () => {
     expect((await loader.load('outlined/c'))?.getAttribute('data-mud-asset')).toBe('icon:outlined/c');
   });
 
+  it('names why a load answered null, and forgets it once a retry succeeds', async () => {
+    const load = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('Failed to fetch dynamically imported module'))
+      .mockResolvedValueOnce({ default: '<p>not a drawing</p>' })
+      .mockResolvedValueOnce({ default: svg('outlined/f') });
+    const loader = createSvgLoader({ 'outlined/f': load });
+    expect(await loader.load('outlined/f')).toBeNull();
+    expect(loader.failure('outlined/f')).toBe('the import failed: Failed to fetch dynamically imported module');
+    expect(await loader.load('outlined/f')).toBeNull();
+    expect(loader.failure('outlined/f')).toBe('the drawing was rejected by the sanitizer');
+    expect(await loader.load('outlined/f')).not.toBeNull();
+    expect(loader.failure('outlined/f')).toBeUndefined();
+  });
+
+  it('evicts a thunk that throws synchronously, so the next call retries', async () => {
+    let calls = 0;
+    const loader = createSvgLoader({
+      'outlined/g': () => {
+        calls += 1;
+        if (calls === 1) throw new Error('sync');
+        return Promise.resolve({ default: svg('outlined/g') });
+      },
+    });
+    expect(await loader.load('outlined/g')).toBeNull();
+    expect((await loader.load('outlined/g'))?.getAttribute('data-mud-asset')).toBe('icon:outlined/g');
+  });
+
+  it('does not let an import that started before a clear repopulate the cache', async () => {
+    let resolve!: (value: { default: string }) => void;
+    const load = vi
+      .fn()
+      .mockImplementationOnce(() => new Promise(r => (resolve = r)))
+      .mockResolvedValueOnce({ default: svg('outlined/h') });
+    const loader = createSvgLoader({ 'outlined/h': load });
+    const stale = loader.load('outlined/h');
+    // The thunk runs on a microtask (see `importOnce`), so the import has started only after this.
+    await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(1));
+    clearSvgCaches();
+    resolve({ default: svg('outlined/h') });
+    await stale;
+    expect(loader.cached('outlined/h')).toBeUndefined();
+    await loader.load('outlined/h');
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps two loaders apart even for the same key', async () => {
     const icons = createSvgLoader({ x: async () => ({ default: svg('x') }) });
     const logos = createSvgLoader({});

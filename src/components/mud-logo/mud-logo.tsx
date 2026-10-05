@@ -11,8 +11,8 @@ const logos = createSvgLoader(LOGO_MODULES);
 /**
  * Brand logo for Moldovan M-products.
  *
- * Each `name` resolves to a single self-contained SVG drawing generated from
- * `./assets/`. The component imports that drawing on demand and renders it
+ * Each `name` resolves to a single self-contained SVG drawing that ships
+ * inside the package as a module. The component imports it on demand and renders it
  * into shadow DOM; the host's
  * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
  * exported from Figma — so a future asset with non-standard dimensions
@@ -32,9 +32,8 @@ const logos = createSvgLoader(LOGO_MODULES);
 })
 export class MudLogo {
   /**
-   * Logo asset identifier — the bare filename (without `.svg`) of an asset
-   * in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for
-   * the complete enumeration.
+   * Logo identifier, in the format `{service}-logo-{layout}`. See `LOGO_NAMES`
+   * for the complete enumeration.
    * @default 'mpay-logo-logomark-only'
    */
   @Prop({ reflect: true }) name: LogoName = 'mpay-logo-logomark-only';
@@ -55,7 +54,8 @@ export class MudLogo {
   /**
    * Emitted when an asset fails to load — either because the `name` is not
    * in the manifest (`'unknown'`) or because the import of its drawing failed
-   * (`'fetch-failed'`, e.g. offline or a chunk that a redeploy removed). Lets
+   * (`'fetch-failed'`, e.g. offline or a chunk that a redeploy removed; it also
+   * covers a drawing the runtime sanitizer rejected). Lets
    * consumers react in production where `console.warn` is invisible
    * (telemetry, fallback UI, etc.).
    *
@@ -122,7 +122,9 @@ export class MudLogo {
     if (this.name !== requestedName) return;
 
     if (!element) {
-      console.warn(`[mud-logo] Failed to load SVG: name="${requestedName}"`);
+      console.warn(
+        `[mud-logo] Failed to load SVG: name="${requestedName}" (${logos.failure(requestedName) ?? 'unknown cause'})`,
+      );
       this.mudLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
       this.svgCacheKey = '';
       this.svgElement = null;

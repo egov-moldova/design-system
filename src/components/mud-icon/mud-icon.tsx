@@ -191,7 +191,9 @@ export class MudIcon {
     if (this.name !== requestedName || currentVariant !== requestedVariant) return;
 
     if (!element) {
-      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant}`);
+      console.warn(
+        `[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant} (${icons.failure(key) ?? 'unknown cause'})`,
+      );
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
