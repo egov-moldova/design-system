@@ -27,16 +27,6 @@ export { MudLogo } from './components/mud-logo/mud-logo';
 export { LOGO_NAMES } from './components/mud-logo/mud-logo.types';
 export type { LogoName } from './components/mud-logo/mud-logo.types';
 
-export { MudServiceButton } from './components/mud-service-button/mud-service-button';
-export {
-  SERVICE_BUTTON_APPEARANCES,
-  SERVICE_BUTTON_TYPES,
-} from './components/mud-service-button/mud-service-button.types';
-export type {
-  ServiceButtonAppearance,
-  ServiceButtonType,
-} from './components/mud-service-button/mud-service-button.types';
-
 export {
   FILLED_ICON_NAMES,
   hasIconVariant,

@@ -29,26 +29,37 @@
     {
       "name": "desktop",
       "node": "81:801",
-      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "html": "<div style=\"width: 435px\"><mud-breadcrumb></mud-breadcrumb></div>",
       "props": {
         "mud-breadcrumb": {
+          "maxVisible": 6,
           "items": [
             {
               "label": "Level 1",
-              "href": "#1"
+              "href": "#Level1"
             },
             {
               "label": "Level 2",
-              "href": "#2"
+              "href": "#Level2"
             },
             {
               "label": "Level 3",
-              "href": "#3"
+              "href": "#Level3"
             },
             {
-              "label": "Active Level"
+              "label": "Level 4",
+              "href": "#Level4"
+            },
+            {
+              "label": "Level 5",
+              "href": "#Level5"
+            },
+            {
+              "label": "Active Level",
+              "active": true
             }
-          ]
+          ],
+          "responsive": false
         }
       },
       "expect": [
@@ -60,9 +71,10 @@
             "alignItems": "center",
             "columnGap": "4px"
           },
-          "note": "Figma 81:801 lays the trail out as a row, centred, with a 4px gap and hug sizing."
+          "note": "Figma 81:801 lays the trail out as a row, centred, with a 4px gap and hug sizing. The Figma Desktop frame shows six levels (Level 1 to 5 and the active one); the fixture raises maxVisible to 6 so none is collapsed. The fixture is 435px wide, the width of the Figma export, because the component fills its container instead of hugging its content. `responsive` is off so the 435px fixture keeps the desktop trail (the component switches to the back link by width). No whole-trail pixel diff: measured on the 2x exports, the label starts of this render trail Figma's by 1, 2, 2, 3 and 3 device pixels over five items (about 0.5 CSS px per item). Figma sizes each hugged label to a whole-pixel text width, a browser keeps the fractional width, so the error grows along the trail while every box, gap and style matches exactly (style parity). The chevron and icon glyphs also differ: Figma draws them from their own 16px drawings, mud-icon scales one 24px drawing. The single-item mobile state compares pixels (0.29%)."
         }
-      ]
+      ],
+      "pixel": false
     },
     {
       "name": "item-enabled",
@@ -181,7 +193,9 @@
           "node": "81:717",
           "styles": {
             "color": "#383838",
-            "textDecorationLine": "underline"
+            "textDecorationLine": "underline",
+            "textDecorationColor": "#383838",
+            "textDecorationThickness": "1px"
           },
           "note": "Figma 81:717 draws a 1px #383838 Underline frame under the label; the component uses a real text-decoration, which is the same 1px rule under the same glyphs."
         }
@@ -370,7 +384,7 @@
               "href": "#2"
             },
             {
-              "label": "Level 3",
+              "label": "Previous Level",
               "href": "#3"
             },
             {
@@ -392,18 +406,239 @@
             "boxWidth": "20px",
             "boxHeight": "20px"
           },
-          "note": "Figma 232:5283 replaces the whole trail with a 20x20 \"20/chevron-left-small\" plus one item, so the back glyph is 20px, not the 16px the desktop trail uses."
+          "note": "Figma 232:5283 replaces the whole trail with a 20x20 \"20/chevron-left-small\" plus one item, so the back glyph is 20px, not the 16px the desktop trail uses. The capture is the back link (glyph and label), the 115 x 20 of the Figma node. The parent crumb is labelled \"Previous Level\" as in the Figma node."
         },
         {
           "target": "mud-breadcrumb .back-link",
-          "node": "232:5283",
+          "node": "609:2034",
           "styles": {
             "fontFamily": "Onest",
             "fontSize": "14px",
             "lineHeight": "20px",
-            "columnGap": "4px"
+            "columnGap": "0px"
           },
-          "note": "Figma 232:5283 keeps the 4px gap and the Desktop/Body/Small text of the desktop item."
+          "note": "Figma mobile breadcrumbs 609:2034 is a row with no gap, centred: the label starts where the 20px \"20/chevron-left-small\" ends (the label begins 21px in on the 2x export, 4px earlier than with a 4px gap). Desktop/Body/Small text, as on the desktop item."
+        }
+      ],
+      "capture": {
+        "selector": "mud-breadcrumb .back-link",
+        "bleed": 0
+      }
+    },
+    {
+      "name": "leading-icon",
+      "node": "630:8010",
+      "html": "<div style=\"width: 311px\"><mud-breadcrumb></mud-breadcrumb></div>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#Level1",
+              "iconStart": "home-round-door"
+            },
+            {
+              "label": "Level 2",
+              "href": "#Level2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#Level3"
+            },
+            {
+              "label": "Active Level",
+              "active": true
+            }
+          ],
+          "responsive": false
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb-icon-start",
+          "node": "630:8010",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          },
+          "note": "\"w/ leading-icon\": a 16/home-round-door (2975:10175, 627:5250) before the first label. The fixture is 311px wide, the width of the Figma export, because the component fills its container instead of hugging its content. `responsive` is off so the 435px fixture keeps the desktop trail (the component switches to the back link by width). No whole-trail pixel diff: measured on the 2x exports, the label starts of this render trail Figma's by 1, 2, 2, 3 and 3 device pixels over five items (about 0.5 CSS px per item). Figma sizes each hugged label to a whole-pixel text width, a browser keeps the fractional width, so the error grows along the trail while every box, gap and style matches exactly (style parity). The chevron and icon glyphs also differ: Figma draws them from their own 16px drawings, mud-icon scales one 24px drawing. The single-item mobile state compares pixels (0.29%)."
+        },
+        {
+          "target": "mud-breadcrumb .crumb-item:nth-of-type(1) .crumb-label",
+          "node": "630:8010",
+          "styles": {
+            "columnGap": "4px"
+          }
+        }
+      ],
+      "pixel": false
+    },
+    {
+      "name": "overflow",
+      "node": "607:6474",
+      "pixel": false,
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "maxVisible": 4,
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#Level1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#Level2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#Level3"
+            },
+            {
+              "label": "Level 5",
+              "href": "#Level5"
+            },
+            {
+              "label": "Active Level",
+              "active": true
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .overflow-trigger",
+          "node": "607:6474",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "color": "#757575"
+          },
+          "note": "The collapsed levels are one item labelled \"...\" (EL-379af63d) in Desktop/Body/Small #757575, followed by the chevron. Figma shows three tail items after it, the text beside it says the first and the last two; the component follows the text. The component sets \"…\" as one character where Figma types three full stops."
+        }
+      ]
+    },
+    {
+      "name": "overflow-menu",
+      "node": "607:6407",
+      "pixel": false,
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "maxVisible": 4,
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#Level1"
+            },
+            {
+              "label": "Level 2",
+              "href": "#Level2"
+            },
+            {
+              "label": "Level 3",
+              "href": "#Level3"
+            },
+            {
+              "label": "Level 5",
+              "href": "#Level5"
+            },
+            {
+              "label": "Active Level",
+              "active": true
+            }
+          ]
+        }
+      },
+      "interaction": {
+        "type": "click",
+        "target": "mud-breadcrumb .overflow-trigger"
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .overflow-menu",
+          "node": "607:6407",
+          "styles": {
+            "boxWidth": "160px",
+            "paddingTop": "8px",
+            "paddingLeft": "8px",
+            "rowGap": "4px",
+            "borderTopLeftRadius": "16px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopWidth": "0px",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 5px 12px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0.5px 0px"
+          },
+          "note": "The overflow dropdown is the contextual-menu 409:22462: 160px wide, padded 8px with 4px between options, radius 16, Drop Shadow/300 and no stroke."
+        },
+        {
+          "target": "mud-breadcrumb .overflow-menu-item",
+          "node": "607:6407",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "paddingRight": "24px",
+            "borderTopLeftRadius": "8px",
+            "boxHeight": "44px",
+            "color": "#383838",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Each option is a .menu-item-action 172:2947: padding 12px 24px 12px 16px, radius 8, Desktop/Body/Small 500 in #383838."
+        }
+      ]
+    },
+    {
+      "name": "truncated-hover",
+      "node": "2436:32135",
+      "pixel": false,
+      "html": "<mud-breadcrumb></mud-breadcrumb>",
+      "props": {
+        "mud-breadcrumb": {
+          "items": [
+            {
+              "label": "Level 1",
+              "href": "#Level1"
+            },
+            {
+              "label": "This breadcrumb label contains more than 30 characters.",
+              "href": "#Thisbreadcrumblabelcontainsmorethan30characters."
+            },
+            {
+              "label": "Active Level",
+              "active": true
+            }
+          ]
+        }
+      },
+      "interaction": {
+        "type": "hover",
+        "target": "mud-breadcrumb .crumb-item:nth-of-type(3) .crumb"
+      },
+      "expect": [
+        {
+          "target": "mud-breadcrumb .crumb-item:nth-of-type(3) .crumb-text",
+          "node": "2436:32135",
+          "styles": {
+            "textOverflow": "ellipsis",
+            "overflow": "hidden",
+            "whiteSpace": "nowrap"
+          },
+          "note": "A label over 30 characters is cut with an ellipsis and its full title shows in a tooltip on hover (Best Practices, 2436:32140). Figma draws the cut crumb 188px wide (underline 188 x 1); the component caps it at 30ch, wider, so the width is a design question and is not pinned."
+        },
+        {
+          "target": "mud-breadcrumb .crumb-item:nth-of-type(3) .crumb",
+          "node": "2436:32135",
+          "styles": {
+            "color": "#383838",
+            "textDecorationLine": "underline",
+            "textDecorationThickness": "1px",
+            "textDecorationColor": "#383838"
+          }
         }
       ]
     }

@@ -198,7 +198,7 @@ export const AllVariants: Story = {
 };
 ```
 
-Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`. No story omits `docs.source`: even a single clean `<mud-component …>` render shows the story object under `'code'`. A property that is not an attribute goes in a `<script>` block on an element `id` (`mud-breadcrumb.stories.ts`).
+Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories). No story omits `docs.source`: even a single clean `<mud-component …>` render shows the story object under `'code'`. A property that is not an attribute goes in a `<script>` block on an element `id` (`mud-breadcrumb.stories.ts`).
 
 ### Step 6 — Write or draft
 

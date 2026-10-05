@@ -130,7 +130,9 @@ export class MudMenuItem {
         <Host role="presentation">
           <div class="separator" aria-hidden="true"></div>
           <div class="heading">
-            <slot>{this.label ?? ''}</slot>
+            <span class="heading-label">
+              <slot>{this.label ?? ''}</slot>
+            </span>
           </div>
         </Host>
       );

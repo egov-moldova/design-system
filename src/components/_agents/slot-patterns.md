@@ -212,6 +212,6 @@ element (`<slot name="icon"><mud-icon name={iconName} /></slot>`) are not text a
 
 Until the next major (#165):
 
-- `mud-button`, `mud-service-button`, `mud-chip`: `label` is still an accessible name only,
+- `mud-button`, `mud-chip`: `label` is still an accessible name only,
   deprecated in favour of the native `aria-label`, which they forward; it goes away in the next
   major.

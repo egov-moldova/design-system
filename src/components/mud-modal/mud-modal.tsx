@@ -398,7 +398,7 @@ export class MudModal {
         onKeyDown={this.handleCloseButtonKeyDown}
       >
         <span class="close-icon" aria-hidden="true">
-          <mud-icon name="cross-small" size={16}></mud-icon>
+          <mud-icon name="cross-large" size={16}></mud-icon>
         </span>
       </button>
     );

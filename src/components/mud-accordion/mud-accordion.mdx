@@ -30,6 +30,14 @@ live under **Molecules → Accordion Item** in the sidebar.
 
 <ArgTypes of={ItemStories} />
 
+### Panel content and spacing
+
+The panel adds no padding: its slot runs edge to edge, as in the Figma Accordion page
+(670:5171), and the content spaces itself. In the design `.accordion-content` pads 12px at the
+bottom and each `.service-item` row pads 24px (see **With Panel List**). Plain text sits flush
+with the heading; wrap it in a container with the padding you need. The stories and demos add
+12px below plain-text panels with `mud-accordion-item::part(panel)`, which you can do too.
+
 ## Stories
 
 <Stories />

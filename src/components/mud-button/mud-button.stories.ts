@@ -900,7 +900,7 @@ export const WithBadge: Story = {
     docs: {
       description: {
         story:
-          'Pick the M-service with the `badge` prop (`badge="mpay"`) on a `size="lg"` button in `primary` or `neutral` (Figma button-badge-filled, 2925:4606); the `badge` slot takes any other logo instead. This replaces `mud-service-button`, which is deprecated. The logo dims to 30% when disabled and hides while loading.',
+          'Pick the M-service with the `badge` prop (`badge="mpay"`) on a `size="lg"` button in `primary` or `neutral` (Figma button-badge-filled, 2925:4606); the `badge` slot takes any other logo instead. This is what `mud-service-button` used to do. The logo dims to 30% when disabled and hides while loading.',
       },
       source: {
         code: [

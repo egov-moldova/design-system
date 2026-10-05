@@ -1,0 +1,196 @@
+{
+  "component": "mud-tooltip",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-tooltip--default",
+    "viewport": {
+      "width": 900,
+      "height": 500
+    }
+  },
+  "states": [
+    {
+      "name": "large-arrow-bottom",
+      "node": "210:3898",
+      "pixel": false,
+      "html": "<div style=\"padding:100px 180px\"><mud-tooltip open size=\"lg\" position=\"top\" show-delay=\"0\" hide-delay=\"0\"><button slot=\"trigger\" type=\"button\" style=\"width:72px;height:32px\">Trigger</button>Tooltip</mud-tooltip></div>",
+      "expect": [
+        {
+          "target": "mud-tooltip .bubble",
+          "node": "210:3898",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "borderTopLeftRadius": "6px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "color": "#FFFFFF",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "textAlign": "center",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px"
+          },
+          "note": "Bubble 210:3899 pads 12px 16px, radius 6, #1E1E1E, Desktop/Body/Small 14/20 in white centred; the tooltip carries Drop Shadow/200 (0 1px 3px, 0 3px 8px at 8%, 0 0 0.5px at 18%)."
+        },
+        {
+          "target": "mud-tooltip .arrow",
+          "node": "210:3898",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "12px",
+            "backgroundColor": "#1E1E1E"
+          }
+        }
+      ]
+    },
+    {
+      "name": "small-arrow-bottom",
+      "node": "611:2343",
+      "pixel": false,
+      "html": "<div style=\"padding:100px 180px\"><mud-tooltip open size=\"sm\" position=\"top\" show-delay=\"0\" hide-delay=\"0\"><button slot=\"trigger\" type=\"button\" style=\"width:72px;height:32px\">Trigger</button>Tooltip</mud-tooltip></div>",
+      "expect": [
+        {
+          "target": "mud-tooltip .bubble",
+          "node": "611:2343",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "borderTopLeftRadius": "4px",
+            "paddingTop": "8px",
+            "paddingBottom": "8px",
+            "paddingLeft": "12px",
+            "color": "#FFFFFF",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "textAlign": "center",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px"
+          },
+          "note": "Small: bubble 611:2344 pads 8px 12px, radius 4; the arrow is 21.33 x 8."
+        },
+        {
+          "target": "mud-tooltip .arrow",
+          "node": "611:2343",
+          "styles": {
+            "boxWidth": "21.33px",
+            "boxHeight": "8px",
+            "backgroundColor": "#1E1E1E"
+          },
+          "note": "Figma 611:2349 is the 21.33 x 8 arrow: a flat base that flares out of the bubble and a rounded tip (path in the node export). Style parity pins its box and colour; the shape was compared against the 2x export of 611:2410 (bubble and arrow, aligned on the dark region): 0.44% of the pixels differ."
+        }
+      ]
+    },
+    {
+      "name": "large-arrow-top",
+      "node": "210:3905",
+      "pixel": false,
+      "html": "<div style=\"padding:100px 180px\"><mud-tooltip open size=\"lg\" position=\"bottom\" show-delay=\"0\" hide-delay=\"0\"><button slot=\"trigger\" type=\"button\" style=\"width:72px;height:32px\">Trigger</button>Tooltip</mud-tooltip></div>",
+      "expect": [
+        {
+          "target": "mud-tooltip .bubble",
+          "node": "210:3905",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "borderTopLeftRadius": "6px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "color": "#FFFFFF",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "textAlign": "center",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px"
+          }
+        },
+        {
+          "target": "mud-tooltip .arrow",
+          "node": "210:3905",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "12px",
+            "backgroundColor": "#1E1E1E"
+          }
+        }
+      ]
+    },
+    {
+      "name": "large-arrow-bottom-left",
+      "node": "210:3941",
+      "pixel": false,
+      "html": "<div style=\"padding:100px 180px\"><mud-tooltip open size=\"lg\" position=\"top-left\" show-delay=\"0\" hide-delay=\"0\"><button slot=\"trigger\" type=\"button\" style=\"width:72px;height:32px\">Trigger</button>Tooltip</mud-tooltip></div>",
+      "expect": [
+        {
+          "target": "mud-tooltip .bubble",
+          "node": "210:3941",
+          "styles": {
+            "backgroundColor": "#1E1E1E",
+            "borderTopLeftRadius": "6px",
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "color": "#FFFFFF",
+            "fontFamily": "Onest",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400",
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px"
+          },
+          "note": "Design question, not pinned: the Bottom Left variant sets its text in Desktop/Body/Small (2975:9912), left aligned, where the Bottom and Top variants centre it (210:3898). The component centres every default tooltip; the difference is invisible for one line."
+        },
+        {
+          "target": "mud-tooltip .arrow",
+          "node": "210:3941",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "12px",
+            "backgroundColor": "#1E1E1E"
+          }
+        }
+      ]
+    },
+    {
+      "name": "coach-close",
+      "node": "5082:8487",
+      "pixel": false,
+      "html": "<div style=\"padding:100px 180px\"><mud-tooltip open size=\"lg\" position=\"top\" show-delay=\"0\" hide-delay=\"0\" variant=\"coach\"><button slot=\"trigger\" type=\"button\" style=\"width:72px;height:32px\">Trigger</button>Tooltip</mud-tooltip></div>",
+      "expect": [
+        {
+          "target": "mud-tooltip .bubble",
+          "node": "5082:8488",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingBottom": "12px",
+            "paddingLeft": "16px",
+            "backgroundColor": "#1E1E1E",
+            "borderTopLeftRadius": "6px"
+          },
+          "note": "Close Button=True: the bubble pads 12px 12px 12px 16px and puts the 16px cross-large (5082:8490) after the text, gap 12."
+        },
+        {
+          "target": "mud-tooltip .close",
+          "node": "578:34599",
+          "styles": {
+            "boxWidth": "32px",
+            "boxHeight": "32px"
+          },
+          "note": "Target Sizes: the close target is 32 x 32 on pointer devices (Surface 578:34599) and 40 x 40 on touch (578:34626)."
+        },
+        {
+          "target": "mud-tooltip .close-icon",
+          "node": "5082:8490",
+          "styles": {
+            "boxWidth": "16px",
+            "boxHeight": "16px"
+          }
+        }
+      ]
+    }
+  ]
+}

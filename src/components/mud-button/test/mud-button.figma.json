@@ -328,7 +328,7 @@
           "styles": {
             "backgroundColor": "#0058D2"
           },
-          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts, as mud-service-button did. The pixel diff reports that width."
+          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts. The pixel diff reports that width."
         },
         {
           "target": "mud-button .badge",
@@ -449,7 +449,7 @@
           "styles": {
             "backgroundColor": "#F5F5F5"
           },
-          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts, as mud-service-button did. The pixel diff reports that width."
+          "note": "Design question: the Figma loading variants are 8px wider than the default (the spinner joins the auto-layout row); the button keeps its default width so the layout does not move when loading starts. The pixel diff reports that width."
         },
         {
           "target": "mud-button .badge",

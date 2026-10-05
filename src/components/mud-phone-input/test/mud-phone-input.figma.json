@@ -69,22 +69,6 @@
         "reason": "Default/Filled/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
       },
       {
-        "node": "3318:18224",
-        "reason": "Default/ReadOnly/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "7854:6781",
-        "reason": "Default/ReadOnly/Large/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "6173:6074",
-        "reason": "Default/ReadOnly/Medium/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
-        "node": "7854:6794",
-        "reason": "Default/ReadOnly/Medium/International — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
-      },
-      {
         "node": "3318:18236",
         "reason": "Default/Disabled/Large/Local — the state treatments are the ones the shared input family carries (border colour, surface, text colour); this manifest pins the phone field's own anatomy, which those states do not move. Left uncovered rather than asserted without reading each node."
       },
@@ -614,6 +598,383 @@
             "boxShadow": "inset 0 0 0 1px #0058D2, 0 0 0 4px #CCDEF6"
           },
           "note": "The search field is search-input-rectangular in State=Focus (933:29631), with the caret drawn in its placeholder: a 2px #0058D2 stroke and Focus Ring/Large/Default, 0 0 0 4px #CCDEF6. The 1px border plus a 1px inset shadow make the 2px stroke, so the content does not move."
+        }
+      ]
+    },
+    {
+      "name": "readonly-medium-international",
+      "node": "7854:6794",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"md\" type=\"international\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6805",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma 24/checkmark-small at 24x24 in the Medium frame (7854:6805); its fill is #039855, the icon.positive.default token."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6794",
+          "styles": {
+            "paddingRight": "12px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "40px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6794",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "7854:6799",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "32px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 32px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "7854:6799",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "node": "7854:6799",
+          "absent": true,
+          "note": "The read-only International frame has only the flag and the code, no chevron."
+        }
+      ],
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff.",
+      "capture": {
+        "selector": "mud-phone-input",
+        "bleed": 0
+      },
+      "captureNote": "Same as default-large-international: the country listbox popover carries a drop shadow even while hidden, which `bleed: \"auto\"` would union into the frame."
+    },
+    {
+      "name": "readonly-large-international",
+      "node": "7854:6781",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6792",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma 24/checkmark-small at 24x24 in the Large frame (7854:6792); its fill is #039855, the icon.positive.default token."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6781",
+          "styles": {
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "48px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "7854:6781",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "7854:6786",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "36px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 36px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "7854:6786",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-chevron",
+          "node": "7854:6786",
+          "absent": true,
+          "note": "The read-only International frame has only the flag and the code, no chevron."
+        }
+      ],
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff.",
+      "capture": {
+        "selector": "mud-phone-input",
+        "bleed": 0
+      },
+      "captureNote": "Same as default-large-international: the country listbox popover carries a drop shadow even while hidden, which `bleed: \"auto\"` would union into the frame."
+    },
+    {
+      "name": "readonly-medium-local",
+      "node": "6173:6074",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"md\" type=\"local\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6805",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma the same 24x24 checkmark, as in the Medium International frame (7854:6805); its fill is #039855, the icon.positive.default token."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "6173:6074",
+          "styles": {
+            "paddingRight": "12px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "40px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "6173:6074",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "6173:6079",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "32px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 32px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "6173:6079",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        }
+      ],
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff."
+    },
+    {
+      "name": "readonly-large-local",
+      "node": "3318:18224",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"local\" value=\"+37362123456\" readonly></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .valid-icon",
+          "node": "7854:6792",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px",
+            "color": "#039855"
+          },
+          "note": "Figma the same 24x24 checkmark, as in the Large International frame (7854:6792); its fill is #039855, the icon.positive.default token."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18224",
+          "styles": {
+            "paddingRight": "16px",
+            "columnGap": "12px",
+            "backgroundColor": "#F5F5F5",
+            "boxHeight": "48px"
+          },
+          "note": "The read-only frame keeps the field's padding and gap and sits on #F5F5F5."
+        },
+        {
+          "target": "mud-phone-input .control",
+          "node": "3318:18224",
+          "styles": {
+            "outlineColor": "rgba(0, 0, 0, 0)"
+          },
+          "note": "The Figma Input frame carries a #F5F5F5 fill and no stroke; the field's outline is transparent."
+        },
+        {
+          "target": "mud-phone-input .country-trigger",
+          "node": "3318:18224",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "paddingLeft": "8px",
+            "paddingRight": "12px",
+            "boxHeight": "36px"
+          },
+          "note": "The read-only chip is white, padded 0 12 0 8, 36px high."
+        },
+        {
+          "target": "mud-phone-input .country-trigger-code",
+          "node": "3318:18224",
+          "styles": {
+            "color": "#121212",
+            "fontSize": "16px",
+            "lineHeight": "24px"
+          },
+          "note": "The dial code is #121212, not dimmed like a disabled field's."
+        }
+      ],
+      "mask": ["mud-phone-input .flag", "mud-phone-input .native"],
+      "maskNote": "The frames draw the placeholder XX  XXX  XXX and the component needs a valid number to show its check; the number and the flag are masked, and the glyph is compared in the pixel diff."
+    },
+    {
+      "name": "selection-menu",
+      "node": "10747:2452",
+      "pixel": false,
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\"></mud-phone-input></div>",
+      "interaction": {
+        "type": "click",
+        "target": "mud-phone-input .country-trigger"
+      },
+      "expect": [
+        {
+          "target": "mud-phone-input .listbox-popover",
+          "node": "10747:2452",
+          "styles": {
+            "backgroundColor": "#FFFFFF",
+            "borderTopLeftRadius": "16px",
+            "paddingTop": "8px",
+            "paddingLeft": "8px",
+            "paddingRight": "8px",
+            "boxWidth": "282px",
+            "boxShadow": "0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 5px 12px 0 rgba(0, 0, 0, 0.08), 0 0 0.5px 0 rgba(0, 0, 0, 0.15)"
+          },
+          "note": "selection-menu: a white 16px-radius panel padded 8, on Drop Shadow/300. Pixel diff off: Figma filters the list with the query Mo (Moldova, Monaco, ...) and draws emoji flags, while the fixture shows the unfiltered list. Design question: with 16px row padding and a 24px check, a long localised name such as 'Republica Moldova' is ellipsized at 282px; the frames only show short English names."
+        },
+        {
+          "target": "mud-phone-input .listbox-search-icon",
+          "node": "10747:2453",
+          "styles": {
+            "boxWidth": "20px",
+            "boxHeight": "20px"
+          },
+          "note": "The search-input-rectangular instance 10747:2453 draws 20/search (933:29636) at 20x20."
+        },
+        {
+          "target": "mud-phone-input .listbox-search-input",
+          "node": "10747:2453",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "color": "#121212"
+          },
+          "note": "The instance's typed text (933:29639) is Desktop/Body/Small in #121212."
+        },
+        {
+          "target": "mud-phone-input .listbox",
+          "node": "10747:2535",
+          "styles": {
+            "rowGap": "4px"
+          },
+          "note": "The options are 4px apart."
+        },
+        {
+          "target": "mud-phone-input .option.is-selected",
+          "node": "10758:2616",
+          "styles": {
+            "backgroundColor": "#F5F5F5",
+            "borderTopLeftRadius": "8px",
+            "paddingTop": "8px",
+            "paddingBottom": "8px",
+            "paddingLeft": "16px",
+            "paddingRight": "16px",
+            "columnGap": "12px"
+          },
+          "note": "The selected option is a #F5F5F5 row padded 8 16, radius 8, gap 12 before the check."
+        },
+        {
+          "target": "mud-phone-input .option.is-selected .option-name",
+          "node": "10758:2620",
+          "styles": {
+            "color": "#0058D2",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "The selected country name is Desktop/Body/Small 500 in #0058D2."
+        },
+        {
+          "target": "mud-phone-input .option.is-selected .option-code",
+          "node": "10758:2621",
+          "styles": {
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          },
+          "note": "The dial code stays grey #757575 on the selected row."
+        },
+        {
+          "target": "mud-phone-input .option.is-selected .option-check",
+          "node": "10758:2622",
+          "styles": {
+            "boxWidth": "24px",
+            "boxHeight": "24px"
+          },
+          "note": "24/checkmark-small at 24x24."
+        },
+        {
+          "target": "mud-phone-input .option:not(.is-selected) .option-name",
+          "node": "10758:2627",
+          "styles": {
+            "color": "#383838",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          },
+          "note": "Other countries are Desktop/Body/Small 500 in #383838."
+        },
+        {
+          "target": "mud-phone-input .option:not(.is-selected) .option-code",
+          "node": "10758:2628",
+          "styles": {
+            "color": "#757575",
+            "fontSize": "14px",
+            "fontWeight": "400"
+          },
+          "note": "Their dial code is #757575."
         }
       ]
     }

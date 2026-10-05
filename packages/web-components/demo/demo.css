@@ -306,3 +306,9 @@ code {
   font-size: var(--font-size-14);
   color: var(--color-text-base-tertiary);
 }
+
+/* The accordion panel adds no padding (Figma Content Slot): plain-text panels get the
+   12px .accordion-content leaves below the content. */
+mud-accordion-item::part(panel) {
+  padding-block-end: var(--spacing-12);
+}

@@ -139,6 +139,11 @@
         "$type": "color",
         "$comment": "Figma Section Heading label #757575."
       },
+      "separatorInset": {
+        "$value": "1.5px",
+        "$type": "dimension",
+        "$comment": "Off the spacing scale: Figma pads the separator 2px top and bottom around a 0-high stroke centred on its line (403:21610), so a real 1px line sits 1.5px in and the block stays 4px tall."
+      },
       "separatorColor": {
         "$value": "{color.border.base.default}",
         "$type": "color",

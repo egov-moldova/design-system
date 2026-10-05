@@ -390,17 +390,19 @@
   line-height: var(--accordion-item-panel-line-height);
 }
 
+/* The panel adds no padding: Figma's Content Slot runs edge to edge and the
+   content spaces itself (.accordion-content pads 12px at the bottom, each
+   .service-item 24px). */
 .panel-inner {
-  padding-block-end: var(--accordion-item-panel-padding-block-end);
-  /* Panel body is inset from the heading, per the design. */
-  padding-inline-start: var(--accordion-item-panel-padding-inline-start);
-  padding-inline-end: var(--accordion-item-panel-padding-inline-end);
+  display: block;
 }
 
-/* Trail-sites keeps the panel aligned with the tinted header instead of the
-   default inset, so body text lines up with the brand-tinted heading. */
+/* Trail-sites is not on the Accordion page, so its panel keeps the inset it had:
+   body text lines up with the brand-tinted heading. */
 :host([appearance='trail-sites'][open]) .panel-inner {
+  padding-block-end: var(--accordion-item-panel-trail-sites-padding-block-end);
   padding-inline-start: var(--_padding-inline);
+  padding-inline-end: var(--accordion-item-panel-trail-sites-padding-inline-end);
 }
 
 ::slotted(*) {

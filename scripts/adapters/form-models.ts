@@ -162,7 +162,6 @@ export const FORM_MODEL_EXCLUSIONS: readonly TagDisposition[] = [
  */
 export const NON_EMITTING_VALUE_HOLDERS: readonly TagDisposition[] = [
   { tag: 'mud-button', reason: 'form-associated submit value, not a model: it emits no change' },
-  { tag: 'mud-service-button', reason: 'form-associated submit value, not a model: it emits no change' },
   {
     tag: 'mud-chip',
     reason: 'a `selected` toggle that announces itself with `mudSelect`, an action rather than a model',

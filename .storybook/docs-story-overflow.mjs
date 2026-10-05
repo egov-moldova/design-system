@@ -11,7 +11,7 @@
 //
 // Only a story that fits its frame is marked. CSS cannot scroll one axis and leave the
 // other visible — `overflow-x: auto` turns `overflow-y: visible` into `auto` — so a story
-// wider than its frame (the logo, pagination and service-button grids on a narrow
+// wider than its frame (the logo and pagination grids on a narrow
 // viewport) keeps addon-docs' scrolling box, and so does every frame if this module never
 // runs. The measurement runs when stories mount, hydrate, fonts load or the viewport
 // resizes, never when an overlay opens.

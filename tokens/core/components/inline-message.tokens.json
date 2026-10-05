@@ -36,7 +36,11 @@
         "$type": "color",
         "$comment": "Darker green (#027948, ~5.2:1 on white). positive.default (#039855) is 3.73:1 and fails WCAG 1.4.3 AA as body text."
       },
-      "icon": { "$value": "{color.icon.positive.on-secondary}", "$type": "color" }
+      "icon": {
+        "$value": "{color.icon.positive.default}",
+        "$type": "color",
+        "$comment": "Figma draws the success glyph #039855 (571:29793). A non-text glyph needs 3:1 (WCAG 1.4.11) and gets 3.73:1 on white, unlike the text above."
+      }
     },
     "error": {
       "text": { "$value": "{color.text.danger.default}", "$type": "color" },

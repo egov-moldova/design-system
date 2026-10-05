@@ -147,6 +147,13 @@ describe('mud-modal', () => {
       expect(queryCloseButton(root)).toBeTruthy();
     });
 
+    it('draws the close glyph with the 16px cross-large icon (Figma 109:2526)', async () => {
+      const { root } = await render(<mud-modal title-text="x"></mud-modal>);
+      const icon = queryCloseButton(root)?.querySelector('mud-icon');
+      expect(icon?.getAttribute('name')).toBe('cross-large');
+      expect(icon?.getAttribute('size')).toBe('16');
+    });
+
     it('omits the close button when `closable=false`', async () => {
       const { root } = await render(<mud-modal title-text="x" closable={false}></mud-modal>);
       expect(queryCloseButton(root)).toBeNull();

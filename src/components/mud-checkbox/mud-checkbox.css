@@ -55,9 +55,8 @@
 :host(.is-invalid) {
   --_bg: var(--checkbox-destructive-background-unchecked);
   --_border-color: var(--checkbox-destructive-border-unchecked);
-  /* Label keeps its default colour in the error state (per Figma) — only the
-     box, the error icon, and the error message turn red. */
-  --_supporting-color: var(--checkbox-destructive-supporting);
+  /* The label and the supporting text keep their default colours in the error state (Figma
+     340:10810, 340:10817) — only the box, the error icon, and the error message turn red. */
 }
 
 :host(.is-invalid.is-checked),
@@ -105,9 +104,10 @@
 
 /* ---------- Control (box + native input) ---------- */
 
-/* Figma checkbox-label 13:131 centres the box and a lone label on each other;
-   only the supporting-text variant 13:143 aligns them to the top. */
-:host(:not(.has-supporting):not(.has-error)) .root {
+/* Figma checkbox-label 13:131 centres the box and a lone label on each other, and so does the
+   error-message variant without supporting text (340:10810); only the supporting-text variants
+   (13:143, 340:10817) align them to the top. */
+:host(:not(.has-supporting)) .root {
   align-items: center;
 }
 
@@ -129,6 +129,18 @@
     content: '';
     position: absolute;
     inset: calc((var(--_box-size) - var(--_touch-target)) / 2);
+  }
+
+  /* The target of a checkbox with a label reaches past the whole row (Figma 2822:1233, 2822:1236),
+     not only past the box. */
+  .root {
+    position: relative;
+  }
+
+  .root::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--checkbox-container-touch-row-inset));
   }
 }
 
@@ -245,19 +257,22 @@
 .error {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-4);
+  gap: var(--checkbox-error-gap);
+  /* The flex gap already puts --checkbox-text-gap between the label (or the supporting text) and the
+     message; the message sits --checkbox-error-spacing below it (Figma 340:10854). */
+  margin-block-start: calc(var(--checkbox-error-spacing) - var(--checkbox-text-gap));
   font-family: var(--checkbox-supporting-font-family);
   font-weight: var(--checkbox-supporting-font-weight);
-  font-size: var(--_supporting-font-size);
-  line-height: var(--_supporting-line-height);
+  font-size: var(--checkbox-error-font-size);
+  line-height: var(--checkbox-error-line-height);
   color: var(--checkbox-destructive-supporting);
   overflow-wrap: anywhere;
 }
 
-/* Centre the 16px icon on the first text line (line-height is a px length). */
+/* Centre the icon on the first text line (line-height is a px length). */
 .error-icon {
   flex-shrink: 0;
-  margin-block-start: calc((var(--_supporting-line-height) - 16px) / 2);
+  margin-block-start: calc((var(--checkbox-error-line-height) - var(--checkbox-error-icon-size)) / 2);
 }
 
 .error-text {

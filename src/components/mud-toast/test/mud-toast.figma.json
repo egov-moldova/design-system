@@ -1094,6 +1094,50 @@
           "note": "Truncation › body: 3 lines of 20px in the fill column (layer I578:33542;100:818)."
         }
       ]
+    },
+    {
+      "name": "mobile-info-heading",
+      "node": "565:20401",
+      "pixel": false,
+      "viewport": {
+        "width": 375,
+        "height": 800
+      },
+      "html": "<div style=\"width:359px\"><mud-toast variant=\"info\" title-text=\"Message heading\">We inform you about service changes.</mud-toast></div>",
+      "expect": [
+        {
+          "target": "mud-toast",
+          "node": "565:20401",
+          "styles": {
+            "paddingTop": "12px",
+            "paddingRight": "12px",
+            "paddingBottom": "16px",
+            "paddingLeft": "12px",
+            "columnGap": "16px",
+            "borderTopLeftRadius": "8px",
+            "backgroundColor": "#0058D2"
+          },
+          "note": "Mobile placement frame (565:20401): the same padding, gap, radius and fill as the 350px desktop toast. Its width is 359px (a 375px screen less two 8px insets); the component keeps its 350px width, so boxWidth is deliberately not pinned and the pixel diff is off — a design question, see the PR."
+        },
+        {
+          "target": "mud-toast .title",
+          "node": "75:418",
+          "styles": {
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        },
+        {
+          "target": "mud-toast .body",
+          "node": "75:419",
+          "styles": {
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@stencil/core';
+import { Component, Element, Event, type EventEmitter, h, Host, Prop, State } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
 import type { SidebarItemBadgeVariant, SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
@@ -63,6 +63,14 @@ export class MudSidebarItem {
   /** Collapsed (icon-only) rail — propagated by the parent `mud-sidebar`. @internal */
   @Prop({ reflect: true, mutable: true }) collapsed = false;
 
+  /**
+   * Whether the default slot holds a label of its own. Whitespace-only text does not count: an
+   * expandable item is written with its nested items on separate lines, and that whitespace is
+   * assigned to the default slot, which would otherwise hide the `label` fallback and leave the
+   * button without a name.
+   */
+  @State() private hasLabelSlot = false;
+
   @Element() host!: HTMLMudSidebarItemElement;
 
   /** Fired when a non-expandable item is activated. */
@@ -72,6 +80,25 @@ export class MudSidebarItem {
   /** Fired when an expandable item is expanded or collapsed. */
   @Event({ eventName: 'mudToggle', bubbles: true, composed: true })
   mudToggle!: EventEmitter<SidebarItemToggleDetail>;
+
+  componentWillLoad(): void {
+    this.hasLabelSlot = this.hostHasLabelContent();
+  }
+
+  private hostHasLabelContent(): boolean {
+    return Array.from(this.host.childNodes).some(node => {
+      if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
+      return node.nodeType === Node.ELEMENT_NODE && !(node as Element).hasAttribute('slot');
+    });
+  }
+
+  private onLabelSlotChange = (ev: Event): void => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasLabelSlot = slot.assignedNodes({ flatten: true }).some(node => {
+      if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
+      return true;
+    });
+  };
 
   private handleClick = (ev: MouseEvent): void => {
     if (this.disabled) {
@@ -101,6 +128,9 @@ export class MudSidebarItem {
 
   private renderContent() {
     return [
+      // A real element, not a ::before: axe cannot read a text background behind a pseudo-element
+      // and reports the item's contrast as "needs review".
+      this.active ? <span class="rail" aria-hidden="true"></span> : null,
       this.icon ? (
         <mud-icon
           class="icon"
@@ -111,7 +141,8 @@ export class MudSidebarItem {
         ></mud-icon>
       ) : null,
       <span class="label">
-        <slot>{this.label ?? ''}</slot>
+        <slot onSlotchange={this.onLabelSlotChange}></slot>
+        {this.hasLabelSlot ? null : (this.label ?? '')}
       </span>,
       this.secondary ? <span class="secondary">{this.secondary}</span> : null,
       this.tag ? (

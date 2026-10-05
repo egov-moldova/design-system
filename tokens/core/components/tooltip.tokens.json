@@ -22,9 +22,9 @@
       },
       "maxWidth": { "$value": "200px", "$type": "dimension" },
       "shadow": {
-        "$value": "{dropShadow.100}",
+        "$value": "0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 3px 8px 0px rgba(0, 0, 0, 0.08), 0px 0px 0.5px 0px rgba(0, 0, 0, 0.18)",
         "$type": "string",
-        "$comment": "Lightest elevation rung. dropShadow.200 carries a 2px spread that pushes a faint grey halo ~2px beyond the bubble edges; on the dark bubble against a light page that halo reads as a thin border. dropShadow.100 has no spread on its primary layer and is the correct elevation for a small floating tooltip."
+        "$comment": "Figma Drop Shadow/200 as the tooltip page draws it (210:3898). The repo's dropShadow.200 is an older, different value (a 2px spread that read as a halo on the dark bubble), so the tooltip carries the Figma value itself until the foundation token is aligned."
       },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
@@ -59,8 +59,12 @@
         "lg": { "$value": "12px", "$type": "dimension" }
       },
       "width": {
-        "sm": { "$value": "16px", "$type": "dimension" },
-        "lg": { "$value": "24px", "$type": "dimension" }
+        "sm": {
+          "$value": "21.33px",
+          "$type": "dimension",
+          "$comment": "Figma draws the Small arrow 21.33 x 8, the 32 x 12 Large arrow scaled to 8px high (611:2349)."
+        },
+        "lg": { "$value": "{spacing.32}", "$type": "dimension", "$comment": "Figma arrow 32 x 12 (210:3904)." }
       },
       "edgeMargin": { "$value": "{spacing.12}", "$type": "dimension" }
     },
@@ -75,7 +79,16 @@
         "hover": { "$value": "{color.background.base-inverse.default-hover}", "$type": "color" }
       },
       "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
-      "touchTarget": { "$value": "{spacing.24}", "$type": "dimension" }
+      "target": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Target Sizes: the close target is 32px on pointer devices (578:34599)."
+      },
+      "touchTarget": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "40px under pointer: coarse (578:34626)."
+      }
     },
     "offset": {
       "trigger": { "$value": "{spacing.4}", "$type": "dimension" }
