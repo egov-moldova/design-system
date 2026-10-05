@@ -1,11 +1,11 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
-import { setAssetPath } from '@stencil/core';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
-import { clearIconSvgCache, fetchIconSvg, resolveIconAsset } from '../mud-icon.providers';
+import { ICON_MODULES } from '../../../generated/icons';
+import { clearSvgCaches } from '../../../utils/svg-assets';
 import {
   hasIconVariant,
   ICON_NAMES,
@@ -20,31 +20,26 @@ const variantsOf = (name: IconName): readonly IconVariant[] => REAL_MANIFEST[nam
 const NAME_IN_BOTH_VARIANTS = ICON_NAMES.find(n => variantsOf(n).length === 2);
 const FILLED_ONLY_NAME = ICON_NAMES.find(n => !variantsOf(n).includes('outlined'));
 
-function makeFetchMock() {
-  return vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
-    if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[2]}" data-variant="${match[1]}"></svg>`, {
-      status: 200,
-      headers: { 'Content-Type': 'image/svg+xml' },
-    });
-  });
-}
+type ModuleThunks = Record<string, () => Promise<{ default: string }>>;
+/** The generated map, writable only so a spec can hold or fail one import. */
+const modules = ICON_MODULES as ModuleThunks;
+
+/** The `data-mud-asset` marker the generator stamps on every drawing: which file was rendered. */
+const marker = (root: Element | null | undefined) =>
+  root?.shadowRoot?.querySelector('svg')?.getAttribute('data-mud-asset');
 
 describe('mud-icon', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    setAssetPath('http://localhost/');
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    fetchSpy = makeFetchMock();
-    clearIconSvgCache();
+    clearSvgCaches();
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    fetchSpy.mockRestore();
+    vi.restoreAllMocks();
+    clearSvgCaches();
   });
 
   it('renders with default props (size=16, variant=outlined)', async () => {
@@ -64,24 +59,20 @@ describe('mud-icon', () => {
     expect(root?.getAttribute('size')).toBe('32');
   });
 
-  it('loads the filled drawing when variant=filled', async () => {
+  it('renders the filled drawing when variant="filled"', async () => {
     const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} variant="filled" />);
-    await waitForChanges();
+    const { root } = await render(<mud-icon name={name} variant="filled" />);
     expect(root?.getAttribute('variant')).toBe('filled');
-    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/filled/${name}.svg`))).toBe(true);
+    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${name}`));
   });
 
   it('falls back to the drawing that exists and warns when the variant is missing', async () => {
     if (!FILLED_ONLY_NAME) return;
-    const { root, waitForChanges } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="outlined" />);
-    await waitForChanges();
-    expect(warnSpy).toHaveBeenCalled();
-    expect(
-      fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/filled/${FILLED_ONLY_NAME}.svg`)),
-    ).toBe(true);
-    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
-    expect(innerHTML).toContain('data-variant="filled"');
+    const { root } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="outlined" />);
+    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`No "outlined" drawing for name="${FILLED_ONLY_NAME}"`),
+    );
   });
 
   it('reflects interactive + disabled flags', async () => {
@@ -217,247 +208,146 @@ describe('mud-icon', () => {
 
   it('renders inline SVG markup in shadow DOM for a known icon', async () => {
     const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} size={24} />);
-    await waitForChanges();
-    const innerHtml = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
-    expect(innerHtml.toLowerCase()).toContain('<svg');
-  });
-
-  it('cache hit: fetch called only once for two instances with the same name+size', async () => {
-    const name = ICON_NAMES[0];
-    // Render both instances concurrently; they share the same cache URL Promise.
-    const renders = await Promise.all([
-      render(<mud-icon name={name} size={16} />),
-      render(<mud-icon name={name} size={16} />),
-    ]);
-    await renders[0].waitForChanges();
-    await renders[1].waitForChanges();
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('graceful degrade: fetch 404 → warn + .svg-icon empty', async () => {
-    fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));
-
-    const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} size={16} />);
-    await waitForChanges();
-    expect(warnSpy).toHaveBeenCalled();
-    const container = root?.shadowRoot?.querySelector('.svg-icon');
-    expect(container?.children.length ?? 0).toBe(0);
-  });
-
-  it('fetch rejects with network error → .catch() path → warn + .svg-icon empty', async () => {
-    fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
-
-    const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} />);
-    await waitForChanges();
-    expect(warnSpy).toHaveBeenCalled();
-    const container = root?.shadowRoot?.querySelector('.svg-icon');
-    expect(container?.children.length ?? 0).toBe(0);
-  });
-
-  it('cache eviction on failure: a transient 404 does not lock out future retries', async () => {
-    fetchSpy.mockRestore();
-    // First call: 404 → null → cache must evict
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('', { status: 404 }));
-    const url = 'http://localhost/16/test.svg';
-    const first = await fetchIconSvg(url);
-    expect(first).toBeNull();
-    // Drain microtask so the eviction `.then` runs.
-    await new Promise(r => setTimeout(r, 0));
-
-    // Second call: backend recovered → must actually re-fetch (cache evicted)
-    fetchSpy.mockResolvedValueOnce(
-      new Response('<svg viewBox="0 0 16 16"></svg>', {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      }),
+    const { root } = await render(<mud-icon name={name} size={24} />);
+    await vi.waitFor(() =>
+      expect(root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML.toLowerCase() ?? '').toContain('<svg'),
     );
-    const second = await fetchIconSvg(url);
-    expect(second).not.toBeNull();
-    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('never lets a superseded import replace the latest name', async () => {
+    const { root, waitForChanges } = await render(<mud-icon name="wallet" />);
+    let release!: (m: { default: string }) => void;
+    vi.spyOn(modules, 'outlined/calendar').mockReturnValueOnce(new Promise(r => (release = r)));
+    root!.setAttribute('name', 'calendar');
+    root!.setAttribute('name', 'umbrella');
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
+    release({ default: '<svg xmlns="http://www.w3.org/2000/svg" data-mud-asset="icon:outlined/calendar"></svg>' });
+    await new Promise(r => setTimeout(r, 0));
+    // Without this, a superseded result would only reach the DOM after the check below ran.
+    await waitForChanges();
+    expect(marker(root)).toBe('icon:outlined/umbrella');
+  });
+
+  it('renders a second instance of a loaded icon without importing again', async () => {
+    const first = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() => expect(marker(first.root)).toBe('icon:outlined/calendar'));
+    const spy = vi.spyOn(modules, 'outlined/calendar');
+    const { root } = await render(<mud-icon name="calendar" />);
+    expect(marker(root)).toBe('icon:outlined/calendar');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('imports once for two instances rendered together', async () => {
+    const spy = vi.spyOn(modules, 'outlined/calendar');
+    const [a, b] = await Promise.all([render(<mud-icon name="calendar" />), render(<mud-icon name="calendar" />)]);
+    await vi.waitFor(() => expect(marker(a.root)).toBe('icon:outlined/calendar'));
+    await vi.waitFor(() => expect(marker(b.root)).toBe('icon:outlined/calendar'));
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('graceful degrade: a failed import warns once and leaves .svg-icon empty', async () => {
+    vi.spyOn(modules, 'outlined/calendar').mockRejectedValueOnce(
+      new Error('Failed to fetch dynamically imported module'),
+    );
+    const { root } = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() =>
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[mud-icon] Failed to load SVG: name="calendar"')),
+    );
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(root?.shadowRoot?.querySelector('.svg-icon')?.children.length ?? 0).toBe(0);
+  });
+
+  it('graceful degrade: markup that sanitizes to nothing warns and leaves .svg-icon empty', async () => {
+    vi.spyOn(modules, 'outlined/calendar').mockResolvedValueOnce({ default: '' });
+    const { root } = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() =>
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[mud-icon] Failed to load SVG')),
+    );
+    expect(root?.shadowRoot?.querySelector('.svg-icon')?.children.length ?? 0).toBe(0);
+  });
+
+  it('a failed import is not cached: a later render imports again and draws', async () => {
+    vi.spyOn(modules, 'outlined/calendar').mockRejectedValueOnce(new Error('offline'));
+    const failed = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() => expect(warnSpy).toHaveBeenCalledTimes(1));
+    expect(marker(failed.root)).toBeFalsy();
+
+    const { root } = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
   });
 
   it('onNameChange: changing name to a different icon loads the new SVG', async () => {
-    if (ICON_NAMES.length < 2) return;
-    const [name1, name2] = ICON_NAMES;
-    const { root, waitForChanges } = await render(<mud-icon name={name1} size={16} />);
-    await waitForChanges();
+    const { root } = await render(<mud-icon name="calendar" size={16} />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
 
-    (root as unknown as { name: string }).name = name2;
-    await waitForChanges();
-
-    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/${name2}.svg`))).toBe(true);
-    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
-    expect(innerHTML.toLowerCase()).toContain('<svg');
+    (root as unknown as { name: string }).name = 'umbrella';
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
   });
 
-  it('onVariantChange: changing variant reloads the SVG from the other style', async () => {
+  it('onVariantChange: changing variant redraws from the other style', async () => {
     const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} variant="outlined" />);
-    await waitForChanges();
+    const { root } = await render(<mud-icon name={name} variant="outlined" />);
+    await vi.waitFor(() => expect(marker(root)).toBe(`icon:outlined/${name}`));
 
     (root as unknown as { variant: string }).variant = 'filled';
-    await waitForChanges();
-
-    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes('/filled/'))).toBe(true);
+    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${name}`));
   });
 
-  it('changing size alone does not refetch — one drawing covers every size', async () => {
-    const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} size={16} />);
-    await waitForChanges();
-    fetchSpy.mockClear();
+  it('changing size alone does not import again — one drawing covers every size', async () => {
+    const { root, waitForChanges } = await render(<mud-icon name="calendar" size={16} />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    clearSvgCaches();
+    const spy = vi.spyOn(modules, 'outlined/calendar');
 
     (root as unknown as { size: number }).size = 32;
     await waitForChanges();
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
     expect(root?.getAttribute('size')).toBe('32');
+    expect(marker(root)).toBe('icon:outlined/calendar');
   });
 
   it('onNameChange: same-value guard (newVal === oldVal) skips reload', async () => {
-    const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} />);
-    await waitForChanges();
-    clearIconSvgCache();
-    fetchSpy.mockClear();
+    const { root, waitForChanges } = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    clearSvgCaches();
+    const spy = vi.spyOn(modules, 'outlined/calendar');
 
     // Invoke the watch handler directly with identical values to exercise the equality guard
     type WatchInstance = { onNameChange: (newVal: string, oldVal: string) => Promise<void> };
-    await (root as unknown as WatchInstance).onNameChange(name, name);
+    await (root as unknown as WatchInstance).onNameChange('calendar', 'calendar');
     await waitForChanges();
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('onVariantChange: same-value guard (newVal === oldVal) skips reload', async () => {
-    const name = ICON_NAMES[0];
-    const { root, waitForChanges } = await render(<mud-icon name={name} />);
-    await waitForChanges();
-    clearIconSvgCache();
-    fetchSpy.mockClear();
+    const { root, waitForChanges } = await render(<mud-icon name="calendar" />);
+    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    clearSvgCaches();
+    const spy = vi.spyOn(modules, 'outlined/calendar');
 
     type WatchInstance = { onVariantChange: (newVal: string, oldVal: string) => Promise<void> };
     await (root as unknown as WatchInstance).onVariantChange('outlined', 'outlined');
     await waitForChanges();
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 
-  it('svgCacheKey guard: variant fallback to the already-loaded style skips fetch', async () => {
+  it('svgCacheKey guard: variant fallback to the already-loaded style skips the import', async () => {
     if (!FILLED_ONLY_NAME) return;
 
     const { root, waitForChanges } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="filled" />);
-    await waitForChanges();
-    // svgCacheKey is now "name|filled"
-    fetchSpy.mockClear();
+    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
+    clearSvgCaches();
+    const spy = vi.spyOn(modules, `filled/${FILLED_ONLY_NAME}`);
 
-    // variant=outlined → resolveIconAsset falls back to filled → cacheKey unchanged → early return
+    // variant=outlined falls back to filled → same key as the loaded drawing → early return
     (root as unknown as { variant: string }).variant = 'outlined';
     await waitForChanges();
 
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it('race condition guard: stale name-change fetch discarded when name changes again', async () => {
-    if (ICON_NAMES.length < 3) return;
-    const [nameA, nameB, nameC] = ICON_NAMES;
-
-    const { root, waitForChanges } = await render(<mud-icon name={nameA} size={16} />);
-    await waitForChanges();
-
-    // Replace fetch: nameB hangs until explicitly resolved, nameC resolves immediately
-    fetchSpy.mockRestore();
-    clearIconSvgCache();
-    let resolveBFetch!: (r: Response) => void;
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url: unknown) => {
-      const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
-      if (!match) return new Response('', { status: 404 });
-      const [, variant, iconName] = match;
-      if (iconName === nameB) {
-        return new Promise<Response>(resolve => {
-          resolveBFetch = resolve;
-        });
-      }
-      return new Response(`<svg data-name="${iconName}" data-variant="${variant}"></svg>`, {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      });
-    });
-
-    // Trigger nameB (fetch hangs), then immediately trigger nameC (resolves fast)
-    (root as unknown as { name: string }).name = nameB;
-    (root as unknown as { name: string }).name = nameC;
-    await waitForChanges();
-
-    // Resolve the stale nameB fetch — race condition guard must discard it
-    resolveBFetch!(
-      new Response(`<svg data-name="${nameB}"></svg>`, {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      }),
-    );
-    await waitForChanges();
-
-    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
-    expect(innerHTML).toContain(`data-name="${nameC}"`);
-    expect(innerHTML).not.toContain(`data-name="${nameB}"`);
-  });
-});
-
-describe('resolveIconAsset (provider URL builder)', () => {
-  beforeEach(() => {
-    setAssetPath('http://localhost/');
-  });
-
-  // Real names: the manifest type is keyed by IconName, so a made-up key no
-  // longer type-checks — which is the point of keying it.
-  const manifest: IconManifest = {
-    sun: { variants: ['outlined', 'filled'] },
-    moon: { variants: ['filled'] },
-  };
-
-  it('returns the requested style when the icon is drawn in it', () => {
-    const r = resolveIconAsset('sun', 'filled', manifest);
-    expect(r?.resolvedVariant).toBe('filled');
-    expect(r?.url).toContain('/filled/sun.svg');
-  });
-
-  it('falls back to the only style the icon is drawn in', () => {
-    const r = resolveIconAsset('moon', 'outlined', manifest);
-    expect(r?.resolvedVariant).toBe('filled');
-    expect(r?.url).toContain('/filled/moon.svg');
-  });
-
-  it('returns undefined for unknown names', () => {
-    const r = resolveIconAsset('car', 'outlined', manifest);
-    expect(r).toBeUndefined();
-  });
-
-  it('returns undefined when the entry lists no style', () => {
-    const empty: IconManifest = { stamp: { variants: [] } };
-    const r = resolveIconAsset('stamp', 'outlined', empty);
-    expect(r).toBeUndefined();
-  });
-
-  // Sanity check against the real manifest — at least one icon should resolve.
-  it('resolves a URL from the real manifest', () => {
-    if (!ICON_NAMES.length) return;
-    const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
-    const r = resolveIconAsset(name, 'outlined');
-    expect(r?.url).toBeTruthy();
-    expect(r?.url).toContain('/outlined/');
-  });
-
-  it('exercises the fallback against the real manifest', () => {
-    if (!FILLED_ONLY_NAME) return;
-    const r = resolveIconAsset(FILLED_ONLY_NAME, 'outlined');
-    expect(r?.resolvedVariant).toBe('filled');
-    expect(r?.url).toContain(`/filled/${FILLED_ONLY_NAME}.svg`);
+    expect(spy).not.toHaveBeenCalled();
+    expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`);
   });
 });
 

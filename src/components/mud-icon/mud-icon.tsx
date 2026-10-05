@@ -1,20 +1,23 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import defaultManifest from './assets/icons.manifest.json';
-import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
+import { ICON_MODULES } from '../../generated/icons';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { createSvgLoader } from '../../utils/svg-assets';
 import {
+  hasIconVariant,
   ICON_VARIANTS,
   isIconName,
   isIconVariant,
-  type IconManifest,
   type IconName,
   type IconSize,
   type IconVariant,
 } from './mud-icon.types';
 
+const icons = createSvgLoader(ICON_MODULES);
+
 /**
- * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+ * Icon — renders an inline SVG loaded on-demand: one small ES module per drawing, imported the
+ * first time that icon is rendered and shared by every later instance.
  *
  * One drawing per style covers every size: `variant` selects the style
  * directory (`outlined` / `filled`) and `size` sets the rendered box.
@@ -28,7 +31,6 @@ import {
   tag: 'mud-icon',
   styleUrl: 'mud-icon.css',
   shadow: true,
-  assetsDirs: ['assets'],
 })
 export class MudIcon {
   /**
@@ -139,7 +141,6 @@ export class MudIcon {
         `[mud-icon] Unknown variant="${this.variant}" — rendering "outlined". Expected ${ICON_VARIANTS.join(' or ')}.`,
       );
     }
-    const manifest = defaultManifest as IconManifest;
     // `isIconName`, not `manifest[name]` / `name in manifest`: a runtime string such as
     // "constructor" resolves through Object.prototype and reached `entry.variants.includes`
     // as undefined, throwing inside componentWillLoad (test/mud-icon.spec.tsx).
@@ -150,45 +151,52 @@ export class MudIcon {
       return;
     }
 
-    const result = resolveIconAsset(requestedName, requestedVariant, manifest);
-    if (!result) {
-      // Reached this branch even though the manifest entry exists. In
-      // production this can only happen if `entry.variants` is empty, which the
-      // generated manifest never emits. In vitest browser-mode it's the common
-      // case: the entry exists, but `getAssetPath` cannot construct a URL
-      // outside the lazy-bundle host. Falling through silently — the host still
-      // renders as aria-hidden (see render()), no per-render console noise.
+    // Not every icon is drawn in both styles (`facebook` is filled-only, most glyphs are
+    // outlined-only). Rendering the other style beats rendering nothing.
+    const resolvedVariant = hasIconVariant(requestedName, requestedVariant)
+      ? requestedVariant
+      : ICON_VARIANTS.find(candidate => hasIconVariant(requestedName, candidate));
+    if (!resolvedVariant) {
+      // The generated name list never carries an icon with no drawing at all.
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
     }
 
-    const cacheKey = `${requestedName}|${result.resolvedVariant}`;
-    if (this.svgCacheKey === cacheKey) return;
+    const key = `${resolvedVariant}/${requestedName}`;
+    if (this.svgCacheKey === key) return;
 
     // Below the cache guard: toggling `variant` on a single-style icon resolves
     // to the same drawing every time, and warning above this line repeated the
-    // message on every toggle without a fetch behind it.
-    if (result.resolvedVariant !== requestedVariant) {
+    // message on every toggle without a load behind it.
+    if (resolvedVariant !== requestedVariant) {
       console.warn(
-        `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${result.resolvedVariant}".`,
+        `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${resolvedVariant}".`,
       );
     }
 
-    const element = await fetchIconSvg(result.url);
+    // A drawing another instance already loaded renders synchronously, in the same pass.
+    const hit = icons.cached(key);
+    if (hit) {
+      this.svgCacheKey = key;
+      this.svgElement = hit;
+      return;
+    }
 
-    // Guard: props changed during the async fetch — discard stale result
+    const element = await icons.load(key);
+
+    // Guard: props changed during the async import — discard the stale result
     if (this.name !== requestedName || this.variant !== requestedVariant) return;
 
     if (!element) {
-      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${result.resolvedVariant}`);
+      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant}`);
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
     }
 
-    this.svgCacheKey = cacheKey;
-    this.svgElement = element.cloneNode(true) as Element;
+    this.svgCacheKey = key;
+    this.svgElement = element;
   }
 
   private get isKnownName(): boolean {

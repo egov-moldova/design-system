@@ -2,10 +2,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-numeric-input';
 
-// `mud-icon` is intentionally NOT imported. Like `mud-text-input.spec.tsx`, the
-// stepper / error icons resolve SVG asset URLs via `getAssetPath` which the
-// mock-doc environment cannot satisfy. We only assert that the wrapped
-// elements appear in the shadow tree.
+// `mud-icon` is intentionally NOT imported: the stepper / error icons stay
+// unupgraded placeholders. We only assert that the wrapped elements appear in
+// the shadow tree.
 
 import { describeLocales, lastValidity, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
