@@ -4,6 +4,7 @@ import '../mud-phone-input';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { COUNTRIES } from '../mud-phone-input.data';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
@@ -205,23 +206,23 @@ describe('mud-phone-input', () => {
 
     it('renders the flag of the current country inline, as a decorative drawing (local mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
-      await vi.waitFor(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
       expect(queryFlag(root)?.getAttribute('aria-hidden')).toBe('true');
       expect(queryFlag(root)?.querySelector('img')).toBeNull();
     });
 
     it('renders the flag of the current country inline, as a decorative drawing (international mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
-      await vi.waitFor(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
       expect(queryFlag(root)?.getAttribute('aria-hidden')).toBe('true');
       expect(queryFlag(root)?.querySelector('img')).toBeNull();
     });
 
     it('shows the flag of the newly chosen country on the trigger, and no longer the old one', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
-      await vi.waitFor(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
       optionFor(root, 'RO')?.click();
-      await vi.waitFor(() => expect(drawing(queryFlag(root), 'ro')).toBeTruthy());
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'ro')).toBeTruthy());
       expect(drawing(queryFlag(root), 'md')).toBeNull();
       expect(queryFlag(root)?.querySelectorAll('svg')).toHaveLength(1);
     });
@@ -238,7 +239,7 @@ describe('mud-phone-input', () => {
       );
       const trigger = queryTrigger(root);
       expect(trigger?.textContent).toContain(dial);
-      await vi.waitFor(() => expect(drawing(trigger?.querySelector('.flag'), iso.toLowerCase())).toBeTruthy());
+      await waitForAssetLoad(() => expect(drawing(trigger?.querySelector('.flag'), iso.toLowerCase())).toBeTruthy());
     });
 
     it('draws no chevron on a read-only international chip', async () => {
@@ -434,7 +435,7 @@ describe('mud-phone-input', () => {
           const rows = queryOptions(root);
           expect(rows.some(row => flagOf(row))).toBe(false);
           // The trigger shows the country at once: it is always in view.
-          await vi.waitFor(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+          await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
 
           const observer = created[created.length - 1];
           expect(observer.options?.root).toBe(root?.shadowRoot?.querySelector('.listbox'));
@@ -445,7 +446,7 @@ describe('mud-phone-input', () => {
             { isIntersecting: true, target: rows[1] },
             { isIntersecting: false, target: rows[2] },
           ]);
-          await vi.waitFor(() => {
+          await waitForAssetLoad(() => {
             expect(drawing(rows[0].querySelector('.option-flag'), 'md')).toBeTruthy();
             expect(flagOf(rows[1])?.getAttribute('data-mud-asset')).toBe(
               `flag:${(rows[1].getAttribute('data-iso') ?? '').toLowerCase()}`,
@@ -490,7 +491,7 @@ describe('mud-phone-input', () => {
       const { root } = await render(
         <mud-phone-input label="x" type="international" open countries={['RO', 'MD', 'UA']}></mud-phone-input>,
       );
-      await vi.waitFor(() => {
+      await waitForAssetLoad(() => {
         for (const opt of queryOptions(root)) {
           const iso = (opt.getAttribute('data-iso') ?? '').toLowerCase();
           expect(drawing(opt.querySelector('.option-flag'), iso), iso).toBeTruthy();
@@ -527,7 +528,7 @@ describe('mud-phone-input', () => {
 
     it('draws both boxes when two of them show the same country', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
-      await vi.waitFor(() => {
+      await waitForAssetLoad(() => {
         expect(drawing(queryFlag(root), 'md')).toBeTruthy();
         expect(drawing(optionFor(root, 'MD')?.querySelector('.option-flag'), 'md')).toBeTruthy();
       });

@@ -3,6 +3,7 @@ import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@ste
 import '../mud-logo';
 import { LOGO_MODULES } from '../../../generated/logos';
 import { clearSvgCaches } from '../../../utils/svg-assets';
+import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { LOGO_NAMES } from '../mud-logo.types';
 
 type ModuleThunks = Record<string, () => Promise<{ default: string }>>;
@@ -65,7 +66,7 @@ describe('mud-logo', () => {
 
   it('renders inline SVG markup in shadow DOM for a known logo', async () => {
     const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
     const inner = root?.shadowRoot?.querySelector('.svg-logo')?.innerHTML ?? '';
     expect(inner.toLowerCase()).toContain('<svg');
   });
@@ -110,7 +111,7 @@ describe('mud-logo', () => {
 
   it('renders the drawing of a valid name', async () => {
     const { root } = await render(<mud-logo name="mpass-logo-with-name" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
   });
 
   it('emits mudLogoError with reason="fetch-failed" when the import fails (Issue 7)', async () => {
@@ -141,17 +142,17 @@ describe('mud-logo', () => {
     expect(marker(first.root)).toBeUndefined();
 
     const second = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await vi.waitFor(() => expect(marker(second.root)).toBe('logo:mpay-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(second.root)).toBe('logo:mpay-logo-logomark-only'));
   });
 
   it('never lets a superseded import replace the latest name', async () => {
     const { root, waitForChanges } = await render(<mud-logo name="mpass-logo-with-name" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpass-logo-with-name'));
     let release!: (m: { default: string }) => void;
     vi.spyOn(modules, 'mcloud-logo-with-name').mockReturnValueOnce(new Promise(r => (release = r)));
     root!.setAttribute('name', 'mcloud-logo-with-name');
     root!.setAttribute('name', 'msign-logo-with-name');
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:msign-logo-with-name'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:msign-logo-with-name'));
     release({ default: '<svg xmlns="http://www.w3.org/2000/svg" data-mud-asset="logo:mcloud-logo-with-name"></svg>' });
     await new Promise(r => setTimeout(r, 0));
     await waitForChanges();
@@ -160,19 +161,19 @@ describe('mud-logo', () => {
 
   it('renders a second instance of a loaded logo without importing again', async () => {
     const first = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await vi.waitFor(() => expect(marker(first.root)).toBe('logo:mpay-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(first.root)).toBe('logo:mpay-logo-logomark-only'));
     const spy = vi.spyOn(modules, 'mpay-logo-logomark-only');
     const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
     expect(spy).not.toHaveBeenCalled();
   });
 
   it('onNameChange: changing to a different name draws the new logo', async () => {
     const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
 
     (root as unknown as { name: string }).name = 'mpass-logo-logomark-only';
-    await vi.waitFor(() => expect(marker(root)).toBe('logo:mpass-logo-logomark-only'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpass-logo-logomark-only'));
   });
 
   it('every LOGO_NAMES entry has a generated module', () => {

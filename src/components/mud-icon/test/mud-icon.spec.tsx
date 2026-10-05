@@ -6,6 +6,7 @@ import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
 import { ICON_MODULES } from '../../../generated/icons';
 import { clearSvgCaches } from '../../../utils/svg-assets';
+import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import {
   hasIconVariant,
   ICON_NAMES,
@@ -63,13 +64,13 @@ describe('mud-icon', () => {
     const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
     const { root } = await render(<mud-icon name={name} variant="filled" />);
     expect(root?.getAttribute('variant')).toBe('filled');
-    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${name}`));
+    await waitForAssetLoad(() => expect(marker(root)).toBe(`icon:filled/${name}`));
   });
 
   it('falls back to the drawing that exists and warns when the variant is missing', async () => {
     if (!FILLED_ONLY_NAME) return;
     const { root } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="outlined" />);
-    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
+    await waitForAssetLoad(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining(`No "outlined" drawing for name="${FILLED_ONLY_NAME}"`),
     );
@@ -77,7 +78,7 @@ describe('mud-icon', () => {
 
   it('an invalid variant warns and draws the outlined drawing on a cold cache', async () => {
     const { root } = await render(<mud-icon name="calendar" variant={'bogus' as IconVariant} />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
     expect(warnSpy).toHaveBeenCalled();
   });
 
@@ -215,7 +216,7 @@ describe('mud-icon', () => {
   it('renders inline SVG markup in shadow DOM for a known icon', async () => {
     const name = ICON_NAMES[0];
     const { root } = await render(<mud-icon name={name} size={24} />);
-    await vi.waitFor(() =>
+    await waitForAssetLoad(() =>
       expect(root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML.toLowerCase() ?? '').toContain('<svg'),
     );
   });
@@ -226,7 +227,7 @@ describe('mud-icon', () => {
     vi.spyOn(modules, 'outlined/calendar').mockReturnValueOnce(new Promise(r => (release = r)));
     root!.setAttribute('name', 'calendar');
     root!.setAttribute('name', 'umbrella');
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
     release({ default: '<svg xmlns="http://www.w3.org/2000/svg" data-mud-asset="icon:outlined/calendar"></svg>' });
     await new Promise(r => setTimeout(r, 0));
     // Without this, a superseded result would only reach the DOM after the check below ran.
@@ -236,7 +237,7 @@ describe('mud-icon', () => {
 
   it('renders a second instance of a loaded icon without importing again', async () => {
     const first = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() => expect(marker(first.root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(first.root)).toBe('icon:outlined/calendar'));
     const spy = vi.spyOn(modules, 'outlined/calendar');
     const { root } = await render(<mud-icon name="calendar" />);
     expect(marker(root)).toBe('icon:outlined/calendar');
@@ -246,8 +247,8 @@ describe('mud-icon', () => {
   it('imports once for two instances rendered together', async () => {
     const spy = vi.spyOn(modules, 'outlined/calendar');
     const [a, b] = await Promise.all([render(<mud-icon name="calendar" />), render(<mud-icon name="calendar" />)]);
-    await vi.waitFor(() => expect(marker(a.root)).toBe('icon:outlined/calendar'));
-    await vi.waitFor(() => expect(marker(b.root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(a.root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(b.root)).toBe('icon:outlined/calendar'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
@@ -256,7 +257,7 @@ describe('mud-icon', () => {
       new Error('Failed to fetch dynamically imported module'),
     );
     const { root } = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() =>
+    await waitForAssetLoad(() =>
       expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[mud-icon] Failed to load SVG: name="calendar"')),
     );
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -266,7 +267,7 @@ describe('mud-icon', () => {
   it('graceful degrade: markup that sanitizes to nothing warns and leaves .svg-icon empty', async () => {
     vi.spyOn(modules, 'outlined/calendar').mockResolvedValueOnce({ default: '' });
     const { root } = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() =>
+    await waitForAssetLoad(() =>
       expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[mud-icon] Failed to load SVG')),
     );
     expect(root?.shadowRoot?.querySelector('.svg-icon')?.children.length ?? 0).toBe(0);
@@ -275,33 +276,33 @@ describe('mud-icon', () => {
   it('a failed import is not cached: a later render imports again and draws', async () => {
     vi.spyOn(modules, 'outlined/calendar').mockRejectedValueOnce(new Error('offline'));
     const failed = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() => expect(warnSpy).toHaveBeenCalledTimes(1));
+    await waitForAssetLoad(() => expect(warnSpy).toHaveBeenCalledTimes(1));
     expect(marker(failed.root)).toBeFalsy();
 
     const { root } = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
   });
 
   it('onNameChange: changing name to a different icon loads the new SVG', async () => {
     const { root } = await render(<mud-icon name="calendar" size={16} />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
 
     (root as unknown as { name: string }).name = 'umbrella';
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/umbrella'));
   });
 
   it('onVariantChange: changing variant redraws from the other style', async () => {
     const name = NAME_IN_BOTH_VARIANTS ?? ICON_NAMES[0];
     const { root } = await render(<mud-icon name={name} variant="outlined" />);
-    await vi.waitFor(() => expect(marker(root)).toBe(`icon:outlined/${name}`));
+    await waitForAssetLoad(() => expect(marker(root)).toBe(`icon:outlined/${name}`));
 
     (root as unknown as { variant: string }).variant = 'filled';
-    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${name}`));
+    await waitForAssetLoad(() => expect(marker(root)).toBe(`icon:filled/${name}`));
   });
 
   it('changing size alone does not import again — one drawing covers every size', async () => {
     const { root, waitForChanges } = await render(<mud-icon name="calendar" size={16} />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
     clearSvgCaches();
     const spy = vi.spyOn(modules, 'outlined/calendar');
 
@@ -315,7 +316,7 @@ describe('mud-icon', () => {
 
   it('onNameChange: same-value guard (newVal === oldVal) skips reload', async () => {
     const { root, waitForChanges } = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
     clearSvgCaches();
     const spy = vi.spyOn(modules, 'outlined/calendar');
 
@@ -329,7 +330,7 @@ describe('mud-icon', () => {
 
   it('onVariantChange: same-value guard (newVal === oldVal) skips reload', async () => {
     const { root, waitForChanges } = await render(<mud-icon name="calendar" />);
-    await vi.waitFor(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+    await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
     clearSvgCaches();
     const spy = vi.spyOn(modules, 'outlined/calendar');
 
@@ -344,7 +345,7 @@ describe('mud-icon', () => {
     if (!FILLED_ONLY_NAME) return;
 
     const { root, waitForChanges } = await render(<mud-icon name={FILLED_ONLY_NAME} variant="filled" />);
-    await vi.waitFor(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
+    await waitForAssetLoad(() => expect(marker(root)).toBe(`icon:filled/${FILLED_ONLY_NAME}`));
     clearSvgCaches();
     const spy = vi.spyOn(modules, `filled/${FILLED_ONLY_NAME}`);
 
