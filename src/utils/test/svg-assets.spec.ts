@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { clearSvgCaches, createSvgLoader } from '../svg-assets';
+import { SVG_RETRY_MAX_MS, SVG_RETRY_MS, clearSvgCaches, createSvgLoader } from '../svg-assets';
 
 const svg = (k: string) => `<svg xmlns="http://www.w3.org/2000/svg" data-mud-asset="icon:${k}"></svg>`;
 
@@ -46,9 +46,15 @@ describe('createSvgLoader', () => {
       .mockResolvedValueOnce({ default: svg('outlined/f') });
     const loader = createSvgLoader({ 'outlined/f': load });
     expect(await loader.load('outlined/f')).toBeNull();
-    expect(loader.failure('outlined/f')).toBe('the import failed: Failed to fetch dynamically imported module');
+    expect(loader.failure('outlined/f')).toEqual({
+      kind: 'import',
+      message: 'the import failed: Failed to fetch dynamically imported module',
+    });
     expect(await loader.load('outlined/f')).toBeNull();
-    expect(loader.failure('outlined/f')).toBe('the drawing was rejected by the sanitizer');
+    expect(loader.failure('outlined/f')).toEqual({
+      kind: 'rejected',
+      message: 'the drawing was rejected by the sanitizer',
+    });
     expect(await loader.load('outlined/f')).not.toBeNull();
     expect(loader.failure('outlined/f')).toBeUndefined();
   });
@@ -58,7 +64,7 @@ describe('createSvgLoader', () => {
     expect(await loader.load('outlined/nope')).toBeNull();
     expect(loader.failure('outlined/nope')).toBeUndefined();
     expect(await loader.load('outlined/i')).toBeNull();
-    expect(loader.failure('outlined/i')).toBe('the import failed: chunk gone');
+    expect(loader.failure('outlined/i')?.message).toBe('the import failed: chunk gone');
   });
 
   it('does not record the failure of an import that started before a clear', async () => {
@@ -102,6 +108,38 @@ describe('createSvgLoader', () => {
     expect(loader.cached('outlined/h')).toBeUndefined();
     await loader.load('outlined/h');
     expect(load).toHaveBeenCalledTimes(2);
+  });
+
+  it('waits SVG_RETRY_MS after a failed import, doubling per failure up to the cap, and 0 once it loads', async () => {
+    let clock = 1000;
+    const now = vi.spyOn(performance, 'now').mockImplementation(() => clock);
+    try {
+      const load = vi.fn().mockRejectedValue(new Error('offline'));
+      const loader = createSvgLoader({ 'outlined/k': load });
+      expect(loader.retryDelay('outlined/k')).toBe(0);
+      await loader.load('outlined/k');
+      expect(loader.retryDelay('outlined/k')).toBe(SVG_RETRY_MS);
+      clock += 4000;
+      expect(loader.retryDelay('outlined/k')).toBe(SVG_RETRY_MS - 4000);
+      await loader.load('outlined/k');
+      expect(loader.retryDelay('outlined/k')).toBe(2 * SVG_RETRY_MS);
+      for (let i = 0; i < 10; i += 1) await loader.load('outlined/k');
+      expect(loader.retryDelay('outlined/k')).toBe(SVG_RETRY_MAX_MS);
+      load.mockResolvedValue({ default: svg('outlined/k') });
+      await loader.load('outlined/k');
+      expect(loader.retryDelay('outlined/k')).toBe(0);
+    } finally {
+      now.mockRestore();
+    }
+  });
+
+  it('never asks again for a drawing the sanitizer rejected, until clearFailures', async () => {
+    const loader = createSvgLoader({ 'outlined/l': async () => ({ default: '<p>not a drawing</p>' }) });
+    await loader.load('outlined/l');
+    expect(loader.retryDelay('outlined/l')).toBe(Infinity);
+    loader.clearFailures();
+    expect(loader.retryDelay('outlined/l')).toBe(0);
+    expect(loader.failure('outlined/l')).toBeUndefined();
   });
 
   it('keeps two loaders apart even for the same key', async () => {

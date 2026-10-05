@@ -5,8 +5,8 @@ import path from 'node:path';
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
 import { ICON_MODULES } from '../../../generated/icons';
-import { clearSvgCaches } from '../../../utils/svg-assets';
-import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
+import { SVG_RETRY_MS, clearSvgCaches } from '../../../utils/svg-assets';
+import { holdRetryTimers, waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import {
   hasIconVariant,
   ICON_NAMES,
@@ -281,6 +281,30 @@ describe('mud-icon', () => {
 
     const { root } = await render(<mud-icon name="calendar" />);
     await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+  });
+
+  it('retries a failed import on its own after the loader backoff, with no prop change, warning once', async () => {
+    const calendar = vi
+      .spyOn(modules, 'outlined/calendar')
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockRejectedValueOnce(new Error('offline'));
+    const timers = holdRetryTimers();
+    try {
+      const { root } = await render(<mud-icon name="calendar" />);
+      await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(timers.held[0].ms).toBeGreaterThan(SVG_RETRY_MS - 1000);
+      timers.held[0].fire();
+      await waitForAssetLoad(() => expect(timers.held).toHaveLength(2));
+      expect(calendar).toHaveBeenCalledTimes(2);
+      expect(timers.held[1].ms).toBeGreaterThan(2 * SVG_RETRY_MS - 1000);
+      timers.held[1].fire();
+      await waitForAssetLoad(() => expect(marker(root)).toBe('icon:outlined/calendar'));
+      expect(calendar).toHaveBeenCalledTimes(3);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      timers.restore();
+    }
   });
 
   it('onNameChange: changing name to a different icon loads the new SVG', async () => {

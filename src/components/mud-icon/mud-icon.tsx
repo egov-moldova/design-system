@@ -80,6 +80,10 @@ export class MudIcon {
 
   private svgCacheKey: string = '';
   private stopAriaLabel?: () => void;
+  /** The retry the loader's policy (`retryDelay`) scheduled after a failed import. */
+  private retryTimer?: ReturnType<typeof setTimeout>;
+  /** The key whose failure was last warned about, so a retry that fails again stays quiet. */
+  private warnedKey = '';
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -108,10 +112,13 @@ export class MudIcon {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
       keepOnHost: true,
     });
+    // Moved in the DOM while its import was failing: the retry was cancelled on the way out.
+    if (this.warnedKey && !this.svgElement) void this.loadSvg();
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    clearTimeout(this.retryTimer);
   }
 
   componentWillRender() {
@@ -132,6 +139,7 @@ export class MudIcon {
   }
 
   private async loadSvg(): Promise<void> {
+    clearTimeout(this.retryTimer);
     const requestedName = this.name;
     // An attribute value is whatever the HTML said. Naming a bad `variant` here
     // keeps the fallback warning below about the ASSET SET, not about a typo.
@@ -191,14 +199,26 @@ export class MudIcon {
     if (this.name !== requestedName || currentVariant !== requestedVariant) return;
 
     if (!element) {
-      console.warn(
-        `[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant} (${icons.failure(key) ?? 'unknown cause'})`,
-      );
+      if (this.warnedKey !== key) {
+        this.warnedKey = key;
+        console.warn(
+          `[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant} (${icons.failure(key)?.message ?? 'unknown cause'})`,
+        );
+      }
       this.svgCacheKey = '';
       this.svgElement = null;
+      // Offline, or a chunk a redeploy removed: ask again when the loader's backoff allows, with no
+      // user action needed. A rejected drawing (`Infinity`) is not asked for again.
+      const delay = icons.retryDelay(key);
+      if (Number.isFinite(delay)) {
+        this.retryTimer = setTimeout(() => {
+          if (this.host.isConnected) void this.loadSvg();
+        }, delay);
+      }
       return;
     }
 
+    this.warnedKey = '';
     this.svgCacheKey = key;
     this.svgElement = element;
   }

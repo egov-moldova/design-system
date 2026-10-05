@@ -2,8 +2,8 @@ import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@ste
 
 import '../mud-logo';
 import { LOGO_MODULES } from '../../../generated/logos';
-import { clearSvgCaches } from '../../../utils/svg-assets';
-import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
+import { SVG_RETRY_MS, clearSvgCaches } from '../../../utils/svg-assets';
+import { holdRetryTimers, waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { LOGO_NAMES } from '../mud-logo.types';
 
 type ModuleThunks = Record<string, () => Promise<{ default: string }>>;
@@ -125,6 +125,50 @@ describe('mud-logo', () => {
     expect(errorSpy).toHaveBeenCalledTimes(1);
     const detail = (errorSpy.mock.calls[0][0] as CustomEvent).detail;
     expect(detail).toEqual({ name: 'mpay-logo-logomark-only', reason: 'fetch-failed' });
+  });
+
+  it('emits mudLogoError with reason="rejected" when the sanitizer refuses the drawing, and never retries it', async () => {
+    vi.spyOn(modules, 'mpay-logo-logomark-only').mockResolvedValueOnce({ default: '<p>not a drawing</p>' });
+    const errorSpy = vi.fn();
+    document.addEventListener('mudLogoError', errorSpy);
+    const timers = holdRetryTimers();
+    try {
+      await render(<mud-logo name="mpay-logo-logomark-only" />);
+      await waitForAssetLoad(() => expect(errorSpy).toHaveBeenCalledTimes(1));
+      expect((errorSpy.mock.calls[0][0] as CustomEvent).detail).toEqual({
+        name: 'mpay-logo-logomark-only',
+        reason: 'rejected',
+      });
+      expect(timers.held).toHaveLength(0);
+    } finally {
+      timers.restore();
+      document.removeEventListener('mudLogoError', errorSpy);
+    }
+  });
+
+  it('retries a failed import on its own after the loader backoff, reporting the run of failures once', async () => {
+    const logo = vi
+      .spyOn(modules, 'mpay-logo-logomark-only')
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockRejectedValueOnce(new Error('offline'));
+    const errorSpy = vi.fn();
+    document.addEventListener('mudLogoError', errorSpy);
+    const timers = holdRetryTimers();
+    try {
+      const { root } = await render(<mud-logo name="mpay-logo-logomark-only" />);
+      await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+      timers.held[0].fire();
+      await waitForAssetLoad(() => expect(timers.held).toHaveLength(2));
+      expect(timers.held[1].ms).toBeGreaterThan(2 * SVG_RETRY_MS - 1000);
+      timers.held[1].fire();
+      await waitForAssetLoad(() => expect(marker(root)).toBe('logo:mpay-logo-logomark-only'));
+      expect(logo).toHaveBeenCalledTimes(3);
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      timers.restore();
+      document.removeEventListener('mudLogoError', errorSpy);
+    }
   });
 
   it('graceful degrade: a failed import warns once and leaves .svg-logo empty', async () => {

@@ -9,3 +9,26 @@ import { vi } from '@stencil/vitest';
  */
 export const waitForAssetLoad = <T>(assertion: () => T | Promise<T>): Promise<T> =>
   vi.waitFor(assertion, { timeout: 10_000 });
+
+/**
+ * Holds every `setTimeout` of at least `minMs` (an owner's retry, scheduled from the loader's
+ * `retryDelay`) instead of scheduling it, so a spec fires each one when it chooses. Shorter timers
+ * pass through: `vi.useFakeTimers` cannot be used here, because Stencil's own render loop runs on
+ * `setTimeout` and stalls under it. `vi.waitFor` keeps working: it runs on Vitest's saved timers.
+ */
+export function holdRetryTimers(minMs = 1000): { held: Array<{ ms: number; fire: () => void }>; restore: () => void } {
+  const held: Array<{ ms: number; fire: () => void }> = [];
+  const real = globalThis.setTimeout;
+  const spy = vi.spyOn(globalThis, 'setTimeout').mockImplementation(((
+    handler: (...args: unknown[]) => void,
+    ms?: number,
+    ...args: unknown[]
+  ) => {
+    if (typeof handler === 'function' && (ms ?? 0) >= minMs) {
+      held.push({ ms: ms ?? 0, fire: () => handler(...args) });
+      return 0;
+    }
+    return real(handler, ms, ...args);
+  }) as unknown as typeof setTimeout);
+  return { held, restore: () => spy.mockRestore() };
+}

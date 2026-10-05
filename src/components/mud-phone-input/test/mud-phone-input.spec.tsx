@@ -5,8 +5,8 @@ import '../mud-phone-input';
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
 import { FLAG_MODULES } from '../../../generated/flags';
-import { clearSvgCaches } from '../../../utils/svg-assets';
-import { waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
+import { SVG_RETRY_MS, clearSvgCaches } from '../../../utils/svg-assets';
+import { holdRetryTimers, waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { COUNTRIES } from '../mud-phone-input.data';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
@@ -230,24 +230,27 @@ describe('mud-phone-input', () => {
     });
 
     // `type="local"`: a field whose list never opens must still get its flag back.
-    it('warns once when a flag cannot be imported, does not re-import it on each render, and retries after 10 s', async () => {
+    it('retries a failed flag on its own after the loader backoff, not on each render, warning once', async () => {
       clearSvgCaches();
       const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
       const realPw = flags.pw;
       const pw = vi.spyOn(flags, 'pw').mockRejectedValue(new Error('offline'));
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-      const start = Date.now();
-      const now = vi.spyOn(Date, 'now').mockReturnValue(start);
+      const timers = holdRetryTimers();
+      // The backoff is measured on `performance.now()`; held timers fire early, so the clock is moved by hand.
+      const clock = { at: performance.now() };
+      const now = vi.spyOn(performance, 'now').mockImplementation(() => clock.at);
       const input = (root: Element | null | undefined) => root?.shadowRoot?.querySelector('input');
       try {
         const { root, waitForChanges } = await render(
           <mud-phone-input label="x" type="local" default-country="PW"></mud-phone-input>,
         );
-        await waitForAssetLoad(() =>
-          expect(warn).toHaveBeenCalledWith(
-            '[mud-phone-input] Failed to load flag: key="pw" (the import failed: offline)',
-          ),
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+        expect(warn).toHaveBeenCalledWith(
+          '[mud-phone-input] Failed to load flag: key="pw" (the import failed: offline)',
         );
+        expect(timers.held[0].ms).toBeGreaterThan(SVG_RETRY_MS - 1000);
+        // Renders inside the backoff do not import again.
         for (const text of ['one', 'two']) {
           root!.setAttribute('placeholder', text);
           await waitForChanges();
@@ -255,21 +258,48 @@ describe('mud-phone-input', () => {
         }
         expect(pw).toHaveBeenCalledTimes(1);
 
-        now.mockReturnValue(start + 10_000);
-        root!.setAttribute('placeholder', 'three');
-        await waitForChanges();
-        await waitForAssetLoad(() => expect(pw).toHaveBeenCalledTimes(2));
+        // The timer alone brings the retry about: nobody types, focuses or opens anything.
+        clock.at += SVG_RETRY_MS;
+        timers.held[0].fire();
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(2));
+        expect(pw).toHaveBeenCalledTimes(2);
         expect(warn).toHaveBeenCalledTimes(1);
+        expect(timers.held[1].ms).toBeGreaterThan(2 * SVG_RETRY_MS - 1000);
 
         pw.mockImplementation(realPw!);
-        now.mockReturnValue(start + 20_000);
-        root!.setAttribute('placeholder', 'four');
-        await waitForChanges();
+        clock.at += 2 * SVG_RETRY_MS;
+        timers.held[1].fire();
         await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
+        expect(pw).toHaveBeenCalledTimes(3);
       } finally {
+        now.mockRestore();
+        timers.restore();
         pw.mockRestore();
         warn.mockRestore();
-        now.mockRestore();
+        clearSvgCaches();
+      }
+    });
+
+    it('asks again at once for a failed flag when the list opens', async () => {
+      clearSvgCaches();
+      const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
+      const realPw = flags.pw;
+      const pw = vi.spyOn(flags, 'pw').mockRejectedValueOnce(new Error('offline'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const timers = holdRetryTimers();
+      try {
+        const { root } = await render(
+          <mud-phone-input label="x" type="international" default-country="PW"></mud-phone-input>,
+        );
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+        pw.mockImplementation(realPw!);
+        queryTriggerButton(root)?.click();
+        await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
+        expect(pw).toHaveBeenCalledTimes(2);
+      } finally {
+        timers.restore();
+        pw.mockRestore();
+        warn.mockRestore();
         clearSvgCaches();
       }
     });

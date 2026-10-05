@@ -37,8 +37,6 @@ let phoneInputInstanceCounter = 0;
 
 /** Imports one flag module per country, on first use, and hands out clones of the sanitized drawing. */
 const flagLoader = createSvgLoader(FLAG_MODULES);
-/** How long a flag whose import failed waits before a render may ask for it again. */
-const FLAG_RETRY_MS = 10_000;
 
 const displayNamesCache = new Map<string, Intl.DisplayNames>();
 
@@ -309,10 +307,13 @@ export class MudPhoneInput {
   private listboxEl?: HTMLElement;
   private listEl?: HTMLElement;
   private flagObserver?: IntersectionObserver;
-  /** Flag keys being imported (`'pending'`), or whose import failed (the time it failed). */
-  private flagRequests = new Map<string, 'pending' | number>();
-  /** Flag keys already warned about, so a flag that keeps failing warns once. */
+  /** Flag keys being imported by this instance; when a failed one may be asked again is the loader's call. */
+  private pendingFlags = new Set<string>();
+  /** Flag keys already warned about, so a flag that keeps failing warns once; a success forgets it. */
   private warnedFlags = new Set<string>();
+  /** The one retry timer of this instance (`scheduleFlagRetry`), and when it fires (`performance.now()`). */
+  private flagRetryTimer?: ReturnType<typeof setTimeout>;
+  private flagRetryDue = 0;
   private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
   private stopAriaLabel?: () => void;
@@ -328,6 +329,9 @@ export class MudPhoneInput {
         forceUpdate(this);
       },
     );
+    // Moved in the DOM while a flag was failing: its retry timer was cancelled on the way out.
+    const waits = [...this.warnedFlags].map(key => flagLoader.retryDelay(key));
+    if (waits.length > 0) this.scheduleFlagRetry(Math.min(...waits));
   }
 
   componentDidRender() {
@@ -340,6 +344,8 @@ export class MudPhoneInput {
     this.stopLang?.();
     this.flagObserver?.disconnect();
     this.flagObserver = undefined;
+    clearTimeout(this.flagRetryTimer);
+    this.flagRetryTimer = undefined;
   }
 
   /**
@@ -400,26 +406,45 @@ export class MudPhoneInput {
         return;
       }
       // This runs on every render (each keystroke, each highlight move), so a key already being
-      // imported is not asked for again, and a key whose import failed only once FLAG_RETRY_MS has
-      // passed: offline, asking on every render would fire an import per shown flag per keystroke,
-      // and never asking again would leave the flag blank after the network returns.
-      const request = this.flagRequests.get(key);
-      if (request === 'pending' || (request !== undefined && Date.now() - request < FLAG_RETRY_MS)) return;
-      this.flagRequests.set(key, 'pending');
+      // imported is not asked for again, and a key whose import failed only once the loader's
+      // backoff allows (`retryDelay`): offline, asking on every render would fire an import per
+      // shown flag per keystroke. `scheduleFlagRetry` brings that render about with no user input.
+      if (this.pendingFlags.has(key)) return;
+      const wait = flagLoader.retryDelay(key);
+      if (wait > 0) {
+        // Also when the timer fired a hair before the backoff ended: re-arm it, or nothing would.
+        this.scheduleFlagRetry(wait);
+        return;
+      }
+      this.pendingFlags.add(key);
       void flagLoader.load(key).then(loaded => {
+        this.pendingFlags.delete(key);
         if (loaded) {
-          this.flagRequests.delete(key);
+          this.warnedFlags.delete(key);
           this.flagLoads += 1;
           return;
         }
-        this.flagRequests.set(key, Date.now());
+        this.scheduleFlagRetry(flagLoader.retryDelay(key));
         if (this.warnedFlags.has(key)) return;
         this.warnedFlags.add(key);
         console.warn(
-          `[mud-phone-input] Failed to load flag: key="${key}" (${flagLoader.failure(key) ?? 'unknown cause'})`,
+          `[mud-phone-input] Failed to load flag: key="${key}" (${flagLoader.failure(key)?.message ?? 'unknown cause'})`,
         );
       });
     });
+  }
+
+  /** One timer per instance, for the soonest pending retry: it re-renders, and `drawFlags` asks again. */
+  private scheduleFlagRetry(delay: number) {
+    if (!Number.isFinite(delay)) return;
+    const due = performance.now() + delay;
+    if (this.flagRetryTimer !== undefined && this.flagRetryDue <= due) return;
+    clearTimeout(this.flagRetryTimer);
+    this.flagRetryDue = due;
+    this.flagRetryTimer = setTimeout(() => {
+      this.flagRetryTimer = undefined;
+      if (this.host.isConnected) this.flagLoads += 1;
+    }, delay);
   }
 
   /** Built-in strings in the resolved locale. This component has no override props —
@@ -771,6 +796,8 @@ export class MudPhoneInput {
     this.open = next;
 
     if (next) {
+      // The user asked to see the flags: whatever failed is asked for again now, not after its backoff.
+      flagLoader.clearFailures();
       this.searchQuery = '';
       this.primeHighlight();
       if (opts?.emit) this.mudOpen.emit();

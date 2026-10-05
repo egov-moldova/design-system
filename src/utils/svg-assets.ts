@@ -7,13 +7,42 @@ import { sanitizeSvgToElement } from './svg-sanitizer';
  */
 export type SvgModuleMap = Readonly<Partial<Record<string, () => Promise<{ default: string }>>>>;
 
+/** The first wait before a drawing whose import failed is asked for again; it doubles per failure. */
+export const SVG_RETRY_MS = 10_000;
+/** The longest wait between two attempts, however many failed. */
+export const SVG_RETRY_MAX_MS = 5 * 60_000;
+
+/** Why the last `load` of a known key answered null. */
+export interface SvgFailure {
+  /** `import`: the module did not arrive (offline, a chunk a redeploy removed) — a retry may succeed.
+   *  `rejected`: the drawing arrived and the sanitizer refused it — no retry can fix that. */
+  kind: 'import' | 'rejected';
+  /** The cause, for the owner's warning. */
+  message: string;
+}
+
 export interface SvgLoader {
   /** A fresh clone of an already-loaded drawing, or undefined. Never imports. */
   cached(key: string): Element | undefined;
   /** Resolves through the cache, else through `map[key]`; null for an unknown key or a failed import. */
   load(key: string): Promise<Element | null>;
-  /** Why the last `load` of a known key answered null (import error or sanitizer rejection), for the owner's warning. */
-  failure(key: string): string | undefined;
+  /** Why the last `load` of a known key answered null; undefined once a later load succeeds. */
+  failure(key: string): SvgFailure | undefined;
+  /**
+   * Milliseconds until a key whose import failed should be asked for again: 0 when it may be now
+   * (or never failed), `Infinity` for a rejected drawing. The wait starts at `SVG_RETRY_MS` and
+   * doubles with each consecutive failure, up to `SVG_RETRY_MAX_MS`. One policy for every owner.
+   */
+  retryDelay(key: string): number;
+  /** Forgets every failure, so every key may be asked for at once (a user asked to see them). */
+  clearFailures(): void;
+}
+
+interface FailureRecord extends SvgFailure {
+  /** `performance.now()` at the failure: monotonic, so a clock change cannot stall a retry. */
+  at: number;
+  /** Consecutive failures of this key. */
+  attempts: number;
 }
 
 /** One `clear` per loader ever created, so a spec can reset every cache between tests. */
@@ -26,7 +55,10 @@ export function createSvgLoader(map: SvgModuleMap): SvgLoader {
   /** The pending import per key, so concurrent loads of one key import it once. */
   const inflight = new Map<string, Promise<Element | null>>();
   /** Why the last load of a key answered null; a later successful load clears it. */
-  const failures = new Map<string, string>();
+  const failures = new Map<string, FailureRecord>();
+  const fail = (key: string, kind: SvgFailure['kind'], message: string) => {
+    failures.set(key, { kind, message, at: performance.now(), attempts: (failures.get(key)?.attempts ?? 0) + 1 });
+  };
   /** Bumped by every clear, so an import that started before one cannot repopulate the cache. */
   let generation = 0;
 
@@ -61,7 +93,7 @@ export function createSvgLoader(map: SvgModuleMap): SvgLoader {
             parsed.set(key, element);
             failures.delete(key);
           } else {
-            failures.set(key, 'the drawing was rejected by the sanitizer');
+            fail(key, 'rejected', 'the drawing was rejected by the sanitizer');
           }
         }
         return element;
@@ -69,7 +101,7 @@ export function createSvgLoader(map: SvgModuleMap): SvgLoader {
         // Offline, or a chunk hash changed under a redeploy: answer null and keep nothing, so
         // the next call imports again instead of serving a cached failure.
         if (started === generation)
-          failures.set(key, `the import failed: ${error instanceof Error ? error.message : String(error)}`);
+          fail(key, 'import', `the import failed: ${error instanceof Error ? error.message : String(error)}`);
         return null;
       } finally {
         if (started === generation) inflight.delete(key);
@@ -91,7 +123,18 @@ export function createSvgLoader(map: SvgModuleMap): SvgLoader {
       return element ? (element.cloneNode(true) as Element) : null;
     },
     failure(key) {
-      return failures.get(key);
+      const record = failures.get(key);
+      return record ? { kind: record.kind, message: record.message } : undefined;
+    },
+    retryDelay(key) {
+      const record = failures.get(key);
+      if (!record) return 0;
+      if (record.kind === 'rejected') return Infinity;
+      const wait = Math.min(SVG_RETRY_MS * 2 ** (record.attempts - 1), SVG_RETRY_MAX_MS);
+      return Math.max(0, wait - (performance.now() - record.at));
+    },
+    clearFailures() {
+      failures.clear();
     },
   };
 }

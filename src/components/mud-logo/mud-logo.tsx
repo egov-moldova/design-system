@@ -52,12 +52,13 @@ export class MudLogo {
   private stopAriaLabel?: () => void;
 
   /**
-   * Emitted when an asset fails to load — either because the `name` is not
-   * in the manifest (`'unknown'`) or because the import of its drawing failed
-   * (`'fetch-failed'`, e.g. offline or a chunk that a redeploy removed; it also
-   * covers a drawing the runtime sanitizer rejected). Lets
-   * consumers react in production where `console.warn` is invisible
-   * (telemetry, fallback UI, etc.).
+   * Emitted when an asset fails to load: the `name` is not in the manifest
+   * (`'unknown'`); the import of its drawing failed (`'fetch-failed'`, e.g.
+   * offline or a chunk that a redeploy removed — the logo retries on its own,
+   * with a growing wait, and the event fires once per run of failures); or the
+   * drawing arrived and the runtime sanitizer rejected it (`'rejected'` — a
+   * fault in the package that no retry fixes). Lets consumers react in
+   * production where `console.warn` is invisible (telemetry, fallback UI, etc.).
    *
    * Note: events emitted during `componentWillLoad` (initial mount) fire
    * before consumer listeners can attach to a freshly-inserted host. Attach
@@ -65,10 +66,14 @@ export class MudLogo {
    * mount-time failures.
    */
   @Event()
-  mudLogoError!: EventEmitter<{ name: string; reason: 'unknown' | 'fetch-failed' }>;
+  mudLogoError!: EventEmitter<{ name: string; reason: 'unknown' | 'fetch-failed' | 'rejected' }>;
 
   private svgCacheKey: string = '';
   private lastAppendedSvg: Element | null = null;
+  /** The retry the loader's policy (`retryDelay`) scheduled after a failed import. */
+  private retryTimer?: ReturnType<typeof setTimeout>;
+  /** The name whose failure was last reported, so a retry that fails again stays quiet. */
+  private reportedName = '';
 
   // @Watch is the canonical primitive for asset-driven props — no native DOM
   // event corresponds to a prop change, so @Listen is not applicable here.
@@ -97,13 +102,17 @@ export class MudLogo {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
       keepOnHost: true,
     });
+    // Moved in the DOM while its import was failing: the retry was cancelled on the way out.
+    if (this.reportedName && this.isKnownName && !this.svgElement) void this.loadSvg();
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    clearTimeout(this.retryTimer);
   }
 
   private async loadSvg(): Promise<void> {
+    clearTimeout(this.retryTimer);
     const requestedName = this.name;
 
     if (!this.isKnownName) {
@@ -122,15 +131,28 @@ export class MudLogo {
     if (this.name !== requestedName) return;
 
     if (!element) {
-      console.warn(
-        `[mud-logo] Failed to load SVG: name="${requestedName}" (${logos.failure(requestedName) ?? 'unknown cause'})`,
-      );
-      this.mudLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
+      const failure = logos.failure(requestedName);
+      if (this.reportedName !== requestedName) {
+        this.reportedName = requestedName;
+        console.warn(`[mud-logo] Failed to load SVG: name="${requestedName}" (${failure?.message ?? 'unknown cause'})`);
+        this.mudLogoError.emit({
+          name: requestedName,
+          reason: failure?.kind === 'rejected' ? 'rejected' : 'fetch-failed',
+        });
+      }
       this.svgCacheKey = '';
       this.svgElement = null;
+      // Ask again when the loader's backoff allows, with no user action; never for a rejected drawing.
+      const delay = logos.retryDelay(requestedName);
+      if (Number.isFinite(delay)) {
+        this.retryTimer = setTimeout(() => {
+          if (this.host.isConnected) void this.loadSvg();
+        }, delay);
+      }
       return;
     }
 
+    this.reportedName = '';
     this.svgCacheKey = requestedName;
     this.svgElement = element.cloneNode(true) as Element;
   }
