@@ -44,10 +44,4 @@ export default defineConfig(({ command }) => ({
       input: htmlInputs,
     },
   },
-  // Stencil's lazy bundle uses `import.meta.url` to resolve asset paths.
-  // Pre-bundling would rewrite the URL into Vite's optimized-deps cache, which
-  // doesn't contain the assets/ folder — leaving mud-icon SVGs at 404.
-  optimizeDeps: {
-    exclude: ['@egov-moldova/mud/mud.esm.js'],
-  },
 }));

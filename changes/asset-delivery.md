@@ -4,7 +4,9 @@ title: icons, logos and flags load automatically; no asset path, no copied folde
 breaking: true
 ---
 
-`mud-icon`, `mud-logo` and the country flags of `mud-phone-input` now load each drawing as a small JavaScript module, imported the first time the component shows it. Nothing is fetched from a folder of SVG files, so there is no asset path to set, no `assets/` folder to copy next to the build, and no `img-src` or `connect-src` Content-Security-Policy entry to add: the drawings are JavaScript, covered by `script-src`, and carry no `style` attribute. The chunks are hashed (`p-<hash>.js`). A service worker that precaches every file downloads all of them (about 2.9 MB); the README's "Service workers / PWA" note says how to avoid that.
+`mud-icon`, `mud-logo` and the country flags of `mud-phone-input` now load each drawing as a small JavaScript module, imported the first time the component shows it. Nothing is fetched from a folder of SVG files, so there is no asset path to set, no `assets/` folder to copy next to the build, and no `img-src` or `connect-src` Content-Security-Policy entry to add: the drawings are JavaScript, covered by `script-src`, and carry no `style` attribute. The chunks are hashed (`p-<hash>.js`). A service worker that precaches every file downloads all of them (about 2.9 MB); the README's "Service workers / PWA" note says how to avoid that. Under a `require-trusted-types-for 'script'` policy the drawings still render empty, as they did before this change: the sanitizer parses them through `innerHTML`.
+
+The core now declares `sideEffects` (its CSS, `mud.esm.js` and the loader entries), so a bundler leaves out every component the application does not import.
 
 Removed:
 
