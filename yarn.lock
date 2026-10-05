@@ -1354,6 +1354,8 @@ __metadata:
     "@egov-moldova/mud": "workspace:^"
     typescript: "npm:^5.9.3"
     vite: "npm:^8.3.0"
+  peerDependencies:
+    "@egov-moldova/mud": "workspace:^"
   languageName: unknown
   linkType: soft
 

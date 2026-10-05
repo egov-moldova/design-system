@@ -25,10 +25,8 @@
     "demo.build": "vite build --config demo/vite.config.ts",
     "prepare": "yarn build"
   },
-  "dependencies": {
-    "@egov-moldova/mud": "workspace:^"
-  },
   "devDependencies": {
+    "@egov-moldova/mud": "workspace:^",
     "typescript": "^5.9.3",
     "vite": "^8.3.0"
   },
@@ -48,5 +46,8 @@
     "design-system",
     "stencil"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "@egov-moldova/mud": "workspace:^"
+  }
 }
