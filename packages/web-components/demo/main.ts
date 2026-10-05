@@ -3,11 +3,11 @@ import '@egov-moldova/mud/tokens/core.dark.tokens.css';
 import '@egov-moldova/mud/styles.css';
 import './demo.css';
 
-// Import the lazy bundle entry directly so Stencil resolves `getAssetPath()`
-// relative to dist/mud/ (where the SVG assets live) via import.meta.url.
-import '@egov-moldova/mud/mud.esm.js';
+import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './manifest';
+
+defineCustomElements();
 
 type Theme = 'light' | 'dark';
 
