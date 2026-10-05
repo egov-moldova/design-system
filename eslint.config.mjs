@@ -89,6 +89,36 @@ export default tseslint.config(
           message:
             'Boolean props for slot control are forbidden. Use CSS :empty or slot detection instead. See AGENTS.md "Slot-Based Architecture".',
         },
+        {
+          selector: 'Property[key.name="assetsDirs"]',
+          message: 'assets load through src/utils/svg-assets.ts',
+        },
+      ],
+    },
+  },
+
+  // No asset path: icons, logos and flags are ES modules imported on demand (src/utils/svg-assets.ts),
+  // so nothing in `src/` resolves a URL against the bundle. Stencil's `getAssetPath` / `setAssetPath`
+  // would silently bring the published SVG files and the asset-path setup back.
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@stencil/core',
+              importNames: ['getAssetPath', 'setAssetPath'],
+              message: 'assets load through src/utils/svg-assets.ts',
+            },
+            {
+              name: '@egov-moldova/mud/components',
+              importNames: ['setAssetPath'],
+              message: 'assets load through src/utils/svg-assets.ts',
+            },
+          ],
+        },
       ],
     },
   },

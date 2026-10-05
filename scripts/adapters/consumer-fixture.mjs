@@ -15,7 +15,9 @@
  *                workspace) is packed with `npm pack` from that directory; its build owns the
  *                `workspace:` rewrite, and the same guard checks it.
  *   2. guard     FAIL on a `workspace:` specifier in any packed manifest (read from the
- *                tarball, not from the source tree), on a tracked file under any proxy output
+ *                tarball, not from the source tree), on a packed SVG file in the core or the
+ *                adapter (`isPublishedSvg`, the predicate the publish gate uses), on a tracked
+ *                file under any proxy output
  *                directory (the list comes from `proxy-dirs.ts`, not retyped), and on a root
  *                `components/` directory (the shim folder 6e557bf5 removed).
  *   3. install   copy `packages/<framework>/fixture/` to a temp directory and
@@ -64,6 +66,7 @@ import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { isEntrypoint } from '../lib/is-entrypoint.mjs';
+import { isPublishedSvg } from '../validate-package.mjs';
 import { PROXY_OUT_DIRS } from './proxy-dirs.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -352,6 +355,15 @@ async function readPackedManifest(tarball) {
   return JSON.parse(stdout);
 }
 
+/** Every path a tarball holds, without the `package/` prefix `npm` and `yarn` both add. */
+async function readPackedPaths(tarball) {
+  const { stdout } = await run('guard', 'tar', ['-tzf', tarball], { capture: true });
+  return stdout
+    .split('\n')
+    .filter(Boolean)
+    .map(entry => entry.replace(/^package\//, ''));
+}
+
 /** Every `workspace:` specifier a packed manifest still carries: a consumer's installer cannot resolve one. */
 export function workspaceSpecifiers(manifest) {
   const found = [];
@@ -537,9 +549,15 @@ async function main() {
       const specifiers = workspaceSpecifiers(await readPackedManifest(tarball));
       if (specifiers.length > 0)
         fail('guard', `the packed ${name} manifest carries workspace: specifiers:\n  ${specifiers.join('\n  ')}`);
+      const svgs = (await readPackedPaths(tarball)).filter(isPublishedSvg);
+      if (svgs.length > 0)
+        fail(
+          'guard',
+          `the packed ${name} tarball publishes ${svgs.length} SVG file(s):\n  ${svgs.slice(0, 5).join('\n  ')}`,
+        );
     }
     await guardTree();
-    log('guard: no workspace: specifier, no tracked proxy file, no root components/');
+    log('guard: no workspace: specifier, no packed SVG, no tracked proxy file, no root components/');
 
     // 3. install
     const app = join(temp, 'app');
@@ -570,12 +588,6 @@ async function main() {
 
     if (existsSync(join(app, 'node_modules', spec.adapterPackage, 'node_modules/@egov-moldova/mud'))) {
       fail('install', `${spec.adapterPackage} installed its own copy of the core: two runtimes would load`);
-    }
-    if (!existsSync(join(app, 'node_modules/@egov-moldova/mud/dist/components/assets/outlined'))) {
-      fail(
-        'install',
-        'the packed core carries no dist/components/assets: the documented asset step has nothing to copy',
-      );
     }
 
     // 4. typecheck + build, then the second-runtime check

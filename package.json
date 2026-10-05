@@ -49,8 +49,15 @@
     "tar": "7.5.22",
     "undici": "6.28.1"
   },
+  "sideEffects": [
+    "*.css",
+    "./dist/mud/mud.esm.js",
+    "./dist/esm/loader.js",
+    "./loader/*"
+  ],
   "files": [
     "dist/",
+    "!dist/collection/**/*.svg",
     "loader/",
     "CHANGELOG.md"
   ],
@@ -231,7 +238,7 @@
       ]
     },
     "build": {
-      "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
+      "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
       "dependencies": [
         "tokens.build.prod"
       ],
@@ -241,12 +248,12 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "src/assets/**/*",
+        "src/components/mud-phone-input/assets/flags/LICENSE",
         "!src/components.d.ts",
         "stencil.config.ts",
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
-        "scripts/copy-component-assets.mjs",
         "scripts/adapters/**",
         "!scripts/adapters/consumer-fixture.mjs",
         "!scripts/adapters/pin-workspace-ranges.mjs"

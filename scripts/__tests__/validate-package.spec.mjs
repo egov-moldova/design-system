@@ -8,11 +8,14 @@ import ts from 'typescript';
 
 import {
   checkAbsolutePaths,
-  checkBundleAssets,
+  assetModuleDirs,
+  checkAssetModules,
   checkDeclaredEntries,
   checkDevSignature,
+  checkFlagLicense,
   checkForbiddenPaths,
   checkEsmOnlySubpaths,
+  checkNoPublishedSvg,
   checkPackerAgreement,
   checkPublicSpecifiers,
   checkSourceMaps,
@@ -20,6 +23,8 @@ import {
   checkStylesheetAssets,
   collectDeclaredEntries,
   exportsKeyPattern,
+  expectedAssetKeys,
+  isPublishedSvg,
   lazyBundleDir,
   normalizePackagePath,
   PROJECT_ROOT,
@@ -156,21 +161,150 @@ describe('standaloneBundleDir', () => {
   });
 });
 
-describe('checkBundleAssets', () => {
-  it('flags a standalone bundle shipped without the assets the lazy one has', () => {
-    const packed = ['dist/mud/assets/icon.svg', 'dist/components/index.js'];
-    assert.deepEqual(checkBundleAssets(packed, 'dist/mud/', 'dist/components/'), [
-      'dist/components/assets/ is empty while dist/mud/assets/ carries 1 file(s)',
+describe('isPublishedSvg / checkNoPublishedSvg', () => {
+  it('recognises an SVG path in any case and nothing else', () => {
+    assert.equal(isPublishedSvg('dist/mud/assets/outlined/a.svg'), true);
+    assert.equal(isPublishedSvg('dist/mud/assets/LOGO.SVG'), true);
+    assert.equal(isPublishedSvg('dist/mud/assets/fonts/onest-variable.woff2'), false);
+    assert.equal(isPublishedSvg('dist/mud/svg-assets.js'), false);
+  });
+
+  it('flags a packed SVG file', () => {
+    assert.deepEqual(checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg']), ['dist/mud/assets/outlined/a.svg']);
+  });
+
+  it('passes a tarball whose only asset is a font', () => {
+    assert.deepEqual(checkNoPublishedSvg(['dist/mud/assets/fonts/onest-variable.woff2']), []);
+  });
+});
+
+describe('assetModuleDirs', () => {
+  it('names the standalone, the lazy ESM and the CDN directories', () => {
+    assert.deepEqual(assetModuleDirs(PKG), ['dist/components/', 'dist/esm/', 'dist/mud/']);
+  });
+
+  it('refuses a package it cannot locate the ESM build of', () => {
+    assert.throws(() => assetModuleDirs({ ...PKG, es2015: undefined }), /cannot locate the lazy ESM build/);
+  });
+});
+
+describe('expectedAssetKeys', () => {
+  it('covers every icon variant, logo and flag the sources hold', () => {
+    const keys = expectedAssetKeys();
+    const count = prefix => keys.filter(key => key.startsWith(prefix)).length;
+    const files = dir => fs.readdirSync(path.join(PROJECT_ROOT, dir)).filter(isPublishedSvg).length;
+    assert.equal(
+      count('icon:'),
+      files('src/components/mud-icon/assets/outlined') + files('src/components/mud-icon/assets/filled'),
+    );
+    assert.equal(count('logo:'), files('src/components/mud-logo/assets'));
+    assert.equal(count('flag:'), files('src/components/mud-phone-input/assets/flags'));
+    assert.ok(keys.includes('icon:outlined/alarm') && keys.includes('flag:ad'));
+  });
+});
+
+describe('checkAssetModules', () => {
+  const DIRS = ['dist/components/', 'dist/esm/', 'dist/mud/'];
+  const KEYS = ['icon:outlined/a', 'logo:l', 'flag:ad'];
+  const chunk = (...keys) => keys.map(key => `export default "<svg data-mud-asset=\\"${key}\\"></svg>";`).join('\n');
+  const fixture = overrides => {
+    const texts = {};
+    for (const dir of DIRS) {
+      texts[`${dir}p-1.js`] = chunk(...KEYS);
+    }
+    return { ...texts, ...overrides };
+  };
+  const run = texts => checkAssetModules(Object.keys(texts), file => texts[file], KEYS, DIRS);
+
+  it('passes when every directory carries every key', () => {
+    assert.deepEqual(run(fixture({})), []);
+  });
+
+  it('finds a marker spread over several chunks and quoted any way a minifier likes', () => {
+    const texts = fixture({
+      'dist/mud/p-1.js': 'x=\'<svg data-mud-asset="icon:outlined/a">\'',
+      'dist/mud/p-2.js': 'y=`<svg data-mud-asset="logo:l">`',
+      'dist/mud/p-3.js': 'z=\'<svg data-mud-asset="flag:ad">\'',
+    });
+    assert.deepEqual(run(texts), []);
+  });
+
+  it('reports a key with no marker anywhere', () => {
+    const texts = {};
+    for (const dir of DIRS) {
+      texts[`${dir}p-1.js`] = chunk('icon:outlined/a', 'flag:ad');
+    }
+    const problems = run(texts);
+    assert.equal(problems.length, 3);
+    assert.match(problems[0], /dist\/components\/ has no module for 1 of 3 drawing\(s\): logo:l/);
+  });
+
+  it('reports a key missing only from dist/mud/', () => {
+    const problems = run(fixture({ 'dist/mud/p-1.js': chunk('icon:outlined/a', 'logo:l') }));
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /^dist\/mud\/ has no module for 1 of 3 drawing\(s\): flag:ad$/);
+  });
+
+  it('fails every key for a directory with no JavaScript at all', () => {
+    const texts = fixture({});
+    delete texts['dist/esm/p-1.js'];
+    const problems = run(texts);
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /^dist\/esm\/ has no module for 3 of 3/);
+  });
+
+  it('ignores a marker in a file that is not JavaScript', () => {
+    const texts = fixture({ 'dist/mud/p-1.js': '', 'dist/mud/a.svg': chunk(...KEYS) });
+    assert.equal(run(texts).length, 1);
+  });
+});
+
+describe('checkFlagLicense', () => {
+  const CONFIG = { licenseFile: 'dist/mud/licenses/flag-icons.txt', componentsDir: 'dist/components/' };
+  const flagChunk = code => `export default"<svg data-mud-asset=\\"flag:${code}\\"></svg>";`;
+  const FILES = {
+    'dist/mud/licenses/flag-icons.txt': 'MIT',
+    'dist/components/p-ad.js': flagChunk('ad'),
+    'dist/components/p-ae.js': flagChunk('ae'),
+    'dist/components/mud-phone-input.js':
+      '/* flag-icons */const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+  };
+  const run = (texts, config = CONFIG) => checkFlagLicense(Object.keys(texts), file => texts[file], config);
+
+  it('passes when the licence is packed and the flag-map chunk names flag-icons', () => {
+    assert.deepEqual(run(FILES), []);
+  });
+
+  it('reports a missing licence file', () => {
+    const texts = { ...FILES };
+    delete texts['dist/mud/licenses/flag-icons.txt'];
+    assert.deepEqual(run(texts), ['dist/mud/licenses/flag-icons.txt is not packed']);
+  });
+
+  it('reports a flag-map chunk that lost flag-icons in minification', () => {
+    const texts = {
+      ...FILES,
+      'dist/components/mud-phone-input.js':
+        'const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+    };
+    assert.deepEqual(run(texts), [
+      'dist/components/mud-phone-input.js holds the flag map but no longer contains "flag-icons" after minification',
     ]);
   });
 
-  it('passes when both carry assets', () => {
-    const packed = ['dist/mud/assets/icon.svg', 'dist/components/assets/icon.svg'];
-    assert.deepEqual(checkBundleAssets(packed, 'dist/mud/', 'dist/components/'), []);
+  it('is not satisfied by flag-icons in a chunk that is not the flag map', () => {
+    const texts = {
+      ...FILES,
+      'dist/components/mud-phone-input.js':
+        'const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+      'dist/components/other.js': '/* flag-icons */',
+    };
+    assert.equal(run(texts).length, 1);
   });
 
-  it('is silent when the package has no assets at all', () => {
-    assert.deepEqual(checkBundleAssets(['dist/mud/mud.esm.js'], 'dist/mud/', 'dist/components/'), []);
+  it('reports a bundle with no flag drawing rather than passing vacuously', () => {
+    const texts = { 'dist/mud/licenses/flag-icons.txt': 'MIT', 'dist/components/x.js': 'export{}' };
+    assert.deepEqual(run(texts), ['no chunk under dist/components/ carries a flag drawing']);
   });
 });
 

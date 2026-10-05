@@ -38,6 +38,11 @@ const outputTargets: OutputTarget[] = [
             dest: 'assets/fonts',
             warn: false,
           },
+          {
+            src: 'components/mud-phone-input/assets/flags/LICENSE',
+            dest: 'licenses/flag-icons.txt',
+            warn: true,
+          },
         ],
   },
 ];
@@ -67,12 +72,6 @@ if (hasDocs) {
 // rebuild in watch mode many times an hour and a second full component bundle
 // per rebuild buys nothing there.
 //
-// Note: Stencil's `dist-custom-elements` target ignores the `copy` option for
-// `assetsDirs` declared on components (Stencil v4 bug/limitation — copy on
-// this target type silently no-ops). `scripts/copy-component-assets.mjs`
-// mirrors `dist/mud/assets/` into `dist/components/assets/` afterwards, so
-// consumers of the standalone bundle can resolve `getAssetPath('./assets/x')`.
-// It runs from `wireit.build.command`, which is also what `build.react` depends on.
 if (!isDevMode) {
   outputTargets.push({ type: 'dist-custom-elements', externalRuntime: false });
 }

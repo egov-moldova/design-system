@@ -400,7 +400,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `mud.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/mud/` as a whole. |
-| Icons render as blank squares | Asset resolution failed | The SVG sprite path is derived from `mud.esm.js`'s URL. Ensure `dist/mud/assets/` is co-located with the entry. |
+| Icons, logos or flags render as blank squares | Their chunk (`p-*.js`) failed to load; each drawing ships as a JavaScript module inside the build, with no asset path to configure | Open DevTools → Network and look for a 404 or a blocked `p-*.js`; deploy `dist/mud/` as a whole, and keep `script-src` open to the origin that serves it. |
 | Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `mud.css`. Otherwise component CSS resolves variables to their fallback. |
 | Text renders in a system font instead of Onest | `mud.css` was copied without `assets/fonts/`, or CSP `font-src` blocks it | Deploy `dist/mud/` as a whole; check DevTools → Network for `onest-variable.woff2` and the console for a CSP violation. |
 | Dark mode doesn't apply | Missing dark tokens or wrong attribute | Confirm `core.dark.tokens.css` is linked **and** `<html data-theme="dark">` is set. |
