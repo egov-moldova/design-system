@@ -336,12 +336,12 @@ button.country-trigger:disabled {
   border-radius: var(--phone-input-flag-border-radius);
 }
 
-.flag img {
+.flag svg {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  /* The flag file is 4:3, the box 20x14 minus its border: fill it and trim the overflow. */
-  object-fit: cover;
+  /* The drawing is 4:3, the box 20x14 minus its border: the generator's `preserveAspectRatio="xMidYMid slice"`
+     fills the box and trims the overflow, the crop `object-fit: cover` gave the `<img>`. */
 }
 
 /* ---------- Native input ---------- */
@@ -628,11 +628,10 @@ button.country-trigger:disabled {
   border-radius: var(--phone-input-flag-border-radius);
 }
 
-.option-flag img {
+.option-flag svg {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  object-fit: cover;
 }
 
 .option-name {

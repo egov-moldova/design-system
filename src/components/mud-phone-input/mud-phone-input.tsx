@@ -15,7 +15,7 @@ import {
 
 import { COUNTRIES, DEFAULT_COUNTRY_ORDER } from './mud-phone-input.data';
 import type { PhoneCountry } from './mud-phone-input.data';
-import { flagUrl } from './mud-phone-input.flags';
+import { flagKey } from './mud-phone-input.flags';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './mud-phone-input.types';
 import type {
   PhoneInputChangeDetail,
@@ -25,13 +25,18 @@ import type {
   PhoneInputType,
   PhoneInputVariant,
 } from './mud-phone-input.types';
+import { FLAG_MODULES } from '../../generated/flags';
 import { observeAriaLabel } from '../../utils/aria-label';
 import { childLocale, formatLocale, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
+import { createSvgLoader } from '../../utils/svg-assets';
 import { PHONE_INPUT_MESSAGES } from './mud-phone-input.messages';
 import type { PhoneInputMessages } from './mud-phone-input.messages';
 
 let phoneInputInstanceCounter = 0;
+
+/** Imports one flag module per country, on first use, and hands out clones of the sanitized drawing. */
+const flagLoader = createSvgLoader(FLAG_MODULES);
 
 const displayNamesCache = new Map<string, Intl.DisplayNames>();
 
@@ -98,7 +103,7 @@ const defaultCountryList = (tag: string): PhoneCountry[] => {
  * Phone Input — phone-number entry molecule with country-code prefix and
  * format mask. The most Moldova-specific input in the family: it ships a
  * default `+373` country, every country that has a numbering plan (245)
- * with its SVG flag (flag-icons, shipped as local assets), and
+ * with its SVG flag (flag-icons, imported on demand and drawn inline), and
  * Romanian-voice placeholder + error copy.
  *
  * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
@@ -118,7 +123,6 @@ const defaultCountryList = (tag: string): PhoneCountry[] => {
   styleUrl: 'mud-phone-input.css',
   shadow: { delegatesFocus: true },
   formAssociated: true,
-  assetsDirs: ['assets'],
 })
 export class MudPhoneInput {
   /**
@@ -254,6 +258,8 @@ export class MudPhoneInput {
   @State() private searchQuery: string = '';
   /** ISO codes of the rows whose flag was asked for: those that came near the visible part of the list. */
   @State() private shownFlags: ReadonlySet<string> = new Set();
+  /** Flag keys whose module has resolved: each change re-renders so `drawFlags` can pick the drawing up. */
+  @State() private loadedFlags: ReadonlySet<string> = new Set();
 
   @Element() host!: HTMLMudPhoneInputElement;
 
@@ -319,6 +325,7 @@ export class MudPhoneInput {
   }
 
   componentDidRender() {
+    this.drawFlags();
     this.observeRowFlags();
   }
 
@@ -359,8 +366,37 @@ export class MudPhoneInput {
     this.flagObserver = observer;
   }
 
-  private rowFlagUrl(iso: string): string | undefined {
-    return typeof IntersectionObserver === 'undefined' || this.shownFlags.has(iso) ? flagUrl(iso) : undefined;
+  private rowFlagShown(iso: string): boolean {
+    return typeof IntersectionObserver === 'undefined' || this.shownFlags.has(iso);
+  }
+
+  /**
+   * Fills every flag box with the drawing of its own country. The boxes are not in the vdom's
+   * children, so Stencil leaves what is appended here alone, and it also reuses them: the option rows
+   * are unkeyed and the trigger's span is the same element across country changes. So a box is
+   * matched on the `data-mud-asset` marker of its drawing, never on being empty, and a box that is
+   * not shown (a row the observer has not reported) is cleared rather than left with the old flag.
+   * A drawing that is not loaded yet leaves the box empty; `loadedFlags` re-renders it once it is.
+   */
+  private drawFlags() {
+    const boxes = this.host.shadowRoot?.querySelectorAll<HTMLElement>('.flag[data-iso], .option-flag[data-iso]');
+    boxes?.forEach(box => {
+      const iso = box.dataset.iso ?? '';
+      const key = flagKey(iso);
+      const current = box.querySelector('svg');
+      const shown = !box.classList.contains('option-flag') || this.rowFlagShown(iso);
+      if (shown && current?.getAttribute('data-mud-asset') === `flag:${key}`) return;
+      current?.remove();
+      if (!shown) return;
+      const drawing = flagLoader.cached(key);
+      if (drawing) {
+        box.appendChild(drawing);
+        return;
+      }
+      void flagLoader.load(key).then(loaded => {
+        if (loaded) this.loadedFlags = new Set([...this.loadedFlags, key]);
+      });
+    });
   }
 
   /** Built-in strings in the resolved locale. This component has no override props —
@@ -923,11 +959,7 @@ export class MudPhoneInput {
   }
 
   private renderFlag(country: PhoneCountry) {
-    return (
-      <span class="flag" part="flag" aria-hidden="true">
-        <img src={flagUrl(country.iso)} alt="" decoding="async" draggable={false} />
-      </span>
-    );
+    return <span class="flag" part="flag" aria-hidden="true" data-iso={country.iso}></span>;
   }
 
   render() {
@@ -1146,17 +1178,8 @@ export class MudPhoneInput {
                         onClick={this.handleOptionClick(index)}
                         onMouseEnter={this.handleOptionPointerEnter(index)}
                       >
-                        <span class="option-flag" aria-hidden="true">
-                          {/* The file is asked for when the row comes near the view (observeRowFlags); `lazy` is the
-                              fallback for a browser without IntersectionObserver. */}
-                          <img
-                            src={this.rowFlagUrl(opt.iso)}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            draggable={false}
-                          />
-                        </span>
+                        {/* The drawing is imported when the row comes near the view (observeRowFlags, drawFlags). */}
+                        <span class="option-flag" aria-hidden="true" data-iso={opt.iso}></span>
                         <span class="option-name">{this.displayName(opt)}</span>
                         <span class="option-code">{opt.code}</span>
                         {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={16} /> : null}
