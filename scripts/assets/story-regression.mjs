@@ -28,6 +28,7 @@ import { PNG } from 'pngjs';
 import { launchBrowser, mapLimit } from '../audit/lib/browser-context.mjs';
 import { diffImages } from '../audit/lib/image-diff.mjs';
 import { captureState } from '../audit/lib/state-page.mjs';
+import { isEntrypoint } from '../lib/is-entrypoint.mjs';
 import { isStorybookReachable, storyUrl } from '../audit/lib/storybook-helpers.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -364,7 +365,7 @@ async function main(argv) {
   return 2;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isEntrypoint(import.meta.url)) {
   main(process.argv.slice(2)).then(
     code => process.exit(code),
     err => {
