@@ -19,7 +19,8 @@
  *   node scripts/assets/build-asset-modules.mjs --check      # write nothing; exit 1 on drift
  *
  * `--check` exits 1 when any output would differ (stale, missing or extra file), when any module
- * carries a `style` attribute, a script, an event handler or a reference out of its own file, or
+ * carries a `style` attribute or element, a script, an event handler, a reference or `url()` out of
+ * its own file, or an element that loads, navigates or retargets a reference (`FORBIDDEN`), or
  * when a drawing references an id it never defines and is not in `KNOWN_DANGLING`
  * (run by scripts/__tests__/build-asset-modules.spec.mjs).
  */
@@ -46,14 +47,29 @@ const FLAGS_DIR = path.join(COMPONENTS, 'mud-phone-input/assets/flags');
  */
 const SAFE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
 
-/** What no emitted drawing may carry: it is appended inline to a shadow root on every consumer's page. */
+/**
+ * What no emitted drawing may carry: it is appended inline to a shadow root on every consumer's page.
+ * The transform strips some of these; this list is the check that refuses whatever it did not, so a
+ * new upstream drawing that needs one of them fails the run instead of shipping.
+ */
 const FORBIDDEN = [
   [/\sstyle\s*=/i, 'a style attribute'],
   [/<style/i, 'a style element'],
   [/<script/i, 'a script'],
   [/\son[a-z]+\s*=/i, 'an event handler'],
   [/\s(?:href|xlink:href|src)\s*=\s*["'](?!#)/i, 'a reference out of the file'],
+  [/url\(\s*['"]?(?!#)/i, 'a url() out of the file'],
+  // An animation can retarget an `href` the transform made local; the others load or navigate.
+  [
+    /<(?:animate|animateMotion|animateTransform|set|foreignObject|image|a|iframe|object|embed)[\s/>]/i,
+    'an element that loads, navigates or retargets a reference',
+  ],
 ];
+
+/** The reasons, from `FORBIDDEN`, that a drawing may not be emitted; empty when it may. */
+export function forbiddenIn(markup) {
+  return FORBIDDEN.filter(([pattern]) => pattern.test(markup)).map(([, what]) => what);
+}
 
 /**
  * Drawings allowed to reference ids they never define, each with the reason. A browser paints a
@@ -198,9 +214,7 @@ export function buildOutputs() {
 
     for (const { key, file } of sources) {
       const markup = transformSvg(fs.readFileSync(file, 'utf8'), { kind: set.kind, key });
-      for (const [pattern, what] of FORBIDDEN) {
-        if (pattern.test(markup)) forbidden.push(`${set.kind}:${key} (${what})`);
-      }
+      for (const what of forbiddenIn(markup)) forbidden.push(`${set.kind}:${key} (${what})`);
       const asset = `${set.kind}:${key}`;
       const missingIds = danglingReferences(markup);
       if (missingIds.length && KNOWN_DANGLING.has(asset)) expired.delete(asset);
