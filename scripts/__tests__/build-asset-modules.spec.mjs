@@ -70,7 +70,7 @@ describe('forbiddenIn', () => {
   for (const [name, body, reason] of [
     [
       'an animation retargeting an href',
-      '<a href="#x"><animate attributeName="href" to="https://evil.test/x.svg#a"/></a>',
+      '<g><animate attributeName="href" to="https://evil.test/x.svg#a"/></g>',
       'an element that loads, navigates or retargets a reference',
     ],
     [
@@ -91,11 +91,41 @@ describe('forbiddenIn', () => {
       'an element that loads, navigates or retargets a reference',
     ],
     ['an image', '<image width="1" height="1"/>', 'an element that loads, navigates or retargets a reference'],
+    [
+      'a CSS-escaped url() in a presentation attribute',
+      '<rect fill="u\\72l(https://evil.test/x.svg#a)" width="1" height="1"/>',
+      'a backslash escape in an attribute value',
+    ],
   ]) {
     it(`refuses ${name}`, () => {
       assert.ok(after(wrap(body)).includes(reason), `${name}: ${JSON.stringify(after(wrap(body)))}`);
     });
   }
+
+  // One case per element, each alone, so dropping any name from the pattern fails its own case.
+  for (const tag of [
+    'animate',
+    'animateMotion',
+    'animateTransform',
+    'set',
+    'foreignObject',
+    'image',
+    'a',
+    'iframe',
+    'object',
+    'embed',
+  ]) {
+    it(`refuses <${tag}> on its own`, () => {
+      assert.deepEqual(forbiddenIn(wrap(`<g><${tag}/></g>`)), [
+        'an element that loads, navigates or retargets a reference',
+      ]);
+    });
+  }
+
+  it('accepts a local url() with a space before the fragment, and an element whose name only starts like one', () => {
+    assert.deepEqual(forbiddenIn(wrap('<path fill="url( #g)" d="M0 0h1"/><altGlyph/>')), []);
+    assert.deepEqual(forbiddenIn(wrap(`<path fill="url('#g')" d="M0 0h1"/>`)), []);
+  });
 });
 
 describe('danglingReferences', () => {

@@ -58,7 +58,12 @@ const FORBIDDEN = [
   [/<script/i, 'a script'],
   [/\son[a-z]+\s*=/i, 'an event handler'],
   [/\s(?:href|xlink:href|src)\s*=\s*["'](?!#)/i, 'a reference out of the file'],
-  [/url\(\s*['"]?(?!#)/i, 'a url() out of the file'],
+  // The lookahead also refuses a quote or a space, so backtracking over the optional parts cannot
+  // turn a local `url( #g)` into a refusal; an empty `url()` is refused.
+  [/url\(\s*['"]?\s*(?!['"\s#])/i, 'a url() out of the file'],
+  // CSS resolves escapes in a function name (`u\72l(` is `url(`), which the pattern above cannot
+  // see; no drawing needs a backslash in an attribute value.
+  [/="[^"]*\\[^"]*"/, 'a backslash escape in an attribute value'],
   // An animation can retarget an `href` the transform made local; the others load or navigate.
   [
     /<(?:animate|animateMotion|animateTransform|set|foreignObject|image|a|iframe|object|embed)[\s/>]/i,
