@@ -16,8 +16,8 @@
 export const PROXY_DIRS = {
   react: 'packages/react/src/components/stencil-generated',
   vue: 'packages/vue/src/components/stencil-generated',
-  // Under `src/lib/`, the Angular library convention; the hand-written accessors and
-  // `provideMud` sit beside it in `src/lib/`, outside the directory the build empties.
+  // Under `src/lib/`, the Angular library convention; the hand-written accessors sit
+  // beside it in `src/lib/`, outside the directory the build empties.
   angular: 'packages/angular/src/lib/stencil-generated',
 } as const;
 
