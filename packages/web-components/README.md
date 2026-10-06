@@ -69,7 +69,7 @@ Serve `node_modules/@egov-moldova/mud/dist/mud/` as a whole: `mud.css` requests 
 
 ## Usage — CDN, no install
 
-This package is not needed for a CDN page. Its `dist/index.js` imports `@egov-moldova/mud/loader` by name, which a browser cannot resolve from a CDN URL without an import map: importing it from jsDelivr fails with `Failed to resolve module specifier "@egov-moldova/mud/loader"`. Load the core's script-tag build instead: it registers every element on its own. Replace `<version>` with the release you pin, as the root README's [Option A — Script Tag (CDN)](../../README.md#without-a-bundler) shows. For production, read [CDN alternative](../../INTEGRATION.md#cdn-alternative-no-copy-step) in INTEGRATION.md first: it covers Subresource Integrity, and why self-hosting is safer.
+This package is not needed for a CDN page. Its `dist/index.js` imports `@egov-moldova/mud/loader` by name, which a browser cannot resolve from a CDN URL without an import map: importing it from jsDelivr fails with a module-resolution error (in Chrome: `Failed to resolve module specifier "@egov-moldova/mud/loader"`). Load the core's script-tag build instead: it registers every element on its own. Replace `<version>` with the release you pin, as the root README's [Option A — Script Tag (CDN)](../../README.md#without-a-bundler) shows. For production, read [CDN alternative](../../INTEGRATION.md#cdn-alternative-no-copy-step) in INTEGRATION.md first: it covers Subresource Integrity, and why self-hosting is safer.
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@<version>/dist/mud/tokens/core.tokens.css" />

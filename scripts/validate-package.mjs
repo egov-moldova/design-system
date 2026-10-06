@@ -63,7 +63,7 @@ export function normalizePackagePath(target) {
   return target.replace(/^\.\//, '');
 }
 
-function walkExports(node, trail, entries) {
+function walkExports(node, trail, entries, { patterns = false } = {}) {
   if (typeof node === 'string') {
     entries.push({ source: trail, target: node });
     return;
@@ -74,10 +74,11 @@ function walkExports(node, trail, entries) {
   for (const [key, child] of Object.entries(node)) {
     // A subpath pattern resolves to many files; a literal existence check on it
     // would be meaningless. Its directory is covered by the sibling literals.
-    if (key.includes('*')) {
+    // `checkScriptTagNotExported` asks what a pattern REACHES, so it keeps them.
+    if (key.includes('*') && !patterns) {
       continue;
     }
-    walkExports(child, `${trail}[${key}]`, entries);
+    walkExports(child, `${trail}[${key}]`, entries, { patterns });
   }
 }
 
@@ -210,39 +211,38 @@ export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
     .map(key => `exports["${key}"] declares a require condition, but this subpath is ESM-only`);
 }
 
-/** Every target string in an `exports` value: condition objects flattened, pattern keys kept, `null` exclusions skipped. */
-function exportsTargets(node) {
-  if (typeof node === 'string') return [node];
-  if (node === null || typeof node !== 'object') return [];
-  return Object.values(node).flatMap(exportsTargets);
-}
-
 /**
- * Turn one `exports` TARGET into the RegExp matching the packed files it can resolve to: `*`
- * matches anything, `/` included, as in `exportsKeyPattern`, and a target ending in `/` is a
- * legacy folder mapping, which reaches everything under it.
+ * The RegExp matching the packed files one `exports` TARGET can resolve to. A target ending in
+ * `/` is a legacy folder mapping and reaches everything under it; the raw target is tested, since
+ * the root mapping `./` normalizes to the empty string. Dot segments are collapsed and case is
+ * ignored, so `./dist/x/../mud/*` or `./dist/MUD/*` (which a case-insensitive file system
+ * resolves) cannot slip past.
  */
-export function exportsTargetPattern(target) {
-  const normalized = normalizePackagePath(target);
-  const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`).replaceAll(String.raw`\*`, '.*');
-  return new RegExp(`^${escaped}${normalized.endsWith('/') ? '.*' : ''}$`);
+function exportsTargetPattern(target) {
+  const folder = target.endsWith('/') ? '.*' : '';
+  const collapsed = normalizePackagePath(path.posix.normalize(target));
+  return new RegExp(`^${subpathPatternSource(collapsed === '.' ? '' : collapsed)}${folder}$`, 'i');
 }
 
 /**
  * Every `exports` target that reaches a script of the lazy browser bundle (#193). That build
- * resolves its chunks (`./<id>.entry.js`) against its own URL, where a bundler such as Vite emits
- * nothing, so a package specifier reaching any of its scripts registers every element and renders
- * none in a bundled app. A
- * script tag, a CDN or an import map loads it by URL and never reads `exports`. The scope is the
- * packed `.js` files of `lazyBundleDir`, not the one `unpkg` entry: `index.esm.js` and the chunks
- * fail the same way, while `styles.css` and the token stylesheets beside them stay exportable.
+ * resolves its chunks (`./<id>.entry.js`) against its own URL, where Vite emits nothing, so a
+ * Vite-bundled import of any of its scripts registers every element and renders none. A script
+ * tag, a CDN or an import map loads it by URL and never reads `exports`. The scope is the packed
+ * `.js` files of `lazyBundleDir`, not the one `unpkg` entry: `index.esm.js` and the chunks fail
+ * the same way, while `styles.css` and the token stylesheets beside them stay exportable.
  * `lazyBundleDir` throws when `unpkg` is unusable, so a renamed field fails the gate instead of
- * leaving nothing to compare against.
+ * leaving nothing to compare against. Each target is graded on its own: a `null` exclusion under
+ * another key is not consulted, so a wildcard narrowed that way still fails (closed, never open).
+ * The check is textual: an exported module that itself imports the bundle is not traced; the
+ * web-components fixture's bundled-import test covers the specifier end to end.
  */
 export function checkScriptTagNotExported(pkg, packedFiles) {
   const bundleDir = lazyBundleDir(pkg);
   const scripts = packedFiles.filter(file => file.startsWith(bundleDir) && file.endsWith('.js'));
-  return exportsTargets(pkg.exports).flatMap(target => {
+  const entries = [];
+  walkExports(pkg.exports, '$.exports', entries, { patterns: true });
+  return entries.flatMap(({ target }) => {
     const shape = exportsTargetPattern(target);
     const reached = scripts.filter(file => shape.test(file));
     if (reached.length === 0) return [];
@@ -683,7 +683,7 @@ export function checkPackerAgreement(yarnFiles, npmFiles) {
 }
 
 /**
- * Turn one `exports` key into the RegExp matching the public specifiers it serves.
+ * The RegExp source for one subpath-pattern string (an `exports` key or target).
  *
  * Escape first, then substitute the wildcard. An unescaped key leaves `.` matching
  * any character, so `./tokens/*.css` would accept `.../tokens/coreXtokensYcss` — a
@@ -693,10 +693,14 @@ export function checkPackerAgreement(yarnFiles, npmFiles) {
  * Node's subpath-pattern `*` matches ZERO or more characters, `/` included, so
  * `.+` would quietly narrow the grammar this is a translation of.
  */
+function subpathPatternSource(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`).replaceAll(String.raw`\*`, '.*');
+}
+
+/** Turn one `exports` key into the RegExp matching the public specifiers it serves. */
 export function exportsKeyPattern(key) {
   const suffix = key === '.' ? '' : key.slice(1);
-  const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-  return new RegExp(`^@egov-moldova/mud${escaped.replaceAll(String.raw`\*`, '.*')}$`);
+  return new RegExp(`^@egov-moldova/mud${subpathPatternSource(suffix)}$`);
 }
 
 export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.error } = {}) {

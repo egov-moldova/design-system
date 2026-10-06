@@ -673,6 +673,29 @@ describe('checkScriptTagNotExported', () => {
     assert.match(failures[0], /^\.\/dist\/mud\/ -> /);
   });
 
+  it('treats the root folder mapping, which normalizes to an empty path, as reaching the bundle', () => {
+    const failures = checkScriptTagNotExported(withExports({ './': './' }), packed);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /^\.\/ -> dist\/mud\//);
+  });
+
+  it('collapses dot segments and ignores case in a target', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({ './a/*': './dist/x/../mud/*', './b/*': './dist/MUD/*' }),
+      packed,
+    );
+    assert.equal(failures.length, 2);
+  });
+
+  it('fails closed on a wildcard narrowed by a null exclusion under another key', () => {
+    // Node would let the longer `*.js` key win; the gate grades each target alone.
+    const failures = checkScriptTagNotExported(
+      withExports({ './dist/mud/*': './dist/mud/*', './dist/mud/*.js': null }),
+      packed,
+    );
+    assert.equal(failures.length, 1);
+  });
+
   it('skips a null exclusion and the stylesheets beside the bundle', () => {
     const failures = checkScriptTagNotExported(
       withExports({
