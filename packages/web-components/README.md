@@ -28,7 +28,7 @@ defineCustomElements();
 <mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
-Icons, logos and country flags load on their own, only when shown: there is nothing to copy or configure. Use `defineCustomElements()` from this package in a bundler. Do not `import '@egov-moldova/mud/mud.esm.js'` from a bundled app: it registers the elements, but the component chunks 404, because that build resolves them against its own URL, which a bundler does not emit. `mud.esm.js` is for a `<script type="module">` tag with the whole `dist/mud/` served.
+Icons, logos and country flags load on their own, only when shown: there is nothing to copy or configure. In a bundler, register the elements with `defineCustomElements()` from this package. `@egov-moldova/mud/mud.esm.js` is not an import: it is not a package export, and the build fails on it. That file is the core's script-tag build, referenced by URL; see the root README's [With a bundler](../../README.md#with-a-bundler) section.
 
 `styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../../README.md#fonts) section.
 
@@ -67,15 +67,14 @@ Icons, logos and country flags load on their own, only when shown: there is noth
 
 Serve `node_modules/@egov-moldova/mud/dist/mud/` as a whole: `mud.css` requests its font from `assets/fonts/` beside it. Icons, logos and flags are chunks in the same loader build and need no folder of their own.
 
-## Usage — CDN via jsDelivr
+## Usage — CDN, no install
+
+This package is not needed for a CDN page. Its `dist/index.js` imports `@egov-moldova/mud/loader` by name, which a browser cannot resolve from a CDN URL without an import map, so importing it from jsDelivr registers nothing. Load the core's script-tag build instead: it registers every element on its own. Pin a version, as the root README's [Option A — Script Tag (CDN)](../../README.md#without-a-bundler) shows:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/tokens/core.tokens.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/mud.css" />
-<script type="module">
-  import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/@egov-moldova/mud-web-components/dist/index.js';
-  defineCustomElements();
-</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@<version>/dist/mud/tokens/core.tokens.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@<version>/dist/mud/mud.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@<version>/dist/mud/mud.esm.js"></script>
 ```
 
 ## Local demo
