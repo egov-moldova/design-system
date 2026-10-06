@@ -387,14 +387,14 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - **Compression**: enable Brotli/gzip on `.js` and `.css`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
 - **Fonts under CSP**: `mud.css` loads `assets/fonts/onest-variable.woff2` relative to itself, so `font-src` must allow the origin `mud.css` is served from (`'self'` when self-hosted, the CDN origin otherwise).
 - **Icons, logos and flags under CSP**: they arrive as JavaScript modules, so `script-src` covers them, and they carry no `style` attribute. No `img-src` or `connect-src` entry is needed for them.
-- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egov-moldova/mud/loader` before the loader runs:
+- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce. Under a `style-src` without `'unsafe-inline'`, the `<style>` element the components inject needs your nonce. Put it in a `<meta name="csp-nonce">` tag in the `<head>`, before `mud.esm.js` loads; the runtime reads it from there:
 
   ```html
-  <script type="module" nonce="abc123">
-    import { setNonce } from '/age/loader/index.js';
-    setNonce('abc123');
-  </script>
+  <meta name="csp-nonce" content="abc123">
+  <script type="module" src="/age/mud.esm.js"></script>
   ```
+
+  `setNonce('abc123')` imported from `/age/mud.esm.js` itself works too. `setNonce` from `@egov-moldova/mud/loader` does not: that sets the nonce of the loader's own runtime (`dist/esm/`), not of the script-tag build, and the injected style is blocked. That export is for bundled apps, which register through the loader.
 
 ---
 
@@ -411,7 +411,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 | Blazor: `e.target.value` is empty in event handler | Stencil emits typed `CustomEvent`; `value` lives on `event.detail`, not on the target | Use `e.Detail` (Blazor) or `e.detail` (JS). |
 | `<mud-select>` shows no options after data load | Tried to set `options` as an attribute | Set the JS property after `customElements.whenDefined()`. See [section 6](#6-setting-non-string-props-objects-arrays). |
 | Console warns "Lit is in dev mode" or similar from Stencil | You shipped the dev build (`stencil build --dev`) | Run a production build (`yarn build`) and deploy the `dist/` from that run. |
-| CSP blocks the loader | `script-src` doesn't allow dynamic imports / your nonce | Add a nonce, call `setNonce()`, or relax to `'self'` for module sources. |
+| CSP blocks the loader, or reports "Applying inline style violates … style-src" | `script-src` doesn't allow dynamic imports, or the injected `<style>` carries no nonce | Allow `'self'` for module sources, and add `<meta name="csp-nonce" content="…">` to the `<head>` (see [section 9](#9-hosting--cache-strategy)). `setNonce()` from `@egov-moldova/mud/loader` does not reach the script-tag build. |
 
 ---
 
