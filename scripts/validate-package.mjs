@@ -63,7 +63,8 @@ export function normalizePackagePath(target) {
   return target.replace(/^\.\//, '');
 }
 
-function walkExports(node, trail, entries, { patterns = false } = {}) {
+/** Every target string under an `exports` value, each tagged with its key trail; `null` exclusions skipped. */
+function walkExports(node, trail, entries) {
   if (typeof node === 'string') {
     entries.push({ source: trail, target: node });
     return;
@@ -72,13 +73,7 @@ function walkExports(node, trail, entries, { patterns = false } = {}) {
     return;
   }
   for (const [key, child] of Object.entries(node)) {
-    // A subpath pattern resolves to many files; a literal existence check on it
-    // would be meaningless. Its directory is covered by the sibling literals.
-    // `checkScriptTagNotExported` asks what a pattern REACHES, so it keeps them.
-    if (key.includes('*') && !patterns) {
-      continue;
-    }
-    walkExports(child, `${trail}[${key}]`, entries, { patterns });
+    walkExports(child, `${trail}[${key}]`, entries);
   }
 }
 
@@ -91,7 +86,9 @@ export function collectDeclaredEntries(pkg) {
     }
   }
   walkExports(pkg.exports, '$.exports', entries);
-  return entries.filter(entry => !entry.target.includes('*'));
+  // A subpath pattern resolves to many files; a literal existence check on it
+  // would be meaningless. Its directory is covered by the sibling literals.
+  return entries.filter(entry => !entry.source.includes('*') && !entry.target.includes('*'));
 }
 
 export function checkDeclaredEntries(entries, packedFiles) {
@@ -214,40 +211,50 @@ export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
 /**
  * The RegExp matching the packed files one `exports` TARGET can resolve to. A target ending in
  * `/` is a legacy folder mapping and reaches everything under it; the raw target is tested, since
- * the root mapping `./` normalizes to the empty string. Dot segments are collapsed and case is
- * ignored, so `./dist/x/../mud/*` or `./dist/MUD/*` (which a case-insensitive file system
- * resolves) cannot slip past.
+ * the root mapping `./` normalizes to the empty string. The target is read the way Node resolves
+ * it (`new URL`, then a file path): backslashes are separators, percent escapes are decoded, dot
+ * segments collapse, and case is ignored for case-insensitive file systems. So
+ * `./dist\mud\mud.esm.js`, `./dist/%6Dud/*`, `./dist/x/../mud/*` and `./dist/MUD/*` cannot slip past;
+ * Node 24 resolves and loads the first two.
  */
 function exportsTargetPattern(target) {
-  const folder = target.endsWith('/') ? '.*' : '';
-  const collapsed = normalizePackagePath(path.posix.normalize(target));
+  const slashed = target.replaceAll('\\', '/');
+  let decoded = slashed;
+  try {
+    decoded = decodeURIComponent(slashed);
+  } catch {
+    // A malformed escape stays literal and matches nothing: Node fails such a target with `URI malformed`.
+  }
+  const folder = decoded.endsWith('/') ? '.*' : '';
+  const collapsed = normalizePackagePath(path.posix.normalize(decoded));
   return new RegExp(`^${subpathPatternSource(collapsed === '.' ? '' : collapsed)}${folder}$`, 'i');
 }
 
 /**
  * Every `exports` target that reaches a script of the lazy browser bundle (#193). That build
- * resolves its chunks (`./<id>.entry.js`) against its own URL, where Vite emits nothing, so a
- * Vite-bundled import of any of its scripts registers every element and renders none. A script
+ * resolves its chunks (`./<id>.entry.js`) against its own URL, where Vite and Rollup emit nothing,
+ * so an import of any of its scripts bundled by either registers every element and renders none. A script
  * tag, a CDN or an import map loads it by URL and never reads `exports`. The scope is the packed
  * `.js` files of `lazyBundleDir`, not the one `unpkg` entry: `index.esm.js` and the chunks fail
  * the same way, while `styles.css` and the token stylesheets beside them stay exportable.
  * `lazyBundleDir` throws when `unpkg` is unusable, so a renamed field fails the gate instead of
  * leaving nothing to compare against. Each target is graded on its own: a `null` exclusion under
  * another key is not consulted, so a wildcard narrowed that way still fails (closed, never open).
- * The check is textual: an exported module that itself imports the bundle is not traced; the
- * web-components fixture's bundled-import test covers the specifier end to end.
+ * The check is textual: an exported module that itself imports the bundle is not traced, and no
+ * other check covers that case. The web-components fixture's bundled-import test covers only the
+ * `./mud.esm.js` specifier, end to end.
  */
 export function checkScriptTagNotExported(pkg, packedFiles) {
   const bundleDir = lazyBundleDir(pkg);
   const scripts = packedFiles.filter(file => file.startsWith(bundleDir) && file.endsWith('.js'));
   const entries = [];
-  walkExports(pkg.exports, '$.exports', entries, { patterns: true });
-  return entries.flatMap(({ target }) => {
+  walkExports(pkg.exports, '$.exports', entries);
+  return entries.flatMap(({ source, target }) => {
     const shape = exportsTargetPattern(target);
     const reached = scripts.filter(file => shape.test(file));
     if (reached.length === 0) return [];
     const more = reached.length > 1 ? ` (+${reached.length - 1} more)` : '';
-    return [`${target} -> ${reached[0]}${more}`];
+    return [`${source}: ${target} -> ${reached[0]}${more}`];
   });
 }
 

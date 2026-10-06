@@ -252,8 +252,8 @@ names the old path but not the new one — the mapping is below.
 `.` and `./loader` are unchanged.
 
 `mud.esm.js` gets no new package name. It is the script-tag build: it loads each
-component chunk from its own URL, where Vite emits nothing, so a Vite-bundled
-import of it registers every element and renders none. Reference it by
+component chunk from its own URL, where Vite and Rollup emit nothing, so a
+bundled import of it there registers every element and renders none. Reference it by
 URL, in a `<script type="module" src="…/dist/mud/mud.esm.js">` tag.
 
 **Removed with no replacement**, deliberately. The old `./dist/mud/*` wildcard

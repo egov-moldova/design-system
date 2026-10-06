@@ -23,10 +23,10 @@ test('cdn: import map and script-tag pages render', async ({ page }) => {
 });
 
 // `mud.esm.js` is the script-tag build: it loads its component chunks by a URL it computes at runtime
-// (`import(`./${id}.entry.js`)` against its own location). Vite does not emit those chunks, so a
-// bundled import would register the elements and render none. The core therefore does not export
-// it (#193): the same import must fail the build, naming the specifier, instead of shipping a page
-// that 404s. The script-tag shape itself stays covered by `esm-script.html` above.
+// (`import(`./${id}.entry.js`)` against its own location). Vite, like Rollup, does not emit those
+// chunks, so a bundled import would register the elements and render none. The core therefore does
+// not export it (#193): the same import must fail the build, naming the specifier, instead of
+// shipping a page that 404s. The script-tag shape itself stays covered by `esm-script.html` above.
 test('exports: a bundled mud.esm.js import fails to resolve', async () => {
   const { build } = await import('vite');
   const app = fileURLToPath(new URL('..', import.meta.url));

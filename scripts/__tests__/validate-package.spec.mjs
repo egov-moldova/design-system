@@ -651,12 +651,12 @@ describe('checkScriptTagNotExported', () => {
 
   it('names a literal key on the entry, the shape 1.2.0-dev.1 to dev.3 published', () => {
     const failures = checkScriptTagNotExported(withExports({ './mud.esm.js': './dist/mud/mud.esm.js' }), packed);
-    assert.deepEqual(failures, ['./dist/mud/mud.esm.js -> dist/mud/mud.esm.js']);
+    assert.deepEqual(failures, ['$.exports[./mud.esm.js]: ./dist/mud/mud.esm.js -> dist/mud/mud.esm.js']);
   });
 
   it('names a pattern that reaches the bundle, the shape 1.1.9 published', () => {
     const failures = checkScriptTagNotExported(withExports({ './dist/mud/*': './dist/mud/*' }), packed);
-    assert.deepEqual(failures, ['./dist/mud/* -> dist/mud/mud.esm.js (+3 more)']);
+    assert.deepEqual(failures, ['$.exports[./dist/mud/*]: ./dist/mud/* -> dist/mud/mud.esm.js (+3 more)']);
   });
 
   it('reads a target nested under a condition', () => {
@@ -664,19 +664,36 @@ describe('checkScriptTagNotExported', () => {
       withExports({ './bundle': { webpack: { import: './dist/mud/index.esm.js' } } }),
       packed,
     );
-    assert.deepEqual(failures, ['./dist/mud/index.esm.js -> dist/mud/index.esm.js']);
+    assert.deepEqual(failures, [
+      '$.exports[./bundle][webpack][import]: ./dist/mud/index.esm.js -> dist/mud/index.esm.js',
+    ]);
   });
 
   it('treats a legacy folder mapping as reaching everything under it', () => {
     const failures = checkScriptTagNotExported(withExports({ './': './dist/mud/' }), packed);
     assert.equal(failures.length, 1);
-    assert.match(failures[0], /^\.\/dist\/mud\/ -> /);
+    assert.match(failures[0], /^\$\.exports\[\.\/\]: \.\/dist\/mud\/ -> /);
   });
 
   it('treats the root folder mapping, which normalizes to an empty path, as reaching the bundle', () => {
     const failures = checkScriptTagNotExported(withExports({ './': './' }), packed);
     assert.equal(failures.length, 1);
-    assert.match(failures[0], /^\.\/ -> dist\/mud\//);
+    assert.match(failures[0], /^\$\.exports\[\.\/\]: \.\/ -> dist\/mud\//);
+  });
+
+  it('reads backslash separators and percent escapes the way Node resolves them', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './b': String.raw`./dist\mud\mud.esm.js`,
+        './c': './dist/%6Dud/mud.esm.js',
+        './d': './dist/%zz/x.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, [
+      String.raw`$.exports[./b]: ./dist\mud\mud.esm.js -> dist/mud/mud.esm.js`,
+      '$.exports[./c]: ./dist/%6Dud/mud.esm.js -> dist/mud/mud.esm.js',
+    ]);
   });
 
   it('collapses dot segments and ignores case in a target', () => {

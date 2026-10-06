@@ -28,7 +28,7 @@ defineCustomElements();
 <mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
-Icons, logos and country flags load on their own, only when shown: there is nothing to copy or configure. In a bundler, register the elements with `defineCustomElements()` from this package. `@egov-moldova/mud/mud.esm.js` is not an import: it is not a package export, and the build fails on it. That file is the core's script-tag build, referenced by URL; see the root README's [With a bundler](../../README.md#with-a-bundler) section.
+Icons, logos and country flags load on their own, only when shown: there is nothing to copy or configure. In a bundler, register the elements with `defineCustomElements()` from this package. `@egov-moldova/mud/mud.esm.js` is not an import: it is not a package export, so a bundler does not resolve it. That file is the core's script-tag build, referenced by URL; see the root README's [With a bundler](../../README.md#with-a-bundler) section.
 
 `styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../../README.md#fonts) section.
 
