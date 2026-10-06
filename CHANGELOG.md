@@ -245,7 +245,7 @@ names the old path but not the new one — the mapping is below.
 | --- | --- |
 | `@egov-moldova/mud/dist/mud/mud.css` | `@egov-moldova/mud/styles.css` |
 | `@egov-moldova/mud/dist/mud/tokens/<name>.css` | `@egov-moldova/mud/tokens/<name>.css` |
-| `@egov-moldova/mud/dist/mud/mud.esm.js` | `@egov-moldova/mud/mud.esm.js` |
+| `@egov-moldova/mud/dist/mud/mud.esm.js` | none: `defineCustomElements()` (below), or the file by URL in a `<script type="module">` tag |
 | `@egov-moldova/mud/dist/components` | `@egov-moldova/mud/components` |
 | `@egov-moldova/mud/dist/components/mud-<name>.js` | `@egov-moldova/mud/components/mud-<name>.js` |
 
@@ -256,9 +256,13 @@ also exposed `dist/mud/index.esm.js`, the `p-*.js` chunk files and everything
 under `dist/mud/assets/`. None of those is API:
 
 - The chunks and `index.esm.js` are loaded by the bundle itself through relative
-  imports, which never consult the `exports` map. If you named either, use
-  `@egov-moldova/mud/mud.esm.js` — the self-registering bundle entry — or
-  `defineCustomElements()` from `@egov-moldova/mud/loader`.
+  imports, which never consult the `exports` map. If you named either, call
+  `defineCustomElements()` from `@egov-moldova/mud/loader` (or from
+  `@egov-moldova/mud-web-components`), or use a framework adapter.
+- **`mud.esm.js` is not a module specifier either.** It is the script-tag build:
+  it loads each component chunk from its own URL, which a bundler never emits,
+  so a bundled import of it registers every element and renders none. Reference
+  it by URL, in a `<script type="module" src="…/dist/mud/mud.esm.js">` tag.
 - **Icons and other assets are not module imports.** `<mud-icon>` fetches its
   SVG at runtime through Stencil's `getAssetPath()`, which builds a URL relative
   to the loaded bundle and never goes through module resolution. To serve assets

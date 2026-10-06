@@ -59,7 +59,6 @@ const PKG = {
     './styles.css': './dist/mud/mud.css',
     './tokens/*.css': './dist/mud/tokens/*.css',
     './assets/*': './dist/mud/assets/*',
-    './mud.esm.js': './dist/mud/mud.esm.js',
     './components': {
       types: './dist/components/index.d.ts',
       import: './dist/components/index.js',
@@ -627,6 +626,27 @@ describe('PUBLIC_SPECIFIERS covers the exports map', () => {
       return !PUBLIC_SPECIFIERS.some(specifier => shape.test(specifier));
     });
     assert.deepEqual(missing, []);
+  });
+});
+
+describe('the script-tag build is not a module specifier', () => {
+  // `unpkg` names the lazy bundle's entry, which loads `./<id>.entry.js` against its own URL. A
+  // bundler never emits those chunks, so an exported path to it registers every element and renders
+  // none (#193). The packed-tarball fixture's test 7 proves the same contract in a real Vite build.
+  it('no exports target, literal or pattern, reaches the unpkg entry', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const entry = `./${pkg.unpkg}`;
+    const leaves = value => (typeof value === 'string' ? [value] : Object.values(value).flatMap(leaves));
+    const reaching = leaves(pkg.exports).filter(target => {
+      const shape = new RegExp(
+        `^${target
+          .split('*')
+          .map(part => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+          .join('.*')}$`,
+      );
+      return shape.test(entry);
+    });
+    assert.deepEqual(reaching, []);
   });
 });
 

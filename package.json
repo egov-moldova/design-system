@@ -23,7 +23,6 @@
     },
     "./styles.css": "./dist/mud/mud.css",
     "./tokens/*.css": "./dist/mud/tokens/*.css",
-    "./mud.esm.js": "./dist/mud/mud.esm.js",
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"

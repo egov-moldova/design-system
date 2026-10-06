@@ -38,6 +38,8 @@ After `yarn build`, the relevant artifacts live in `dist/mud/`:
 
 There is no SVG folder to ship and no asset path to set: icons, logos and flags are chunks in the same directory, fetched only when shown.
 
+`mud.esm.js` is referenced by URL, from a `<script type="module" src>` tag or an import map entry, never imported by package name: `@egov-moldova/mud/mud.esm.js` is not a package export, and a bundler or Node refuses it as "not exported". If your host runs a bundler after all, follow the README's [With a bundler](./README.md#with-a-bundler) section instead.
+
 ---
 
 ## 2. The three-line integration
@@ -401,6 +403,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `mud.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/mud/` as a whole. |
+| A build or Node fails on `@egov-moldova/mud/mud.esm.js` with "is not exported" (`ERR_PACKAGE_PATH_NOT_EXPORTED` in Node) | Code imports the script-tag build by package name. It is not a package export: its chunks load from its own URL, which a bundler never emits | Keep `mud.esm.js` in a `<script type="module" src>` tag. In code that a bundler or dev server resolves, call `defineCustomElements()` from `@egov-moldova/mud-web-components`, or use a framework adapter (see the README). |
 | Icons, logos or flags render as blank squares | Their chunk (`p-*.js`) failed to load; each drawing ships as a JavaScript module inside the build, with no asset path to configure | Open DevTools → Network and look for a 404 or a blocked `p-*.js`; deploy `dist/mud/` as a whole, and keep `script-src` open to the origin that serves it. |
 | Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `mud.css`. Otherwise component CSS resolves variables to their fallback. |
 | Text renders in a system font instead of Onest | `mud.css` was copied without `assets/fonts/`, or CSP `font-src` blocks it | Deploy `dist/mud/` as a whole; check DevTools → Network for `onest-variable.woff2` and the console for a CSP violation. |

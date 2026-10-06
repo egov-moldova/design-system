@@ -347,7 +347,7 @@ describe('the Playwright report verdict', () => {
     );
   });
 
-  it('requires the cdn and side-effect titles of web-components on top of the asset titles', () => {
+  it('requires the cdn and exports titles of web-components on top of the asset titles', () => {
     const all = [...ASSET_TITLES, ...CDN_TITLES];
     assert.throws(() => judgeReport(report(ASSET_TITLES), all), rejects(/required test "cdn: loader page/));
   });

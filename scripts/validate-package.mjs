@@ -181,7 +181,6 @@ export const PUBLIC_SPECIFIERS = [
   '@egov-moldova/mud/styles.css',
   '@egov-moldova/mud/tokens/core.tokens.css',
   '@egov-moldova/mud/tokens/core.dark.tokens.css',
-  '@egov-moldova/mud/mud.esm.js',
   '@egov-moldova/mud/components',
   '@egov-moldova/mud/components/mud-button.js',
 ];
