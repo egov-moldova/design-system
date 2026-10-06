@@ -240,6 +240,7 @@
     "build": {
       "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
       "dependencies": [
+        "tokens.build",
         "tokens.build.prod"
       ],
       "clean": false,
