@@ -18,6 +18,7 @@ import {
   checkNoPublishedSvg,
   checkPackerAgreement,
   checkPublicSpecifiers,
+  checkScriptTagNotExported,
   checkSourceMaps,
   checkFontFaceCoverage,
   checkStylesheetAssets,
@@ -629,24 +630,64 @@ describe('PUBLIC_SPECIFIERS covers the exports map', () => {
   });
 });
 
-describe('the script-tag build is not a module specifier', () => {
-  // `unpkg` names the lazy bundle's entry, which loads `./<id>.entry.js` against its own URL. A
-  // bundler never emits those chunks, so an exported path to it registers every element and renders
-  // none (#193). The packed-tarball fixture's test 7 proves the same contract in a real Vite build.
-  it('no exports target, literal or pattern, reaches the unpkg entry', () => {
+describe('checkScriptTagNotExported', () => {
+  // The packed scripts of the lazy bundle, in the shape the tarball carries them, beside the
+  // stylesheets that legitimately share the directory.
+  const packed = [
+    'dist/mud/mud.esm.js',
+    'dist/mud/index.esm.js',
+    'dist/mud/p-abc123.js',
+    'dist/mud/p-def456.entry.js',
+    'dist/mud/mud.css',
+    'dist/mud/tokens/core.tokens.css',
+    'dist/components/mud-button.js',
+  ];
+  const withExports = exports => ({ unpkg: 'dist/mud/mud.esm.js', exports });
+
+  it('passes the package.json this repository publishes', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
-    const entry = `./${pkg.unpkg}`;
-    const leaves = value => (typeof value === 'string' ? [value] : Object.values(value).flatMap(leaves));
-    const reaching = leaves(pkg.exports).filter(target => {
-      const shape = new RegExp(
-        `^${target
-          .split('*')
-          .map(part => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
-          .join('.*')}$`,
-      );
-      return shape.test(entry);
-    });
-    assert.deepEqual(reaching, []);
+    assert.deepEqual(checkScriptTagNotExported(pkg, packed), []);
+  });
+
+  it('names a literal key on the entry, the shape 1.2.0-dev.1 to dev.3 published', () => {
+    const failures = checkScriptTagNotExported(withExports({ './mud.esm.js': './dist/mud/mud.esm.js' }), packed);
+    assert.deepEqual(failures, ['./dist/mud/mud.esm.js -> dist/mud/mud.esm.js']);
+  });
+
+  it('names a pattern that reaches the bundle, the shape 1.1.9 published', () => {
+    const failures = checkScriptTagNotExported(withExports({ './dist/mud/*': './dist/mud/*' }), packed);
+    assert.deepEqual(failures, ['./dist/mud/* -> dist/mud/mud.esm.js (+3 more)']);
+  });
+
+  it('reads a target nested under a condition', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({ './bundle': { webpack: { import: './dist/mud/index.esm.js' } } }),
+      packed,
+    );
+    assert.deepEqual(failures, ['./dist/mud/index.esm.js -> dist/mud/index.esm.js']);
+  });
+
+  it('treats a legacy folder mapping as reaching everything under it', () => {
+    const failures = checkScriptTagNotExported(withExports({ './': './dist/mud/' }), packed);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /^\.\/dist\/mud\/ -> /);
+  });
+
+  it('skips a null exclusion and the stylesheets beside the bundle', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './styles.css': './dist/mud/mud.css',
+        './tokens/*.css': './dist/mud/tokens/*.css',
+        './dist/*': null,
+        './components/mud-*.js': './dist/components/mud-*.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, []);
+  });
+
+  it('refuses to grade a package whose unpkg field cannot locate the bundle', () => {
+    assert.throws(() => checkScriptTagNotExported({ exports: {} }, packed), /cannot locate the lazy bundle/);
   });
 });
 

@@ -138,7 +138,7 @@ yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 
 Icons, logos and flags need no step of their own: see [Icons, logos and flags](#icons-logos-and-flags).
 
-> **`mud.esm.js` is a URL, not an import.** It is the script-tag build of [Option A](#without-a-bundler): reference it from a `<script type="module" src="…/dist/mud/mud.esm.js">` tag, from a CDN or with the whole `dist/mud/` served. `@egov-moldova/mud/mud.esm.js` is not a package export, so `import '@egov-moldova/mud/mud.esm.js'` fails with a "not exported" error in a bundler, in a dev server that resolves imports from `node_modules` (such as `@web/dev-server`) and in Node. That is deliberate: the build loads each component chunk (`./<id>.entry.js`) from its own URL, a bundler never emits those files, and the import would register every element and render none. Wherever imports are resolved, use `defineCustomElements()` as above, or a framework adapter below.
+> **`mud.esm.js` is a URL, not an import.** It is the script-tag build of [Option A](#without-a-bundler): reference it from a `<script type="module" src="…/dist/mud/mud.esm.js">` tag, from a CDN or with the whole `dist/mud/` served. `@egov-moldova/mud/mud.esm.js` is not a package export, so `import '@egov-moldova/mud/mud.esm.js'` fails with a "not exported" error in a bundler, in a dev server that resolves imports from `node_modules` (such as `@web/dev-server`) and in Node. That is deliberate: the build loads each component chunk (`./<id>.entry.js`) from its own URL, where a bundler such as Vite emits nothing, so in a bundled app the import would register every element and render none. Wherever imports are resolved, use `defineCustomElements()` as above, or a framework adapter below.
 
 #### Fonts
 

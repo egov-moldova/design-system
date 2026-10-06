@@ -10,7 +10,7 @@ import { PROJECT_ROOT } from '../validate-package.mjs';
 const signalsBefore = ['SIGINT', 'SIGTERM'].map(signal => process.listenerCount(signal));
 const {
   ASSET_TITLES,
-  CDN_TITLES,
+  WEB_COMPONENTS_TITLES,
   RunnerError,
   checkSecondRuntime,
   judgeNegative,
@@ -311,7 +311,7 @@ describe('the Playwright report verdict', () => {
 
   it('passes a report in which every test ended expected and every required title ran', () => {
     assert.equal(judgeReport(report(ASSET_TITLES), ASSET_TITLES), ASSET_TITLES.length);
-    const all = [...ASSET_TITLES, ...CDN_TITLES];
+    const all = [...ASSET_TITLES, ...WEB_COMPONENTS_TITLES];
     assert.equal(judgeReport(report(all), all), all.length);
   });
 
@@ -348,7 +348,7 @@ describe('the Playwright report verdict', () => {
   });
 
   it('requires the cdn and exports titles of web-components on top of the asset titles', () => {
-    const all = [...ASSET_TITLES, ...CDN_TITLES];
+    const all = [...ASSET_TITLES, ...WEB_COMPONENTS_TITLES];
     assert.throws(() => judgeReport(report(ASSET_TITLES), all), rejects(/required test "cdn: loader page/));
   });
 

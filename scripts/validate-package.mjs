@@ -210,6 +210,47 @@ export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
     .map(key => `exports["${key}"] declares a require condition, but this subpath is ESM-only`);
 }
 
+/** Every target string in an `exports` value: condition objects flattened, pattern keys kept, `null` exclusions skipped. */
+function exportsTargets(node) {
+  if (typeof node === 'string') return [node];
+  if (node === null || typeof node !== 'object') return [];
+  return Object.values(node).flatMap(exportsTargets);
+}
+
+/**
+ * Turn one `exports` TARGET into the RegExp matching the packed files it can resolve to: `*`
+ * matches anything, `/` included, as in `exportsKeyPattern`, and a target ending in `/` is a
+ * legacy folder mapping, which reaches everything under it.
+ */
+export function exportsTargetPattern(target) {
+  const normalized = normalizePackagePath(target);
+  const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`).replaceAll(String.raw`\*`, '.*');
+  return new RegExp(`^${escaped}${normalized.endsWith('/') ? '.*' : ''}$`);
+}
+
+/**
+ * Every `exports` target that reaches a script of the lazy browser bundle (#193). That build
+ * resolves its chunks (`./<id>.entry.js`) against its own URL, where a bundler such as Vite emits
+ * nothing, so a package specifier reaching any of its scripts registers every element and renders
+ * none in a bundled app. A
+ * script tag, a CDN or an import map loads it by URL and never reads `exports`. The scope is the
+ * packed `.js` files of `lazyBundleDir`, not the one `unpkg` entry: `index.esm.js` and the chunks
+ * fail the same way, while `styles.css` and the token stylesheets beside them stay exportable.
+ * `lazyBundleDir` throws when `unpkg` is unusable, so a renamed field fails the gate instead of
+ * leaving nothing to compare against.
+ */
+export function checkScriptTagNotExported(pkg, packedFiles) {
+  const bundleDir = lazyBundleDir(pkg);
+  const scripts = packedFiles.filter(file => file.startsWith(bundleDir) && file.endsWith('.js'));
+  return exportsTargets(pkg.exports).flatMap(target => {
+    const shape = exportsTargetPattern(target);
+    const reached = scripts.filter(file => shape.test(file));
+    if (reached.length === 0) return [];
+    const more = reached.length > 1 ? ` (+${reached.length - 1} more)` : '';
+    return [`${target} -> ${reached[0]}${more}`];
+  });
+}
+
 /**
  * The specifiers a CommonJS consumer must be able to `require`. AUTHORED, and
  * that is the whole point — an earlier revision derived this from the map by
@@ -688,6 +729,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       checkPublicSpecifiers(REQUIRE_CAPABLE_SPECIFIERS, cwd, files, 'require'),
     ],
     ['ESM-only subpath declares a require condition', checkEsmOnlySubpaths(pkg)],
+    ['export reaches the script-tag build', checkScriptTagNotExported(pkg, files)],
     ['build-machine artifact in tarball', checkForbiddenPaths(files)],
     ['absolute build-machine path in tarball', checkAbsolutePaths(files)],
     ['source map in tarball (development build)', checkSourceMaps(files)],

@@ -96,8 +96,11 @@ export const ASSET_TITLES = [
   'assets: never-shown assets are not downloaded',
   'bundle: an unimported component is not bundled',
 ];
-/** Tests 5-8 of the web-components fixture's own spec: the delivery shapes only the lazy loader has. */
-export const CDN_TITLES = [
+/**
+ * Tests 5-8 of the web-components fixture's own spec: the delivery shapes only the lazy loader has,
+ * and the core's refusal to export its script-tag build.
+ */
+export const WEB_COMPONENTS_TITLES = [
   'cdn: loader page on a deep subpath renders',
   'cdn: import map and script-tag pages render',
   'exports: a bundled mud.esm.js import fails to resolve',
@@ -262,7 +265,7 @@ const FRAMEWORKS = {
     adapterPackage: '@egov-moldova/mud-web-components',
     workspace: 'packages/web-components',
     built: 'dist/index.js',
-    required: [...ASSET_TITLES, ...CDN_TITLES],
+    required: [...ASSET_TITLES, ...WEB_COMPONENTS_TITLES],
 
     /** Typecheck with `tsc`, then build the adapter page (`index.html`) with Vite. */
     async build({ app, bin, run }) {

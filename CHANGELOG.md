@@ -251,6 +251,11 @@ names the old path but not the new one — the mapping is below.
 
 `.` and `./loader` are unchanged.
 
+`mud.esm.js` gets no new package name. It is the script-tag build: it loads each
+component chunk from its own URL, where a bundler such as Vite emits nothing, so a
+bundled import of it registers every element and renders none. Reference it by
+URL, in a `<script type="module" src="…/dist/mud/mud.esm.js">` tag.
+
 **Removed with no replacement**, deliberately. The old `./dist/mud/*` wildcard
 also exposed `dist/mud/index.esm.js`, the `p-*.js` chunk files and everything
 under `dist/mud/assets/`. None of those is API:
@@ -259,15 +264,11 @@ under `dist/mud/assets/`. None of those is API:
   imports, which never consult the `exports` map. If you named either, call
   `defineCustomElements()` from `@egov-moldova/mud/loader` (or from
   `@egov-moldova/mud-web-components`), or use a framework adapter.
-- **`mud.esm.js` is not a module specifier either.** It is the script-tag build:
-  it loads each component chunk from its own URL, which a bundler never emits,
-  so a bundled import of it registers every element and renders none. Reference
-  it by URL, in a `<script type="module" src="…/dist/mud/mud.esm.js">` tag.
-- **Icons and other assets are not module imports.** `<mud-icon>` fetches its
-  SVG at runtime through Stencil's `getAssetPath()`, which builds a URL relative
-  to the loaded bundle and never goes through module resolution. To serve assets
-  from your own origin instead, copy `dist/mud/assets/**` with a filesystem glob
-  and point `setAssetPath()` at the destination — a build step, not an `import`.
+- **Assets are not module imports.** Icons, logos and flags are JavaScript
+  chunks that the components import themselves when they are shown, with no
+  asset path to set (see "icons, logos and flags load automatically"). The font
+  under `dist/mud/assets/fonts/` is requested by `styles.css` through a relative
+  URL. Nothing under `dist/mud/assets/` needs an `import` or a copy step.
 
 The `./dist/components/*` wildcard is likewise not re-published in full: only
 `./components/mud-*.js` is, which is every component module and none of the 35

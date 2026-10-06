@@ -1,5 +1,6 @@
-// Tests 5-8, which only the lazy loader's delivery shapes need. Tests 1-4 run on `/` from
-// `assets.spec.ts`, which the runner copies in next to this file with `asset-checks.ts`.
+// Tests 5-8: the delivery shapes only the lazy loader has, and the core's refusal to export its
+// script-tag build. Tests 1-4 run on `/` from `assets.spec.ts`, which the runner copies in next to
+// this file with `asset-checks.ts`.
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,7 +23,7 @@ test('cdn: import map and script-tag pages render', async ({ page }) => {
 });
 
 // `mud.esm.js` is the script-tag build: it loads its component chunks by a URL it computes at runtime
-// (`import(`./${id}.entry.js`)` against its own location). A bundler cannot see those chunks, so a
+// (`import(`./${id}.entry.js`)` against its own location). Vite does not emit those chunks, so a
 // bundled import would register the elements and render none. The core therefore does not export
 // it (#193): the same import must fail the build, naming the specifier, instead of shipping a page
 // that 404s. The script-tag shape itself stays covered by `esm-script.html` above.
@@ -39,7 +40,10 @@ test('exports: a bundled mud.esm.js import fails to resolve', async () => {
     (failure: unknown) => failure,
   );
   expect(error, 'the bundled import built').toBeInstanceOf(Error);
-  expect((error as Error).message).toMatch(/"\.\/mud\.esm\.js" is not exported/);
+  // The specifier, in either resolver's wording: Rolldown's native resolver (`"./mud.esm.js" is not
+  // exported`) or Vite's JS one (`Missing "./mud.esm.js" specifier`). A missing file or package
+  // throws neither, so the match still tells an exports refusal from any other build failure.
+  expect((error as Error).message).toMatch(/"\.\/mud\.esm\.js" is not exported|Missing "\.\/mud\.esm\.js" specifier/);
 });
 
 test('assets: one shown icon downloads exactly one asset chunk', async ({ page, network }) => {
