@@ -34,7 +34,7 @@ test('exports: a bundled mud.esm.js import fails to resolve', async () => {
     root: app,
     configFile: false,
     logLevel: 'silent',
-    build: { write: false, rollupOptions: { input: join(app, 'bundled-import/entry.ts') } },
+    build: { write: false, rolldownOptions: { input: join(app, 'bundled-import/entry.ts') } },
   }).then(
     () => null,
     (failure: unknown) => failure,

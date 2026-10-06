@@ -208,26 +208,30 @@ export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
     .map(key => `exports["${key}"] declares a require condition, but this subpath is ESM-only`);
 }
 
+const PACKAGE_ROOT = new URL('file:///package/');
+const MATCHES_NOTHING = /(?!)/;
+
 /**
- * The RegExp matching the packed files one `exports` TARGET can resolve to. A target ending in
- * `/` is a legacy folder mapping and reaches everything under it; the raw target is tested, since
- * the root mapping `./` normalizes to the empty string. The target is read the way Node resolves
- * it (`new URL`, then a file path): backslashes are separators, percent escapes are decoded, dot
- * segments collapse, and case is ignored for case-insensitive file systems. So
- * `./dist\mud\mud.esm.js`, `./dist/%6Dud/*`, `./dist/x/../mud/*` and `./dist/MUD/*` cannot slip past;
- * Node 24 resolves and loads the first two.
+ * The RegExp matching the packed files one `exports` TARGET can resolve to. The target is
+ * resolved the way Node resolves it, with `new URL` against the package root, so backslashes,
+ * dot segments, a `?query` and a `#hash` are the platform's to handle, not a rewrite's. Then, as
+ * Node's own resolution does, an encoded separator (`%2F`, `%5C`) or a malformed escape reaches
+ * nothing, and the rest is percent-decoded. A target ending in `/` (the root mapping `./`
+ * included) is a legacy folder mapping and reaches everything under it. Case is ignored for
+ * case-insensitive file systems. Node 24 loads the bundle through `./dist\\mud\\mud.esm.js`,
+ * `./dist/%6Dud/mud.esm.js`, `./dist/mud/mud.esm.js?x` and `./dist/mud/mud.esm.js#y`; all four match.
  */
 function exportsTargetPattern(target) {
-  const slashed = target.replaceAll('\\', '/');
-  let decoded = slashed;
+  const { pathname } = new URL(target, PACKAGE_ROOT);
+  if (!pathname.startsWith(PACKAGE_ROOT.pathname) || /%2f|%5c/i.test(pathname)) return MATCHES_NOTHING;
+  let relative;
   try {
-    decoded = decodeURIComponent(slashed);
+    relative = decodeURIComponent(pathname.slice(PACKAGE_ROOT.pathname.length));
   } catch {
-    // A malformed escape stays literal and matches nothing: Node fails such a target with `URI malformed`.
+    return MATCHES_NOTHING;
   }
-  const folder = decoded.endsWith('/') ? '.*' : '';
-  const collapsed = normalizePackagePath(path.posix.normalize(decoded));
-  return new RegExp(`^${subpathPatternSource(collapsed === '.' ? '' : collapsed)}${folder}$`, 'i');
+  const folder = relative === '' || relative.endsWith('/') ? '.*' : '';
+  return new RegExp(`^${subpathPatternSource(relative)}${folder}$`, 'i');
 }
 
 /**

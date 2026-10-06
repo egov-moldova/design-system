@@ -696,6 +696,22 @@ describe('checkScriptTagNotExported', () => {
     ]);
   });
 
+  it('reads a query or hash suffix as Node does, and refuses encoded separators as Node does', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './q': './dist/mud/mud.esm.js?x',
+        './h': './dist/mud/mud.esm.js#y',
+        './s': './dist/mud%2Fmud.esm.js',
+        './u': '../outside/mud.esm.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, [
+      '$.exports[./q]: ./dist/mud/mud.esm.js?x -> dist/mud/mud.esm.js',
+      '$.exports[./h]: ./dist/mud/mud.esm.js#y -> dist/mud/mud.esm.js',
+    ]);
+  });
+
   it('collapses dot segments and ignores case in a target', () => {
     const failures = checkScriptTagNotExported(
       withExports({ './a/*': './dist/x/../mud/*', './b/*': './dist/MUD/*' }),

@@ -350,6 +350,13 @@ describe('the Playwright report verdict', () => {
   it('requires the cdn and exports titles of web-components on top of the asset titles', () => {
     const all = [...ASSET_TITLES, ...WEB_COMPONENTS_TITLES];
     assert.throws(() => judgeReport(report(ASSET_TITLES), all), rejects(/required test "cdn: loader page/));
+    const exportsTitle = 'exports: a bundled mud.esm.js import fails to resolve';
+    assert.ok(WEB_COMPONENTS_TITLES.includes(exportsTitle), 'the export refusal test is required');
+    const withoutExports = all.filter(title => title !== exportsTitle);
+    assert.throws(
+      () => judgeReport(report(withoutExports), all),
+      rejects(/required test "exports: a bundled mud\.esm\.js import/),
+    );
   });
 
   it('fails an empty report and an error outside any test', () => {
