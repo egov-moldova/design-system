@@ -38,10 +38,6 @@ export default {
   stories: ['./stories/**/*.mdx', '../src/components/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
   // Map tokens/generated/ → /tokens/generated/ in production build output.
   // In dev mode, the custom middleware in viteFinal serves these files instead.
-  // Map component asset dirs to /assets/assets/ — in production Vite bundles the Stencil ESM into
-  // /assets/[hash].js, so getAssetPath('./assets/<file>') resolves to /assets/assets/*. In dev,
-  // Vite serves dist/mud/ from the filesystem directly (fs.allow: ['..']), so staticDirs is not
-  // needed there and the correct URL is /dist/mud/assets/* regardless of this mapping.
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
     { from: '../assets/font', to: 'assets/font' },
@@ -49,8 +45,6 @@ export default {
     // /assets/fonts/onest-variable.woff2. Without this it 404s in dev, where
     // stencil.config.ts copies no fonts in watch mode.
     { from: '../src/assets/fonts', to: 'assets/fonts' },
-    { from: '../src/components/mud-icon/assets', to: 'assets/assets' },
-    { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
   // The manager bundle receives every key of this preset as a build-time

@@ -31,6 +31,10 @@ src/hidden/*/readme.md                                        merge=ours linguis
 # Style Dictionary token build outputs (tokens.build wireit target)
 tokens/generated/**                                           merge=ours linguist-generated=true
 
+# One ES module per icon, logo and flag (yarn assets.generate). No merge=ours: a conflict here is
+# resolved by re-running the generator, and `build-asset-modules.mjs --check` fails on drift.
+src/generated/**                                              linguist-generated=true
+
 # =============================================================================
 # Cross-platform line endings — Windows + Unix contributors coexist on this
 # repo. LF for shell scripts, CRLF for PowerShell. Everything else:

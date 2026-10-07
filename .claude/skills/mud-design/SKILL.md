@@ -18,10 +18,12 @@ import '@egov-moldova/mud/tokens/core.tokens.css';
 import '@egov-moldova/mud/styles.css'; // also loads Onest (weights 100–900) — never add your own @font-face
 
 defineCustomElements();
-// Optional: defineCustomElements({ assetPath: '/your-prod-asset-path/' })
-// In Vite dev hosts the default `/node_modules/@egov-moldova/mud/dist/components/`
-// works automatically. See AGE PR #32 for the asset-path mechanism.
+// Icons, logos and flags load on their own, only when shown: no asset path, no copied
+// folder, no plugin. Never import `@egov-moldova/mud/mud.esm.js` from a bundled app
+// (its chunks 404); that file is for a <script type="module"> tag.
 ```
+
+Vue and Angular wrapper packages exist but are not yet published. Once published, the setup is the same two style imports and nothing else: no plugin in Vue, no provider in Angular, no asset path in either. In Angular the tokens and `styles.css` go under `build.options.styles` in `angular.json`. In Angular, a component that binds a `mud-*` form control also imports `MUD_FORM_ACCESSORS` next to `FormsModule` or `ReactiveFormsModule`, or `[(ngModel)]` and `formControl` throw `No value accessor`. Until then use the vanilla setup above (`isCustomElement` in Vue, `CUSTOM_ELEMENTS_SCHEMA` in Angular).
 
 Tokens are CSS custom properties. Use them in your own CSS:
 

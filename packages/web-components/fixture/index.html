@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-web-components consumer fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>mud-web-components consumer fixture</h1>
+      <!-- The page contract of scripts/adapters/fixture-e2e: the same four test ids in every fixture app. -->
+      <mud-icon data-testid="asset-icon" name="calendar" size="24"></mud-icon>
+      <mud-logo data-testid="asset-logo" name="mpass-logo-with-name"></mud-logo>
+      <mud-phone-input data-testid="asset-phone" aria-label="Phone"></mud-phone-input>
+      <mud-select data-testid="asset-select" aria-label="Fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </mud-select>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

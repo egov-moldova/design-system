@@ -62,8 +62,8 @@ Reference: <https://stenciljs.com/docs/api>. Tests import from `@stencil/vitest`
 | #    | Rule                                                                                                                                                   | enforced-by                             |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
 | API1 | Component code imports from `@stencil/core`, never from `@stencil/core/internal/…` (only `stencil.config.ts` does, for the `Config` type that declares `buildDocs`) | `manual`                                |
-| API3 | Asset URLs come from `getAssetPath()`, never a hard-coded `/assets/…` path                                                                             | `manual`                                |
-| API4 | `setAssetPath()` belongs to consumer apps and tests, not components                                                                                    | `manual`                                |
+| API3 | No asset URL: a drawing is imported through `src/utils/svg-assets.ts`, never resolved with `getAssetPath()` or a hard-coded `/assets/…` path; ESLint forbids `getAssetPath` in `src/` | `manual`                                |
+| API4 | `setAssetPath()` is not used anywhere: there is no asset path to set; ESLint forbids it in `src/`                                                      | `manual`                                |
 | API5 | Batched DOM reads and writes go through `readTask()` / `writeTask()`                                                                                   | `manual`                                |
 | API6 | Consumers call `componentOnReady()` on the element; components never override it                                                                       | `manual`                                |
 
@@ -109,7 +109,7 @@ with the `h` pragma (`tsconfig.json` `jsxFactory`), so it is not used.
 | `Event`               | decorator                             | custom events                                                       |
 | `forceUpdate`         | function                                  | forbidden in components (`ANTIPATTERN-013-FORCEUPDATE`)         |
 | `Fragment`            | functional component                  | unused                                                              |
-| `getAssetPath`        | function                              | `mud-icon` and `mud-logo` providers                                 |
+| `getAssetPath`        | function                              | unused — forbidden in `src/` (assets load through `src/utils/svg-assets.ts`) |
 | `getElement`          | function                              | unused — `@Element()` is the project form                           |
 | `getMode`             | function (style modes)                | unused                                                              |
 | `getRenderingRef`     | function                              | unused                                                              |
@@ -124,7 +124,7 @@ with the `h` pragma (`tsconfig.json` `jsxFactory`), so it is not used.
 | `readTask`            | function (batched DOM read)           | unused                                                              |
 | `render`              | function (render a VNode into a container) | unused                                                         |
 | `resolveVar`          | compile-time function (constant names in `@Listen` / `@Event`) | unused                                     |
-| `setAssetPath`        | function                              | spec tests                                                          |
+| `setAssetPath`        | function                              | unused — forbidden in `src/`                                        |
 | `setErrorHandler`     | function (global render/lifecycle error handler) | unused                                                   |
 | `setMode`             | function (style modes)                | unused                                                              |
 | `setNonce`            | function (CSP nonce for injected tags) | unused                                                             |

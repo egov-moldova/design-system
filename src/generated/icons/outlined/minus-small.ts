@@ -1,0 +1,2 @@
+const svg: string = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" data-mud-asset="icon:outlined/minus-small"><path fill="currentColor" fill-rule="evenodd" d="M6.1 12a.9.9 0 0 1 .9-.9h10a.9.9 0 1 1 0 1.8H7a.9.9 0 0 1-.9-.9z" clip-rule="evenodd"/></svg>';
+export default svg;
