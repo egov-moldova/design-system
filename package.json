@@ -48,7 +48,8 @@
     "joi": "18.2.9",
     "@stencil/postcss/postcss": "^8.5.28",
     "tar": "7.5.22",
-    "undici": "6.28.1"
+    "undici": "6.28.1",
+    "source-map-js": "1.2.2"
   },
   "sideEffects": [
     "*.css",
