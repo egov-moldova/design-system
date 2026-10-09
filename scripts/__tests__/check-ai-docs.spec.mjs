@@ -105,6 +105,67 @@ describe('package-name rule', () => {
   });
 });
 
+describe('asset-setup rule', () => {
+  const families = {
+    'asset path option': 'Pass `{ assetPath: "/mud" }` at startup.',
+    'setAssetPath': 'Call setAssetPath(document.baseURI).',
+    'getAssetPath': 'Resolve it with getAssetPath().',
+    'resourcesUrl': 'Set resourcesUrl to the CDN.',
+    'setupMud': 'Call setupMud() once.',
+    'provideMud': 'Add provideMud() to the providers.',
+    'Vue plugin': 'app.use(Mud, { assetPath })',
+    'copied folder': 'Copy dist/components/assets into public/mud/assets.',
+    'asset subfolder': 'Serve <img src="/assets/flags/md.svg">, assets/outlined and assets/filled.',
+    'copy tooling': 'Add copy-component-assets or vite-plugin-static-copy.',
+  };
+
+  for (const [family, text] of Object.entries(families)) {
+    it(`flags ${family} in a consumer doc`, () => {
+      const root = makeFixture({ 'package.json': pkgJson(), 'README.md': `${text}\n` });
+      const hits = checkAiDocs({ root });
+      assert.deepEqual(
+        hits.map(h => [h.file, h.line, h.ruleId]),
+        [['README.md', 1, 'asset-setup']],
+      );
+    });
+  }
+
+  it('covers INTEGRATION.md, packages/*/README.md and the mud-design skill', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'INTEGRATION.md': 'Call setupMud().\n',
+      'packages/vue/README.md': 'Call setupMud().\n',
+      '.claude/skills/mud-design/SKILL.md': 'Call setupMud().\n',
+    });
+    const hits = checkAiDocs({ root });
+    assert.deepEqual(hits.map(h => [h.file, h.ruleId]).sort(), [
+      ['.claude/skills/mud-design/SKILL.md', 'asset-setup'],
+      ['INTEGRATION.md', 'asset-setup'],
+      ['packages/vue/README.md', 'asset-setup'],
+    ]);
+  });
+
+  it('passes the resourcesUrl API signature in the web-components README only', () => {
+    const line = '`defineCustomElements(opts?: { resourcesUrl?: string })` registers the elements.\n';
+    const root = makeFixture({ 'package.json': pkgJson(), 'packages/web-components/README.md': line });
+    assert.deepEqual(checkAiDocs({ root }), []);
+    const other = makeFixture({ 'package.json': pkgJson(), 'packages/vue/README.md': line });
+    assert.deepEqual(
+      checkAiDocs({ root: other }).map(h => h.ruleId),
+      ['asset-setup'],
+    );
+  });
+
+  it('passes a contributor doc that names getAssetPath', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'CONTRIBUTING.md': 'Never call getAssetPath or setAssetPath in a component.\n',
+      '.claude/skills/stencil-compliance/SKILL.md': 'getAssetPath and assetsDirs are forbidden.\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});
+
 describe('settings-path rule', () => {
   it('flags a machine-specific /Users/ path baked into .claude/settings.json', () => {
     const root = makeFixture({

@@ -22,21 +22,13 @@ const ROMANIAN_ITEMS: BreadcrumbItem[] = [
 
 describe('mud-breadcrumb', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      return new Response('<svg></svg>', {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      });
-    });
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    fetchSpy.mockRestore();
   });
 
   it('renders nav landmark with the default locale aria-label', async () => {
@@ -566,21 +558,13 @@ describe('mud-breadcrumb', () => {
 
 describe('mud-breadcrumb-item', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      return new Response('<svg></svg>', {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      });
-    });
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    fetchSpy.mockRestore();
   });
 
   it('renders as an anchor when href is set', async () => {

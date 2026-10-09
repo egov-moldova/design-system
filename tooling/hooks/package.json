@@ -1,0 +1,7 @@
+{
+  "name": "@egov-moldova/repo-hooks",
+  "private": true,
+  "scripts": {
+    "postinstall": "node ../../scripts/git/install-hooks.mjs"
+  }
+}

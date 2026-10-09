@@ -33,7 +33,7 @@ Reference: <https://stenciljs.com/docs/component>.
 | C5  | `styleUrl` (one CSS file) is the default for `mud-*`                                                                                | `manual`                             |
 | C6  | `styleUrls` only when several stylesheets are needed; the project themes with CSS custom properties, not Stencil modes              | `manual`                             |
 | C7  | `styles` (inline string) only for tests or scaffolding, and pure CSS                                                                | `manual`                             |
-| C8  | `assetsDirs: ['assets']` only when the component bundles static assets, read through `getAssetPath()`                               | `manual`                             |
+| C8  | No `assetsDirs`: assets are ES modules loaded through `src/utils/svg-assets.ts`, and ESLint forbids the option in `src/`            | `manual`                             |
 | C9  | `shadow: { delegatesFocus: true }` on components that wrap a focusable control, so focusing the host focuses it                     | `manual`                             |
 | C10 | `shadow: { slotAssignment: 'manual' }` only for components that assign slots imperatively                                           | `manual`                             |
 

@@ -1,19 +1,16 @@
-import { setAssetPath } from '@stencil/core';
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-phone-input';
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import type { DescribeLocalesRender } from '../../../utils/locale.test-helpers';
+import { FLAG_MODULES } from '../../../generated/flags';
+import { SVG_RETRY_MS, clearSvgCaches } from '../../../utils/svg-assets';
+import { holdRetryTimers, waitForAssetLoad } from '../../../utils/svg-assets.test-helpers';
 import { COUNTRIES } from '../mud-phone-input.data';
-import { flagAssetPath } from '../mud-phone-input.flags';
 import { PHONE_INPUT_MESSAGES } from '../mud-phone-input.messages';
 import type { PhoneInputMessages } from '../mud-phone-input.messages';
 import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../mud-phone-input.types';
-
-// `getAssetPath` throws outside a lazy-bundle host, so a flag would have no `src`: give the
-// component the base a real host registers.
-setAssetPath('https://cdn.test/build/');
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
@@ -44,6 +41,13 @@ const queryLive = (root: Element | null | undefined): HTMLElement | null =>
 
 const queryFlag = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.country-trigger .flag') ?? null) as HTMLElement | null;
+
+/** The drawing a flag box holds, keyed by the marker the generated module carries. */
+const drawing = (box: Element | null | undefined, key: string): Element | null =>
+  box?.querySelector(`svg[data-mud-asset="flag:${key}"]`) ?? null;
+
+const flagsOf = (root: Element | null | undefined): Element[] =>
+  Array.from(root?.shadowRoot?.querySelectorAll('.option-flag svg') ?? []);
 
 const querySpinner = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.control-spinner') ?? null) as HTMLElement | null;
@@ -202,18 +206,102 @@ describe('mud-phone-input', () => {
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('renders the flag file of the current country as a decorative image (local mode)', async () => {
+    it('renders the flag of the current country inline, as a decorative drawing (local mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="local"></mud-phone-input>);
-      const img = queryFlag(root)?.querySelector('img');
-      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
-      expect(img?.getAttribute('alt')).toBe('');
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      expect(queryFlag(root)?.getAttribute('aria-hidden')).toBe('true');
+      expect(queryFlag(root)?.querySelector('img')).toBeNull();
     });
 
-    it('renders the flag file of the current country as a decorative image (international mode)', async () => {
+    it('renders the flag of the current country inline, as a decorative drawing (international mode)', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international"></mud-phone-input>);
-      const img = queryFlag(root)?.querySelector('img');
-      expect(img?.getAttribute('src')).toBe('https://cdn.test/build/assets/flags/md.svg');
-      expect(img?.getAttribute('alt')).toBe('');
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      expect(queryFlag(root)?.getAttribute('aria-hidden')).toBe('true');
+      expect(queryFlag(root)?.querySelector('img')).toBeNull();
+    });
+
+    it('shows the flag of the newly chosen country on the trigger, and no longer the old one', async () => {
+      const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
+      optionFor(root, 'RO')?.click();
+      await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'ro')).toBeTruthy());
+      expect(drawing(queryFlag(root), 'md')).toBeNull();
+      expect(queryFlag(root)?.querySelectorAll('svg')).toHaveLength(1);
+    });
+
+    // `type="local"`: a field whose list never opens must still get its flag back.
+    it('retries a failed flag on its own after the loader backoff, not on each render, warning once', async () => {
+      clearSvgCaches();
+      const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
+      const realPw = flags.pw;
+      const pw = vi.spyOn(flags, 'pw').mockRejectedValue(new Error('offline'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const timers = holdRetryTimers();
+      // The backoff is measured on `performance.now()`; held timers fire early, so the clock is moved by hand.
+      const clock = { at: performance.now() };
+      const now = vi.spyOn(performance, 'now').mockImplementation(() => clock.at);
+      const input = (root: Element | null | undefined) => root?.shadowRoot?.querySelector('input');
+      try {
+        const { root, waitForChanges } = await render(
+          <mud-phone-input label="x" type="local" default-country="PW"></mud-phone-input>,
+        );
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+        expect(warn).toHaveBeenCalledWith(
+          '[mud-phone-input] Failed to load flag: key="pw" (the import failed: offline)',
+        );
+        expect(timers.held[0].ms).toBeGreaterThan(SVG_RETRY_MS - 1000);
+        // Renders inside the backoff do not import again.
+        for (const text of ['one', 'two']) {
+          root!.setAttribute('placeholder', text);
+          await waitForChanges();
+          expect(input(root)?.getAttribute('placeholder')).toBe(text);
+        }
+        expect(pw).toHaveBeenCalledTimes(1);
+
+        // The timer alone brings the retry about: nobody types, focuses or opens anything.
+        clock.at += SVG_RETRY_MS;
+        timers.held[0].fire();
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(2));
+        expect(pw).toHaveBeenCalledTimes(2);
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(timers.held[1].ms).toBeGreaterThan(2 * SVG_RETRY_MS - 1000);
+
+        pw.mockImplementation(realPw!);
+        clock.at += 2 * SVG_RETRY_MS;
+        timers.held[1].fire();
+        await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
+        expect(pw).toHaveBeenCalledTimes(3);
+      } finally {
+        now.mockRestore();
+        timers.restore();
+        pw.mockRestore();
+        warn.mockRestore();
+        clearSvgCaches();
+      }
+    });
+
+    it('asks again at once for a failed flag when the list opens', async () => {
+      clearSvgCaches();
+      const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
+      const realPw = flags.pw;
+      const pw = vi.spyOn(flags, 'pw').mockRejectedValueOnce(new Error('offline'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const timers = holdRetryTimers();
+      try {
+        const { root } = await render(
+          <mud-phone-input label="x" type="international" default-country="PW"></mud-phone-input>,
+        );
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+        pw.mockImplementation(realPw!);
+        queryTriggerButton(root)?.click();
+        await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'pw')).toBeTruthy());
+        expect(pw).toHaveBeenCalledTimes(2);
+      } finally {
+        timers.restore();
+        pw.mockRestore();
+        warn.mockRestore();
+        clearSvgCaches();
+      }
     });
 
     it.each([
@@ -228,9 +316,7 @@ describe('mud-phone-input', () => {
       );
       const trigger = queryTrigger(root);
       expect(trigger?.textContent).toContain(dial);
-      expect(trigger?.querySelector('.flag img')?.getAttribute('src')).toBe(
-        `https://cdn.test/build/assets/flags/${iso.toLowerCase()}.svg`,
-      );
+      await waitForAssetLoad(() => expect(drawing(trigger?.querySelector('.flag'), iso.toLowerCase())).toBeTruthy());
     });
 
     it('draws no chevron on a read-only international chip', async () => {
@@ -417,16 +503,16 @@ describe('mud-phone-input', () => {
         vi.stubGlobal('IntersectionObserver', FakeObserver);
         return created;
       };
-      const flagOf = (row: Element) => row.querySelector('.option-flag img');
+      const flagOf = (row: Element) => row.querySelector('.option-flag svg');
 
       it('asks for the flag of a row only once the row comes near the visible part of the list', async () => {
         const created = stubObserver();
         try {
           const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
           const rows = queryOptions(root);
-          expect(rows.some(row => flagOf(row)?.hasAttribute('src'))).toBe(false);
+          expect(rows.some(row => flagOf(row))).toBe(false);
           // The trigger shows the country at once: it is always in view.
-          expect(queryFlag(root)?.querySelector('img')?.getAttribute('src')).toContain('/flags/md.svg');
+          await waitForAssetLoad(() => expect(drawing(queryFlag(root), 'md')).toBeTruthy());
 
           const observer = created[created.length - 1];
           expect(observer.options?.root).toBe(root?.shadowRoot?.querySelector('.listbox'));
@@ -437,12 +523,13 @@ describe('mud-phone-input', () => {
             { isIntersecting: true, target: rows[1] },
             { isIntersecting: false, target: rows[2] },
           ]);
-          await flush();
-          expect(flagOf(rows[0])?.getAttribute('src')).toContain('/flags/md.svg');
-          expect(flagOf(rows[1])?.getAttribute('src')).toContain(
-            flagAssetPath(rows[1].getAttribute('data-iso') ?? '').slice(2),
-          );
-          expect(flagOf(rows[2])?.hasAttribute('src')).toBe(false);
+          await waitForAssetLoad(() => {
+            expect(drawing(rows[0].querySelector('.option-flag'), 'md')).toBeTruthy();
+            expect(flagOf(rows[1])?.getAttribute('data-mud-asset')).toBe(
+              `flag:${(rows[1].getAttribute('data-iso') ?? '').toLowerCase()}`,
+            );
+          });
+          expect(flagOf(rows[2])).toBeNull();
 
           // A row that was asked for is not watched again.
           const latest = created[created.length - 1];
@@ -477,25 +564,51 @@ describe('mud-phone-input', () => {
       expect(queryTrigger(root)?.textContent).toContain('+998');
     });
 
-    it('loads the flag of a listed country lazily, but not the one on the trigger', async () => {
-      const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
-      const options = queryOptions(root);
-      for (const opt of options) {
-        expect(opt.querySelector('.option-flag img')?.getAttribute('loading')).toBe('lazy');
+    it("each option carries its own country's flag inline, as a decorative drawing", async () => {
+      const { root } = await render(
+        <mud-phone-input label="x" type="international" open countries={['RO', 'MD', 'UA']}></mud-phone-input>,
+      );
+      await waitForAssetLoad(() => {
+        for (const opt of queryOptions(root)) {
+          const iso = (opt.getAttribute('data-iso') ?? '').toLowerCase();
+          expect(drawing(opt.querySelector('.option-flag'), iso), iso).toBeTruthy();
+        }
+      });
+      for (const opt of queryOptions(root)) {
+        expect(opt.querySelector('.option-flag')?.getAttribute('aria-hidden')).toBe('true');
+        expect(opt.querySelector('.option-flag img')).toBeNull();
       }
-      expect(queryFlag(root)?.querySelector('img')?.hasAttribute('loading')).toBe(false);
     });
 
-    it("each option carries its country's flag file as a decorative image", async () => {
+    it('shows each row the flag of its own country after a search reorders the list', async () => {
       const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
-      const options = queryOptions(root);
-      for (const opt of options) {
-        const img = opt.querySelector('.option-flag img');
-        expect(img?.getAttribute('src')).toBe(
-          `https://cdn.test/build/${flagAssetPath(opt.getAttribute('data-iso') ?? '').slice(2)}`,
-        );
-        expect(img?.getAttribute('alt')).toBe('');
-      }
+      await vi.waitFor(() => expect(flagsOf(root).length).toBeGreaterThan(0), { timeout: 10000 });
+      const before = queryOptions(root).map(option => option.getAttribute('data-iso'));
+      const search = querySearchInput(root)!;
+      search.value = 'ro';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      const rows = queryOptions(root);
+      expect(rows.map(option => option.getAttribute('data-iso'))).not.toEqual(before.slice(0, rows.length));
+      await vi.waitFor(
+        () => {
+          for (const opt of queryOptions(root)) {
+            const iso = (opt.getAttribute('data-iso') ?? '').toLowerCase();
+            const box = opt.querySelector('.option-flag');
+            expect(drawing(box, iso), iso).toBeTruthy();
+            expect(box?.querySelectorAll('svg')).toHaveLength(1);
+          }
+        },
+        { timeout: 10000 },
+      );
+    });
+
+    it('draws both boxes when two of them show the same country', async () => {
+      const { root } = await render(<mud-phone-input label="x" type="international" open></mud-phone-input>);
+      await waitForAssetLoad(() => {
+        expect(drawing(queryFlag(root), 'md')).toBeTruthy();
+        expect(drawing(optionFor(root, 'MD')?.querySelector('.option-flag'), 'md')).toBeTruthy();
+      });
     });
 
     it('honors a custom `countries` whitelist', async () => {

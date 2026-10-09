@@ -120,6 +120,10 @@ yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-
 # Build (production / final verification)
 yarn build                     # Full production build with tokens, custom-elements, and docs
 yarn build.web                 # Build @egov-moldova/mud-web-components vanilla adapter
+yarn build.react               # Typecheck @egov-moldova/mud-react against React 18 and 19 (fails on a type error)
+yarn build.vue                 # Build @egov-moldova/mud-vue (generated proxies come from `yarn build`)
+yarn build.angular             # Build @egov-moldova/mud-angular with ng-packagr (partial mode)
+node scripts/adapters/consumer-fixture.mjs <react|vue|angular|web-components> [--framework-version <major>]  # Pack core + adapter, install into the fixture app, drive it in Chromium (after `yarn build` and the adapter build)
 yarn demo.web                  # Serve the @egov-moldova/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn validate.package          # Publish gate: every declared entrypoint present, no dev build, no leaked paths, packers agree
@@ -141,7 +145,7 @@ yarn format                    # Auto-fix code style
 # Utilities
 npx stencil generate           # Stencil component generator scaffolding (not wired as a yarn script)
 yarn tokens.audit              # Debug missing token references
-yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json and icon-names.ts
+yarn svg:icons                 # Normalize src/components/mud-icon/assets/** + rebuild icons.manifest.json, icon-names.ts and src/generated/
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.

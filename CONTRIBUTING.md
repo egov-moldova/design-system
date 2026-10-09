@@ -57,13 +57,15 @@ Storybook opens at `http://localhost:6007` with hot-reload — this is where you
 
 ## Repository Structure
 
-This is a monorepo (Yarn workspaces) publishing three packages:
+This is a monorepo (Yarn workspaces) with the core package and four adapters under `packages/`:
 
 | Package | Location | Description |
 | --- | --- | --- |
 | `@egov-moldova/mud` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
-| `@egov-moldova/mud-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
-| `@egov-moldova/mud-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud-web-components` | `packages/web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
+| `@egov-moldova/mud-react` | `packages/react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud-vue` | `packages/vue/` | Vue adapter (typed wrappers, `v-model`) — **in progress**, not yet published |
+| `@egov-moldova/mud-angular` | `packages/angular/` | Angular adapter (standalone components, form value accessors) — **in progress**, not yet published |
 
 Key directories:
 
@@ -74,8 +76,10 @@ src/assets/         # fonts, icons, shared assets
 tokens/core/        # source design tokens (light) — Style Dictionary, DTCG format
 tokens/core.dark/   # source design tokens (dark)
 tokens/generated/   # build output — never hand-edit
-web-components/     # vanilla JS/HTML adapter package
-react/              # React adapter package (WIP)
+packages/web-components/  # vanilla JS/HTML adapter package
+packages/react/           # React adapter package (WIP)
+packages/vue/             # Vue adapter package (WIP)
+packages/angular/         # Angular adapter package (WIP)
 scripts/            # build tooling, token sync, audits
 .storybook/         # Storybook config + stories assets
 ```
@@ -105,7 +109,7 @@ Additional docs worth knowing about:
 6. **Run tests**: `yarn test` (see [Testing](#testing) below).
 7. **Commit** using [Conventional Commits](#commit-messages), **push**, and **open a PR**.
 
-### Vanilla adapter (`web-components/`)
+### Vanilla adapter (`packages/web-components/`)
 
 `@egov-moldova/mud-web-components` is a *thin* re-export of the Stencil
 loader — because Stencil already compiles to native custom elements, there is no
@@ -113,11 +117,11 @@ framework-specific build step. Two builds and a demo server:
 
 ```bash
 yarn build        # tokens + Stencil -> dist/, loader/, dist/types/
-yarn build.web    # depends on `build` (wireit orders it); runs tsc inside web-components/
+yarn build.web    # depends on `build` (wireit orders it); runs tsc inside packages/web-components/
 yarn demo.web     # http://localhost:5174 — live <mud-button> showcase
 ```
 
-`yarn build.web` compiles `web-components/src/index.ts` into:
+`yarn build.web` compiles `packages/web-components/src/index.ts` into:
 
 - `dist/index.js` — re-exports `defineCustomElements` and `setNonce` from the core loader
 - `dist/index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
@@ -135,7 +139,7 @@ You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`,
 `HTMLMudIconElement`, …).
 
 ```text
-web-components/
+packages/web-components/
 ├── src/index.ts              # defineCustomElements + type re-exports
 ├── demo/
 │   ├── index.html            # mud-button showcase
@@ -147,6 +151,64 @@ web-components/
 └── README.md
 ```
 
+### Icons, logos and flags
+
+`mud-icon`, `mud-logo` and the flags of `mud-phone-input` render ES modules, one per drawing, that they `import()` on demand through `src/utils/svg-assets.ts`. No SVG file is published and no component resolves an asset URL: ESLint forbids `getAssetPath`, `setAssetPath` and `assetsDirs` in `src/`. The generated modules live in `src/generated/`, are committed like `icon-names.ts`, and are never edited by hand. `node scripts/assets/build-asset-modules.mjs --check` fails on any stale, missing or extra module, and on a drawing that carries a `style` attribute, a script, an event handler or an outside reference.
+
+| To add | Do |
+| --- | --- |
+| An icon | Drop the SVG into `src/components/mud-icon/assets/outlined/` or `…/filled/`, then run `yarn svg:icons`. It normalizes the drawing, rebuilds `icons.manifest.json` and `icon-names.ts`, and regenerates the modules. |
+| A logo | Drop the SVG into `src/components/mud-logo/assets/`, append its bare name to `LOGO_NAMES` in `src/components/mud-logo/mud-logo.types.ts`, then run `yarn assets.generate`. |
+| A flag | Run `yarn svg:flags` (it vendors the pinned flag-icons set into `src/components/mud-phone-input/assets/flags/` and regenerates the modules). |
+
+Commit the source SVGs and the regenerated `src/generated/` together. After a change to any SVG, `yarn assets.generate` brings the modules back in sync.
+
+### Framework adapters (`packages/react/`, `packages/vue/`, `packages/angular/`)
+
+One `yarn build` runs Stencil's React, Vue and Angular output targets next to the core build. They write the generated proxies under each package (`packages/{react,vue,angular}/src/.../stencil-generated/`). Those files are git-ignored and are never committed: the runner below fails on any tracked file there. Every adapter build depends on `yarn build`.
+
+```bash
+yarn build           # core + generated React, Vue and Angular proxies
+yarn build.react     # typechecks @egov-moldova/mud-react against React 18 and 19, fails on a type error (depends on `build`)
+yarn build.vue       # compiles @egov-moldova/mud-vue (depends on `build`)
+yarn build.angular   # packages @egov-moldova/mud-angular with ng-packagr, partial mode (depends on `build`)
+```
+
+`yarn dev` does not regenerate the proxies: its Stencil watch build skips the framework output targets. A change to a component's API (a prop, an event, a method) needs `yarn build` before the adapters, their specs and the fixtures see it.
+
+The Angular adapter is compiled with Angular 20 and supports `^20 || ^21 || ^22`. The proxies cover every `mud-*` component. Which properties and events bind to `v-model` and `ngModel` is one table, `scripts/adapters/form-models.ts`; `scripts/__tests__/adapter-form-models.spec.mjs` checks it against `.storybook/custom-elements.json`.
+
+**Consumer fixtures.** Each adapter, and the vanilla adapter, has a small app in `packages/<framework>/fixture/`, outside the Yarn workspaces. The README's framework examples are copied from the `src/` of these apps, so a fixture that passes proves the example works: change the two together. The runner packs the core and the adapter, installs the tarballs into a temporary copy of the fixture (no workspace link and no lockfile, so a packaging defect cannot hide), typechecks and builds it with the framework's own toolchain, and drives it in Chromium.
+
+```bash
+yarn build && yarn build.react && yarn build.vue && yarn build.angular && yarn build.web
+node scripts/adapters/consumer-fixture.mjs react                            # React 19
+node scripts/adapters/consumer-fixture.mjs react --framework-version 18
+node scripts/adapters/consumer-fixture.mjs vue
+node scripts/adapters/consumer-fixture.mjs angular --framework-version 20   # zone.js
+node scripts/adapters/consumer-fixture.mjs angular --framework-version 22   # zoneless
+node scripts/adapters/consumer-fixture.mjs web-components                   # lazy loader, import map, script tag, deep path, mud.esm.js not exported
+```
+
+Every fixture app renders the same four elements (`data-testid` `asset-icon`, `asset-logo`, `asset-phone`, `asset-select`), and one shared file, `scripts/adapters/fixture-e2e/assets.spec.ts`, asserts asset delivery for all of them: the named icon, logo and flag render, a component's own icon renders, and an asset no component on the page draws is never downloaded. The runner copies it into the temporary app, so a new adapter fixture needs the four elements and nothing else to get those checks.
+
+Without `--framework-version` the runner uses the highest major in the fixture's `versions.json`. It installs Chromium for the pinned Playwright (`--with-deps`, which runs the system package step and needs sudo on Linux, is added only when `CI` is set). A failed run keeps its temporary directory and prints the path (under `RUNNER_TEMP` when that is set); Playwright writes a trace there. The `Adapters` CI job runs the same commands.
+
+To try an adapter in another project without publishing, pack it the way the runner does and install the tarball with a `file:` specifier. Install the core tarball from the same build too, because the adapter's generated proxies match that exact core API:
+
+```bash
+yarn pack --out /tmp/mud-core.tgz                                    # repo root
+yarn workspace @egov-moldova/mud-vue pack --out /tmp/mud-vue.tgz
+(cd packages/angular/dist && npm pack --pack-destination /tmp)       # ng-packagr's dist/ is the package
+
+# in the other project
+yarn add file:/tmp/mud-core.tgz file:/tmp/mud-vue.tgz   # or the Angular tarball
+```
+
+Pack Angular from `packages/angular/dist/` with `npm pack`: `dist/` is the publishable package and is not a Yarn workspace, and the build already rewrote its `workspace:` range. Never `npm pack` a workspace root, which leaves `workspace:^` in the manifest.
+
+**Linking `mud-react` into another app.** `mud-react` ships its TypeScript source, so a link is enough. Run `yarn build.react`, then `npm link` in `packages/react/` and `npm link @egov-moldova/mud-react` in the consuming app. Re-run `yarn build.react` after a component's public API changes: the watch build does not regenerate the proxies. The consuming app must dedupe React (Vite: `resolve.dedupe: ['react', 'react-dom', '@egov-moldova/mud']`, the last so the app and the linked adapter share one component runtime), because the linked `src/` otherwise resolves this repository's React 18, and a React 19 app then loads two copies of React.
+
 ### Script reference
 
 | Script | Purpose |
@@ -155,6 +217,13 @@ web-components/
 | `yarn build` | Full build: tokens → Stencil components → `dist/`, `loader/` |
 | `yarn build.web` | Builds `@egov-moldova/mud-web-components` (depends on `build`) |
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
+| `yarn build.react` | Typechecks `@egov-moldova/mud-react` against React 18 and 19 (depends on `build`) |
+| `yarn build.vue` | Builds `@egov-moldova/mud-vue` (depends on `build`) |
+| `yarn build.angular` | Builds `@egov-moldova/mud-angular` (depends on `build`) |
+| `node scripts/adapters/consumer-fixture.mjs <react\|vue\|angular\|web-components> [--framework-version <major>]` | Packs the core and the adapter, installs them into the consumer fixture and drives it in Chromium (after `build` and the adapter's own build) |
+| `yarn svg:icons` | Normalizes the icon SVGs, rebuilds `icons.manifest.json` and `icon-names.ts`, regenerates `src/generated/` |
+| `yarn svg:flags` | Syncs the vendored flag-icons set and regenerates `src/generated/` |
+| `yarn assets.generate` | Regenerates `src/generated/` from the icon, logo and flag SVGs (`--check` on `node scripts/assets/build-asset-modules.mjs` fails on drift) |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
 | `yarn lint` | ESLint + Stylelint (wireit-cached) + Prettier check over the whole repo (always runs, Prettier's own content cache); no fixes |
@@ -298,7 +367,7 @@ For example, with npm `latest` at `1.1.9`, development releases use valid SemVer
 
 The release pipeline runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, while the release pipeline publishes with npm. Run it yourself after `yarn build` before any emergency manual publish.
 
-The Azure release pipelines currently publish only the core `@egov-moldova/mud` package. They do not publish `@egov-moldova/mud-web-components` or the private React adapter.
+The Azure release pipelines currently publish only the core `@egov-moldova/mud` package. They do not publish `@egov-moldova/mud-web-components` or the private React, Vue and Angular adapters.
 
 ### Emergency manual publish (maintainers)
 

@@ -245,25 +245,30 @@ names the old path but not the new one — the mapping is below.
 | --- | --- |
 | `@egov-moldova/mud/dist/mud/mud.css` | `@egov-moldova/mud/styles.css` |
 | `@egov-moldova/mud/dist/mud/tokens/<name>.css` | `@egov-moldova/mud/tokens/<name>.css` |
-| `@egov-moldova/mud/dist/mud/mud.esm.js` | `@egov-moldova/mud/mud.esm.js` |
+| `@egov-moldova/mud/dist/mud/mud.esm.js` | none: `defineCustomElements()` (below), or the file by URL in a `<script type="module">` tag |
 | `@egov-moldova/mud/dist/components` | `@egov-moldova/mud/components` |
 | `@egov-moldova/mud/dist/components/mud-<name>.js` | `@egov-moldova/mud/components/mud-<name>.js` |
 
 `.` and `./loader` are unchanged.
+
+`mud.esm.js` gets no new package name. It is the script-tag build: it loads each
+component chunk from its own URL, where Vite and Rollup emit nothing, so a
+bundled import of it there registers every element and renders none. Reference it by
+URL, in a `<script type="module" src="…/dist/mud/mud.esm.js">` tag.
 
 **Removed with no replacement**, deliberately. The old `./dist/mud/*` wildcard
 also exposed `dist/mud/index.esm.js`, the `p-*.js` chunk files and everything
 under `dist/mud/assets/`. None of those is API:
 
 - The chunks and `index.esm.js` are loaded by the bundle itself through relative
-  imports, which never consult the `exports` map. If you named either, use
-  `@egov-moldova/mud/mud.esm.js` — the self-registering bundle entry — or
-  `defineCustomElements()` from `@egov-moldova/mud/loader`.
-- **Icons and other assets are not module imports.** `<mud-icon>` fetches its
-  SVG at runtime through Stencil's `getAssetPath()`, which builds a URL relative
-  to the loaded bundle and never goes through module resolution. To serve assets
-  from your own origin instead, copy `dist/mud/assets/**` with a filesystem glob
-  and point `setAssetPath()` at the destination — a build step, not an `import`.
+  imports, which never consult the `exports` map. If you named either, call
+  `defineCustomElements()` from `@egov-moldova/mud/loader` (or from
+  `@egov-moldova/mud-web-components`), or use a framework adapter.
+- **Assets are not module imports.** Icons, logos and flags are JavaScript
+  chunks that the components import themselves when they are shown, with no
+  asset path to set (see "icons, logos and flags load automatically"). The font
+  under `dist/mud/assets/fonts/` is requested by `styles.css` through a relative
+  URL. Nothing under `dist/mud/assets/` needs an `import` or a copy step.
 
 The `./dist/components/*` wildcard is likewise not re-published in full: only
 `./components/mud-*.js` is, which is every component module and none of the 35

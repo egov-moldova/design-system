@@ -7,11 +7,15 @@ WORKDIR /app
 
 # Copy package files first for better layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY web-components/package.json ./web-components/
-COPY react/package.json ./react/
+COPY packages/web-components/package.json ./packages/web-components/
+COPY packages/react/package.json ./packages/react/
+COPY packages/vue/package.json ./packages/vue/
+COPY packages/angular/package.json ./packages/angular/
+# Every workspace's manifest: one missing here and `yarn install --immutable` wants to rewrite yarn.lock
+COPY tooling/hooks/package.json ./tooling/hooks/
 # yarn.lock resolves patched packages from these files, so the install fails without them
 COPY .yarn/patches ./.yarn/patches
-# react's postinstall runs scripts/git/install-hooks.mjs; with no .git it exits 0, but it must exist
+# tooling/hooks' postinstall runs scripts/git/install-hooks.mjs; with no .git it exits 0, but it must exist
 COPY scripts/git ./scripts/git
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably

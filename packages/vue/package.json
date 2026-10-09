@@ -1,0 +1,52 @@
+{
+  "name": "@egov-moldova/mud-vue",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Vue adapter for the MUD Design System — typed Vue wrappers with v-model around the Stencil-compiled mud-* custom elements.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@stencil/vue-output-target": "~0.14.3"
+  },
+  "peerDependencies": {
+    "@egov-moldova/mud": "workspace:^",
+    "vue": "^3.4.38"
+  },
+  "devDependencies": {
+    "@egov-moldova/mud": "workspace:^",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.43",
+    "vue-router": "^4.6.4"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
+  "keywords": [
+    "vue",
+    "web-components",
+    "custom-elements",
+    "design-system",
+    "stencil",
+    "mud"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

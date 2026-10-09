@@ -1,5 +1,4 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
-import { setAssetPath } from '@stencil/core';
 
 import { describeLocales } from '../../../utils/locale.test-helpers';
 import '../mud-stepper';
@@ -41,24 +40,13 @@ const queryConnectors = (root: Element | null | undefined): HTMLElement[] =>
 
 describe('mud-stepper', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    // mud-icon resolves assets via `getAssetPath()` which requires a base URL.
-    setAssetPath('http://localhost/');
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    // mud-icon lazy-fetches the SVG sprite; stub it so tests stay deterministic.
-    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      return new Response('<svg></svg>', {
-        status: 200,
-        headers: { 'Content-Type': 'image/svg+xml' },
-      });
-    });
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
-    fetchSpy.mockRestore();
   });
 
   // -------------------------------------------------------------------------

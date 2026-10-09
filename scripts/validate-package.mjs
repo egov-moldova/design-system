@@ -63,6 +63,7 @@ export function normalizePackagePath(target) {
   return target.replace(/^\.\//, '');
 }
 
+/** Every target string under an `exports` value, each tagged with its key trail; `null` exclusions skipped. */
 function walkExports(node, trail, entries) {
   if (typeof node === 'string') {
     entries.push({ source: trail, target: node });
@@ -72,12 +73,6 @@ function walkExports(node, trail, entries) {
     return;
   }
   for (const [key, child] of Object.entries(node)) {
-    // A subpath pattern resolves to many files; a literal existence check on it
-    // would be meaningless. Its directory is covered by the sibling literals,
-    // and `checkBundleAssets` covers the one subtree that has no literal.
-    if (key.includes('*')) {
-      continue;
-    }
     walkExports(child, `${trail}[${key}]`, entries);
   }
 }
@@ -91,7 +86,9 @@ export function collectDeclaredEntries(pkg) {
     }
   }
   walkExports(pkg.exports, '$.exports', entries);
-  return entries.filter(entry => !entry.target.includes('*'));
+  // A subpath pattern resolves to many files; a literal existence check on it
+  // would be meaningless. Its directory is covered by the sibling literals.
+  return entries.filter(entry => !entry.source.includes('*') && !entry.target.includes('*'));
 }
 
 export function checkDeclaredEntries(entries, packedFiles) {
@@ -133,7 +130,7 @@ export function lazyBundleDir(pkg) {
 
 /**
  * Where `exports["./components"]` points. Throws rather than returning
- * null: a null would make `checkBundleAssets` a silent no-op, which is the same
+ * null: a null would make `checkAssetModules` a silent no-op, which is the same
  * vacuous-scan failure `lazyBundleDir` exists to avoid one function up. If the
  * standalone bundle is ever dropped from the contract deliberately, drop the
  * asset check with it — do not let it quietly stop grading while the gate
@@ -182,7 +179,6 @@ export const PUBLIC_SPECIFIERS = [
   '@egov-moldova/mud/styles.css',
   '@egov-moldova/mud/tokens/core.tokens.css',
   '@egov-moldova/mud/tokens/core.dark.tokens.css',
-  '@egov-moldova/mud/mud.esm.js',
   '@egov-moldova/mud/components',
   '@egov-moldova/mud/components/mud-button.js',
 ];
@@ -210,6 +206,60 @@ export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
       return entry !== null && typeof entry === 'object' && typeof entry.require === 'string';
     })
     .map(key => `exports["${key}"] declares a require condition, but this subpath is ESM-only`);
+}
+
+const PACKAGE_ROOT = new URL('file:///package/');
+const MATCHES_NOTHING = /(?!)/;
+
+/**
+ * The RegExp matching the packed files one `exports` TARGET can resolve to. The target is
+ * resolved the way Node resolves it, with `new URL` against the package root, so backslashes,
+ * dot segments, a `?query` and a `#hash` are the platform's to handle, not a rewrite's. Then, as
+ * Node's own resolution does, an encoded separator (`%2F`, `%5C`) or a malformed escape reaches
+ * nothing, and the rest is percent-decoded. A target ending in `/` (the root mapping `./`
+ * included) is a legacy folder mapping and reaches everything under it. Case is ignored for
+ * case-insensitive file systems. Node 24 loads the bundle through `./dist\\mud\\mud.esm.js`,
+ * `./dist/%6Dud/mud.esm.js`, `./dist/mud/mud.esm.js?x` and `./dist/mud/mud.esm.js#y`; all four match.
+ */
+function exportsTargetPattern(target) {
+  const { pathname } = new URL(target, PACKAGE_ROOT);
+  if (!pathname.startsWith(PACKAGE_ROOT.pathname) || /%2f|%5c/i.test(pathname)) return MATCHES_NOTHING;
+  let relative;
+  try {
+    relative = decodeURIComponent(pathname.slice(PACKAGE_ROOT.pathname.length));
+  } catch {
+    return MATCHES_NOTHING;
+  }
+  const folder = relative === '' || relative.endsWith('/') ? '.*' : '';
+  return new RegExp(`^${subpathPatternSource(relative)}${folder}$`, 'i');
+}
+
+/**
+ * Every `exports` target that reaches a script of the lazy browser bundle (#193). That build
+ * resolves its chunks (`./<id>.entry.js`) against its own URL, where Vite and Rollup emit nothing,
+ * so an import of any of its scripts bundled by either registers every element and renders none. A script
+ * tag, a CDN or an import map loads it by URL and never reads `exports`. The scope is the packed
+ * `.js` files of `lazyBundleDir`, not the one `unpkg` entry: `index.esm.js` and the chunks fail
+ * the same way, while `styles.css` and the token stylesheets beside them stay exportable.
+ * `lazyBundleDir` throws when `unpkg` is unusable, so a renamed field fails the gate instead of
+ * leaving nothing to compare against. Each target is graded on its own: a `null` exclusion under
+ * another key is not consulted, so a wildcard narrowed that way still fails (closed, never open).
+ * The check is textual: an exported module that itself imports the bundle is not traced, and no
+ * other check covers that case. The web-components fixture's bundled-import test covers only the
+ * `./mud.esm.js` specifier, end to end.
+ */
+export function checkScriptTagNotExported(pkg, packedFiles) {
+  const bundleDir = lazyBundleDir(pkg);
+  const scripts = packedFiles.filter(file => file.startsWith(bundleDir) && file.endsWith('.js'));
+  const entries = [];
+  walkExports(pkg.exports, '$.exports', entries);
+  return entries.flatMap(({ source, target }) => {
+    const shape = exportsTargetPattern(target);
+    const reached = scripts.filter(file => shape.test(file));
+    if (reached.length === 0) return [];
+    const more = reached.length > 1 ? ` (+${reached.length - 1} more)` : '';
+    return [`${source}: ${target} -> ${reached[0]}${more}`];
+  });
 }
 
 /**
@@ -346,23 +396,120 @@ export function checkDevSignature(packedFiles, readText, bundleDir) {
 }
 
 /**
- * The standalone custom-elements bundle resolves `getAssetPath('./assets/x')`
- * relative to itself, but Stencil's `dist-custom-elements` target silently
- * ignores `assetsDirs` — `scripts/copy-component-assets.mjs` mirrors them in as
- * a post-build step. Without it a component with assets "renders empty
- * silently" (that script's own words). Nothing else in the tarball reveals it:
- * `exports["./components/*"]` is a pattern, so checkDeclaredEntries skips
- * it by design.
+ * The ONE predicate for "a packed path that is an SVG file". `consumer-fixture.mjs` imports it, so
+ * the publish gate and the fixture runner cannot disagree about what counts.
  */
-export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
-  const lazy = packedFiles.filter(file => file.startsWith(`${lazyDir}assets/`));
-  if (lazy.length === 0) {
-    return [];
+export function isPublishedSvg(file) {
+  return /\.svg$/i.test(file);
+}
+
+/**
+ * No SVG file is published: icons, logos and flags ship as JavaScript modules inside the bundles.
+ * Stencil's `dist` target copies `**\/*.svg` into `dist/collection/` on its own, which is why
+ * `package.json` `files` excludes that glob; this check is what notices the day it stops doing so.
+ */
+export function checkNoPublishedSvg(packedFiles) {
+  return packedFiles.filter(isPublishedSvg);
+}
+
+/**
+ * Where a built drawing is found by its `data-mud-asset="<kind>:<key>"` marker. The marker sits
+ * inside a string literal, so a minifier may quote it with `"`, `'` or a backtick, or escape the `"`.
+ */
+const ASSET_MARKER = /data-mud-asset=\\?["'`]([a-z]+:[a-z0-9/-]+)/g;
+
+/** Every directory a consumer can load the components from: standalone, lazy ESM and the CDN build. */
+export function assetModuleDirs(pkg) {
+  if (typeof pkg.es2015 !== 'string' || !pkg.es2015.includes('/')) {
+    throw new Error('validate-package: cannot locate the lazy ESM build — package.json has no usable "es2015" field');
   }
-  const standalone = packedFiles.filter(file => file.startsWith(`${standaloneDir}assets/`));
-  return standalone.length === 0
-    ? [`${standaloneDir}assets/ is empty while ${lazyDir}assets/ carries ${lazy.length} file(s)`]
-    : [];
+  return [standaloneBundleDir(pkg), `${path.posix.dirname(normalizePackagePath(pkg.es2015))}/`, lazyBundleDir(pkg)];
+}
+
+/**
+ * The marker of every drawing the package must carry, read from the SOURCES, not from the generated
+ * modules: icons from the manifest (one key per variant), logos and flags from their SVG files.
+ * Deriving it from `src/generated/` would ask the generator whether the generator was right.
+ */
+export function expectedAssetKeys(cwd = PROJECT_ROOT) {
+  const components = path.join(cwd, 'src/components');
+  const svgNames = dir =>
+    fs
+      .readdirSync(dir)
+      .filter(isPublishedSvg)
+      .map(file => file.replace(/\.svg$/i, ''));
+  const manifest = JSON.parse(fs.readFileSync(path.join(components, 'mud-icon/assets/icons.manifest.json'), 'utf8'));
+  return [
+    ...Object.entries(manifest).flatMap(([name, { variants }]) => variants.map(variant => `icon:${variant}/${name}`)),
+    ...svgNames(path.join(components, 'mud-logo/assets')).map(name => `logo:${name}`),
+    ...svgNames(path.join(components, 'mud-phone-input/assets/flags')).map(name => `flag:${name}`),
+  ];
+}
+
+function jsUnder(packedFiles, dir) {
+  return packedFiles.filter(file => file.startsWith(dir) && file.endsWith('.js'));
+}
+
+/**
+ * Every expected drawing has a generated module in EACH of `dirs`, found by its marker. One
+ * directory is enough to hide a loss from the others: `dist/mud/` is what `unpkg` serves, and a
+ * bundler resolving `dist/components/` or `dist/esm/` never reads it. An empty directory fails every
+ * key, so a rename of an output folder cannot turn this into a silent pass.
+ */
+export function checkAssetModules(packedFiles, readText, expectedKeys, dirs) {
+  const problems = [];
+  for (const dir of dirs) {
+    const found = new Set();
+    for (const file of jsUnder(packedFiles, dir)) {
+      for (const match of readText(file).matchAll(ASSET_MARKER)) {
+        found.add(match[1]);
+      }
+    }
+    const missing = expectedKeys.filter(key => !found.has(key));
+    if (missing.length > 0) {
+      const shown = missing.slice(0, 5).join(', ');
+      problems.push(
+        `${dir} has no module for ${missing.length} of ${expectedKeys.length} drawing(s): ${shown}${missing.length > 5 ? ', ...' : ''}`,
+      );
+    }
+  }
+  return problems;
+}
+
+/**
+ * The flag-icons licence travels in two places: as a file next to the CDN build, and inside the
+ * `componentsDir` chunk that holds the flag map (the one that dynamically imports the flag
+ * modules, found by their markers). The second is read from the MINIFIED output, which is the
+ * point: a licence comment a minifier drops is invisible in the source and in the unminified build.
+ */
+export function checkFlagLicense(packedFiles, readText, { licenseFile, componentsDir }) {
+  const problems = [];
+  if (!packedFiles.includes(licenseFile)) {
+    problems.push(`${licenseFile} is not packed`);
+  }
+  const files = jsUnder(packedFiles, componentsDir);
+  const flagChunks = new Set(
+    files.filter(file => /data-mud-asset=\\?["'`]flag:/.test(readText(file))).map(file => path.posix.basename(file)),
+  );
+  if (flagChunks.size === 0) {
+    problems.push(`no chunk under ${componentsDir} carries a flag drawing`);
+    return problems;
+  }
+  const holders = files.filter(file => {
+    const imported = [...readText(file).matchAll(/import\(\s*["'`]\.\/([^"'`]+)["'`]\s*\)/g)].filter(match =>
+      flagChunks.has(match[1]),
+    );
+    return imported.length >= Math.ceil(flagChunks.size / 2);
+  });
+  if (holders.length === 0) {
+    problems.push(`no chunk under ${componentsDir} imports the flag modules`);
+  }
+  for (const file of holders) {
+    if (!readText(file).includes('flag-icons')) {
+      problems.push(`${file} holds the flag map but no longer contains "flag-icons" after minification`);
+    }
+  }
+  return problems;
 }
 
 /**
@@ -547,7 +694,7 @@ export function checkPackerAgreement(yarnFiles, npmFiles) {
 }
 
 /**
- * Turn one `exports` key into the RegExp matching the public specifiers it serves.
+ * The RegExp source for one subpath-pattern string (an `exports` key or target).
  *
  * Escape first, then substitute the wildcard. An unescaped key leaves `.` matching
  * any character, so `./tokens/*.css` would accept `.../tokens/coreXtokensYcss` — a
@@ -557,10 +704,14 @@ export function checkPackerAgreement(yarnFiles, npmFiles) {
  * Node's subpath-pattern `*` matches ZERO or more characters, `/` included, so
  * `.+` would quietly narrow the grammar this is a translation of.
  */
+function subpathPatternSource(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`).replaceAll(String.raw`\*`, '.*');
+}
+
+/** Turn one `exports` key into the RegExp matching the public specifiers it serves. */
 export function exportsKeyPattern(key) {
   const suffix = key === '.' ? '' : key.slice(1);
-  const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-  return new RegExp(`^@egov-moldova/mud${escaped.replaceAll(String.raw`\*`, '.*')}$`);
+  return new RegExp(`^@egov-moldova/mud${subpathPatternSource(suffix)}$`);
 }
 
 export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.error } = {}) {
@@ -593,6 +744,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       checkPublicSpecifiers(REQUIRE_CAPABLE_SPECIFIERS, cwd, files, 'require'),
     ],
     ['ESM-only subpath declares a require condition', checkEsmOnlySubpaths(pkg)],
+    ['export reaches the script-tag build', checkScriptTagNotExported(pkg, files)],
     ['build-machine artifact in tarball', checkForbiddenPaths(files)],
     ['absolute build-machine path in tarball', checkAbsolutePaths(files)],
     ['source map in tarball (development build)', checkSourceMaps(files)],
@@ -605,7 +757,18 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       // the tarball. Rationale and the measurement behind it: `checkDevSignature`.
       checkDevSignature(files, readText),
     ],
-    ['standalone bundle published without its assets', checkBundleAssets(files, lazyDir, standaloneDir)],
+    ['SVG file in tarball', checkNoPublishedSvg(files)],
+    [
+      'drawing without a generated module',
+      checkAssetModules(files, readText, expectedAssetKeys(cwd), assetModuleDirs(pkg)),
+    ],
+    [
+      'flag-icons licence missing',
+      checkFlagLicense(files, readText, {
+        licenseFile: `${lazyDir}licenses/flag-icons.txt`,
+        componentsDir: standaloneDir,
+      }),
+    ],
     ['global stylesheet references a file the tarball does not contain', checkStylesheetAssets(pkg, files, readText)],
     [
       'global stylesheet does not give the token font weights a face',

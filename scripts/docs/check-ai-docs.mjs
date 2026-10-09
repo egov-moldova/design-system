@@ -32,6 +32,9 @@
  *                     baked into `.claude/settings.json`.
  *   stale-prefix   — a retired `cor`/`Cor`/`HTMLCor`/`onCor` component identifier
  *                     in doc scope; the prefix is `mud`.
+ *   asset-setup    — an icon/logo/flag asset-setup term (an asset path, a copied
+ *                     `assets/` folder, `setupMud`, `provideMud`, …) in a consumer
+ *                     doc; MUD assets load on their own and need no setup.
  *   lookaround     — a lookahead/lookbehind in a code span or fence without
  *                     `--pcre2`/`-P`; ripgrep's default engine rejects it.
  *   stencil-version — a `Stencil 4.x` claim, or a minor above the
@@ -709,6 +712,65 @@ function checkStalePrefix(relPath, lines) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: asset-setup
+// ---------------------------------------------------------------------------
+
+// Icons, logos and flags are ES modules loaded through `import()`: a consumer sets no asset path,
+// copies no folder and installs no plugin or provider. The consumer docs must not teach any of
+// that. Contributor docs (CONTRIBUTING.md, the stencil-compliance skill) stay out of scope: they
+// have to be able to name the API they forbid.
+const ASSET_SETUP_TERMS = [
+  'assetPath',
+  'setAssetPath',
+  'getAssetPath',
+  'resourcesUrl',
+  'setupMud',
+  'provideMud',
+  'app.use(Mud',
+  'dist/components/assets',
+  'public/mud/assets',
+  'assets/flags',
+  'assets/outlined',
+  'assets/filled',
+  'copy-component-assets',
+  'vite-plugin-static-copy',
+];
+
+// The one API signature that legitimately names the option, kept as reference.
+const ASSET_SETUP_ALLOWLIST = new Map([
+  ['packages/web-components/README.md', ['defineCustomElements(opts?: { resourcesUrl?:']],
+]);
+
+export function isAssetSetupScope(relPath) {
+  return (
+    relPath === 'README.md' ||
+    relPath === 'INTEGRATION.md' ||
+    relPath === '.claude/skills/mud-design/SKILL.md' ||
+    /^packages\/[^/]+\/README\.md$/.test(relPath)
+  );
+}
+
+function checkAssetSetup(relPath, lines) {
+  const allowed = ASSET_SETUP_ALLOWLIST.get(relPath) ?? [];
+  const hits = [];
+  lines.forEach((line, i) => {
+    if (allowed.some(a => line.includes(a))) return;
+    const term = ASSET_SETUP_TERMS.find(t => line.includes(t));
+    if (term) {
+      hits.push(
+        makeHit(
+          relPath,
+          i + 1,
+          'asset-setup',
+          `\`${term}\` in a consumer doc; icons, logos and flags load on their own, with no asset setup`,
+        ),
+      );
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: lookaround
 // ---------------------------------------------------------------------------
 
@@ -989,8 +1051,9 @@ export function checkAiDocs({ root }) {
     const needsNodeVersion = isNodeVersionScope(relPath);
     const needsPackageName = isPackageNameScope(relPath);
     const needsSettingsPath = relPath === '.claude/settings.json';
+    const needsAssetSetup = isAssetSetupScope(relPath);
 
-    if (!needsDocScope && !needsNodeVersion && !needsPackageName && !needsSettingsPath) continue;
+    if (!needsDocScope && !needsNodeVersion && !needsPackageName && !needsSettingsPath && !needsAssetSetup) continue;
 
     const lines = fs.readFileSync(absPath, 'utf8').split('\n');
 
@@ -1008,6 +1071,7 @@ export function checkAiDocs({ root }) {
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
     if (needsSettingsPath) hits.push(...checkSettingsPath(relPath, lines));
+    if (needsAssetSetup) hits.push(...checkAssetSetup(relPath, lines));
   }
 
   hits.push(...checkAgentCatalog(root));
