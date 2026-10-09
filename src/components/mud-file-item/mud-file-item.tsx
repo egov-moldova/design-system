@@ -2,13 +2,17 @@ import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, Watch, forceUpdate, h } from '@stencil/core';
 
 import { FILE_ITEM_STATES } from './mud-file-item.types';
-import { FILE_GLYPH_SRC } from './mud-file-item.glyph';
-import type { FileItemRemoveDetail, FileItemState } from './mud-file-item.types';
+import { FILE_GLYPH_SRC, renderLoader, renderSystemGlyph, renderUserGlyph } from './mud-file-item.glyph';
+import type { FileItemRemoveDetail, FileItemState, FileItemVariant } from './mud-file-item.types';
 import { localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import { formatFileSize } from '../../utils/file-size';
 import { FILE_ITEM_MESSAGES } from './mud-file-item.messages';
 import type { FileItemMessages } from './mud-file-item.messages';
+
+/** Ids inside the shadow root: the remove button is labelled by itself and the file name. */
+const REMOVE_ID = 'remove';
+const FILENAME_ID = 'filename';
 
 /**
  * File Item — single-file row inside `mud-file-input` (or any file list surface).
@@ -36,7 +40,46 @@ export class MudFileItem {
    */
   @Prop({ reflect: true }) state: FileItemState = 'uploaded';
 
-  /** Visible filename. */
+  /**
+   * Visual variant. `system` renders the Figma "system-files-item" card: a taller
+   * grey card, a blue document glyph and an info row (`issued-label` `issued-on` • `issuer`)
+   * in place of the size meta. Use it for documents issued by a registry rather than uploaded.
+   * @default 'default'
+   */
+  @Prop({ reflect: true }) variant: FileItemVariant = 'default';
+
+  /**
+   * System variant: render as a selectable list option (Figma "system-files-item-selectable") —
+   * white bordered row, no remove button. The owner handles click / keyboard and sets `selected`.
+   * @default false
+   */
+  @Prop({ reflect: true }) selectable: boolean = false;
+
+  /**
+   * Selectable rows: marks the chosen option with the brand border.
+   * @default false
+   */
+  @Prop({ reflect: true }) selected: boolean = false;
+
+  /**
+   * Upload variant: progress of an uploading row, 0–100. Left unset, the bar is indeterminate. Ignored in
+   * other states and variants.
+   */
+  @Prop() progress?: number;
+
+  /** System variant: label before the issue date (already localised, e.g. "Emis"). */
+  @Prop({ attribute: 'issued-label' }) issuedLabel?: string;
+
+  /** System variant: issue date, pre-formatted by the host (e.g. "12.03.2026"). */
+  @Prop({ attribute: 'issued-on' }) issuedOn?: string;
+
+  /** System variant: issuing authority (e.g. "EVO"). */
+  @Prop() issuer?: string;
+
+  /**
+   * Visible filename.
+   * @default ''
+   */
   @Prop() filename: string = '';
 
   /** Optional file size in bytes — rendered as a human-readable string. */
@@ -54,10 +97,16 @@ export class MudFileItem {
    */
   @Prop({ attribute: 'preview-src' }) previewSrc?: string;
 
-  /** Disables the remove button. */
+  /**
+   * Disables the remove button.
+   * @default false
+   */
   @Prop({ reflect: true }) disabled: boolean = false;
 
-  /** Hide the remove button entirely (e.g. read-only summary lists). */
+  /**
+   * Hide the remove button entirely (e.g. read-only summary lists).
+   * @default false
+   */
   @Prop({ reflect: true, attribute: 'no-remove' }) noRemove: boolean = false;
 
   /**
@@ -73,7 +122,30 @@ export class MudFileItem {
    */
   @Prop({ attribute: 'remove-label' }) removeLabel?: string;
 
+  /**
+   * Text announced to assistive technology when the row starts uploading (the state is otherwise only a spinner).
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Se încarcă' (ro-MD)
+   */
+  @Prop({ attribute: 'uploading-label' }) uploadingLabel?: string;
+
+  /**
+   * Text announced when an upload finishes (`success`, or `uploaded` right after `uploading`).
+   * Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Încărcat cu succes' (ro-MD)
+   */
+  @Prop({ attribute: 'success-label' }) successLabel?: string;
+
+  /**
+   * Text announced when the row turns to `error` and has no `error-text` of its own (with one, the message itself
+   * is announced as an alert). Overrides the `locale`'s copy when set to a non-empty string.
+   * @default 'Eroare la încărcare' (ro-MD)
+   */
+  @Prop({ attribute: 'error-label' }) errorLabel?: string;
+
   @State() private previewFailed: boolean = false;
+  /** What the live region says now: the filename and the new state, set when the state changes. */
+  @State() private announcement: string = '';
   /** True when the filename is visually clipped, which gates the hover tooltip. */
   @State() private isTruncated: boolean = false;
 
@@ -94,7 +166,13 @@ export class MudFileItem {
     );
   }
 
+  componentWillLoad() {
+    this.syncProgress();
+  }
+
   componentDidLoad() {
+    // A row created already uploading: the live region exists now, so filling it is announced.
+    if (this.state === 'uploading') this.announceState('uploading', undefined);
     this.measureTruncation();
     if (typeof ResizeObserver !== 'undefined' && this.filenameEl) {
       this.resizeObserver = new ResizeObserver(() => this.measureTruncation());
@@ -116,6 +194,9 @@ export class MudFileItem {
   private messages(): FileItemMessages {
     return localeMessages('mud-file-item', this.host, this.locale, FILE_ITEM_MESSAGES, {
       removeLabel: this.removeLabel,
+      uploadingLabel: this.uploadingLabel,
+      successLabel: this.successLabel,
+      errorLabel: this.errorLabel,
     });
   }
 
@@ -139,9 +220,38 @@ export class MudFileItem {
     }
   }
 
+  /**
+   * The state is drawn as an icon only, so a change of it is also said in a live region: the filename and what
+   * happened. Nothing is announced for the resting row, or for an error that carries its own `error-text` (that is
+   * an alert of its own).
+   */
+  @Watch('state')
+  announceState(next: FileItemState, prev: FileItemState | undefined) {
+    if (next === prev) return;
+
+    const m = this.messages();
+    let text = '';
+    if (next === 'uploading') text = m.uploadingLabel;
+    else if (next === 'success' || (next === 'uploaded' && prev === 'uploading')) text = m.successLabel;
+    else if (next === 'error' && !this.errorText?.trim()) text = m.errorLabel;
+
+    this.announcement = text ? `${this.filename}: ${text}` : '';
+  }
+
   @Watch('previewSrc')
   resetPreviewFailure() {
     this.previewFailed = false;
+  }
+
+  /** Hands the clamped progress to the bar through a custom property (no inline style in the template). */
+  @Watch('progress')
+  syncProgress() {
+    if (typeof this.progress === 'number' && Number.isFinite(this.progress)) {
+      const clamped = Math.min(100, Math.max(0, this.progress));
+      this.host.style.setProperty('--_progress', `${String(clamped)}%`);
+    } else {
+      this.host.style.removeProperty('--_progress');
+    }
   }
 
   private handlePreviewError = () => {
@@ -178,7 +288,18 @@ export class MudFileItem {
     const showLeadingIcon = !isError;
     // Resting (uploaded) and error rows are removable; uploading shows a spinner
     // and success shows a confirmation tick instead (per Figma).
-    const showRemove = !this.noRemove && (this.state === 'uploaded' || isError);
+    const isSystem = this.variant === 'system';
+    const isUpload = this.variant === 'upload';
+    const hasProgress = typeof this.progress === 'number' && Number.isFinite(this.progress);
+    const progressValue = hasProgress ? Math.min(100, Math.max(0, this.progress as number)) : 0;
+    const issuedText = this.issuedOn?.trim();
+    const issuerText = this.issuer?.trim();
+    const isSelectable = isSystem && this.selectable;
+    // The upload layout keeps the remove button while uploading too: there it cancels the upload.
+    const showRemove = !this.noRemove && !isSelectable && (isUpload || this.state === 'uploaded' || isError);
+    // Every row of a list has the same button, so its name also says which file it removes: `aria-label` stays the
+    // localised label, and `aria-labelledby` reads it (the button itself) followed by the file name.
+    const removeLabelledBy = this.filename ? [REMOVE_ID, FILENAME_ID].join(' ') : undefined;
     const lang = hostLang(this.host, this.locale);
 
     return (
@@ -186,11 +307,27 @@ export class MudFileItem {
         class={{
           [`state-${this.state}`]: true,
           'is-disabled': this.disabled,
+          'is-system': isSystem,
+          'is-upload': isUpload,
+          'is-selectable': isSelectable,
+          'is-selected': isSelectable && this.selected,
         }}
         lang={lang}
       >
         <div class="row" part="row">
-          {showLeadingIcon ? (
+          {isUpload ? (
+            <span class="leading-status" part="leading-status" aria-hidden="true">
+              {isUploading ? (
+                renderLoader()
+              ) : isSuccess ? (
+                <mud-icon name="circle-checkmark" variant="filled" size={24} color="icon-positive-default" />
+              ) : isError ? (
+                <mud-icon name="circle-error" variant="filled" size={24} color="icon-danger-default" />
+              ) : (
+                renderUserGlyph()
+              )}
+            </span>
+          ) : showLeadingIcon ? (
             <span class="leading-icon" part="leading-icon" aria-hidden="true">
               {this.previewSrc && !this.previewFailed ? (
                 <img
@@ -202,7 +339,11 @@ export class MudFileItem {
                 />
               ) : (
                 <slot name="icon">
-                  <img class="file-glyph" src={FILE_GLYPH_SRC} alt="" aria-hidden="true" />
+                  {isSystem ? (
+                    renderSystemGlyph()
+                  ) : (
+                    <img class="file-glyph" src={FILE_GLYPH_SRC} alt="" aria-hidden="true" />
+                  )}
                 </slot>
               )}
             </span>
@@ -210,7 +351,7 @@ export class MudFileItem {
 
           <span class="body" part="body">
             <span class="filename-wrap">
-              <span class="filename" part="filename" ref={el => (this.filenameEl = el as HTMLElement)}>
+              <span class="filename" id={FILENAME_ID} part="filename" ref={el => (this.filenameEl = el as HTMLElement)}>
                 {this.filename}
               </span>
               {this.isTruncated ? (
@@ -219,20 +360,42 @@ export class MudFileItem {
                 </span>
               ) : null}
             </span>
-            {sizeText ? (
+            {isUpload && sizeText ? (
+              <span class="bullet" aria-hidden="true">
+                •
+              </span>
+            ) : null}
+            {!isSystem && sizeText ? (
               <span class="meta" part="meta">
                 {sizeText}
+              </span>
+            ) : null}
+            {isSystem && !issuedText && !issuerText && sizeText ? (
+              <span class="info" part="info">
+                <span class="info-label">{sizeText}</span>
+              </span>
+            ) : null}
+            {isSystem && (issuedText || issuerText) ? (
+              <span class="info" part="info">
+                {issuedText ? (
+                  <span class="info-item">
+                    {this.issuedLabel ? <span class="info-label">{this.issuedLabel}</span> : null}
+                    <span class="info-value">{issuedText}</span>
+                  </span>
+                ) : null}
+                {issuedText && issuerText ? <span class="info-dot" aria-hidden="true" /> : null}
+                {issuerText ? <span class="info-label">{issuerText}</span> : null}
               </span>
             ) : null}
           </span>
 
           <span class="trailing" part="trailing">
-            {isUploading ? (
+            {isUploading && !isUpload ? (
               <span class="spinner" part="spinner" aria-hidden="true">
                 <mud-spinner size="sm" variant="brand" label="" />
               </span>
             ) : null}
-            {isSuccess ? (
+            {isSuccess && !isUpload ? (
               <mud-icon
                 class="status status-success"
                 name="circle-checkmark"
@@ -241,7 +404,16 @@ export class MudFileItem {
                 color="icon-positive-default"
               />
             ) : null}
-            {isError ? (
+            {isSelectable && this.selected ? (
+              <mud-icon
+                class="status status-selected"
+                name="circle-checkmark"
+                variant="filled"
+                size={20}
+                color="icon-brand-default"
+              />
+            ) : null}
+            {isError && !isUpload ? (
               <mud-icon
                 class="status status-error"
                 name="circle-error"
@@ -253,25 +425,47 @@ export class MudFileItem {
             {showRemove ? (
               <button
                 type="button"
+                id={REMOVE_ID}
                 class="remove"
                 part="remove"
                 disabled={this.disabled}
                 aria-label={m.removeLabel}
+                aria-labelledby={removeLabelledBy}
                 aria-disabled={this.disabled ? 'true' : null}
                 onClick={this.handleRemove}
                 onKeyDown={this.handleRemoveKey}
               >
-                <mud-icon name="cross-large" size={20} />
+                <mud-icon name="cross-large" size={isSystem || isUpload ? 16 : 20} />
               </button>
             ) : null}
           </span>
         </div>
 
+        {isUpload && isUploading ? (
+          <div
+            class="progress"
+            part="progress"
+            role="progressbar"
+            aria-label={`${this.filename}: ${m.uploadingLabel}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={hasProgress ? Math.round(progressValue) : undefined}
+          >
+            <div class={{ 'progress-fill': true, 'is-indeterminate': !hasProgress }} />
+          </div>
+        ) : null}
+
         {showErrorMessage ? (
-          <p class="error-message" part="error-message">
+          <p class="error-message" part="error-message" role="alert">
             {this.errorText}
           </p>
         ) : null}
+
+        {/* Says a change of state aloud (the state itself is only an icon); present from the first render so that
+            filling it is announced. */}
+        <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          {this.announcement}
+        </span>
       </Host>
     );
   }

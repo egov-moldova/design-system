@@ -56,6 +56,76 @@
       },
       "focusRing": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
+    "upload": {
+      "$comment": "Figma upload-modal 'file-item' (FOD Components flow 384:13189 / 384:13297): status icon first, remove always, 2px progress bar.",
+      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingBlockEndProgress": { "$value": "{spacing.6}", "$type": "dimension" },
+      "paddingInlineStart": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "statusSize": { "$value": "{spacing.24}", "$type": "dimension" },
+      "bulletGap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "bulletFontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "bulletLineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "removeIconSize": { "$value": "16px", "$type": "dimension" },
+      "meta": {
+        "$comment": "Figma 'file-item' (384:13692 uploaded / 384:13297): the size is Body/Small 14/20, the bullet before it Caption 12/16.",
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" }
+      },
+      "glyph": {
+        "$comment": "Figma 'User Uploaded' document icon (204:3217): a grey page with three white lines; the resting row of the upload layout.",
+        "fill": { "$value": "{color.icon.base.tertiary}", "$type": "color" },
+        "line": { "$value": "{color.background.base.default}", "$type": "color" }
+      },
+      "loader": {
+        "$comment": "Figma 'Progress Indicator/Loader': a 20px ring, grey track and a quarter-circle brand arc, 2.5px stroke.",
+        "size": { "$value": "{spacing.20}", "$type": "dimension" },
+        "strokeWidth": { "$value": "2.5px", "$type": "dimension" },
+        "track": { "$value": "{color.border.base.secondary}", "$type": "color" },
+        "arc": { "$value": "{color.border.brand.default}", "$type": "color" }
+      },
+      "progress": {
+        "height": { "$value": "2px", "$type": "dimension" },
+        "track": { "$value": "{color.background.base.default-active}", "$type": "color" },
+        "fill": { "$value": "{color.background.brand.default}", "$type": "color" }
+      }
+    },
+    "system": {
+      "$comment": "Figma 'system-files-item' (FOD Components flow 384:12264): borderless card with a document glyph and an issued-on / issuer info row.",
+      "minHeight": { "$value": "70px", "$type": "dimension" },
+      "paddingInlineStart": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "infoGap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "iconSize": { "$value": "{spacing.24}", "$type": "dimension" },
+      "removeIconSize": { "$value": "16px", "$type": "dimension" },
+      "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+      "selectable": {
+        "$comment": "Figma 'system-files-item-selectable' (378:10608): white bordered row used as a list option.",
+        "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
+        "paddingInline": { "$value": "{spacing.16}", "$type": "dimension" },
+        "borderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
+        "background": { "$value": "{color.background.base.default}", "$type": "color" },
+        "backgroundSelected": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "trailingGap": { "$value": "{spacing.16}", "$type": "dimension" },
+        "border": {
+          "default": { "$value": "{color.border.base.default}", "$type": "color" },
+          "hover": { "$value": "{color.border.brand.default}", "$type": "color" },
+          "selected": { "$value": "{color.border.brand.default}", "$type": "color" }
+        }
+      },
+      "text": {
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "color": {
+          "label": { "$value": "{color.text.base.secondary}", "$type": "color" },
+          "default": { "$value": "{color.text.base.default}", "$type": "color" }
+        }
+      }
+    },
     "background": {
       "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
       "error": { "$value": "{color.background.base.default}", "$type": "color" },
