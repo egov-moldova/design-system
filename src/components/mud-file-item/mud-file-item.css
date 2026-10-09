@@ -217,6 +217,20 @@
   color: var(--file-item-text-meta-color-error);
 }
 
+/* ---------- Live region (state changes said aloud) ---------- */
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- Remove button ---------- */
 
 .remove {
@@ -265,5 +279,293 @@
   :host,
   .remove {
     transition: none;
+  }
+}
+
+/* ---------- System variant (Figma "system-files-item") ---------- */
+
+:host(.is-system) {
+  min-block-size: var(--file-item-system-min-height);
+  padding-block: 0;
+  padding-inline-start: var(--file-item-system-padding-inline-start);
+  padding-inline-end: var(--file-item-system-padding-inline-end);
+  background-color: var(--file-item-system-background);
+  border-radius: var(--file-item-system-border-radius);
+}
+
+:host(.is-system.state-error) {
+  background-color: var(--file-item-background-error);
+}
+
+:host(.is-system.is-disabled) {
+  background-color: var(--file-item-background-disabled);
+}
+
+:host(.is-system) .row {
+  gap: var(--file-item-system-gap);
+}
+
+:host(.is-system) .system-glyph {
+  display: block;
+  inline-size: var(--file-item-system-icon-size);
+  block-size: var(--file-item-system-icon-size);
+}
+
+/* Filename on top, info row underneath (6px apart). */
+:host(.is-system) .body {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--file-item-system-info-gap);
+}
+
+:host(.is-system) .filename-wrap {
+  max-inline-size: 100%;
+}
+
+.info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--file-item-system-info-gap);
+  font-size: var(--file-item-system-text-font-size);
+  line-height: var(--file-item-system-text-line-height);
+  font-weight: var(--file-item-text-meta-font-weight);
+}
+
+.info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.info-label {
+  color: var(--file-item-system-text-color-label);
+}
+
+.info-value {
+  font-weight: var(--file-item-text-filename-font-weight);
+  color: var(--file-item-system-text-color-default);
+}
+
+.info-dot {
+  flex-shrink: 0;
+  inline-size: var(--spacing-4);
+  block-size: var(--spacing-4);
+  border-radius: 50%;
+  background-color: var(--file-item-system-text-color-label);
+}
+
+:host(.is-system) .remove mud-icon {
+  inline-size: var(--file-item-system-remove-icon-size);
+  block-size: var(--file-item-system-remove-icon-size);
+}
+
+/* Selectable option: white bordered row, 12px radius, brand border when selected. */
+:host(.is-system.is-selectable) {
+  /* The 1px border sits outside the Figma 12/16 padding, so take it off. */
+  padding-block: calc(var(--file-item-system-selectable-padding-block) - var(--file-item-container-border-width));
+  padding-inline: calc(var(--file-item-system-selectable-padding-inline) - var(--file-item-container-border-width));
+  background-color: var(--file-item-system-selectable-background);
+  border-color: var(--file-item-system-selectable-border-default);
+  border-radius: var(--file-item-system-selectable-border-radius);
+  cursor: pointer;
+}
+
+:host(.is-system.is-selectable:hover) {
+  border-color: var(--file-item-system-selectable-border-hover);
+}
+
+/* Figma: grey fill and a 2px brand stroke drawn inside the frame (1px border + 1px inset ring, so the
+   row keeps its size) plus the check mark 16px after the text. */
+:host(.is-system.is-selectable.is-selected) {
+  background-color: var(--file-item-system-selectable-background-selected);
+  border-color: var(--file-item-system-selectable-border-selected);
+  box-shadow: inset 0 0 0 var(--file-item-container-border-width) var(--file-item-system-selectable-border-selected);
+}
+
+/* The row's own gap is 12px; the check mark sits 16px from the text. */
+:host(.is-system.is-selectable) .trailing {
+  margin-inline-start: calc(var(--file-item-system-selectable-trailing-gap) - var(--file-item-system-gap));
+}
+
+/* ---------- Upload variant (Figma upload-modal "file-item") ---------- */
+
+:host(.is-upload) {
+  position: relative;
+  overflow: hidden;
+  gap: 0;
+  /* No resting border (it would add 2px to the 48px row); only the error state draws one. */
+  border-width: 0;
+  min-block-size: var(--file-item-upload-min-height);
+  padding: 0;
+  background-color: var(--file-item-background-default);
+  border-radius: var(--file-item-system-border-radius);
+}
+
+:host(.is-upload.state-error) {
+  background-color: var(--file-item-background-error);
+  border-width: var(--file-item-container-border-width);
+}
+
+:host(.is-upload.is-disabled) {
+  background-color: var(--file-item-background-disabled);
+}
+
+:host(.is-upload) .row {
+  gap: var(--file-item-upload-gap);
+  padding-block: var(--file-item-upload-padding-block);
+  padding-inline-start: var(--file-item-upload-padding-inline-start);
+  padding-inline-end: var(--file-item-upload-padding-inline-end);
+  box-sizing: border-box;
+}
+
+/* With the progress bar (2px) under it the row ends 6px lower: 8 + 32 + 6 + 2 = 48. */
+:host(.is-upload.state-uploading) .row {
+  padding-block-end: var(--file-item-upload-padding-block-end-progress);
+}
+
+/* The upload host has no padding of its own (the row carries it), so the message below the divider takes the
+   row's insets, or it would sit flush against the border. */
+:host(.is-upload) .error-message {
+  padding-inline-start: var(--file-item-upload-padding-inline-start);
+  padding-inline-end: var(--file-item-upload-padding-inline-end);
+  padding-block-end: var(--file-item-upload-padding-block);
+}
+
+.leading-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--file-item-upload-status-size);
+  block-size: var(--file-item-upload-status-size);
+}
+
+.leading-status mud-icon {
+  inline-size: var(--file-item-upload-status-size);
+  block-size: var(--file-item-upload-status-size);
+}
+
+/* Figma loader: grey ring with a quarter-circle brand arc (2π · 8.75 / 4 ≈ 13.74 of 54.98), turning. */
+.loader {
+  display: block;
+  inline-size: var(--file-item-upload-loader-size);
+  block-size: var(--file-item-upload-loader-size);
+  animation: mud-file-item-loader var(--spinner-transition-duration) linear infinite;
+}
+
+.loader circle {
+  fill: none;
+  stroke-width: var(--file-item-upload-loader-stroke-width);
+}
+
+.loader-track {
+  stroke: var(--file-item-upload-loader-track);
+}
+
+.loader-arc {
+  stroke: var(--file-item-upload-loader-arc);
+  stroke-dasharray: 13.74 41.24;
+}
+
+@keyframes mud-file-item-loader {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+:host(.is-upload) .body {
+  gap: var(--file-item-upload-bullet-gap);
+}
+
+:host(.is-upload) .meta::before {
+  content: none;
+}
+
+/* The size is Body/Small (14/20) next to the 12px bullet (Figma 384:13692). */
+:host(.is-upload) .meta {
+  font-size: var(--file-item-upload-meta-font-size);
+  line-height: var(--file-item-upload-meta-line-height);
+}
+
+/* Resting row's document icon: Figma "User Uploaded", a 24px grey page with white lines. */
+.user-glyph {
+  display: block;
+  inline-size: var(--file-item-upload-status-size);
+  block-size: var(--file-item-upload-status-size);
+}
+
+.user-glyph-body {
+  fill: var(--file-item-upload-glyph-fill);
+}
+
+.user-glyph-lines {
+  fill: var(--file-item-upload-glyph-line);
+}
+
+:host(.is-disabled) .user-glyph {
+  opacity: 0.45;
+}
+
+.bullet {
+  flex-shrink: 0;
+  font-size: var(--file-item-upload-bullet-font-size);
+  line-height: var(--file-item-upload-bullet-line-height);
+  color: var(--file-item-text-meta-color-default);
+}
+
+:host(.is-upload) .remove mud-icon {
+  inline-size: var(--file-item-upload-remove-icon-size);
+  block-size: var(--file-item-upload-remove-icon-size);
+}
+
+.progress {
+  position: relative;
+  overflow: hidden;
+  inline-size: 100%;
+  block-size: var(--file-item-upload-progress-height);
+  background-color: var(--file-item-upload-progress-track);
+}
+
+.progress-fill {
+  /* --_progress is set on the host from the `progress` prop (clamped to 0-100%). */
+  inline-size: var(--_progress, 0%);
+  block-size: 100%;
+  background-color: var(--file-item-upload-progress-fill);
+  transition: inline-size var(--file-item-container-transition-duration)
+    var(--file-item-container-transition-timing-function);
+}
+
+/* No progress reported: a block slides along the track instead of a fill that never moves. */
+.progress-fill.is-indeterminate {
+  inline-size: 33%;
+  animation: mud-file-item-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes mud-file-item-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+
+  .progress-fill.is-indeterminate {
+    inline-size: 100%;
+    animation: none;
   }
 }

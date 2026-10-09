@@ -191,3 +191,69 @@ export const EdgeCases: Story = {
     },
   },
 };
+
+export const System: Story = {
+  name: 'System (issued document)',
+  render: () =>
+    wrap(
+      cell(
+        'variant="system" — Figma system-files-item',
+        /*html*/ `<mud-file-item variant="system" filename="Certificat de calitate de moștenitor" issued-label="Emis" issued-on="12.03.2026" issuer="EVO"></mud-file-item>`,
+      ),
+    ),
+  parameters: {
+    docs: {
+      source: {
+        type: 'code',
+        code: '<mud-file-item variant="system" filename="Certificat de calitate de moștenitor" issued-label="Emis" issued-on="12.03.2026" issuer="EVO"></mud-file-item>',
+      },
+    },
+  },
+};
+
+export const Upload: Story = {
+  name: 'Upload (file-item of the upload flow)',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'uploaded (resting)',
+          /*html*/ `<mud-file-item variant="upload" state="uploaded" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>`,
+        ),
+        cell(
+          'uploading, 40%',
+          /*html*/ `<mud-file-item variant="upload" state="uploading" progress="40" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>`,
+        ),
+        cell(
+          'uploading, no progress reported',
+          /*html*/ `<mud-file-item variant="upload" state="uploading" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>`,
+        ),
+        cell(
+          'success',
+          /*html*/ `<mud-file-item variant="upload" state="success" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>`,
+        ),
+        cell(
+          'error',
+          /*html*/ `<mud-file-item variant="upload" state="error" filename="document-prea-mare.pdf" size="14000000" error-text="Fișierul depășește limita de 5 MB"></mud-file-item>`,
+        ),
+        cell(
+          'disabled',
+          /*html*/ `<mud-file-item variant="upload" state="uploaded" disabled filename="document-arhivat.pdf" size="245320"></mud-file-item>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        type: 'code',
+        code: [
+          '<mud-file-item variant="upload" state="uploaded" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>',
+          '<mud-file-item variant="upload" state="uploading" progress="40" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>',
+          '<mud-file-item variant="upload" state="success" filename="planul-incaperilor.pdf" size="1887436"></mud-file-item>',
+          '<mud-file-item variant="upload" state="error" filename="document-prea-mare.pdf" size="14000000" error-text="Fișierul depășește limita de 5 MB"></mud-file-item>',
+        ].join('\n'),
+      },
+    },
+  },
+};

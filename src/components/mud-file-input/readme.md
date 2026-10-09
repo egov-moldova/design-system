@@ -108,8 +108,8 @@ graph TD;
   mud-file-input --> mud-file-item
   mud-button --> mud-logo
   mud-button --> mud-spinner
-  mud-file-item --> mud-spinner
   mud-file-item --> mud-icon
+  mud-file-item --> mud-spinner
   style mud-file-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
