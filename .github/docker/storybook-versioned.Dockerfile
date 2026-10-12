@@ -5,6 +5,7 @@ ARG COMPONENT_VERSION
 WORKDIR /app
 
 COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/patches ./.yarn/patches
 COPY web-components/package.json ./web-components/
 COPY react/package.json ./react/
 
