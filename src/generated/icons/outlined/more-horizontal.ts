@@ -1,0 +1,2 @@
+const svg: string = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" data-mud-asset="icon:outlined/more-horizontal"><path fill="currentColor" fill-rule="evenodd" d="M4 11.9a.1.1 0 1 0 0 .2.1.1 0 0 0 0-.2zm-1.9.1a1.9 1.9 0 1 1 3.8 0 1.9 1.9 0 0 1-3.8 0zm9.9-.1a.1.1 0 1 0 0 .2.1.1 0 0 0 0-.2zm-1.9.1a1.9 1.9 0 1 1 3.8 0 1.9 1.9 0 0 1-3.8 0zm9.9-.1a.1.1 0 1 0 0 .2.1.1 0 0 0 0-.2zm-1.9.1a1.9 1.9 0 1 1 3.8 0 1.9 1.9 0 0 1-3.8 0z" clip-rule="evenodd"/></svg>';
+export default svg;

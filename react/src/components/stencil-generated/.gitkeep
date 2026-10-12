@@ -1,3 +1,0 @@
-# This directory is populated by @stencil/react-output-target on `yarn build.react`.
-# The generated file (`index.ts`) is intentionally not committed — re-run the build
-# after pulling.

@@ -31,11 +31,12 @@ After `yarn build`, the relevant artifacts live in `dist/mud/`:
 | `mud.css` | Global base styles (reset, body defaults, focus ring helpers). | **Yes** |
 | `tokens/core.tokens.css` | Light-theme CSS variables (palette + semantic). | **Yes** |
 | `tokens/core.dark.tokens.css` | Dark-theme overrides, scoped under `[data-theme='dark']`. | Recommended |
-| `p-*.js` chunks | One per component, lazy-loaded by the entry. | Auto-served alongside the entry |
-| `assets/` | SVG files (used by `mud-icon`, `mud-logo`, and the country flags of `mud-phone-input` under `assets/flags/`). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `mud.esm.js` |
+| `p-*.js` chunks | The components, plus every icon, logo and country flag, each as a JavaScript module. The entry loads one only when something on the page shows it. | **Yes** — keep beside the entry |
 | `assets/fonts/` | The Onest variable font (`onest-variable.woff2`, weights 100–900). Requested by `mud.css` through a relative URL. | **Yes** — keep relative to `mud.css` |
 
-> **Critical:** ship the *entire* `dist/mud/` directory as one unit. The lazy loader uses `import.meta.url` to locate chunks and assets — moving or renaming individual files will break asset resolution at runtime.
+> **Critical:** ship the *entire* `dist/mud/` directory as one unit. The lazy loader uses `import.meta.url` to locate its chunks and the font — moving or renaming individual files will break them at runtime.
+
+There is no SVG folder to ship and no asset path to set: icons, logos and flags are chunks in the same directory, fetched only when shown.
 
 ---
 
@@ -61,7 +62,7 @@ That's it. From now on, `<mud-button>`, `<mud-icon>`, `<mud-modal>`, etc. work a
 
 ## 3. Plain HTML / static site
 
-Copy `dist/mud/` to your site's static folder (e.g. `public/mud/`) and reference it from the page:
+Copy `dist/mud/` to your site's static folder (e.g. `public/mud/`) and reference it from the page. This copy hosts the lazy-loader entry, its chunks and the font; it is not an asset step, and nothing else needs copying:
 
 ```html
 <!doctype html>
@@ -379,11 +380,11 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 
 - **Same-origin or CORS**: ESM module imports honor CORS. If you host the build on a CDN under a different origin than your page, the CDN must respond with `Access-Control-Allow-Origin`. unpkg and jsDelivr already do.
 - **Subresource Integrity (SRI)**: any third-party-hosted asset (CDN, partner domain) must carry `integrity="sha384-…"` + `crossorigin="anonymous"`. Note that SRI only covers files referenced directly in markup; lazy-loaded chunks emitted by Stencil cannot be SRI-protected because they are pulled via dynamic `import()`. Self-hosting eliminates this gap entirely — prefer it for production.
-- **MIME type**: `.js` files must be served as `application/javascript` (or `text/javascript`). Some legacy servers default to `application/octet-stream` for unknown extensions and the browser will refuse to execute the module. Configure your server to send the right MIME for `.js`, `.css`, and `.svg`.
+- **MIME type**: `.js` files must be served as `application/javascript` (or `text/javascript`). Some legacy servers default to `application/octet-stream` for unknown extensions and the browser will refuse to execute the module. Configure your server to send the right MIME for `.js`, `.css` and `.woff2`. Icons, logos and flags are `.js` modules, so they need no SVG MIME type.
 - **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `mud.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
-- **Compression**: enable Brotli/gzip on `.js`, `.css`, `.svg`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
+- **Compression**: enable Brotli/gzip on `.js` and `.css`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
 - **Fonts under CSP**: `mud.css` loads `assets/fonts/onest-variable.woff2` relative to itself, so `font-src` must allow the origin `mud.css` is served from (`'self'` when self-hosted, the CDN origin otherwise).
-- **Flags under CSP**: `mud-phone-input` shows each country flag as an `<img>` of `assets/flags/<CODE>.svg`, so `img-src` must allow the origin `mud.esm.js` is served from (`'self'` when self-hosted, the CDN origin otherwise).
+- **Icons, logos and flags under CSP**: they arrive as JavaScript modules, so `script-src` covers them, and they carry no `style` attribute. No `img-src` or `connect-src` entry is needed for them.
 - **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egov-moldova/mud/loader` before the loader runs:
 
   ```html
@@ -400,7 +401,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `mud.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/mud/` as a whole. |
-| Icons render as blank squares | Asset resolution failed | The SVG sprite path is derived from `mud.esm.js`'s URL. Ensure `dist/mud/assets/` is co-located with the entry. |
+| Icons, logos or flags render as blank squares | Their chunk (`p-*.js`) failed to load; each drawing ships as a JavaScript module inside the build, with no asset path to configure | Open DevTools → Network and look for a 404 or a blocked `p-*.js`; deploy `dist/mud/` as a whole, and keep `script-src` open to the origin that serves it. |
 | Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `mud.css`. Otherwise component CSS resolves variables to their fallback. |
 | Text renders in a system font instead of Onest | `mud.css` was copied without `assets/fonts/`, or CSP `font-src` blocks it | Deploy `dist/mud/` as a whole; check DevTools → Network for `onest-variable.woff2` and the console for a CSP violation. |
 | Dark mode doesn't apply | Missing dark tokens or wrong attribute | Confirm `core.dark.tokens.css` is linked **and** `<html data-theme="dark">` is set. |
@@ -417,4 +418,4 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - [`STACK.md`](./STACK.md) — stack overview (Stencil, Style Dictionary, Storybook)
 - [`DESIGN.md`](./DESIGN.md) — design tokens, theming, naming
 - Storybook (when published) — live API docs per component
-- `web-components/demo/` — runnable vanilla-HTML examples per component (`yarn demo.web`)
+- `packages/web-components/demo/` — runnable vanilla-HTML examples per component (`yarn demo.web`)

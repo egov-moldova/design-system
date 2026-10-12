@@ -7,7 +7,8 @@
 
 ## Overview
 
-Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+Icon — renders an inline SVG loaded on-demand: one small ES module per drawing, imported the
+first time that icon is rendered and shared by every later instance.
 
 One drawing per style covers every size: `variant` selects the style
 directory (`outlined` / `filled`) and `size` sets the rendered box.

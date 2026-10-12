@@ -88,7 +88,7 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | @Component | C5: `styleUrl` (one CSS file) is the default for `mud-*` | `manual` | [decorators C5](references/decorators.md#component) |
 | @Component | C6: `styleUrls` only when several stylesheets are needed; the project themes with CSS custom properties, not Stencil modes | `manual` | [decorators C6](references/decorators.md#component) |
 | @Component | C7: `styles` (inline string) only for tests or scaffolding, and pure CSS | `manual` | [decorators C7](references/decorators.md#component) |
-| @Component | C8: `assetsDirs: ['assets']` only when the component bundles static assets, read through `getAssetPath()` | `manual` | [decorators C8](references/decorators.md#component) |
+| @Component | C8: No `assetsDirs`: assets are ES modules loaded through `src/utils/svg-assets.ts`, and ESLint forbids the option in `src/` | `manual` | [decorators C8](references/decorators.md#component) |
 | @Component | C9: `shadow: { delegatesFocus: true }` on components that wrap a focusable control, so focusing the host focuses it | `manual` | [decorators C9](references/decorators.md#component) |
 | @Component | C10: `shadow: { slotAssignment: 'manual' }` only for components that assign slots imperatively | `manual` | [decorators C10](references/decorators.md#component) |
 | @Prop | P1: Props that drive styling use `reflect: true` so `:host([variant='primary'])` selectors match | `manual` | [decorators P1](references/decorators.md#prop) |
@@ -192,8 +192,8 @@ One row per rule kept in the references. `enforced-by` is exactly one of `compil
 | Functional | FC4: Stateful, lifecycle-bound or HTML-consumable UI is a class component instead | `manual` | [functional-api FC4](references/functional-api.md#functional) |
 | Functional | FC5: A component file exports only its class (type-only exports are allowed); a functional component lives in its own file | `eslint:@stencil/single-export` | — |
 | Public API | API1: Component code imports from `@stencil/core`, never from `@stencil/core/internal/…` (only `stencil.config.ts` does, for the `Config` type that declares `buildDocs`) | `manual` | [functional-api API1](references/functional-api.md#public-api) |
-| Public API | API3: Asset URLs come from `getAssetPath()`, never a hard-coded `/assets/…` path | `manual` | [functional-api API3](references/functional-api.md#public-api) |
-| Public API | API4: `setAssetPath()` belongs to consumer apps and tests, not components | `manual` | [functional-api API4](references/functional-api.md#public-api) |
+| Public API | API3: No asset URL: a drawing is imported through `src/utils/svg-assets.ts`, never resolved with `getAssetPath()` or a hard-coded `/assets/…` path; ESLint forbids `getAssetPath` in `src/` | `manual` | [functional-api API3](references/functional-api.md#public-api) |
+| Public API | API4: `setAssetPath()` is not used anywhere: there is no asset path to set; ESLint forbids it in `src/` | `manual` | [functional-api API4](references/functional-api.md#public-api) |
 | Public API | API5: Batched DOM reads and writes go through `readTask()` / `writeTask()` | `manual` | [functional-api API5](references/functional-api.md#public-api) |
 | Public API | API6: Consumers call `componentOnReady()` on the element; components never override it | `manual` | [functional-api API6](references/functional-api.md#public-api) |
 | @Watch | W1: a watcher is not `async` — [`component-structure.md` § @Watch Rule](../../../src/components/_agents/component-structure.md) | `script-16:STENCIL-WATCH-ASYNC` | `STENCIL-WATCH-ASYNC` |

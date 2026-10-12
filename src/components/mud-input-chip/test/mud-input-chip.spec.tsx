@@ -152,6 +152,22 @@ describe('mud-input-chip', () => {
       expect(chips?.[2].textContent).toContain('c');
     });
 
+    it('treats a null chips model at load as an empty list', async () => {
+      const { root } = await render(<mud-input-chip label="x" chips={null as unknown as string[]}></mud-input-chip>);
+      expect((root as unknown as { chips: string[] }).chips).toEqual([]);
+      expect(queryChips(root)?.length ?? 0).toBe(0);
+    });
+
+    it.each([null, undefined])('treats a %s chips assignment as clearing the list', async cleared => {
+      const { root } = await render(<mud-input-chip label="x" chips={['a', 'b']}></mud-input-chip>);
+      const host = root as unknown as { chips: string[] | null | undefined };
+      expect(queryChips(root)?.length).toBe(2);
+      host.chips = cleared;
+      await flush();
+      expect(host.chips).toEqual([]);
+      expect(queryChips(root)?.length ?? 0).toBe(0);
+    });
+
     it('renders a remove button per chip with localized aria-label', async () => {
       const { root } = await render(<mud-input-chip label="x" chips={['ana@gov.md']}></mud-input-chip>);
       const removes = queryChipRemoves(root);

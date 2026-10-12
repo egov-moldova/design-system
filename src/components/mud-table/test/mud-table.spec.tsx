@@ -5,11 +5,9 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 import '../mud-table';
 import '../../mud-checkbox/mud-checkbox';
 
-// `mud-icon` is intentionally NOT imported here: its `componentWillLoad`
-// resolves SVG asset URLs via `getAssetPath`, which the mock-doc test
-// environment cannot resolve. The sort affordance still renders as an
-// unupgraded `<mud-icon>` placeholder, which is sufficient for assertions
-// about table behaviour, aria-sort, and selection.
+// `mud-icon` is intentionally NOT imported here. The sort affordance renders
+// as an unupgraded `<mud-icon>` placeholder, which is sufficient for
+// assertions about table behaviour, aria-sort, and selection.
 
 import { describeLocales } from '../../../utils/locale.test-helpers';
 import { TABLE_MESSAGES } from '../mud-table.messages';

@@ -19,7 +19,7 @@ export interface SegmentedControlSegment {
   disabled?: boolean;
   /**
    * Optional leading icon. Maps to a registered `mud-icon` name.
-   * @see src/components/mud-icon/mud-icon.providers.ts
+   * @see src/components/mud-icon/icon-names.ts
    */
   iconName?: IconName;
 }
