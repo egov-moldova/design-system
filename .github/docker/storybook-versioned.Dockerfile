@@ -4,16 +4,11 @@ FROM node:24-alpine AS builder
 ARG COMPONENT_VERSION
 WORKDIR /app
 
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn/patches ./.yarn/patches
-COPY web-components/package.json ./web-components/
-COPY react/package.json ./react/
+COPY . .
 
 RUN --mount=type=cache,target=/root/.yarn/berry/cache \
     corepack enable \
  && yarn install --immutable --inline-builds --network-timeout 600000
-
-COPY . .
 
 ENV NODE_OPTIONS="--max-old-space-size=12288"
 ENV CI=true
