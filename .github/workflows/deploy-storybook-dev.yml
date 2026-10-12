@@ -2,6 +2,11 @@ name: Deploy Storybook to development
 
 on:
   workflow_dispatch:
+    inputs:
+      component_version:
+        description: 'Published @egov-moldova/mud version (use latest for the current stable release)'
+        required: false
+        default: 'latest'
 
 permissions:
   contents: read
@@ -11,8 +16,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve-version:
+    name: Resolve published version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      component_version: ${{ steps.resolve.outputs.component_version }}
+      source_sha: ${{ steps.resolve.outputs.source_sha }}
+      short_sha: ${{ steps.resolve.outputs.short_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Resolve npm version and source commit
+        id: resolve
+        env:
+          REQUESTED_VERSION: ${{ inputs.component_version }}
+        run: node .github/scripts/resolve-storybook-version.cjs "$REQUESTED_VERSION"
+
   deploy:
     name: Build image and deploy
+    needs: resolve-version
     runs-on: ${{ vars.DEPLOY_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 30
     environment:
@@ -21,7 +46,9 @@ jobs:
     env:
       REGISTRY: ${{ vars.HARBOR_REGISTRY }}
       IMAGE_REPOSITORY: ${{ vars.HARBOR_IMAGE_REPOSITORY }}
-      IMAGE_TAG: sha-${{ github.sha }}
+      COMPONENT_VERSION: ${{ needs.resolve-version.outputs.component_version }}
+      SOURCE_SHA: ${{ needs.resolve-version.outputs.source_sha }}
+      IMAGE_TAG: npm-${{ needs.resolve-version.outputs.component_version }}-sha-${{ needs.resolve-version.outputs.short_sha }}
       K8S_NAMESPACE: ${{ vars.K8S_NAMESPACE }}
       HELM_RELEASE: ${{ vars.HELM_RELEASE }}
       CHART_PATH: deploy/design.system/chart
@@ -31,6 +58,20 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.sha }}
+
+      - name: Check out published component source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+          path: component-source
+
+      - name: Verify published component source
+        shell: bash
+        working-directory: component-source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cp ../.github/docker/storybook-versioned.Dockerfile Dockerfile.storybook-versioned
 
       - name: Validate deployment configuration
         shell: bash
@@ -53,8 +94,10 @@ jobs:
       - name: Build and push Storybook image
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
-          context: .
-          file: Dockerfile
+          context: component-source
+          file: component-source/Dockerfile.storybook-versioned
+          build-args: |
+            COMPONENT_VERSION=${{ env.COMPONENT_VERSION }}
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}
@@ -113,5 +156,7 @@ jobs:
         run: |
           {
             echo "Deployed image: \`${REGISTRY}/${IMAGE_REPOSITORY}:${IMAGE_TAG}\`"
+            echo "Component version: \`@egov-moldova/mud@${COMPONENT_VERSION}\`"
+            echo "Source commit: \`${SOURCE_SHA}\`"
             echo "Application: https://mud.dev.egov.md"
           } >> "$GITHUB_STEP_SUMMARY"

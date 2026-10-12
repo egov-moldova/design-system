@@ -54,10 +54,12 @@ jobs:
             VERSION="$RELEASE_VERSION"
             TAG=latest
           fi
+          SOURCE_SHA="$(git rev-parse HEAD)"
           npm pkg set version="$VERSION"
+          npm pkg set gitHead="$SOURCE_SHA"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "Publishing $VERSION under dist-tag $TAG"
+          echo "Publishing $VERSION from $SOURCE_SHA under dist-tag $TAG"
 
       # Before `yarn build`: Stencil empties dist/ and restores dist/mud/tokens/
       # from tokens/generated/*.css, which only tokens.build writes.
