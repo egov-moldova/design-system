@@ -9,8 +9,8 @@
  *
  * The files are optimised with SVGO (`svgo.config.flags.js`) and written to
  * `src/components/mud-phone-input/assets/flags/<code>.svg`, together with the upstream
- * `LICENSE` and a `SOURCE.json` that pins the upstream commit. Stencil copies the whole
- * `assets/` folder to `dist/`, so the licence travels with the flags.
+ * `LICENSE` and a `SOURCE.json` that pins the upstream commit. The build publishes the licence as
+ * `dist/mud/licenses/flag-icons.txt` and the asset-module generator embeds it in the flag map.
  *
  *   yarn svg:flags                        # fetch the pinned commit and sync
  *   yarn svg:flags --from <checkout>      # use a local flag-icons checkout

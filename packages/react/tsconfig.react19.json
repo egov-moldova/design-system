@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "paths": {
+      "react": ["../../node_modules/react-types-19"],
+      "react/*": ["../../node_modules/react-types-19/*"]
+    }
+  }
+}

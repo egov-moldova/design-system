@@ -1,5 +1,4 @@
-import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
-import { setAssetPath } from '@stencil/core';
+import { render, h, describe, it, expect } from '@stencil/vitest';
 
 import { formatMessage } from '../../../utils/locale';
 import { describeLocales } from '../../../utils/locale.test-helpers';
@@ -11,27 +10,6 @@ import type { AvatarMessages } from '../mud-avatar.messages';
 import { AVATAR_SIZES, AVATAR_TYPES } from '../mud-avatar.types';
 import { deriveInitials, ICON_SIZE_FOR } from '../mud-avatar.utils';
 import { ICON_SIZES } from '../../mud-icon/mud-icon.types';
-
-// `mud-icon` fetches its SVGs asynchronously via `getAssetPath` + `fetch`.
-// Stub both in this test environment so the avatar tests that render
-// `type="icon"` don't blow up on `new URL(...)`.
-let fetchSpy: ReturnType<typeof vi.spyOn>;
-
-beforeEach(() => {
-  setAssetPath('http://localhost/');
-  fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
-    const match = String(url).match(/\/(outlined|filled)\/([^/]+)\.svg/);
-    if (!match) return new Response('', { status: 404 });
-    return new Response(`<svg data-name="${match[2]}" data-variant="${match[1]}"></svg>`, {
-      status: 200,
-      headers: { 'Content-Type': 'image/svg+xml' },
-    });
-  });
-});
-
-afterEach(() => {
-  fetchSpy.mockRestore();
-});
 
 const queryInner = (root: Element | null | undefined): Element | null =>
   (root?.shadowRoot?.querySelector('.inner') ?? null) as Element | null;

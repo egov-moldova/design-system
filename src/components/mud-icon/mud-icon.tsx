@@ -1,20 +1,23 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import defaultManifest from './assets/icons.manifest.json';
-import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
+import { ICON_MODULES } from '../../generated/icons';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { createSvgLoader } from '../../utils/svg-assets';
 import {
+  hasIconVariant,
   ICON_VARIANTS,
   isIconName,
   isIconVariant,
-  type IconManifest,
   type IconName,
   type IconSize,
   type IconVariant,
 } from './mud-icon.types';
 
+const icons = createSvgLoader(ICON_MODULES);
+
 /**
- * Icon — renders an inline SVG fetched on-demand from the icon assets folder.
+ * Icon — renders an inline SVG loaded on-demand: one small ES module per drawing, imported the
+ * first time that icon is rendered and shared by every later instance.
  *
  * One drawing per style covers every size: `variant` selects the style
  * directory (`outlined` / `filled`) and `size` sets the rendered box.
@@ -28,7 +31,6 @@ import {
   tag: 'mud-icon',
   styleUrl: 'mud-icon.css',
   shadow: true,
-  assetsDirs: ['assets'],
 })
 export class MudIcon {
   /**
@@ -78,6 +80,10 @@ export class MudIcon {
 
   private svgCacheKey: string = '';
   private stopAriaLabel?: () => void;
+  /** The retry the loader's policy (`retryDelay`) scheduled after a failed import. */
+  private retryTimer?: ReturnType<typeof setTimeout>;
+  /** The key whose failure was last warned about, so a retry that fails again stays quiet. */
+  private warnedKey = '';
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -106,10 +112,13 @@ export class MudIcon {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
       keepOnHost: true,
     });
+    // Moved in the DOM while its import was failing: the retry was cancelled on the way out.
+    if (this.warnedKey && !this.svgElement) void this.loadSvg();
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    clearTimeout(this.retryTimer);
   }
 
   componentWillRender() {
@@ -130,6 +139,7 @@ export class MudIcon {
   }
 
   private async loadSvg(): Promise<void> {
+    clearTimeout(this.retryTimer);
     const requestedName = this.name;
     // An attribute value is whatever the HTML said. Naming a bad `variant` here
     // keeps the fallback warning below about the ASSET SET, not about a typo.
@@ -139,7 +149,6 @@ export class MudIcon {
         `[mud-icon] Unknown variant="${this.variant}" — rendering "outlined". Expected ${ICON_VARIANTS.join(' or ')}.`,
       );
     }
-    const manifest = defaultManifest as IconManifest;
     // `isIconName`, not `manifest[name]` / `name in manifest`: a runtime string such as
     // "constructor" resolves through Object.prototype and reached `entry.variants.includes`
     // as undefined, throwing inside componentWillLoad (test/mud-icon.spec.tsx).
@@ -150,45 +159,68 @@ export class MudIcon {
       return;
     }
 
-    const result = resolveIconAsset(requestedName, requestedVariant, manifest);
-    if (!result) {
-      // Reached this branch even though the manifest entry exists. In
-      // production this can only happen if `entry.variants` is empty, which the
-      // generated manifest never emits. In vitest browser-mode it's the common
-      // case: the entry exists, but `getAssetPath` cannot construct a URL
-      // outside the lazy-bundle host. Falling through silently — the host still
-      // renders as aria-hidden (see render()), no per-render console noise.
+    // Not every icon is drawn in both styles (`facebook` is filled-only, most glyphs are
+    // outlined-only). Rendering the other style beats rendering nothing.
+    const resolvedVariant = hasIconVariant(requestedName, requestedVariant)
+      ? requestedVariant
+      : ICON_VARIANTS.find(candidate => hasIconVariant(requestedName, candidate));
+    if (!resolvedVariant) {
+      // The generated name list never carries an icon with no drawing at all.
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
     }
 
-    const cacheKey = `${requestedName}|${result.resolvedVariant}`;
-    if (this.svgCacheKey === cacheKey) return;
+    const key = `${resolvedVariant}/${requestedName}`;
+    if (this.svgCacheKey === key) return;
 
     // Below the cache guard: toggling `variant` on a single-style icon resolves
     // to the same drawing every time, and warning above this line repeated the
-    // message on every toggle without a fetch behind it.
-    if (result.resolvedVariant !== requestedVariant) {
+    // message on every toggle without a load behind it.
+    if (resolvedVariant !== requestedVariant) {
       console.warn(
-        `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${result.resolvedVariant}".`,
+        `[mud-icon] No "${requestedVariant}" drawing for name="${requestedName}" — rendering "${resolvedVariant}".`,
       );
     }
 
-    const element = await fetchIconSvg(result.url);
-
-    // Guard: props changed during the async fetch — discard stale result
-    if (this.name !== requestedName || this.variant !== requestedVariant) return;
-
-    if (!element) {
-      console.warn(`[mud-icon] Failed to load SVG: name="${requestedName}" variant=${result.resolvedVariant}`);
-      this.svgCacheKey = '';
-      this.svgElement = null;
+    // A drawing another instance already loaded renders synchronously, in the same pass.
+    const hit = icons.cached(key);
+    if (hit) {
+      this.svgCacheKey = key;
+      this.svgElement = hit;
       return;
     }
 
-    this.svgCacheKey = cacheKey;
-    this.svgElement = element.cloneNode(true) as Element;
+    const element = await icons.load(key);
+
+    // Guard: props changed during the async import — discard the stale result. The variant is
+    // compared normalised, as `requestedVariant` is, or an invalid one would discard every load.
+    const currentVariant = isIconVariant(this.variant) ? this.variant : 'outlined';
+    if (this.name !== requestedName || currentVariant !== requestedVariant) return;
+
+    if (!element) {
+      if (this.warnedKey !== key) {
+        this.warnedKey = key;
+        console.warn(
+          `[mud-icon] Failed to load SVG: name="${requestedName}" variant=${resolvedVariant} (${icons.failure(key)?.message ?? 'unknown cause'})`,
+        );
+      }
+      this.svgCacheKey = '';
+      this.svgElement = null;
+      // Offline, or a chunk a redeploy removed: ask again when the loader's backoff allows, with no
+      // user action needed. A rejected drawing (`Infinity`) is not asked for again.
+      const delay = icons.retryDelay(key);
+      if (Number.isFinite(delay)) {
+        this.retryTimer = setTimeout(() => {
+          if (this.host.isConnected) void this.loadSvg();
+        }, delay);
+      }
+      return;
+    }
+
+    this.warnedKey = '';
+    this.svgCacheKey = key;
+    this.svgElement = element;
   }
 
   private get isKnownName(): boolean {

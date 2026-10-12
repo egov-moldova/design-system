@@ -321,15 +321,17 @@ const focusTabHtml = (id: string, selectedValue: string, focusValue: string, ari
     <mud-tab value="c" label="Label"></mud-tab>
   </mud-tabs>
   <script>
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        // The story may already be unmounted when these frames run (test runners
-        // mount the next story first), so the host can be gone.
-        var host = document.getElementById('${id}');
-        var tab = host && host.querySelector('mud-tab[value="${focusValue}"]');
-        if (tab) tab.focus();
-      });
-    });
+    // A tab is focusable only once mud-tabs has given it a tabindex (its roving-tabindex
+    // sync), so focusing on a fixed frame count lands or misses with load timing. Wait for
+    // that tabindex, up to about two seconds of frames.
+    (function focusWhenFocusable(framesLeft) {
+      // The story may already be unmounted (test runners mount the next story first).
+      var host = document.getElementById('${id}');
+      if (!host) return;
+      var tab = host.querySelector('mud-tab[value="${focusValue}"]');
+      if (tab && tab.hasAttribute('tabindex')) return tab.focus();
+      if (framesLeft > 0) requestAnimationFrame(function() { focusWhenFocusable(framesLeft - 1); });
+    })(120);
   </script>
 `;
 

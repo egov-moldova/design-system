@@ -23,7 +23,6 @@
     },
     "./styles.css": "./dist/mud/mud.css",
     "./tokens/*.css": "./dist/mud/tokens/*.css",
-    "./mud.esm.js": "./dist/mud/mud.esm.js",
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
@@ -31,8 +30,11 @@
     "./components/mud-*.js": "./dist/components/mud-*.js"
   },
   "workspaces": [
-    "web-components",
-    "react"
+    "packages/web-components",
+    "packages/react",
+    "packages/vue",
+    "packages/angular",
+    "tooling/hooks"
   ],
   "resolutions": {
     "undici-types": "~7.19.0",
@@ -48,8 +50,15 @@
     "undici": "6.28.1",
     "source-map-js": "1.2.2"
   },
+  "sideEffects": [
+    "*.css",
+    "./dist/mud/mud.esm.js",
+    "./dist/esm/loader.js",
+    "./loader/*"
+  ],
   "files": [
     "dist/",
+    "!dist/collection/**/*.svg",
     "loader/",
     "CHANGELOG.md"
   ],
@@ -61,7 +70,9 @@
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
-    "build.react": "stencil build --docs --react && node scripts/copy-component-assets.mjs && yarn workspace @egov-moldova/mud-react build",
+    "build.react": "wireit",
+    "build.vue": "wireit",
+    "build.angular": "wireit",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
     "demo.web.dev": "wireit",
@@ -115,8 +126,9 @@
     "tokens.watch": "wireit",
     "svg:remove-size": "svgo -f src/components/mud-icon/assets --recursive --config svgo.config.icons.size.js",
     "svg:remove-fill": "svgo -f src/components/mud-icon/assets --recursive --config svgo.config.icons.fill.js",
-    "svg:icons": "yarn format.icons && node scripts/icons/build-registry.mjs",
-    "svg:flags": "node scripts/flags/sync-flags.mjs",
+    "svg:icons": "yarn format.icons && node scripts/icons/build-registry.mjs && node scripts/assets/build-asset-modules.mjs",
+    "svg:flags": "node scripts/flags/sync-flags.mjs \"$@\" && node scripts/assets/build-asset-modules.mjs",
+    "assets.generate": "node scripts/assets/build-asset-modules.mjs",
     "countries.sync": "node scripts/countries/sync-countries.mjs",
     "sync:main": "node scripts/git/sync-main.mjs",
     "types.ensure": "wireit",
@@ -227,8 +239,9 @@
       ]
     },
     "build": {
-      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
+      "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
       "dependencies": [
+        "tokens.build",
         "tokens.build.prod"
       ],
       "clean": false,
@@ -237,18 +250,81 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "src/assets/**/*",
+        "src/components/mud-phone-input/assets/flags/LICENSE",
         "!src/components.d.ts",
         "stencil.config.ts",
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
-        "scripts/copy-component-assets.mjs"
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [
         "dist/**",
         "loader/**",
         ".storybook/custom-elements.json",
-        "src/components.d.ts"
+        "src/components.d.ts",
+        "packages/react/src/components/stencil-generated/**",
+        "packages/vue/src/components/stencil-generated/**",
+        "packages/angular/src/lib/stencil-generated/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.react": {
+      "command": "yarn workspace @egov-moldova/mud-react build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "packages/react/src/**/*.ts",
+        "packages/react/src/**/*.tsx",
+        "packages/react/tsconfig.json",
+        "packages/react/tsconfig.react19.json",
+        "packages/react/package.json"
+      ],
+      "output": [
+        "packages/react/dist/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.vue": {
+      "command": "yarn workspace @egov-moldova/mud-vue build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "packages/vue/src/**/*.ts",
+        "packages/vue/tsconfig.json",
+        "packages/vue/package.json"
+      ],
+      "output": [
+        "packages/vue/dist/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.angular": {
+      "command": "yarn workspace @egov-moldova/mud-angular build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "packages/angular/src/**/*.ts",
+        "packages/angular/ng-package.json",
+        "packages/angular/tsconfig.json",
+        "packages/angular/package.json",
+        "packages/angular/LICENSE",
+        "scripts/adapters/pin-workspace-ranges.mjs",
+        "package.json"
+      ],
+      "output": [
+        "packages/angular/dist/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -260,12 +336,12 @@
         "build"
       ],
       "files": [
-        "web-components/src/**/*.ts",
-        "web-components/tsconfig.json",
-        "web-components/package.json"
+        "packages/web-components/src/**/*.ts",
+        "packages/web-components/tsconfig.json",
+        "packages/web-components/package.json"
       ],
       "output": [
-        "web-components/dist/**"
+        "packages/web-components/dist/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -291,11 +367,11 @@
         "build"
       ],
       "files": [
-        "web-components/demo/**",
-        "web-components/package.json"
+        "packages/web-components/demo/**",
+        "packages/web-components/package.json"
       ],
       "output": [
-        "web-components/demo/dist-demo/**"
+        "packages/web-components/demo/dist-demo/**"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -359,6 +435,9 @@
         "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs",
         "!src/components.d.ts"
       ],
       "output": [
@@ -459,7 +538,10 @@
         "tsconfig.json",
         "vitest.config.mts",
         "vitest-setup.ts",
-        "scripts/check-test-stderr.mjs"
+        "scripts/check-test-stderr.mjs",
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [],
       "packageLocks": [
@@ -484,7 +566,10 @@
         "*.ts",
         "*.mjs",
         "*.d.mts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "scripts/adapters/**",
+        "!scripts/adapters/consumer-fixture.mjs",
+        "!scripts/adapters/pin-workspace-ranges.mjs"
       ],
       "output": [],
       "packageLocks": [
@@ -530,10 +615,12 @@
     "@commitlint/config-conventional": "^21.0.1",
     "@playwright/test": "^1.63.0",
     "@prettier/plugin-oxc": "^0.1.4",
+    "@stencil/angular-output-target": "^1.5.0",
     "@stencil/eslint-plugin": "^1.4.0",
     "@stencil/postcss": "^2.1.0",
     "@stencil/react-output-target": "^1.6.2",
     "@stencil/vitest": "^1.15.1",
+    "@stencil/vue-output-target": "~0.14.3",
     "@storybook/addon-a11y": "^10.6.0",
     "@storybook/addon-docs": "^10.6.0",
     "@storybook/addon-links": "^10.6.0",
