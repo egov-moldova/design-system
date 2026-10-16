@@ -68,7 +68,7 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
     }
   });
 
-  it('registers the Phase 3 scripts as agreed: 17 source (A), 18 CEM (B), 19 interaction (C)', () => {
+  it('registers scripts 17 source (A), 18 CEM (B), 19 interaction (C)', () => {
     const byId = Object.fromEntries(AUDIT_SCRIPTS.map(s => [s.id, s]));
     assert.deepEqual(
       [byId['17'].wave, byId['17'].file, byId['17'].args, byId['17'].perComponent],
@@ -157,7 +157,7 @@ describe('run-all: selectScripts', () => {
     );
   });
 
-  it('Decision 12: no depth selects an ai-leg row — the registry has none', () => {
+  it('no depth selects an ai-leg row — the registry has none', () => {
     assert.equal(
       AUDIT_SCRIPTS.some(s => s.kind === 'ai-leg' || s.id.startsWith('ai-')),
       false,
@@ -417,8 +417,8 @@ describe('run-all: aggregate row status (F1, F3)', () => {
     assert.equal(combined.ok, false);
   });
 
-  it('sums summary.incomplete across several broken rows and reproduces the Phase 0 06/08 finding', () => {
-    // Phase 0 results: a healthy install still has 06 and 08 exit 2 (no coverage / no dist yet).
+  it('sums summary.incomplete across several broken rows and reproduces the 06/08 finding of a healthy install', () => {
+    // A healthy install still has 06 and 08 exit 2 (no coverage / no dist yet).
     // S10: with no `status` set on the result, the prerequisite already succeeded (a
     // real prerequisite failure sets `status: 'missing-prereq'` upstream, in
     // prerequisiteFailure) — these are script crashes.
@@ -433,7 +433,7 @@ describe('run-all: aggregate row status (F1, F3)', () => {
   });
 });
 
-describe('run-all: evaluateCoverageResults (S11, plan 2026-09-22-audit-depths-sentinel-fixes.md Decision §6)', () => {
+describe('run-all: evaluateCoverageResults (S11)', () => {
   it('ok when the run exited 0, regardless of testResults content', () => {
     const res = evaluateCoverageResults({ testResults: [] }, { exitCode: 0, components: ['mud-a'] });
     assert.deepEqual(res, { ok: true, failedComponents: [], unmappedSpecs: [] });
@@ -836,7 +836,7 @@ describe('run-all: runAudit — standard prerequisites and arguments', () => {
   });
 });
 
-describe('run-all: runAudit — Figma inputs from HEAD only (Design §8)', () => {
+describe('run-all: runAudit — Figma inputs from HEAD only', () => {
   const H = manifestText();
   async function run15(head, wt) {
     const p = pipeline({ argv: ['mud-fx', '--verdict'], head: { 'mud-fx': head }, wt: { 'mud-fx': wt } });
@@ -848,7 +848,7 @@ describe('run-all: runAudit — Figma inputs from HEAD only (Design §8)', () =>
       brief: readFileSync(join(p.auditDir, 'mud-fx', 'fix-brief.md'), 'utf8'),
     };
   }
-  // runDir is per-run by design (Decision §10) — each call runs under its own
+  // runDir is per-run by design — each call runs under its own
   // fresh tmp repoRoot, so only notes/runDir are excluded from the compare.
   const omit = (obj, keys) => Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)));
   const sameAsHead = (variant, baseline) => {
@@ -919,7 +919,7 @@ describe('run-all: runAudit — --changed runs one pipeline per component', () =
   });
 });
 
-describe('storybook-helpers: R3 locks (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3)', () => {
+describe('storybook-helpers: R3 locks', () => {
   function tmpLockPath() {
     const dir = mkdtempSync(join(tmpdir(), 'lock-spec-'));
     tmpRoots.push(dir);
@@ -1072,7 +1072,7 @@ describe('run-all: runAudit — R3 worktree lock', () => {
   });
 });
 
-describe('run-all: runAudit — S5, zero components selected (plan 2026-09-22-audit-depths-sentinel-fixes.md)', () => {
+describe('run-all: runAudit — S5, zero components selected', () => {
   it('--changed selecting nothing, repo-level rows clean → PASS, note printed, 03 still ran once', async () => {
     const p = pipeline({ argv: ['--changed', '--depth', 'quick', '--verdict'], changed: [] });
     const r = await runAudit(p.args, p.deps);
@@ -1107,7 +1107,7 @@ describe('run-all: runAudit — S5, zero components selected (plan 2026-09-22-au
 describe('run-all: runAudit — deep', () => {
   const H = manifestText();
 
-  it('emits one row per mapped deep item, opens no AI row, and passes at PRODUCTION-READY (Decision 12)', async () => {
+  it('emits one row per mapped deep item, opens no review-leg row, and passes at PRODUCTION-READY', async () => {
     const p = pipeline({
       argv: ['mud-fx', '--depth', 'deep', '--verdict'],
       env: { FIGMA_TOKEN: 'x' },
@@ -1118,7 +1118,6 @@ describe('run-all: runAudit — deep', () => {
     const envelope = r.perComponent[0].envelope;
     const rowIds = new Set(envelope.results.map(x => x.id));
     for (const id of ['figma-refs', 'adapter-react', 'adapter-vanilla', 'e2e']) assert.ok(rowIds.has(id), id);
-    assert.equal('aiLegs' in envelope.audit, false);
     assert.equal(envelope.results.find(x => x.id === 'e2e').status, 'skipped');
     assert.ok(p.commands.includes('yarn build.react') && p.commands.includes('yarn build.web'));
     assert.deepEqual(JSON.parse(infoOf(envelope, 'figma-refs', 'FIXTURE-ARGV')[0]), [
@@ -1131,14 +1130,14 @@ describe('run-all: runAudit — deep', () => {
     const v = verdictOf(p.auditDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
-    assert.match(v.headline, /ai-legs: advisory/);
+    assert.match(v.headline, /review-legs: advisory/);
 
     // A leg that writes afterwards is folded in by a re-render, as advisory only.
     const runDir = join(p.auditDir, 'mud-fx', 'runs', 'run-1');
     const [first] = allLegsClosed();
-    mkdirSync(join(runDir, 'ai', first.leg), { recursive: true });
+    mkdirSync(join(runDir, 'reviews', first.leg), { recursive: true });
     writeFileSync(
-      join(runDir, 'ai', first.leg, 'ai-findings.json'),
+      join(runDir, 'reviews', first.leg, 'review-findings.json'),
       JSON.stringify({ ...first.data, findings: [{ severity: 'error', code: 'DX-1', message: 'm' }] }),
     );
     const rerendered = writeVerdictForRun(runDir);
@@ -1208,7 +1207,7 @@ describe('run-all: runAudit — env preflight with --verdict', () => {
   });
 });
 
-describe('storybook-helpers: ensureWorktreeStorybook (Design §9, nothing started for real)', () => {
+describe('storybook-helpers: ensureWorktreeStorybook (nothing started for real)', () => {
   const fake = over => {
     const log = { started: [], written: [] };
     return {
@@ -1311,18 +1310,9 @@ describe('run-all: the command pre-pr-check runs', () => {
     for (const r of envelope.results) assert.ok('error' in r, `${r.id} has no error field`);
     assert.equal(envelope.meta.depth, 'quick');
   });
-
-  it('pre-pr-check.md runs exactly that command', () => {
-    const doc = readFileSync(join(REPO, '.claude', 'commands', 'pre-pr-check.md'), 'utf8');
-    // R5 (Phase 3, plan 2026-09-22-audit-depths-sentinel-fixes.md): the fast
-    // path runs the audit ONCE through `verdict.mjs` and branches on its exit
-    // status — never the raw `run-all.mjs` invocation this test asserted
-    // before Phase 3 landed.
-    assert.match(doc, /^yarn audit:component --changed --depth quick --no-browser --json$/m);
-  });
 });
 
-describe('run-all: Phase 5 (sentinel round 2)', () => {
+describe('run-all: review round 2', () => {
   const H = manifestText();
   const liveHolder = lockPath => {
     const realStartTime = getProcessStartTime(process.pid);

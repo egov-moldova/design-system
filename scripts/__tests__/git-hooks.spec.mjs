@@ -85,7 +85,7 @@ describe('commit-msg hook: commitlint config', () => {
   });
 
   it('accepts a Conventional Commit', () => {
-    assert.equal(commitlint('docs(agents): load AGENTS.md through CLAUDE.md\n'), 0);
+    assert.equal(commitlint('docs(contributing): describe the commit conventions\n'), 0);
   });
 });
 

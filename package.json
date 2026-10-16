@@ -94,6 +94,7 @@
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
     "test:scripts": "wireit",
+    "check:scope": "wireit",
     "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
     "changelog.check": "node scripts/changelog-release.mjs --check",
@@ -144,9 +145,7 @@
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "audit:test": "node scripts/audit/__tests__/02-antipatterns.test.mjs",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
-    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs",
-    "cleanup:agents": "node scripts/cleanup-agents.mjs",
-    "cleanup:agents:dry": "node scripts/cleanup-agents.mjs --dry-run"
+    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
   },
   "wireit": {
     "tokens.build.core": {
@@ -414,7 +413,8 @@
         "lint",
         "test",
         "test:scripts",
-        "docs:check"
+        "docs:check",
+        "check:scope"
       ],
       "files": [],
       "output": [],
@@ -428,8 +428,11 @@
         "build"
       ]
     },
+    "check:scope": {
+      "command": "node scripts/check-public-scope.mjs && node scripts/check-public-scope.mjs --content"
+    },
     "docs:check": {
-      "command": "node scripts/docs/check-ai-docs.mjs"
+      "command": "node scripts/docs/check-docs.mjs"
     },
     "lint.css": {
       "command": "stylelint \"src/**/*.css\" --allow-empty-input",

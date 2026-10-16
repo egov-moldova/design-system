@@ -3,14 +3,12 @@
  * 02-stencil-antipatterns.mjs
  *
  * Scans TSX and CSS for Stencil and project anti-patterns. Each rule's `code` is
- * its stable identifier; its `ruleScope` names the doc that owns it:
- * `'stencil'` → `.claude/skills/stencil-compliance/`, `'project'` →
- * `_agents/anti-patterns.md` and the token/icon/security docs.
+ * its stable identifier; its `ruleScope` says whose rule it is: `'stencil'` is a
+ * framework rule (decorators, lifecycle, reactivity), `'project'` is a rule of
+ * this repository (tokens, icons, security, content API).
  *
- * Replaces AI work in:
- *   - `.claude/commands/pre-pr-check.md` Wave 1 (6 separate rg calls)
- *   - `.claude/skills/audit-component/SKILL.md` Wave 1 (~14 anti-pattern greps)
- *   - `.claude/agents/audit-production.md` Phase 1.2.1 + 1.2.2 (lifecycle + reactivity)
+ * Replaces the manual grep waves a reviewer would otherwise run: the lint-style
+ * pattern greps plus the lifecycle and reactivity checks.
  *
  * Patterns are evaluated per-line for fast O(n) scans. Two patterns need
  * file-level state (lifecycle pairing, form-associated context); they have
@@ -22,9 +20,9 @@
  *
  * Output JSON envelope: see scripts/audit/lib/json-output.mjs (schemaVersion 1.0.0).
  *
- * Quality note: this script produces structurally MORE detail than the prior
- * AI workflow (every match gets file:line; the AI workflow only reported counts).
- * That extra detail is additive, not lossy — AI consumers can ignore line info
+ * Quality note: this script produces structurally MORE detail than the manual
+ * greps it replaces (every match gets file:line; the greps only reported counts).
+ * That extra detail is additive, not lossy — consumers can ignore line info
  * if they only want the count, but they gain precise navigation when desired.
  */
 import { readFile } from 'node:fs/promises';
@@ -134,10 +132,10 @@ export function hasChildExpression(text, from = 0, insideOnly = false) {
 
 /**
  * Pattern registry. Each entry:
- *   - code:     stable identifier (referenced by AI workflows and tests)
+ *   - code:     stable identifier (referenced by review legs and tests)
  *   - severity: error | warning | info
  *   - scope:     'tsx' | 'css' (which file kind to scan)
- *   - ruleScope: 'stencil' | 'project' (which doc owns the rule)
+ *   - ruleScope: 'stencil' | 'project' (whose rule it is)
  *   - regex:     matched line-by-line; capture group 0 is the snippet shown
  *   - filter:    optional fn(match, ctx) => boolean — skip false positives
  *   - message:   human-readable description
@@ -470,8 +468,7 @@ export const FILE_CHECKS = [
     },
   },
   {
-    // Content API rule (src/components/_agents/slot-patterns.md, "Prop, Slot or Hybrid"):
-    // a text prop rendered as a slot's fallback (a hybrid) is the documented API
+    // Content API rule ("Prop, Slot or Hybrid"): a text prop rendered as a slot's fallback (a hybrid) is the documented API
     // of the components in HYBRID_CONTENT_COMPONENTS only. Anywhere else it is a
     // second way to set the same content that nobody decided on.
     //

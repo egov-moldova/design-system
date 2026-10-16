@@ -10,10 +10,6 @@
  *   - @Event()                    → JSDoc with description; generic type covered separately
  *   - @Method()                   → JSDoc with @param (per arg) and @returns
  *
- * Replaces AI work in:
- *   - `.claude/agents/audit-production.md` Phase 8.1 (JSDoc completeness)
- *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` docs check
- *
  * Usage:
  *   node scripts/audit/04-jsdoc-completeness.mjs mud-button [--json] [--out file]
  *   node scripts/audit/04-jsdoc-completeness.mjs --all

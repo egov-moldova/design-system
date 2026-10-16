@@ -16,12 +16,6 @@
  * This is the upstream data source for:
  *   - scripts/scaffold/story-scaffold.mjs  (generate CSF3 boilerplate)
  *   - scripts/scaffold/test-scaffold.mjs   (generate spec.tsx skeleton)
- *   - redesign-component agent Step 1 (read existing implementation)
- *
- * Replaces AI work in:
- *   - story-writer Step 1
- *   - test-writer Step 1
- *   - redesign-component Step 1 (the "read existing implementation" portion)
  *
  * Usage:
  *   node scripts/audit/14-component-contract.mjs mud-button --json
@@ -215,7 +209,7 @@ export function extractContractFromTsx(tsxPath, componentName) {
   // `<slot name="separator">` element).
   contract.slots = mergeSlots(extractSlots(tsxContent), extractSlotJsDocTags(classNode));
 
-  // Archetype routes Layer-2 (AI MCP) checks in the audit-component skill.
+  // Archetype routes the Layer-2 browser checks (the advisory review legs).
   // Override via class-level `@archetype FORM|STATUS|OVERLAY|ACTION|CONTAINER`
   // wins over heuristics; otherwise inferred from contract + TSX content.
   const overrideValue = readArchetypeOverride(classNode);
@@ -224,7 +218,7 @@ export function extractContractFromTsx(tsxPath, componentName) {
   return { findings, contract, componentName };
 }
 
-// ─── Archetype inference (drives Layer-2 routing in SKILL.md §CX) ──────────
+// ─── Archetype inference (drives Layer-2 check routing) ──────────
 
 const VALID_ARCHETYPES = ['FORM', 'STATUS', 'OVERLAY', 'ACTION', 'CONTAINER'];
 const OVERLAY_PROP_NAMES = ['open', 'expanded', 'visible', 'isOpen', 'active'];
@@ -262,7 +256,7 @@ function readArchetypeOverride(classNode) {
  *   override  →  FORM  →  STATUS  →  OVERLAY  →  ACTION  →  CONTAINER
  *
  * Returns { value, source: 'override'|'heuristic', confidence: 'high'|'medium'|'low', signals: string[] }.
- * The `signals` array makes the decision auditable (shown in the SKILL Check Matrix).
+ * The `signals` array makes the decision auditable (shown in the Layer-2 check matrix).
  */
 export function inferArchetype({ contract, tsxContent, componentName, overrideValue } = {}) {
   if (overrideValue && VALID_ARCHETYPES.includes(overrideValue)) {

@@ -3,19 +3,14 @@
  * 09-a11y-tree.mjs
  *
  * Visits a `mud-*` component story (light + dark) and collects two pieces of
- * structured data the a11y-verifier agent currently extracts manually:
+ * structured data a reviewer would otherwise extract by hand:
  *
  *   1. The accessibility snapshot tree (`page.accessibility.snapshot()`)
  *   2. A census of every interactive element with role / accessible name /
  *      focus-visible status, walked via `page.evaluate` + querySelectorAll.
  *
  * The script ONLY collects data — it never interprets ARIA correctness
- * (e.g. "is aria-label appropriate here?"). That judgment stays with AI.
- *
- * Replaces AI work in:
- *   - `.claude/agents/a11y-verifier.md` Step 2 (navigate + snapshot)
- *   - `.claude/agents/a11y-verifier.md` Step 3 (element-by-element ARIA scan)
- *   - `.claude/agents/a11y-verifier.md` Step 5 (ARIA validation data gathering)
+ * (e.g. "is aria-label appropriate here?"). That judgment stays with a reviewer.
  *
  * Usage:
  *   yarn sp.dev.watch
@@ -184,7 +179,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
   const checks = {};
 
   // Quality safeguard: flag obviously missing accessible names, but stop short
-  // of interpreting ARIA correctness — that's AI's job.
+  // of interpreting ARIA correctness — that stays with a reviewer.
   for (const theme of [light, dark].filter(Boolean)) {
     for (const el of theme.interactive) {
       if (!el.accessibleName || el.accessibleName.trim() === '') {
@@ -241,7 +236,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
  * Both the tree and the interactive census are scoped to the audited
  * component's subtree (host + light DOM + own shadow root). Without this
  * scoping the tree was empty for shadow-root components and the census
- * leaked Storybook chrome / tooling overlay elements (e.g. Agentation MCP).
+ * leaked Storybook chrome / tooling overlay elements (e.g. a page-annotation widget).
  *
  * The tree is built by a manual DOM walker in `page.evaluate()` rather than
  * via `page.accessibility.snapshot()` because that API was removed in
@@ -422,7 +417,7 @@ async function collectForTheme(url, componentName, theme) {
       // BX2 + BX3 — Tab-walk the component and sample the focus ring at each
       // stop. Reduced motion + an injected `transition: none; animation:
       // none` (document + every shadow root) MUST land before this sampling
-      // or the ring is caught mid-transition (Phase 0 results: 4 of 5 runs
+      // or the ring is caught mid-transition (measured: 4 of 5 runs
       // differed without it, 5 of 5 identical with it).
       await applyNoMotionStyle(page);
       // Start the walk from just before the component, not from the page
@@ -441,8 +436,7 @@ async function collectForTheme(url, componentName, theme) {
 
 /**
  * Inject `transition: none !important; animation: none !important;` into the
- * document AND every shadow root reachable from it (Phase 0 results —
- * without this the focus ring is sampled mid-transition), plus
+ * document AND every shadow root reachable from it (without this the focus ring is sampled mid-transition), plus
  * `emulateMedia({ reducedMotion: 'reduce' })`. Idempotent — marks each root
  * it has already touched, so it is safe to call again after an interaction
  * that may have rendered new shadow content.
@@ -474,7 +468,7 @@ export async function applyNoMotionStyle(page) {
  * and focus it, so the next Tab press is the FIRST one the component can
  * receive. Without this the walk starts at the page top, and a focusable
  * element earlier in the DOM (e.g. an `<input name="email">` elsewhere in
- * the story) silently consumes Tab presses meant for the component — Phase 3
+ * the story) silently consumes Tab presses meant for the component — seen in a
  * live run against `mud-button`'s stories.
  */
 export async function focusJustBeforeComponent(page, componentName) {

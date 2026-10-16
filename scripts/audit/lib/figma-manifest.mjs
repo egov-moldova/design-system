@@ -10,7 +10,8 @@
  * specifies. A value in `expect` must be copied from Figma (node data or Dev
  * Mode), never inferred from a screenshot: the `node` on each entry is the
  * citation. `absent` entries are negative evidence — the node has no such
- * element, so rendering one is drift. See `.claude/skills/pixel-perfect/SKILL.md`.
+ * element, so rendering one is drift. The manifest format is described in
+ * `scripts/audit/README.md`.
  *
  * Shape:
  *   {
@@ -241,7 +242,7 @@ export function validateManifest(manifest) {
 }
 
 /**
- * A component with no design (AGENTS.md Figma-First exception) declares it
+ * A component with no design (a utility or internal component with no Figma frame) declares it
  * once: `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`,
  * with no `fileKey` and no `states` — there is no node to cite. Pure.
  */
@@ -390,7 +391,7 @@ export function manifestRelPath(componentName) {
 
 /**
  * The fixed, git-ignored path the orchestrator writes a component's HEAD
- * manifest to (Design §8). Fixed rather than a temp dir so no run-varying path
+ * manifest to. Fixed rather than a temp dir so no run-varying path
  * reaches a finding.
  */
 export function headManifestRelPath(componentName) {
@@ -398,7 +399,7 @@ export function headManifestRelPath(componentName) {
 }
 
 /**
- * Resolve a component's Figma manifest from the committed tree (Design §8):
+ * Resolve a component's Figma manifest from the committed tree:
  * every Figma input — presence, `design`, `expect`, `override`, `skip` — is
  * read from `git show HEAD:<path>`, never from the working tree, so the audit
  * cannot grant itself a waiver or a correction. The HEAD copy is written to

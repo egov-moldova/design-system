@@ -21,7 +21,7 @@
  * Why this exists next to the pixel diff: a screenshot diff reports "3.1% of
  * pixels differ" — it cannot say that a focus ring is 4px instead of 3px, a
  * border renders 1px instead of 1.5px, or a hover colour is #E8F0FB instead of
- * #F5F5F5. Those are zero-tolerance values in `_agents/pixel-perfect-qa.md`,
+ * #F5F5F5. Those are zero-tolerance values in the pixel-perfect rules,
  * and this script checks them exactly, with the Figma node cited per failure.
  *
  * Usage:
@@ -208,7 +208,7 @@ async function main() {
   if (!existsSync(manifestPath)) {
     // A component without a manifest has not been set up for Figma
     // verification yet — a warning with a JSON envelope, not a crash, so
-    // run-all and audit-production can report it like any other finding.
+    // run-all can report it like any other finding.
     const result = buildResult({
       tool: TOOL,
       target: target.name,
@@ -218,7 +218,7 @@ async function main() {
           code: 'STYLE-NO-MANIFEST',
           file: manifestRel,
           message: `No Figma state manifest for ${target.name}; nothing to verify.`,
-          fix: 'Create it following .claude/skills/pixel-perfect/SKILL.md (step 2).',
+          fix: 'Create it following scripts/audit/README.md § Figma state manifest.',
         }),
       ],
       meta: { durationMs: Date.now() - t0, manifest: manifestRel },

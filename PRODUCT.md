@@ -59,7 +59,7 @@ If a screenshot of a new screen could be mistaken for a startup landing page, a 
 
 ## Accessibility & Inclusion
 
-- **Conformance target: WCAG 2.1 Level AA**, validated per component via `accessibility-compliance` skill and the audit pipeline.
+- **Conformance target: WCAG 2.1 Level AA**, validated per component by the audit pipeline (`yarn audit:component`).
 - **Color contrast pairs** (`yarn audit:contrast`, `yarn audit:contrast-pairs`) gate every token shipped — both light and dark themes.
 - **Keyboard navigation:** every interactive element is reachable and operable without a pointer. Focus indicators are visible at AA contrast against every background variant.
 - **Reduced motion:** all transitions respect `prefers-reduced-motion`. Animations are functional (state feedback under 200ms), never decorative.

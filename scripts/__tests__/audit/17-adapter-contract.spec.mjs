@@ -49,7 +49,7 @@ describe('17-adapter-contract: RESERVED_PUBLIC_MEMBERS / NATIVE_DOM_EVENT_NAMES'
     assert.equal(RESERVED_PUBLIC_MEMBERS.has('variant'), false);
   });
 
-  // R10 (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §4): compares
+  // R10: compares
   // A4's RESERVED_PUBLIC_MEMBERS against `@stencil/eslint-plugin`'s own
   // `reserved-member-names` rule set, computed the same way the rule computes
   // it (node_modules/@stencil/eslint-plugin/dist/index.js:892-948) — GLOBAL_ATTRIBUTES

@@ -21,8 +21,14 @@ jobs:
       - name: Run lint
         run: yarn lint
 
-      - name: Check AI docs against the repo
+      - name: Check docs against the repo
         run: yarn docs:check
+
+      - name: Check the repository scope
+        run: node scripts/check-public-scope.mjs
+
+      - name: Check the repository scope (file contents)
+        run: node scripts/check-public-scope.mjs --content
 
   changelog:
     name: Changelog fragments
@@ -151,6 +157,12 @@ jobs:
         run: yarn build
         env:
           NODE_ENV: production
+
+      - name: Build the web-components package
+        run: yarn build.web
+
+      - name: Check the packed packages
+        run: node scripts/check-public-scope.mjs --packed
 
       - name: Build Storybook
         run: yarn sp.docker

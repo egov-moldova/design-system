@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * copy-probe.mjs — issue #163's acceptance bar, second row: the RUNTIME net over
- * `storybook-static/`. Serves the build locally, opens every story of every Phase 1-5
- * component (the folders that own a `*.messages.ts` dictionary — derived from the tree,
+ * `storybook-static/`. Serves the build locally, opens every story of every
+ * localized component (the folders that own a `*.messages.ts` dictionary — derived from the tree,
  * never a hand-kept list) with the Storybook `lang` global forced to `ru-MD`
  * (`.storybook/preview.js`'s `langDecorator`, set via the `globals=lang:ru-MD` query param
  * rather than the toolbar UI), and inspects component-owned text: shadow-root text nodes

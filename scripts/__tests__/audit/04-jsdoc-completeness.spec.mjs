@@ -8,7 +8,7 @@
  *   - Synthetic TSX fixtures injected via analyzeTsxFile() exercise each
  *     finding code (missing prop JSDoc, missing @default, missing @param, etc.).
  *
- * Quality bar (from the plan):
+ * Quality bar:
  *   - 0 error-level findings on mud-button, mud-text-input, mud-tooltip.
  *   - Warnings may be present but should match real issues; we don't pin counts.
  */

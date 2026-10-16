@@ -85,7 +85,7 @@ describe('06-test-coverage: analyzeComponent', () => {
     const f = findings.find(x => x.code === 'COVERAGE-COMPONENT-MISSING');
     assert.ok(f);
     assert.equal(f.severity, 'warning');
-    // S6 (Decision §5): a required row that checked nothing is noTarget, so
+    // S6: a required row that checked nothing is noTarget, so
     // verdict.mjs maps it to INCOMPLETE instead of grading it as a warning.
     assert.equal(f.noTarget, true);
   });
@@ -128,7 +128,7 @@ describe('06-test-coverage: analyzeComponent', () => {
     assert.ok(findings.find(f => f.code === 'STRUCTURE-NOT-FOUND'));
   });
 
-  // S11 (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §6): a
+  // S11: a
   // failed spec under this component adds COVERAGE-TESTS-FAILED alongside
   // whatever the coverage-summary-based findings already say.
   it('adds COVERAGE-TESTS-FAILED when a spec under this component failed, on top of a clean coverage summary', () => {

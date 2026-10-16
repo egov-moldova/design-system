@@ -341,8 +341,8 @@ export const resetDocumentLangObserver = (): void => {
 };
 
 /**
- * The `lang` a component with an explicit `locale` puts on its own HOST (WCAG 3.1.2,
- * `_agents/localization.md` §7): the copy is spread over sibling shadow elements and
+ * The `lang` a component with an explicit `locale` puts on its own HOST (WCAG 3.1.2):
+ * the copy is spread over sibling shadow elements and
  * host-level `aria-label`s, so only the host names the language of all of it, and only the
  * host is visible to a slotted light-DOM child or a nested `mud-*` component reading an
  * ancestor `lang`.

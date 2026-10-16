@@ -16,9 +16,6 @@
  * Also verifies the component's auto-generated CustomEvent type is exported
  * from src/index.ts (Stencil generates `MudXCustomEvent` per component with events).
  *
- * Replaces AI work in:
- *   - `.claude/agents/integration-checker.md` (all phases)
- *
  * Usage:
  *   node scripts/audit/07-integration-usage.mjs mud-button --json
  *   node scripts/audit/07-integration-usage.mjs --all --json

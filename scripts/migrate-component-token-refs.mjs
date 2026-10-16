@@ -14,7 +14,7 @@
  *   node scripts/migrate-component-token-refs.mjs --root tokens/core/components
  *
  * Lossy substitutions: any pair with `(lossy)` in the comment loses fidelity
- * (e.g. fontSize.3xl = 30px → fontSize.32 = 32px). Reviewed in plan PR D Anexa A.
+ * (e.g. fontSize.3xl = 30px → fontSize.32 = 32px). Review these before committing.
  */
 
 import fs from 'node:fs';

@@ -1,13 +1,13 @@
 /**
  * Tests for scripts/audit/lib/fix-brief.mjs — every non-PASS entry carries
- * every field of its state's shape (Design §2), one case per state.
+ * every field of its state's shape, one case per state.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { BRIEF_FIELDS, renderEntry, renderFixBrief, resultIcon } from '../../audit/lib/fix-brief.mjs';
 import { computeVerdict } from '../../audit/verdict.mjs';
-import { FIGMA_ABSENT, aiFindings, cleanEnvelope, withError } from './__fixtures__/verdict/envelope.mjs';
+import { FIGMA_ABSENT, reviewFindings, cleanEnvelope, withError } from './__fixtures__/verdict/envelope.mjs';
 
 /** Each field of the kind's shape appears as its own `- <field>:` line of the entry's block. */
 function assertShape(brief, entry) {
@@ -71,13 +71,15 @@ describe('fix-brief: one shape per state', () => {
     assert.match(block, /^ {2}3\. /m);
   });
 
-  it('Advisory: AI findings at standard in the FAIL shape, under "Advisory"', () => {
+  it('Advisory: review-leg findings at standard in the FAIL shape, under "Advisory"', () => {
     const v = computeVerdict({
       envelope: cleanEnvelope(),
-      aiFiles: [
+      reviewFiles: [
         {
           leg: 'a11y-verifier',
-          data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
+          data: reviewFindings('a11y-verifier', {
+            findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }],
+          }),
         },
       ],
     });
@@ -86,11 +88,11 @@ describe('fix-brief: one shape per state', () => {
     const advisoryAt = brief.indexOf('## Advisory');
     assert.ok(advisoryAt > 0);
     const block = assertShape(brief.slice(advisoryAt), v.advisory[0]);
-    // Decision 12: an advisory finding is folded in by re-rendering the run the summary lists.
+    // An advisory finding is folded in by re-rendering the run the summary lists.
     // Executable as written: the command names the component, and --rerender
     // looks its current run up in summary.json — never a `<runDir>` the reader
     // has to substitute by hand.
-    assert.match(block, /re-dispatch the a11y-verifier leg, then: yarn audit:component --rerender mud-fx`/);
+    assert.match(block, /re-run the a11y-verifier review leg, then: yarn audit:component --rerender mud-fx`/);
     assert.equal(/<run/.test(block), false);
     assert.doesNotMatch(brief, /--recompute/);
   });
@@ -188,7 +190,7 @@ describe('fix-brief: a missing field fails the renderer', () => {
       expected: { value: 'x', source: 'rule' },
       actual: 'y',
       verify: 'cmd',
-      owner: '/modify-component',
+      owner: 'component change',
     },
     'INCOMPLETE': { id: 'I1', kind: 'INCOMPLETE', check: '06', cause: 'c', prerequisite: 'p', verify: 'v' },
     'NEEDS-DECISION': { id: 'D1', kind: 'NEEDS-DECISION', node: 'no manifest', question: 'q?', options: ['a'] },
@@ -210,7 +212,7 @@ describe('fix-brief: a missing field fails the renderer', () => {
   });
 });
 
-describe('fix-brief: Decision 13 — a not-applicable row is listed with its reason', () => {
+describe('fix-brief: a not-applicable row is listed with its reason', () => {
   it('renders a "Not applicable" section naming the row and the reason', () => {
     const v = computeVerdict({ envelope: cleanEnvelope() });
     const row = v.rows.find(r => r.id === '13') ?? v.rows[0];

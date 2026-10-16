@@ -264,7 +264,8 @@ export class MudAccordionItem {
   }
 
   disconnectedCallback() {
-    // Acquire/release symmetry (`src/components/AGENTS.md:93`). The writes live
+    // Acquire/release symmetry: what the component wrote into slotted elements is
+    // released on disconnect. The writes live
     // in the consumer's DOM, which outlives this instance: a framework that
     // unmounts the item, or moves a slotted control into a toolbar, would
     // otherwise leave it carrying a `disabled` nobody can attribute.

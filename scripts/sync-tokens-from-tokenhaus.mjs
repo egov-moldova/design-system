@@ -830,7 +830,7 @@ Next steps:
      If missing, author it manually before yarn tokens.build (dropShadow.100..500).
   2. yarn tokens.build && yarn tokens.lint.all
   3. Run yarn test:scripts to confirm regression suite passes.
-  4. Update src/components/ CSS variable references — see plan PR D for migration script.`);
+  4. Update src/components/ CSS variable references.`);
     return;
   }
 

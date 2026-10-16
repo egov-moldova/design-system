@@ -55,7 +55,7 @@ describe('09-a11y-tree: R6 — bx2StatusFor / bx3StatusFor (extracted status ass
 });
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
-describe('09-a11y-tree: S6 — A11Y-NO-STORY carries noTarget (Decision §5)', () => {
+describe('09-a11y-tree: S6 — A11Y-NO-STORY carries noTarget', () => {
   it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'a11y-no-story-'));
     const storiesPath = join(dir, 'mud-fx.stories.ts');
@@ -184,7 +184,7 @@ describe('09-a11y-tree: judgeFocusRingVisible (BX3, pure)', () => {
     );
   });
 
-  it('flags an invisible ring (outline 0px, boxShadow none) — the Phase 0 mid-transition case', () => {
+  it('flags an invisible ring (outline 0px, boxShadow none) — the mid-transition case', () => {
     const finding = judgeFocusRingVisible({
       tag: 'button',
       outlineWidth: '0px',

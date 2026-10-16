@@ -1,8 +1,8 @@
 /**
  * Tests for scripts/audit/lib/json-output.mjs — the envelope writer every audit
  * script and `run-all.mjs` share, and the shared `state`/`level`/row-status/
- * AI-leg-row schema `verdict.mjs` (Phase 2) and the AI legs (Phase 2/3) build
- * against (plan `2026-09-21-audit-component-depths.md` Phase 1 task 1).
+ * review-leg-row schema `verdict.mjs` and the review legs build
+ * against.
  */
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   SCHEMA_VERSION,
   VERDICT_SCHEMA_VERSION,
-  AI_FINDINGS_SCHEMA_VERSION,
+  REVIEW_FINDINGS_SCHEMA_VERSION,
   STATES,
   LEVELS,
   ROW_STATUSES,
@@ -60,9 +60,9 @@ describe('json-output: schema versions', () => {
     assert.equal(SCHEMA_VERSION, '1.4.0');
   });
 
-  it('defines separate schemaVersions for verdict.json and ai-findings.json', () => {
+  it('defines separate schemaVersions for verdict.json and review-findings.json', () => {
     assert.equal(VERDICT_SCHEMA_VERSION, '2.1.0');
-    assert.equal(AI_FINDINGS_SCHEMA_VERSION, '1.0.0');
+    assert.equal(REVIEW_FINDINGS_SCHEMA_VERSION, '1.0.0');
   });
 
   it('S13: the module doc states the same schemaVersion as the SCHEMA_VERSION constant, in both the header and the example envelope', () => {
@@ -133,7 +133,7 @@ describe('json-output: S6 — finding() accepts and emits noTarget', () => {
     assert.equal('noTarget' in g, false);
   });
 
-  it('Decision 13: notApplicable: true is carried on the finding; omitted it is absent entirely', () => {
+  it('notApplicable: true is carried on the finding; omitted it is absent entirely', () => {
     const f = finding({
       severity: 'info',
       code: 'TOKEN-DIFF-NOT-APPLICABLE',
@@ -144,7 +144,7 @@ describe('json-output: S6 — finding() accepts and emits noTarget', () => {
     assert.equal('notApplicable' in finding({ severity: 'info', code: 'X', message: 'm' }), false);
   });
 
-  it('Decision 13: notApplicable forces severity info whatever the caller passed', () => {
+  it('notApplicable forces severity info whatever the caller passed', () => {
     for (const severity of ['error', 'warning']) {
       const f = finding({ severity, code: 'X', message: 'm', notApplicable: true });
       assert.equal(f.severity, 'info');

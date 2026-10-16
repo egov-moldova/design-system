@@ -2,9 +2,9 @@
 
 **Status**: Decided — Option C, in [#165](https://github.com/egov-moldova/design-system/issues/165) (2026-09-29)
 **Captured**: 2026-05-27
-**Source**: cor-checkbox audit (this conversation)
+**Source**: cor-checkbox audit
 **Detection rule**: `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK` in [scripts/audit/02-stencil-antipatterns.mjs](../../scripts/audit/02-stencil-antipatterns.mjs)
-**Canonical rule**: [src/components/_agents/slot-patterns.md](../../src/components/_agents/slot-patterns.md) → "Prop, Slot or Hybrid — Content API Rule"
+**Canonical rule**: plain text the component wires itself is a prop; structured data and configuration are props; rich content is a slot; coordinated `mud-*` children are compound slots; field labels and helper text are hybrid (a text prop renders, a slot overrides it)
 
 ---
 
@@ -111,7 +111,5 @@ Per component: drop string props, update render to plain `<slot>`, update storie
 ## Pointers
 
 - Detector: `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK` in [02-stencil-antipatterns.mjs](../../scripts/audit/02-stencil-antipatterns.mjs)
-- Pattern doc: [_agents/slot-patterns.md](../../src/components/_agents/slot-patterns.md)
-- Audit Wave reference: [audit-component/references/wave-2-static-analysis.md](../../.claude/skills/audit-component/references/wave-2-static-analysis.md) §2.8
 - Reference impls to copy from: [cor-button](../../src/components/cor-button/cor-button.tsx), [cor-service-button](../../src/components/cor-service-button/cor-service-button.tsx)
-- Conversation that surfaced this: cor-checkbox audit on 2026-05-27
+- Surfaced by: cor-checkbox audit on 2026-05-27
