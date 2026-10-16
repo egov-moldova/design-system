@@ -146,7 +146,7 @@ export function analyzeComponent(target) {
         code: 'STRUCTURE-MISSING-TOKENS',
         file: relativeToRepo(target.paths[TOKEN_KIND]),
         message: `No per-component tokens file. Add tokens/core/components/${target.bare}.tokens.json if this component has custom design tokens.`,
-        fix: `Run /update-tokens or skip if component truly uses only semantic tokens.`,
+        fix: `Add the component tokens file, or skip this check if the component truly uses only semantic tokens.`,
       }),
     );
   }
@@ -157,7 +157,7 @@ export function analyzeComponent(target) {
       finding({
         severity: 'info',
         code: 'STRUCTURE-UNGRADUATED',
-        message: `Component lives in src/hidden/ — not yet graduated to src/components/. Run /migrate-component when ready.`,
+        message: `Component lives in src/hidden/ — not yet graduated to src/components/. Move it once it passes the audit.`,
       }),
     );
   }

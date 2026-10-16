@@ -157,7 +157,7 @@ function computeScopes({ verdict, envelope, legs }) {
  * @param {object} opts.verdict — this run's computed verdict (`computeVerdict`'s return)
  * @param {object|null} opts.envelope — this run's envelope (as read by `readRunInputs`)
  * @param {Array<{leg: string, graded: boolean, cause: string|null}>} [opts.legs] —
- *   `verdict.mjs`'s `computeLegRecords(aiFiles)`
+ *   `verdict.mjs`'s `computeLegRecords(reviewFiles)`
  */
 export function buildRunRecord({ run, verdict, envelope, legs = [] }) {
   const results = rowResults(verdict);

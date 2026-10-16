@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * check-public-scope.mjs — keeps editor and assistant configuration, and the internal-only
- * scripts that go with it, out of the public repository and out of its published packages.
+ * check-public-scope.mjs — keeps the maintainers' assistant tooling configuration, and the
+ * internal-only scripts that go with it, out of the public repository and out of its published packages.
  *
  * One authored list, two exports: `ROOTS` (the literal paths, also usable to write a local
  * exclude file) and `PATTERNS` (the regexes that match a root with or without a trailing
@@ -16,8 +16,9 @@
  *             no root citation, no PROSE_PATTERNS match in a packed text file, no matching
  *             `package.json` script
  *
- * Stated limit: a path assembled from segments (`join(REPO, '.claude', …)`) is not seen by the
- * citation scan; CI running the script specs on a checkout without those files is the backstop.
+ * Stated limits: a path assembled from segments (`join(REPO, '.claude', …)`) is not seen by the
+ * citation scan, and a run id nested deeper than nine segments escapes the `runs/…/ai/` identifier
+ * pattern. `--packed` also fails on an unbuilt tree (no `dist/` entry), because it would scan nothing.
  *
  * Usage: node scripts/check-public-scope.mjs [--paths] [--staged] [--content] [--packed]
  */
@@ -48,14 +49,14 @@ export const ROOTS = [
 
 /** Each regex matches a root with or without a trailing segment. Every ROOT matches one. */
 export const PATTERNS = [
-  /(^|\/)\.claude(\/|$)/,
-  /(^|\/)_agents(\/|$)/,
-  /(^|\/)(AGENTS|CLAUDE)\.md$/,
-  /^\.mcp\.json$/,
-  /(^|\/)CLAUDE\.local\.md$/,
+  /(^|\/)\.claude(\/|$)/i,
+  /(^|\/)_agents(\/|$)/i,
+  /(^|\/)(AGENTS|CLAUDE)\.md$/i,
+  /^\.mcp\.json$/i,
+  /(^|\/)CLAUDE\.local\.md$/i,
 ];
 
-/** Exact paths of internal-only scripts and specs. None of them cites a root. */
+/** Exact paths that were removed from the tree and must not return: internal-only scripts, specs and documents. None cites a root. */
 export const INTERNAL_ONLY_FILES = [
   'scripts/audit/measure-prompt-cost.mjs',
   'scripts/audit/CLEANUP.md',
@@ -231,8 +232,12 @@ export async function run(modes = ['--paths'], cwd = process.cwd()) {
   return results;
 }
 
-/** A file name can hold control characters; a CI log must not read them as commands. */
-const printable = text => String(text).replace(/[\u0000-\u001f\u007f]/g, '?');
+/**
+ * A file name can hold control characters, bidi overrides or a leading `::`; a CI log must not read any
+ * of them as a command. Keep letters, marks, numbers, punctuation, symbols and spaces, and start the line
+ * with a fixed prefix.
+ */
+const printable = text => `- ${String(text).replace(/[^\p{L}\p{M}\p{N}\p{P}\p{S} ]/gu, '?')}`;
 
 if (isEntrypoint(import.meta.url)) {
   const args = process.argv.slice(2);

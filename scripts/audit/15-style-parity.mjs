@@ -208,7 +208,7 @@ async function main() {
   if (!existsSync(manifestPath)) {
     // A component without a manifest has not been set up for Figma
     // verification yet — a warning with a JSON envelope, not a crash, so
-    // run-all and audit-production can report it like any other finding.
+    // run-all can report it like any other finding.
     const result = buildResult({
       tool: TOOL,
       target: target.name,

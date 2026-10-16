@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   SCHEMA_VERSION,
   VERDICT_SCHEMA_VERSION,
-  AI_FINDINGS_SCHEMA_VERSION,
+  REVIEW_FINDINGS_SCHEMA_VERSION,
   STATES,
   LEVELS,
   ROW_STATUSES,
@@ -62,7 +62,7 @@ describe('json-output: schema versions', () => {
 
   it('defines separate schemaVersions for verdict.json and review-findings.json', () => {
     assert.equal(VERDICT_SCHEMA_VERSION, '2.1.0');
-    assert.equal(AI_FINDINGS_SCHEMA_VERSION, '1.0.0');
+    assert.equal(REVIEW_FINDINGS_SCHEMA_VERSION, '1.0.0');
   });
 
   it('S13: the module doc states the same schemaVersion as the SCHEMA_VERSION constant, in both the header and the example envelope', () => {

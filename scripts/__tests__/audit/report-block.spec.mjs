@@ -11,7 +11,7 @@ import { after, describe, it } from 'node:test';
 
 import { REPORT_END, renderFixBrief } from '../../audit/lib/fix-brief.mjs';
 import { computeVerdict, printSummary, readReportBlock, writeVerdictForRun } from '../../audit/verdict.mjs';
-import { aiFindings, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
+import { reviewFindings, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
 
 const dirs = [];
 function tmp() {
@@ -29,10 +29,12 @@ describe('report block: the summary is the verdict, row for row', () => {
     const e = withError(withError(cleanEnvelope(), '02'), '15', { code: 'STYLE-MISMATCH' });
     const v = computeVerdict({
       envelope: e,
-      aiFiles: [
+      reviewFiles: [
         {
           leg: 'a11y-verifier',
-          data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
+          data: reviewFindings('a11y-verifier', {
+            findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }],
+          }),
         },
       ],
     });

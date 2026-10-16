@@ -25,6 +25,7 @@ node_modules/
 
 .stencil/
 .wireit/
+test-results/
 .audit-screenshots/
 .audit-figma/
 # Audit verdicts, fix briefs and per-run inputs (scripts/audit/verdict.mjs). Anchored:

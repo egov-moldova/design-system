@@ -93,9 +93,9 @@ Additional docs worth knowing about:
 
 ## Repository Scope
 
-This repository publishes the component library, its build and test tooling, and the documents that consumers and contributors need. Editor and assistant configuration is kept outside the repository.
+This repository publishes the component library, its build and test tooling, and the documents that consumers and contributors need. The maintainers' assistant tooling configuration (instruction files, per-tool settings, skills, commands, hooks, plans and MCP configuration) is kept outside the repository.
 
-`node scripts/check-public-scope.mjs` enforces this in a pre-commit hook and in CI.
+`node scripts/check-public-scope.mjs` enforces this. The pre-commit hook checks the staged paths (`--staged`); CI additionally checks every tracked path, the contents of tracked files (`--content`) and, after a build, the published packages (`--packed`). `git commit --no-verify` skips the hook, not CI.
 
 ---
 
@@ -170,7 +170,7 @@ web-components/
 | `yarn format` | ESLint `--fix` + Prettier `--write` |
 | `yarn typecheck` | `tsc --noEmit` |
 | `yarn test` | Full unit test suite — `vitest run --project spec`, wireit-cached; compiles components from source and builds no `dist/` |
-| `yarn check` | `format` then the full local verify gate (`typecheck` + `lint` + `test`) — run this before opening a PR |
+| `yarn check` | `format` then the full local verify gate (`check.verify`: typecheck, lint, tests, script tests, docs check and the scope check) — run this before opening a PR |
 | `yarn version.bump <dev\|patch\|minor\|major\|x.y.z>` | Sets the root `package.json` version for a release PR (see [Publishing](#publishing)) |
 
 ---
@@ -294,7 +294,7 @@ Internal contributors with write access to this repo should continue branching d
 
 ## Submitting a Pull Request
 
-1. Before opening a PR, run the full local verify gate: `yarn check` (format + typecheck + lint + test), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components/*/readme.md` — these are auto-generated and must stay in sync with source.
+1. Before opening a PR, run the full local verify gate: `yarn check` (format, then `check.verify`: typecheck, lint, tests, script tests, docs check and scope check), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components/*/readme.md` — these are auto-generated and must stay in sync with source.
 2. If the change is visible to consumers, add a changelog fragment under `changes/` instead of editing `CHANGELOG.md`. See [`changes/README.md`](changes/README.md) for the format.
 3. Push your branch and open a PR against `main`. Describe what changed and why, and note the test plan (what you ran, e.g. `yarn check`, `yarn build`, manual Storybook verification).
 4. Address review feedback with new commits (avoid force-pushing mid-review unless asked to squash/rebase, or to clear merge conflicts as in step 6).

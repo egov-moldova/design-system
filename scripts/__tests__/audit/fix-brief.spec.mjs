@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 
 import { BRIEF_FIELDS, renderEntry, renderFixBrief, resultIcon } from '../../audit/lib/fix-brief.mjs';
 import { computeVerdict } from '../../audit/verdict.mjs';
-import { FIGMA_ABSENT, aiFindings, cleanEnvelope, withError } from './__fixtures__/verdict/envelope.mjs';
+import { FIGMA_ABSENT, reviewFindings, cleanEnvelope, withError } from './__fixtures__/verdict/envelope.mjs';
 
 /** Each field of the kind's shape appears as its own `- <field>:` line of the entry's block. */
 function assertShape(brief, entry) {
@@ -74,10 +74,12 @@ describe('fix-brief: one shape per state', () => {
   it('Advisory: review-leg findings at standard in the FAIL shape, under "Advisory"', () => {
     const v = computeVerdict({
       envelope: cleanEnvelope(),
-      aiFiles: [
+      reviewFiles: [
         {
           leg: 'a11y-verifier',
-          data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
+          data: reviewFindings('a11y-verifier', {
+            findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }],
+          }),
         },
       ],
     });
@@ -188,7 +190,7 @@ describe('fix-brief: a missing field fails the renderer', () => {
       expected: { value: 'x', source: 'rule' },
       actual: 'y',
       verify: 'cmd',
-      owner: '/modify-component',
+      owner: 'component change',
     },
     'INCOMPLETE': { id: 'I1', kind: 'INCOMPLETE', check: '06', cause: 'c', prerequisite: 'p', verify: 'v' },
     'NEEDS-DECISION': { id: 'D1', kind: 'NEEDS-DECISION', node: 'no manifest', question: 'q?', options: ['a'] },

@@ -42,7 +42,7 @@ import { REPO_ROOT, normalizeComponentName } from './lib/component-paths.mjs';
 import { EXIT_INTERNAL, exitCodeForState } from './lib/exit-codes.mjs';
 import { headManifestRelPath, manifestRelPath } from './lib/figma-manifest.mjs';
 import {
-  AI_FINDINGS_SCHEMA_VERSION,
+  REVIEW_FINDINGS_SCHEMA_VERSION,
   FINDING_CLASS,
   LEVEL,
   ROW_STATUS,
@@ -76,7 +76,7 @@ const STANDARD = [...QUICK, '06', '08', '13', '18', '09', '10', '11', '12', '15'
  *   adapter smoke build, React           → adapter-react (`yarn build.react`: wrapper + its typecheck)
  *   adapter smoke build, vanilla         → adapter-vanilla (`yarn build.web` only; no vanilla-specific rules)
  *   E2E when present                     → e2e, deferred (DEFERRED_CHECKS)
- * The advisory review legs (stencil-compliance manual rows, full WCAG, media conditions,
+ * The advisory review legs (manual Stencil rules, full WCAG, media conditions,
  * Figma states × themes, archetype, security) are advisory at every depth,
  * `deep` included — no row is opened for them and they never move `state`.
  */
@@ -227,7 +227,7 @@ function failEntry({ f, check, component, source, verify, owner }) {
   return entry;
 }
 
-function aiFailOrDecision(f, leg, component) {
+function reviewFailOrDecision(f, leg, component) {
   if (typeof f.question === 'string' && f.question) {
     return {
       kind: STATE.NEEDS_DECISION,
@@ -240,7 +240,7 @@ function aiFailOrDecision(f, leg, component) {
   }
   return failEntry({
     f,
-    check: `ai ${leg}`,
+    check: `review ${leg}`,
     component,
     source: `review leg ${leg}`,
     verify: `re-run the ${leg} review leg, then: ${rerenderCommand(component)}`,
@@ -252,7 +252,7 @@ function aiFailOrDecision(f, leg, component) {
  * A finding whose kind renderFixBrief renders as FAIL needs `severity` and
  * (`message` or `actual`) — BRIEF_FIELDS[FAIL] in fix-brief.mjs. A finding
  * carrying a non-empty `question` renders as NEEDS-DECISION instead, whose
- * fields (`node`, `options`) are always defaulted by aiFailOrDecision, so it
+ * fields (`node`, `options`) are always defaulted by reviewFailOrDecision, so it
  * needs no shape check here. Pure. Returns a cause string, or null when the
  * finding's shape is safe to render — a review-leg finding that fails it is listed as
  * a note, never rendered.
@@ -276,13 +276,13 @@ function findingShapeIssue(f, index) {
  * which still lists the well-shaped findings of a leg that also wrote a bad
  * one. Pure. Sorted by leg for determinism.
  *
- * @param {Array<{leg: string, data: object|null}>} aiFiles
+ * @param {Array<{leg: string, data: object|null}>} reviewFiles
  * @returns {Array<{leg: string, graded: boolean, cause: string|null}>}
  */
-export function computeLegRecords(aiFiles = []) {
-  return [...aiFiles]
+export function computeLegRecords(reviewFiles = []) {
+  return [...reviewFiles]
     .map(({ leg, data }) => {
-      if (!data || schemaMajor(data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
+      if (!data || schemaMajor(data.schemaVersion) !== schemaMajor(REVIEW_FINDINGS_SCHEMA_VERSION)) {
         return { leg, graded: false, cause: 'unreadable or unknown schema' };
       }
       if (!Array.isArray(data.findings)) {
@@ -304,10 +304,10 @@ export function computeLegRecords(aiFiles = []) {
  *
  * @param {object} opts
  * @param {object|null} opts.envelope — run-all's per-component envelope
- * @param {Array<{leg: string, data: object|null}>} [opts.aiFiles]
+ * @param {Array<{leg: string, data: object|null}>} [opts.reviewFiles]
  * @param {string} [opts.component] — used when the envelope is missing
  */
-export function computeVerdict({ envelope, aiFiles = [], component: fallbackComponent = null }) {
+export function computeVerdict({ envelope, reviewFiles = [], component: fallbackComponent = null }) {
   const audit = envelope?.audit ?? {};
   const component = audit.component ?? fallbackComponent ?? envelope?.target ?? 'unknown';
   const depth = audit.depth ?? 'standard';
@@ -490,7 +490,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
               component,
               source: `rule ${f.code} (${row.file ? `scripts/audit/${row.file}` : row.name})`,
               verify: verifyCommand(component, depth, id),
-              owner: row.owner ?? '/modify-component',
+              owner: row.owner ?? 'component change',
             }),
           );
         }
@@ -506,8 +506,8 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
 
   // Review legs: advisory at every depth, deep included — a leg's
   // findings are listed, never state-changing.
-  for (const file of [...aiFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
-    if (!file.data || schemaMajor(file.data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
+  for (const file of [...reviewFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
+    if (!file.data || schemaMajor(file.data.schemaVersion) !== schemaMajor(REVIEW_FINDINGS_SCHEMA_VERSION)) {
       notes.push(`review-findings.json from leg ${file.leg} ignored: unreadable or unknown major schemaVersion`);
       continue;
     }
@@ -519,10 +519,10 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       else validFindings.push(f);
     });
     // A question-shaped finding renders as an advisory decision entry rather
-    // than being forced through the FAIL shape (S3): `aiFailOrDecision`
+    // than being forced through the FAIL shape (S3): `reviewFailOrDecision`
     // picks the shape and never needs severity/actual for one.
     for (const f of validFindings.sort(compareFindings)) {
-      advisory.push(aiFailOrDecision(f, file.leg, component));
+      advisory.push(reviewFailOrDecision(f, file.leg, component));
     }
   }
 
@@ -615,11 +615,11 @@ export function readRunInputs(runDir) {
       envelope = null;
     }
   }
-  const aiDir = join(runDir, 'reviews');
-  const aiFiles = [];
-  if (existsSync(aiDir)) {
-    for (const leg of readdirSync(aiDir).sort()) {
-      const file = join(aiDir, leg, 'review-findings.json');
+  const reviewsDir = join(runDir, 'reviews');
+  const reviewFiles = [];
+  if (existsSync(reviewsDir)) {
+    for (const leg of readdirSync(reviewsDir).sort()) {
+      const file = join(reviewsDir, leg, 'review-findings.json');
       if (!existsSync(file)) continue;
       let data = null;
       try {
@@ -627,10 +627,10 @@ export function readRunInputs(runDir) {
       } catch {
         data = null;
       }
-      aiFiles.push({ leg, data });
+      reviewFiles.push({ leg, data });
     }
   }
-  return { envelope, aiFiles };
+  return { envelope, reviewFiles };
 }
 
 /**
@@ -672,8 +672,8 @@ export function writeVerdictForRun(runDir) {
   const componentDir = resolve(absRun, '..', '..');
   const component = basename(componentDir);
   const run = basename(absRun);
-  const { envelope, aiFiles } = readRunInputs(absRun);
-  const verdict = computeVerdict({ envelope, aiFiles, component });
+  const { envelope, reviewFiles } = readRunInputs(absRun);
+  const verdict = computeVerdict({ envelope, reviewFiles, component });
 
   // Building the record, finding the baseline, comparing AND rendering the
   // Changes section all run inside one try: a throw from any of them — a
@@ -683,7 +683,7 @@ export function writeVerdictForRun(runDir) {
   let record = null;
   let changes = null;
   try {
-    const legs = computeLegRecords(aiFiles);
+    const legs = computeLegRecords(reviewFiles);
     record = buildRunRecord({ run, verdict, envelope, legs });
     const found = findPreviousRecord(componentDir, run, verdict.depth);
     changes = found.unusable

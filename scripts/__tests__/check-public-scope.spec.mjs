@@ -106,6 +106,22 @@ describe('check-public-scope: outOfScope', () => {
     assert.deepEqual(outOfScope(['docs/agents-guide.md', 'src/_agentsX/a.md', 'MY-AGENTS.md']), []);
   });
 
+  it('matches case variants, which name the same files on a case-insensitive filesystem', () => {
+    const input = ['.Claude/x', 'CLAUDE.MD', 'Agents.md', '_Agents/a', '.MCP.json', 'claude.local.md'];
+    assert.deepEqual(outOfScope(input), input);
+  });
+
+  it('prints a hostile file name behind a fixed prefix with control and bidi characters replaced', () => {
+    const root = tempRepo();
+    const name = '::error::x/.claude/a';
+    write(root, name);
+    git(root, 'add', '-f', `:(literal)${name}`);
+    const result = cli(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /^- ::error::x\/\.claude\/a · /m);
+    assert.doesNotMatch(result.stderr, /^::/m);
+  });
+
   it('matches a path with spaces or unicode by name', () => {
     const input = ['.claude/my notes/é ü.md', 'src/ok file.ts', 'tokens/_agents/日本語 file.md'];
     assert.deepEqual(outOfScope(input), ['.claude/my notes/é ü.md', 'tokens/_agents/日本語 file.md']);
@@ -367,7 +383,7 @@ describe('check-public-scope: CLI', () => {
     git(root, 'add', '-f', '.claude/my notes/é ü.md');
     const result = cli(root, '--paths');
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /^\.claude\/my notes\/é ü\.md · /m);
+    assert.match(result.stderr, /^- \.claude\/my notes\/é ü\.md · /m);
   });
 
   it('rejects an unknown argument with exit 2', () => {
@@ -469,8 +485,10 @@ describe('check-public-scope: enforcement map', () => {
   it('the packed check runs after both packages are built', () => {
     const ci = read('.github/workflows/ci.yml');
     const packed = ci.indexOf('check-public-scope.mjs --packed');
-    assert.ok(ci.indexOf('run: yarn build\n') < packed);
-    assert.ok(ci.indexOf('run: yarn build.web') < packed);
+    const buildJob = ci.indexOf('\n  build:');
+    assert.ok(buildJob > 0);
+    assert.ok(ci.indexOf('run: yarn build\n', buildJob) < packed);
+    assert.ok(ci.indexOf('run: yarn build.web', buildJob) < packed);
   });
 
   it('the pre-commit hook runs the staged check', () => {

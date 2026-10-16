@@ -508,9 +508,10 @@ export function checkStalePrefix(relPath, lines) {
 // Prose (`Stencil 4.46`, `Stencil >= 4.46`, `Stencil (4.46)`), table rows (`| Stencil | ~4.46.0 |`) and
 // package spellings (`@stencil/core` `~4.46.0`, `@stencil/core@4.46`, `"@stencil/core": "~4.46.0"`).
 const STENCIL_PROSE_CLAIMS = [
-  // Whitespace runs are bounded: adjacent unbounded runs backtrack in cubic time on a long line.
-  /\bStencil[ \t]{1,8}[`(]?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)(?:\.(\d+|x))?/gi,
-  /\bStencil[ \t]{0,8}\|[ \t]{0,8}`?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)\.(\d+|x)/gi,
+  // Whitespace runs are bounded (64 before the version or the table pipe, wide enough for a padded table cell):
+  // adjacent unbounded runs backtrack in cubic time on a long line.
+  /\bStencil[ \t]{1,64}[`(]?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)(?:\.(\d+|x))?/gi,
+  /\bStencil[ \t]{0,64}\|[ \t]{0,8}`?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)\.(\d+|x)/gi,
 ];
 const STENCIL_PACKAGE_CLAIM = /@stencil\/core[`"]?(?:@|:?\s*)[`"]?\s*(?:[~^]|>=?)?v?(\d+)\.(\d+|x)/gi;
 
@@ -678,7 +679,10 @@ function main() {
   }
 
   for (const hit of hits) {
-    console.log(`${hit.file}:${hit.line}: [${hit.ruleId}] ${hit.message}`.replace(/[\u0000-\u001f\u007f]/g, '?'));
+    // A file name must not turn a log line into a CI command: fixed prefix, no control or bidi characters.
+    console.log(
+      `- ${`${hit.file}:${hit.line}: [${hit.ruleId}] ${hit.message}`.replace(/[^\p{L}\p{M}\p{N}\p{P}\p{S} ]/gu, '?')}`,
+    );
   }
   console.log(hits.length ? `check-docs: ${hits.length} problem(s)` : 'check-docs: clean');
   process.exit(hits.length ? 1 : 0);

@@ -126,7 +126,7 @@ export const SUMMARY_SCHEMA_VERSION = '2.0.0';
  * `schemaVersion` a review leg writes into its own `review-findings.json`. A file with an unknown major version is ignored and named in the
  * verdict's notes; an unknown minor is accepted — `verdict.mjs` owns that check.
  */
-export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
+export const REVIEW_FINDINGS_SCHEMA_VERSION = '1.0.0';
 
 /**
  * `schemaVersion` written into `audit/<component>/runs/<run>/record.json`

@@ -160,7 +160,7 @@
     {
       "scope": "leg:a11y-verifier",
       "key": "[\"fail\",\"CX1\",\"a.tsx\"]",
-      "label": "ai a11y-verifier · CX1 · a.tsx — focus lost"
+      "label": "review a11y-verifier · CX1 · a.tsx — focus lost"
     },
     {
       "scope": "row:02",

@@ -506,11 +506,11 @@ failures in light or dark.
 
 ### 2026-05-22 — `mud-file-input` Figma node resolution
 
-The Figma file `doJ7tDY0PlQ0PqMgbpFVIC` exposed via the MCP server only listed
+The Figma file `doJ7tDY0PlQ0PqMgbpFVIC` exposed through the Figma API only listed
 9 top-level pages (Getting Started, Badge, Button, Checkbox, Link, Messaging,
 Pagination, Progress Indicator, Separator) — none corresponding to the
 `file-input` or `file-item` component sets identified by the user-provided
-component keys. The advertised `search_design_system` MCP tool was not
+component keys. The `search_design_system` lookup was not
 available in this environment (only `get_design_context`, `get_screenshot`,
 `get_metadata`, `get_variable_defs` were exposed).
 
@@ -527,7 +527,7 @@ scale, spacing, semantic colors, dark-mode mappings) came from the canonical
 sources: `DESIGN.md`, the existing token bundles,
 and the `mud-text-input` / `mud-date-input` patterns on disk.
 
-Future agent runs: if a Figma node-id for either component_set is rediscovered,
+If a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
@@ -577,9 +577,9 @@ border, brand-blue focus ring, label, helper / error, sizes md/lg, states
 default / hover / focus / filled / disabled / mandatory / destructive).
 Chips kept INTERNAL to `mud-input-chip` (not as a separate `mud-chip`
 sibling) — no standalone chip component was visible in the Figma file
-scope reachable via MCP, and the rule-of-two (PRINCIPLES.md §B) hasn't
+scope reachable through the Figma API, and the rule-of-two (PRINCIPLES.md §B) hasn't
 fired yet (one consumer). Sibling extraction can come later via
-`/refactor-component` if a second consumer emerges. Each chip is a soft
+a refactor if a second consumer emerges. Each chip is a soft
 gray pill (`color.background.base.secondary`) with the value label
 truncated by `text-overflow: ellipsis` at 100% of the container width,
 followed by a circular × remove button. Romanian aria-labels:
@@ -622,12 +622,12 @@ and emits `corChipRemove` + `corChange`.
 
 ### 2026-05-23 — `mud-input-chip` Figma node resolution
 
-Same MCP file scope as the eight earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
+Same Figma file scope as the eight earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
 only exposes 9 top-level pages (Getting Started, Badge, Button, Checkbox,
 Link, Messaging, Pagination, Progress Indicator, Separator) and no
 `input-chip` page was reachable through the available `get_metadata`
-traversal. The advertised `mcp__figma__search_design_system` MCP tool is
-NOT in this environment's allow-list (only `get_design_context`,
+traversal. The `search_design_system` lookup is
+not available in this environment (only `get_design_context`,
 `get_screenshot`, `get_metadata`, `get_variable_defs` were exposed).
 Probed the known sibling page nodeId `403:21765` ("Input: Date") via
 `get_screenshot` (PNG rendered successfully — file scope hasn't shifted)
@@ -693,11 +693,10 @@ audit:contrast` summary 21 pass / 0 fail).
 
 ### 2026-05-23 — `mud-phone-input` Figma node resolution
 
-Same MCP file scope as the seven earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
+Same Figma file scope as the seven earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
 only exposes 9 top-level pages and no `phone-number-input` node was
 reachable through the available `get_metadata` traversal. The advertised
-`search_design_system` MCP tool is intentionally NOT in the
-`new-component` agent's allow-list; the known sibling page nodeId
+`search_design_system` lookup was intentionally not used; the known sibling page nodeId
 `403:21765` ("Input: Date") was reachable via `get_screenshot`
 (confirming the file scope hasn't shifted), but it doesn't link back to
 the phone-input page. Derivation followed the well-validated pattern from
@@ -752,7 +751,7 @@ story, 0 contrast failures across light + dark.
 
 ### 2026-05-23 — `mud-numeric-input` Figma node resolution
 
-Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
+Same Figma file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `numeric-input` node was reachable through
 the available `get_metadata` traversal. The known sibling page nodeId
 `403:21765` ("Input: Date") was reachable for screenshot retrieval (date
@@ -789,11 +788,9 @@ across every story, 0 contrast failures across light + dark.
 
 ### 2026-05-23 — `mud-search-input-circular` Figma node resolution
 
-Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
+Same Figma file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `search-input-circular` node was reachable
-through the available `get_metadata` traversal. The advertised
-`search_design_system` MCP tool is intentionally NOT in the `new-component`
-agent's allow-list, and the only known sibling page nodeId (`403:21765`,
+through the available `get_metadata` traversal. The `search_design_system` lookup was intentionally not used, and the only known sibling page nodeId (`403:21765`,
 "Input: Date") doesn't link back to the search circular page. Derivation
 followed the established pattern (see prior failure log entries): the
 sibling `mud-search-input-rectangular` provided the 1:1 behavioural and
@@ -826,7 +823,7 @@ light + dark, 0 console errors.
 
 ### 2026-05-23 — `mud-search-input-rectangular` Figma node resolution
 
-Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
+Same Figma file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `search-input-rectangular` node was
 reachable through the available `get_metadata` traversal. Derivation
 followed the established pattern (see prior failure log entry): mud-text-input

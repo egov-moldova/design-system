@@ -6,7 +6,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REQUIRED_CHECKS, excuseFor } from '../../../../audit/verdict.mjs';
-import { AI_FINDINGS_SCHEMA_VERSION, SCHEMA_VERSION } from '../../../../audit/lib/json-output.mjs';
+import { REVIEW_FINDINGS_SCHEMA_VERSION, SCHEMA_VERSION } from '../../../../audit/lib/json-output.mjs';
 
 export const COMMIT = '0123456789abcdef0123456789abcdef01234567';
 
@@ -103,7 +103,10 @@ export function withError(envelope, id, f = {}) {
 }
 
 /** A leg's review-findings.json, listing every id the leg judges. */
-export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {}) {
+export function reviewFindings(
+  leg,
+  { findings = [], schemaVersion = REVIEW_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {},
+) {
   const ids =
     idsJudged ??
     Object.values(LEGS)
@@ -114,7 +117,7 @@ export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCH
 
 /** Every leg's file, with no findings. */
 export function allLegsClosed() {
-  return [...new Set(Object.values(LEGS).map(l => l.leg))].map(leg => ({ leg, data: aiFindings(leg) }));
+  return [...new Set(Object.values(LEGS).map(l => l.leg))].map(leg => ({ leg, data: reviewFindings(leg) }));
 }
 
 /**

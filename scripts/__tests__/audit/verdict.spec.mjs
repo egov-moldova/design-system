@@ -30,7 +30,7 @@ import {
   FIGMA_ABSENT,
   FIGMA_DESIGN_NONE,
   FIGMA_PRESENT,
-  aiFindings,
+  reviewFindings,
   allLegsClosed,
   cleanEnvelope,
   withError,
@@ -231,13 +231,15 @@ describe('verdict: deep — review legs advisory', () => {
   });
 
   it('an error-severity review-leg finding at deep → still PASS, listed under Advisory in verdict and brief', () => {
-    const aiFiles = [
+    const reviewFiles = [
       {
         leg: 'a11y-verifier',
-        data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'DX-WCAG-1', message: 'no name' }] }),
+        data: reviewFindings('a11y-verifier', {
+          findings: [{ severity: 'error', code: 'DX-WCAG-1', message: 'no name' }],
+        }),
       },
     ];
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), reviewFiles });
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
     assert.equal(v.advisory.length, 1);
@@ -249,15 +251,15 @@ describe('verdict: deep — review legs advisory', () => {
   });
 
   it('a question-shaped review-leg finding at deep is an advisory decision entry, never NEEDS-DECISION', () => {
-    const aiFiles = [
+    const reviewFiles = [
       {
         leg: 'audit-component',
-        data: aiFindings('audit-component', {
+        data: reviewFindings('audit-component', {
           findings: [{ code: 'CX2', question: 'Trap focus?', options: ['yes', 'no'] }],
         }),
       },
     ];
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), reviewFiles });
     assert.equal(v.state, 'PASS');
     assert.equal(v.advisory[0].kind, 'NEEDS-DECISION');
     // run-record.mjs scopes this decision as `leg:<owner>`; without it the
@@ -267,30 +269,30 @@ describe('verdict: deep — review legs advisory', () => {
   });
 
   it('a malformed review-leg finding at deep is a note, never INCOMPLETE', () => {
-    const aiFiles = [
-      { leg: 'a11y-verifier', data: aiFindings('a11y-verifier', { findings: [{ code: 'DX-WCAG-1' }] }) },
+    const reviewFiles = [
+      { leg: 'a11y-verifier', data: reviewFindings('a11y-verifier', { findings: [{ code: 'DX-WCAG-1' }] }) },
     ];
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), aiFiles });
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'deep' }), reviewFiles });
     assert.equal(v.state, 'PASS');
     assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
   });
 
   it('a review-leg finding cannot turn a script FAIL into anything else', () => {
-    const aiFiles = [
+    const reviewFiles = [
       {
         leg: 'audit-component',
-        data: aiFindings('audit-component', {
+        data: reviewFindings('audit-component', {
           findings: [{ severity: 'info', code: 'X', message: 'm', question: 'q?', options: ['a'] }],
         }),
       },
     ];
-    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), aiFiles });
+    const v = computeVerdict({ envelope: withError(cleanEnvelope({ depth: 'deep' }), '02'), reviewFiles });
     assert.equal(v.state, 'FAIL');
   });
 
   it('verdict.json carries no awaitingLegs, at any depth', () => {
     for (const depth of ['quick', 'standard', 'deep']) {
-      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: allLegsClosed() });
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), reviewFiles: allLegsClosed() });
       assert.equal('awaitingLegs' in v, false, depth);
     }
   });
@@ -458,13 +460,15 @@ describe('verdict: review-leg findings are advisory at quick / standard', () => 
   const blocking = [
     {
       leg: 'a11y-verifier',
-      data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
+      data: reviewFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
     },
   ];
 
   it('quick/standard: a malformed finding is reported as a note, never throws, and is absent from advisory', () => {
-    const malformed = [{ leg: 'a11y-verifier', data: aiFindings('a11y-verifier', { findings: [{ code: 'CX1' }] }) }];
-    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'quick' }), aiFiles: malformed });
+    const malformed = [
+      { leg: 'a11y-verifier', data: reviewFindings('a11y-verifier', { findings: [{ code: 'CX1' }] }) },
+    ];
+    const v = computeVerdict({ envelope: cleanEnvelope({ depth: 'quick' }), reviewFiles: malformed });
     assert.equal(v.state, 'PASS');
     assert.equal(v.advisory.length, 0);
     assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
@@ -472,7 +476,7 @@ describe('verdict: review-leg findings are advisory at quick / standard', () => 
 
   for (const depth of ['quick', 'standard']) {
     it(`${depth}: a blocking review-leg finding with clean script rows yields PASS and lands under advisory`, () => {
-      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: blocking });
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), reviewFiles: blocking });
       assert.equal(v.state, 'PASS');
       assert.equal(v.advisory.length, 1);
       assert.equal(v.advisory[0].id, 'A1');
@@ -483,12 +487,12 @@ describe('verdict: review-leg findings are advisory at quick / standard', () => 
       const question = [
         {
           leg: 'a11y-verifier',
-          data: aiFindings('a11y-verifier', {
+          data: reviewFindings('a11y-verifier', {
             findings: [{ code: 'CX1', question: 'Trap focus?', options: ['yes', 'no'] }],
           }),
         },
       ];
-      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: question });
+      const v = computeVerdict({ envelope: cleanEnvelope({ depth }), reviewFiles: question });
       assert.equal(v.state, 'PASS');
       assert.equal(v.advisory.length, 1);
       assert.equal(v.advisory[0].kind, 'NEEDS-DECISION');
@@ -512,7 +516,7 @@ describe('verdict: Figma inputs', () => {
     assert.equal(f.location, 'src/components/mud-fx/test/mud-fx.figma.json:7');
     assert.deepEqual(f.expected, { value: '#f5f5f5', source: 'Figma 1:2' });
     assert.equal(f.actual, '#e8f0fb');
-    assert.equal(f.owner, '/modify-component');
+    assert.equal(f.owner, 'component change');
   });
 
   it('prints a pending working-tree change as not honoured', () => {
