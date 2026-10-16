@@ -8,8 +8,8 @@
  * (generated, dist, node_modules, .git) and files like style-dictionary*.config.json
  * and package.json (build/config files, not token data).
  *
- * Naming rule: compound keys are camelCase (`optionFontFamily`), per tokens/AGENTS.md Critical
- * Rule 3 and tokens/_agents/naming-conventions.md. A hyphen is kept only before a digit segment
+ * Naming rule: compound keys are camelCase (`optionFontFamily`), the token naming convention
+ * (hyphen-free component and semantic token keys). A hyphen is kept only before a digit segment
  * (`paddingInline-100`). Errors: a key that starts uppercase, mixes kebab-case with camelCase
  * (`option-fontFamily`), or has a hyphen before a letter (`padding-inline`).
  * Warnings: underscores, dots, spaces.

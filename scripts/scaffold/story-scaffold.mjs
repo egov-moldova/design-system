@@ -14,13 +14,10 @@
  *   - One story per variant value (AllVariants stub) if a `variant` prop exists
  *   - One story per size value (AllSizes stub) if a `size` prop exists
  *
- * What it INTENTIONALLY does NOT generate (AI fills in):
+ * What it INTENTIONALLY does NOT generate (the developer fills in):
  *   - Edge case stories (long content, internationalization, loading)
  *   - Slot examples beyond a placeholder text
  *   - Interaction tests, story decorators, custom render logic
- *
- * Replaces AI work in:
- *   - story-writer Step 4 (compose CSF3 file)
  *
  * Usage:
  *   node scripts/scaffold/story-scaffold.mjs mud-button [--out path] [--dry-run]
@@ -38,7 +35,7 @@ const TOOL = 'story-scaffold';
 const USAGE = `Usage: node scripts/scaffold/story-scaffold.mjs <component> [options]
 
 Generate a CSF3 *.stories.ts skeleton for a mud-* component. The output is a
-starting point; the AI / developer fills edge case stories, slot content,
+starting point; the developer fills edge case stories, slot content,
 and interaction logic.
 
 Options:
@@ -213,7 +210,7 @@ export function generateStoriesFile({ contract, target }) {
   // AllVariants stub (only if variant prop exists)
   const variantProp = contract.props.find(p => /^variant$/i.test(p.name));
   if (variantProp) {
-    lines.push(`// TODO (AI/dev): expand each variant into a labeled cell or its own story.`);
+    lines.push(`// TODO (dev): expand each variant into a labeled cell or its own story.`);
     lines.push(`export const AllVariants: Story = {`);
     lines.push(`  render: () => \`<div style="display:flex;gap:var(--spacing-8);flex-wrap:wrap;">`);
     lines.push(`    <!-- one <${tag} variant="..."> per ${variantProp.type ?? 'value'} -->`);
@@ -225,7 +222,7 @@ export function generateStoriesFile({ contract, target }) {
   // AllSizes stub
   const sizeProp = contract.props.find(p => /^size$/i.test(p.name));
   if (sizeProp) {
-    lines.push(`// TODO (AI/dev): expand each size into a labeled cell.`);
+    lines.push(`// TODO (dev): expand each size into a labeled cell.`);
     lines.push(`export const AllSizes: Story = {`);
     lines.push(`  render: () => \`<div style="display:flex;gap:var(--spacing-8);align-items:center;">`);
     lines.push(`    <!-- one <${tag} size="..."> per ${sizeProp.type ?? 'value'} -->`);
@@ -234,8 +231,8 @@ export function generateStoriesFile({ contract, target }) {
     lines.push('');
   }
 
-  // Footer with AI handoff comments
-  lines.push(`// ─── AI / dev TODO ─────────────────────────────────────────────────`);
+  // Footer with developer TODO comments
+  lines.push(`// ─── Developer TODO ─────────────────────────────────────────────────`);
   lines.push(`// - Replace argAttrString placeholders with real dynamic args.`);
   lines.push(`// - Add edge cases: WithIcon, LongContent, ErrorState, Loading.`);
   lines.push(`// - For form components: add Invalid and Disabled stories.`);
@@ -318,7 +315,7 @@ function argAttrString(props) {
   if (props.length === 0) return '';
   // Build attribute string like `\${args.variant ? \`variant="\${args.variant}"\` : ''}`
   // For the scaffold we keep it simple — one attribute per prop, comma-separated rendering.
-  // The render() callback receives `args`; the dev/AI will refine.
+  // The render() callback receives `args`; the developer will refine.
   return props
     .map(p => ` \${args.${p.name} !== undefined ? \`${kebabAttr(p.name)}="\${args.${p.name}}"\` : ''}`)
     .join('');

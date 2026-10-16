@@ -545,7 +545,7 @@ async function processFile(filePath) {
       }
     }
 
-    // AGENTS.md rule 5: component CSS references component/semantic tokens, never palette
+    // 3-tier token hierarchy (CONTRIBUTING.md § Conventions): component CSS references component/semantic tokens, never palette
     // primitives. Only stylesheets under a `components/` directory are component CSS: a
     // token stylesheet may define semantic tokens from palette ones.
     const segments = path.relative(ROOT, filePath).split(path.sep);

@@ -279,7 +279,7 @@ export class MudPagination {
   }
 
   componentDidUpdate() {
-    // Reflect the AI-managed focus index onto the actual DOM after each render.
+    // Reflect the component-managed focus index onto the actual DOM after each render.
     if (this.openOverflow === null || this.focusedOverflowIndex < 0) return;
     const root = this.host.shadowRoot;
     if (!root) return;
