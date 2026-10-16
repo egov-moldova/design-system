@@ -450,22 +450,34 @@ describe('check-public-scope: enforcement map', () => {
     assert.equal(cli(root, '--staged').status, 0, 'a staged check cannot see a merge');
   });
 
-  const wiring = { todo: 'needs hook/CI wiring' };
   const read = file => fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8');
 
-  it('a commit made with --no-verify is caught by the CI path check', wiring, () => {
-    assert.match(read('.github/workflows/ci.yml'), /check-public-scope\.mjs\s*$/m);
+  it('CI runs the path check, the content check and the packed check', () => {
+    const steps = read('.github/workflows/ci.yml').match(
+      /run: node scripts\/check-public-scope\.mjs( --content| --packed)?\s*$/gm,
+    );
+    assert.deepEqual(
+      steps?.map(step => step.replace(/\s+$/, '')),
+      [
+        'run: node scripts/check-public-scope.mjs',
+        'run: node scripts/check-public-scope.mjs --content',
+        'run: node scripts/check-public-scope.mjs --packed',
+      ],
+    );
   });
 
-  it('a merge of an old branch is caught by the CI path check', wiring, () => {
-    assert.match(read('.github/workflows/ci.yml'), /check-public-scope\.mjs\s*$/m);
+  it('the packed check runs after both packages are built', () => {
+    const ci = read('.github/workflows/ci.yml');
+    const packed = ci.indexOf('check-public-scope.mjs --packed');
+    assert.ok(ci.indexOf('run: yarn build\n') < packed);
+    assert.ok(ci.indexOf('run: yarn build.web') < packed);
   });
 
-  it('the pre-commit hook runs the staged check', wiring, () => {
+  it('the pre-commit hook runs the staged check', () => {
     assert.match(read('.husky/pre-commit'), /check-public-scope\.mjs --staged/);
   });
 
-  it('the aggregate verify target depends on the scope check', wiring, () => {
+  it('the aggregate verify target depends on the scope check', () => {
     const pkg = JSON.parse(read('package.json'));
     assert.ok(pkg.wireit['check.verify'].dependencies.includes('check:scope'));
   });

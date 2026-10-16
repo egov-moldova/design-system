@@ -94,6 +94,7 @@
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
     "test:scripts": "wireit",
+    "check:scope": "wireit",
     "docs:check": "wireit",
     "validate.package": "node scripts/validate-package.mjs",
     "changelog.check": "node scripts/changelog-release.mjs --check",
@@ -412,7 +413,8 @@
         "lint",
         "test",
         "test:scripts",
-        "docs:check"
+        "docs:check",
+        "check:scope"
       ],
       "files": [],
       "output": [],
@@ -425,6 +427,9 @@
       "dependencies": [
         "build"
       ]
+    },
+    "check:scope": {
+      "command": "node scripts/check-public-scope.mjs && node scripts/check-public-scope.mjs --content"
     },
     "docs:check": {
       "command": "node scripts/docs/check-docs.mjs"
