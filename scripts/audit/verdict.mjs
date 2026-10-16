@@ -5,14 +5,14 @@
  * Computes the audit verdict for a component from the inputs of one run, and
  * is the ONLY writer of `audit/<component>/verdict.json` (plan
  * `2026-09-21-audit-component-depths.md` Design §1). It rebuilds the file from
- * its inputs on every run, so a hand-edited or AI-written verdict never
+ * its inputs on every run, so a hand-edited or reviewer-written verdict never
  * survives the next one.
  *
  * Layout (git-ignored):
  *   audit/<component>/verdict.json          stable path, rewritten every run
  *   audit/<component>/fix-brief.md          stable path, rewritten every run
  *   audit/<component>/runs/<run>/envelope.json              run-all's per-component envelope
- *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an AI leg, advisory at every depth
+ *   audit/<component>/runs/<run>/ai/<leg>/ai-findings.json  written by an advisory review leg, advisory at every depth
  *   audit/<component>/runs/<run>/record.json  written by this module (plan
  *     2026-09-23-audit-run-delta.md Design §1); read only by a later run's
  *     comparison (lib/run-record.mjs), never an input to verdict.json itself
@@ -26,7 +26,7 @@
  *     Runs run-all.mjs with --verdict, then exits with the worst state's code.
  *   node scripts/audit/verdict.mjs --rerender <component> [--rerender …] [--json]
  *     Re-renders that component's current run (from audit/_run/summary.json), e.g.
- *     to fold in the advisory ai-findings.json an AI leg wrote after the run.
+ *     to fold in the advisory ai-findings.json an advisory review leg wrote after the run.
  *   node scripts/audit/verdict.mjs --run-dir audit/<component>/runs/<run> [--run-dir …] [--json]
  *     The same, with the run named explicitly. Refused when the named run is not
  *     the component's current one.
@@ -77,7 +77,7 @@ const STANDARD = [...QUICK, '06', '08', '13', '18', '09', '10', '11', '12', '15'
  *   adapter smoke build, React           → adapter-react (`yarn build.react`: wrapper + its typecheck)
  *   adapter smoke build, vanilla         → adapter-vanilla (`yarn build.web` only; no vanilla-specific rules)
  *   E2E when present                     → e2e, deferred (DEFERRED_CHECKS)
- * The AI legs (stencil-compliance manual rows, full WCAG, media conditions,
+ * The advisory review legs (stencil-compliance manual rows, full WCAG, media conditions,
  * Figma states × themes, archetype, security) are advisory at every depth,
  * `deep` included — no row is opened for them and they never move `state`
  * (Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md`).
@@ -244,7 +244,7 @@ function aiFailOrDecision(f, leg, component) {
     f,
     check: `ai ${leg}`,
     component,
-    source: `AI leg ${leg}`,
+    source: `review leg ${leg}`,
     verify: `re-dispatch the ${leg} leg, then: ${rerenderCommand(component)}`,
     owner: leg,
   });
@@ -256,7 +256,7 @@ function aiFailOrDecision(f, leg, component) {
  * carrying a non-empty `question` renders as NEEDS-DECISION instead, whose
  * fields (`node`, `options`) are always defaulted by aiFailOrDecision, so it
  * needs no shape check here. Pure. Returns a cause string, or null when the
- * finding's shape is safe to render — an AI finding that fails it is listed as
+ * finding's shape is safe to render — a review-leg finding that fails it is listed as
  * a note, never rendered.
  */
 function findingShapeIssue(f, index) {
@@ -270,7 +270,7 @@ function findingShapeIssue(f, index) {
 
 /**
  * Per-leg grading for `run-record.mjs`'s `leg:<leg>` scope (Design §2), using
- * this module's own `findingShapeIssue` and AI schema check — the one place
+ * this module's own `findingShapeIssue` and review-leg schema check — the one place
  * that rule lives, so `run-record.mjs` never imports this module (a cycle).
  * A leg is graded only when its file is readable at a matching schema major,
  * its `findings` is an array (zero findings is fine), and no finding fails
@@ -506,7 +506,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
     rows.push(out);
   }
 
-  // AI legs: advisory at every depth, deep included (Decision 12) — a leg's
+  // Review legs: advisory at every depth, deep included (Decision 12) — a leg's
   // findings are listed, never state-changing.
   for (const file of [...aiFiles].sort((a, b) => (a.leg < b.leg ? -1 : a.leg > b.leg ? 1 : 0))) {
     if (!file.data || schemaMajor(file.data.schemaVersion) !== schemaMajor(AI_FINDINGS_SCHEMA_VERSION)) {
@@ -535,7 +535,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
       node: 'no manifest',
       question: `${component} has no Figma state manifest at HEAD${figma.workingTreeOnly ? ' (manifest present, uncommitted)' : ''}. Which design does it follow?`,
       options: [
-        `Commit ${manifestRelPath(component)} citing the Figma file key and a node id per state (see .claude/skills/pixel-perfect/SKILL.md).`,
+        `Commit ${manifestRelPath(component)} citing the Figma file key and a node id per state (see scripts/audit/README.md § Figma state manifest).`,
         `Commit ${manifestRelPath(component)} as { "figma": { "design": "none", "reason": "…", "decidedBy": "…" } } if the component has no design.`,
         'Run this audit with --no-figma to check everything else now (the level is capped at MERGE-READY).',
       ],
@@ -792,7 +792,7 @@ const USAGE = `Usage:
 
 The first form runs run-all.mjs with --verdict and exits with the worst state's
 code. The other two re-render a run's verdict and fix brief from its inputs (e.g.
-after an AI leg wrote its advisory ai-findings.json): --rerender looks the run up
+after a review leg wrote its advisory ai-findings.json): --rerender looks the run up
 in audit/_run/summary.json, --run-dir names it and is refused when it is not the
 component's current run. Exit: 0 PASS, 1 FAIL, 3 INCOMPLETE, 4 NEEDS-DECISION,
 2 usage or internal error.`;
@@ -994,7 +994,7 @@ function runFresh(argv) {
   }
   // R3: the audit-dir lock guards summary.json/envelope.json/verdict.json —
   // taken around deleting the stale files below, spawning run-all, and
-  // reading the summary; released before this function returns, so an AI leg
+  // reading the summary; released before this function returns, so a review leg
   // a caller dispatches afterwards never waits on it (Decision §3).
   const lock = takeAuditLock(auditDir);
   if (!lock.ok) {

@@ -18,10 +18,6 @@
  * Output:
  *   { added: [...], removed: [...], changed: [{ token, before, after, before$type, after$type }], summary: { count } }
  *
- * Replaces AI work in:
- *   - `.claude/agents/redesign-component.md` Step 3 (token diff)
- *   - `.claude/commands/modify-component.md` partial (when adding variants)
- *
  * Usage:
  *   node scripts/audit/13-token-diff.mjs mud-button --json
  *   node scripts/audit/13-token-diff.mjs --from a.json --to b.json --json

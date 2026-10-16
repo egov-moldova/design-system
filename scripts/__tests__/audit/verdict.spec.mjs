@@ -1,6 +1,6 @@
 /**
  * Tests for scripts/audit/verdict.mjs — the state/level computation, its
- * excuses, AI-leg rows, determinism, and that it is the only writer of
+ * excuses, review-leg rows, determinism, and that it is the only writer of
  * `audit/<component>/verdict.json` (plan 2026-09-21-audit-component-depths.md
  * Design §1, Acceptance bar).
  */
@@ -200,7 +200,7 @@ describe('verdict: level', () => {
   });
 });
 
-describe('verdict: deep — AI legs advisory (Decision 12)', () => {
+describe('verdict: deep — review legs advisory (Decision 12)', () => {
   it('REQUIRED_CHECKS.deep requires no ai-* row', () => {
     assert.deepEqual(
       REQUIRED_CHECKS.deep.filter(id => id.startsWith('ai-')),
@@ -231,7 +231,7 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     assert.deepEqual(v.entries, []);
   });
 
-  it('an error-severity AI finding at deep → still PASS, listed under Advisory in verdict and brief', () => {
+  it('an error-severity review-leg finding at deep → still PASS, listed under Advisory in verdict and brief', () => {
     const aiFiles = [
       {
         leg: 'a11y-verifier',
@@ -249,7 +249,7 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     assert.match(brief, /DX-WCAG-1/);
   });
 
-  it('a question-shaped AI finding at deep is an advisory decision entry, never NEEDS-DECISION', () => {
+  it('a question-shaped review-leg finding at deep is an advisory decision entry, never NEEDS-DECISION', () => {
     const aiFiles = [
       {
         leg: 'audit-component',
@@ -267,7 +267,7 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     assert.doesNotThrow(() => renderFixBrief(v));
   });
 
-  it('a malformed AI finding at deep is a note, never INCOMPLETE', () => {
+  it('a malformed review-leg finding at deep is a note, never INCOMPLETE', () => {
     const aiFiles = [
       { leg: 'a11y-verifier', data: aiFindings('a11y-verifier', { findings: [{ code: 'DX-WCAG-1' }] }) },
     ];
@@ -276,7 +276,7 @@ describe('verdict: deep — AI legs advisory (Decision 12)', () => {
     assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
   });
 
-  it('an AI finding cannot turn a script FAIL into anything else', () => {
+  it('an review-leg finding cannot turn a script FAIL into anything else', () => {
     const aiFiles = [
       {
         leg: 'audit-component',
@@ -464,7 +464,7 @@ describe('verdict: R4 — script warnings, non-blocking', () => {
   });
 });
 
-describe('verdict: AI findings are advisory at quick / standard (Decision §5)', () => {
+describe('verdict: review-leg findings are advisory at quick / standard (Decision §5)', () => {
   const blocking = [
     {
       leg: 'a11y-verifier',
@@ -481,7 +481,7 @@ describe('verdict: AI findings are advisory at quick / standard (Decision §5)',
   });
 
   for (const depth of ['quick', 'standard']) {
-    it(`${depth}: a blocking AI finding with clean script rows yields PASS and lands under advisory`, () => {
+    it(`${depth}: a blocking review-leg finding with clean script rows yields PASS and lands under advisory`, () => {
       const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: blocking });
       assert.equal(v.state, 'PASS');
       assert.equal(v.advisory.length, 1);
@@ -489,7 +489,7 @@ describe('verdict: AI findings are advisory at quick / standard (Decision §5)',
       assert.equal(v.advisory[0].code, 'CX1');
     });
 
-    it(`S3: ${depth} — a question-shaped AI finding (question + options, no severity) renders as an advisory decision entry, never throws`, () => {
+    it(`S3: ${depth} — a question-shaped review-leg finding (question + options, no severity) renders as an advisory decision entry, never throws`, () => {
       const question = [
         {
           leg: 'a11y-verifier',

@@ -16,7 +16,7 @@
  * What each minor added, over the `1.0.0` baseline:
  *   1.1.0 — `run-all.mjs`'s combined envelope also carries a `status` per row
  *           (`ROW_STATUS`, below).
- *   1.2.0 — no shape change; the constant was bumped for the AI-leg row and
+ *   1.2.0 — no shape change; the constant was bumped for the review-leg row and
  *           verdict schemas this module also defines (see below).
  *   1.3.0 — a finding may carry `noTarget: true`: "this required row checked
  *           nothing" (plan `2026-09-22-audit-depths-sentinel-fixes.md`
@@ -31,11 +31,11 @@
  *
  * Severity is one of: "error" | "warning" | "info".
  *
- * Callers should NOT add fields outside the envelope; AI workflows consume this
+ * Callers should NOT add fields outside the envelope; review legs consume this
  * schema directly and a stable shape is part of the quality contract.
  *
- * This module also defines the shared schema `verdict.mjs` (Phase 2) and the
- * AI legs (Phase 2/3) build against — `state`, `level`, per-row `status`, and
+ * This module also defines the shared schema `verdict.mjs` and the
+ * review legs build against — `state`, `level`, per-row `status`, and
  * their own `schemaVersion`s. Landing it here, ahead of
  * any consumer, is deliberate (plan `2026-09-21-audit-component-depths.md`
  * Phase 1): every producer and the one consumer read the same enum.
@@ -106,7 +106,7 @@ export function isValidRowStatus(status) {
  * `schemaVersion` written into `audit/<component>/verdict.json` (Phase 2).
  * 1.1.0 (plan `2026-09-22-audit-depths-sentinel-fixes.md`) added `awaitingLegs`
  * and `warnings`. 2.0.0 (Decision 12 of that plan) removes `awaitingLegs` and
- * `aiLegs` — breaking, but no released reader uses either: AI legs are advisory
+ * `aiLegs` — breaking, but no released reader uses either: review legs are advisory
  * at every depth now. Also 2.0.0: a row may carry `note` (Decision 13, a
  * not-applicable check's reason). 2.1.0 (plan `2026-09-23-audit-run-delta.md`
  * Design §3) is additive: a FAIL entry may carry `message` alongside `actual`,
@@ -127,8 +127,7 @@ export const VERDICT_SCHEMA_VERSION = '2.1.0';
 export const SUMMARY_SCHEMA_VERSION = '2.0.0';
 
 /**
- * `schemaVersion` an AI leg writes into its own `ai-findings.json` (Phase
- * 2/3). A file with an unknown major version is ignored and named in the
+ * `schemaVersion` a review leg writes into its own `ai-findings.json`. A file with an unknown major version is ignored and named in the
  * verdict's notes; an unknown minor is accepted — `verdict.mjs` owns that check.
  */
 export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
@@ -144,7 +143,7 @@ export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
 export const RUN_RECORD_SCHEMA_VERSION = '1.0.0';
 
 /**
- * What a Not-compared line says for an AI leg that did not write this run.
+ * What a Not-compared line says for a review leg that did not write this run.
  * `run-record.mjs` writes it and `fix-brief.mjs` keys the re-render hint on
  * it; both read it from here, so rewording it cannot silently drop the hint.
  */

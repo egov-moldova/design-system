@@ -84,7 +84,7 @@ describe('11-pixel-diff-states: classifyDiff', () => {
     assert.equal(classifyDiff(10).status, 'FAIL');
   });
 
-  it('WARNING sets requiresReview=true (AI must inspect)', () => {
+  it('WARNING sets requiresReview=true (a reviewer must inspect)', () => {
     assert.equal(classifyDiff(0.7).requiresReview, true);
   });
 

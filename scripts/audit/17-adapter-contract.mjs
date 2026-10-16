@@ -14,10 +14,9 @@
  *                    against the same source contract (props/attributes,
  *                    events, slots, parts, CSS custom properties).
  *
- * Rule citations (plan `2026-09-21-audit-component-depths.md`, Design §4 +
- * "Phase 0 results"):
- *   - A1: `src/components/_agents/component-structure.md:193`,
- *     `.claude/skills/stencil-compliance/references/anti-patterns.md:144`.
+ * Rule citations:
+ *   - A1: the project convention that an event name starts with `mud` +
+ *     PascalCase (e.g. `mudChange`).
  *     `02-stencil-antipatterns.mjs`'s `ANTIPATTERN-025-EVENT-PREFIX` checks
  *     the class FIELD name only, so an `eventName` override escapes it —
  *     this rule checks the name actually emitted on the wire.
@@ -26,18 +25,16 @@
  *     collides with a native DOM event is indistinguishable to a consumer.
  *   - A3: react.dev same section — a non-string value only reaches a DOM
  *     property when that property exists on the class at construction,
- *     otherwise it is serialized to an attribute; `stencil-compliance` SE1
- *     (`.claude/skills/stencil-compliance/references/form-reactivity.md:164`).
- *     A `@PropSerialize('<prop>')` method on the class satisfies this rule
- *     (Stencil 4.38+, same reference file's "Serialization" section).
+ *     otherwise it is serialized to an attribute (rule SE1). A
+ *     `@PropSerialize('<prop>')` method on the class satisfies this rule
+ *     (Stencil 4.38+).
  *   - A4: `node_modules/@stencil/core/compiler/stencil.js:279782-280030`
  *     (`RESERVED_PUBLIC_MEMBERS`, built from `ALL_KEYS` — the union of
  *     `HTML_ELEMENT_KEYS`, `ELEMENT_KEYS`, `NODE_KEYS`, `JSX_KEYS`,
  *     lower-cased). The compiler only WARNS about a collision; this rule
  *     makes it a finding. `NATIVE_DOM_EVENT_NAMES` (A2) is derived from the
  *     same on-* entries in that citation, so both rules share one source.
- *     R10 (plan `2026-09-22-audit-depths-sentinel-fixes.md`, Decision §4):
- *     compared against `@stencil/eslint-plugin`'s own `reserved-member-names`
+ *     Compared against `@stencil/eslint-plugin`'s own `reserved-member-names`
  *     rule (`node_modules/@stencil/eslint-plugin/dist/index.js:873-950`,
  *     `eslint.config.mjs:64`, level `error`, already enforced on every PR).
  *     Neither set is a subset of the other, so A4 is KEPT, not deleted. Point
@@ -55,16 +52,14 @@
  *     those). The eslint rule also fires only on `@Prop`/`@Method` decorators
  *     (`node_modules/@stencil/eslint-plugin/dist/index.js:873`) — never
  *     `@Event`, which A4 also checks (`kind: 'event'` below) — a second,
- *     independent reason A4 cannot be deleted. P11
- *     (`.claude/skills/stencil-compliance/SKILL.md:106`) stays mapped to
+ *     independent reason A4 cannot be deleted. The
+ *     reserved-names rule stays mapped to
  *     `eslint:@stencil/reserved-member-names` (upstream #110, kept as-is);
  *     A4 is enforced here alongside it for the reserved names that rule
- *     misses and for `@Event` members it never reaches. Phase 4 records this
- *     outcome in the SKILL.md/wave-2 rows.
+ *     misses and for `@Event` members it never reaches.
  *
- * Not encoded (Design §4): `@Method` async — already `eslint:@stencil/async-
- * methods` (stencil-compliance M1) — and a serializable event `detail` (no
- * doc citation found).
+ * Not encoded: `@Method` async — already `eslint:@stencil/async-
+ * methods` — and a serializable event `detail` (no doc citation found).
  *
  * Usage:
  *   node scripts/audit/17-adapter-contract.mjs mud-button --part source --json
@@ -550,7 +545,7 @@ export function checkA3ReflectSerializer(prop, serializedProps, fileRel, aliasKi
     code: 'ADAPTER-A3-REFLECT-NO-SERIALIZER',
     file: fileRel,
     line: prop.line,
-    message: `Prop "${prop.name}" (type: ${prop.type}) has reflect: true but no @PropSerialize('${prop.name}') — a non-primitive value is never written to the attribute (stencil-compliance SE1).`,
+    message: `Prop "${prop.name}" (type: ${prop.type}) has reflect: true but no @PropSerialize('${prop.name}') — a non-primitive value is never written to the attribute (rule SE1).`,
     fix: `Add a @PropSerialize('${prop.name}') method, or drop reflect: true.`,
   });
 }

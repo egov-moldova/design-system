@@ -10,7 +10,8 @@
  * specifies. A value in `expect` must be copied from Figma (node data or Dev
  * Mode), never inferred from a screenshot: the `node` on each entry is the
  * citation. `absent` entries are negative evidence — the node has no such
- * element, so rendering one is drift. See `.claude/skills/pixel-perfect/SKILL.md`.
+ * element, so rendering one is drift. The manifest format is described in
+ * `scripts/audit/README.md`.
  *
  * Shape:
  *   {
@@ -241,7 +242,7 @@ export function validateManifest(manifest) {
 }
 
 /**
- * A component with no design (AGENTS.md Figma-First exception) declares it
+ * A component with no design (a utility or internal component with no Figma frame) declares it
  * once: `{ "figma": { "design": "none", "reason": "…", "decidedBy": "…" } }`,
  * with no `fileKey` and no `states` — there is no node to cite. Pure.
  */

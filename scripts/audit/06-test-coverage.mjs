@@ -14,10 +14,6 @@
  *   3. Filter entries to the target component(s) — match by absolute TSX path.
  *   4. Emit { statements, branches, functions, lines, pass80 } per component.
  *
- * Replaces AI work in:
- *   - `.claude/agents/audit-production.md` Phase 5a (unit tests + coverage parse)
- *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.10.1 (coverage report)
- *
  * Why default is read-only (no auto-run):
  *   Running the full test suite takes 30-60s. Audit orchestrator callers want
  *   fast scripts; coverage is typically generated once per CI/pre-PR pipeline.

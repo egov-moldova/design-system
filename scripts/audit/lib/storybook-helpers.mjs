@@ -1,7 +1,7 @@
 /**
  * Storybook environment helpers shared by Tier 2 (browser) audit scripts.
  *
- *  - DEFAULT_PORT             — 6007 (per repo convention, see AGENTS.md)
+ *  - DEFAULT_PORT             — 6007 (the port `yarn sp.dev.watch` serves on)
  *  - DEFAULT_BASE_URL         — http://localhost:6007
  *  - isStorybookReachable     — async TCP probe; resolves true/false
  *  - storyUrl                 — build iframe URL for a Storybook story id

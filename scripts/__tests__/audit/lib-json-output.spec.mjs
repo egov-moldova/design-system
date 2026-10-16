@@ -1,7 +1,7 @@
 /**
  * Tests for scripts/audit/lib/json-output.mjs — the envelope writer every audit
  * script and `run-all.mjs` share, and the shared `state`/`level`/row-status/
- * AI-leg-row schema `verdict.mjs` (Phase 2) and the AI legs (Phase 2/3) build
+ * review-leg-row schema `verdict.mjs` and the review legs build
  * against (plan `2026-09-21-audit-component-depths.md` Phase 1 task 1).
  */
 import assert from 'node:assert/strict';

@@ -71,7 +71,7 @@ describe('fix-brief: one shape per state', () => {
     assert.match(block, /^ {2}3\. /m);
   });
 
-  it('Advisory: AI findings at standard in the FAIL shape, under "Advisory"', () => {
+  it('Advisory: review-leg findings at standard in the FAIL shape, under "Advisory"', () => {
     const v = computeVerdict({
       envelope: cleanEnvelope(),
       aiFiles: [

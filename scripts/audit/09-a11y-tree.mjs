@@ -3,19 +3,14 @@
  * 09-a11y-tree.mjs
  *
  * Visits a `mud-*` component story (light + dark) and collects two pieces of
- * structured data the a11y-verifier agent currently extracts manually:
+ * structured data a reviewer would otherwise extract by hand:
  *
  *   1. The accessibility snapshot tree (`page.accessibility.snapshot()`)
  *   2. A census of every interactive element with role / accessible name /
  *      focus-visible status, walked via `page.evaluate` + querySelectorAll.
  *
  * The script ONLY collects data — it never interprets ARIA correctness
- * (e.g. "is aria-label appropriate here?"). That judgment stays with AI.
- *
- * Replaces AI work in:
- *   - `.claude/agents/a11y-verifier.md` Step 2 (navigate + snapshot)
- *   - `.claude/agents/a11y-verifier.md` Step 3 (element-by-element ARIA scan)
- *   - `.claude/agents/a11y-verifier.md` Step 5 (ARIA validation data gathering)
+ * (e.g. "is aria-label appropriate here?"). That judgment stays with a reviewer.
  *
  * Usage:
  *   yarn sp.dev.watch
@@ -241,7 +236,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
  * Both the tree and the interactive census are scoped to the audited
  * component's subtree (host + light DOM + own shadow root). Without this
  * scoping the tree was empty for shadow-root components and the census
- * leaked Storybook chrome / tooling overlay elements (e.g. Agentation MCP).
+ * leaked Storybook chrome / tooling overlay elements (e.g. a page-annotation widget).
  *
  * The tree is built by a manual DOM walker in `page.evaluate()` rather than
  * via `page.accessibility.snapshot()` because that API was removed in

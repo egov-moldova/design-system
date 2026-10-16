@@ -10,11 +10,6 @@
  *   `${kebab(titleSegment1)}-${kebab(titleSegment2)}--${kebab(storyExportName)}`
  *   where title comes from the default export's `title` field (`Components/Button`).
  *
- * Replaces AI work in:
- *   - `.claude/agents/pixel-perfect-verifier.md` Step 2
- *   - `.claude/agents/story-writer.md` Step 1 (story enumeration)
- *   - `.claude/agents/audit-production.md` Phase 4.1 (story coverage)
- *
  * Two parsing strategies:
  *   1. Inline default export (`export default { title: '...', ... }`) — common in older stories
  *   2. Variable + default reference (`const meta: Meta = { ... }; export default meta;`) — CSF3 idiom
@@ -49,7 +44,7 @@ const STANDARD_STORIES = [
   // Every production component should have a Default story (the primary example).
   { canonical: 'Default', regex: /^Default$/, recommended: true },
   // Variant/size/state lineup is optional — depends on component API.
-  // Surfaced as info-only so AI can judge whether the component needs them.
+  // Surfaced as info-only so a reviewer can judge whether the component needs them.
   { canonical: 'AllVariants', regex: /^(All)?Variants?(Table|Grid|List)?$/i, recommended: false },
   { canonical: 'AllSizes', regex: /^(All)?Sizes?(Table|Grid|List)?$/i, recommended: false },
   { canonical: 'States', regex: /^(All)?States?(Table|Grid|List)?$/i, recommended: false },
@@ -206,7 +201,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
   }
 
   // docs.source contract checks — lessons captured from the mud-logo audit
-  // (2026-05): see .claude/skills/audit-component/references/wave-2-static-analysis.md §2.9 story-coverage list.
+  // (2026-05): the story-coverage list in `checkDocsSource` below.
   findings.push(...checkDocsSource(sourceFile, fileRel));
 
   return { findings, stories, coverage, title, componentName };

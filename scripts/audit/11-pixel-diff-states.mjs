@@ -367,7 +367,7 @@ async function analyzeStories(target, opts) {
           message: figmaDir
             ? `figma reference dir not found: ${figmaDir}`
             : `No manifest at ${relativeToRepo(manifestPathFor(target.name))} and no --figma-dir.`,
-          fix: 'Create the manifest (see .claude/skills/pixel-perfect/SKILL.md), then run scripts/audit/figma-refs.mjs.',
+          fix: 'Create the manifest (see scripts/audit/README.md § Figma state manifest), then run scripts/audit/figma-refs.mjs.',
           noTarget: true,
         }),
       ],
@@ -560,7 +560,7 @@ export function findingsFor(label, themed, scale, opts) {
         severity: 'warning',
         code: 'PIXEL-DIFF-WARNING',
         file,
-        message: `${label}: ${themed.diffPercent}% diff is borderline (requires AI review)${masked}.`,
+        message: `${label}: ${themed.diffPercent}% diff is borderline (requires manual review)${masked}.`,
       }),
     );
   } else if (themed.status === 'UNKNOWN' && themed.error) {

@@ -22,10 +22,6 @@
  * scored transparent elements against `rgba(0, 0, 0, 0)` and reported
  * compliant components as failures (issue #49).
  *
- * Replaces AI work in:
- *   - `.claude/agents/a11y-verifier.md` Step 6 (light + dark contrast checks)
- *   - `.claude/agents/audit-production.md` Phase 3.3 (component-runtime contrast)
- *
  * Thresholds (WCAG 2.1 AA):
  *   - normal text:    4.5:1
  *   - large text:     3:1  (≥18pt or ≥14pt bold)
@@ -559,7 +555,7 @@ export async function measureSamples(url, componentName, theme) {
         ctx => {
           // Scope element collection to the audited component's subtree only.
           // Without this, the selector matches Storybook chrome + tooling
-          // overlays (Agentation MCP, docs page) and produces dozens of false
+          // overlays (a page-annotation widget, docs page) and produces dozens of false
           // positives unrelated to the mud-* under test.
           //
           // Walk: each <mud-X> host + its light-DOM descendants (slotted
@@ -653,8 +649,8 @@ export async function measureSamples(url, componentName, theme) {
           // records a marker and the row comes back unresolved rather than
           // scored. Ancestor or own `opacity`, out-of-flow content, overlapping
           // siblings and pseudo-element fills are not seen at all and still
-          // yield a ratio; all are documented for the consumer in
-          // `.claude/agents/a11y-verifier.md`. Upgrade path: measure the pixels
+          // yield a ratio; a reviewer must judge
+          // them by hand. Upgrade path: measure the pixels
           // actually painted behind the glyphs — hit-test the text box with
           // `document.elementsFromPoint`, or screenshot the element with its
           // `color` made transparent — which covers every case above with one

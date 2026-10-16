@@ -7,9 +7,6 @@
  * findings, never a gate. Declaration facts come from script 14's contract
  * extractor; this file walks the AST only for method bodies and JSX.
  *
- * Codes are cited by `.claude/skills/stencil-compliance/`. The parity spec
- * `scripts/__tests__/stencil-compliance-skill.spec.mjs` keeps both in step.
- *
  * Usage:
  *   node scripts/audit/16-stencil-contract.mjs mud-button [--json]
  *   node scripts/audit/16-stencil-contract.mjs --all --json
@@ -51,7 +48,7 @@ export const RULES = [
 
 const severityOf = code => RULES.find(r => r.code === code).severity;
 
-// Canonical group order: src/components/_agents/component-structure.md "Member Order".
+// Canonical order of the member groups inside a component class.
 export const GROUP_ORDER = [
   'Prop',
   'State',

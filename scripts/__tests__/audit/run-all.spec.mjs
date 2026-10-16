@@ -1107,7 +1107,7 @@ describe('run-all: runAudit — S5, zero components selected (plan 2026-09-22-au
 describe('run-all: runAudit — deep', () => {
   const H = manifestText();
 
-  it('emits one row per mapped deep item, opens no AI row, and passes at PRODUCTION-READY (Decision 12)', async () => {
+  it('emits one row per mapped deep item, opens no review-leg row, and passes at PRODUCTION-READY (Decision 12)', async () => {
     const p = pipeline({
       argv: ['mud-fx', '--depth', 'deep', '--verdict'],
       env: { FIGMA_TOKEN: 'x' },
@@ -1310,15 +1310,6 @@ describe('run-all: the command pre-pr-check runs', () => {
     assert.ok(envelope.results.length > 0);
     for (const r of envelope.results) assert.ok('error' in r, `${r.id} has no error field`);
     assert.equal(envelope.meta.depth, 'quick');
-  });
-
-  it('pre-pr-check.md runs exactly that command', () => {
-    const doc = readFileSync(join(REPO, '.claude', 'commands', 'pre-pr-check.md'), 'utf8');
-    // R5 (Phase 3, plan 2026-09-22-audit-depths-sentinel-fixes.md): the fast
-    // path runs the audit ONCE through `verdict.mjs` and branches on its exit
-    // status — never the raw `run-all.mjs` invocation this test asserted
-    // before Phase 3 landed.
-    assert.match(doc, /^yarn audit:component --changed --depth quick --no-browser --json$/m);
   });
 });
 

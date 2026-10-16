@@ -1,21 +1,14 @@
 /**
  * Gate callers branch on `verdict.mjs`'s exit status, never on their own
- * reading of the verdict (Design §1). This spec EXECUTES verdict.mjs over a
- * fixture per state and asserts the exit code, the worst component deciding
- * on a multi-component run.
+ * reading of the verdict. This spec EXECUTES verdict.mjs over a fixture per
+ * state and asserts the exit code, the worst component deciding on a
+ * multi-component run.
  *
- * The second half checks the Phase 5 caller files by group: every gate
- * caller invokes `yarn audit:component` and none of the deny-listed old
- * criteria tokens survive; every leg invokes neither `yarn audit:component`
- * nor `verdict.mjs`.
- *
- * Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md` descoped the
- * two-phase `deep` flow: AI legs are advisory at every depth, so every caller
- * runs the gate once and stops on a non-zero exit — no `awaitingLegs`, no
- * `--recompute`. The one field a caller still reads besides the exit status is
- * a component's `runDir` in `audit/_run/summary.json` (Decision 10), which it
- * passes to `--run-dir` to re-render the brief with advisory findings a leg
- * wrote afterwards. The last describe block asserts this by text.
+ * Review legs are advisory at every depth, so a caller runs the gate once and
+ * stops on a non-zero exit — no `awaitingLegs`, no `--recompute`. The one
+ * field a caller still reads besides the exit status is a component's `runDir`
+ * in `audit/_run/summary.json`, which it passes to `--run-dir` to re-render
+ * the brief with advisory findings a leg wrote afterwards.
  */
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -25,7 +18,6 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, it } from 'node:test';
 
-import { REPO_ROOT } from '../../audit/lib/component-paths.mjs';
 import { STATE_EXIT_CODES } from '../../audit/lib/exit-codes.mjs';
 import { acquireLock, releaseLock } from '../../audit/lib/storybook-helpers.mjs';
 import { FIGMA_ABSENT, cleanEnvelope, withError, writeRunDir } from './__fixtures__/verdict/envelope.mjs';
@@ -276,168 +268,5 @@ describe('callers: S9 — a usage error in fresh mode exits 2 before run-all is 
     assert.equal(res.status, 2, res.stderr);
     assert.match(res.stderr, /invalid component name/);
     assert.equal(existsSync(join(dir, '_run', 'summary.json')), false);
-  });
-});
-
-// Phase 5 (callers) file lists (plan Phase 5 `## Files`). Gate callers run
-// `yarn audit:component` and stop on its exit status; legs keep their
-// `run-all --only` evidence runs and never invoke the gate.
-const GATE_CALLERS = [
-  '.claude/commands/pre-pr-check.md',
-  '.claude/agents/audit-production.md',
-  '.claude/agents/new-component.md',
-  '.claude/agents/refactor-component.md',
-  '.claude/commands/migrate-component.md',
-];
-const LEGS = [
-  '.claude/agents/a11y-verifier.md',
-  '.claude/agents/pixel-perfect-verifier.md',
-  '.claude/skills/stencil-compliance/SKILL.md',
-];
-
-/** The GATE_CALLERS that run `--depth deep`: they run the gate once and stop on a non-zero exit;
- * AI legs are optional advisory follow-ups re-rendered with `--run-dir` (Decision 12). */
-const DEEP_CALLERS = ['.claude/agents/audit-production.md', '.claude/commands/migrate-component.md'];
-
-describe('callers: /audit-component has one authored entry point', () => {
-  it('the skill exists and no same-named command file does', () => {
-    assert.ok(
-      existsSync(join(REPO_ROOT, '.claude/skills/audit-component/SKILL.md')),
-      'the audit-component skill is missing',
-    );
-    assert.ok(
-      !existsSync(join(REPO_ROOT, '.claude/commands/audit-component.md')),
-      '.claude/commands/audit-component.md exists: the audit-component skill shadows a same-named command, so the file is never loaded — it would be dead code drifting from the skill',
-    );
-  });
-});
-
-/** The `audit-production` PASS/FAIL/WARN table header this plan replaces (Design §1 / Phase 5 task 2). */
-const PASS_FAIL_WARN_HEADER = '**Pass/Fail criteria**:';
-const DENY_TOKENS = ['Ready to merge', 'summary.errors', PASS_FAIL_WARN_HEADER];
-
-/** Fenced code blocks only — a prose mention inside backticks (e.g. "never invokes `verdict.mjs`") is not an invocation. */
-function codeBlocks(text) {
-  return [...text.matchAll(/```[a-z]*\n([\s\S]*?)```/g)].map(m => m[1]);
-}
-
-function readFile(rel) {
-  return readFileSync(join(REPO_ROOT, rel), 'utf8');
-}
-
-describe('callers: caller files by group', () => {
-  for (const rel of GATE_CALLERS) {
-    it(`gate caller ${rel} invokes \`yarn audit:component\` in a code block`, () => {
-      const blocks = codeBlocks(readFile(rel));
-      assert.ok(
-        blocks.some(b => b.includes('yarn audit:component')),
-        `${rel}: no code block invokes \`yarn audit:component\``,
-      );
-    });
-
-    it(`gate caller ${rel} carries none of the deny-listed old criteria tokens`, () => {
-      const text = readFile(rel);
-      for (const token of DENY_TOKENS) {
-        assert.ok(!text.includes(token), `${rel}: still contains deny-listed token "${token}"`);
-      }
-    });
-  }
-
-  for (const rel of LEGS) {
-    it(`leg ${rel} never invokes \`yarn audit:component\` or \`verdict.mjs\` in a code block`, () => {
-      const blocks = codeBlocks(readFile(rel));
-      for (const block of blocks) {
-        assert.ok(!block.includes('yarn audit:component'), `${rel}: a code block invokes \`yarn audit:component\``);
-        assert.ok(!/\bverdict\.mjs\b/.test(block), `${rel}: a code block invokes \`verdict.mjs\``);
-      }
-    });
-  }
-});
-
-describe('callers: Decision 12 — deep runs the gate once; AI legs are advisory', () => {
-  const SKILL = '.claude/skills/audit-component/SKILL.md';
-  /** Code-block lines that start a fresh gate run — `yarn audit:component` not re-rendering a run. */
-  const freshGateLines = rel =>
-    codeBlocks(readFile(rel))
-      .flatMap(b => b.split('\n'))
-      .filter(l => l.includes('yarn audit:component') && !l.includes('--run-dir') && !l.includes('--rerender'));
-
-  /**
-   * Vocabulary of the two-phase `deep` flow Decision 12 removed. Each of these
-   * described a leg CLOSING a row the verdict had left open; under the advisory
-   * regime no such row exists, so a doc still carrying one describes machinery
-   * that is not there. The codes are the removed row ids, `aiLegs` the envelope
-   * field, and the phrase the behaviour itself.
-   */
-  const DEAD_DEEP_FLOW = [
-    'awaitingLegs',
-    '--recompute',
-    'ai-wcag',
-    'ai-media',
-    'ai-stencil',
-    'aiLegs',
-    'closes that row',
-  ];
-
-  for (const rel of [...new Set([...GATE_CALLERS, ...LEGS, SKILL])]) {
-    it(`${rel} names nothing from the removed two-phase deep flow`, () => {
-      const text = readFile(rel);
-      for (const token of DEAD_DEEP_FLOW) {
-        assert.ok(!text.includes(token), `${rel}: still names "${token}" (Decision 12 removed it)`);
-      }
-    });
-  }
-
-  // The skill is the one /audit-component entry point since its command file
-  // was deleted, so it carries the gate-caller contract that file did. "Ready
-  // to merge" is left out on purpose: the skill's history section quotes it as
-  // the failure the scripted verdict removed.
-  it(`${SKILL} runs the gate once and carries no old criteria`, () => {
-    assert.equal(freshGateLines(SKILL).length, 1, freshGateLines(SKILL).join('\n'));
-    const text = readFile(SKILL);
-    for (const token of ['summary.errors', PASS_FAIL_WARN_HEADER]) {
-      assert.ok(!text.includes(token), `${SKILL}: still contains deny-listed token "${token}"`);
-    }
-  });
-
-  for (const rel of DEEP_CALLERS) {
-    it(`${rel} runs the gate exactly once`, () => {
-      assert.equal(freshGateLines(rel).length, 1, freshGateLines(rel).join('\n'));
-    });
-
-    it(`${rel} re-renders advisory legs with --rerender, never a hand-substituted run path`, () => {
-      const text = readFile(rel);
-      assert.ok(
-        codeBlocks(text).some(b => /yarn audit:component --rerender \S+/.test(b)),
-        `${rel}: no code block re-renders with --rerender`,
-      );
-      assert.ok(!text.includes('verdict.runDir'), `${rel}: reads runDir from verdict.json`);
-    });
-  }
-
-  // The rule "a caller that already ran the gate must not make the skill run a
-  // second one" lives in an ARGUMENT or it lives nowhere: the skill is a fresh
-  // context and reads only what the invocation hands it.
-  const SKILL_CALLERS = [...new Set([...GATE_CALLERS, ...DEEP_CALLERS])].filter(rel =>
-    readFile(rel).includes("Skill('audit-component'"),
-  );
-
-  it('at least one caller invokes the skill — otherwise the assertion below is vacuous', () => {
-    assert.ok(SKILL_CALLERS.length > 0);
-  });
-
-  for (const rel of SKILL_CALLERS) {
-    it(`${rel} passes --run-dir into its Skill('audit-component') invocation`, () => {
-      for (const call of readFile(rel).matchAll(/Skill\('audit-component',\s*\{([^}]*)\}\)/g)) {
-        assert.match(call[1], /--run-dir/, `${rel}: Skill() invocation carries no --run-dir: ${call[0]}`);
-      }
-    });
-  }
-
-  it('the skill treats --run-dir as the signal that the gate already ran', () => {
-    const text = readFile(SKILL);
-    const flag = text.indexOf('--run-dir');
-    const rule = text.indexOf('never start a second fresh run');
-    assert.ok(flag >= 0 && rule > flag, 'step 1 must name --run-dir as the condition for that rule');
   });
 });

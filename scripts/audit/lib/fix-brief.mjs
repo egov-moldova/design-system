@@ -7,7 +7,7 @@
  *   FAIL            ID · severity · check · location · expected (value + source) · actual · verify · owner
  *   INCOMPLETE      ID · check · cause · prerequisite (or, for a crash, log) · verify
  *   NEEDS-DECISION  ID · node (or "no manifest") · question · options — the audit never picks one
- *   Advisory        AI findings, at every depth, in the FAIL shape; they never change the state
+ *   Advisory        Review-leg findings, at every depth, in the FAIL shape; they never change the state
  *
  * A missing field is a renderer error, not an empty line: a brief that drops
  * the verify command or the expected value's source is the failure F8 names.
@@ -15,8 +15,8 @@
  * The brief opens with a report block (plan
  * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
  * check and an index of every entry — then `## Changes since the previous run`
- * (plan `2026-09-23-audit-run-delta.md`), closed by REPORT_END. The terminal prints that block and the skill pastes it
- * inline, so no session ever rebuilds the table in its own words.
+ * (plan `2026-09-23-audit-run-delta.md`), closed by REPORT_END. The terminal
+ * prints that block and a reviewer can paste it inline, so nobody has to rebuild the table in their own words.
  */
 import { LEG_NOT_WRITTEN, ROW_STATUS, STATE } from './json-output.mjs';
 
@@ -71,7 +71,7 @@ export function line(value) {
  * or autolink; no `&` → no entity; no backtick → no code span; no `|` → no
  * table cell break. The backslash is in the set and the replacement is one
  * pass, so a backslash already in the text can never cancel an escape. The
- * preview shows the finding's text exactly. Why it matters: an AI leg's
+ * preview shows the finding's text exactly. Why it matters: a review leg's
  * finding text is kept in record.json and re-rendered in later briefs, and a
  * previewer fetches an image or hides the rest of the file on `<!--` the
  * moment it opens. `run-record.spec.mjs` checks both properties over
@@ -87,8 +87,8 @@ const MD_ACTIVE = /[\\`[\]<&|]/g;
 export function code(value) {
   if (value === '') return '(empty)';
   // Control characters are neutralised too: this text reaches a terminal
-  // (printSummary), where an ESC sequence from a story's console message or an
-  // AI leg's finding could move the cursor and overwrite the real headline.
+  // (printSummary), where an ESC sequence from a story's console message or a
+  // review leg's finding could move the cursor and overwrite the real headline.
   // Unicode line/paragraph separators count as newlines, and bidi controls are
   // neutralised like C0/C1: a right-to-left override lets a finding display
   // text other than its bytes (Trojan Source) in a terminal or a previewer.
@@ -157,7 +157,7 @@ export function rerenderCommand(component) {
   return `yarn audit:component --rerender ${component}`;
 }
 
-/** Closes the report block — the part `printSummary` prints and the skill pastes inline. */
+/** Closes the report block — the part `printSummary` prints and a reviewer can paste inline. */
 export const REPORT_END = '<!-- end of report -->';
 
 /**
@@ -498,7 +498,10 @@ export function renderFixBrief(verdict, changes = null) {
 
   const advisory = verdict.advisory ?? [];
   if (advisory.length) {
-    out.push(`## Advisory — AI findings, they do not change the state at ${verdict.depth} (${advisory.length})`, '');
+    out.push(
+      `## Advisory — review-leg findings, they do not change the state at ${verdict.depth} (${advisory.length})`,
+      '',
+    );
     for (const e of advisory) out.push(renderEntry(e));
   }
   return `${out.join('\n').replace(/\n+$/, '')}\n`;

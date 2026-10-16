@@ -2,7 +2,7 @@
  * Tests for the fix brief's report block (plan
  * `2026-09-23-audit-report-summary-and-delta.md`): the script-rendered
  * `## Summary` section — one row per check, an index of every entry — that
- * `printSummary` prints to the terminal and the skill pastes inline.
+ * `printSummary` prints to the terminal and a reviewer can paste inline.
  */
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';

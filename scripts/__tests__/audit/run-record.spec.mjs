@@ -52,7 +52,7 @@ function runDirAt(componentDir, run) {
   return dir;
 }
 
-/** Build a record straight from an envelope, with no AI legs unless given. */
+/** Build a record straight from an envelope, with no review legs unless given. */
 function record(envelope, { run = '2026-09-23T10-00-00-000Z-1', aiFiles = [], legs = null } = {}) {
   const verdict = computeVerdict({ envelope, aiFiles });
   const legRecords = legs ?? computeLegRecords(aiFiles);
@@ -240,7 +240,7 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.unchanged, 0);
   });
 
-  it("an AI leg's finding reworded with the same code and file → never gone + new", () => {
+  it("an review leg's finding reworded with the same code and file → never gone + new", () => {
     const leg = 'a11y-verifier';
     const at = message => {
       const files = [
@@ -253,7 +253,7 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.added.length, 0);
   });
 
-  it("an AI leg's decision is scoped to its leg and compares across runs", () => {
+  it("an review leg's decision is scoped to its leg and compares across runs", () => {
     const leg = 'audit-component';
     const at = (run, question) =>
       record(cleanEnvelope({ depth: 'deep' }), {
@@ -437,7 +437,7 @@ describe('run-record: baseline robustness', () => {
 // ─── The golden record ──────────────────────────────────────────────────────
 
 describe('run-record: the golden record', () => {
-  it('a fixed envelope plus AI files produces the checked-in golden record byte for byte', () => {
+  it('a fixed envelope plus review-leg files produces the checked-in golden record byte for byte', () => {
     const e = withStyleFinding(cleanEnvelope({ depth: 'deep' }), styleFinding());
     const w = e.results.find(r => r.id === '02');
     w.summary = { errors: 0, warnings: 1, info: 0 };
@@ -663,7 +663,7 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
     return section;
   }
 
-  it('an AI leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
+  it('an review leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
     const leg = 'a11y-verifier';
     // The leg must be graded in BOTH runs (an empty-findings file, then one
     // with this finding) so the comparison actually keys it into `added`,
@@ -746,7 +746,7 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
 });
 
 describe('run-record: hostile text cannot add a column, a row or a heading', () => {
-  it("an AI leg's markdown image or link in a finding renders inert in later briefs", () => {
+  it("an review leg's markdown image or link in a finding renders inert in later briefs", () => {
     const leg = 'a11y-verifier';
     const message = 'focus lost ![b](https://attacker.example/x.png) [c](javascript:alert(1)) rgb(0, 0, 0)';
     const current = record(cleanEnvelope({ depth: 'deep' }), {
@@ -1120,7 +1120,7 @@ describe('run-record: sentinel round 4', () => {
     assert.match(withLog, /^- log: `results\[id="02"\]\.error in envelope\.json`$/m);
   });
 
-  it('code-less AI findings on one file are told apart by their text, and never render "undefined"', () => {
+  it('code-less review-leg findings on one file are told apart by their text, and never render "undefined"', () => {
     const leg = 'a11y-verifier';
     const at = (run, messages) =>
       record(cleanEnvelope({ depth: 'deep' }), {

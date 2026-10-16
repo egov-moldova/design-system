@@ -10,10 +10,6 @@
  * Also reports the component's location (`components` vs `hidden`) so callers
  * know whether it's graduated to production.
  *
- * Replaces AI work in:
- *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.1
- *   - `.claude/agents/audit-production.md` Phase 1.1
- *
  * Usage:
  *   node scripts/audit/01-component-structure.mjs mud-button [--json] [--out file]
  *   node scripts/audit/01-component-structure.mjs --all --json
@@ -196,9 +192,9 @@ function kindHint(kind, name) {
     case 'css':
       return `Create src/components/${name}/${name}.css — even if empty, Stencil expects it when styleUrl is set.`;
     case 'stories':
-      return `Create src/components/${name}/${name}.stories.ts in CSF3 format. Use story-writer subagent or scripts/scaffold/story-scaffold.mjs (Sprint 2).`;
+      return `Create src/components/${name}/${name}.stories.ts in CSF3 format. Use scripts/scaffold/story-scaffold.mjs as a starting point.`;
     case 'spec':
-      return `Create src/components/${name}/test/${name}.spec.tsx using @stencil/vitest render() tests. Use test-writer subagent.`;
+      return `Create src/components/${name}/test/${name}.spec.tsx using @stencil/vitest render() tests.`;
     case 'readme':
       return `Run yarn build (or stencil build --docs) to auto-generate readme.md.`;
     default:

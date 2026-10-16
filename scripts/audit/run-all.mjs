@@ -9,7 +9,7 @@
  *   quick     env preflight, lint, Wave A — no build, no browser
  *   standard  quick + prerequisites built automatically + Wave B + Wave C
  *   deep      standard + Wave D (figma-refs --check, adapter smoke builds,
- *             E2E deferred); AI legs are advisory and have no row
+ *             E2E deferred); review legs are advisory and have no row
  *
  *   Wave A (parallel, no browser, no build):
  *     lint, 01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
@@ -82,7 +82,7 @@ const TOOL = 'run-all';
  * The check registry. `kind` defaults to 'script' (an audit script spawned
  * with `<target> --json [...args]`); 'lint' runs ESLint + Stylelint on the
  * component's files; 'command' runs a repo-level build; 'deferred' is a row
- * that reports its reason. AI legs have no row: their findings are advisory
+ * that reports its reason. Review legs have no row: their findings are advisory
  * (Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md`).
  * `requiresBuild` names the prerequisite a row needs (PREREQUISITES_FOR).
  */
@@ -1112,9 +1112,8 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  * Merge per-script results into a single envelope. Pure — exported for tests.
  *
  * `ci` and `noBrowser` drive two meta fields kept as script-output signal;
- * no `.claude/` file reads either since the BX rows became scripted verdict
- * rows (`grep -rnE 'layer2Required|ciDetected' .claude/agents .claude/skills
- * .claude/commands .claude/hooks` → no hits; `.claude/plans` only records history):
+ * no reader of the envelope depends on either since the BX rows became
+ * scripted verdict rows:
  *
  *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
  *                          at the time of invocation. Surfaces to CI dashboards

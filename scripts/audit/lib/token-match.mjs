@@ -9,7 +9,7 @@
  * Matching by value alone therefore names other components' tokens, so:
  *
  * - Palette primitives are excluded: component CSS never references them
- *   (AGENTS.md rule 5).
+ *   (component CSS references the semantic tier; `yarn lint.colors` fails on `var(--palette-*)`).
  * - With `own` (the custom properties the element's component CSS references,
  *   from `referencedTokens`) and `components` (the names under
  *   `tokens/core/components/`), a token owned by a component is kept only if

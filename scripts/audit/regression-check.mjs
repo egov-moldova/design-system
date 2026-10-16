@@ -11,8 +11,8 @@
  *   - Info-level changes are ignored                  — pass-through
  *
  * Use this BEFORE merging any slim-down PR. The plan's quality bar is:
- * "If the script misses a finding the AI used to catch, NU migrăm acea
- * bucată — rămâne la AI."
+ * "If the script misses a finding the manual review used to catch, NU migrăm
+ * acea bucată — rămâne la review."
  *
  * Usage:
  *   node scripts/audit/regression-baseline.mjs     # capture baseline

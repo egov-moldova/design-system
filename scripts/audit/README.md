@@ -1,39 +1,37 @@
 # scripts/audit/ — deterministic audit suite
 
-Local Node ESM scripts that replace mechanical work AI used to do inside
-`audit-component`, `audit-production`, `pre-pr-check`, `a11y-verifier`,
-`pixel-perfect-verifier`, `integration-checker`, `story-writer`, and
-`test-writer`. Each script is read-only, emits a standard JSON envelope, and
-is independently testable with `node --test`.
+Local Node ESM scripts that replace mechanical review work: anti-pattern greps,
+structure and JSDoc checks, accessibility and contrast measurements, pixel and
+style comparison against Figma. Each script is read-only, emits a standard JSON
+envelope, and is independently testable with `node --test`.
 
 ## Why this exists
 
-AI workflows like `/audit-component` and `/audit-production` were spending
-significant tokens on **mechanical, deterministic** work — running 14 grep
-calls, parsing JSON reports, building markdown tables. That kind of work has
-a single correct answer per input, so a script delivers identical results in
-a fraction of the wall-clock time and at zero token cost.
+Reviewing a component by hand means **mechanical, deterministic** work —
+running 14 grep calls, parsing JSON reports, building markdown tables. That
+kind of work has a single correct answer per input, so a script delivers
+identical results in a fraction of the time.
 
-The scripts in this folder run that mechanical work; AI keeps the
-**judgment-heavy** parts: naming critique, architecture review, ARIA
+The scripts in this folder run that mechanical work; advisory review legs keep
+the **judgment-heavy** parts: naming critique, architecture review, ARIA
 correctness for a captured tree, WCAG remediation choice, edge-case story
 suggestions, etc.
 
 ## Quality contract
 
-Per the plan that produced this suite, every script obeys:
+Every script obeys:
 
-1. **Output identical or superior accuracy** to what AI produced manually.
-2. **Never force AI to compensate** — output is a clean JSON envelope, no raw
+1. **Output identical or superior accuracy** to what a manual review produces.
+2. **Never force a reviewer to compensate** — output is a clean JSON envelope, no raw
    text parsing needed downstream.
-3. **Read-only** on source files. No script writes to `src/`, `tokens/`, or
-   `.claude/`, and none writes a `*.figma.json` manifest. The audit's own
+3. **Read-only** on source files. No script writes to `src/` or `tokens/`,
+   and none writes a `*.figma.json` manifest. The audit's own
    outputs are git-ignored: `audit/` (verdicts, fix briefs, run inputs),
    `.audit-figma/` (the `HEAD` copy of each manifest, Figma references) and
    `.audit-storybook.json`. The scaffolders under `scripts/scaffold/` are the
    only source writers, and they require an explicit `--write` flag.
-4. **Regression-gated** before any AI prompt is slimmed: run the legacy
-   workflow and the new workflow on the same component; critical + high
+4. **Regression-gated** before a manual step is dropped: run the legacy
+   review and the new script on the same component; critical + high
    findings must be identical (warnings ≤ 5% diff, and only in the direction
    of MORE — never fewer).
 
@@ -230,8 +228,8 @@ node scripts/audit/run-all.mjs --all --depth quick --no-browser --out reports/au
 | `--depth quick\|standard\|deep` | Which checks run — `REQUIRED_CHECKS` in `verdict.mjs`, the one table. Default `standard`. |
 | `--fast` | Deprecated alias of `--depth quick`. |
 | `--e2e` | Folded into `--depth deep` (the `e2e` row is deferred: no E2E test project). |
-| `--no-browser`, `--ci`, `CI` env | Excuse Wave C and the browser AI legs; the verdict prints `browser: waived (flag \| CI env)` and caps the level at `CLEAN-STATIC`. `--ci` also sets `meta.ciDetected`. |
-| `--no-figma` | Excuse 11, 15, `figma-refs` and the Figma AI leg for this run; `deep` is capped at `MERGE-READY`. |
+| `--no-browser`, `--ci`, `CI` env | Excuse Wave C and the browser review legs; the verdict prints `browser: waived (flag \| CI env)` and caps the level at `CLEAN-STATIC`. `--ci` also sets `meta.ciDetected`. |
+| `--no-figma` | Excuse 11, 15, `figma-refs` and the Figma review leg for this run; `deep` is capped at `MERGE-READY`. |
 | `--skip` / `--only` | Drop or select check ids. |
 | `--verdict`, `--audit-dir <dir>` | Also write the run inputs and have `verdict.mjs` write the verdict (what `yarn audit:component` does). |
 
@@ -309,20 +307,19 @@ unprepared row and per row with an owed `noTarget`. Gate on
 
 Waves run sequentially; rows within a wave run in parallel via async `spawn`.
 Repo-level rows (03, the adapter builds) run once per invocation and are shared
-across components. AI legs have no row: the `audit-component` skill dispatches
-them, and their findings are advisory at every depth (Decision 12 of
-`2026-09-22-audit-depths-sentinel-fixes.md`).
+across components. Advisory review legs have no row: they run after the scripted
+rows, and their findings are advisory at every depth.
 
 ## Verdict (`verdict.mjs`)
 
 ```bash
 yarn audit:component mud-button --depth standard             # run + verdict, exit = state
-node scripts/audit/verdict.mjs --rerender mud-button          # re-render its current run, e.g. with advisory AI findings
+node scripts/audit/verdict.mjs --rerender mud-button          # re-render its current run, e.g. with advisory review-leg findings
 node scripts/audit/verdict.mjs --run-dir audit/mud-button/runs/<run>   # the same, run named explicitly
 ```
 
 The only writer of `verdict.json`. It rebuilds the file from its inputs on every
-run, so a hand-edited or model-written verdict never survives the next run.
+run, so a hand-edited verdict never survives the next run.
 
 - **State**, first match wins: `INCOMPLETE` (a row crashed, missed its
   prerequisite, a required id did not run without an excuse, a row that owes a
@@ -335,7 +332,7 @@ run, so a hand-edited or model-written verdict never survives the next run.
 - **Excuses**, and nothing else: `--no-figma` or a committed `design: "none"`
   (Figma ids), no manifest at `HEAD` (Figma ids, state `NEEDS-DECISION`), and
   `--no-browser` / `--ci` / `CI` (browser ids). Each is printed in the headline.
-- **AI findings** are advisory at every depth, `deep` included: a leg's
+- **Review-leg findings** are advisory at every depth, `deep` included: a leg's
   `ai-findings.json` under the run's `ai/<leg>/` is listed under "Advisory" and
   never moves `state`; a malformed file or finding is named in `notes`. At
   `deep` the headline says `ai-legs: advisory` — `PRODUCTION-READY` means the
@@ -353,7 +350,7 @@ run, so a hand-edited or model-written verdict never survives the next run.
   preflight) still prints a summary, with `components: []`.
 - **Not applicable.** A finding marked `notApplicable: true` (severity `info`)
   never moves `state`; its row carries the reason as `note` and the brief lists
-  it under "Not applicable" (Decision 13).
+  it under "Not applicable".
 - **Warnings** never change the state. `verdict.json` lists them under
   `warnings`, and the brief renders them as "Warnings (non-blocking)" with their
   row and `verify:` command.
@@ -370,7 +367,7 @@ Stable paths (git-ignored `audit/`):
 | `audit/<component>/verdict.json` | `verdict.mjs`, every run |
 | `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index, changes since the previous run), then one block per non-PASS entry with its `verify:` command |
 | `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
-| `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the AI leg, nothing else |
+| `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the review leg, nothing else |
 | `audit/<component>/runs/<run>/record.json` | `verdict.mjs` via `lib/run-record.mjs` — what that run graded and the identity of every finding it reported; read only by the next run's comparison (below), never an input to `verdict.json` itself |
 | `audit/_run/summary.json` | worst state over the run's components, each `runDir` |
 
@@ -382,7 +379,7 @@ per-fix check, and only a full run at the same depth can write `PASS`.
 Every run writes `record.json` (a re-render of an older run leaves its record
 untouched): the scopes it graded — a required row that actually ran (not
 excused, crashed, deferred, `noTarget`, or dropped by `--only`/`--skip`), each
-AI leg whose file parsed at a matching schema with a `findings` list and no
+review leg whose file parsed at a matching schema with a `findings` list and no
 finding rejected by the shape check, and
 the Figma gate at `standard`+ — plus the identity of every finding it
 reported. `verdict.mjs` looks up the newest earlier `runs/*` record at the
@@ -415,7 +412,7 @@ previous run` section inside the report block (`fix-brief.md`, before
   rows land under "Not compared"; the header always names the run it
   compared against, so this is visible rather than silent.
 - The renderer's own words never say "fixed" or "resolved" — a quoted
-  finding label is a check's or an AI leg's text and may contain either
+  finding label is a check's or a review leg's text and may contain either
   word, but it always sits after a fixed status prefix ("newly reported:",
   "no longer reported:", …), so the claim is the renderer's, never the
   finding's. Finding text is kept in `record.json` and re-rendered later, so
@@ -483,12 +480,11 @@ left out of the percentage and reported as `PIXEL-MASKED`.
 
 ## Figma verification — manifest, style parity, pixel diff
 
-The procedure is the `pixel-perfect` skill (`.claude/skills/pixel-perfect/SKILL.md`).
 The scripts share one input: the component's **Figma state manifest**,
 `src/components/<name>/test/<name>.figma.json` — every state cites a Figma
 node, says how to render it (fixture `html`, `theme`, `clock`, `interaction`),
 and lists the exact values the node specifies (`expect`) plus elements the
-design does not have (`absent`). Schema: `lib/figma-manifest.mjs`. Example:
+design does not have (`absent`). Format: "Figma state manifest" below. Example:
 `src/components/mud-date-picker/test/mud-date-picker.figma.json`.
 
 ```bash
@@ -508,15 +504,106 @@ What makes the pixel percentage meaningful:
 | Dark capture vs light reference | guaranteed FAIL | dark only against `<state>-dark.png` / dark states |
 | "today", hover, focus, open views | not reachable | `clock`, `interaction` (hover, focus, press, click) |
 
+## Figma state manifest
+
+The Figma checks (`11-pixel-diff-states`, `15-style-parity`, `figma-refs`) share one input
+per component: a JSON file committed at
+
+```
+src/components/<name>/test/<name>.figma.json
+```
+
+Every state cites a Figma node, says how to render the same state in Storybook, and
+optionally lists the exact values that node specifies. Values in `expect` are copied from
+Figma (node data or Dev Mode), never inferred from a screenshot; the `node` on each entry
+is the citation. The audit reads the manifest from `HEAD` only (see "Figma inputs come from
+`HEAD` only" above). `lib/figma-manifest.mjs` is the parser and validator; an invalid
+manifest is reported as `MANIFEST-INVALID` with the list of problems. A complete example is
+`src/components/mud-date-picker/test/mud-date-picker.figma.json`.
+
+### Top level
+
+| Field | Required | Meaning |
+|-------|----------|---------|
+| `component` | by convention | The component tag name. `figma-refs` falls back to it when no component is passed on the command line; the validator does not check it. |
+| `figma.fileKey` | yes (when `figma` is present) | Non-empty string: the key of the Figma file the node ids belong to. Required as soon as any state has a `node`. |
+| `figma.scale` | no | Positive number: the export scale of reference PNGs. |
+| `figma.skip` | no | Array of `{ "node", "reason" }`: Figma variants the manifest deliberately does not cover. `figma-refs --check` reports every other uncovered variant. Both fields are required in each entry. |
+| `defaults` | no | `story`, `clock`, `viewport`, `capture` and `mask`, inherited by every state that does not set its own. |
+| `shared` | no | Object of `{ "<kebab-case-key>": [expectation, ...] }`: non-empty lists that several states reuse with `{ "use": "<key>" }` in `expect`. |
+| `states` | yes | Non-empty array of states (below). |
+| `$comment` | no | Free text; ignored. |
+
+### State
+
+| Field | Required | Meaning |
+|-------|----------|---------|
+| `name` | yes | Kebab-case (`a-z`, `0-9`, `-`), unique in the manifest. Names the reference file, `<name>.png`. |
+| `story` | yes, here or in `defaults` | Storybook story id such as `components-button--default`: the page that loads the component. |
+| `node` | no, but needed for pixel diff and for `expect` entries without their own `node` | Figma node id such as `158:402` (the URL form `158-402` is accepted). Requires `figma.fileKey`. |
+| `html` | no | String: the fixture markup rendered in place of the story's own. |
+| `props` | no | `{ "<selector>": { "<property>": value } }`: JS properties assigned after the fixture renders, for props with no attribute form (arrays, objects). Selectors are light-DOM selectors; every match gets the values. |
+| `theme` | no | `light` (default) or `dark`. |
+| `clock` | no | ISO date-time the page clock is frozen at. |
+| `viewport` | no | `{ "width", "height" }`, both positive. Default 1280 by 900. |
+| `interaction` | no | One step or a list of steps `{ "type": "hover" \| "focus" \| "press" \| "click", "target": "<selector>" }`. Both fields are required in each step. |
+| `capture` | no | `{ "selector", "bleed" }`: the element captured (default: the component itself) and the margin around it, `"auto"` (default) or a non-negative number. |
+| `mask` | no | Array of selectors painted with the page background on both images before the pixel diff, for mock data such as dates. Masked pixels are reported, and style parity still checks the elements. `"mask": []` on a state opts out of `defaults.mask`. |
+| `pixel` | no | Boolean. `false` keeps the state out of the screenshot diff and the reference export while its `expect` entries are still checked. |
+| `expect` | no | Array of expectations (below), or `{ "use": "<key>" }` entries naming a `shared` block. A `use` entry carries no other field. |
+
+### Expectation
+
+| Field | Required | Meaning |
+|-------|----------|---------|
+| `target` | yes | Selector of the element checked. |
+| `styles` | yes, unless `absent` | Non-empty `{ "<property>": "<value>" }`, every value a string. Any computed-style property is accepted, plus `boxWidth` and `boxHeight` (border box) and `textContent` (trimmed). |
+| `absent` | no | Only `true`: the Figma node has no such element, so rendering one is drift (`STYLE-UNEXPECTED-ELEMENT`). Cannot be combined with `styles`. |
+| `node` | no | Figma node id for this entry. Defaults to the state's `node`; one of the two must be set. |
+| `override` | no | A correction the owner decided, for example a typo in the design: `{ "value", "reason", "decidedBy" }`, all three non-empty strings. The entry must list exactly one style; `15-style-parity` checks `value` instead of the Figma one, and the verdict lists the override. |
+
+Selectors are Playwright CSS selectors, which pierce open shadow roots, so `mud-x .inner`
+reaches `.inner` inside `mud-x`'s shadow DOM.
+
+### Component with no design
+
+A component that has no Figma design declares that instead of states, with no `fileKey` and
+no `states`:
+
+```json
+{ "figma": { "design": "none", "reason": "Utility component, no design exists", "decidedBy": "owner name" } }
+```
+
+`reason` and `decidedBy` are required non-empty strings without control characters. Figma
+checks are skipped for the component and the verdict prints the reason. A manifest that
+fails this validation does not grant the waiver: 11 and 15 run and report
+`MANIFEST-INVALID`.
+
+### Minimal example
+
+```json
+{
+  "component": "mud-button",
+  "figma": { "fileKey": "<file key>" },
+  "defaults": { "story": "components-button--default" },
+  "states": [
+    {
+      "name": "default",
+      "node": "12:34",
+      "expect": [{ "target": "mud-button", "styles": { "boxHeight": "40px", "borderTopLeftRadius": "8px" } }]
+    }
+  ]
+}
+```
+
 ## Measuring the suite itself
 
-Two scripts, neither part of a run:
+One script, not part of a run:
 
 ```bash
 node scripts/audit/measure-run-cost.mjs --component mud-button --depth quick,standard --out reports/run-cost-before.json
 # …change something…
 node scripts/audit/measure-run-cost.mjs --component mud-button --depth quick,standard --compare reports/run-cost-before.json
-node scripts/audit/measure-prompt-cost.mjs --out reports/prompt-cost.md   # the static AI-prompt side
 ```
 
 `measure-run-cost.mjs` reports median wall-clock, peak RSS and the slowest rows
@@ -557,11 +644,8 @@ variable and a level no higher than `CLEAN-STATIC`.
 ## See also
 
 - `scripts/visual-diff.mjs` — Pixelmatch CLI used by 11 (algorithm in `lib/image-diff.mjs`).
-- `.claude/skills/pixel-perfect/SKILL.md` — how AI authors manifests and judges 11 / 15 findings.
+- "Figma state manifest" above — how manifests are authored; 11 / 15 findings point back to it.
 - `scripts/audit-token-contrast.mjs` — token-level WCAG audit (10 is the
   component-runtime equivalent; both share the same luminance math).
 - `scripts/tokens-validate.mjs` — DTCG validation; the orchestrator does NOT
   call it today because it operates on the whole token tree, not per-component.
-- `.claude/skills/audit-component/SKILL.md` — the procedure around
-  `yarn audit:component`, the `deep` AI legs and the `ai-findings.json`
-  contract.
