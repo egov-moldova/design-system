@@ -1130,7 +1130,7 @@ describe('run-all: runAudit — deep', () => {
     const v = verdictOf(p.auditDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
-    assert.match(v.headline, /ai-legs: advisory/);
+    assert.match(v.headline, /review-legs: advisory/);
 
     // A leg that writes afterwards is folded in by a re-render, as advisory only.
     const runDir = join(p.auditDir, 'mud-fx', 'runs', 'run-1');

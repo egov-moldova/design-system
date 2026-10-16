@@ -220,13 +220,13 @@ describe('verdict: deep — review legs advisory', () => {
     assert.match(v.headline, /internal utility; decided by Dan/);
   });
 
-  it('a deep run with no reviews/ directory → PASS PRODUCTION-READY, headline "ai-legs: advisory"', () => {
+  it('a deep run with no reviews/ directory → PASS PRODUCTION-READY, headline "review-legs: advisory"', () => {
     const auditDir = tmp();
     const runDir = writeRunDir(auditDir, cleanEnvelope({ depth: 'deep' }));
     const v = writeVerdictForRun(runDir);
     assert.equal(v.state, 'PASS');
     assert.equal(v.level, 'PRODUCTION-READY');
-    assert.match(v.headline, /ai-legs: advisory$/);
+    assert.match(v.headline, /review-legs: advisory$/);
     assert.deepEqual(v.entries, []);
   });
 
@@ -275,7 +275,7 @@ describe('verdict: deep — review legs advisory', () => {
     assert.ok(v.notes.some(n => n.includes('a11y-verifier') && n.includes('finding ignored')));
   });
 
-  it('an review-leg finding cannot turn a script FAIL into anything else', () => {
+  it('a review-leg finding cannot turn a script FAIL into anything else', () => {
     const aiFiles = [
       {
         leg: 'audit-component',

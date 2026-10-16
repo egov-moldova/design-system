@@ -1112,7 +1112,8 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  *
  * `ci` and `noBrowser` drive two meta fields kept as script-output signal;
  * no reader of the envelope depends on either since the BX rows became
- * scripted verdict rows:
+ * scripted verdict rows. Baseline: `grep -rlE 'layer2Required|ciDetected' scripts src`
+ * lists only this file, lib/cli-args.mjs and run-all.spec.mjs (producer, parser, spec):
  *
  *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
  *                          at the time of invocation. Surfaces to CI dashboards

@@ -25,7 +25,7 @@
  *     collides with a native DOM event is indistinguishable to a consumer.
  *   - A3: react.dev same section — a non-string value only reaches a DOM
  *     property when that property exists on the class at construction,
- *     otherwise it is serialized to an attribute (rule SE1). A
+ *     otherwise it is serialized to an attribute. A
  *     `@PropSerialize('<prop>')` method on the class satisfies this rule
  *     (Stencil 4.38+).
  *   - A4: `node_modules/@stencil/core/compiler/stencil.js:279782-280030`
@@ -545,7 +545,7 @@ export function checkA3ReflectSerializer(prop, serializedProps, fileRel, aliasKi
     code: 'ADAPTER-A3-REFLECT-NO-SERIALIZER',
     file: fileRel,
     line: prop.line,
-    message: `Prop "${prop.name}" (type: ${prop.type}) has reflect: true but no @PropSerialize('${prop.name}') — a non-primitive value is never written to the attribute (rule SE1).`,
+    message: `Prop "${prop.name}" (type: ${prop.type}) has reflect: true but no @PropSerialize('${prop.name}') — a non-primitive value is never written to the attribute.`,
     fix: `Add a @PropSerialize('${prop.name}') method, or drop reflect: true.`,
   });
 }

@@ -335,7 +335,7 @@ run, so a hand-edited verdict never survives the next run.
 - **Review-leg findings** are advisory at every depth, `deep` included: a leg's
   `review-findings.json` under the run's `reviews/<leg>/` is listed under "Advisory" and
   never moves `state`; a malformed file or finding is named in `notes`. At
-  `deep` the headline says `ai-legs: advisory` — `PRODUCTION-READY` means the
+  `deep` the headline says `review-legs: advisory` — `PRODUCTION-READY` means the
   scripted rows passed.
 - **Re-render.** A leg that writes after the run is folded in with
   `yarn audit:component --rerender <component>`, which looks that component's

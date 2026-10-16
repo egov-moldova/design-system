@@ -4,7 +4,7 @@
   "component": "mud-fx",
   "depth": "deep",
   "state": "FAIL",
-  "headline": "FAIL@deep · ai-legs: advisory",
+  "headline": "FAIL@deep · review-legs: advisory",
   "rows": [
     {
       "id": "lint",

@@ -3,8 +3,8 @@
 /**
  * check-docs.mjs
  *
- * Dependency-free checker for the public documents (the root Markdown files
- * and the package READMEs, see PUBLIC_DOC_BASENAMES) that carry links, version
+ * Dependency-free checker for the public documents (any Markdown file whose
+ * basename is in PUBLIC_DOC_BASENAMES, at any depth) that carry links, version
  * claims, script names or the package name.
  *
  *   node scripts/docs/check-docs.mjs              # scan the repo root
@@ -508,8 +508,9 @@ export function checkStalePrefix(relPath, lines) {
 // Prose (`Stencil 4.46`, `Stencil >= 4.46`, `Stencil (4.46)`), table rows (`| Stencil | ~4.46.0 |`) and
 // package spellings (`@stencil/core` `~4.46.0`, `@stencil/core@4.46`, `"@stencil/core": "~4.46.0"`).
 const STENCIL_PROSE_CLAIMS = [
-  /\bStencil\s+[`(]?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)(?:\.(\d+|x))?/gi,
-  /\bStencil\s*\|\s*`?\s*(?:[~^]|>=?|≥)?\s*v?(\d+)\.(\d+|x)/gi,
+  // Whitespace runs are bounded: adjacent unbounded runs backtrack in cubic time on a long line.
+  /\bStencil[ \t]{1,8}[`(]?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)(?:\.(\d+|x))?/gi,
+  /\bStencil[ \t]{0,8}\|[ \t]{0,8}`?[ \t]{0,8}(?:[~^]|>=?|≥)?[ \t]{0,8}v?(\d+)\.(\d+|x)/gi,
 ];
 const STENCIL_PACKAGE_CLAIM = /@stencil\/core[`"]?(?:@|:?\s*)[`"]?\s*(?:[~^]|>=?)?v?(\d+)\.(\d+|x)/gi;
 
@@ -677,7 +678,7 @@ function main() {
   }
 
   for (const hit of hits) {
-    console.log(`${hit.file}:${hit.line}: [${hit.ruleId}] ${hit.message}`);
+    console.log(`${hit.file}:${hit.line}: [${hit.ruleId}] ${hit.message}`.replace(/[\u0000-\u001f\u007f]/g, '?'));
   }
   console.log(hits.length ? `check-docs: ${hits.length} problem(s)` : 'check-docs: clean');
   process.exit(hits.length ? 1 : 0);

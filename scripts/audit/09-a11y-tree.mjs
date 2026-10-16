@@ -179,7 +179,7 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
   const checks = {};
 
   // Quality safeguard: flag obviously missing accessible names, but stop short
-  // of interpreting ARIA correctness — that's AI's job.
+  // of interpreting ARIA correctness — that stays with a reviewer.
   for (const theme of [light, dark].filter(Boolean)) {
     for (const el of theme.interactive) {
       if (!el.accessibleName || el.accessibleName.trim() === '') {

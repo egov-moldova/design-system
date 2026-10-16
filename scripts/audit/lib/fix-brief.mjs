@@ -1,8 +1,8 @@
 /**
  * fix-brief.mjs — renders `audit/<component>/fix-brief.md` from a verdict
  * One block per
- * non-PASS entry, one shape per state, so pasting the brief into a new
- * session is enough to start fixing without re-running the audit:
+ * non-PASS entry, one shape per state, so handing the brief to whoever
+ * fixes it is enough to start fixing without re-running the audit:
  *
  *   FAIL            ID · severity · check · location · expected (value + source) · actual · verify · owner
  *   INCOMPLETE      ID · check · cause · prerequisite (or, for a crash, log) · verify

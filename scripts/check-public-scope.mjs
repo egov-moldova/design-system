@@ -6,7 +6,7 @@
  * One authored list, two exports: `ROOTS` (the literal paths, also usable to write a local
  * exclude file) and `PATTERNS` (the regexes that match a root with or without a trailing
  * segment, so a committed symlink named `.claude` is caught too). `INTERNAL_ONLY_FILES` names
- * the exact paths of scripts and specs that cite no root, so no citation scan would see them.
+ * the exact paths of scripts, specs and documents that cite no root, so no citation scan would see them.
  *
  * Modes (several may be combined; default `--paths`):
  *   --paths   every tracked path (`git ls-files -z`) against PATTERNS and INTERNAL_ONLY_FILES
@@ -68,17 +68,26 @@ export const INTERNAL_ONLY_FILES = [
 ];
 
 /**
- * Prose and identifier patterns that must not appear in published text. A quoted
- * 'AI' is data (initials, a country code), so only the unquoted word counts.
+ * Prose and identifier patterns that must not appear in published text. A word quoted
+ * on both sides ('AI': initials, a country code) is data; a quote on one side does not exempt it.
  */
 export const PROSE_PATTERNS = [
-  { kind: 'prose', pattern: /(?<!['"`])\bAI\b(?!['"`])/ },
+  { kind: 'prose', pattern: /(?<!['"`])\bAI\b|\bAI\b(?!['"`])/ },
   { kind: 'prose', pattern: /claude|subagent|\bLLM\b/i },
-  { kind: 'identifier', pattern: /ai-findings|\baiLegs\b|requires-ai-review|\/ai\/<|runs\/[^ ]*\/ai\// },
+  {
+    kind: 'identifier',
+    pattern: /ai-findings|\baiLegs\b|requires-ai-review|\/ai\/<|runs\/[^ /]*(?:\/[^ /]*){0,8}\/ai\//,
+  },
 ];
 
-/** A root path cited in text. A preceding word character or hyphen means a different name. */
-const ROOT_CITATION = /(?<![\w-])(?:\.claude\/|_agents\/|AGENTS\.md|CLAUDE\.md|\.mcp\.json)/;
+/**
+ * A root cited in text, built from ROOTS so the two cannot drift: the last segment of every root, with
+ * or without a trailing slash. A word character or hyphen on either side means a different name.
+ */
+const CITED_NAMES = [...new Set(ROOTS.map(root => root.replace(/\/$/, '').split('/').pop()))];
+const ROOT_CITATION = new RegExp(
+  `(?<![\\w-])(?:${CITED_NAMES.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?![\\w-])`,
+);
 
 /** Files the citation scan never reports: this guard, its spec, and released history. */
 const CITATION_EXEMPT = [
@@ -172,12 +181,22 @@ async function defaultPackedFiles(cwd) {
  * Packed-tarball findings for each package under `root`. `listFiles(cwd)` returns the packed
  * file list; the default asks both packers (`--ignore-scripts` is set in validate-package.mjs).
  */
-export async function checkPacked(root = process.cwd(), { listFiles = defaultPackedFiles, packages = PACKAGES } = {}) {
+export async function checkPacked(
+  root = process.cwd(),
+  { listFiles = defaultPackedFiles, packages = PACKAGES, requireBuilt = true } = {},
+) {
   const findings = [];
   for (const pkgDir of packages) {
     const cwd = path.join(root, pkgDir);
     const label = file => path.posix.join(pkgDir, file);
     const files = await listFiles(cwd);
+    // An unbuilt package packs to a few top-level files; passing then would scan nothing.
+    if (requireBuilt && !files.some(file => file.startsWith('dist/'))) {
+      findings.push({
+        file: label('dist/'),
+        reason: 'no built files in the packed list: build before running --packed',
+      });
+    }
     for (const file of outOfScope(files)) findings.push({ file: label(file), reason: MESSAGE });
     for (const file of files) {
       const text = readText(cwd, file);
@@ -212,18 +231,28 @@ export async function run(modes = ['--paths'], cwd = process.cwd()) {
   return results;
 }
 
+/** A file name can hold control characters; a CI log must not read them as commands. */
+const printable = text => String(text).replace(/[\u0000-\u001f\u007f]/g, '?');
+
 if (isEntrypoint(import.meta.url)) {
   const args = process.argv.slice(2);
-  const unknown = args.filter(arg => !(arg in CHECKS));
+  let top;
+  try {
+    top = git(process.cwd(), ['rev-parse', '--show-toplevel']).trim();
+  } catch {
+    console.error('[check-public-scope] not inside a git repository');
+    process.exit(2);
+  }
+  const unknown = args.filter(arg => !Object.hasOwn(CHECKS, arg));
   if (unknown.length > 0) {
     console.error(`[check-public-scope] unknown argument: ${unknown.join(' ')}`);
     console.error('Usage: node scripts/check-public-scope.mjs [--paths] [--staged] [--content] [--packed]');
     process.exit(2);
   }
   let total = 0;
-  for (const { mode, findings } of await run(args.length > 0 ? args : ['--paths'])) {
+  for (const { mode, findings } of await run(args.length > 0 ? args : ['--paths'], top)) {
     for (const { file, line, reason } of findings) {
-      console.error(`${file}${line ? `:${line}` : ''} · ${reason}`);
+      console.error(printable(`${file}${line ? `:${line}` : ''} · ${reason}`));
     }
     total += findings.length;
     console.error(`[check-public-scope] ${mode}: ${findings.length} offender(s).`);

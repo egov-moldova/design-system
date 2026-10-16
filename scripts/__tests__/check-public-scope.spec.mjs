@@ -75,7 +75,7 @@ describe('check-public-scope: the authored list', () => {
     }
   });
 
-  it('lists the eleven roots and the local override file', () => {
+  it('lists the roots and the local override file', () => {
     assert.equal(ROOTS.length, 12);
     assert.ok(ROOTS.includes('CLAUDE.local.md'));
   });
@@ -155,13 +155,16 @@ describe('check-public-scope: citesOutOfScope', () => {
       'CLAUDE.md',
       '.mcp.json',
       'src/components/_agents/a.md',
+      'CLAUDE.local.md',
+      'the .claude directory',
+      'the _agents folder',
     ]) {
       assert.deepEqual(rootCitationLines(`see ${cite}`), [1], cite);
     }
   });
 
   it('ignores near-miss names', () => {
-    assert.deepEqual(rootCitationLines('MY-AGENTS.md src/_agentsX/a my_agents/x agents-guide.md CLAUDE.local.md'), []);
+    assert.deepEqual(rootCitationLines('MY-AGENTS.md src/_agentsX/a my_agents/x agents-guide.md .claude-plugin'), []);
   });
 
   it('exempts this guard, its spec and the released changelog', () => {
@@ -204,8 +207,20 @@ describe('check-public-scope: prose and identifier patterns', () => {
     assert.deepEqual(proseHits(`const code = '${upper}'; "${upper}" \`${upper}\` said, waiting, mail`), []);
   });
 
+  it('does not exempt a word quoted on one side only', () => {
+    for (const sample of [`'${upper} findings'`, `"built by ${upper}"`, `'${upper}-generated'`]) {
+      assert.deepEqual(proseHits(sample), [{ line: 1, kind: 'prose' }], sample);
+    }
+  });
+
   it('reports the line number', () => {
     assert.deepEqual(proseHits(`ok\n${word('sub', 'agent')}`), [{ line: 2, kind: 'prose' }]);
+  });
+
+  it('stays linear on a long line of repeated path starts', () => {
+    const started = Date.now();
+    proseHits('runs/'.repeat(40000));
+    assert.ok(Date.now() - started < 2000);
   });
 });
 
@@ -258,17 +273,35 @@ describe('check-public-scope: --packed', () => {
     assert.ok(reasons.some(r => r.includes('dist/b.js') && r.includes('prose patterns')));
   });
 
+  it('fails when the packed list holds no built files', async () => {
+    const root = tempDir('packed-');
+    write(root, 'package.json', '{}\n');
+    const findings = await checkPacked(root, { packages: ['.'], listFiles: lister(['package.json']) });
+    assert.deepEqual(
+      findings.map(f => f.reason),
+      ['no built files in the packed list: build before running --packed'],
+    );
+  });
+
   it('does not exempt the changelog', async () => {
     const root = tempDir('packed-');
     write(root, 'CHANGELOG.md', 'see AGENTS.md\n');
-    const findings = await checkPacked(root, { packages: ['.'], listFiles: lister(['CHANGELOG.md']) });
+    const findings = await checkPacked(root, {
+      packages: ['.'],
+      requireBuilt: false,
+      listFiles: lister(['CHANGELOG.md']),
+    });
     assert.equal(findings.length, 1);
   });
 
   it('skips binary and missing files', async () => {
     const root = tempDir('packed-');
     fs.writeFileSync(path.join(root, 'icon.bin'), Buffer.from([0, 1, 2, ...Buffer.from('AGENTS.md')]));
-    const findings = await checkPacked(root, { packages: ['.'], listFiles: lister(['icon.bin', 'gone.js']) });
+    const findings = await checkPacked(root, {
+      packages: ['.'],
+      requireBuilt: false,
+      listFiles: lister(['icon.bin', 'gone.js']),
+    });
     assert.deepEqual(findings, []);
   });
 
@@ -277,6 +310,7 @@ describe('check-public-scope: --packed', () => {
     write(root, 'web-components/dist/a.js', '// .mcp.json\n');
     const findings = await checkPacked(root, {
       packages: ['.', 'web-components'],
+      requireBuilt: false,
       listFiles: async cwd => (cwd === root ? [] : ['dist/a.js']),
     });
     assert.deepEqual(
@@ -340,6 +374,30 @@ describe('check-public-scope: CLI', () => {
     const result = cli(tempRepo(), '--nope');
     assert.equal(result.status, 2);
     assert.match(result.stderr, /unknown argument/);
+  });
+
+  it('rejects a name inherited from Object.prototype with exit 2', () => {
+    for (const name of ['toString', 'constructor', '__proto__']) {
+      const result = cli(tempRepo(), name);
+      assert.equal(result.status, 2, name);
+      assert.match(result.stderr, /unknown argument/);
+    }
+  });
+
+  it('scans the whole repository when started from a subdirectory', () => {
+    const root = tempRepo();
+    write(root, '.mcp.json', '{}\n');
+    git(root, 'add', '-f', '.mcp.json');
+    fs.mkdirSync(path.join(root, 'sub'), { recursive: true });
+    const result = cli(path.join(root, 'sub'));
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /\.mcp\.json · /);
+  });
+
+  it('exits 2 outside a git repository', () => {
+    const result = cli(tempDir('nogit-'));
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /not inside a git repository/);
   });
 
   it('has no side effect when imported', () => {

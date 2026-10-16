@@ -90,7 +90,7 @@ describe('fix-brief: one shape per state', () => {
     // Executable as written: the command names the component, and --rerender
     // looks its current run up in summary.json — never a `<runDir>` the reader
     // has to substitute by hand.
-    assert.match(block, /re-dispatch the a11y-verifier leg, then: yarn audit:component --rerender mud-fx`/);
+    assert.match(block, /re-run the a11y-verifier review leg, then: yarn audit:component --rerender mud-fx`/);
     assert.equal(/<run/.test(block), false);
     assert.doesNotMatch(brief, /--recompute/);
   });

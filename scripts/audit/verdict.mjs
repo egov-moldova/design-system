@@ -243,7 +243,7 @@ function aiFailOrDecision(f, leg, component) {
     check: `ai ${leg}`,
     component,
     source: `review leg ${leg}`,
-    verify: `re-dispatch the ${leg} leg, then: ${rerenderCommand(component)}`,
+    verify: `re-run the ${leg} review leg, then: ${rerenderCommand(component)}`,
     owner: leg,
   });
 }
@@ -560,7 +560,7 @@ export function computeVerdict({ envelope, aiFiles = [], component: fallbackComp
   const headlineParts = [`${state}@${depth}`];
   if (level) headlineParts.push(level);
   headlineParts.push(...excuses);
-  if (depth === 'deep') headlineParts.push('ai-legs: advisory');
+  if (depth === 'deep') headlineParts.push('review-legs: advisory');
 
   const verdict = {
     schemaVersion: VERDICT_SCHEMA_VERSION,

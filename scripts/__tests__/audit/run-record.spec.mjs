@@ -239,7 +239,7 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.unchanged, 0);
   });
 
-  it("an review leg's finding reworded with the same code and file → never gone + new", () => {
+  it("a review leg's finding reworded with the same code and file → never gone + new", () => {
     const leg = 'a11y-verifier';
     const at = message => {
       const files = [
@@ -252,7 +252,7 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.added.length, 0);
   });
 
-  it("an review leg's decision is scoped to its leg and compares across runs", () => {
+  it("a review leg's decision is scoped to its leg and compares across runs", () => {
     const leg = 'audit-component';
     const at = (run, question) =>
       record(cleanEnvelope({ depth: 'deep' }), {
@@ -662,7 +662,7 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
     return section;
   }
 
-  it('an review leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
+  it('a review leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
     const leg = 'a11y-verifier';
     // The leg must be graded in BOTH runs (an empty-findings file, then one
     // with this finding) so the comparison actually keys it into `added`,
@@ -745,7 +745,7 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
 });
 
 describe('run-record: hostile text cannot add a column, a row or a heading', () => {
-  it("an review leg's markdown image or link in a finding renders inert in later briefs", () => {
+  it("a review leg's markdown image or link in a finding renders inert in later briefs", () => {
     const leg = 'a11y-verifier';
     const message = 'focus lost ![b](https://attacker.example/x.png) [c](javascript:alert(1)) rgb(0, 0, 0)';
     const current = record(cleanEnvelope({ depth: 'deep' }), {
@@ -826,7 +826,7 @@ describe('run-record: purity and determinism', () => {
   });
 });
 
-// ─── Review round on PR #140──────────────────────────────────────────────
+// ─── Review round on PR #140 ──────────────────────────────────────────────
 
 describe('run-record: a baseline the renderer cannot shape never blocks the verdict', () => {
   for (const [what, mutate] of [
