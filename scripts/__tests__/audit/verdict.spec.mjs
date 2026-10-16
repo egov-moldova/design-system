@@ -1,8 +1,7 @@
 /**
  * Tests for scripts/audit/verdict.mjs — the state/level computation, its
  * excuses, review-leg rows, determinism, and that it is the only writer of
- * `audit/<component>/verdict.json` (plan 2026-09-21-audit-component-depths.md
- * Design §1, Acceptance bar).
+ * `audit/<component>/verdict.json`.
  */
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
@@ -200,7 +199,7 @@ describe('verdict: level', () => {
   });
 });
 
-describe('verdict: deep — review legs advisory (Decision 12)', () => {
+describe('verdict: deep — review legs advisory', () => {
   it('REQUIRED_CHECKS.deep requires no ai-* row', () => {
     assert.deepEqual(
       REQUIRED_CHECKS.deep.filter(id => id.startsWith('ai-')),
@@ -221,7 +220,7 @@ describe('verdict: deep — review legs advisory (Decision 12)', () => {
     assert.match(v.headline, /internal utility; decided by Dan/);
   });
 
-  it('a deep run with no ai/ directory → PASS PRODUCTION-READY, headline "ai-legs: advisory"', () => {
+  it('a deep run with no reviews/ directory → PASS PRODUCTION-READY, headline "ai-legs: advisory"', () => {
     const auditDir = tmp();
     const runDir = writeRunDir(auditDir, cleanEnvelope({ depth: 'deep' }));
     const v = writeVerdictForRun(runDir);
@@ -289,20 +288,11 @@ describe('verdict: deep — review legs advisory (Decision 12)', () => {
     assert.equal(v.state, 'FAIL');
   });
 
-  it('verdict.json carries neither awaitingLegs nor aiLegs, at any depth', () => {
+  it('verdict.json carries no awaitingLegs, at any depth', () => {
     for (const depth of ['quick', 'standard', 'deep']) {
       const v = computeVerdict({ envelope: cleanEnvelope({ depth }), aiFiles: allLegsClosed() });
       assert.equal('awaitingLegs' in v, false, depth);
-      assert.equal('aiLegs' in v, false, depth);
     }
-  });
-
-  it('an envelope written before Decision 12, still carrying audit.aiLegs, opens no row', () => {
-    const e = cleanEnvelope({ depth: 'deep' });
-    e.audit.aiLegs = [{ id: 'ai-wcag', leg: 'a11y-verifier', idsJudged: ['DX-wcag'], status: 'open', findings: [] }];
-    const v = computeVerdict({ envelope: e });
-    assert.equal(v.state, 'PASS');
-    assert.ok(!v.rows.some(r => r.id.startsWith('ai-')));
   });
 
   it('verdict.json schemaVersion is 2.1.0 (2.0.0: awaitingLegs removed — a breaking change; 2.1.0: additive owner/message)', () => {
@@ -310,7 +300,7 @@ describe('verdict: deep — review legs advisory (Decision 12)', () => {
   });
 });
 
-describe('verdict: summary.json schemaVersion is unpinned from verdict.json (plan 2026-09-23-audit-run-delta.md)', () => {
+describe('verdict: summary.json schemaVersion is unpinned from verdict.json', () => {
   it("summary.json keeps its own SUMMARY_SCHEMA_VERSION (2.0.0), unaffected by VERDICT_SCHEMA_VERSION's 2.1.0 bump", () => {
     const dir = tmp();
     const summary = writeSummary(dir, { depth: 'quick', runs: [] });
@@ -319,7 +309,7 @@ describe('verdict: summary.json schemaVersion is unpinned from verdict.json (pla
   });
 });
 
-describe('verdict: Decision 13 — a visible not-applicable', () => {
+describe('verdict: a visible not-applicable', () => {
   const notApplicable = () => {
     const e = cleanEnvelope();
     const row = e.results.find(r => r.id === '13');
@@ -464,7 +454,7 @@ describe('verdict: R4 — script warnings, non-blocking', () => {
   });
 });
 
-describe('verdict: review-leg findings are advisory at quick / standard (Decision §5)', () => {
+describe('verdict: review-leg findings are advisory at quick / standard', () => {
   const blocking = [
     {
       leg: 'a11y-verifier',
@@ -626,7 +616,7 @@ describe('verdict: the only writer, byte-identical', () => {
   });
 });
 
-// ─── S5: zero components selected (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §2) ───
+// ─── S5: zero components selected ───
 
 function captureStdout(fn) {
   const chunks = [];
@@ -674,7 +664,7 @@ describe('S5: writeSummary / printSummary with zero components selected', () => 
     assert.match(jsonOut, /no components selected/);
   });
 
-  it('each component carries the runDir a caller passes back to --run-dir (Decision §10)', () => {
+  it('each component carries the runDir a caller passes back to --run-dir', () => {
     const auditDir = tmp();
     const runDir = writeRunDir(auditDir, cleanEnvelope());
     const verdict = writeVerdictForRun(runDir);
@@ -702,7 +692,7 @@ describe('S5: writeSummary / printSummary with zero components selected', () => 
   });
 });
 
-// ─── R3: takeAuditLock (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3) ───
+// ─── R3: takeAuditLock ───
 
 describe('R3: takeAuditLock', () => {
   it('takes a fresh audit-dir lock, and the token releases it', () => {
@@ -754,7 +744,7 @@ describe('R5: a stale envelope.json is removed before a fresh run (CLI, real sub
   });
 });
 
-describe('verdict: Phase 5 (sentinel round 2)', () => {
+describe('verdict: review round 2', () => {
   it('T10: a crashed entry names the crash and its log, never a prerequisite', () => {
     const e = cleanEnvelope();
     Object.assign(e.results[0], { status: 'crashed', summary: null, exitCode: 2, error: 'boom' });
@@ -836,7 +826,7 @@ describe('verdict: Phase 5 (sentinel round 2)', () => {
     assert.equal(v.warnings[0].code, 'A11Y-NO-STORY');
   });
 
-  it('Decision 12: writeSummary lists no awaitingLegs', () => {
+  it('writeSummary lists no awaitingLegs', () => {
     const dir = tmp();
     const v = computeVerdict({ envelope: cleanEnvelope({ component: 'mud-a', depth: 'deep' }) });
     const summary = writeSummary(dir, {

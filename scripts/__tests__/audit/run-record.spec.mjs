@@ -1,7 +1,6 @@
 /**
  * Tests for scripts/audit/lib/run-record.mjs — the per-run record, finding a
- * baseline, and comparing two records (plan `2026-09-23-audit-run-delta.md`
- * Design §§1-5, Acceptance bar). Reuses the verdict fixtures so the records
+ * baseline, and comparing two records. Reuses the verdict fixtures so the records
  * under test are built from the same shapes `computeVerdict` actually
  * produces, never a hand-rolled verdict shape of the test's own invention.
  */
@@ -414,10 +413,10 @@ describe('run-record: baseline robustness', () => {
     };
     const legacyDir = runDirAt(join(auditDir, 'mud-fx'), '2026-09-22T10-00-00-000Z-0');
     writeFileSync(join(legacyDir, 'record.json'), JSON.stringify(legacy));
-    const aiDir = join(runA, 'ai', 'a11y-verifier');
+    const aiDir = join(runA, 'reviews', 'a11y-verifier');
     mkdirSync(aiDir, { recursive: true });
     writeFileSync(
-      join(aiDir, 'ai-findings.json'),
+      join(aiDir, 'review-findings.json'),
       JSON.stringify(aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'm' }] })),
     );
     const envelopeDeep = cleanEnvelope({ depth: 'deep' });
@@ -827,7 +826,7 @@ describe('run-record: purity and determinism', () => {
   });
 });
 
-// ─── Sentinel round on PR #140 ──────────────────────────────────────────────
+// ─── Review round on PR #140──────────────────────────────────────────────
 
 describe('run-record: a baseline the renderer cannot shape never blocks the verdict', () => {
   for (const [what, mutate] of [
@@ -1111,7 +1110,7 @@ describe('run-record: what counts as a run under runs/', () => {
   );
 });
 
-describe('run-record: sentinel round 4', () => {
+describe('run-record: review round 4', () => {
   it('prerequisite and log render as code spans, copyable as written', () => {
     const base = { id: 'I1', kind: 'INCOMPLETE', check: '09 a11y', cause: 'missing-prereq', verify: 'v' };
     const withPrereq = renderEntry({ ...base, prerequisite: 'yarn dx:prepare && export T=<token>' });

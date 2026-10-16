@@ -333,7 +333,7 @@ export function checkSource(tsxPath, componentName) {
         written = watchedName(node.operand);
       }
       if (!written) return;
-      if (plainLiteralAssign && isInsideIf(node, member.body)) return; // validation fallback (Decision 2)
+      if (plainLiteralAssign && isInsideIf(node, member.body)) return; // validation fallback
       add(
         'STENCIL-WATCH-WRITES-WATCHED',
         node,

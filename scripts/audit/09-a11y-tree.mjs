@@ -417,7 +417,7 @@ async function collectForTheme(url, componentName, theme) {
       // BX2 + BX3 — Tab-walk the component and sample the focus ring at each
       // stop. Reduced motion + an injected `transition: none; animation:
       // none` (document + every shadow root) MUST land before this sampling
-      // or the ring is caught mid-transition (Phase 0 results: 4 of 5 runs
+      // or the ring is caught mid-transition (measured: 4 of 5 runs
       // differed without it, 5 of 5 identical with it).
       await applyNoMotionStyle(page);
       // Start the walk from just before the component, not from the page
@@ -436,8 +436,7 @@ async function collectForTheme(url, componentName, theme) {
 
 /**
  * Inject `transition: none !important; animation: none !important;` into the
- * document AND every shadow root reachable from it (Phase 0 results —
- * without this the focus ring is sampled mid-transition), plus
+ * document AND every shadow root reachable from it (without this the focus ring is sampled mid-transition), plus
  * `emulateMedia({ reducedMotion: 'reduce' })`. Idempotent — marks each root
  * it has already touched, so it is safe to call again after an interaction
  * that may have rendered new shadow content.
@@ -469,7 +468,7 @@ export async function applyNoMotionStyle(page) {
  * and focus it, so the next Tab press is the FIRST one the component can
  * receive. Without this the walk starts at the page top, and a focusable
  * element earlier in the DOM (e.g. an `<input name="email">` elsewhere in
- * the story) silently consumes Tab presses meant for the component — Phase 3
+ * the story) silently consumes Tab presses meant for the component — seen in a
  * live run against `mud-button`'s stories.
  */
 export async function focusJustBeforeComponent(page, componentName) {

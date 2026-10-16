@@ -242,7 +242,7 @@ export function parseCli(argv = process.argv.slice(2), env = process.env) {
   }
   // CI mode: the explicit --ci flag or any truthy CI env var (GitHub Actions,
   // GitLab CI, CircleCI, … all set CI=true). Either excuses the browser checks
-  // and caps the level (Decision §6); the verdict names which one.
+  // and caps the level; the verdict names which one.
   const ciEnv = Boolean(env.CI);
   const ci = parsed.values.ci || ciEnv;
   const noBrowser = parsed.values['no-browser'];

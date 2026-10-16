@@ -19,15 +19,14 @@
  *   1.2.0 — no shape change; the constant was bumped for the review-leg row and
  *           verdict schemas this module also defines (see below).
  *   1.3.0 — a finding may carry `noTarget: true`: "this required row checked
- *           nothing" (plan `2026-09-22-audit-depths-sentinel-fixes.md`
- *           Decision §5). `verdict.mjs` maps it to an INCOMPLETE entry on a
+ *           nothing". `verdict.mjs` maps it to an INCOMPLETE entry on a
  *           row that owes a target (required and not excused, `owesTarget`),
  *           never a counted error or warning; on any other row, to a warning,
  *           counted as one. No shape change since; `findingClass` below is the
  *           classification run-all and the verdict share.
  *   1.4.0 — a finding may carry `notApplicable: true` (severity `info`): the
  *           check does not apply to this component, and the message says why
- *           (Decision 13). `verdict.mjs` shows it as the row's `note`.
+ *           `verdict.mjs` shows it as the row's `note`.
  *
  * Severity is one of: "error" | "warning" | "info".
  *
@@ -37,8 +36,7 @@
  * This module also defines the shared schema `verdict.mjs` and the
  * review legs build against — `state`, `level`, per-row `status`, and
  * their own `schemaVersion`s. Landing it here, ahead of
- * any consumer, is deliberate (plan `2026-09-21-audit-component-depths.md`
- * Phase 1): every producer and the one consumer read the same enum.
+ * any consumer, is deliberate: every producer and the one consumer read the same enum.
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -55,8 +53,8 @@ export function schemaMajor(version) {
 }
 
 /**
- * `verdict.json`'s overall state (Design §1). First match wins, decided by
- * `verdict.mjs` (Phase 2) — this module only names the four values.
+ * `verdict.json`'s overall state. First match wins, decided by
+ * `verdict.mjs` — this module only names the four values.
  */
 export const STATE = Object.freeze({
   INCOMPLETE: 'INCOMPLETE',
@@ -66,7 +64,7 @@ export const STATE = Object.freeze({
 });
 export const STATES = Object.freeze(Object.values(STATE));
 
-/** `verdict.json`'s `level`, present only on `state: PASS` (Design §1). */
+/** `verdict.json`'s `level`, present only on `state: PASS`. */
 export const LEVEL = Object.freeze({
   CLEAN_STATIC: 'CLEAN-STATIC',
   MERGE_READY: 'MERGE-READY',
@@ -80,7 +78,7 @@ export const LEVELS = Object.freeze(Object.values(LEVEL));
  * 'ok'` (it ran) and still carry error-severity findings. `crashed` and
  * `missing-prereq` are both "no summary reached us"; `run-all.mjs` tells
  * them apart by whether the script declares `requiresBuild`. `skipped` is a
- * required-for-this-depth check that did not run (Phase 2's `--depth`).
+ * required-for-this-depth check that did not run (see `--depth`).
  */
 export const ROW_STATUS = Object.freeze({
   OK: 'ok',
@@ -103,13 +101,12 @@ export function isValidRowStatus(status) {
 }
 
 /**
- * `schemaVersion` written into `audit/<component>/verdict.json` (Phase 2).
- * 1.1.0 (plan `2026-09-22-audit-depths-sentinel-fixes.md`) added `awaitingLegs`
- * and `warnings`. 2.0.0 (Decision 12 of that plan) removes `awaitingLegs` and
- * `aiLegs` — breaking, but no released reader uses either: review legs are advisory
- * at every depth now. Also 2.0.0: a row may carry `note` (Decision 13, a
- * not-applicable check's reason). 2.1.0 (plan `2026-09-23-audit-run-delta.md`
- * Design §3) is additive: a FAIL entry may carry `message` alongside `actual`,
+ * `schemaVersion` written into `audit/<component>/verdict.json`.
+ * 1.1.0 added `awaitingLegs`
+ * and `warnings`. 2.0.0 removes `awaitingLegs` and the
+ * per-leg list the envelope carried — breaking, but no released reader uses either: review legs are advisory
+ * at every depth now. Also 2.0.0: a row may carry `note` (a
+ * not-applicable check's reason). 2.1.0 is additive: a FAIL entry may carry `message` alongside `actual`,
  * and an advisory NEEDS-DECISION entry may carry `owner: <leg>` — both read by
  * `run-record.mjs`'s finding-identity keys, never required by
  * `fix-brief.mjs`'s renderer. The run directory is not here: it is per-run, so
@@ -119,22 +116,21 @@ export const VERDICT_SCHEMA_VERSION = '2.1.0';
 
 /**
  * `schemaVersion` written into `audit/_run/summary.json` — split from
- * `VERDICT_SCHEMA_VERSION` at 2.0.0 (plan `2026-09-23-audit-run-delta.md`
- * Design §3) so a verdict-shape bump (2.1.0) never forces every reader of the
- * summary's own, much smaller shape to re-check theirs. `summary.json` stays
- * byte-for-byte unchanged by this plan.
+ * `VERDICT_SCHEMA_VERSION` at 2.0.0 so a verdict-shape bump (2.1.0) never
+ * forces every reader of the summary's own, much smaller shape to re-check
+ * theirs. `summary.json` was byte-for-byte unchanged by that bump.
  */
 export const SUMMARY_SCHEMA_VERSION = '2.0.0';
 
 /**
- * `schemaVersion` a review leg writes into its own `ai-findings.json`. A file with an unknown major version is ignored and named in the
+ * `schemaVersion` a review leg writes into its own `review-findings.json`. A file with an unknown major version is ignored and named in the
  * verdict's notes; an unknown minor is accepted — `verdict.mjs` owns that check.
  */
 export const AI_FINDINGS_SCHEMA_VERSION = '1.0.0';
 
 /**
  * `schemaVersion` written into `audit/<component>/runs/<run>/record.json`
- * (plan `2026-09-23-audit-run-delta.md` Design §1) — one run's graded scopes
+ * — one run's graded scopes
  * and finding identities, frozen at the moment the run happens so the next
  * run's comparison never has to recompute what this one graded. A major bump
  * here is the only thing that can invalidate a baseline record
@@ -273,10 +269,10 @@ function colorize(noColor) {
 }
 
 /**
- * Helper to make a finding with sensible defaults. `noTarget: true` (Decision
- * §5) marks "this required row checked nothing" — `verdict.mjs` maps it to an
+ * Helper to make a finding with sensible defaults. `noTarget: true`
+ * marks "this required row checked nothing" — `verdict.mjs` maps it to an
  * INCOMPLETE entry instead of grading it as an error or a warning.
- * `notApplicable: true` (Decision 13) marks "this check does not apply here",
+ * `notApplicable: true` marks "this check does not apply here",
  * its `message` the reason — shown, never state-changing. It FORCES severity
  * `info`: a check that did not apply cannot also have failed, and an `error`
  * carrying the flag would otherwise be graded and noted at once.

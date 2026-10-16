@@ -5,7 +5,7 @@
  * usable at all? Today a missing install, a Node version outside
  * `engines.node`, or a resolvable-but-absent dependency surfaces as a
  * `JSON.parse` failure or an `ERR_MODULE_NOT_FOUND` buried in one script's
- * stderr (plan `2026-09-21-audit-component-depths.md` F2). `checkEnv()` turns
+ * stderr. `checkEnv()` turns
  * that into one line naming the cause and the exact command that fixes it —
  * `run-all.mjs` calls it once, before dispatching any wave.
  *

@@ -1,6 +1,6 @@
 /**
  * Tests for scripts/audit/lib/fix-brief.mjs — every non-PASS entry carries
- * every field of its state's shape (Design §2), one case per state.
+ * every field of its state's shape, one case per state.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -86,7 +86,7 @@ describe('fix-brief: one shape per state', () => {
     const advisoryAt = brief.indexOf('## Advisory');
     assert.ok(advisoryAt > 0);
     const block = assertShape(brief.slice(advisoryAt), v.advisory[0]);
-    // Decision 12: an advisory finding is folded in by re-rendering the run the summary lists.
+    // An advisory finding is folded in by re-rendering the run the summary lists.
     // Executable as written: the command names the component, and --rerender
     // looks its current run up in summary.json — never a `<runDir>` the reader
     // has to substitute by hand.
@@ -210,7 +210,7 @@ describe('fix-brief: a missing field fails the renderer', () => {
   });
 });
 
-describe('fix-brief: Decision 13 — a not-applicable row is listed with its reason', () => {
+describe('fix-brief: a not-applicable row is listed with its reason', () => {
   it('renders a "Not applicable" section naming the row and the reason', () => {
     const v = computeVerdict({ envelope: cleanEnvelope() });
     const row = v.rows.find(r => r.id === '13') ?? v.rows[0];

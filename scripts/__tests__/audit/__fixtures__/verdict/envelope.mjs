@@ -102,7 +102,7 @@ export function withError(envelope, id, f = {}) {
   return envelope;
 }
 
-/** A leg's ai-findings.json, listing every id the leg judges. */
+/** A leg's review-findings.json, listing every id the leg judges. */
 export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {}) {
   const ids =
     idsJudged ??
@@ -119,15 +119,15 @@ export function allLegsClosed() {
 
 /**
  * Lay a run directory out on disk: `<auditDir>/<component>/runs/<run>/`
- * with `envelope.json` and `ai/<leg>/ai-findings.json`. Returns the run dir.
+ * with `envelope.json` and `reviews/<leg>/review-findings.json`. Returns the run dir.
  */
 export function writeRunDir(auditDir, envelope, { run = 'run-1', ai = [] } = {}) {
   const runDir = join(auditDir, envelope.audit.component, 'runs', run);
   mkdirSync(runDir, { recursive: true });
   writeFileSync(join(runDir, 'envelope.json'), JSON.stringify(envelope, null, 2));
   for (const { leg, data } of ai) {
-    mkdirSync(join(runDir, 'ai', leg), { recursive: true });
-    writeFileSync(join(runDir, 'ai', leg, 'ai-findings.json'), JSON.stringify(data, null, 2));
+    mkdirSync(join(runDir, 'reviews', leg), { recursive: true });
+    writeFileSync(join(runDir, 'reviews', leg, 'review-findings.json'), JSON.stringify(data, null, 2));
   }
   return runDir;
 }

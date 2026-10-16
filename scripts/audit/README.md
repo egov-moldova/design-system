@@ -333,7 +333,7 @@ run, so a hand-edited verdict never survives the next run.
   (Figma ids), no manifest at `HEAD` (Figma ids, state `NEEDS-DECISION`), and
   `--no-browser` / `--ci` / `CI` (browser ids). Each is printed in the headline.
 - **Review-leg findings** are advisory at every depth, `deep` included: a leg's
-  `ai-findings.json` under the run's `ai/<leg>/` is listed under "Advisory" and
+  `review-findings.json` under the run's `reviews/<leg>/` is listed under "Advisory" and
   never moves `state`; a malformed file or finding is named in `notes`. At
   `deep` the headline says `ai-legs: advisory` — `PRODUCTION-READY` means the
   scripted rows passed.
@@ -367,7 +367,7 @@ Stable paths (git-ignored `audit/`):
 | `audit/<component>/verdict.json` | `verdict.mjs`, every run |
 | `audit/<component>/fix-brief.md` | `verdict.mjs` via `lib/fix-brief.mjs` — a report block (per-check summary table, entry index, changes since the previous run), then one block per non-PASS entry with its `verify:` command |
 | `audit/<component>/runs/<run>/envelope.json` | `run-all.mjs --verdict` |
-| `audit/<component>/runs/<run>/ai/<leg>/ai-findings.json` | the review leg, nothing else |
+| `audit/<component>/runs/<run>/reviews/<leg>/review-findings.json` | the review leg, nothing else |
 | `audit/<component>/runs/<run>/record.json` | `verdict.mjs` via `lib/run-record.mjs` — what that run graded and the identity of every finding it reported; read only by the next run's comparison (below), never an input to `verdict.json` itself |
 | `audit/_run/summary.json` | worst state over the run's components, each `runDir` |
 
@@ -428,7 +428,7 @@ previous run` section inside the report block (`fix-brief.md`, before
   autolink — clickable, its text showing its target, fetched by nothing on
   open.
 - Nothing prunes `runs/`; `record.json` adds one small file per run beside
-  the existing `envelope.json` and `ai/`. Deleting `audit/<component>/runs/`
+  the existing `envelope.json` and `reviews/`. Deleting `audit/<component>/runs/`
   (already safe, above) also resets this comparison — the next run then
   finds no baseline.
 
@@ -474,7 +474,7 @@ Pixelmatch.
 nothing to compare), and 2 on a usage error or unreadable image.
 
 Thresholds live in `lib/image-diff.mjs` (`DEFAULT_PASS`, `DEFAULT_WARN`): PASS below the
-first, WARNING (`requires-ai-review: true` — open the diff) below the second, FAIL at or
+first, WARNING (`requires-review: true` — open the diff) below the second, FAIL at or
 above it. Tune per run with `--pass-threshold` / `--warn-threshold`. Masked pixels are
 left out of the percentage and reported as `PIXEL-MASKED`.
 

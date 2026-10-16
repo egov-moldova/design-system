@@ -1,6 +1,6 @@
 /**
- * Tests for scripts/audit/regression-check.mjs — specifically the Phase 1
- * rule (plan `2026-09-21-audit-component-depths.md` task 2): a row that used
+ * Tests for scripts/audit/regression-check.mjs — specifically the rule that
+ * a row that used
  * to run and is now `crashed` / `missing-prereq` / `skipped` is a regression
  * even when its baseline carried zero findings. Before this, a crashed row
  * was invisible to `compareEnvelopes()` because it only ever diffed
@@ -113,7 +113,7 @@ describe('regression-check: compareEnvelopes counts a newly-broken row as a regr
 });
 
 /**
- * Phase 5 task 3: `regression-baseline.mjs` and `regression-check.mjs` spawn
+ * Depth pinning: `regression-baseline.mjs` and `regression-check.mjs` spawn
  * `run-all` with an explicit `--depth` instead of inheriting its default
  * (`standard`, which would build `standard`'s prerequisites). The baseline
  * records the depth it captured at; `regression-check` refuses to compare
@@ -156,7 +156,7 @@ describe('regression-check: resolveCheckDepth', () => {
     assert.match(result.error, /"quick"/);
   });
 
-  it('refuses a baseline with no recorded depth (captured before Phase 5)', () => {
+  it('refuses a baseline with no recorded depth (captured before depth was recorded)', () => {
     const result = resolveCheckDepth({ baselineDepth: undefined });
     assert.match(result.error, /no recorded depth/);
   });

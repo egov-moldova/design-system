@@ -25,7 +25,7 @@ import {
 
 const tempDirs = [];
 
-describe('11-pixel-diff-states: S6 — PIXEL-NO-REFERENCES / PIXEL-NO-STORIES carry noTarget (Decision §5)', () => {
+describe('11-pixel-diff-states: S6 — PIXEL-NO-REFERENCES / PIXEL-NO-STORIES carry noTarget', () => {
   it('no manifest and no --figma-dir emits PIXEL-NO-REFERENCES with noTarget: true, no browser touched', async () => {
     const target = { found: true, name: 'mud-nonexistent-fixture-xyz', exists: { stories: false }, paths: {} };
     const opts = { args: { extras: {} } };

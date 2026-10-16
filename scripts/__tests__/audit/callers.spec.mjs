@@ -131,7 +131,7 @@ describe('callers: S8 — --run-dir must match <auditRoot>/mud-*/runs/<run>', ()
   });
 });
 
-describe('callers: T5 / Decision 12 — --run-dir needs an envelope and re-renders the named run', () => {
+describe('callers: T5 — --run-dir needs an envelope and re-renders the named run', () => {
   function rerenderCli(argv, dir) {
     return spawnSync(process.execPath, [VERDICT, ...argv, '--audit-dir', dir, '--json'], { encoding: 'utf8' });
   }
@@ -216,7 +216,7 @@ describe('callers: T5 / Decision 12 — --run-dir needs an envelope and re-rende
   });
 });
 
-describe('callers: Decision 11 — every early exit of a fresh run prints a summary with components: []', () => {
+describe('callers: every early exit of a fresh run prints a summary with components: []', () => {
   it('a held audit-dir lock → exit 3, --json stdout is a summary with no components', () => {
     const dir = auditDir();
     const lockPath = join(dir, '_run', '.lock');

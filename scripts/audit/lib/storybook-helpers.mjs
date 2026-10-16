@@ -7,7 +7,7 @@
  *  - storyUrl                 — build iframe URL for a Storybook story id
  *  - storyIdFor               — the story id Storybook itself serves (its own toId)
  *
- *  - ensureWorktreeStorybook — reuse or start THIS worktree's Storybook (Design §9)
+ *  - ensureWorktreeStorybook — reuse or start THIS worktree's Storybook
  *
  * Worktree-aware: callers may pass `port` (e.g. 6008 when a parallel git
  * worktree runs Storybook on a custom port). Defaults keep single-checkout
@@ -124,8 +124,7 @@ function isProcessAlive(pid) {
 
 /**
  * A pid's process-start time, as `ps` reports it — the pid-reuse discriminant
- * shared by R9 (seeded-defects, below) and R3's locks (plan
- * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §3): a bare pid match
+ * shared by R9 (seeded-defects, below) and R3's locks: a bare pid match
  * is not proof of identity once the original process has exited and the OS
  * has recycled the number. `null` when the process is gone or `ps` itself is
  * unavailable — callers treat that as "cannot verify", never as "verified".
@@ -167,7 +166,7 @@ export function startStorybookProcess({ repoRoot, port }) {
 
 /**
  * Return the port of a Storybook that belongs to THIS worktree, starting one
- * if needed (Design §9). Nine worktrees of this repo share port 6007 and
+ * if needed. Nine worktrees of this repo share port 6007 and
  * `isStorybookReachable` is a bare TCP connect, so a reachable 6007 may serve
  * another branch: a server is reused only when this worktree's
  * `.audit-storybook.json` names a live process that answers on its port.
@@ -223,7 +222,7 @@ export async function ensureWorktreeStorybook({
   return { ok: false, cause: `Storybook did not answer on port ${port} within ${timeoutMs} ms` };
 }
 
-// ─── R3 locks (plan 2026-09-22-audit-depths-sentinel-fixes.md, Decision §3) ─
+// ─── R3 locks ───────────────────────────────────────────────────────────────
 //
 // Two lock scopes, each a `wx`-created file holding `{ pid, startTime, nonce }`:
 //   - the worktree lock (`<repoRoot>/audit/_run/.worktree.lock`) guards `dist/`

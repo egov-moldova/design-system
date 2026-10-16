@@ -206,7 +206,7 @@ export function undeclaredCustomProperties(cssText) {
 }
 
 /**
- * Which tokens file a component's CSS draws on (Decision 13). Its own
+ * Which tokens file a component's CSS draws on. Its own
  * `<bare>.tokens.json` when present; otherwise the component token file that
  * owns the most custom properties the CSS reads without declaring them
  * (`mud-text-input` → `input.tokens.json`). Ownership is `tokenOwner`'s
@@ -258,13 +258,13 @@ export function resolveTokensFile(componentName, { tokensDir = TOKENS_DIR } = {}
   return { file: relativePathFor(abs), abs, ...scoped };
 }
 
-/** Exported for tests (S6, Decision 13): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` sites. */
+/** Exported for tests (S6): the `TOKEN-DIFF-NO-CURRENT` / `TOKEN-DIFF-NO-FIGMA-EXPORT` sites. */
 export function loadComponentSources(componentName, figmaExportPath, { tokensDir = TOKENS_DIR } = {}) {
   const bare = bareName(componentName);
   const { abs: currentPath, required, api } = resolveTokensFile(componentName, { tokensDir });
   if (!currentPath) {
     const expected = relativePathFor(join(tokensDir, `${bare}.tokens.json`));
-    // Decision 13, and the component's own prefix is what decides between the
+    // The component's own prefix is what decides between the
     // two shapes. A fallback-less `--<bare>-*` read with no file behind it is a
     // missing input: the row could not diff anything it should have been able
     // to diff, so INCOMPLETE rather than a silent pass.

@@ -149,8 +149,7 @@ async function main() {
 }
 
 /**
- * Read the coverage prerequisite's JSON-reporter output (S11, plan
- * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §6), if present.
+ * Read the coverage prerequisite's JSON-reporter output (S11), if present.
  * Missing or unparseable → `null` (never treated as "no components failed" —
  * `analyzeComponent` skips the check entirely rather than reading a stale or
  * absent file as a clean run).

@@ -1,6 +1,6 @@
 /**
  * fix-brief.mjs — renders `audit/<component>/fix-brief.md` from a verdict
- * (plan `2026-09-21-audit-component-depths.md` Design §2). One block per
+ * One block per
  * non-PASS entry, one shape per state, so pasting the brief into a new
  * session is enough to start fixing without re-running the audit:
  *
@@ -10,17 +10,16 @@
  *   Advisory        Review-leg findings, at every depth, in the FAIL shape; they never change the state
  *
  * A missing field is a renderer error, not an empty line: a brief that drops
- * the verify command or the expected value's source is the failure F8 names.
+ * the verify command or the expected value's source is the failure to avoid.
  *
- * The brief opens with a report block (plan
- * `2026-09-23-audit-report-summary-and-delta.md`): `## Summary` — one row per
- * check and an index of every entry — then `## Changes since the previous run`
- * (plan `2026-09-23-audit-run-delta.md`), closed by REPORT_END. The terminal
+ * The brief opens with a report block: `## Summary` — one row per
+ * check and an index of every entry — then `## Changes since the previous run`,
+ * closed by REPORT_END. The terminal
  * prints that block and a reviewer can paste it inline, so nobody has to rebuild the table in their own words.
  */
 import { LEG_NOT_WRITTEN, ROW_STATUS, STATE } from './json-output.mjs';
 
-/** The fields each entry kind must carry (Design §2). */
+/** The fields each entry kind must carry. */
 export const BRIEF_FIELDS = Object.freeze({
   [STATE.FAIL]: Object.freeze(['severity', 'check', 'location', 'expected', 'actual', 'verify', 'owner']),
   [STATE.INCOMPLETE]: Object.freeze(['check', 'cause', 'prerequisite', 'verify']),
@@ -173,9 +172,8 @@ function cell(value) {
 
 /**
  * The row id an entry or warning belongs to: `check` is `<id> <name>` or a
- * bare `<id>`. Exported for `run-record.mjs` (plan `2026-09-23-audit-run-delta.md`
- * Global constraints: `rowResults` / `rowIdOf` stay here, `run-record.mjs`
- * imports them rather than copying either).
+ * bare `<id>`. Exported for `run-record.mjs` (`rowResults` / `rowIdOf` stay
+ * here, `run-record.mjs` imports them rather than copying either).
  */
 export function rowIdOf(check) {
   return String(check ?? '').split(' ')[0];
@@ -323,10 +321,10 @@ function validateChanges(changes) {
 
 /**
  * Render the `## Changes since the previous run` section from a `changes`
- * value (plan `2026-09-23-audit-run-delta.md` Design §6):
+ * value:
  *   - `null` → no section at all (caller — `renderFixBrief` — never invokes this then).
  *   - `{ error }` → the record/baseline/comparison step threw; `verdict.json`
- *     was still written (Design §7).
+ *     was still written.
  *   - `{ baseline: null, depth, component }` → no earlier run left a record.
  *   - `{ unusable: { run, cause }, depth }` → the newest earlier record cannot
  *     be read; the search never falls through to an older one.
@@ -417,8 +415,7 @@ export function renderChanges(changes) {
 /**
  * Render the whole brief. `changes` is the `## Changes since the previous
  * run` section's data (`null` renders nothing; any other shape than
- * `renderChanges` declares throws) — plan `2026-09-23-audit-run-delta.md`
- * Design §6. Pure — exported for tests.
+ * `renderChanges` declares throws). Pure — exported for tests.
  */
 export function renderFixBrief(verdict, changes = null) {
   const c = verdict.component;

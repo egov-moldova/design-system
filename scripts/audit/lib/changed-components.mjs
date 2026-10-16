@@ -37,8 +37,7 @@ export function componentsFromDiff(lines, folderExists) {
 
 /**
  * Detect the changed-component set and say whether the detection itself
- * succeeded — distinct from "it succeeded and found nothing" (plan
- * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §9). `run-all.mjs`
+ * succeeded — distinct from "it succeeded and found nothing". `run-all.mjs`
  * treats `ok: false` as INCOMPLETE (a broken detector), never as an empty
  * selection (a clean tree). `refExists` / `diff` are an injection seam for
  * tests that need to fail the underlying git calls; production always uses
@@ -60,8 +59,8 @@ export function detectChangedComponents({
 
 /**
  * Wrapper kept for the 16 standalone scripts that only need the name list
- * and treat a broken detector the same as "nothing changed" (plan Decision
- * §9 — `run-all.mjs` is the one caller that needs `detectChangedComponents`'s
+ * and treat a broken detector the same as "nothing changed"
+ * (`run-all.mjs` is the one caller that needs `detectChangedComponents`'s
  * `ok`/`cause` to fail closed).
  */
 export function listChangedComponents(opts = {}) {

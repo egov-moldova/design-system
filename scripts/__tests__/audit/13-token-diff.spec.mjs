@@ -18,7 +18,7 @@ import {
   undeclaredCustomProperties,
 } from '../../audit/13-token-diff.mjs';
 
-describe('13-token-diff: U3 — the tokens file resolves by the component CSS prefix (Decision 13)', () => {
+describe('13-token-diff: U3 — the tokens file resolves by the component CSS prefix', () => {
   it('a component with its own file uses it (mud-button → button.tokens.json)', () => {
     assert.equal(resolveTokensFile('mud-button').file, 'tokens/core/components/button.tokens.json');
   });
@@ -75,7 +75,7 @@ describe('13-token-diff: U3 — the tokens file resolves by the component CSS pr
     assert.deepEqual(api, ['--icon-color']);
   });
 
-  it('Decision 13, third case: a fallback-less --<bare>-* read with no tokens file is noTarget, not a note', () => {
+  it('third case: a fallback-less --<bare>-* read with no tokens file is noTarget, not a note', () => {
     // An empty tokens dir reproduces "the component reads its own tokens and
     // nothing defines them" against real component CSS: mud-button's
     // `--button-container-*` reads carry no fallback.

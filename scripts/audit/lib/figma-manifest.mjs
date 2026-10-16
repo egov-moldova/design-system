@@ -391,7 +391,7 @@ export function manifestRelPath(componentName) {
 
 /**
  * The fixed, git-ignored path the orchestrator writes a component's HEAD
- * manifest to (Design §8). Fixed rather than a temp dir so no run-varying path
+ * manifest to. Fixed rather than a temp dir so no run-varying path
  * reaches a finding.
  */
 export function headManifestRelPath(componentName) {
@@ -399,7 +399,7 @@ export function headManifestRelPath(componentName) {
 }
 
 /**
- * Resolve a component's Figma manifest from the committed tree (Design §8):
+ * Resolve a component's Figma manifest from the committed tree:
  * every Figma input — presence, `design`, `expect`, `override`, `skip` — is
  * read from `git show HEAD:<path>`, never from the working tree, so the audit
  * cannot grant itself a waiver or a correction. The HEAD copy is written to

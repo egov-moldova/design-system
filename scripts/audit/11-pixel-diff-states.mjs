@@ -26,7 +26,7 @@
  * (an extra footer, a missing border) behind a high diff percentage.
  *
  * Thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `lib/image-diff.mjs` — PASS below
- * the first, WARNING (marked `requires-ai-review`) below the second, FAIL at or
+ * the first, WARNING (marked `requires-review`) below the second, FAIL at or
  * above it. A manifest state's `mask` selectors are painted out of both images
  * and reported as `PIXEL-MASKED`.
  *

@@ -1,7 +1,7 @@
 // Standalone flat config enabling only `mud/no-hardcoded-copy`, at `error`, over
 // `src/components/**/*.tsx` — never specs or stories. Kept out of `eslint.config.mjs` until
-// Phase 6 (`yarn lint --max-warnings 0` + the pre-commit hook would otherwise block every
-// phase's commit before every component is migrated). Run directly:
+// every component is migrated (`yarn lint --max-warnings 0` + the pre-commit hook would
+// otherwise block every commit along the way). Run directly:
 //   npx eslint -c scripts/eslint/copy.config.mjs src/components
 import stencil from '@stencil/eslint-plugin';
 import tseslint from 'typescript-eslint';
