@@ -429,7 +429,7 @@
       ]
     },
     "docs:check": {
-      "command": "node scripts/docs/check-ai-docs.mjs"
+      "command": "node scripts/docs/check-docs.mjs"
     },
     "lint.css": {
       "command": "stylelint \"src/**/*.css\" --allow-empty-input",
