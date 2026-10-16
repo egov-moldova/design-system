@@ -144,9 +144,7 @@
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "audit:test": "node scripts/audit/__tests__/02-antipatterns.test.mjs",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
-    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs",
-    "cleanup:agents": "node scripts/cleanup-agents.mjs",
-    "cleanup:agents:dry": "node scripts/cleanup-agents.mjs --dry-run"
+    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
   },
   "wireit": {
     "tokens.build.core": {
