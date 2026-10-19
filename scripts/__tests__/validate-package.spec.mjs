@@ -18,6 +18,7 @@ import {
   checkNoPublishedSvg,
   checkPackerAgreement,
   checkPublicSpecifiers,
+  checkScriptTagNotExported,
   checkSourceMaps,
   checkFontFaceCoverage,
   checkStylesheetAssets,
@@ -59,7 +60,6 @@ const PKG = {
     './styles.css': './dist/mud/mud.css',
     './tokens/*.css': './dist/mud/tokens/*.css',
     './assets/*': './dist/mud/assets/*',
-    './mud.esm.js': './dist/mud/mud.esm.js',
     './components': {
       types: './dist/components/index.d.ts',
       import: './dist/components/index.js',
@@ -627,6 +627,123 @@ describe('PUBLIC_SPECIFIERS covers the exports map', () => {
       return !PUBLIC_SPECIFIERS.some(specifier => shape.test(specifier));
     });
     assert.deepEqual(missing, []);
+  });
+});
+
+describe('checkScriptTagNotExported', () => {
+  // The packed scripts of the lazy bundle, in the shape the tarball carries them, beside the
+  // stylesheets that legitimately share the directory.
+  const packed = [
+    'dist/mud/mud.esm.js',
+    'dist/mud/index.esm.js',
+    'dist/mud/p-abc123.js',
+    'dist/mud/p-def456.entry.js',
+    'dist/mud/mud.css',
+    'dist/mud/tokens/core.tokens.css',
+    'dist/components/mud-button.js',
+  ];
+  const withExports = exports => ({ unpkg: 'dist/mud/mud.esm.js', exports });
+
+  it('passes the package.json this repository publishes', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    assert.deepEqual(checkScriptTagNotExported(pkg, packed), []);
+  });
+
+  it('names a literal key on the entry, the shape 1.2.0-dev.1 to dev.3 published', () => {
+    const failures = checkScriptTagNotExported(withExports({ './mud.esm.js': './dist/mud/mud.esm.js' }), packed);
+    assert.deepEqual(failures, ['$.exports[./mud.esm.js]: ./dist/mud/mud.esm.js -> dist/mud/mud.esm.js']);
+  });
+
+  it('names a pattern that reaches the bundle, the shape 1.1.9 published', () => {
+    const failures = checkScriptTagNotExported(withExports({ './dist/mud/*': './dist/mud/*' }), packed);
+    assert.deepEqual(failures, ['$.exports[./dist/mud/*]: ./dist/mud/* -> dist/mud/mud.esm.js (+3 more)']);
+  });
+
+  it('reads a target nested under a condition', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({ './bundle': { webpack: { import: './dist/mud/index.esm.js' } } }),
+      packed,
+    );
+    assert.deepEqual(failures, [
+      '$.exports[./bundle][webpack][import]: ./dist/mud/index.esm.js -> dist/mud/index.esm.js',
+    ]);
+  });
+
+  it('treats a legacy folder mapping as reaching everything under it', () => {
+    const failures = checkScriptTagNotExported(withExports({ './': './dist/mud/' }), packed);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /^\$\.exports\[\.\/\]: \.\/dist\/mud\/ -> /);
+  });
+
+  it('treats the root folder mapping, which normalizes to an empty path, as reaching the bundle', () => {
+    const failures = checkScriptTagNotExported(withExports({ './': './' }), packed);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /^\$\.exports\[\.\/\]: \.\/ -> dist\/mud\//);
+  });
+
+  it('reads backslash separators and percent escapes the way Node resolves them', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './b': String.raw`./dist\mud\mud.esm.js`,
+        './c': './dist/%6Dud/mud.esm.js',
+        './d': './dist/%zz/x.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, [
+      String.raw`$.exports[./b]: ./dist\mud\mud.esm.js -> dist/mud/mud.esm.js`,
+      '$.exports[./c]: ./dist/%6Dud/mud.esm.js -> dist/mud/mud.esm.js',
+    ]);
+  });
+
+  it('reads a query or hash suffix as Node does, and refuses encoded separators as Node does', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './q': './dist/mud/mud.esm.js?x',
+        './h': './dist/mud/mud.esm.js#y',
+        './s': './dist/mud%2Fmud.esm.js',
+        './u': '../outside/mud.esm.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, [
+      '$.exports[./q]: ./dist/mud/mud.esm.js?x -> dist/mud/mud.esm.js',
+      '$.exports[./h]: ./dist/mud/mud.esm.js#y -> dist/mud/mud.esm.js',
+    ]);
+  });
+
+  it('collapses dot segments and ignores case in a target', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({ './a/*': './dist/x/../mud/*', './b/*': './dist/MUD/*' }),
+      packed,
+    );
+    assert.equal(failures.length, 2);
+  });
+
+  it('fails closed on a wildcard narrowed by a null exclusion under another key', () => {
+    // Node would let the longer `*.js` key win; the gate grades each target alone.
+    const failures = checkScriptTagNotExported(
+      withExports({ './dist/mud/*': './dist/mud/*', './dist/mud/*.js': null }),
+      packed,
+    );
+    assert.equal(failures.length, 1);
+  });
+
+  it('skips a null exclusion and the stylesheets beside the bundle', () => {
+    const failures = checkScriptTagNotExported(
+      withExports({
+        './styles.css': './dist/mud/mud.css',
+        './tokens/*.css': './dist/mud/tokens/*.css',
+        './dist/*': null,
+        './components/mud-*.js': './dist/components/mud-*.js',
+      }),
+      packed,
+    );
+    assert.deepEqual(failures, []);
+  });
+
+  it('refuses to grade a package whose unpkg field cannot locate the bundle', () => {
+    assert.throws(() => checkScriptTagNotExported({ exports: {} }, packed), /cannot locate the lazy bundle/);
   });
 });
 

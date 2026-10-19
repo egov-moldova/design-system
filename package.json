@@ -23,7 +23,6 @@
     },
     "./styles.css": "./dist/mud/mud.css",
     "./tokens/*.css": "./dist/mud/tokens/*.css",
-    "./mud.esm.js": "./dist/mud/mud.esm.js",
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
@@ -242,6 +241,7 @@
     "build": {
       "command": "node scripts/adapters/clean-proxy-dirs.mjs && cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
       "dependencies": [
+        "tokens.build",
         "tokens.build.prod"
       ],
       "clean": false,

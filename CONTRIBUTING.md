@@ -187,7 +187,7 @@ node scripts/adapters/consumer-fixture.mjs react --framework-version 18
 node scripts/adapters/consumer-fixture.mjs vue
 node scripts/adapters/consumer-fixture.mjs angular --framework-version 20   # zone.js
 node scripts/adapters/consumer-fixture.mjs angular --framework-version 22   # zoneless
-node scripts/adapters/consumer-fixture.mjs web-components                   # lazy loader, import map, script tag, deep path
+node scripts/adapters/consumer-fixture.mjs web-components                   # lazy loader, import map, script tag, deep path, mud.esm.js not exported
 ```
 
 Every fixture app renders the same four elements (`data-testid` `asset-icon`, `asset-logo`, `asset-phone`, `asset-select`), and one shared file, `scripts/adapters/fixture-e2e/assets.spec.ts`, asserts asset delivery for all of them: the named icon, logo and flag render, a component's own icon renders, and an asset no component on the page draws is never downloaded. The runner copies it into the temporary app, so a new adapter fixture needs the four elements and nothing else to get those checks.
