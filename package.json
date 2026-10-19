@@ -200,7 +200,6 @@
         "tokens/core/style-dictionary.prod.config.json"
       ],
       "output": [
-        "dist/mud/tokens/core.tokens.css",
         ".storybook/stories/assets/core.tokens.json",
         "tokens/generated/core.tokens.json"
       ],
@@ -216,7 +215,6 @@
         "tokens/core.dark/style-dictionary.prod.config.json"
       ],
       "output": [
-        "dist/mud/tokens/core.dark.tokens.css",
         ".storybook/stories/assets/core.dark.tokens.json",
         "tokens/generated/core.dark.tokens.json"
       ],
