@@ -18,8 +18,8 @@ export type PhoneCountryCode = string;
  * The table covers every country with a numbering plan; the `countries` prop
  * limits the list to a chosen few.
  *
- * Flags are SVG files under `assets/flags/`, named by the lower-case ISO code
- * and shown through an `<img>` (see `mud-phone-input.flags.ts`).
+ * Flags are SVG files under `assets/flags/`, named by the lower-case ISO code,
+ * imported on demand and drawn inline (see `mud-phone-input.flags.ts`).
  *
  * The row itself lives in `mud-phone-input.data.ts` (data, not copy — the
  * `mud/no-hardcoded-copy` guard lints only `.tsx`); this re-exports its type.

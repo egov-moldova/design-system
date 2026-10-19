@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <title>mud loader, deep subpath</title>
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/tokens/core.tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/mud.css" />
+  </head>
+  <body>
+    <main>
+      <mud-icon data-testid="asset-icon" name="calendar" size="24"></mud-icon>
+      <mud-logo data-testid="asset-logo" name="mpass-logo-with-name"></mud-logo>
+      <mud-phone-input data-testid="asset-phone" aria-label="Phone"></mud-phone-input>
+      <mud-select data-testid="asset-select" aria-label="Fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </mud-select>
+    </main>
+    <!-- The core's lazy loader, no `resourcesUrl`: chunks resolve against the loader's own URL, not this page's. -->
+    <script type="module">
+      import { defineCustomElements } from '/node_modules/@egov-moldova/mud/loader/index.js';
+      defineCustomElements();
+    </script>
+  </body>
+</html>

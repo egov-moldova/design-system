@@ -142,6 +142,7 @@ export default defineVitestConfig({
         'src/**/*.enums.ts',
         'src/**/*.constants.ts',
         'src/assets/**',
+        'src/generated/**',
         'dist/**',
         'node_modules/**',
       ],
@@ -169,45 +170,11 @@ export default defineVitestConfig({
       },
       {
         extends: true,
-        resolve: {
-          // `react/` is a workspace directory at the Vite root, and a root-level
-          // directory whose name matches an npm package shadows that package for a
-          // bare specifier. Measured: this project resolved `react` to
-          // `<root>/react/src/index.ts` — the MUD React adapter — while
-          // `react/jsx-runtime`, a subpath with no file under `<root>/react/`,
-          // resolved correctly into `node_modules`. That pulled the adapter's
-          // git-ignored generated sources into the dep graph, where a clean
-          // checkout has none, and `yarn test.storybook` died in pre-bundling
-          // before running a test (#23). Storybook's own Vite (`sp.dev`,
-          // `sp.build`) never had this — it resolves `react` to `node_modules`.
-          //
-          // The value is the package DIRECTORY, not its entry file: object-form
-          // aliases replace a matching prefix, so an entry-file value would
-          // rewrite `react/jsx-runtime` to `.../index.js/jsx-runtime`.
-          //
-          // `.storybook/vitest.setup.ts` asserts the outcome, so deleting this
-          // fails the lane in the next local `yarn test.storybook`. It does NOT
-          // fail CI: no workflow runs that lane yet (issue #20 owns wiring it).
-          //
-          // Scoped to this project rather than the root: `spec` resolves `react`
-          // correctly today and does not need the entry. The cost of that choice
-          // is that a future project touching React re-acquires #23 silently —
-          // accepted, because the durable fix is the directory rename recorded in
-          // the plan's § Deferred, not a wider alias.
-          //
-          // Same spelling as `getAbsolutePath` in `.storybook/main.mjs` — one
-          // idiom for "the directory of an installed package", measured to work
-          // through Vite's config loading.
-          alias: {
-            react: path.dirname(fileURLToPath(import.meta.resolve('react/package.json'))),
-          },
-        },
         plugins: [
           // Rewrite preview.js's lazy bundle import to the source loader so
           // coverage tooling sees the real component files. A `pre` resolver and
           // not a `resolve.alias` because this matches the END of a specifier:
           // object-form aliases match a prefix, which a path suffix cannot express.
-          // (Bare-package aliases do work here — see the `react` entry above.)
           // The dist bundle is still used by regular Storybook dev / prod.
           {
             name: 'age:redirect-dist-bundle-to-source-loader',

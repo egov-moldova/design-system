@@ -73,8 +73,7 @@ function walkExports(node, trail, entries) {
   }
   for (const [key, child] of Object.entries(node)) {
     // A subpath pattern resolves to many files; a literal existence check on it
-    // would be meaningless. Its directory is covered by the sibling literals,
-    // and `checkBundleAssets` covers the one subtree that has no literal.
+    // would be meaningless. Its directory is covered by the sibling literals.
     if (key.includes('*')) {
       continue;
     }
@@ -133,7 +132,7 @@ export function lazyBundleDir(pkg) {
 
 /**
  * Where `exports["./components"]` points. Throws rather than returning
- * null: a null would make `checkBundleAssets` a silent no-op, which is the same
+ * null: a null would make `checkAssetModules` a silent no-op, which is the same
  * vacuous-scan failure `lazyBundleDir` exists to avoid one function up. If the
  * standalone bundle is ever dropped from the contract deliberately, drop the
  * asset check with it — do not let it quietly stop grading while the gate
@@ -346,23 +345,120 @@ export function checkDevSignature(packedFiles, readText, bundleDir) {
 }
 
 /**
- * The standalone custom-elements bundle resolves `getAssetPath('./assets/x')`
- * relative to itself, but Stencil's `dist-custom-elements` target silently
- * ignores `assetsDirs` — `scripts/copy-component-assets.mjs` mirrors them in as
- * a post-build step. Without it a component with assets "renders empty
- * silently" (that script's own words). Nothing else in the tarball reveals it:
- * `exports["./components/*"]` is a pattern, so checkDeclaredEntries skips
- * it by design.
+ * The ONE predicate for "a packed path that is an SVG file". `consumer-fixture.mjs` imports it, so
+ * the publish gate and the fixture runner cannot disagree about what counts.
  */
-export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
-  const lazy = packedFiles.filter(file => file.startsWith(`${lazyDir}assets/`));
-  if (lazy.length === 0) {
-    return [];
+export function isPublishedSvg(file) {
+  return /\.svg$/i.test(file);
+}
+
+/**
+ * No SVG file is published: icons, logos and flags ship as JavaScript modules inside the bundles.
+ * Stencil's `dist` target copies `**\/*.svg` into `dist/collection/` on its own, which is why
+ * `package.json` `files` excludes that glob; this check is what notices the day it stops doing so.
+ */
+export function checkNoPublishedSvg(packedFiles) {
+  return packedFiles.filter(isPublishedSvg);
+}
+
+/**
+ * Where a built drawing is found by its `data-mud-asset="<kind>:<key>"` marker. The marker sits
+ * inside a string literal, so a minifier may quote it with `"`, `'` or a backtick, or escape the `"`.
+ */
+const ASSET_MARKER = /data-mud-asset=\\?["'`]([a-z]+:[a-z0-9/-]+)/g;
+
+/** Every directory a consumer can load the components from: standalone, lazy ESM and the CDN build. */
+export function assetModuleDirs(pkg) {
+  if (typeof pkg.es2015 !== 'string' || !pkg.es2015.includes('/')) {
+    throw new Error('validate-package: cannot locate the lazy ESM build — package.json has no usable "es2015" field');
   }
-  const standalone = packedFiles.filter(file => file.startsWith(`${standaloneDir}assets/`));
-  return standalone.length === 0
-    ? [`${standaloneDir}assets/ is empty while ${lazyDir}assets/ carries ${lazy.length} file(s)`]
-    : [];
+  return [standaloneBundleDir(pkg), `${path.posix.dirname(normalizePackagePath(pkg.es2015))}/`, lazyBundleDir(pkg)];
+}
+
+/**
+ * The marker of every drawing the package must carry, read from the SOURCES, not from the generated
+ * modules: icons from the manifest (one key per variant), logos and flags from their SVG files.
+ * Deriving it from `src/generated/` would ask the generator whether the generator was right.
+ */
+export function expectedAssetKeys(cwd = PROJECT_ROOT) {
+  const components = path.join(cwd, 'src/components');
+  const svgNames = dir =>
+    fs
+      .readdirSync(dir)
+      .filter(isPublishedSvg)
+      .map(file => file.replace(/\.svg$/i, ''));
+  const manifest = JSON.parse(fs.readFileSync(path.join(components, 'mud-icon/assets/icons.manifest.json'), 'utf8'));
+  return [
+    ...Object.entries(manifest).flatMap(([name, { variants }]) => variants.map(variant => `icon:${variant}/${name}`)),
+    ...svgNames(path.join(components, 'mud-logo/assets')).map(name => `logo:${name}`),
+    ...svgNames(path.join(components, 'mud-phone-input/assets/flags')).map(name => `flag:${name}`),
+  ];
+}
+
+function jsUnder(packedFiles, dir) {
+  return packedFiles.filter(file => file.startsWith(dir) && file.endsWith('.js'));
+}
+
+/**
+ * Every expected drawing has a generated module in EACH of `dirs`, found by its marker. One
+ * directory is enough to hide a loss from the others: `dist/mud/` is what `unpkg` serves, and a
+ * bundler resolving `dist/components/` or `dist/esm/` never reads it. An empty directory fails every
+ * key, so a rename of an output folder cannot turn this into a silent pass.
+ */
+export function checkAssetModules(packedFiles, readText, expectedKeys, dirs) {
+  const problems = [];
+  for (const dir of dirs) {
+    const found = new Set();
+    for (const file of jsUnder(packedFiles, dir)) {
+      for (const match of readText(file).matchAll(ASSET_MARKER)) {
+        found.add(match[1]);
+      }
+    }
+    const missing = expectedKeys.filter(key => !found.has(key));
+    if (missing.length > 0) {
+      const shown = missing.slice(0, 5).join(', ');
+      problems.push(
+        `${dir} has no module for ${missing.length} of ${expectedKeys.length} drawing(s): ${shown}${missing.length > 5 ? ', ...' : ''}`,
+      );
+    }
+  }
+  return problems;
+}
+
+/**
+ * The flag-icons licence travels in two places: as a file next to the CDN build, and inside the
+ * `componentsDir` chunk that holds the flag map (the one that dynamically imports the flag
+ * modules, found by their markers). The second is read from the MINIFIED output, which is the
+ * point: a licence comment a minifier drops is invisible in the source and in the unminified build.
+ */
+export function checkFlagLicense(packedFiles, readText, { licenseFile, componentsDir }) {
+  const problems = [];
+  if (!packedFiles.includes(licenseFile)) {
+    problems.push(`${licenseFile} is not packed`);
+  }
+  const files = jsUnder(packedFiles, componentsDir);
+  const flagChunks = new Set(
+    files.filter(file => /data-mud-asset=\\?["'`]flag:/.test(readText(file))).map(file => path.posix.basename(file)),
+  );
+  if (flagChunks.size === 0) {
+    problems.push(`no chunk under ${componentsDir} carries a flag drawing`);
+    return problems;
+  }
+  const holders = files.filter(file => {
+    const imported = [...readText(file).matchAll(/import\(\s*["'`]\.\/([^"'`]+)["'`]\s*\)/g)].filter(match =>
+      flagChunks.has(match[1]),
+    );
+    return imported.length >= Math.ceil(flagChunks.size / 2);
+  });
+  if (holders.length === 0) {
+    problems.push(`no chunk under ${componentsDir} imports the flag modules`);
+  }
+  for (const file of holders) {
+    if (!readText(file).includes('flag-icons')) {
+      problems.push(`${file} holds the flag map but no longer contains "flag-icons" after minification`);
+    }
+  }
+  return problems;
 }
 
 /**
@@ -605,7 +701,18 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       // the tarball. Rationale and the measurement behind it: `checkDevSignature`.
       checkDevSignature(files, readText),
     ],
-    ['standalone bundle published without its assets', checkBundleAssets(files, lazyDir, standaloneDir)],
+    ['SVG file in tarball', checkNoPublishedSvg(files)],
+    [
+      'drawing without a generated module',
+      checkAssetModules(files, readText, expectedAssetKeys(cwd), assetModuleDirs(pkg)),
+    ],
+    [
+      'flag-icons licence missing',
+      checkFlagLicense(files, readText, {
+        licenseFile: `${lazyDir}licenses/flag-icons.txt`,
+        componentsDir: standaloneDir,
+      }),
+    ],
     ['global stylesheet references a file the tarball does not contain', checkStylesheetAssets(pkg, files, readText)],
     [
       'global stylesheet does not give the token font weights a face',

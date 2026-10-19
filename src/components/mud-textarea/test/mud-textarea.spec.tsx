@@ -2,10 +2,8 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-textarea';
 
-// `mud-icon` is intentionally NOT imported here: its `componentWillLoad`
-// resolves SVG asset URLs via `getAssetPath`, which the mock-doc test
-// environment cannot resolve. We only need to observe that the wrapped
-// element exists in the shadow tree, not that it loads pixels.
+// `mud-icon` is intentionally NOT imported here. We only need to observe that
+// the wrapped element exists in the shadow tree, not that it loads pixels.
 
 import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helpers';
 import { TEXTAREA_RESIZE, TEXTAREA_SIZES, TEXTAREA_VARIANTS } from '../mud-textarea.types';

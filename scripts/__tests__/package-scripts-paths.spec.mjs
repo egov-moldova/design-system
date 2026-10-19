@@ -192,28 +192,32 @@ describe('the SVG scripts do what their names say', () => {
   });
 });
 
-/** The `<file>` in `import … from './assets/<file>'` inside a component source. */
-function importedAssetJson(componentSource) {
-  const match = /from '\.\/assets\/([\w.-]+\.json)'/.exec(componentSource);
+/** The `<dir>` in `import … from '../../generated/<dir>'` inside a component source. */
+function importedGeneratedDir(componentSource) {
+  const match = /from '\.\.\/\.\.\/generated\/([\w-]+)'/.exec(componentSource);
   return match?.[1] ?? null;
 }
 
-describe('`svg:icons` produces the manifest the component imports', () => {
+describe('`svg:icons` produces the modules the component imports', () => {
   const iconTsx = fs.readFileSync(path.join(PROJECT_ROOT, 'src/components/mud-icon/mud-icon.tsx'), 'utf8');
-  const imported = importedAssetJson(iconTsx);
+  const imported = importedGeneratedDir(iconTsx);
 
-  it('finds the manifest `mud-icon.tsx` imports', () => {
-    assert.ok(imported, "no `import … from './assets/<file>.json'` in src/components/mud-icon/mud-icon.tsx");
+  it('finds the generated map `mud-icon.tsx` imports', () => {
+    assert.ok(imported, "no `import … from '../../generated/<dir>'` in src/components/mud-icon/mud-icon.tsx");
   });
 
-  it('the generator `svg:icons` runs writes that same file', () => {
-    const generator = readPaths(packageJson.scripts['svg:icons']).find(candidate => candidate.startsWith('scripts/'));
-    assert.ok(generator, `\`svg:icons\` runs no first-party script: ${packageJson.scripts['svg:icons']}`);
+  it('a script `svg:icons` runs writes that generated tree', () => {
+    const generators = readPaths(packageJson.scripts['svg:icons']).filter(candidate =>
+      candidate.startsWith('scripts/'),
+    );
+    assert.ok(generators.length > 0, `\`svg:icons\` runs no first-party script: ${packageJson.scripts['svg:icons']}`);
 
-    const source = fs.readFileSync(path.join(PROJECT_ROOT, generator), 'utf8');
+    const writer = generators.find(generator =>
+      fs.readFileSync(path.join(PROJECT_ROOT, generator), 'utf8').includes(`src/generated/${imported}/`),
+    );
     assert.ok(
-      source.includes(imported),
-      `\`svg:icons\` runs \`${generator}\`, which never names \`${imported}\` — the manifest mud-icon.tsx imports. It writes something nothing reads`,
+      writer,
+      `none of \`${generators.join('`, `')}\` names \`src/generated/${imported}/\` — the tree mud-icon.tsx imports. \`svg:icons\` would refresh something nothing reads`,
     );
   });
 });

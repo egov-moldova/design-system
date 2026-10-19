@@ -11,7 +11,7 @@
  *   - Storybook stories          (src/**\/*.stories.ts)
  *   - Component tests            (src/**\/test/*.spec.tsx, *.e2e.ts)
  *   - Other components           (src/components/mud-Y/mud-Y.tsx — cross-references)
- *   - web-components workspace   (web-components/**\/*.ts)
+ *   - web-components workspace   (packages/web-components/**\/*.ts)
  *
  * Also verifies the component's auto-generated CustomEvent type is exported
  * from src/index.ts (Stencil generates `MudXCustomEvent` per component with events).
@@ -45,9 +45,9 @@ const USAGE_GLOBS = [
   'src/**/*.stories.ts',
   'src/**/*.tsx',
   'src/**/*.ts',
-  'web-components/**/*.ts',
-  'web-components/**/*.tsx',
-  'web-components/**/*.html',
+  'packages/web-components/**/*.ts',
+  'packages/web-components/**/*.tsx',
+  'packages/web-components/**/*.html',
 ];
 
 const IGNORE_DIRS = [/[\\/](node_modules|dist|loader|\.stencil|\.wireit|storybook-static|coverage|\.yarn)[\\/]/];
@@ -224,7 +224,7 @@ export function scanUsage(componentName, fileList) {
 function categorizeFile(rel) {
   if (rel.includes('.stories.')) return 'stories';
   if (rel.includes('/test/') || rel.endsWith('.spec.tsx') || rel.endsWith('.e2e.ts')) return 'tests';
-  if (rel.startsWith('web-components/')) return 'web-components';
+  if (rel.startsWith('packages/web-components/')) return 'web-components';
   if (rel.startsWith('src/components/')) return 'components';
   return 'other';
 }

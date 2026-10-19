@@ -1,30 +1,38 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { setAssetPath } from '@stencil/core';
 import { describe, expect, it } from '@stencil/vitest';
 
+import { FLAG_MODULES } from '../../../generated/flags';
 import { COUNTRIES } from '../mud-phone-input.data';
-import { flagAssetPath, flagUrl } from '../mud-phone-input.flags';
+import { flagKey } from '../mud-phone-input.flags';
 
 const FLAGS_DIR = path.resolve(import.meta.dirname, '../assets/flags');
 const files = readdirSync(FLAGS_DIR);
 const flagFiles = new Set(files.filter(name => name.endsWith('.svg')));
 
 describe('mud-phone-input flags', () => {
-  describe('flagAssetPath', () => {
-    it('names the file by the lower-case ISO code', () => {
-      expect(flagAssetPath('MD')).toBe('./assets/flags/md.svg');
-      expect(flagAssetPath('gb')).toBe('./assets/flags/gb.svg');
+  describe('flagKey', () => {
+    it('names the flag by the lower-case ISO code', () => {
+      expect(flagKey('MD')).toBe('md');
+      expect(flagKey('gb')).toBe('gb');
+    });
+
+    it('names the two territory flags by their parent territory', () => {
+      expect(flagKey('AC')).toBe('sh-ac');
+      expect(flagKey('TA')).toBe('sh-ta');
     });
   });
 
-  describe('flag files', () => {
-    it.each(Object.keys(COUNTRIES))('%s resolves to a file that ships', iso => {
-      const file = path.basename(flagAssetPath(iso));
-      expect(flagFiles.has(file), `${file} is not under assets/flags`).toBe(true);
+  describe('flag modules', () => {
+    it.each(Object.keys(COUNTRIES))('%s has a key in FLAG_MODULES', iso => {
+      expect(Object.hasOwn(FLAG_MODULES, flagKey(iso)), `${flagKey(iso)} is not in FLAG_MODULES`).toBe(true);
     });
+  });
 
+  // The vendored source set the modules are generated from: its provenance is what the licence
+  // banner and `validate.package` repeat, so it is checked where it lives.
+  describe('vendored flag files', () => {
     it('ships the upstream licence and the pinned commit with the files', () => {
       expect(files).toContain('LICENSE');
       expect(readFileSync(path.join(FLAGS_DIR, 'LICENSE'), 'utf8')).toMatch(/MIT License/);
@@ -58,14 +66,6 @@ describe('mud-phone-input flags', () => {
         expect(svg, file).toMatch(/viewBox="/);
         expect(svg, file).not.toMatch(/<script|<style|<image|<foreignObject|\bhref\s*=\s*["'](?!#)|\son\w+\s*=/i);
       }
-    });
-  });
-
-  describe('flagUrl', () => {
-    it('resolves the file against the asset base the host registers', () => {
-      setAssetPath('https://cdn.test/build/');
-      expect(flagUrl('RO')).toBe('https://cdn.test/build/assets/flags/ro.svg');
-      expect(flagUrl('GB')).toBe('https://cdn.test/build/assets/flags/gb.svg');
     });
   });
 });

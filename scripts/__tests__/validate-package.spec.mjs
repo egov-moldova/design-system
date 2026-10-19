@@ -4,13 +4,18 @@ import { describe, it } from 'node:test';
 
 import path from 'node:path';
 
+import ts from 'typescript';
+
 import {
   checkAbsolutePaths,
-  checkBundleAssets,
+  assetModuleDirs,
+  checkAssetModules,
   checkDeclaredEntries,
   checkDevSignature,
+  checkFlagLicense,
   checkForbiddenPaths,
   checkEsmOnlySubpaths,
+  checkNoPublishedSvg,
   checkPackerAgreement,
   checkPublicSpecifiers,
   checkSourceMaps,
@@ -18,6 +23,8 @@ import {
   checkStylesheetAssets,
   collectDeclaredEntries,
   exportsKeyPattern,
+  expectedAssetKeys,
+  isPublishedSvg,
   lazyBundleDir,
   normalizePackagePath,
   PROJECT_ROOT,
@@ -26,6 +33,8 @@ import {
   REQUIRE_CAPABLE_SPECIFIERS,
   standaloneBundleDir,
 } from '../validate-package.mjs';
+import { pinWorkspaceRanges } from '../adapters/pin-workspace-ranges.mjs';
+import { PROXY_DIRS, PROXY_OUT_DIRS } from '../adapters/proxy-dirs.ts';
 
 const PKG = {
   'main': 'dist/index.cjs.js',
@@ -152,21 +161,150 @@ describe('standaloneBundleDir', () => {
   });
 });
 
-describe('checkBundleAssets', () => {
-  it('flags a standalone bundle shipped without the assets the lazy one has', () => {
-    const packed = ['dist/mud/assets/icon.svg', 'dist/components/index.js'];
-    assert.deepEqual(checkBundleAssets(packed, 'dist/mud/', 'dist/components/'), [
-      'dist/components/assets/ is empty while dist/mud/assets/ carries 1 file(s)',
+describe('isPublishedSvg / checkNoPublishedSvg', () => {
+  it('recognises an SVG path in any case and nothing else', () => {
+    assert.equal(isPublishedSvg('dist/mud/assets/outlined/a.svg'), true);
+    assert.equal(isPublishedSvg('dist/mud/assets/LOGO.SVG'), true);
+    assert.equal(isPublishedSvg('dist/mud/assets/fonts/onest-variable.woff2'), false);
+    assert.equal(isPublishedSvg('dist/mud/svg-assets.js'), false);
+  });
+
+  it('flags a packed SVG file', () => {
+    assert.deepEqual(checkNoPublishedSvg(['dist/mud/assets/outlined/a.svg']), ['dist/mud/assets/outlined/a.svg']);
+  });
+
+  it('passes a tarball whose only asset is a font', () => {
+    assert.deepEqual(checkNoPublishedSvg(['dist/mud/assets/fonts/onest-variable.woff2']), []);
+  });
+});
+
+describe('assetModuleDirs', () => {
+  it('names the standalone, the lazy ESM and the CDN directories', () => {
+    assert.deepEqual(assetModuleDirs(PKG), ['dist/components/', 'dist/esm/', 'dist/mud/']);
+  });
+
+  it('refuses a package it cannot locate the ESM build of', () => {
+    assert.throws(() => assetModuleDirs({ ...PKG, es2015: undefined }), /cannot locate the lazy ESM build/);
+  });
+});
+
+describe('expectedAssetKeys', () => {
+  it('covers every icon variant, logo and flag the sources hold', () => {
+    const keys = expectedAssetKeys();
+    const count = prefix => keys.filter(key => key.startsWith(prefix)).length;
+    const files = dir => fs.readdirSync(path.join(PROJECT_ROOT, dir)).filter(isPublishedSvg).length;
+    assert.equal(
+      count('icon:'),
+      files('src/components/mud-icon/assets/outlined') + files('src/components/mud-icon/assets/filled'),
+    );
+    assert.equal(count('logo:'), files('src/components/mud-logo/assets'));
+    assert.equal(count('flag:'), files('src/components/mud-phone-input/assets/flags'));
+    assert.ok(keys.includes('icon:outlined/alarm') && keys.includes('flag:ad'));
+  });
+});
+
+describe('checkAssetModules', () => {
+  const DIRS = ['dist/components/', 'dist/esm/', 'dist/mud/'];
+  const KEYS = ['icon:outlined/a', 'logo:l', 'flag:ad'];
+  const chunk = (...keys) => keys.map(key => `export default "<svg data-mud-asset=\\"${key}\\"></svg>";`).join('\n');
+  const fixture = overrides => {
+    const texts = {};
+    for (const dir of DIRS) {
+      texts[`${dir}p-1.js`] = chunk(...KEYS);
+    }
+    return { ...texts, ...overrides };
+  };
+  const run = texts => checkAssetModules(Object.keys(texts), file => texts[file], KEYS, DIRS);
+
+  it('passes when every directory carries every key', () => {
+    assert.deepEqual(run(fixture({})), []);
+  });
+
+  it('finds a marker spread over several chunks and quoted any way a minifier likes', () => {
+    const texts = fixture({
+      'dist/mud/p-1.js': 'x=\'<svg data-mud-asset="icon:outlined/a">\'',
+      'dist/mud/p-2.js': 'y=`<svg data-mud-asset="logo:l">`',
+      'dist/mud/p-3.js': 'z=\'<svg data-mud-asset="flag:ad">\'',
+    });
+    assert.deepEqual(run(texts), []);
+  });
+
+  it('reports a key with no marker anywhere', () => {
+    const texts = {};
+    for (const dir of DIRS) {
+      texts[`${dir}p-1.js`] = chunk('icon:outlined/a', 'flag:ad');
+    }
+    const problems = run(texts);
+    assert.equal(problems.length, 3);
+    assert.match(problems[0], /dist\/components\/ has no module for 1 of 3 drawing\(s\): logo:l/);
+  });
+
+  it('reports a key missing only from dist/mud/', () => {
+    const problems = run(fixture({ 'dist/mud/p-1.js': chunk('icon:outlined/a', 'logo:l') }));
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /^dist\/mud\/ has no module for 1 of 3 drawing\(s\): flag:ad$/);
+  });
+
+  it('fails every key for a directory with no JavaScript at all', () => {
+    const texts = fixture({});
+    delete texts['dist/esm/p-1.js'];
+    const problems = run(texts);
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /^dist\/esm\/ has no module for 3 of 3/);
+  });
+
+  it('ignores a marker in a file that is not JavaScript', () => {
+    const texts = fixture({ 'dist/mud/p-1.js': '', 'dist/mud/a.svg': chunk(...KEYS) });
+    assert.equal(run(texts).length, 1);
+  });
+});
+
+describe('checkFlagLicense', () => {
+  const CONFIG = { licenseFile: 'dist/mud/licenses/flag-icons.txt', componentsDir: 'dist/components/' };
+  const flagChunk = code => `export default"<svg data-mud-asset=\\"flag:${code}\\"></svg>";`;
+  const FILES = {
+    'dist/mud/licenses/flag-icons.txt': 'MIT',
+    'dist/components/p-ad.js': flagChunk('ad'),
+    'dist/components/p-ae.js': flagChunk('ae'),
+    'dist/components/mud-phone-input.js':
+      '/* flag-icons */const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+  };
+  const run = (texts, config = CONFIG) => checkFlagLicense(Object.keys(texts), file => texts[file], config);
+
+  it('passes when the licence is packed and the flag-map chunk names flag-icons', () => {
+    assert.deepEqual(run(FILES), []);
+  });
+
+  it('reports a missing licence file', () => {
+    const texts = { ...FILES };
+    delete texts['dist/mud/licenses/flag-icons.txt'];
+    assert.deepEqual(run(texts), ['dist/mud/licenses/flag-icons.txt is not packed']);
+  });
+
+  it('reports a flag-map chunk that lost flag-icons in minification', () => {
+    const texts = {
+      ...FILES,
+      'dist/components/mud-phone-input.js':
+        'const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+    };
+    assert.deepEqual(run(texts), [
+      'dist/components/mud-phone-input.js holds the flag map but no longer contains "flag-icons" after minification',
     ]);
   });
 
-  it('passes when both carry assets', () => {
-    const packed = ['dist/mud/assets/icon.svg', 'dist/components/assets/icon.svg'];
-    assert.deepEqual(checkBundleAssets(packed, 'dist/mud/', 'dist/components/'), []);
+  it('is not satisfied by flag-icons in a chunk that is not the flag map', () => {
+    const texts = {
+      ...FILES,
+      'dist/components/mud-phone-input.js':
+        'const m={ad:()=>import("./p-ad.js"),ae:()=>import("./p-ae.js")};export{m as F}',
+      'dist/components/other.js': '/* flag-icons */',
+    };
+    assert.equal(run(texts).length, 1);
   });
 
-  it('is silent when the package has no assets at all', () => {
-    assert.deepEqual(checkBundleAssets(['dist/mud/mud.esm.js'], 'dist/mud/', 'dist/components/'), []);
+  it('reports a bundle with no flag drawing rather than passing vacuously', () => {
+    const texts = { 'dist/mud/licenses/flag-icons.txt': 'MIT', 'dist/components/x.js': 'export{}' };
+    assert.deepEqual(run(texts), ['no chunk under dist/components/ carries a flag drawing']);
   });
 });
 
@@ -557,6 +695,112 @@ describe('the React output target names the exports key', () => {
   });
 });
 
+describe('the proxy output directories agree across the build, git and Prettier', () => {
+  // `scripts/adapters/proxy-dirs.ts` is the one list. Three files hold a copy of each
+  // entry in a different dialect, and a stale copy never errors: a wireit `output` that
+  // misses a directory restores the build from cache without its proxies, a missing
+  // ignore entry lets a generated proxy be committed (the lesson of 6e557bf5), and a
+  // missing `.prettierignore` entry turns `yarn lint` red after a build.
+  const readLines = file =>
+    fs.existsSync(file)
+      ? fs
+          .readFileSync(file, 'utf8')
+          .split('\n')
+          .map(line => line.trim())
+      : [];
+
+  it('names at least one directory, each repo-relative with no trailing slash', () => {
+    assert.ok(PROXY_OUT_DIRS.length > 0);
+    assert.deepEqual(PROXY_OUT_DIRS, Object.values(PROXY_DIRS));
+    for (const dir of PROXY_OUT_DIRS) {
+      assert.ok(!dir.startsWith('/') && !dir.endsWith('/') && !dir.includes('\\'), `malformed proxy directory: ${dir}`);
+    }
+  });
+
+  it('declares every directory as an output of the wireit `build` entry', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const output = pkg.wireit?.build?.output ?? [];
+    const missing = PROXY_OUT_DIRS.filter(dir => !output.includes(`${dir}/**`));
+    assert.deepEqual(missing, [], 'wireit build `output` must carry `<dir>/**` for each proxy directory');
+  });
+
+  it('git-ignores every directory, from the root `.gitignore` or a `.gitignore` above it', () => {
+    const unignored = PROXY_OUT_DIRS.filter(dir => {
+      const segments = dir.split('/');
+      // Ancestors from the repo root down to the directory's parent: `''`, `packages`, ...
+      return !segments.some((_, depth) => {
+        const base = segments.slice(0, depth).join('/');
+        const rel = segments.slice(depth).join('/');
+        const accepted = [rel, `${rel}/`, `${rel}/*`, `${rel}/**`];
+        return readLines(path.join(PROJECT_ROOT, base, '.gitignore')).some(line => accepted.includes(line));
+      });
+    });
+    assert.deepEqual(unignored, []);
+  });
+
+  it('lists every directory in `.prettierignore`', () => {
+    const lines = readLines(path.join(PROJECT_ROOT, '.prettierignore'));
+    const missing = PROXY_OUT_DIRS.filter(dir => !lines.includes(`${dir}/`));
+    assert.deepEqual(missing, []);
+  });
+});
+
+describe('the Vue output target has one range', () => {
+  // The root devDependency is the GENERATOR that writes the proxies; `packages/vue` depends on
+  // the same package for its `/runtime`, which those proxies import. They are two halves of one
+  // version (the target is 0.x, so a minor can break the generated call), and nothing but this
+  // case notices when one is bumped alone.
+  it('uses the same range for the root generator and the packages/vue runtime', () => {
+    const readPkg = file => JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8'));
+    const generator = readPkg('package.json').devDependencies?.['@stencil/vue-output-target'];
+    const runtime = readPkg('packages/vue/package.json').dependencies?.['@stencil/vue-output-target'];
+    assert.ok(generator, 'the root package.json has no @stencil/vue-output-target devDependency');
+    assert.ok(runtime, 'packages/vue/package.json has no @stencil/vue-output-target dependency');
+    assert.equal(runtime, generator);
+    assert.ok(generator.startsWith('~'), `the 0.x output target is pinned with ~, found ${generator}`);
+  });
+});
+
+describe("pinWorkspaceRanges (the Angular adapter build rewrites ng-packagr's manifest)", () => {
+  // ng-packagr copies `workspace:^` into `dist/package.json` verbatim and `dist/` is no Yarn
+  // workspace, so `yarn pack` cannot rewrite it. The build does, with Yarn's own mapping; the
+  // fixture runner's guard then reads the packed tarball. These cases pin the mapping.
+  const versions = new Map([['@egov-moldova/mud', '1.2.0-dev.1']]);
+
+  it("maps `^`, `~`, `*` and an explicit range the way Yarn's pack does", () => {
+    const manifest = {
+      peerDependencies: { '@egov-moldova/mud': 'workspace:^', '@angular/core': '^20.0.0' },
+      dependencies: { '@egov-moldova/mud': 'workspace:~' },
+      optionalDependencies: { '@egov-moldova/mud': 'workspace:*' },
+      devDependencies: { '@egov-moldova/mud': 'workspace:>=1.0.0' },
+    };
+    const rewritten = pinWorkspaceRanges(manifest, versions);
+    assert.equal(rewritten.length, 4);
+    assert.deepEqual(manifest, {
+      peerDependencies: { '@egov-moldova/mud': '^1.2.0-dev.1', '@angular/core': '^20.0.0' },
+      dependencies: { '@egov-moldova/mud': '~1.2.0-dev.1' },
+      optionalDependencies: { '@egov-moldova/mud': '1.2.0-dev.1' },
+      devDependencies: { '@egov-moldova/mud': '>=1.0.0' },
+    });
+  });
+
+  it('fails on a workspace: dependency that names no workspace, rather than shipping it', () => {
+    assert.throws(
+      () => pinWorkspaceRanges({ peerDependencies: { '@egov-moldova/other': 'workspace:^' } }, versions),
+      /not a workspace/,
+    );
+  });
+
+  it('keeps `workspace:^` in the Angular source manifest, so the core version lives only at the root', () => {
+    const angular = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'packages/angular/package.json'), 'utf8'));
+    assert.equal(angular.peerDependencies?.['@egov-moldova/mud'], 'workspace:^');
+    assert.match(
+      angular.scripts?.build ?? '',
+      /ng-packagr .*&& node \.\.\/\.\.\/scripts\/adapters\/pin-workspace-ranges\.mjs dist\/package\.json$/,
+    );
+  });
+});
+
 describe('exportsKeyPattern', () => {
   // Three decisions live in this helper's JSDoc and none of them were pinned:
   // it was reached only through two assertions over the live `exports` map, which
@@ -597,29 +841,28 @@ describe('the React workspace names only exported subpaths', () => {
   // `the React output target names the exports key` above binds the CONFIG
   // (`stencil.config.ts`'s `customElementsDir`) to the `exports` key. It cannot
   // see the files that config produced: those are git-ignored
-  // (`react/.gitignore:6`), so a worktree whose last `yarn build.react` predates
+  // (`packages/react/.gitignore:6`), so a worktree whose last `yarn build` predates
   // an `exports` rename carries 56 wrappers holding a dead specifier that no
   // check reports. That is issue #23, and this is the half that reads the files.
   //
-  // The scan covers all of `react/src`, not just the generated subtree, so it
+  // The scan covers all of `packages/react/src`, not just the generated subtree, so it
   // never reports a pass over zero files: on a fresh clone the generated
-  // directory holds only `.gitkeep` and `react/src/index.ts` is still graded.
-  // What that does NOT buy: where no build output is present — CI, and any
-  // machine that has not run `yarn build.react` — the 56 wrappers this exists
-  // for are absent and one file is graded. Making CI grade them means running
-  // `yarn build.react` before `yarn test:scripts`, which is a `.github/` change.
-  const REACT_SRC = path.join(PROJECT_ROOT, 'react/src');
+  // directory does not exist and `packages/react/src/index.ts` is still graded.
+  // `yarn test:scripts` depends on `yarn build`, which generates the proxies, so a
+  // run through the wireit entry grades all 56 wrappers; a bare `node --test` on a
+  // machine that has not built grades one file.
+  const REACT_SRC = path.join(PROJECT_ROOT, 'packages/react/src');
   // Anchored on the quote, not on `from`/`import`: `import("…")` has no space
   // before the quote and `require("…")` uses neither keyword, and a wrapper that
   // drifted into either would otherwise pass vacuously.
   //
   // What keeps it from firing on prose, stated exactly, because an earlier version
-  // of this comment got it wrong: `react/src/index.ts` carries three non-import
-  // mentions. Two (`:14`, `:42`) spell `/node_modules/@egov-moldova/mud/…`, so the
-  // character after the quote is `/` and they do not match. The third (`:30`) is a
-  // JSDoc mention delimited by BACKTICKS, and it is skipped only because backtick
-  // is not in the `["']` class — not because of any path shape. A future doc
-  // mention written with real quotes WOULD be reported, and that is the known edge.
+  // of this comment got it wrong: the non-import mentions in `packages/react/src` come in
+  // two kinds. Those spelling `/node_modules/@egov-moldova/mud/…` have `/` as the
+  // character after the quote, so they do not match. JSDoc mentions delimited by
+  // BACKTICKS are skipped only because backtick is not in the `["']` class — not because
+  // of any path shape. A future doc mention written with real quotes WOULD be reported,
+  // and that is the known edge.
   //
   // A specifier assembled at runtime from fragments is outside what any static
   // check reads, and outside what this one claims.
@@ -627,7 +870,7 @@ describe('the React workspace names only exported subpaths', () => {
   const SOURCE_EXT = /\.tsx?$/;
 
   // `existsSync` before the recursion: without it a pruned, absent or renamed
-  // `react/` workspace dies on a raw ENOENT with a stack trace, instead of the
+  // `packages/react/` workspace dies on a raw ENOENT with a stack trace, instead of the
   // assertion below — which was written to diagnose exactly that case.
   const walk = dir =>
     !fs.existsSync(dir)
@@ -638,12 +881,12 @@ describe('the React workspace names only exported subpaths', () => {
           return entry.isFile() && SOURCE_EXT.test(full) ? [full] : [];
         });
 
-  it('every `@egov-moldova/mud` specifier under react/src resolves through the exports map', () => {
+  it('every `@egov-moldova/mud` specifier under packages/react/src resolves through the exports map', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
     const patterns = Object.keys(pkg.exports).map(exportsKeyPattern);
 
     const files = walk(REACT_SRC);
-    assert.ok(files.length > 0, 'react/src holds no .ts/.tsx files — the scan would grade nothing');
+    assert.ok(files.length > 0, 'packages/react/src holds no .ts/.tsx files — the scan would grade nothing');
 
     const dead = [];
     for (const file of files) {
@@ -655,5 +898,151 @@ describe('the React workspace names only exported subpaths', () => {
       }
     }
     assert.deepEqual(dead, []);
+  });
+
+  // #180: the wrappers import the standalone bundle, so any other `@egov-moldova/mud` entry
+  // registers tags through a second Stencil runtime. The root specifier resolves to
+  // `dist/index.js`, which re-exports `dist/esm`, the lazy runtime, so it is allowed ONLY in an
+  // import the compiler erases: `import type { … }`, or every binding marked `type` — the shape
+  // the React output target writes for event-detail types (`stencilPackageName`).
+  // Limit: that erasure is the default; a consumer compiling this `src/` with
+  // `verbatimModuleSyntax` keeps `import {} from "@egov-moldova/mud"` and evaluates the lazy
+  // runtime's modules (no tag registered). A specifier assembled at runtime is outside any
+  // static read.
+  const STANDALONE_RE = /^@egov-moldova\/mud\/components(?:\/mud-[a-z0-9-]+\.js)?$/;
+  const ROOT_IMPORT_RE = /\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*["']@egov-moldova\/mud["']\s*;?/g;
+  const isTypeOnly = (typeKeyword, bindings) =>
+    Boolean(typeKeyword) ||
+    bindings
+      .split(',')
+      .map(binding => binding.trim())
+      .filter(Boolean)
+      .every(binding => /^type\s/.test(binding));
+
+  it('names only the standalone runtime, never the lazy loader (#180)', () => {
+    const files = walk(REACT_SRC);
+    assert.ok(files.length > 0, 'packages/react/src holds no .ts/.tsx files — the scan would grade nothing');
+
+    const lazy = [];
+    for (const file of files) {
+      const source = fs
+        .readFileSync(file, 'utf8')
+        .replace(ROOT_IMPORT_RE, (statement, typeKeyword, bindings) =>
+          isTypeOnly(typeKeyword, bindings) ? '' : statement,
+        );
+      for (const [, specifier] of source.matchAll(SPECIFIER_RE)) {
+        if (!STANDALONE_RE.test(specifier)) lazy.push(`${path.relative(PROJECT_ROOT, file)}: ${specifier}`);
+      }
+    }
+    assert.deepEqual(lazy, []);
+  });
+});
+
+describe('no adapter build masks a failure (#180)', () => {
+  // A `build` that swallows its exit status turns `yarn build.<adapter>`, the CI step and
+  // the audit's `adapter-*` rows into checks that cannot fail. Masking idioms cannot be
+  // enumerated (`|| true`, `|| echo`, `; exit 0`, `; next-command`), so the positive shape is
+  // asserted instead: commands chained by `&&` only. A legitimate `||` needs an explicit
+  // exception here.
+  // Each `&&` segment must hold no other shell control operator: `;`, `|` (also `||`), `&`, newline.
+  const propagates = build => build.split('&&').every(segment => !/[;|&\n]/.test(segment));
+  const PACKAGES = path.join(PROJECT_ROOT, 'packages');
+
+  it('every packages/*/package.json build script propagates its exit status', () => {
+    const masked = fs
+      .readdirSync(PACKAGES, { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'package.json')))
+      .map(entry => [
+        entry.name,
+        JSON.parse(fs.readFileSync(path.join(PACKAGES, entry.name, 'package.json'), 'utf8')).scripts?.build,
+      ])
+      .filter(([, build]) => typeof build === 'string' && !propagates(build))
+      .map(([name, build]) => `packages/${name}: ${build}`);
+    assert.deepEqual(masked, []);
+  });
+});
+
+describe('every adapter compiles in strict mode (#180)', () => {
+  const PACKAGES = path.join(PROJECT_ROOT, 'packages');
+  // The compiler's own list, so a flag a TypeScript upgrade adds to `strict` is covered
+  // without editing this spec (5.9.3: nine flags, incl. `noImplicitThis`,
+  // `strictBuiltinIteratorReturn`). `optionDeclarations` is not in the public typings but is
+  // exported at runtime; the guard below fails loudly if an upgrade removes it.
+  const STRICT_FAMILY = (ts.optionDeclarations ?? []).filter(option => option.strictFlag).map(option => option.name);
+  assert.ok(STRICT_FAMILY.length >= 9, `typescript exposes ${STRICT_FAMILY.length} strict flags; expected at least 9`);
+
+  // The EFFECTIVE options, `extends` resolved: `tsconfig.react19.json` declares no `strict` of
+  // its own and a base turning a flag off would otherwise be invisible. The unrecoverable
+  // diagnostic throws, so a config the compiler cannot read fails here, not as a silent pass.
+  const readEffectiveOptions = file =>
+    ts.getParsedCommandLineOfConfigFile(
+      file,
+      {},
+      {
+        ...ts.sys,
+        onUnRecoverableConfigFileDiagnostic: diagnostic => {
+          throw new Error(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+        },
+      },
+    ).options;
+  // Every `packages/<name>/tsconfig*.json`, not just `tsconfig.json`: a build can compile with
+  // `tsc -p <other config>`.
+  const adapterConfigs = fs
+    .readdirSync(PACKAGES, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .flatMap(entry =>
+      fs
+        .readdirSync(path.join(PACKAGES, entry.name))
+        .filter(name => /^tsconfig(\..+)?\.json$/.test(name))
+        .map(name => path.join(PACKAGES, entry.name, name)),
+    );
+
+  it('every packages/*/tsconfig*.json sets strict and turns no strict-family flag back off', () => {
+    // One config per workspace package, so a deleted or renamed `tsconfig.json` cannot leave a
+    // package ungraded while another file keeps the total the same.
+    const ungraded = fs
+      .readdirSync(PACKAGES, { withFileTypes: true })
+      .filter(entry => entry.isDirectory() && fs.existsSync(path.join(PACKAGES, entry.name, 'package.json')))
+      .filter(entry => !adapterConfigs.includes(path.join(PACKAGES, entry.name, 'tsconfig.json')))
+      .map(entry => `packages/${entry.name}`);
+    assert.deepEqual(ungraded, []);
+    const lax = adapterConfigs.flatMap(file => {
+      const options = readEffectiveOptions(file);
+      // `noCheck: true` skips type checking while `tsc` still exits 0.
+      const off = [
+        ...STRICT_FAMILY.filter(flag => options[flag] === false),
+        ...(options.noCheck === true ? ['noCheck'] : []),
+      ];
+      return options.strict === true && off.length === 0
+        ? []
+        : [`${path.relative(PROJECT_ROOT, file)}: strict=${options.strict} off=[${off.join(', ')}]`];
+    });
+    assert.deepEqual(lax, []);
+  });
+
+  it('the React build runs a program that resolves `react` to the React 19 types', () => {
+    const react = path.join(PACKAGES, 'react');
+    const build = JSON.parse(fs.readFileSync(path.join(react, 'package.json'), 'utf8')).scripts?.build ?? '';
+    // Whole `&&` segments, so `echo tsc -p …` or `tsc -p … || true` cannot satisfy it (the
+    // masked-build spec above already rejects any non-`&&` operator).
+    const commands = build.split('&&').map(command => command.trim());
+    assert.ok(commands.includes('tsc'), 'the React build no longer runs the base `tsc` program');
+    assert.ok(commands.includes('tsc -p tsconfig.react19.json'), 'the React build no longer runs the React 19 program');
+    // A `paths` target that does not exist makes TypeScript fall back to the React 18 types
+    // without a diagnostic, so the second `tsc` would pass while checking nothing new. Both
+    // mappings matter: `react/*` carries `react/jsx-runtime`, which `jsx: react-jsx` imports.
+    const options = readEffectiveOptions(path.join(react, 'tsconfig.react19.json'));
+    for (const key of ['react', 'react/*']) {
+      const target = options.paths?.[key]?.[0]?.replace(/\/\*$/, '');
+      assert.ok(target, `tsconfig.react19.json maps no \`${key}\` path`);
+      const manifest = path.join(options.pathsBasePath ?? react, target, 'package.json');
+      assert.ok(
+        fs.existsSync(manifest),
+        `paths["${key}"] → ${target} holds no package.json; TypeScript falls back to React 18`,
+      );
+      const pkg = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+      assert.equal(pkg.name, '@types/react');
+      assert.match(pkg.version, /^19\./);
+    }
   });
 });
