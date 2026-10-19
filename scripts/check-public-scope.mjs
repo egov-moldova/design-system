@@ -97,7 +97,7 @@ const CITATION_EXEMPT = [
   'CHANGELOG.md',
 ];
 
-const PACKAGES = ['.', 'web-components'];
+export const PACKAGES = ['.', 'packages/web-components'];
 
 /** Paths (input order kept) that match a pattern or name an internal-only file. */
 export function outOfScope(paths) {

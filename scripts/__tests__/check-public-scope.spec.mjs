@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import {
   INTERNAL_ONLY_FILES,
   MESSAGE,
+  PACKAGES,
   PATTERNS,
   PROSE_PATTERNS,
   ROOTS,
@@ -333,6 +334,15 @@ describe('check-public-scope: --packed', () => {
       findings.map(f => f.file),
       ['web-components/dist/a.js'],
     );
+  });
+
+  // A moved workspace makes `yarn pack` spawn in a missing directory, which fails as `spawnSync yarn ENOENT`.
+  it('packs only directories that hold a published package.json', () => {
+    for (const pkgDir of PACKAGES) {
+      const manifest = path.join(PROJECT_ROOT, pkgDir, 'package.json');
+      assert.ok(fs.existsSync(manifest), `${pkgDir}: no package.json`);
+      assert.notEqual(JSON.parse(fs.readFileSync(manifest, 'utf8')).private, true, `${pkgDir}: private`);
+    }
   });
 });
 
