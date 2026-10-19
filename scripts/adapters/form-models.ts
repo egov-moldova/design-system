@@ -165,6 +165,10 @@ export const NON_EMITTING_VALUE_HOLDERS: readonly TagDisposition[] = [
     tag: 'mud-chip',
     reason: 'a `selected` toggle that announces itself with `mudSelect`, an action rather than a model',
   },
+  {
+    tag: 'mud-file-item',
+    reason: 'a `selected` flag that only draws the chosen row; it emits `mudRemove`, never a value',
+  },
   { tag: 'mud-menu-item', reason: 'its `selected`/`value` are item state; the owning `mud-menu` holds the model' },
   { tag: 'mud-sidebar-item', reason: 'navigation item: emits `mudSelect`/`mudToggle`, holds no form value' },
   { tag: 'mud-tab', reason: 'a tab of `mud-tabs`, which is excluded: navigation, not a form value' },
