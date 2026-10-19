@@ -73,6 +73,10 @@ export class MudInputChip {
   /**
    * Confirmed chip values. Two-way bound: assigning a new array rerenders
    * the list. Consumer mutations through events should set this prop.
+   *
+   * `null` and `undefined` are accepted and normalised to `[]`, so a cleared form model
+   * leaves an empty list. The type stays `string[]`: a framework binding of a nullable
+   * model needs a cast.
    * @default []
    */
   @Prop({ mutable: true }) chips: string[] = [];
@@ -184,6 +188,9 @@ export class MudInputChip {
   }
 
   componentWillLoad() {
+    // A framework form model may start as `null` (Angular `writeValue(null)`, a Vue
+    // `ref(null)`); every reader below iterates `chips`, so normalise it once here.
+    this.chips ??= [];
     this.initialChips = [...this.chips];
     this.syncFormValue(this.chips);
     this.syncValidity(this.chips);
@@ -226,10 +233,15 @@ export class MudInputChip {
   }
 
   @Watch('chips')
-  handleChipsChange(next: string[]) {
-    const chips = next ?? [];
-    this.syncFormValue(chips);
-    this.syncValidity(chips);
+  handleChipsChange(next: string[] | null | undefined) {
+    // A cleared model (`null` / `undefined`) means no chips. Reassigning re-enters this
+    // watcher once with `[]`, so render and validity never see a non-array.
+    if (next == null) {
+      this.chips = [];
+      return;
+    }
+    this.syncFormValue(next);
+    this.syncValidity(next);
   }
 
   // `syncFormValue` publishes nothing while `name` is unset, so the name is an
@@ -239,6 +251,7 @@ export class MudInputChip {
   // watcher already ran, and nothing runs again when the name arrives.
   @Watch('name')
   handleNameChange() {
+    // `chips` can still be null before the watchers are active, when a framework sets it before upgrade.
     this.syncFormValue(this.chips ?? []);
   }
 

@@ -5,8 +5,8 @@
  * `scripts/eslint/content-language.allow.json` allowlist (one shared module,
  * `scripts/eslint/content-language.mjs`), over the sources the probe cannot render.
  *
- * Sources: web-components/demo/index.html, web-components/demo/pages/**\/*.html,
- * web-components/demo/*.ts, .storybook/stories/*.mdx, src/components/*\/*.mdx.
+ * Sources: packages/web-components/demo/index.html, packages/web-components/demo/pages/**\/*.html,
+ * packages/web-components/demo/*.ts, .storybook/stories/*.mdx, src/components/*\/*.mdx.
  *
  * Usage: node scripts/check-content-language.mjs [--root <dir>]
  */
@@ -39,7 +39,7 @@ function walk(dir, suffix) {
 
 /** `{ path, kind }` for every static source under `root`. */
 export function staticSources(root) {
-  const demo = join(root, 'web-components/demo');
+  const demo = join(root, 'packages/web-components/demo');
   const componentDirs = existsSync(join(root, 'src/components')) ? readdirSync(join(root, 'src/components')) : [];
   return [
     ...(existsSync(join(demo, 'index.html')) ? [{ path: join(demo, 'index.html'), kind: 'markup' }] : []),

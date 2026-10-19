@@ -1,20 +1,24 @@
 import type { EventEmitter } from '@stencil/core';
 import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { fetchLogoSvg, resolveLogoAssetUrl } from './mud-logo.providers';
 import { LOGO_NAMES, type LogoName } from './mud-logo.types';
+import { LOGO_MODULES } from '../../generated/logos';
 import { observeAriaLabel } from '../../utils/aria-label';
+import { createSvgLoader } from '../../utils/svg-assets';
+
+const logos = createSvgLoader(LOGO_MODULES);
 
 /**
  * Brand logo for Moldovan M-products.
  *
- * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
- * The component fetches and renders that SVG into shadow DOM; the host's
+ * Each `name` resolves to a single self-contained SVG drawing that ships
+ * inside the package as a module. The component imports it on demand and renders it
+ * into shadow DOM; the host's
  * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
  * exported from Figma — so a future asset with non-standard dimensions
  * "just works" without a CSS contract change.
  *
- * Consumers that need to reserve layout space before the async fetch
+ * Consumers that need to reserve layout space before the async import
  * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
  * logo in a sized container — `mud-button` does this for its `badge`
  * slot (24 × 24).
@@ -25,13 +29,11 @@ import { observeAriaLabel } from '../../utils/aria-label';
   tag: 'mud-logo',
   styleUrl: 'mud-logo.css',
   shadow: true,
-  assetsDirs: ['assets'],
 })
 export class MudLogo {
   /**
-   * Logo asset identifier — the bare filename (without `.svg`) of an asset
-   * in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for
-   * the complete enumeration.
+   * Logo identifier, in the format `{service}-logo-{layout}`. See `LOGO_NAMES`
+   * for the complete enumeration.
    * @default 'mpay-logo-logomark-only'
    */
   @Prop({ reflect: true }) name: LogoName = 'mpay-logo-logomark-only';
@@ -50,10 +52,13 @@ export class MudLogo {
   private stopAriaLabel?: () => void;
 
   /**
-   * Emitted when an asset fails to load — either because the `name` is not
-   * in the manifest (`'unknown'`) or because the SVG fetch failed
-   * (`'fetch-failed'`). Lets consumers react in production where `console.warn`
-   * is invisible (telemetry, fallback UI, etc.).
+   * Emitted when an asset fails to load: the `name` is not in the manifest
+   * (`'unknown'`); the import of its drawing failed (`'fetch-failed'`, e.g.
+   * offline or a chunk that a redeploy removed — the logo retries on its own,
+   * with a growing wait, and the event fires once per run of failures); or the
+   * drawing arrived and the runtime sanitizer rejected it (`'rejected'` — a
+   * fault in the package that no retry fixes). Lets consumers react in
+   * production where `console.warn` is invisible (telemetry, fallback UI, etc.).
    *
    * Note: events emitted during `componentWillLoad` (initial mount) fire
    * before consumer listeners can attach to a freshly-inserted host. Attach
@@ -61,10 +66,14 @@ export class MudLogo {
    * mount-time failures.
    */
   @Event()
-  mudLogoError!: EventEmitter<{ name: string; reason: 'unknown' | 'fetch-failed' }>;
+  mudLogoError!: EventEmitter<{ name: string; reason: 'unknown' | 'fetch-failed' | 'rejected' }>;
 
   private svgCacheKey: string = '';
   private lastAppendedSvg: Element | null = null;
+  /** The retry the loader's policy (`retryDelay`) scheduled after a failed import. */
+  private retryTimer?: ReturnType<typeof setTimeout>;
+  /** The name whose failure was last reported, so a retry that fails again stays quiet. */
+  private reportedName = '';
 
   // @Watch is the canonical primitive for asset-driven props — no native DOM
   // event corresponds to a prop change, so @Listen is not applicable here.
@@ -93,13 +102,17 @@ export class MudLogo {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label), {
       keepOnHost: true,
     });
+    // Moved in the DOM while its import was failing: the retry was cancelled on the way out.
+    if (this.reportedName && this.isKnownName && !this.svgElement) void this.loadSvg();
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    clearTimeout(this.retryTimer);
   }
 
   private async loadSvg(): Promise<void> {
+    clearTimeout(this.retryTimer);
     const requestedName = this.name;
 
     if (!this.isKnownName) {
@@ -112,30 +125,34 @@ export class MudLogo {
 
     if (this.svgCacheKey === requestedName) return;
 
-    const url = resolveLogoAssetUrl(requestedName);
-    if (!url) {
-      // `resolveLogoAssetUrl` returns null when Stencil's getAssetPath cannot
-      // construct a URL (e.g. vitest browser-mode without a registered base).
-      // Treat it as a fetch failure — same downstream effect as the existing
-      // null-element path below.
-      this.mudLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
-      this.svgCacheKey = '';
-      this.svgElement = null;
-      return;
-    }
-    const element = await fetchLogoSvg(url);
+    const element = await logos.load(requestedName);
 
-    // Guard: prop changed during async fetch
+    // Guard: prop changed during the async import
     if (this.name !== requestedName) return;
 
     if (!element) {
-      console.warn(`[mud-logo] Failed to load SVG: name="${requestedName}"`);
-      this.mudLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
+      const failure = logos.failure(requestedName);
+      if (this.reportedName !== requestedName) {
+        this.reportedName = requestedName;
+        console.warn(`[mud-logo] Failed to load SVG: name="${requestedName}" (${failure?.message ?? 'unknown cause'})`);
+        this.mudLogoError.emit({
+          name: requestedName,
+          reason: failure?.kind === 'rejected' ? 'rejected' : 'fetch-failed',
+        });
+      }
       this.svgCacheKey = '';
       this.svgElement = null;
+      // Ask again when the loader's backoff allows, with no user action; never for a rejected drawing.
+      const delay = logos.retryDelay(requestedName);
+      if (Number.isFinite(delay)) {
+        this.retryTimer = setTimeout(() => {
+          if (this.host.isConnected) void this.loadSvg();
+        }, delay);
+      }
       return;
     }
 
+    this.reportedName = '';
     this.svgCacheKey = requestedName;
     this.svgElement = element.cloneNode(true) as Element;
   }
