@@ -1,7 +1,6 @@
 /**
  * run-record.mjs — the per-run record `verdict.mjs` writes to
- * `audit/<component>/runs/<run>/record.json` (plan
- * `2026-09-23-audit-run-delta.md` Design §1), and the pure functions that find
+ * `audit/<component>/runs/<run>/record.json`, and the pure functions that find
  * a baseline record and compare two of them. It never imports `verdict.mjs`
  * — that would be a cycle, since `verdict.mjs` is this record's writer — so
  * every rule this module needs about what a run graded is either recomputed
@@ -10,7 +9,7 @@
  *
  * The record freezes, at the moment a run happens, what it graded and the
  * identity of every finding it reported — never inferred later from a
- * recomputed verdict (Problem, this plan). Comparing two records is then a
+ * recomputed verdict. Comparing two records is then a
  * pure data operation with no knowledge of verdict-computation rules at all.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -25,7 +24,7 @@ import {
   schemaMajor,
 } from './json-output.mjs';
 
-// ─── Finding identity (Design §3) ─────────────────────────────────────────
+// ─── Finding identity ─────────────────────────────────────────────────────
 
 const HEX_COLOR_RE = /#[0-9a-f]{3,8}\b/gi;
 const DIGIT_RUN_RE = /\d+(?:\.\d+)?/g;
@@ -64,7 +63,7 @@ function failKeyText(entry) {
 }
 
 // The label's own `<file>` is `fileOf(location)`, never the raw location: the
-// key already drops the line so a shift reads as unchanged (Design §3), and a
+// key already drops the line so a shift reads as unchanged, and a
 // label that still carried the line would make the same finding's text differ
 // between two runs for no reason the identity claims to track.
 function failLabel(entry) {
@@ -119,7 +118,7 @@ function findingsFrom(verdict) {
   );
 }
 
-// ─── Graded scopes (Design §2) ─────────────────────────────────────────────
+// ─── Graded scopes ─────────────────────────────────────────────────────────
 
 /** Every scope needs a valid envelope: present, matching schema major, and a preflight that did not fail. */
 function envelopeValid(envelope) {
@@ -148,7 +147,7 @@ function computeScopes({ verdict, envelope, legs }) {
   return scopes.sort();
 }
 
-// ─── The record (Design §1) ────────────────────────────────────────────────
+// ─── The record ────────────────────────────────────────────────────────────
 
 /**
  * Build one run's record. Pure — the same inputs give the same record.
@@ -158,7 +157,7 @@ function computeScopes({ verdict, envelope, legs }) {
  * @param {object} opts.verdict — this run's computed verdict (`computeVerdict`'s return)
  * @param {object|null} opts.envelope — this run's envelope (as read by `readRunInputs`)
  * @param {Array<{leg: string, graded: boolean, cause: string|null}>} [opts.legs] —
- *   `verdict.mjs`'s `computeLegRecords(aiFiles)`
+ *   `verdict.mjs`'s `computeLegRecords(reviewFiles)`
  */
 export function buildRunRecord({ run, verdict, envelope, legs = [] }) {
   const results = rowResults(verdict);
@@ -180,7 +179,7 @@ export function buildRunRecord({ run, verdict, envelope, legs = [] }) {
   };
 }
 
-// ─── The baseline (Design §4) ──────────────────────────────────────────────
+// ─── The baseline ──────────────────────────────────────────────────────────
 
 /**
  * A cause naming why `record` cannot be read as a `record.json` of this
@@ -251,7 +250,7 @@ export function runsComparableTo(names, run) {
  * The previous run's record for `componentDir` at `depth`, searched
  * newest-to-oldest among `runs/*` names strictly less than `currentRun`
  * (string order; run ids are ISO timestamps, so this is chronological). Reads
- * files and writes none; its skip / unusable / baseline rules are Design §4.
+ * files and writes none.
  *
  * @returns {{ record: object|null, run: string|null, skippedEmpty: number } | { unusable: { run: string, cause: string } }}
  */
@@ -291,7 +290,7 @@ export function findPreviousRecord(componentDir, currentRun, depth) {
   return { record: null, run: null, skippedEmpty };
 }
 
-// ─── The comparison (Design §5) ────────────────────────────────────────────
+// ─── The comparison ────────────────────────────────────────────────────────
 
 /** Row results that read as a grade; `crashed`, `excused`, `skipped` … already say nothing was graded. */
 const LOOKS_GRADED = new Set(['pass', 'warn', 'fail', 'incomplete']);

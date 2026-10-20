@@ -6,10 +6,6 @@
  * `console.error` + `console.warn` + uncaught `pageerror` events. Reports
  * any non-empty channel as a finding.
  *
- * Replaces AI work in:
- *   - `.claude/commands/pre-pr-check.md` Wave 5a (console errors)
- *   - `.claude/skills/audit-component/SKILL.md` Wave 3 console check
- *
  * Storybook must be running (default: http://localhost:6007). If not, the
  * script exits with a clean ENV-not-ready message — it does NOT start
  * Storybook itself (that's the orchestrator's responsibility).

@@ -1,6 +1,6 @@
 /**
  * A collection that takes both an array prop and declarative children renders the prop when
- * both are set (`src/components/_agents/slot-patterns.md`, "Collections with two APIs").
+ * both are set; the children are not rendered.
  */
 
 const warned = new WeakSet<HTMLElement>();

@@ -212,7 +212,7 @@
             "backgroundColor": "rgb(241, 241, 241)",
             "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 2px, rgb(51, 121, 219) 0px 0px 0px 5px"
           },
-          "note": "Figma Focus Ring/Medium reads 0 0 0 5px rgba(51,121,219,1), 0 0 0 2px #FFF. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order — see the stacked-focus-ring note in the pixel-perfect skill."
+          "note": "Figma Focus Ring/Medium reads 0 0 0 5px rgba(51,121,219,1), 0 0 0 2px #FFF. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order — see scripts/audit/README.md § Figma state manifest."
         }
       ]
     },

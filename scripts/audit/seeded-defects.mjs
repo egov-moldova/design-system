@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * seeded-defects.mjs — Phase 6 proof (plan `2026-09-21-audit-component-depths.md`
- * Acceptance bar § Tolerances, "Seeded defects").
+ * seeded-defects.mjs — the seeded-defects proof.
  *
  * Proves, against a component that passes `yarn audit:component <c> --depth standard`
  * today (default `mud-banner`), that a defect on each of the four layers the

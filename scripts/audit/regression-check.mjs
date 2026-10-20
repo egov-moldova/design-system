@@ -10,9 +10,9 @@
  *   - Warnings may differ by ≤ N% (default 5)         — exit 1 above threshold
  *   - Info-level changes are ignored                  — pass-through
  *
- * Use this BEFORE merging any slim-down PR. The plan's quality bar is:
- * "If the script misses a finding the AI used to catch, NU migrăm acea
- * bucată — rămâne la AI."
+ * Use this BEFORE merging any slim-down PR. The quality bar: if the script
+ * misses a finding the manual review used to catch, that check is not
+ * migrated into the script — it stays with the review.
  *
  * Usage:
  *   node scripts/audit/regression-baseline.mjs     # capture baseline
@@ -54,8 +54,7 @@ Options:
   --help, -h              Show this help`;
 
 /**
- * Resolve the depth `regression-check` re-runs at (plan
- * `2026-09-21-audit-component-depths.md` Phase 5 task 3): the baseline's own
+ * Resolve the depth `regression-check` re-runs at: the baseline's own
  * recorded depth, unless the caller names a depth that disagrees with it —
  * comparing across depths is refused rather than silently diffing mismatched
  * runs (a `quick` re-run against a `standard` baseline would report every
@@ -67,7 +66,8 @@ Options:
 export function resolveCheckDepth({ baselineDepth, requestedDepth } = {}) {
   if (!baselineDepth) {
     return {
-      error: 'baseline has no recorded depth (captured before Phase 5) — re-capture with regression-baseline.mjs',
+      error:
+        'baseline has no recorded depth (captured before depth was recorded) — re-capture with regression-baseline.mjs',
     };
   }
   if (requestedDepth !== undefined && requestedDepth !== baselineDepth) {
@@ -222,7 +222,7 @@ export function compareEnvelopes(baselineEnv, currentEnv, { warningTolerance = 5
 
   const rows = diffRowStatuses(baselineEnv.results ?? [], currentEnv.results ?? []);
 
-  // Quality rule from the plan:
+  // Quality rule:
   //   - critical/high (error) changes are always regression
   //   - warnings: drift up to N% allowed if direction is "more" (script catches more, never fewer)
   const baselineWarningCount = baseWarnings.size;
@@ -258,7 +258,7 @@ export function compareEnvelopes(baselineEnv, currentEnv, { warningTolerance = 5
  * including a baseline captured before `run-all.mjs` wrote `status`, where a
  * present `summary` means the same thing) and now doesn't — `crashed`,
  * `missing-prereq`, or `skipped` — is a regression even when its baseline had
- * zero findings (plan Phase 1 task 2): the earlier bug (F1) was exactly a
+ * zero findings: a findings-based diff alone misses exactly this, a
  * crashed row that no findings-based diff could ever see. Pure — exported for
  * tests.
  */

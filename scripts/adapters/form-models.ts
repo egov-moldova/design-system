@@ -12,8 +12,7 @@
 // A form control here is a component that emits `mudInput` or `mudChange` carrying its value.
 // `formAssociated` is not the rule: `mud-button` is form-associated without holding a value,
 // and `mud-radio-group`, `mud-date-picker`, `mud-time-picker` and `mud-menu` hold one without
-// being form-associated. The plan's rationale lives in
-// `.claude/plans/2026-09-30-angular-vue-adapters.md` § Form-control model map.
+// being form-associated.
 //
 // Every control sets its model property BEFORE it emits, so reading `event.target[property]`
 // is correct. Two components also write the property on a path that emits a DIFFERENT event,
@@ -165,6 +164,10 @@ export const NON_EMITTING_VALUE_HOLDERS: readonly TagDisposition[] = [
   {
     tag: 'mud-chip',
     reason: 'a `selected` toggle that announces itself with `mudSelect`, an action rather than a model',
+  },
+  {
+    tag: 'mud-file-item',
+    reason: 'a `selected` flag that only draws the chosen row; it emits `mudRemove`, never a value',
   },
   { tag: 'mud-menu-item', reason: 'its `selected`/`value` are item state; the owning `mud-menu` holds the model' },
   { tag: 'mud-sidebar-item', reason: 'navigation item: emits `mudSelect`/`mudToggle`, holds no form value' },

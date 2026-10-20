@@ -1,7 +1,6 @@
 /**
  * Tests for scripts/audit/lib/run-record.mjs — the per-run record, finding a
- * baseline, and comparing two records (plan `2026-09-23-audit-run-delta.md`
- * Design §§1-5, Acceptance bar). Reuses the verdict fixtures so the records
+ * baseline, and comparing two records. Reuses the verdict fixtures so the records
  * under test are built from the same shapes `computeVerdict` actually
  * produces, never a hand-rolled verdict shape of the test's own invention.
  */
@@ -29,7 +28,7 @@ import { mismatchFinding } from '../../audit/15-style-parity.mjs';
 import {
   FIGMA_ABSENT,
   FIGMA_PRESENT,
-  aiFindings,
+  reviewFindings,
   cleanEnvelope,
   withError,
   writeRunDir,
@@ -52,10 +51,10 @@ function runDirAt(componentDir, run) {
   return dir;
 }
 
-/** Build a record straight from an envelope, with no AI legs unless given. */
-function record(envelope, { run = '2026-09-23T10-00-00-000Z-1', aiFiles = [], legs = null } = {}) {
-  const verdict = computeVerdict({ envelope, aiFiles });
-  const legRecords = legs ?? computeLegRecords(aiFiles);
+/** Build a record straight from an envelope, with no review legs unless given. */
+function record(envelope, { run = '2026-09-23T10-00-00-000Z-1', reviewFiles = [], legs = null } = {}) {
+  const verdict = computeVerdict({ envelope, reviewFiles });
+  const legRecords = legs ?? computeLegRecords(reviewFiles);
   return buildRunRecord({ run, verdict, envelope, legs: legRecords });
 }
 
@@ -150,11 +149,13 @@ describe('run-record: graded scopes — false cases make no claim about the affe
     const files = [
       {
         leg: 'a11y-verifier',
-        data: aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }] }),
+        data: reviewFindings('a11y-verifier', {
+          findings: [{ severity: 'error', code: 'CX1', message: 'focus lost' }],
+        }),
       },
     ];
-    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', aiFiles: files });
-    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', aiFiles: [] });
+    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', reviewFiles: files });
+    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', reviewFiles: [] });
     assert.ok(previous.scopes.includes('leg:a11y-verifier'));
     assert.ok(!current.scopes.includes('leg:a11y-verifier'));
     const cmp = compareRecords(current, previous);
@@ -240,26 +241,26 @@ describe('run-record: finding identity', () => {
     assert.equal(cmp.unchanged, 0);
   });
 
-  it("an AI leg's finding reworded with the same code and file → never gone + new", () => {
+  it("a review leg's finding reworded with the same code and file → never gone + new", () => {
     const leg = 'a11y-verifier';
     const at = message => {
       const files = [
-        { leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX1', file: 'a.tsx', message }] }) },
+        { leg, data: reviewFindings(leg, { findings: [{ severity: 'error', code: 'CX1', file: 'a.tsx', message }] }) },
       ];
-      return record(cleanEnvelope({ depth: 'deep' }), { run: `r-${message.length}`, aiFiles: files });
+      return record(cleanEnvelope({ depth: 'deep' }), { run: `r-${message.length}`, reviewFiles: files });
     };
     const cmp = compareRecords(at('appears resolved upstream'), at('focus lost on close'));
     assert.equal(cmp.gone.length, 0);
     assert.equal(cmp.added.length, 0);
   });
 
-  it("an AI leg's decision is scoped to its leg and compares across runs", () => {
+  it("a review leg's decision is scoped to its leg and compares across runs", () => {
     const leg = 'audit-component';
     const at = (run, question) =>
       record(cleanEnvelope({ depth: 'deep' }), {
         run,
-        aiFiles: [
-          { leg, data: aiFindings(leg, { findings: [{ code: 'CX2', node: '1:2', question, options: ['a'] }] }) },
+        reviewFiles: [
+          { leg, data: reviewFindings(leg, { findings: [{ code: 'CX2', node: '1:2', question, options: ['a'] }] }) },
         ],
       });
     const current = at('r2', 'Trap focus inside the dialog?');
@@ -271,10 +272,10 @@ describe('run-record: finding identity', () => {
 
   it('a leg with a shape-rejected finding → Not compared', () => {
     const leg = 'a11y-verifier';
-    const bad = [{ leg, data: aiFindings(leg, { findings: [{ code: 'CX1' }] }) }]; // missing severity/message
-    const good = [{ leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX1', message: 'm' }] }) }];
-    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', aiFiles: good });
-    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', aiFiles: bad });
+    const bad = [{ leg, data: reviewFindings(leg, { findings: [{ code: 'CX1' }] }) }]; // missing severity/message
+    const good = [{ leg, data: reviewFindings(leg, { findings: [{ severity: 'error', code: 'CX1', message: 'm' }] }) }];
+    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', reviewFiles: good });
+    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', reviewFiles: bad });
     assert.ok(!current.scopes.includes(`leg:${leg}`));
     const cmp = compareRecords(current, previous);
     const nc = cmp.notCompared.find(n => n.scope === `leg:${leg}`);
@@ -414,11 +415,11 @@ describe('run-record: baseline robustness', () => {
     };
     const legacyDir = runDirAt(join(auditDir, 'mud-fx'), '2026-09-22T10-00-00-000Z-0');
     writeFileSync(join(legacyDir, 'record.json'), JSON.stringify(legacy));
-    const aiDir = join(runA, 'ai', 'a11y-verifier');
-    mkdirSync(aiDir, { recursive: true });
+    const reviewsDir = join(runA, 'reviews', 'a11y-verifier');
+    mkdirSync(reviewsDir, { recursive: true });
     writeFileSync(
-      join(aiDir, 'ai-findings.json'),
-      JSON.stringify(aiFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'm' }] })),
+      join(reviewsDir, 'review-findings.json'),
+      JSON.stringify(reviewFindings('a11y-verifier', { findings: [{ severity: 'error', code: 'CX1', message: 'm' }] })),
     );
     const envelopeDeep = cleanEnvelope({ depth: 'deep' });
     writeFileSync(join(runA, 'envelope.json'), JSON.stringify(envelopeDeep));
@@ -437,7 +438,7 @@ describe('run-record: baseline robustness', () => {
 // ─── The golden record ──────────────────────────────────────────────────────
 
 describe('run-record: the golden record', () => {
-  it('a fixed envelope plus AI files produces the checked-in golden record byte for byte', () => {
+  it('a fixed envelope plus review-leg files produces the checked-in golden record byte for byte', () => {
     const e = withStyleFinding(cleanEnvelope({ depth: 'deep' }), styleFinding());
     const w = e.results.find(r => r.id === '02');
     w.summary = { errors: 0, warnings: 1, info: 0 };
@@ -445,12 +446,12 @@ describe('run-record: the golden record', () => {
     const files = [
       {
         leg: 'a11y-verifier',
-        data: aiFindings('a11y-verifier', {
+        data: reviewFindings('a11y-verifier', {
           findings: [{ severity: 'error', code: 'CX1', file: 'a.tsx', message: 'focus lost' }],
         }),
       },
     ];
-    const verdict = computeVerdict({ envelope: e, aiFiles: files });
+    const verdict = computeVerdict({ envelope: e, reviewFiles: files });
     const legs = computeLegRecords(files);
     const r = buildRunRecord({ run: '2026-09-23T09-00-00-000Z-1', verdict, envelope: e, legs });
     const golden = JSON.parse(readFileSync(join(FIXTURES, 'record.golden.json'), 'utf8'));
@@ -663,24 +664,24 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
     return section;
   }
 
-  it('an AI leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
+  it('a review leg finding whose own text says "appears resolved upstream" carries that word only inside its quoted label', () => {
     const leg = 'a11y-verifier';
     // The leg must be graded in BOTH runs (an empty-findings file, then one
     // with this finding) so the comparison actually keys it into `added`,
     // rather than leaving the whole scope in `notCompared`.
     const previous = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r1',
-      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+      reviewFiles: [{ leg, data: reviewFindings(leg, { findings: [] }) }],
     });
     const files = [
       {
         leg,
-        data: aiFindings(leg, {
+        data: reviewFindings(leg, {
           findings: [{ severity: 'error', code: 'CX1', file: 'a.tsx', message: 'appears resolved upstream' }],
         }),
       },
     ];
-    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', aiFiles: files });
+    const current = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2', reviewFiles: files });
     const changes = { ...compareRecords(current, previous), skippedEmpty: 0, depth: 'deep', component: 'mud-fx' };
     const section = renderChanges(changes);
     assert.match(section, /appears resolved upstream/);
@@ -725,7 +726,7 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
     const leg = 'a11y-verifier';
     const withLeg = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r1',
-      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+      reviewFiles: [{ leg, data: reviewFindings(leg, { findings: [] }) }],
     });
     const sections = [
       renderChanges({ baseline: null, skippedEmpty: 0, ...base }),
@@ -746,18 +747,18 @@ describe('run-record: wording — no "fixed" or "resolved" as the renderer\'s ow
 });
 
 describe('run-record: hostile text cannot add a column, a row or a heading', () => {
-  it("an AI leg's markdown image or link in a finding renders inert in later briefs", () => {
+  it("a review leg's markdown image or link in a finding renders inert in later briefs", () => {
     const leg = 'a11y-verifier';
     const message = 'focus lost ![b](https://attacker.example/x.png) [c](javascript:alert(1)) rgb(0, 0, 0)';
     const current = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r2',
-      aiFiles: [
-        { leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX9', file: 'a.tsx', message }] }) },
+      reviewFiles: [
+        { leg, data: reviewFindings(leg, { findings: [{ severity: 'error', code: 'CX9', file: 'a.tsx', message }] }) },
       ],
     });
     const previous = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r1',
-      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+      reviewFiles: [{ leg, data: reviewFindings(leg, { findings: [] }) }],
     });
     const section = renderChanges({
       ...compareRecords(current, previous),
@@ -827,7 +828,7 @@ describe('run-record: purity and determinism', () => {
   });
 });
 
-// ─── Sentinel round on PR #140 ──────────────────────────────────────────────
+// ─── Review round on PR #140 ──────────────────────────────────────────────
 
 describe('run-record: a baseline the renderer cannot shape never blocks the verdict', () => {
   for (const [what, mutate] of [
@@ -863,11 +864,11 @@ describe('run-record: what the section names', () => {
 
   it('a well-formed leg in a run that graded nothing reads "wrote, but that run graded nothing"', () => {
     const leg = 'a11y-verifier';
-    const files = [{ leg, data: aiFindings(leg, { findings: [] }) }];
-    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', aiFiles: files });
+    const files = [{ leg, data: reviewFindings(leg, { findings: [] }) }];
+    const previous = record(cleanEnvelope({ depth: 'deep' }), { run: 'r1', reviewFiles: files });
     const broken = cleanEnvelope({ depth: 'deep' });
     broken.preflight = { ok: false, cause: 'no dist', command: 'yarn build' };
-    const current = record(broken, { run: 'r2', aiFiles: files });
+    const current = record(broken, { run: 'r2', reviewFiles: files });
     const nc = compareRecords(current, previous).notCompared.find(n => n.scope === `leg:${leg}`);
     assert.equal(nc.current, 'wrote, but that run graded nothing');
   });
@@ -887,7 +888,7 @@ describe('run-record: what the section names', () => {
     const leg = 'a11y-verifier';
     const wrote = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r1',
-      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+      reviewFiles: [{ leg, data: reviewFindings(leg, { findings: [] }) }],
     });
     const none = record(cleanEnvelope({ depth: 'deep' }), { run: 'r2' });
     const base = { skippedEmpty: 0, depth: 'deep', component: 'mud-fx' };
@@ -900,13 +901,13 @@ describe('run-record: what the section names', () => {
     const message = 'x <img src="https://attacker.example/p.png"> <!-- hide --> a < b';
     const current = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r2',
-      aiFiles: [
-        { leg, data: aiFindings(leg, { findings: [{ severity: 'error', code: 'CX8', file: 'a.tsx', message }] }) },
+      reviewFiles: [
+        { leg, data: reviewFindings(leg, { findings: [{ severity: 'error', code: 'CX8', file: 'a.tsx', message }] }) },
       ],
     });
     const previous = record(cleanEnvelope({ depth: 'deep' }), {
       run: 'r1',
-      aiFiles: [{ leg, data: aiFindings(leg, { findings: [] }) }],
+      reviewFiles: [{ leg, data: reviewFindings(leg, { findings: [] }) }],
     });
     const section = renderChanges({
       ...compareRecords(current, previous),
@@ -1111,7 +1112,7 @@ describe('run-record: what counts as a run under runs/', () => {
   );
 });
 
-describe('run-record: sentinel round 4', () => {
+describe('run-record: review round 4', () => {
   it('prerequisite and log render as code spans, copyable as written', () => {
     const base = { id: 'I1', kind: 'INCOMPLETE', check: '09 a11y', cause: 'missing-prereq', verify: 'v' };
     const withPrereq = renderEntry({ ...base, prerequisite: 'yarn dx:prepare && export T=<token>' });
@@ -1120,13 +1121,13 @@ describe('run-record: sentinel round 4', () => {
     assert.match(withLog, /^- log: `results\[id="02"\]\.error in envelope\.json`$/m);
   });
 
-  it('code-less AI findings on one file are told apart by their text, and never render "undefined"', () => {
+  it('code-less review-leg findings on one file are told apart by their text, and never render "undefined"', () => {
     const leg = 'a11y-verifier';
     const at = (run, messages) =>
       record(cleanEnvelope({ depth: 'deep' }), {
         run,
-        aiFiles: [
-          { leg, data: aiFindings(leg, { findings: messages.map(message => ({ severity: 'error', message })) }) },
+        reviewFiles: [
+          { leg, data: reviewFindings(leg, { findings: messages.map(message => ({ severity: 'error', message })) }) },
         ],
       });
     const cmp = compareRecords(

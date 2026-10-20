@@ -111,7 +111,7 @@ export function defaultUsage(toolName, summary, extraLines = []) {
   ].join('\n');
 }
 
-/** Audit depths, shallowest first (plan `2026-09-21-audit-component-depths.md` Decision §1). */
+/** Audit depths, shallowest first. */
 export const DEPTHS = Object.freeze(['quick', 'standard', 'deep']);
 export const DEFAULT_DEPTH = 'standard';
 
@@ -138,17 +138,16 @@ export function resolveDepth({ depth, fast = false, e2e = false } = {}) {
 const RUN_ALL_TOOL = 'run-all';
 
 /**
- * `run-all.mjs`'s own usage text (Decision §8 of
- * `2026-09-22-audit-depths-sentinel-fixes.md`: moved here, beside
- * `resolveDepth`, so `verdict.mjs` can validate the same flags before
- * spawning run-all as a child process, exiting 2 on a usage error itself
- * rather than letting a spawned failure read back as INCOMPLETE).
+ * `run-all.mjs`'s own usage text, kept here beside `resolveDepth` so
+ * `verdict.mjs` can validate the same flags before spawning run-all as a
+ * child process, exiting 2 on a usage error itself rather than letting a
+ * spawned failure read back as INCOMPLETE.
  */
 export const RUN_ALL_USAGE = `Usage: node scripts/audit/run-all.mjs <component | --all | --changed> [options]
 
 Run the audit checks a depth requires in waves and aggregate the results into
-a single JSON envelope. AI agents should call this instead of dispatching each
-script individually; gate callers use \`yarn audit:component\` (verdict.mjs).
+a single JSON envelope. Callers that want the combined result should use this
+instead of running each script individually; gate callers use \`yarn audit:component\` (verdict.mjs).
 
 Targets (choose one):
   <mud-name>          Audit one component (e.g. mud-button or button)
@@ -160,7 +159,7 @@ Depth:
                         quick     lint + Wave A; no build, no browser
                         standard  quick + prerequisites + Waves B and C
                         deep      standard + figma-refs --check, adapter builds,
-                                  E2E (deferred) and the AI-leg rows
+                                  E2E (deferred) and the advisory-review-leg rows
   --fast              Deprecated alias of --depth quick
   --e2e               Folded into --depth deep
 
@@ -170,11 +169,11 @@ Options:
   --skip <ids>        Comma-separated list of check ids to skip (e.g. 06,08)
   --only <ids>        Comma-separated list — only run these checks. A required id dropped
                       by --skip / --only makes the verdict INCOMPLETE.
-  --no-browser        Excuse the browser checks (Wave C and the browser AI legs);
+  --no-browser        Excuse the browser checks (Wave C and the browser review legs);
                       the verdict level is capped at CLEAN-STATIC.
   --ci                Same as --no-browser, and sets meta.ciDetected. Also enabled
                       when process.env.CI is set.
-  --no-figma          Excuse the Figma checks (11, 15, figma-refs, the Figma AI leg)
+  --no-figma          Excuse the Figma checks (11, 15, figma-refs, the Figma review leg)
                       for this run; deep is then capped at MERGE-READY.
   --figma-dir <dir>   Forwarded to 11-pixel-diff-states (reference PNGs)
   --verdict           Also write audit/<component>/runs/<run>/, verdict.json,
@@ -243,7 +242,7 @@ export function parseCli(argv = process.argv.slice(2), env = process.env) {
   }
   // CI mode: the explicit --ci flag or any truthy CI env var (GitHub Actions,
   // GitLab CI, CircleCI, … all set CI=true). Either excuses the browser checks
-  // and caps the level (Decision §6); the verdict names which one.
+  // and caps the level; the verdict names which one.
   const ciEnv = Boolean(env.CI);
   const ci = parsed.values.ci || ciEnv;
   const noBrowser = parsed.values['no-browser'];

@@ -280,6 +280,32 @@ describe('mud-phone-input', () => {
       }
     });
 
+    // On the real clock: re-deriving the due time on each render must not re-arm the same retry.
+    it('keeps one retry timer across renders inside the backoff, on the real clock', async () => {
+      clearSvgCaches();
+      const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;
+      const pw = vi.spyOn(flags, 'pw').mockRejectedValue(new Error('offline'));
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const timers = holdRetryTimers();
+      try {
+        const { root, waitForChanges } = await render(
+          <mud-phone-input label="x" type="local" default-country="PW"></mud-phone-input>,
+        );
+        await waitForAssetLoad(() => expect(timers.held).toHaveLength(1));
+        for (let i = 0; i < 200; i++) {
+          root!.setAttribute('placeholder', String(i));
+          await waitForChanges();
+        }
+        expect(timers.held).toHaveLength(1);
+        expect(pw).toHaveBeenCalledTimes(1);
+      } finally {
+        timers.restore();
+        pw.mockRestore();
+        warn.mockRestore();
+        clearSvgCaches();
+      }
+    });
+
     it('asks again at once for a failed flag when the list opens', async () => {
       clearSvgCaches();
       const flags = FLAG_MODULES as Record<string, () => Promise<{ default: string }>>;

@@ -14,10 +14,6 @@
  *   3. Filter entries to the target component(s) — match by absolute TSX path.
  *   4. Emit { statements, branches, functions, lines, pass80 } per component.
  *
- * Replaces AI work in:
- *   - `.claude/agents/audit-production.md` Phase 5a (unit tests + coverage parse)
- *   - `.claude/skills/audit-component/references/wave-2-static-analysis.md` §2.10.1 (coverage report)
- *
  * Why default is read-only (no auto-run):
  *   Running the full test suite takes 30-60s. Audit orchestrator callers want
  *   fast scripts; coverage is typically generated once per CI/pre-PR pipeline.
@@ -153,8 +149,7 @@ async function main() {
 }
 
 /**
- * Read the coverage prerequisite's JSON-reporter output (S11, plan
- * `2026-09-22-audit-depths-sentinel-fixes.md` Decision §6), if present.
+ * Read the coverage prerequisite's JSON-reporter output (S11), if present.
  * Missing or unparseable → `null` (never treated as "no components failed" —
  * `analyzeComponent` skips the check entirely rather than reading a stale or
  * absent file as a clean run).

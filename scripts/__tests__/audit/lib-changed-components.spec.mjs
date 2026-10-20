@@ -82,7 +82,7 @@ describe('changed-components', () => {
         [],
       );
       // A broken detector degrades to "nothing changed" for the 16 standalone
-      // callers (Decision §9) — only run-all.mjs needs the ok/cause distinction.
+      // callers — only run-all.mjs needs the ok/cause distinction.
       assert.deepEqual(listChangedComponents({ refExists: () => false }), []);
     });
   });

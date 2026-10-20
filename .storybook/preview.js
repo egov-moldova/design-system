@@ -245,7 +245,6 @@ export const parameters = {
   },
   // WCAG 2.1 Level AA — Storybook addon-a11y configuration.
   // Runs axe-core against every story in both light and dark mode.
-  // Canonical reference: .claude/skills/accessibility-compliance/SKILL.md
   a11y: {
     // Scope axe to the story canvas: skip the dev-only agentation toolbar and its
     // satellite elements (draw canvas, capture overlays). These are author tooling,

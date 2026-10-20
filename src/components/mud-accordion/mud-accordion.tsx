@@ -190,7 +190,7 @@ export class MudAccordion {
     }
   }
 
-  // ---------- Lifecycle (placed after @Watch / @Listen per AGENTS.md order) ----------
+  // ---------- Lifecycle (placed after @Watch / @Listen) ----------
 
   connectedCallback() {
     this.evaluateBreakpoint();

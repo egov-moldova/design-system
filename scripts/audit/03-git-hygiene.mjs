@@ -8,10 +8,6 @@
  *   - No build artifacts or generated files staged (dist/, node_modules/, .stencil/, .wireit/, tokens/generated/, etc.)
  *   - No noisy untracked files like ".env" or "*.log"
  *
- * Replaces AI work in:
- *   - `.claude/commands/pre-pr-check.md` Wave 1 git checks
- *   - `.claude/agents/audit-production.md` Phase 9
- *
  * Usage:
  *   node scripts/audit/03-git-hygiene.mjs [--json] [--out file] [--commits 20]
  *

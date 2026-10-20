@@ -12,9 +12,6 @@
  *   3. For a single component target: grep the chunks for the literal tag and
  *      sum the matching chunks (rough upper bound).
  *
- * Replaces AI work in:
- *   - `.claude/agents/audit-production.md` Phase 6.1 (bundle size)
- *
  * Caveats:
  *   - This reads existing build artifacts. Run `yarn build` first or use --build.
  *   - The per-component size is an upper bound; multiple components may share

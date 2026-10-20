@@ -1,7 +1,7 @@
 /**
  * Resolves the canonical file layout of a `mud-*` component.
  *
- * Project convention (from `.claude/skills/audit-component/SKILL.md`):
+ * Project convention:
  *   src/components/mud-<name>/
  *     ├── mud-<name>.tsx                 REQUIRED
  *     ├── mud-<name>.css                 REQUIRED
@@ -35,7 +35,7 @@ export const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'co
  * Normalize a user-provided component name. Accepts:
  *   - "mud-button"        → "mud-button"
  *   - "button"            → "mud-button"
- *   - "@mud-button"       → "mud-button"        (Claude Code @-prefix convention)
+ *   - "@mud-button"       → "mud-button"        (editor @-mention prefix)
  *   - "mud-button/"       → "mud-button"
  *
  * Returns null if the input doesn't look like a valid component name.

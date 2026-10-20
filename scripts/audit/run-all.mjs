@@ -9,7 +9,7 @@
  *   quick     env preflight, lint, Wave A — no build, no browser
  *   standard  quick + prerequisites built automatically + Wave B + Wave C
  *   deep      standard + Wave D (figma-refs --check, adapter smoke builds,
- *             E2E deferred); AI legs are advisory and have no row
+ *             E2E deferred); review legs are advisory and have no row
  *
  *   Wave A (parallel, no browser, no build):
  *     lint, 01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
@@ -27,7 +27,7 @@
  *   the component's own coverage, and a Storybook owned by this worktree
  *   (`.audit-storybook.json`, lib/storybook-helpers.mjs) passed via `--port`.
  *
- * Figma inputs come from HEAD only (Design §8): each manifest is resolved
+ * Figma inputs come from HEAD only: each manifest is resolved
  * from `git show HEAD:<path>` into `.audit-figma/<component>/manifest@HEAD.json`
  * and passed to 11, 15 and figma-refs via `--manifest`.
  *
@@ -82,8 +82,7 @@ const TOOL = 'run-all';
  * The check registry. `kind` defaults to 'script' (an audit script spawned
  * with `<target> --json [...args]`); 'lint' runs ESLint + Stylelint on the
  * component's files; 'command' runs a repo-level build; 'deferred' is a row
- * that reports its reason. AI legs have no row: their findings are advisory
- * (Decision 12 of `2026-09-22-audit-depths-sentinel-fixes.md`).
+ * that reports its reason. Review legs have no row: their findings are advisory.
  * `requiresBuild` names the prerequisite a row needs (PREREQUISITES_FOR).
  */
 const AUDIT_SCRIPTS = [
@@ -175,7 +174,7 @@ const AUDIT_SCRIPTS = [
     name: 'token-diff',
     perComponent: true,
     requiresBuild: false,
-    owner: '/update-tokens',
+    owner: 'token change',
   },
   {
     id: '18',
@@ -203,7 +202,7 @@ const AUDIT_SCRIPTS = [
     perComponent: true,
     requiresBuild: 'browser',
     usesManifest: true,
-    owner: '/fix-visual-bug',
+    owner: 'visual fix',
   },
   {
     id: '12',
@@ -221,7 +220,7 @@ const AUDIT_SCRIPTS = [
     perComponent: true,
     requiresBuild: 'browser',
     usesManifest: true,
-    owner: '/fix-visual-bug',
+    owner: 'visual fix',
   },
   {
     id: '19',
@@ -241,7 +240,7 @@ const AUDIT_SCRIPTS = [
     requiresBuild: 'figma-token',
     usesManifest: true,
     recordMeta: ['version'],
-    owner: '/fix-visual-bug',
+    owner: 'visual fix',
   },
   {
     id: 'adapter-react',
@@ -292,7 +291,7 @@ export const PREREQUISITES = Object.freeze({
 export const VITEST_RESULTS_REL = join('_run', 'vitest-results.json');
 
 /**
- * S11 (plan `2026-09-22-audit-depths-sentinel-fixes.md` Decision §6): whether
+ * S11: whether
  * the one vitest run that covers every selected component is `ok` for 06's
  * prerequisite — the results JSON must have parsed, AND (the run exited 0, or
  * every failed spec's component is itself in the selection). A vitest crash
@@ -737,7 +736,7 @@ async function runPrerequisites(needed, { components, deps, auditDir }) {
 /**
  * `{ ok: true, cause: null, names }` | `{ ok: false, cause }` — a `--changed`
  * detector failure (no base ref, `git diff` failed) is distinct from an empty
- * selection (Decision §9): `runAudit` maps `ok: false` to INCOMPLETE, never
+ * selection: `runAudit` maps `ok: false` to INCOMPLETE, never
  * to "nothing changed, PASS". Exported for tests.
  */
 export function resolveComponents(args, deps) {
@@ -762,7 +761,7 @@ function lockRefusal({ args, cause, lockPath, t0 }) {
 /**
  * Whether this run writes under `<auditDir>/_run/` — the summary (`--verdict`)
  * or the coverage prerequisite's results file — and so must hold the audit-dir
- * lock (Decision §3). A leg's `--only 09` evidence run writes neither and never
+ * lock. A leg's `--only 09` evidence run writes neither and never
  * contends with a sibling leg's.
  */
 function writesRunDir(args, registry) {
@@ -878,7 +877,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
 
   const detection = resolveComponents(args, d);
   if (!detection.ok) {
-    // S5 / Decision §9: a broken `--changed` detector (no base ref, `git diff`
+    // S5: a broken `--changed` detector (no base ref, `git diff`
     // failed) is INCOMPLETE — never "nothing changed, PASS". Reuses the
     // preflight-failure shape: no script has run, so nothing to aggregate.
     const detectCheck = { cause: detection.cause, command: 'git diff <base>...HEAD' };
@@ -922,7 +921,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
   // R3 / T6: take the worktree lock whenever this run builds `dist/` or starts
   // Storybook — a prerequisite or an `exclusive` build row. A `quick` run
   // touches neither and never blocks on, or is blocked by, one. Released in
-  // `finally` below, before this function returns (Decision §3's "no self-block").
+  // `finally` below, before this function returns (so a run never blocks itself).
   let lockToken = null;
   if (touchesWorktree(needed, [...sharedScripts, ...plans.flatMap(p => p.scripts)])) {
     const lock = d.acquireLock(d.worktreeLockPath);
@@ -1023,7 +1022,7 @@ async function auditUnderLock({ args, d, repoRoot, auditDir, targetArg, auditBas
     const result = { combined, perComponent };
     if (args.verdict) {
       const runs = perComponent.map(({ component, envelope }) => writeRun(auditDir, component, d.runId, envelope));
-      // S5 / Decision §2: with zero components selected, no per-component verdict
+      // S5: with zero components selected, no per-component verdict
       // carries the repo-level rows' (03, ...) outcome — `combined` is the only
       // place it lives, so it is handed to writeSummary explicitly.
       const repoLevel =
@@ -1084,7 +1083,7 @@ async function main() {
 /**
  * The envelope emitted when `checkEnv()` fails: no script has run, so there
  * is nothing to aggregate — the envelope carries the preflight cause instead
- * of a synthetic per-script result (F2). Pure — exported for tests.
+ * of a synthetic per-script result. Pure — exported for tests.
  */
 export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
   const target = args.all ? '--all' : args.changed ? '--changed' : (args.component ?? 'unknown');
@@ -1112,9 +1111,9 @@ export function buildPreflightFailure({ args, envCheck, message, durationMs }) {
  * Merge per-script results into a single envelope. Pure — exported for tests.
  *
  * `ci` and `noBrowser` drive two meta fields kept as script-output signal;
- * no `.claude/` file reads either since the BX rows became scripted verdict
- * rows (`grep -rnE 'layer2Required|ciDetected' .claude/agents .claude/skills
- * .claude/commands .claude/hooks` → no hits; `.claude/plans` only records history):
+ * no reader of the envelope depends on either since the BX rows became
+ * scripted verdict rows. Baseline: `grep -rlE 'layer2Required|ciDetected' scripts src`
+ * lists only this file, lib/cli-args.mjs, run-all.spec.mjs and audit/README.md (producer, parser, spec, docs):
  *
  *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
  *                          at the time of invocation. Surfaces to CI dashboards
@@ -1249,7 +1248,7 @@ export function aggregate({
 }
 
 /**
- * Classify a per-script result into the shared row-status enum (F1, F3, S10).
+ * Classify a per-script result into the shared row-status enum.
  * A status the runner already decided (a missing script file is `crashed`, a
  * failed prerequisite `missing-prereq` — set by `prerequisiteFailure` in
  * `runRow`, before the script is even spawned — a deferred item `skipped`) is
@@ -1331,6 +1330,6 @@ if (isDirectRun) {
   });
 }
 
-// `parseCli` now lives in lib/cli-args.mjs (Decision §8); re-exported here so
+// `parseCli` now lives in lib/cli-args.mjs; re-exported here so
 // existing importers of run-all.mjs keep working unchanged.
 export { TOOL, AUDIT_SCRIPTS, parseCli };

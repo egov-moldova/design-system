@@ -393,7 +393,7 @@ export class MudSelect {
     // Stencil log `the state/prop "listboxMaxBlockSize" changed during
     // rendering` and schedules a second pass on every open. `readTask` moves the
     // DOM read — and the writes that follow it — into the next read frame, which
-    // is the batching API for exactly this (AGENTS.md rule API5). It also keeps
+    // is the batching API for exactly this. It also keeps
     // the scroll / resize listeners off the layout-thrash path.
     readTask(() => this.measureListbox());
   };

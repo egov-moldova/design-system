@@ -32,7 +32,7 @@ function listComponentSources(dir = COMPONENTS_ROOT, out = []) {
   for (const entry of readdirSync(dir)) {
     const full = path.join(dir, entry);
     if (statSync(full).isDirectory()) {
-      if (entry === 'test' || entry === '_agents') continue;
+      if (entry === 'test') continue;
       listComponentSources(full, out);
       continue;
     }

@@ -6,7 +6,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REQUIRED_CHECKS, excuseFor } from '../../../../audit/verdict.mjs';
-import { AI_FINDINGS_SCHEMA_VERSION, SCHEMA_VERSION } from '../../../../audit/lib/json-output.mjs';
+import { REVIEW_FINDINGS_SCHEMA_VERSION, SCHEMA_VERSION } from '../../../../audit/lib/json-output.mjs';
 
 export const COMMIT = '0123456789abcdef0123456789abcdef01234567';
 
@@ -102,8 +102,11 @@ export function withError(envelope, id, f = {}) {
   return envelope;
 }
 
-/** A leg's ai-findings.json, listing every id the leg judges. */
-export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {}) {
+/** A leg's review-findings.json, listing every id the leg judges. */
+export function reviewFindings(
+  leg,
+  { findings = [], schemaVersion = REVIEW_FINDINGS_SCHEMA_VERSION, idsJudged = null } = {},
+) {
   const ids =
     idsJudged ??
     Object.values(LEGS)
@@ -114,20 +117,20 @@ export function aiFindings(leg, { findings = [], schemaVersion = AI_FINDINGS_SCH
 
 /** Every leg's file, with no findings. */
 export function allLegsClosed() {
-  return [...new Set(Object.values(LEGS).map(l => l.leg))].map(leg => ({ leg, data: aiFindings(leg) }));
+  return [...new Set(Object.values(LEGS).map(l => l.leg))].map(leg => ({ leg, data: reviewFindings(leg) }));
 }
 
 /**
  * Lay a run directory out on disk: `<auditDir>/<component>/runs/<run>/`
- * with `envelope.json` and `ai/<leg>/ai-findings.json`. Returns the run dir.
+ * with `envelope.json` and `reviews/<leg>/review-findings.json`. Returns the run dir.
  */
 export function writeRunDir(auditDir, envelope, { run = 'run-1', ai = [] } = {}) {
   const runDir = join(auditDir, envelope.audit.component, 'runs', run);
   mkdirSync(runDir, { recursive: true });
   writeFileSync(join(runDir, 'envelope.json'), JSON.stringify(envelope, null, 2));
   for (const { leg, data } of ai) {
-    mkdirSync(join(runDir, 'ai', leg), { recursive: true });
-    writeFileSync(join(runDir, 'ai', leg, 'ai-findings.json'), JSON.stringify(data, null, 2));
+    mkdirSync(join(runDir, 'reviews', leg), { recursive: true });
+    writeFileSync(join(runDir, 'reviews', leg, 'review-findings.json'), JSON.stringify(data, null, 2));
   }
   return runDir;
 }

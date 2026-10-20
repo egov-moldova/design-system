@@ -25,7 +25,7 @@ import {
   analyzeComponent,
 } from '../../audit/10-contrast-pairs.mjs';
 
-describe('10-contrast-pairs: S6 — CONTRAST-NO-STORY carries noTarget (Decision §5)', () => {
+describe('10-contrast-pairs: S6 — CONTRAST-NO-STORY carries noTarget', () => {
   it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'contrast-no-story-'));
     const storiesPath = join(dir, 'mud-fx.stories.ts');

@@ -3,8 +3,8 @@
  * regression-baseline.mjs
  *
  * Captures a deterministic snapshot of `run-all.mjs` output for the canonical
- * regression-test components (mud-button, mud-text-input, mud-tooltip per the
- * approved plan) and writes it to `reports/regression-baseline.json`.
+ * regression-test components (mud-button, mud-text-input, mud-tooltip by
+ * default) and writes it to `reports/regression-baseline.json`.
  *
  * The snapshot is NORMALIZED: timestamps, durations, and similar non-stable
  * fields are stripped so the diff command can compare findings only.
@@ -49,16 +49,15 @@ Options:
   --help, -h              Show this help`;
 
 /**
- * Resolve the depth a baseline capture runs at (plan `2026-09-21-audit-component-depths.md`
- * Phase 5 task 3). An explicit `--depth` wins; otherwise `standard` when
+ * Resolve the depth a baseline capture runs at. An explicit `--depth` wins; otherwise `standard` when
  * `--include-browser` is set (Wave C already needs its build + Storybook
  * prerequisites), else `quick` — the only depth whose required-check set
  * (`verdict.mjs` `REQUIRED_CHECKS.quick`) needs no build at all, so capturing
  * at `quick` is what keeps a baseline comparable to a later check run without
  * `standard`'s prerequisites (tokens, the component's own coverage, a dev
  * build, Storybook) ever being built. `standard` is the default `run-all.mjs`
- * depth — silently inheriting it (no `--depth` at all) is exactly the Phase 2
- * regression this task fixes: `18` (adapter-contract-cem, Wave B) is neither
+ * depth — silently inheriting it (no `--depth` at all) is the failure to
+ * avoid: `18` (adapter-contract-cem, Wave B) is neither
  * a browser id nor covered by `--skip 06,08`, so a depth-less run would still
  * schedule it and trigger the `dx:stencil:once` build. Pure.
  *

@@ -2,18 +2,17 @@
 /**
  * 19-interaction.mjs
  *
- * A local Playwright instance (not the shared MCP browser) that covers the
+ * A local Playwright instance (not a shared browser session) that covers the
  * BX checks `09-a11y-tree` does not: BX1 (hydration), BX4 (escape /
  * activation), BX5 (light/dark structural diff), BX7 (form round-trip).
  * BX2/BX3 (Tab order, focus ring) live in `09-a11y-tree.mjs`'s interactive
  * census; BX6 (console errors) stays `12-console-errors.mjs` — neither is
- * duplicated here (`.claude/skills/audit-component/references/layer-2-
- * browser-checklists.md` §BX).
+ * duplicated here.
  *
  * Like BX2/BX3, BX4/BX5/BX7 apply reduced motion plus an injected
  * `transition: none; animation: none` style (document + every shadow root,
- * re-injected after each state-changing interaction) before sampling —
- * Phase 0 results, plan `2026-09-21-audit-component-depths.md`.
+ * re-injected after each state-changing interaction) before sampling,
+ * so a transition in flight never skews a measurement.
  *
  * Usage:
  *   yarn sp.dev.watch

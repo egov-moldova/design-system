@@ -26,7 +26,7 @@
  * (an extra footer, a missing border) behind a high diff percentage.
  *
  * Thresholds: `DEFAULT_PASS` / `DEFAULT_WARN` in `lib/image-diff.mjs` — PASS below
- * the first, WARNING (marked `requires-ai-review`) below the second, FAIL at or
+ * the first, WARNING (marked `requires-review`) below the second, FAIL at or
  * above it. A manifest state's `mask` selectors are painted out of both images
  * and reported as `PIXEL-MASKED`.
  *
@@ -367,7 +367,7 @@ async function analyzeStories(target, opts) {
           message: figmaDir
             ? `figma reference dir not found: ${figmaDir}`
             : `No manifest at ${relativeToRepo(manifestPathFor(target.name))} and no --figma-dir.`,
-          fix: 'Create the manifest (see .claude/skills/pixel-perfect/SKILL.md), then run scripts/audit/figma-refs.mjs.',
+          fix: 'Create the manifest (see scripts/audit/README.md § Figma state manifest), then run scripts/audit/figma-refs.mjs.',
           noTarget: true,
         }),
       ],
@@ -560,7 +560,7 @@ export function findingsFor(label, themed, scale, opts) {
         severity: 'warning',
         code: 'PIXEL-DIFF-WARNING',
         file,
-        message: `${label}: ${themed.diffPercent}% diff is borderline (requires AI review)${masked}.`,
+        message: `${label}: ${themed.diffPercent}% diff is borderline (requires manual review)${masked}.`,
       }),
     );
   } else if (themed.status === 'UNKNOWN' && themed.error) {

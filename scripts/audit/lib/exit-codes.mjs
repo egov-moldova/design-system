@@ -25,7 +25,7 @@ export function exitCodeFromSummary(summary) {
 
 /**
  * Exit status of `verdict.mjs` (and `yarn audit:component`), one per verdict
- * `state` (Design §1). Gate callers branch on this status, never on their own
+ * `state`. Gate callers branch on this status, never on their own
  * reading of the verdict. 0 only on PASS; 2 stays "internal error", so no
  * state uses it. `run-all.mjs` does NOT use this map — its own exit keeps the
  * 0 / 1 / 2 meaning above, except that 1 also covers a crashed or

@@ -68,7 +68,7 @@ export default tseslint.config(
       '@stencil/dependency-suggestions': 'off',
 
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // _agents/typescript-strict.md Rule 6. Autofixable except `import('…')` type annotations.
+      // Type-only imports use `import type`. Autofixable except `import('…')` type annotations.
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
@@ -79,15 +79,15 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': 'warn',
 
       // Catches `@Prop() iconLeft: boolean` and friends — boolean slot-control
-      // props are forbidden in favour of `:empty`/slot detection. See AGENTS.md
-      // "Slot-Based Architecture".
+      // props are forbidden in favour of `:empty`/slot detection. See
+      // CONTRIBUTING.md § Conventions.
       'no-restricted-syntax': [
         'error',
         {
           selector:
             'PropertyDefinition[decorators] > Decorator[expression.callee.name="Prop"] ~ Identifier[name=/^(iconLeft|iconRight|iconOnly|showHelper|showIcon|hasIcon|showLabel)$/]',
           message:
-            'Boolean props for slot control are forbidden. Use CSS :empty or slot detection instead. See AGENTS.md "Slot-Based Architecture".',
+            'Boolean props for slot control are forbidden. Use CSS :empty or slot detection instead. See CONTRIBUTING.md § Conventions.',
         },
         {
           selector: 'Property[key.name="assetsDirs"]',

@@ -200,7 +200,7 @@
           "styles": {
             "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 1px, rgb(51, 121, 219) 0px 0px 0px 3px"
           },
-          "note": "Figma Focus Ring/Small reads 0 0 0 3px rgba(51,121,219,1), 0 0 0 1px #FFF. Its render is a 1px white halo inside a blue band ending 3px out, which in CSS is the reverse order — see the stacked-focus-ring note in the pixel-perfect skill."
+          "note": "Figma Focus Ring/Small reads 0 0 0 3px rgba(51,121,219,1), 0 0 0 1px #FFF. Its render is a 1px white halo inside a blue band ending 3px out, which in CSS is the reverse order — see scripts/audit/README.md § Figma state manifest."
         }
       ]
     },

@@ -438,7 +438,10 @@ export class MudPhoneInput {
   private scheduleFlagRetry(delay: number) {
     if (!Number.isFinite(delay)) return;
     const due = performance.now() + delay;
-    if (this.flagRetryTimer !== undefined && this.flagRetryDue <= due) return;
+    // Every render inside the backoff asks again with `now + (wait - (now - at))`, which rounds a
+    // fraction of a millisecond either way: compared exactly, about one render in twenty replaced
+    // the timer. A due within a millisecond of the armed one is the same retry.
+    if (this.flagRetryTimer !== undefined && this.flagRetryDue <= due + 1) return;
     clearTimeout(this.flagRetryTimer);
     this.flagRetryDue = due;
     this.flagRetryTimer = setTimeout(() => {

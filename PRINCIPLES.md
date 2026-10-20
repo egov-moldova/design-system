@@ -1,6 +1,6 @@
 # PRINCIPLES.md — `@egov-moldova/mud`
 
-Engineering posture for the Corlab Design System (Stencil web components, design tokens, Storybook). This file is durable policy. When a rule below collides with `AGENTS.md`, `AGENTS.md` wins on workflow specifics; this file owns code-shape opinions.
+Engineering posture for the Corlab Design System (Stencil web components, design tokens, Storybook). This file is durable policy. When a rule below collides with `CONTRIBUTING.md`, `CONTRIBUTING.md` wins on workflow specifics; this file owns code-shape opinions.
 
 ## A. Engineering posture
 
@@ -28,12 +28,12 @@ Engineering posture for the Corlab Design System (Stencil web components, design
 
 ## E. Discipline
 
-- **Refactor lives in its own PR.** A bug fix changes the buggy lines and nothing else. Cleanup, renames, and structural changes go through `/refactor-component` or a standalone refactor PR. Diffs stay focused and reviewable.
+- **Refactor lives in its own PR.** A bug fix changes the buggy lines and nothing else. Cleanup, renames, and structural changes go through a standalone refactor PR. Diffs stay focused and reviewable.
 - **TODOs require an issue link.** `// TODO(#123): wire dark mode token` is acceptable. `// TODO` alone is not. The audit pipeline and code review should reject orphan TODOs.
-- **Never hand-edit generated files.** `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**` are produced by `yarn build`. Only the readmes are tracked, and `.husky/pre-push` fails the push if the rebuilt ones differ from what is committed; the other three are git-ignored. Merge conflicts in generated files are resolved by rebuilding, not by editing markers. See `_agents/generated-files.md`.
+- **Never hand-edit generated files.** `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**` are produced by `yarn build`. Only the readmes are tracked, and `.husky/pre-push` fails the push if the rebuilt ones differ from what is committed; the other three are git-ignored. Merge conflicts in generated files are resolved by rebuilding, not by editing markers (`yarn sync:main`; see `CONTRIBUTING.md`).
 
 ## Cross-references
 
-- `AGENTS.md` — workflow rules, slash commands, MCP tools, Figma-first / token-first / pixel-perfect gates.
+- `CONTRIBUTING.md` — workflow, conventions, and the Figma-first / token-first / pixel-perfect rules.
 - `STACK.md` — language/runtime/library choices and the anti-choices.
 - `TESTING.md` — what we test, what we don't, mocking policy, coverage target.

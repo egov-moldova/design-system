@@ -5,9 +5,9 @@
 Every `mud-*` component ships with a `*.spec.tsx` that covers four surfaces:
 
 1. **Rendering + `@Prop` reflection.** Default render, render with each prop, host attributes reflect the prop state correctly (where `reflect: true` is set).
-2. **Slots + slot detection.** Default slot vs. custom content, `:empty` behavior, the dual-selector pattern (`::slotted()` *and* direct child) where the component has default slot content. See `AGENTS.md § Critical Rules #9`.
+2. **Slots + slot detection.** Default slot vs. custom content, `:empty` behavior, the dual-selector pattern (`::slotted()` *and* direct child) where the component has default slot content. See `CONTRIBUTING.md § Conventions`.
 3. **`@Event` dispatch.** Custom events emit with the right `detail` payload, bubble (or not) as declared, are cancelable where the contract says so.
-4. **ARIA / a11y structural.** Correct `role`, `aria-*` wiring, focus order, keyboard contract per `accessibility-compliance` skill. Structural assertions only — visual contrast and color tokens are validated by `audit:contrast` and pixel-perfect tooling, not spec tests.
+4. **ARIA / a11y structural.** Correct `role`, `aria-*` wiring, focus order, keyboard contract per the WCAG 2.1 AA requirements. Structural assertions only — visual contrast and color tokens are validated by `audit:contrast` and pixel-perfect tooling, not spec tests.
 
 ## What we don't test
 
@@ -54,7 +54,7 @@ The full `yarn test` run is the gate; `yarn test.dev` is the dev-loop tool. Both
 
 ## Cross-references
 
-- `AGENTS.md § Quality Assurance` — `_agents/pixel-perfect-qa.md` (full QA loop), `_agents/verification-git.md` (pre-PR checklist).
-- `_agents/skills-and-workflows.md` — when to invoke `audit-component`, `test-writer`, `pre-pr-check`.
-- `accessibility-compliance` skill — WCAG 2.1 AA contract that spec tests assert against structurally.
+- `CONTRIBUTING.md § Conventions` — the pixel-perfect and locale-first rules the specs and visual checks back up.
+- `scripts/audit/README.md` — the per-component production audit (`yarn audit:component`).
+- WCAG 2.1 AA — the accessibility contract that spec tests assert against structurally.
 - `PRINCIPLES.md § D` — validation at `@Prop` boundary; spec tests assert the warn + fallback behavior on invalid input.

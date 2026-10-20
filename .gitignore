@@ -29,7 +29,7 @@ node_modules/
 
 .stencil/
 .wireit/
-.playwright-mcp
+test-results/
 .audit-screenshots/
 .audit-figma/
 # Audit verdicts, fix briefs and per-run inputs (scripts/audit/verdict.mjs). Anchored:
@@ -78,9 +78,6 @@ $RECYCLE.BIN/
 # Local configuration
 
 .env
-CLAUDE.local.md
-.claude/*.local.json
-.claude/skills.local/
 /.vs
 
 # Story regression captures (scripts/assets/story-regression.mjs)

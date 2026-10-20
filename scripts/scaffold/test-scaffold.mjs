@@ -16,13 +16,10 @@
  *                Element fails axe-core's `instanceof Node` check)
  *   - Form     — formAssociated callbacks stub (if @Component formAssociated: true)
  *
- * What it INTENTIONALLY does NOT generate (AI fills in):
+ * What it INTENTIONALLY does NOT generate (the developer fills in):
  *   - Specific assertions for each prop's effect on rendered output beyond attribute reflection
  *   - Event trigger logic (the interaction that emits each event)
  *   - Edge cases (long content, invalid input, etc.)
- *
- * Replaces AI work in:
- *   - test-writer Step 4 (compose spec.tsx)
  *
  * Usage:
  *   node scripts/scaffold/test-scaffold.mjs mud-button [--out path] [--write]
@@ -40,7 +37,7 @@ const TOOL = 'test-scaffold';
 const USAGE = `Usage: node scripts/scaffold/test-scaffold.mjs <component> [options]
 
 Generate a *.spec.tsx skeleton (@stencil/vitest render) for a mud-* component.
-The output is a starting point; the AI / developer fills assertions for state
+The output is a starting point; the developer fills assertions for state
 transitions, event triggers, and edge cases.
 
 Options:
@@ -148,7 +145,7 @@ export function generateSpecFile({ contract }) {
   lines.push(`// MANDATORY side-effect import — stencilVitestPlugin compiles the source TSX`);
   lines.push(`// on-the-fly and appends customElements.define(). Without this line the spec`);
   lines.push(`// either fails (custom element unregistered) or passes with 0% coverage on the`);
-  lines.push(`// component TSX. See src/components/_agents/testing.md → Coverage rules.`);
+  lines.push(`// component TSX.`);
   lines.push(`import '../${tag}';`);
   lines.push('');
   lines.push(`describe('${tag}', () => {`);
@@ -184,7 +181,7 @@ export function generateSpecFile({ contract }) {
       lines.push(`    it('${ev.name}: emits with payload', async () => {`);
       lines.push(`      const { root, spyOnEvent } = await render(<${tag} />);`);
       lines.push(`      const spy = spyOnEvent('${evName}');`);
-      lines.push(`      // TODO (AI/dev): trigger the interaction that fires ${ev.name} on \`root\``);
+      lines.push(`      // TODO (dev): trigger the interaction that fires ${ev.name} on \`root\``);
       lines.push(`      // expect(spy.length).toBe(1);`);
       lines.push(`      // expect(spy.lastEvent?.detail).toEqual(/* ${ev.payloadType ?? 'payload'} */);`);
       lines.push(`      void root;`);
@@ -203,7 +200,7 @@ export function generateSpecFile({ contract }) {
       const args = (m.params ?? []).map(p => `/* ${p.name}: ${p.type} */`).join(', ');
       lines.push(`    it('${m.name}: returns a Promise', async () => {`);
       lines.push(`      const { instance } = await render(<${tag} />);`);
-      lines.push(`      // TODO (AI/dev): call the method and assert its effect`);
+      lines.push(`      // TODO (dev): call the method and assert its effect`);
       lines.push(`      // const result = await instance.${m.name}(${args});`);
       lines.push(`      // expect(result).toBe(/* expected */);`);
       lines.push(`      void instance;`);
@@ -242,7 +239,7 @@ export function generateSpecFile({ contract }) {
     lines.push(`      expect(root).toBeTruthy();`);
     lines.push(`    });`);
     lines.push('');
-    lines.push(`    // TODO (AI/dev): exercise formResetCallback, formDisabledCallback, formStateRestoreCallback,`);
+    lines.push(`    // TODO (dev): exercise formResetCallback, formDisabledCallback, formStateRestoreCallback,`);
     lines.push(`    // setFormValue (2-arg), and setValidity flags with concrete assertions.`);
     lines.push(`  });`);
     lines.push('');
@@ -254,7 +251,7 @@ export function generateSpecFile({ contract }) {
   lines.push(`  describe('accessibility', () => {`);
   lines.push(`    it('exposes the documented WCAG contract', async () => {`);
   lines.push(`      const { root } = await render(<${tag}>${defaultSlotHtml(contract.slots)}</${tag}>);`);
-  lines.push(`      // TODO (AI/dev): assert role / aria-* attributes per the component's WCAG spec.`);
+  lines.push(`      // TODO (dev): assert role / aria-* attributes per the component's WCAG spec.`);
   lines.push(`      expect(root).toBeTruthy();`);
   lines.push(`    });`);
   lines.push(`  });`);
@@ -263,7 +260,6 @@ export function generateSpecFile({ contract }) {
   // 8. Branch-coverage hatch — Stencil compiler injects `if (registerHost !== false)`
   // into every constructor. The `render(...)` path never trips the else, capping
   // branch coverage at 50%. This boilerplate test takes the else explicitly.
-  // See `src/components/_agents/testing.md` → "Reaching 100% Branches".
   lines.push(`  it('constructs without registering a host when registerHost=false', () => {`);
   lines.push(`    const Ctor = customElements.get('${tag}') as unknown as new (registerHost: boolean) => unknown;`);
   lines.push(`    expect(Ctor).toBeTruthy();`);

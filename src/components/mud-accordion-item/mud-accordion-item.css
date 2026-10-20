@@ -102,7 +102,8 @@
  * That is a deliberate exception to the usual rule against `!important`, not an
  * specificity convenience.
  *
- * `AGENTS.md:92` rule 9 (dual selectors) is deliberately NOT applied here. The
+ * The dual-selector rule for slots with default content (style both `::slotted()`
+ * and the direct child) is deliberately NOT applied here. The
  * `heading` and `supporting` slots do render fallback content, but it is a bare
  * text node — never a hit target — so a direct-child arm would add two selectors
  * and change nothing observable.

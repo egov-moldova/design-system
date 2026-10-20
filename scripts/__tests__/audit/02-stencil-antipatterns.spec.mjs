@@ -4,7 +4,7 @@
  * Strategy:
  *   - scanFile() is pure — feed it synthetic file content and verify each
  *     pattern fires (or doesn't) as documented.
- *   - PATTERN registry is asserted to cover the 14+ codes the AI workflow
+ *   - PATTERN registry is asserted to cover the 14+ codes the review workflow
  *     was relying on, so we can't accidentally drop coverage.
  *   - Sanity-scan mud-button — must remain clean (zero error-level findings).
  *

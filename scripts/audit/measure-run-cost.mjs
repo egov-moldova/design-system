@@ -4,8 +4,7 @@
  *
  * What one `yarn audit:component` run costs: wall-clock, peak memory, and the
  * per-row `durationMs` the envelope already records — repeated N times so a
- * claim rests on a median rather than one sample. The companion to
- * `measure-prompt-cost.mjs`, which measures the static prompt side.
+ * claim rests on a median rather than one sample.
  *
  * It also re-reads `verdict.json` after every repetition and compares it byte
  * for byte against the first one. That is the half a stopwatch cannot give:

@@ -230,7 +230,7 @@ export default {
   meta: {
     type: 'problem',
     docs: {
-      description: 'No hardcoded user-facing copy in a mud-* component — see _agents/localization.md.',
+      description: 'No hardcoded user-facing copy in a mud-* component — see CONTRIBUTING.md § Conventions.',
     },
     schema: [],
     messages: {

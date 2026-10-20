@@ -331,10 +331,8 @@ If issues arise during migration:
 
 ## References
 
-- **Full specification**: `tokens/AGENTS.md` § Component Token Naming Convention
-- **Workflow guidance**: `.claude/commands/update-tokens.md`
-- **Refactor workflow**: `.claude/agents/refactor-component.md`
-- **Root documentation**: `AGENTS.md` § 4. Token-First Development Pipeline
+- **Contributor guide**: `CONTRIBUTING.md` § Design Tokens
+- **Conventions**: `CONTRIBUTING.md` § Conventions (token-first CSS, the 3-tier hierarchy)
 
 ---
 
@@ -342,7 +340,7 @@ If issues arise during migration:
 
 For questions about the migration:
 
-1. Check `tokens/AGENTS.md` for detailed naming rules
+1. Check `CONTRIBUTING.md` § Design Tokens for the naming rules
 2. Review examples in this document
 
 ---

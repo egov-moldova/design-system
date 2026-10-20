@@ -17,7 +17,7 @@ import {
   PAGE_BUDGET,
 } from '../../audit/12-console-errors.mjs';
 
-describe('12-console-errors: S6 — CONSOLE-NO-STORIES carries noTarget (Decision §5)', () => {
+describe('12-console-errors: S6 — CONSOLE-NO-STORIES carries noTarget', () => {
   it('a component whose stories file exports nothing emits noTarget: true, no browser touched', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'console-no-stories-'));
     const storiesPath = join(dir, 'mud-fx.stories.ts');

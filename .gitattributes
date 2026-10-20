@@ -2,7 +2,7 @@
 # AGE Design System — Git attributes for auto-generated files
 # =============================================================================
 #
-# Why: parallel agent worktrees each rebuild and regenerate the tracked files
+# Why: parallel worktrees each rebuild and regenerate the tracked files
 # below independently per branch.
 # Without `merge=ours`, every PR merge would produce conflict markers even
 # though the canonical resolution is deterministic — just re-run `yarn build`.

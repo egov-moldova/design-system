@@ -2,12 +2,12 @@
  * Repo invariant: every story id a Figma state manifest names resolves to a story that exists.
  *
  * A story id is derived from the story's `title`, so renaming a title leaves every manifest id
- * pointing at a page that no longer exists. The audit harness then waits for a component that never
+ * pointing at a page that no longer exists. The audit runner then waits for a component that never
  * renders and reports PIXEL-CAPTURE-FAILED for every state instead of "story not found" — see
  * GitHub issue #144, where the `Components` rename left 17 manifests stale.
  *
  * The known-id set is computed from the stories files with the audit's own `analyzeStoriesFile`,
- * so this test and the harness cannot disagree about what an id is. Known limit: that helper counts
+ * so this test and the runner cannot disagree about what an id is. Known limit: that helper counts
  * every exported const of a stories file as a story, so a non-story helper export would count as a
  * known id (no stories file uses `includeStories`/`excludeStories` today).
  */
