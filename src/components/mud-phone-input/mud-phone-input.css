@@ -417,11 +417,11 @@ button.country-trigger:disabled {
 }
 
 /* ---------- Loading state ----------
- * Loading dims the native input and reveals an inline spinner. The
- * trigger and the value stay legible; the field is just frozen.
+ * Loading reveals an inline spinner and freezes the field without dimming it:
+ * Figma 3340:6613 keeps the value in #121212, so the native input is read-only
+ * while loading, not disabled (design review 12.10.2026).
  */
 :host(.is-loading) .native {
-  opacity: var(--phone-input-control-loading-opacity);
   pointer-events: none;
 }
 

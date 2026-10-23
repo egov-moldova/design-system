@@ -951,10 +951,13 @@ describe('mud-phone-input', () => {
       expect(querySpinner(lg)?.querySelector('mud-spinner')?.getAttribute('size')).toBe('sm');
     });
 
-    it('loading disables the native input', async () => {
+    it('loading freezes the native input without disabling it', async () => {
+      // Figma 3340:6613 keeps the value legible (#121212); a disabled input
+      // would paint the disabled text colour instead.
       const { root } = await render(<mud-phone-input label="x" loading></mud-phone-input>);
       const native = queryNative(root);
-      expect(native?.disabled).toBe(true);
+      expect(native?.disabled).toBe(false);
+      expect(native?.readOnly).toBe(true);
       expect(native?.getAttribute('aria-busy')).toBe('true');
     });
 

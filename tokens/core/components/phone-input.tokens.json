@@ -106,10 +106,6 @@
           "$value": "{lineHeight.24}",
           "$type": "dimension"
         }
-      },
-      "loadingOpacity": {
-        "$value": "0.6",
-        "$type": "number"
       }
     },
     "label": {
