@@ -14,6 +14,9 @@
   inset-block-start: var(--_menu-top, 0);
   left: var(--_menu-left, 0);
   z-index: var(--dropdown-z-index);
+  /* The menu sits in the flat tree wherever the trigger is — an end-aligned table
+     cell included — and must not inherit that text alignment. */
+  text-align: start;
 }
 
 /* Hidden until the first placement, so the menu never flashes at the corner. */
