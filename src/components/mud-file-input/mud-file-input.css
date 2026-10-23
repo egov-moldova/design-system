@@ -144,9 +144,17 @@
 
 /* `.is-hover-demo` is a Storybook-only helper that statically paints the hover
    border (real hover still works via `:hover`). */
-:host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone,
 :host(.is-hover-demo:not(.is-disabled)) .dropzone {
   outline-color: var(--_border-color-hover);
+}
+
+/* Hover only where the pointer can hover: on touch screens a tap leaves
+   `:hover` stuck, so the hover treatment stayed painted after the tap
+   (design review 12.10.2026). Every hover rule below is gated the same way. */
+@media (hover: hover) {
+  :host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone {
+    outline-color: var(--_border-color-hover);
+  }
 }
 
 /* Figma 616:7146 leaves the resting dashed stroke alone and rings the drop zone
@@ -266,8 +274,10 @@
   cursor: pointer;
 }
 
-.dropzone-cta__link:hover {
-  color: var(--_cta-link-color-hover);
+@media (hover: hover) {
+  .dropzone-cta__link:hover {
+    color: var(--_cta-link-color-hover);
+  }
 }
 
 /* Figma 616:7146 rings the drop zone and nothing else. The link is what the
