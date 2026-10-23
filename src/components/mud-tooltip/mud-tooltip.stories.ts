@@ -304,6 +304,57 @@ export const AllPositions: Story = {
 };
 
 // ---------------------------------------------------------------------------
+// ArrowAlignment — the three arrow positions of Figma's Position section
+// (578:34660): left, middle, right. Middle centres the text; left and right
+// align it to the start (210:3941, 210:3925).
+// ---------------------------------------------------------------------------
+const ARROW_ALIGNMENTS = [
+  ['left', 'top-left'],
+  ['middle', 'top'],
+  ['right', 'top-right'],
+] as const;
+const ARROW_ALIGNMENT_COPY = 'Moldova’s digital evolution is at the heart of seamless public service delivery.';
+const renderArrowAlignment = () => /*html*/ `
+  <div style="display: grid; grid-template-columns: repeat(3, 280px); column-gap: var(--spacing-64); padding: 160px var(--spacing-48) var(--spacing-48);">
+    ${ARROW_ALIGNMENTS.map(
+      ([caption, position]) => /*html*/ `
+      <div style="display: flex; flex-direction: column; align-items: ${
+        caption === 'left' ? 'flex-start' : caption === 'right' ? 'flex-end' : 'center'
+      }; gap: var(--spacing-12);">
+        <mud-tooltip size="lg" position="${position}" max-width="240" trigger="manual" open>
+          <button slot="trigger" type="button" style="${buttonStyle}">Trigger</button>
+          ${ARROW_ALIGNMENT_COPY}
+        </mud-tooltip>
+        <p style="${captionStyle}">${caption} — position="${position}"</p>
+      </div>`,
+    ).join('')}
+  </div>
+`;
+const docsSourceArrowAlignment = ARROW_ALIGNMENTS.map(
+  ([, position]) => /*html*/ `<mud-tooltip size="lg" position="${position}" max-width="240">
+  <button slot="trigger" type="button">Trigger</button>
+  ${ARROW_ALIGNMENT_COPY}
+</mud-tooltip>`,
+).join('\n\n');
+export const ArrowAlignment: Story = {
+  name: 'Arrow Alignment',
+  render: renderArrowAlignment,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The arrow sits on the left, in the middle or on the right of the bubble (Figma 578:34660), set with ' +
+          '`position="top-left"`, `"top"` or `"top-right"` — and the `bottom-*` equivalents for a tooltip below its ' +
+          'trigger. With the arrow in the middle the text is centred; with the arrow at an edge it aligns to the start. ' +
+          'Use an edge arrow when the trigger sits near the side of a container, so the bubble opens inwards.',
+      },
+      source: { code: docsSourceArrowAlignment },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
 // AutoFlip — preferred `top` flips to `bottom` near the top edge of the canvas.
 // ---------------------------------------------------------------------------
 const renderAutoFlip = () => /*html*/ `
@@ -367,7 +418,7 @@ export const WithMaxWidth: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// WithLongContent — wrapping behavior + 200px max-width.
+// WithLongContent — wrapping behaviour under the 280px default `max-width`.
 // ---------------------------------------------------------------------------
 const renderWithLongContent = () => /*html*/ `
   <div style="${stageStyle}">
