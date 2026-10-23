@@ -11,7 +11,6 @@ type TagArgs = {
   semantic: TagSemantic;
   label: string;
   iconStart?: string;
-  iconEnd?: string;
   ariaLabel?: string;
   disabled?: boolean;
 };
@@ -68,8 +67,7 @@ const renderTag = (args: TagArgs) => {
     .filter(Boolean)
     .join(' ');
   const iconStart = args.iconStart ? `<mud-icon slot="icon-start" name="${args.iconStart}"></mud-icon>` : '';
-  const iconEnd = args.iconEnd ? `<mud-icon slot="icon-end" name="${args.iconEnd}"></mud-icon>` : '';
-  return /*html*/ `<mud-tag ${attrs}>${iconStart}${args.label}${iconEnd}</mud-tag>`;
+  return /*html*/ `<mud-tag ${attrs}>${iconStart}${args.label}</mud-tag>`;
 };
 
 const meta: Meta<TagArgs> = {
@@ -133,11 +131,6 @@ when the tag conveys a live state and the element will adopt
       options: ['', ...Object.keys(ICON_PATHS)],
       description: 'Leading icon name (uses mud-icon).',
     },
-    iconEnd: {
-      control: 'select',
-      options: ['', ...Object.keys(ICON_PATHS)],
-      description: 'Trailing icon name (uses mud-icon).',
-    },
     ariaLabel: {
       control: 'text',
       description: 'Sets role="status" + aria-label when set.',
@@ -155,7 +148,6 @@ when the tag conveys a live state and the element will adopt
     semantic: 'neutral',
     label: 'Active',
     iconStart: '',
-    iconEnd: '',
     disabled: false,
   },
 };
@@ -353,29 +345,6 @@ export const WithIcon: Story = {
           </mud-tag>
         </div>
       </div>
-      <div>
-        <p style="${captionStyle}">Trailing icon</p>
-        <div style="${rowStyle}">
-          <mud-tag type="strong" semantic="brand">
-            Details
-            <mud-icon slot="icon-end" name="arrow-right" size="16"></mud-icon>
-          </mud-tag>
-          <mud-tag type="outlined" semantic="accent">
-            Expires soon
-            <mud-icon slot="icon-end" name="bubble-alert" size="16"></mud-icon>
-          </mud-tag>
-        </div>
-      </div>
-      <div>
-        <p style="${captionStyle}">Both</p>
-        <div style="${rowStyle}">
-          <mud-tag type="subtle" semantic="brand">
-            <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-            Verified
-            <mud-icon slot="icon-end" name="arrow-right" size="16"></mud-icon>
-          </mud-tag>
-        </div>
-      </div>
     </div>
   `,
   parameters: {
@@ -451,32 +420,17 @@ export const Group: Story = {
   render: () => /*html*/ `
     <div style="${sectionStyle}">
       <p style="${hintStyle}">
-        Tags stacked horizontally with an 8 px gutter wrap onto multiple lines
-        when the row overflows. Used inside cards, table rows, and filter bars.
+        Tags that describe the same item sit side by side with an 8 px gutter
+        and wrap onto more lines when the row runs out. Keep a group in one
+        neutral colour: a colour carries a status, and a row of statuses is
+        hard to read.
       </p>
-      <div style="${groupStyle}">
-        <mud-tag type="subtle" semantic="brand">Active</mud-tag>
-        <mud-tag type="subtle" semantic="success">Approved</mud-tag>
-        <mud-tag type="subtle" semantic="accent">Waiting</mud-tag>
-        <mud-tag type="subtle" semantic="danger">Rejected</mud-tag>
-        <mud-tag type="subtle" semantic="accent">Expired</mud-tag>
-        <mud-tag type="subtle" semantic="neutral">Nou</mud-tag>
-      </div>
-      <div style="${groupStyle}">
-        <mud-tag type="outlined" semantic="brand">
-          <mud-icon slot="icon-start" name="checkmark-small" size="16"></mud-icon>
-          Verified
-        </mud-tag>
-        <mud-tag type="outlined" semantic="success">Approved</mud-tag>
-        <mud-tag type="outlined" semantic="danger">Rejected</mud-tag>
-        <mud-tag type="outlined" semantic="muted">Draft</mud-tag>
-      </div>
       <div style="${groupStyle}; max-width: 320px;">
-        <mud-tag type="subtle" semantic="brand">Apartment</mud-tag>
-        <mud-tag type="subtle" semantic="brand">3 rooms</mud-tag>
-        <mud-tag type="subtle" semantic="brand">Floor 2/5</mud-tag>
-        <mud-tag type="subtle" semantic="brand">76 m²</mud-tag>
-        <mud-tag type="subtle" semantic="success">Available</mud-tag>
+        <mud-tag type="subtle" semantic="neutral">Apartment</mud-tag>
+        <mud-tag type="subtle" semantic="neutral">3 rooms</mud-tag>
+        <mud-tag type="subtle" semantic="neutral">Floor 2/5</mud-tag>
+        <mud-tag type="subtle" semantic="neutral">76 m²</mud-tag>
+        <mud-tag type="subtle" semantic="neutral">Parking</mud-tag>
       </div>
     </div>
   `,
@@ -485,10 +439,12 @@ export const Group: Story = {
     docs: {
       source: {
         code: /*html*/ `
-<div style="display: flex; gap: var(--spacing-8); flex-wrap: wrap;">
-  <mud-tag type="subtle" semantic="brand">Active</mud-tag>
-  <mud-tag type="subtle" semantic="success">Approved</mud-tag>
-  <mud-tag type="subtle" semantic="accent">Waiting</mud-tag>
+<div style="display: flex; gap: var(--spacing-8); flex-wrap: wrap; max-width: 320px;">
+  <mud-tag>Apartment</mud-tag>
+  <mud-tag>3 rooms</mud-tag>
+  <mud-tag>Floor 2/5</mud-tag>
+  <mud-tag>76 m²</mud-tag>
+  <mud-tag>Parking</mud-tag>
 </div>`.trim(),
       },
     },

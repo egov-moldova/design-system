@@ -1,10 +1,16 @@
-import { render, h, describe, it, expect } from '@stencil/vitest';
+import { render, h, describe, it, expect, vi, onTestFinished } from '@stencil/vitest';
 
 // Side-effect import: stencilVitestPlugin appends a customElements.define call
 // so the element is registered before render().
 import '../mud-tag';
 
 import { TAG_SEMANTICS, TAG_SIZES, TAG_TYPES, TAG_VARIANTS } from '../mud-tag.types';
+
+/** Silences the deprecation warning of a test that exercises the deprecated API on purpose: the `icon-end` slot is deprecated; its warning is asserted once, under "deprecated icon-end slot". */
+const silenceDeprecation = () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  onTestFinished(() => warn.mockRestore());
+};
 
 const queryLabel = (root: Element | null | undefined): HTMLSpanElement | null =>
   (root?.shadowRoot?.querySelector('span.label') ?? null) as HTMLSpanElement | null;
@@ -107,6 +113,7 @@ describe('mud-tag', () => {
     });
 
     it('marks the host with has-icon-end when a trailing icon is slotted', async () => {
+      silenceDeprecation();
       const { root } = await render(
         <mud-tag>
           Detalii
@@ -118,6 +125,7 @@ describe('mud-tag', () => {
     });
 
     it('marks both icon classes when both slots are populated', async () => {
+      silenceDeprecation();
       const { root } = await render(
         <mud-tag>
           <span slot="icon-start">★</span>
@@ -224,6 +232,25 @@ describe('mud-tag', () => {
       expect(root?.getAttribute('aria-live')).toBe('polite');
       expect(root?.getAttribute('aria-label')).toBe('Procesare în curs');
       expect(root?.getAttribute('aria-disabled')).toBeNull();
+    });
+  });
+
+  describe('deprecated icon-end slot', () => {
+    it('warns once when the icon-end slot is filled, and not otherwise', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const isIconEndWarning = ([m]: unknown[]) => String(m).includes('"icon-end" slot is deprecated');
+      await render(<mud-tag>Plain</mud-tag>);
+      expect(warn.mock.calls.filter(isIconEndWarning)).toHaveLength(0);
+      const { root, waitForChanges } = await render(
+        <mud-tag>
+          Details
+          <span slot="icon-end">→</span>
+        </mud-tag>,
+      );
+      root?.setAttribute('semantic', 'success');
+      await waitForChanges();
+      expect(warn.mock.calls.filter(isIconEndWarning)).toHaveLength(1);
+      warn.mockRestore();
     });
   });
 });

@@ -48,11 +48,11 @@ attribute on the parent.
 
 ## Slots
 
-| Slot           | Description                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------- |
-|                | (default) The label text. Falls back to the `label` prop.                                          |
-| `"icon-end"`   | Optional trailing 16 × 16 visual. Same contract            as `icon-start`.                        |
-| `"icon-start"` | Optional leading 16 × 16 visual (`mud-icon`).              Inherits text color via `currentColor`. |
+| Slot           | Description                                                                                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|                | (default) The label text. Falls back to the `label` prop.                                                                                                                                              |
+| `"icon-end"`   | Deprecated: Figma's tag has a leading icon only (22:80),            and a trailing or second icon reads as an action the tag            does not have. Still rendered; it goes away in the next major. |
+| `"icon-start"` | Optional leading 16 × 16 visual (`mud-icon`).              Inherits text color via `currentColor`.                                                                                                     |
 
 
 ## Dependencies
