@@ -37,10 +37,6 @@
         "reason": "Default/Filled/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
       },
       {
-        "node": "132:3467",
-        "reason": "Default/ReadOnly/Large — the state treatments are the shared input family's (border colour, ring, surface, text colour, spinner); this manifest pins the field's anatomy, which those states do not move."
-      },
-      {
         "node": "6057:13838",
         "reason": "Default/ReadOnly/Medium — the Medium column differs from Large only in height, inline padding, icon size and control font size, all of which default-medium pins."
       },
@@ -280,6 +276,25 @@
             "boxHeight": "12px"
           },
           "note": "Figma draws the mark as the 12/asterisk icon, not a text glyph — a text '*' at the 14px label font rendered smaller and sat high (design review 12.10.2026)."
+        }
+      ]
+    },
+    {
+      "name": "readonly-large",
+      "node": "132:3467",
+      "html": "<div style=\"width: 282px\"><mud-text-input label=\"Label\" value=\"Placeholder\" size=\"lg\" readonly></mud-text-input></div>",
+      "expect": [
+        {
+          "target": "mud-text-input .control",
+          "node": "132:3471",
+          "styles": { "backgroundColor": "#F5F5F5", "outlineColor": "#00000000", "boxHeight": "48px" },
+          "note": "Figma 132:3471 fills #F5F5F5 and has no stroke: read-only is told apart by its surface alone. Its trailing check is the optional Trailing Icon (132:3476), off by default."
+        },
+        {
+          "target": "mud-text-input .native",
+          "node": "132:3474",
+          "styles": { "color": "#121212" },
+          "note": "The value keeps the default text colour."
         }
       ]
     },
