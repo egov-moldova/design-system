@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@stencil/vitest';
 
-import { nameHostWithFallback, observeAriaLabel } from './aria-label';
+import { moveHostAria, nameHostWithFallback, observeAriaLabel } from './aria-label';
 
 // The spec environment (mock-doc) has no MutationObserver, so these cover the read at call
 // time; the live path is exercised in a real browser by the component stories.
@@ -121,5 +121,35 @@ describe('nameHostWithFallback', () => {
     const el = host('Registration steps');
     nameHostWithFallback(el, () => 'Progress tracker').stop();
     expect(el.getAttribute('aria-label')).toBe('Registration steps');
+  });
+});
+
+describe('moveHostAria', () => {
+  it('reports each named attribute and strips it from the host', () => {
+    const el = document.createElement('div');
+    el.setAttribute('aria-expanded', 'true');
+    el.setAttribute('aria-haspopup', 'menu');
+    el.setAttribute('aria-describedby', 'x');
+    const seen: Array<Readonly<Record<string, string | undefined>>> = [];
+    moveHostAria(el, ['aria-expanded', 'aria-haspopup'], values => seen.push(values));
+    expect(seen).toEqual([{ 'aria-expanded': 'true', 'aria-haspopup': 'menu' }]);
+    expect(el.hasAttribute('aria-expanded')).toBe(false);
+    expect(el.hasAttribute('aria-haspopup')).toBe(false);
+    expect(el.getAttribute('aria-describedby')).toBe('x');
+  });
+
+  it('reports nothing when none of the names is set', () => {
+    const el = document.createElement('div');
+    const seen: unknown[] = [];
+    moveHostAria(el, ['aria-expanded'], values => seen.push(values));
+    expect(seen).toEqual([]);
+  });
+
+  it('treats an empty value as unset', () => {
+    const el = document.createElement('div');
+    el.setAttribute('aria-expanded', ' ');
+    const seen: Array<Readonly<Record<string, string | undefined>>> = [];
+    moveHostAria(el, ['aria-expanded'], values => seen.push(values));
+    expect(seen).toEqual([]);
   });
 });

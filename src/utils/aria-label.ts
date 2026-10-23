@@ -104,3 +104,41 @@ export const nameHostWithFallback = (host: HTMLElement, fallback: () => string |
     },
   };
 };
+
+/**
+ * Moves ARIA state the consumer writes on a component host (e.g. `aria-expanded` set by a
+ * `mud-dropdown` on its trigger) onto the inner element that owns the role, now and on every
+ * later write. Each attribute is read, taken off the host — a host with no role must not carry
+ * it — and reported through `onChange` with the latest value of every name (`undefined` once
+ * set to an empty string).
+ *
+ * @returns A function that stops observing; call it from `disconnectedCallback`.
+ */
+export const moveHostAria = (
+  host: HTMLElement,
+  names: readonly string[],
+  onChange: (values: Readonly<Record<string, string | undefined>>) => void,
+): (() => void) => {
+  const values: Record<string, string | undefined> = {};
+  const read = (): void => {
+    let changed = false;
+    for (const name of names) {
+      const raw = host.getAttribute(name);
+      // A missing attribute is our own removal, not the consumer's.
+      if (raw === null) continue;
+      host.removeAttribute(name);
+      const next = raw.trim().length > 0 ? raw : undefined;
+      if (values[name] !== next) {
+        values[name] = next;
+        changed = true;
+      }
+    }
+    if (changed) onChange({ ...values });
+  };
+
+  read();
+  if (typeof MutationObserver === 'undefined') return () => undefined;
+  const observer = new MutationObserver(read);
+  observer.observe(host, { attributes: true, attributeFilter: [...names] });
+  return () => observer.disconnect();
+};

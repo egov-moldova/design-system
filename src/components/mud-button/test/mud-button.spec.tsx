@@ -53,6 +53,39 @@ describe('mud-button', () => {
     expect(root?.getAttribute('icon-only')).toBeNull();
   });
 
+  describe('popup state', () => {
+    it('moves aria-expanded and aria-haspopup from the host onto the internal control', async () => {
+      const { root } = await render(
+        <mud-button aria-expanded="false" aria-haspopup="menu">
+          Acțiuni
+        </mud-button>,
+      );
+      const control = root?.shadowRoot?.querySelector('.control');
+      expect(root?.hasAttribute('aria-expanded')).toBe(false);
+      expect(root?.hasAttribute('aria-haspopup')).toBe(false);
+      expect(control?.getAttribute('aria-expanded')).toBe('false');
+      expect(control?.getAttribute('aria-haspopup')).toBe('menu');
+    });
+
+    it('moves them onto the link when the button renders as one', async () => {
+      const { root } = await render(
+        <mud-button href="/x" aria-expanded="true" aria-haspopup="menu">
+          Acțiuni
+        </mud-button>,
+      );
+      const control = root?.shadowRoot?.querySelector('a');
+      expect(control?.getAttribute('aria-expanded')).toBe('true');
+      expect(control?.getAttribute('aria-haspopup')).toBe('menu');
+    });
+
+    it('sets neither when the host has none', async () => {
+      const { root } = await render(<mud-button>Trimite</mud-button>);
+      const control = root?.shadowRoot?.querySelector('.control');
+      expect(control?.hasAttribute('aria-expanded')).toBe(false);
+      expect(control?.hasAttribute('aria-haspopup')).toBe(false);
+    });
+  });
+
   describe('icon-only prop', () => {
     it('reflects icon-only attribute when set', async () => {
       // Stencil's mock-doc doesn't fire `slotchange` before componentDidLoad,
