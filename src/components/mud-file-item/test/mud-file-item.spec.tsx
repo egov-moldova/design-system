@@ -265,6 +265,24 @@ describe('mud-file-item', () => {
       await waitForChanges();
     };
 
+    it('empty successLabel falls back to the locale copy', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-file-item variant="upload" state="uploading" filename="x.pdf" success-label=""></mud-file-item>,
+      );
+      await waitForChanges();
+      await setState(root, 'success', waitForChanges);
+      expect(region(root)?.textContent?.trim()).toBe(`x.pdf: ${FILE_ITEM_MESSAGES['ro-MD'].successLabel}`);
+    });
+
+    it('empty errorLabel falls back to the locale copy', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-file-item variant="upload" state="uploading" filename="x.pdf" error-label=""></mud-file-item>,
+      );
+      await waitForChanges();
+      await setState(root, 'error', waitForChanges);
+      expect(region(root)?.textContent?.trim()).toBe(`x.pdf: ${FILE_ITEM_MESSAGES['ro-MD'].errorLabel}`);
+    });
+
     it('has a polite live region that is empty for a resting row', async () => {
       const { root } = await render(<mud-file-item filename="x.pdf"></mud-file-item>);
       const live = region(root);
