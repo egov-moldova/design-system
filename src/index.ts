@@ -42,6 +42,13 @@ export { MudToast } from './components/mud-toast/mud-toast';
 export { TOAST_VARIANTS } from './components/mud-toast/mud-toast.types';
 export type { ToastVariant } from './components/mud-toast/mud-toast.types';
 
+export { MudToastRegion } from './components/mud-toast-region/mud-toast-region';
+export {
+  TOAST_REGION_AUTO_DISMISS_VARIANTS,
+  TOAST_REGION_DEFAULT_DURATION_MS,
+} from './components/mud-toast-region/mud-toast-region.types';
+export type { ToastRegionShowOptions } from './components/mud-toast-region/mud-toast-region.types';
+
 export { MudInfoBox } from './components/mud-info-box/mud-info-box';
 export { INFO_BOX_VARIANTS, INFO_BOX_EMPHASES } from './components/mud-info-box/mud-info-box.types';
 export type { InfoBoxVariant, InfoBoxEmphasis } from './components/mud-info-box/mud-info-box.types';

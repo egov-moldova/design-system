@@ -78,6 +78,10 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [mud-toast-region](../mud-toast-region)
+
 ### Depends on
 
 - [mud-icon](../mud-icon)
@@ -86,6 +90,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   mud-toast --> mud-icon
+  mud-toast-region --> mud-toast
   style mud-toast fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

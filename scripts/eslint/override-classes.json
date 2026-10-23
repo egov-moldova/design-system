@@ -126,6 +126,9 @@
   "mud-toast": {
     "closeLabel": "name"
   },
+  "mud-toast-region": {
+    "label": "name"
+  },
   "mud-tooltip": {
     "closeLabel": "name",
     "dismissHint": "name"

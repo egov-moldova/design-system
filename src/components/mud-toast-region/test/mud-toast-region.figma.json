@@ -1,0 +1,70 @@
+{
+  "component": "mud-toast-region",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-toast-region--stacked",
+    "viewport": { "width": 1280, "height": 800 },
+    "capture": { "selector": "mud-toast-region", "bleed": "auto" }
+  },
+  "fixtureNote": "Figma draws the stack inside browser mock-ups (a Safari toolbar, fades), so there is no node of the stack alone to diff against; every state is pinned by style parity. Two toasts, oldest first, as in the Figma frames.",
+  "states": [
+    {
+      "name": "vertical-stack-desktop",
+      "node": "14830:13873",
+      "pixel": false,
+      "html": "<mud-toast-region duration=\"0\"><mud-toast variant=\"info\" title-text=\"Message heading\">We inform you about service changes.</mud-toast><mud-toast variant=\"success\" title-text=\"Message heading\">We inform you about service changes.</mud-toast></mud-toast-region>",
+      "expect": [
+        {
+          "target": "mud-toast-region",
+          "node": "14830:13873",
+          "styles": {
+            "position": "fixed",
+            "top": "32px",
+            "right": "32px",
+            "flexDirection": "column-reverse",
+            "rowGap": "12px",
+            "zIndex": "9000"
+          },
+          "note": "Toasts 14830:13878 (older, y 177) and 14830:13879 (newer, y 85) sit 32px under the 53px toolbar and 32px from the right edge, 92px apart for an 80px toast: a 12px gap, the newest on top."
+        },
+        {
+          "target": "mud-toast-region mud-toast:last-child",
+          "node": "14830:13879",
+          "styles": { "boxWidth": "350px" },
+          "note": "The desktop toast keeps its 350px width."
+        }
+      ]
+    },
+    {
+      "name": "vertical-stack-mobile",
+      "node": "14830:13914",
+      "pixel": false,
+      "viewport": { "width": 375, "height": 667 },
+      "html": "<mud-toast-region duration=\"0\"><mud-toast variant=\"info\" title-text=\"Message heading\">We inform you about service changes.</mud-toast><mud-toast variant=\"success\" title-text=\"Message heading\">We inform you about service changes.</mud-toast></mud-toast-region>",
+      "expect": [
+        {
+          "target": "mud-toast-region",
+          "node": "14830:13914",
+          "styles": {
+            "position": "fixed",
+            "bottom": "12px",
+            "left": "8px",
+            "right": "8px",
+            "flexDirection": "column",
+            "rowGap": "12px"
+          },
+          "note": "Placement › mobile (14830:13869): a 359px toast in a 375px screen, 8px from the sides and 12px above the bottom; vertical-stack: mobile puts the newest nearest the bottom."
+        },
+        {
+          "target": "mud-toast-region mud-toast:last-child",
+          "node": "14830:13914",
+          "styles": { "boxWidth": "359px" },
+          "note": "The mobile toast fills the region: 375 − 2 × 8."
+        }
+      ]
+    }
+  ]
+}
