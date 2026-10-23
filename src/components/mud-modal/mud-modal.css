@@ -74,15 +74,18 @@
   padding-inline-end: var(--modal-header-padding-inline-end);
 }
 
+/* The image yields to the body and actions on a short viewport: at its full
+   280px the card overflowed and clipped the footer (design review
+   12.10.2026). 35dvh keeps it at full height on any screen 800px or taller. */
 .header-image {
   position: relative;
-  block-size: var(--modal-header-image-height);
+  block-size: min(var(--modal-header-image-height), 35dvh);
   padding: 0;
   overflow: hidden;
 }
 
 :host([size='sm']) .header-image {
-  block-size: var(--modal-header-image-height-sm);
+  block-size: min(var(--modal-header-image-height-sm), 35dvh);
 }
 
 /* Cover BOTH a light-DOM slotted image AND the `imageSrc`-prop fallback <img>
@@ -198,20 +201,6 @@
   letter-spacing: var(--modal-title-letter-spacing-sm);
 }
 
-/* Figma 358:16247 — the with-icon variant centers the icon, title and body. */
-:host([variant='with-icon']) .body {
-  align-items: center;
-  text-align: center;
-}
-
-:host([variant='with-icon']) .body-content {
-  align-self: center;
-}
-
-:host([variant='with-icon']) .body-content > * {
-  margin-inline: auto;
-}
-
 /* ---------- body ---------- */
 
 .body {
@@ -285,11 +274,6 @@
   inline-size: 100%;
 }
 
-/* Centered footer for with-icon variant — Figma centers the action group. */
-:host([variant='with-icon']) .footer {
-  justify-content: center;
-}
-
 :host(:not(.has-actions)) .footer {
   display: none;
 }
@@ -300,7 +284,13 @@
 
 /* ---------- close button ---------- */
 
+/* `relative` lets the focus ring stack above neighbours (z-index below). It
+   lives here, not on :focus-visible, so `.header-image .close` keeps the
+   button absolutely placed on the image: on :focus-visible it used to win the
+   cascade and drop the button into the middle of the image as soon as the
+   modal opened and focused it (design review 12.10.2026). */
 .close {
+  position: relative;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -332,7 +322,6 @@
   box-shadow:
     0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
     0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
-  position: relative;
   z-index: 1;
 }
 
