@@ -83,6 +83,7 @@ inside shadow DOM and overlays a ghost format hint that lets the unfilled
 | `"picker-popover"`  |             |
 | `"required-mark"`   |             |
 | `"trailing-icon"`   |             |
+| `"valid-icon"`      |             |
 
 
 ## Dependencies

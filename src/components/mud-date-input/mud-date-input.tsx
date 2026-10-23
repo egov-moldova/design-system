@@ -1171,22 +1171,34 @@ export class MudDateInput {
             </button>
           ) : null}
 
-          <button
-            type="button"
-            class="trailing-icon"
-            part="trailing-icon"
-            aria-label={messages.openPickerLabel}
-            aria-haspopup="dialog"
-            aria-expanded={this.pickerOpen ? 'true' : 'false'}
-            /* `aria-controls` references the popover ID — only emit it while the
-               popover is actually mounted so axe's `aria-valid-attr-value` rule
-               doesn't see a dangling id. */
-            aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
-            disabled={effectivelyDisabled || this.readonly}
-            onClick={this.togglePicker}
-          >
-            <mud-icon name="calendar" size={iconSize} />
-          </button>
+          {this.readonly ? (
+            this.value !== '' && !this.isInvalid() ? (
+              <mud-icon
+                class="valid-icon"
+                part="valid-icon"
+                name="checkmark-small"
+                size={24}
+                color="icon-positive-default"
+              />
+            ) : null
+          ) : (
+            <button
+              type="button"
+              class="trailing-icon"
+              part="trailing-icon"
+              aria-label={messages.openPickerLabel}
+              aria-haspopup="dialog"
+              aria-expanded={this.pickerOpen ? 'true' : 'false'}
+              /* `aria-controls` references the popover ID — only emit it while the
+                 popover is actually mounted so axe's `aria-valid-attr-value` rule
+                 doesn't see a dangling id. */
+              aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
+              disabled={effectivelyDisabled}
+              onClick={this.togglePicker}
+            >
+              <mud-icon name="calendar" size={iconSize} />
+            </button>
+          )}
 
           {/* The popover lives inside `.control` so it anchors under the field,
               not under the helper / error text below it. */}

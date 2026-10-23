@@ -136,24 +136,24 @@
    `:hover` stuck, so the hover treatment stayed painted after the tap
    (design review 12.10.2026). Every hover rule below is gated the same way. */
 @media (hover: hover) {
-  :host(:not(.is-disabled):not(.is-focused):hover) .control {
+  :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
     border-color: var(--_border-color-hover);
   }
 
-  :host(:not(.is-disabled):not(.is-focused):hover) .control::after {
+  :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control::after {
     box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
       var(--_border-color-hover);
   }
 }
 
-:host(.is-focused:not(.is-disabled)) .control {
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
   border-color: var(--_border-color-focus);
   /* The outer focus ring is drawn outside the control, where the native input
      cannot reach it — it stays on `.control`. */
   box-shadow: 0 0 0 var(--spacing-4) var(--_focus-ring-color);
 }
 
-:host(.is-focused:not(.is-disabled)) .control::after {
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control::after {
   box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
     var(--_border-color-focus);
 }
@@ -164,6 +164,21 @@
    overrode `.control` would be repainted with the enabled colors as soon as
    the browser autofilled the field. Driving the vars keeps every surface --
    control background, autofill fill and text -- on one source of truth. */
+/* Read-only follows the shared read-only input (457:26191): a grey surface,
+   no stroke, the value in the default text colour and a trailing check in
+   place of the calendar button (design review 12.10.2026). */
+:host(.is-readonly) {
+  --_bg: var(--date-input-default-background-read-only);
+  --_border-color: var(--date-input-default-border-read-only);
+}
+
+.valid-icon {
+  flex-shrink: 0;
+  inline-size: var(--date-input-valid-icon-size);
+  block-size: var(--date-input-valid-icon-size);
+  color: var(--date-input-valid-icon-color);
+}
+
 :host(.is-disabled) {
   --_bg: var(--date-input-default-background-disabled);
   --_text: var(--date-input-default-text-disabled);

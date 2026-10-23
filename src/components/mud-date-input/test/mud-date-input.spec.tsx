@@ -526,11 +526,37 @@ describe('mud-date-input', () => {
       const { root } = await render(
         <mud-date-input locale="ro-MD" label="x" readonly value="15/04/2025"></mud-date-input>,
       );
-      const trigger = root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
-      expect(trigger?.hasAttribute('disabled')).toBe(true);
-      trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      // Read-only drops the calendar button (457:26191): nothing to open it with.
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')).toBeNull();
+      root?.shadowRoot
+        ?.querySelector<HTMLElement>('.control')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await flush();
       expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+
+    it('shows the read-only check in place of the calendar button when the value is valid', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-MD" label="x" readonly value="15/04/2025"></mud-date-input>,
+      );
+      const check = root?.shadowRoot?.querySelector('.valid-icon');
+      expect(check?.getAttribute('name')).toBe('checkmark-small');
+      expect(check?.getAttribute('part')).toBe('valid-icon');
+    });
+
+    it('shows no read-only check when the field is empty or invalid', async () => {
+      const { root: empty } = await render(<mud-date-input locale="ro-MD" label="x" readonly></mud-date-input>);
+      expect(empty?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
+      const { root: invalid } = await render(
+        <mud-date-input locale="ro-MD" label="x" readonly invalid value="15/04/2025"></mud-date-input>,
+      );
+      expect(invalid?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
+    });
+
+    it('keeps the calendar button when not read-only', async () => {
+      const { root } = await render(<mud-date-input locale="ro-MD" label="x" value="15/04/2025"></mud-date-input>);
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')).not.toBeNull();
+      expect(root?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
     });
 
     it('responds to fieldset disabled via formDisabledCallback', async () => {
