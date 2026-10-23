@@ -166,13 +166,18 @@
   transition: box-shadow var(--_transition-duration) var(--_transition-easing);
 }
 
-:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
-  outline-color: var(--_border-color-hover);
-}
+/* Hover only where the pointer can hover: on touch screens a tap leaves
+   `:hover` stuck, so the hover treatment stayed painted after the tap
+   (design review 12.10.2026). Every hover rule below is gated the same way. */
+@media (hover: hover) {
+  :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
+    outline-color: var(--_border-color-hover);
+  }
 
-/* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
-:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control::after {
-  box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-hover);
+  /* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
+  :host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control::after {
+    box-shadow: inset 0 0 0 var(--_border-width-emphasized) var(--_border-color-hover);
+  }
 }
 
 :host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
@@ -290,9 +295,11 @@
     color var(--_transition-duration) var(--_transition-easing);
 }
 
-.control-clear:hover {
-  color: var(--input-clear-button-color-hover);
-  background-color: var(--input-clear-button-background-hover);
+@media (hover: hover) {
+  .control-clear:hover {
+    color: var(--input-clear-button-color-hover);
+    background-color: var(--input-clear-button-background-hover);
+  }
 }
 
 .control-clear:focus-visible {
