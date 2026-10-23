@@ -37,6 +37,16 @@
           "$comment": "Figma strokes every variant of 262:6718 at 1.5px — the resting, hover, focus and disabled dashes and the active solid alike, so there is no second width."
         }
       },
+      "borderDash": {
+        "$value": "{spacing.6}",
+        "$type": "dimension",
+        "$comment": "Figma 262:6705 dashes the stroke 6,4: a 6px dash…"
+      },
+      "borderGap": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "…and a 4px gap. A CSS dashed outline cannot set either, so the stroke is an SVG rect."
+      },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
       "iconCircle": {

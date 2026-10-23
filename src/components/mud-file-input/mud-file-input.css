@@ -116,6 +116,8 @@
 /* ---------- Drop zone ---------- */
 
 .dropzone {
+  --_dropzone-stroke: var(--_border-color);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -125,27 +127,45 @@
   padding-block: var(--_dropzone-padding-block);
   padding-inline: var(--_dropzone-padding-inline);
   background-color: var(--_bg);
-  /* The dashed affordance is an outline pulled inside the box rather than a
-     border. A Figma stroke sits inside the frame and moves nothing, while a CSS
-     border would add its width to the height — 2px taller than 262:6717 — and
-     a 1.5px border is floored to 1px by Chromium anyway. `outline` takes the
-     dash, honours the radius, and stays out of the layout. */
-  outline: var(--_dropzone-border-width) dashed var(--_border-color);
-  outline-offset: calc(-1 * var(--_dropzone-border-width));
   border-radius: var(--_dropzone-radius);
   text-align: center;
   cursor: pointer;
   user-select: none;
   transition:
-    outline-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
     background-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
     box-shadow var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
+}
+
+/* The dashed stroke is an SVG rect laid over the drop zone. Figma 262:6705
+   strokes 1.5px dashed 6,4 inside the frame; a CSS border would add its width
+   to the height and Chromium floors a 1.5px border or outline to 1px, and
+   neither can set the dash or the gap (design review 12.10.2026). The rect
+   sits half a stroke in from each edge so the whole stroke stays inside. Its
+   size comes from percentage attributes, which every engine honours; `rx` is
+   set in CSS from the radius token, with the attribute as a fallback. */
+.dropzone-border {
+  position: absolute;
+  inset-block-start: calc(var(--_dropzone-border-width) / 2);
+  inset-inline-start: calc(var(--_dropzone-border-width) / 2);
+  inline-size: calc(100% - var(--_dropzone-border-width));
+  block-size: calc(100% - var(--_dropzone-border-width));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.dropzone-border rect {
+  rx: calc(var(--_dropzone-radius) - var(--_dropzone-border-width) / 2);
+  fill: none;
+  stroke: var(--_dropzone-stroke);
+  stroke-width: var(--_dropzone-border-width);
+  stroke-dasharray: var(--file-input-dropzone-border-dash) var(--file-input-dropzone-border-gap);
+  transition: stroke var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
 }
 
 /* `.is-hover-demo` is a Storybook-only helper that statically paints the hover
    border (real hover still works via `:hover`). */
 :host(.is-hover-demo:not(.is-disabled)) .dropzone {
-  outline-color: var(--_border-color-hover);
+  --_dropzone-stroke: var(--_border-color-hover);
 }
 
 /* Hover only where the pointer can hover: on touch screens a tap leaves
@@ -153,7 +173,7 @@
    (design review 12.10.2026). Every hover rule below is gated the same way. */
 @media (hover: hover) {
   :host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone {
-    outline-color: var(--_border-color-hover);
+    --_dropzone-stroke: var(--_border-color-hover);
   }
 }
 
@@ -171,14 +191,17 @@
 /* Figma "Active" state — drag-over (262:6720). The one variant whose stroke is
    solid, over the brand-tinted fill. */
 :host(.is-active:not(.is-disabled)) .dropzone {
-  outline-style: solid;
-  outline-color: var(--_border-color-active);
+  --_dropzone-stroke: var(--_border-color-active);
   background-color: var(--_bg-active);
 }
 
+:host(.is-active:not(.is-disabled)) .dropzone-border rect {
+  stroke-dasharray: none;
+}
+
 :host(.is-disabled) .dropzone {
+  --_dropzone-stroke: var(--file-input-border-disabled);
   background-color: var(--file-input-background-disabled);
-  outline-color: var(--file-input-border-disabled);
   cursor: not-allowed;
 }
 

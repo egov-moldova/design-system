@@ -16,6 +16,7 @@
     {
       "name": "default",
       "node": "262:6717",
+      "pixelNote": "The dashed stroke matches Figma in width (1.5px), dash (6) and gap (4), but Figma starts the dash pattern about 3px earlier along the edge than an SVG rect does, so the dashes and gaps trade places along the edges of the diff (about 0.9%). Style parity pins the stroke itself.",
       "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
       "expect": [
         {
@@ -29,12 +30,15 @@
             "paddingRight": "24px",
             "rowGap": "20px",
             "boxHeight": "156px",
-            "outlineStyle": "dashed",
-            "outlineColor": "#B2B2B2",
-            "outlineWidth": "1px",
             "borderTopLeftRadius": "8px"
           },
-          "note": "Figma 262:6705 fills #FFFFFF, pads 32px 24px, gaps 20px and strokes 1.5px #B2B2B2 dashed 6,4 at radius 8px. Two things the browser will not reproduce: Chromium floors a 1.5px stroke to 1px at every device scale, which is the 1px asserted here, and the length of a CSS dash is the engine's to choose, so Figma's 6,4 rhythm cannot be asked for. Both show up in the pixel diff as a dotted edge."
+          "note": "Figma 262:6705 fills #FFFFFF, pads 32px 24px and gaps 20px at radius 8px."
+        },
+        {
+          "target": "mud-file-input .dropzone-border rect",
+          "node": "262:6705",
+          "styles": { "stroke": "#B2B2B2", "strokeWidth": "1.5px", "strokeDasharray": "6px, 4px" },
+          "note": "Figma 262:6705 strokes 1.5px #B2B2B2 dashed 6,4. The stroke is an SVG rect inset half a stroke from the frame: a CSS outline or border is floored to 1px by Chromium and cannot set the dash or the gap (design review 12.10.2026)."
         },
         {
           "target": "mud-file-input .dropzone-icon",
@@ -118,24 +122,28 @@
     {
       "name": "hover",
       "node": "616:7045",
+      "pixelNote": "The dashed stroke matches Figma in width (1.5px), dash (6) and gap (4), but Figma starts the dash pattern about 3px earlier along the edge than an SVG rect does, so the dashes and gaps trade places along the edges of the diff (about 0.9%). Style parity pins the stroke itself.",
       "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
       "interaction": { "type": "hover", "target": "mud-file-input .dropzone" },
       "expect": [
         {
           "target": "mud-file-input .dropzone",
           "node": "616:7046",
-          "styles": {
-            "outlineColor": "#0058D2",
-            "outlineStyle": "dashed",
-            "backgroundColor": "#FFFFFF"
-          },
-          "note": "Figma 616:7046 recolours the stroke to #0058D2 and keeps it dashed and the fill white — hover changes nothing else."
+          "styles": { "backgroundColor": "#FFFFFF" },
+          "note": "Figma 616:7046 keeps the fill white — hover changes nothing but the stroke."
+        },
+        {
+          "target": "mud-file-input .dropzone-border rect",
+          "node": "616:7046",
+          "styles": { "stroke": "#0058D2", "strokeWidth": "1.5px", "strokeDasharray": "6px, 4px" },
+          "note": "Figma 616:7046 recolours the stroke to #0058D2 and keeps it dashed."
         }
       ]
     },
     {
       "name": "focus",
       "node": "616:7145",
+      "pixelNote": "The dashed stroke matches Figma in width (1.5px), dash (6) and gap (4), but Figma starts the dash pattern about 3px earlier along the edge than an SVG rect does, so the dashes and gaps trade places along the edges of the diff (about 0.9%). Style parity pins the stroke itself.",
       "html": "<div style=\"width: 588px\"><mud-file-input cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
       "interaction": { "type": "focus", "target": "mud-file-input .dropzone-cta__link" },
       "expect": [
@@ -143,8 +151,6 @@
           "target": "mud-file-input .dropzone",
           "node": "616:7146",
           "styles": {
-            "outlineColor": "#B2B2B2",
-            "outlineStyle": "dashed",
             "boxShadow": "0px 0px 0px 2px #ffffff, 0px 0px 0px 5px #3379db"
           },
           "note": "Figma 616:7146 keeps the resting #B2B2B2 dashed stroke and adds Focus Ring/Medium, listed as `0 0 0 5px #3379DB, 0 0 0 2px #FFFFFF`. Its render is a 2px white halo inside a blue band ending 5px out, which in CSS is the reverse order. The ring is on the drop zone, not on the inner link, because the link is what the keyboard reaches."
@@ -154,6 +160,12 @@
           "node": "616:7146",
           "styles": { "outlineStyle": "none" },
           "note": "Figma 616:7146 draws one indicator, around the frame. A ring on the link as well would put a second box inside the first."
+        },
+        {
+          "target": "mud-file-input .dropzone-border rect",
+          "node": "616:7146",
+          "styles": { "stroke": "#B2B2B2", "strokeWidth": "1.5px", "strokeDasharray": "6px, 4px" },
+          "note": "Figma 616:7146 keeps the resting #B2B2B2 dashed stroke under the focus ring."
         }
       ]
     },
@@ -169,12 +181,16 @@
           "node": "262:6720",
           "styles": {
             "backgroundColor": "#E8F0FB",
-            "outlineStyle": "solid",
-            "outlineColor": "#0058D2",
             "paddingTop": "32px",
             "paddingLeft": "24px"
           },
-          "note": "Figma 262:6720 is the only variant whose stroke is solid: #0058D2 over an #E8F0FB fill, same padding as the resting frame."
+          "note": "Figma 262:6720 fills #E8F0FB with the same padding as the resting frame."
+        },
+        {
+          "target": "mud-file-input .dropzone-border rect",
+          "node": "262:6720",
+          "styles": { "stroke": "#0058D2", "strokeWidth": "1.5px", "strokeDasharray": "none" },
+          "note": "Figma 262:6720 is the only variant whose stroke is solid: #0058D2."
         },
         {
           "target": "mud-file-input .dropzone-text",
@@ -204,17 +220,20 @@
     {
       "name": "disabled",
       "node": "616:7070",
+      "pixelNote": "The dashed stroke matches Figma in width (1.5px), dash (6) and gap (4), but Figma starts the dash pattern about 3px earlier along the edge than an SVG rect does, so the dashes and gaps trade places along the edges of the diff (about 0.9%). Style parity pins the stroke itself.",
       "html": "<div style=\"width: 588px\"><mud-file-input disabled cta-text=\"Drag and drop or \" choose-files-text=\"choose files\" supported-formats-text=\"Supported formats: jpg, png, pdf\" max-size-text=\"Maximum size: 100 MB\"></mud-file-input></div>",
       "expect": [
         {
           "target": "mud-file-input .dropzone",
           "node": "616:7071",
-          "styles": {
-            "backgroundColor": "#FFFFFF",
-            "outlineColor": "#D9D9D9",
-            "outlineStyle": "dashed"
-          },
-          "note": "Figma 616:7071 keeps the white fill and greys the stroke to #D9D9D9 — it does not tint the surface."
+          "styles": { "backgroundColor": "#FFFFFF" },
+          "note": "Figma 616:7071 keeps the white fill — it does not tint the surface."
+        },
+        {
+          "target": "mud-file-input .dropzone-border rect",
+          "node": "616:7071",
+          "styles": { "stroke": "#D9D9D9", "strokeWidth": "1.5px", "strokeDasharray": "6px, 4px" },
+          "note": "Figma 616:7071 greys the dashed stroke to #D9D9D9."
         },
         {
           "target": "mud-file-input .dropzone-icon",

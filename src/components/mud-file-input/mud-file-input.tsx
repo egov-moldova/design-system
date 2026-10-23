@@ -775,6 +775,9 @@ export class MudFileInput {
                 onDragLeave={this.handleDragLeave}
                 onDrop={this.handleDrop}
               >
+                <svg class="dropzone-border" aria-hidden="true" focusable="false">
+                  <rect width="100%" height="100%" rx="7.25" />
+                </svg>
                 {!isActiveNow ? (
                   <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
                     <slot name="icon">
