@@ -443,11 +443,11 @@ const renderEdgeCases = () => /*html*/ `
       </mud-accordion-item>
     </mud-accordion>
 
-    <p style="${sectionLabelStyle}">Long heading — truncated at the line end, no visible overflow.</p>
+    <p style="${sectionLabelStyle}">Long heading and supporting text — both wrap over several lines; nothing is truncated.</p>
     <mud-accordion mode="multiple">
       <mud-accordion-item
         heading="Question with a very long title that exceeds the normal width of the accordion and has to wrap over several lines without breaking the visual layout"
-        supporting-text="The supporting text stays on a single line and is truncated with an ellipsis when it exceeds the space available in the container"
+        supporting-text="The supporting text wraps over as many lines as it needs, so an open question always shows its whole description"
       >
         The panel content renders normally regardless of the heading length.
       </mud-accordion-item>
