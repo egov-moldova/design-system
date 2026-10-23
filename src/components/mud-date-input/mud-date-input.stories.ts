@@ -12,7 +12,7 @@ import type { DateInputFormat, DateInputSize, DateInputType, DateInputVariant } 
 type DateInputArgs = {
   variant: DateInputVariant;
   size: DateInputSize;
-  format: DateInputFormat;
+  format: DateInputFormat | '';
   type: DateInputType;
   locale: string;
   label: string;
@@ -32,7 +32,7 @@ const renderDateInput = (args: DateInputArgs) => /*html*/ `
   <mud-date-input
     variant="${args.variant}"
     size="${args.size}"
-    format="${args.format}"
+    ${args.format ? `format="${args.format}"` : ''}
     type="${args.type}"
     ${args.locale ? `locale="${args.locale}"` : ''}
     label="${args.label}"
@@ -52,7 +52,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
     args.locale ? `locale="${args.locale}"` : '',
     args.variant !== 'default' ? `variant="${args.variant}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
-    args.format !== 'DD/MM/YYYY' ? `format="${args.format}"` : '',
+    args.format ? `format="${args.format}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.placeholder ? `placeholder="${args.placeholder}"` : '',
     args.value ? `value="${args.value}"` : '',
@@ -65,7 +65,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
   ]
     .filter(Boolean)
     .join(' ');
-  return `<mud-date-input ${attrs}></mud-date-input>`;
+  return `<mud-date-input format="DD/MM/YYYY" ${attrs}></mud-date-input>`;
 };
 
 const meta: Meta<DateInputArgs> = {
@@ -86,9 +86,10 @@ const meta: Meta<DateInputArgs> = {
     },
     format: {
       control: 'select',
-      options: DATE_INPUT_FORMATS,
-      description: 'Display format pattern.',
-      table: { defaultValue: { summary: 'DD/MM/YYYY' } },
+      options: ['', ...DATE_INPUT_FORMATS],
+      description:
+        'Display format pattern. Empty follows the locale: MM/DD/YYYY for en-US, DD/MM/YYYY for ro-MD and ru-MD — switch the toolbar language to see it.',
+      table: { defaultValue: { summary: 'the locale order' } },
     },
     type: {
       control: 'inline-radio',
@@ -124,7 +125,7 @@ export const Default: Story = {
   args: {
     variant: 'default',
     size: 'lg',
-    format: 'DD/MM/YYYY',
+    format: '',
     type: 'default',
     locale: '',
     label: 'Label',
@@ -171,7 +172,10 @@ export const AllVariants: Story = {
   render: () =>
     wrap(
       DATE_INPUT_VARIANTS.map(variant =>
-        cell(variant, /*html*/ `<mud-date-input variant="${variant}" size="lg" label="Label"></mud-date-input>`),
+        cell(
+          variant,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" variant="${variant}" size="lg" label="Label"></mud-date-input>`,
+        ),
       ).join(''),
     ),
   parameters: {
@@ -179,7 +183,7 @@ export const AllVariants: Story = {
     docs: {
       source: {
         code: DATE_INPUT_VARIANTS.map(
-          v => `<mud-date-input variant="${v}" size="lg" label="Label"></mud-date-input>`,
+          v => `<mud-date-input format="DD/MM/YYYY" variant="${v}" size="lg" label="Label"></mud-date-input>`,
         ).join('\n'),
       },
     },
@@ -191,14 +195,16 @@ export const AllSizes: Story = {
   render: () =>
     wrap(
       DATE_INPUT_SIZES.map(size =>
-        cell(size, /*html*/ `<mud-date-input size="${size}" label="Label"></mud-date-input>`),
+        cell(size, /*html*/ `<mud-date-input format="DD/MM/YYYY" size="${size}" label="Label"></mud-date-input>`),
       ).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: DATE_INPUT_SIZES.map(s => `<mud-date-input size="${s}" label="Label"></mud-date-input>`).join('\n'),
+        code: DATE_INPUT_SIZES.map(
+          s => `<mud-date-input format="DD/MM/YYYY" size="${s}" label="Label"></mud-date-input>`,
+        ).join('\n'),
       },
     },
   },
@@ -209,20 +215,29 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('default: default', /*html*/ `<mud-date-input size="lg" label="Label"></mud-date-input>`),
+        cell(
+          'default: default',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label"></mud-date-input>`,
+        ),
         cell(
           'default: filled',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
         ),
-        cell('default: disabled', /*html*/ `<mud-date-input size="lg" label="Label" disabled></mud-date-input>`),
+        cell(
+          'default: disabled',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" disabled></mud-date-input>`,
+        ),
         cell(
           'default: readonly',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/2025" readonly></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025" readonly></mud-date-input>`,
         ),
-        cell('default: mandatory', /*html*/ `<mud-date-input size="lg" label="Label" required></mud-date-input>`),
+        cell(
+          'default: mandatory',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" required></mud-date-input>`,
+        ),
         cell(
           'destructive: default',
-          /*html*/ `<mud-date-input variant="destructive" size="lg" label="Label"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" variant="destructive" size="lg" label="Label"></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -231,12 +246,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/2025"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" disabled></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/2025" readonly></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" required></mud-date-input>',
-          '<mud-date-input variant="destructive" size="lg" label="Label"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" disabled></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025" readonly></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" required></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" variant="destructive" size="lg" label="Label"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -267,27 +282,27 @@ export const SegmentFocusStates: Story = {
         [
           cell(
             'focus: empty',
-            /*html*/ `<mud-date-input id="${fixId}" data-autofocus size="lg" label="Label"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" id="${fixId}" data-autofocus size="lg" label="Label"></mud-date-input>`,
           ),
           cell(
             'focus: date-populated',
-            /*html*/ `<mud-date-input size="lg" label="Label" value="15/"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/"></mud-date-input>`,
           ),
           cell(
             'focus: month-populated',
-            /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/"></mud-date-input>`,
           ),
           cell(
             'focus: fully-populated',
-            /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
           ),
           cell(
             'default: hover (filled)',
-            /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025"></mud-date-input>`,
           ),
           cell(
             'backspace (mid-segment)',
-            /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/20"></mud-date-input>`,
+            /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/20"></mud-date-input>`,
           ),
         ].join(''),
       ) + focusScript
@@ -302,10 +317,10 @@ export const SegmentFocusStates: Story = {
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label"></mud-date-input> <!-- focused, empty -->',
-          '<mud-date-input size="lg" label="Label" value="15/"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label"></mud-date-input> <!-- focused, empty -->',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/2025"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -317,9 +332,18 @@ export const Validation: Story = {
   render: () =>
     wrapTriple(
       [
-        cell('DD-error', /*html*/ `<mud-date-input size="lg" label="Label" value="45"></mud-date-input>`),
-        cell('MM-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>`),
-        cell('YYYY-error', /*html*/ `<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>`),
+        cell(
+          'DD-error',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="45"></mud-date-input>`,
+        ),
+        cell(
+          'MM-error',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/18"></mud-date-input>`,
+        ),
+        cell(
+          'YYYY-error',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/1550"></mud-date-input>`,
+        ),
       ].join(''),
     ),
   parameters: {
@@ -331,9 +355,9 @@ export const Validation: Story = {
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/18"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" value="15/04/1550"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="45"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/18"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="15/04/1550"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -354,17 +378,17 @@ export const Types: Story = {
     <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-48); padding: var(--spacing-24);">
       ${typeColumn(
         'default',
-        '<mud-date-input size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+        '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
         '<mud-date-picker value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
       )}
       ${typeColumn(
         'advanced',
-        '<mud-date-input size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+        '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
         '<mud-date-picker header-style="dropdown" value="2025-01-11" view-date="2025-01-01"></mud-date-picker>',
       )}
       ${typeColumn(
         'date-range',
-        '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+        '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         '<mud-date-picker type="date-range" range-start="2025-01-18" range-end="2025-01-22" view-date="2025-01-01"></mud-date-picker>',
       )}
     </div>
@@ -378,9 +402,9 @@ export const Types: Story = {
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="default" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="advanced" value="11/01/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -392,14 +416,17 @@ export const DateRange: Story = {
   render: () =>
     wrapTriple(
       [
-        cell('empty', /*html*/ `<mud-date-input size="lg" label="Label" type="date-range"></mud-date-input>`),
+        cell(
+          'empty',
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range"></mud-date-input>`,
+        ),
         cell(
           'filled',
-          /*html*/ `<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>`,
         ),
         cell(
           'order-error',
-          /*html*/ `<mud-date-input size="lg" label="Label" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -412,8 +439,8 @@ export const DateRange: Story = {
       },
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" type="date-range"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" type="date-range" value="18/01/2025 - 22/01/2025"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -427,11 +454,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-date-input size="lg" label="Label" helper-text="Helper message displayed here"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" helper-text="Helper message displayed here"></mud-date-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-date-input size="lg" label="Label" required helper-text="Required field"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" required helper-text="Required field"></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -440,8 +467,8 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" helper-text="Helper message displayed here"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" required helper-text="Required field"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" helper-text="Helper message displayed here"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" required helper-text="Required field"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -455,11 +482,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>`,
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<mud-date-input variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -468,8 +495,8 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>',
-          '<mud-date-input variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" value="45/" invalid error-text="Please pick a day from 01 to 31."></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" variant="destructive" size="lg" label="Label" error-text="Error message displayed here" invalid></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -483,11 +510,11 @@ export const WithMinMax: Story = {
       [
         cell(
           'today onward (min only)',
-          /*html*/ `<mud-date-input size="lg" label="Pick a future date" min="2025-04-15" helper-text="Min 15/04/2025"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Pick a future date" min="2025-04-15" helper-text="Min 15/04/2025"></mud-date-input>`,
         ),
         cell(
           'bounded range',
-          /*html*/ `<mud-date-input size="lg" label="Pick a date in 2025" min="2025-01-01" max="2025-12-31" helper-text="01/01/2025 — 31/12/2025"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Pick a date in 2025" min="2025-01-01" max="2025-12-31" helper-text="01/01/2025 — 31/12/2025"></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -496,8 +523,8 @@ export const WithMinMax: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="Pick a future date" min="2025-04-15"></mud-date-input>',
-          '<mud-date-input size="lg" label="Pick a date in 2025" min="2025-01-01" max="2025-12-31"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Pick a future date" min="2025-04-15"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Pick a date in 2025" min="2025-01-01" max="2025-12-31"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -511,11 +538,11 @@ export const EdgeCases: Story = {
       [
         cell(
           'label truncation (single line)',
-          /*html*/ `<mud-date-input size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></mud-date-input>`,
         ),
         cell(
           'assistive truncation (two lines)',
-          /*html*/ `<mud-date-input size="lg" label="Label" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-date-input>`,
+          /*html*/ `<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></mud-date-input>`,
         ),
       ].join(''),
     ),
@@ -524,8 +551,8 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-date-input size="lg" label="…long label…"></mud-date-input>',
-          '<mud-date-input size="lg" label="Label" helper-text="…long helper text…"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="…long label…"></mud-date-input>',
+          '<mud-date-input format="DD/MM/YYYY" size="lg" label="Label" helper-text="…long helper text…"></mud-date-input>',
         ].join('\n'),
       },
     },
@@ -540,14 +567,14 @@ export const MobileBottomSheet: Story = {
   globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); min-block-size: 480px;">
-      <mud-date-input label="Birth date"></mud-date-input>
+      <mud-date-input format="DD/MM/YYYY" label="Birth date"></mud-date-input>
     </div>
   `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Birth date"></mud-date-input>',
+        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input format="DD/MM/YYYY" label="Birth date"></mud-date-input>',
       },
       description: {
         story:
@@ -563,18 +590,29 @@ export const MobileBottomSheet: Story = {
 const LOCALES = ['ro-MD', 'en-US', 'ru-MD'] as const;
 
 const localesDateInput = (locale: string) =>
-  `<mud-date-input locale="${locale}" size="lg" label="Date" value="45/01/2025"></mud-date-input>`;
+  `<mud-date-input format="DD/MM/YYYY" locale="${locale}" size="lg" label="Date" value="45/01/2025"></mud-date-input>`;
+
+const localesEmptyDateInput = (locale: string) =>
+  `<mud-date-input locale="${locale}" size="lg" label="Date"></mud-date-input>`;
 
 export const Locales: Story = {
-  render: () => wrap(LOCALES.map(locale => cell(`locale="${locale}"`, localesDateInput(locale))).join('')),
+  render: () =>
+    wrap(
+      [
+        ...LOCALES.map(locale =>
+          cell(`locale="${locale}" — no format: the order follows the locale`, localesEmptyDateInput(locale)),
+        ),
+        ...LOCALES.map(locale => cell(`locale="${locale}" — built-in error copy`, localesDateInput(locale))),
+      ].join(''),
+    ),
   parameters: {
     controls: { disable: true },
     docs: {
       description: {
         story:
-          'The same component under each supported locale. Only the built-in copy changes; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar.',
+          'The same component under each supported locale. With no `format`, the order of the date follows the locale — month first for `en-US`, day first for `ro-MD` and `ru-MD`. The built-in copy changes too; content stays as written. This is the one place a story pins `locale` — every other story follows the Storybook toolbar, and the stories with sample dates pin `format="DD/MM/YYYY"` so their day-first values read the same in every language.',
       },
-      source: { code: LOCALES.map(localesDateInput).join('\n') },
+      source: { code: [...LOCALES.map(localesEmptyDateInput), ...LOCALES.map(localesDateInput)].join('\n') },
     },
   },
 };

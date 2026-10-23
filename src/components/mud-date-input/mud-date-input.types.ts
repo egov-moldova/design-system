@@ -12,6 +12,16 @@ export const DATE_INPUT_LOCALES = MUD_LOCALES;
 export type DateInputSize = (typeof DATE_INPUT_SIZES)[number];
 export type DateInputVariant = (typeof DATE_INPUT_VARIANTS)[number];
 export type DateInputFormat = (typeof DATE_INPUT_FORMATS)[number];
+
+/**
+ * The display format each locale uses when `format` is not set: month first in
+ * `en-US`, day first in Moldova (`ro-MD`, `ru-MD`).
+ */
+export const DATE_INPUT_LOCALE_FORMATS: Record<MudLocale, DateInputFormat> = {
+  'ro-MD': 'DD/MM/YYYY',
+  'ru-MD': 'DD/MM/YYYY',
+  'en-US': 'MM/DD/YYYY',
+};
 /** Alias of `MudLocale`. */
 export type DateInputLocale = MudLocale;
 
