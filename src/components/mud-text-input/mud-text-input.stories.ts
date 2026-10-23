@@ -260,11 +260,11 @@ export const WithWarning: Story = {
       [
         cell(
           'warning',
-          /*html*/ `<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" helper-text="This value could cause problems"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="warning" size="lg" label="E-mail" type="email" value="ion.popescu@gmial.com" helper-text="Check the domain — did you mean gmail.com?"></mud-text-input>`,
         ),
         cell(
           'warning + placeholder',
-          /*html*/ `<mud-text-input variant="warning" size="lg" label="Amount" placeholder="0,00 MDL" helper-text="Check the amount before continuing"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="warning" size="lg" label="Full name" placeholder="Ion Popescu" helper-text="Write the name exactly as on your identity card"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -273,8 +273,8 @@ export const WithWarning: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input variant="warning" size="lg" label="Amount" value="9 500" helper-text="This value could cause problems"></mud-text-input>',
-          '<mud-text-input variant="warning" size="lg" label="Amount" placeholder="0,00 MDL" helper-text="Check the amount before continuing"></mud-text-input>',
+          '<mud-text-input variant="warning" size="lg" label="E-mail" type="email" value="ion.popescu@gmial.com" helper-text="Check the domain — did you mean gmail.com?"></mud-text-input>',
+          '<mud-text-input variant="warning" size="lg" label="Full name" placeholder="Ion Popescu" helper-text="Write the name exactly as on your identity card"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -288,11 +288,11 @@ export const WithSuccess: Story = {
       [
         cell(
           'success',
-          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verified"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="success" size="lg" label="E-mail" type="email" value="ion.popescu@gmail.com" helper-text="E-mail address confirmed"></mud-text-input>`,
         ),
         cell(
           'success + placeholder',
-          /*html*/ `<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validated by the State Register"></mud-text-input>`,
+          /*html*/ `<mud-text-input variant="success" size="lg" label="Username" placeholder="ion.popescu" helper-text="This username is available"></mud-text-input>`,
         ),
       ].join(''),
     ),
@@ -301,8 +301,8 @@ export const WithSuccess: Story = {
     docs: {
       source: {
         code: [
-          '<mud-text-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verified"></mud-text-input>',
-          '<mud-text-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validated by the State Register"></mud-text-input>',
+          '<mud-text-input variant="success" size="lg" label="E-mail" type="email" value="ion.popescu@gmail.com" helper-text="E-mail address confirmed"></mud-text-input>',
+          '<mud-text-input variant="success" size="lg" label="Username" placeholder="ion.popescu" helper-text="This username is available"></mud-text-input>',
         ].join('\n'),
       },
     },
@@ -472,38 +472,6 @@ export const ReadOnly: Story = {
           '<mud-text-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Read-only field"></mud-text-input>',
           '<mud-text-input size="md" label="IDNP" value="2002004123456" readonly></mud-text-input>',
           '<mud-text-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Disabled field"></mud-text-input>',
-        ].join('\n'),
-      },
-    },
-  },
-};
-
-export const WithIcons: Story = {
-  name: 'With Icons',
-  render: () =>
-    wrap(
-      [
-        cell(
-          'icon-start',
-          /*html*/ `<mud-text-input size="lg" label="Find" placeholder="Find">
-            <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
-          </mud-text-input>`,
-        ),
-        cell(
-          'icon-end',
-          /*html*/ `<mud-text-input size="lg" label="Date" placeholder="Placeholder">
-            <mud-icon slot="icon-end" name="calendar" size="24"></mud-icon>
-          </mud-text-input>`,
-        ),
-      ].join(''),
-    ),
-  parameters: {
-    controls: { disable: true },
-    docs: {
-      source: {
-        code: [
-          '<mud-text-input size="lg" label="Find" placeholder="Find"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-text-input>',
-          '<mud-text-input size="lg" label="Date" placeholder="Placeholder"><mud-icon slot="icon-end" name="calendar" size="24"></mud-icon></mud-text-input>',
         ].join('\n'),
       },
     },
