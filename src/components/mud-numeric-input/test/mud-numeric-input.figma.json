@@ -193,6 +193,40 @@
       ]
     },
     {
+      "name": "large-mandatory",
+      "node": "210:2266",
+      "pixel": false,
+      "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"lg\" required></mud-numeric-input></div>",
+      "expect": [
+        {
+          "target": "mud-numeric-input .label",
+          "node": "210:2267",
+          "styles": {
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-numeric-input .required-mark",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "#D92D20"
+          },
+          "note": "Every input's mandatory star is an instance of the 12/asterisk icon (2975:10179), 12×12, fill #D92D20."
+        },
+        {
+          "target": "mud-numeric-input .required-mark mud-icon",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma draws the mark as the 12/asterisk icon, not a text glyph — a text '*' at the 14px label font rendered smaller and sat high (design review 12.10.2026)."
+        }
+      ]
+    },
+    {
       "name": "default-medium",
       "node": "6173:3287",
       "html": "<div style=\"width: 200px\"><mud-numeric-input label=\"Label\" placeholder=\"12345\" size=\"md\"><span slot=\"suffix\">lei</span></mud-numeric-input></div>",
