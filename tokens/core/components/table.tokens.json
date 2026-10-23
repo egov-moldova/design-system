@@ -71,7 +71,11 @@
           "$comment": "Per Figma table-cell master (649:4296) Mobile breakpoint."
         }
       },
-      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingBlock": {
+        "$value": "{spacing.0}",
+        "$type": "dimension",
+        "$comment": "Cells are a fixed 40px with their content centred (649:4296). Action, checkbox and tag cells pad 0 vertically (649:4374, 649:4329, 649:4355) so a 32px control fits; a one-line text cell (8px in 649:4297) centres the same either way."
+      },
       "gap": { "$value": "{spacing.6}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
