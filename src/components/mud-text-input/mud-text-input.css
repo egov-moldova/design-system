@@ -223,7 +223,6 @@
  */
 :host(.is-loading) .native {
   pointer-events: none;
-  opacity: var(--input-control-loading-opacity);
 }
 
 :host(.is-loading) .control-spinner {

@@ -35,8 +35,7 @@
       "lineHeight": {
         "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
         "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
-      },
-      "loadingOpacity": { "$value": "0.6", "$type": "number" }
+      }
     },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
