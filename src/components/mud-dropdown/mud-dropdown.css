@@ -1,0 +1,22 @@
+:host {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.trigger {
+  display: inline-flex;
+}
+
+/* The menu is placed with `position: fixed` so a scrolling ancestor (a table)
+   cannot clip it; the dropdown writes its coordinates to --_menu-top/left. */
+::slotted(mud-menu) {
+  position: fixed;
+  inset-block-start: var(--_menu-top, 0);
+  left: var(--_menu-left, 0);
+  z-index: var(--dropdown-z-index);
+}
+
+/* Hidden until the first placement, so the menu never flashes at the corner. */
+:host(:not(.is-placed)) ::slotted(mud-menu) {
+  visibility: hidden;
+}

@@ -1,0 +1,36 @@
+{
+  "component": "mud-dropdown",
+  "figma": {
+    "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC",
+    "scale": 2
+  },
+  "defaults": {
+    "story": "components-dropdown--default",
+    "viewport": { "width": 1000, "height": 700 },
+    "capture": { "selector": "mud-dropdown", "bleed": "auto" }
+  },
+  "fixtureNote": "Figma Menu › Dismissal (430:25768) draws the open dropdown with a gesture overlay on top, so its frames are not diffed; the menu itself is covered by mud-menu's manifest. The 4px gap and the left-edge alignment are relative positions no computed style holds: they are measured in the browser (menu top − trigger bottom = 4, left edges equal).",
+  "states": [
+    {
+      "name": "open",
+      "node": "430:25769",
+      "pixel": false,
+      "html": "<div style=\"padding:24px\"><mud-dropdown><mud-button slot=\"trigger\" shape=\"circular\">Button<mud-icon slot=\"icon-end\" name=\"chevron-bottom\" size=\"20\"></mud-icon></mud-button><mud-menu type=\"contextual\" aria-label=\"Options\"><mud-menu-item value=\"o1\">Option 1</mud-menu-item><mud-menu-item value=\"o2\">Option 2</mud-menu-item><mud-menu-item value=\"o3\">Option 3</mud-menu-item><mud-menu-item value=\"o4\">Option 4</mud-menu-item><mud-menu-item value=\"o5\">Option 5</mud-menu-item><mud-menu-item value=\"o6\">Option 6</mud-menu-item></mud-menu></mud-dropdown></div>",
+      "interaction": { "type": "click", "target": "mud-dropdown mud-button" },
+      "expect": [
+        {
+          "target": "mud-dropdown mud-button",
+          "node": "430:25804",
+          "styles": { "boxHeight": "40px" },
+          "note": "The trigger is button-filled-circular Primary Medium with a trailing 20/chevron-bottom, 40px tall."
+        },
+        {
+          "target": "mud-dropdown mud-menu",
+          "node": "430:25770",
+          "styles": { "boxWidth": "270px", "position": "fixed", "visibility": "visible" },
+          "note": "The contextual menu (409:22462) is 270px wide; it is fixed-positioned so a scrolling container cannot clip it, and shown once placed."
+        }
+      ]
+    }
+  ]
+}

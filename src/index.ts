@@ -42,6 +42,10 @@ export { MudToast } from './components/mud-toast/mud-toast';
 export { TOAST_VARIANTS } from './components/mud-toast/mud-toast.types';
 export type { ToastVariant } from './components/mud-toast/mud-toast.types';
 
+export { MudDropdown } from './components/mud-dropdown/mud-dropdown';
+export { DROPDOWN_ALIGNS } from './components/mud-dropdown/mud-dropdown.types';
+export type { DropdownAlign, DropdownToggleDetail } from './components/mud-dropdown/mud-dropdown.types';
+
 export { MudToastRegion } from './components/mud-toast-region/mud-toast-region';
 export {
   TOAST_REGION_AUTO_DISMISS_VARIANTS,
