@@ -53,8 +53,21 @@ export class MudInlineMessage {
 
   /**
    * Override the default per-variant `mud-icon` name.
+   * @deprecated Each variant has its own icon in Figma, and a custom one weakens
+   * what the icon tells the reader. Still honoured; it goes away in the next major.
    */
   @Prop() iconName?: IconName;
+
+  private warnedIconName = false;
+
+  componentDidRender() {
+    if (this.iconName && !this.warnedIconName) {
+      this.warnedIconName = true;
+      console.warn(
+        '[mud-inline-message] `iconName` is deprecated: each variant keeps its own icon. It goes away in the next major.',
+      );
+    }
+  }
 
   private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;

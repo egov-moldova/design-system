@@ -1,4 +1,4 @@
-import { render, h, describe, it, expect } from '@stencil/vitest';
+import { render, h, describe, it, expect, vi, onTestFinished } from '@stencil/vitest';
 
 import '../mud-inline-message';
 import {
@@ -6,6 +6,12 @@ import {
   INLINE_MESSAGE_VARIANTS,
   INLINE_MESSAGE_SIZES,
 } from '../mud-inline-message.types';
+
+/** Silences the deprecation warning of a test that exercises the deprecated API on purpose: `iconName` is deprecated; its warning is asserted once, in its own test. */
+const silenceDeprecation = () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  onTestFinished(() => warn.mockRestore());
+};
 
 describe('mud-inline-message', () => {
   it('renders with default props (variant=info, size=medium)', async () => {
@@ -46,6 +52,7 @@ describe('mud-inline-message', () => {
   });
 
   it('honors the iconName override', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(<mud-inline-message icon-name="sparkles">M</mud-inline-message>);
     await waitForChanges();
     expect(root?.shadowRoot?.querySelector('.icon mud-icon')?.getAttribute('name')).toBe('sparkles');
@@ -84,5 +91,17 @@ describe('mud-inline-message', () => {
     expect(Ctor).toBeTruthy();
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
+  });
+
+  it('warns once that `iconName` is deprecated, and only when it is set', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const isIconNameWarning = ([m]: unknown[]) => String(m).includes('`iconName` is deprecated');
+    await render(<mud-inline-message>Plain</mud-inline-message>);
+    expect(warn.mock.calls.filter(isIconNameWarning)).toHaveLength(0);
+    const { root, waitForChanges } = await render(<mud-inline-message icon-name="sparkles">Custom</mud-inline-message>);
+    root?.setAttribute('variant', 'success');
+    await waitForChanges();
+    expect(warn.mock.calls.filter(isIconNameWarning)).toHaveLength(1);
+    warn.mockRestore();
   });
 });

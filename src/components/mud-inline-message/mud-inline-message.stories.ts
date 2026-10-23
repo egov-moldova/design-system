@@ -2,14 +2,11 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { INLINE_MESSAGE_SIZES, INLINE_MESSAGE_VARIANTS } from './mud-inline-message.types';
 import type { InlineMessageSize, InlineMessageVariant } from './mud-inline-message.types';
-import { ICON_NAMES } from '../mud-icon/mud-icon.types';
-import type { IconName } from '../mud-icon/mud-icon.types';
 
 type InlineMessageArgs = {
   variant: InlineMessageVariant;
   size: InlineMessageSize;
   hideIcon: boolean;
-  iconName: IconName | '';
   text: string;
 };
 
@@ -18,7 +15,6 @@ const renderInlineMessage = (args: InlineMessageArgs) => /*html*/ `
     variant="${args.variant}"
     size="${args.size}"
     ${args.hideIcon ? 'hide-icon' : ''}
-    ${args.iconName ? `icon-name="${args.iconName}"` : ''}
   >${args.text}</mud-inline-message>
 `;
 
@@ -70,19 +66,12 @@ messages use \`mud-toast\` / \`mud-banner\`.
       description: 'Suppress the leading icon (the `icon-none` variation).',
       table: { defaultValue: { summary: 'false' } },
     },
-    iconName: {
-      name: 'icon-name',
-      control: 'select',
-      options: ['', ...ICON_NAMES],
-      description: 'Override the default per-variant icon. Empty keeps the variant default.',
-    },
     text: { control: 'text', description: 'Message text (default slot).' },
   },
   args: {
     variant: 'info',
     size: 'medium',
     hideIcon: false,
-    iconName: '',
     text: 'Inline message',
   },
 };
@@ -185,6 +174,10 @@ const renderUsage = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-8); max-width: 320px;">
     <mud-text-input label="Label" placeholder="Placeholder" invalid></mud-text-input>
     <mud-inline-message variant="error" size="small">Error message displayed here</mud-inline-message>
+    <mud-text-input label="Label" placeholder="Placeholder"></mud-text-input>
+    <mud-inline-message variant="warning" size="small">
+      A longer message wraps onto several lines and keeps its icon level with the first line.
+    </mud-inline-message>
   </div>
 `;
 export const Usage: Story = {
@@ -202,31 +195,6 @@ export const Usage: Story = {
 <mud-inline-message id="err" variant="error" size="small">Error message displayed here</mud-inline-message>`,
       },
     },
-  },
-};
-
-// ---------------------------------------------------------------------------
-// EdgeCases — long wrapping text, diacritics, custom icon
-// ---------------------------------------------------------------------------
-const renderEdgeCases = () => /*html*/ `
-  <div style="display: flex; flex-direction: column; gap: var(--spacing-16); max-width: 360px;">
-    <div style="${cellStyle}">
-      <span style="${captionStyle}">long text — wraps, icon stays on first line</span>
-      <mud-inline-message variant="warning">
-        The message exceeds a single line and wraps onto several rows, keeping the icon aligned with the first line.
-      </mud-inline-message>
-    </div>
-    <div style="${cellStyle}">
-      <span style="${captionStyle}">custom icon override</span>
-      <mud-inline-message variant="success" icon-name="sparkles">Profile verified successfully.</mud-inline-message>
-    </div>
-  </div>
-`;
-export const EdgeCases: Story = {
-  render: renderEdgeCases,
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: '<mud-inline-message variant="warning">…long text…</mud-inline-message>' } },
   },
 };
 
