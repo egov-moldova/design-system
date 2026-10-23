@@ -140,9 +140,10 @@
             "fontSize": "14px",
             "lineHeight": "20px",
             "fontWeight": "400",
-            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px"
+            "boxShadow": "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px, rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0.5px 0px",
+            "textAlign": "start"
           },
-          "note": "Design question, not pinned: the Bottom Left variant sets its text in Desktop/Body/Small (2975:9912), left aligned, where the Bottom and Top variants centre it (210:3898). The component centres every default tooltip; the difference is invisible for one line."
+          "note": "Bubble 210:3941 sets its text in Desktop/Body/Small (2975:9912), left aligned, where the centred-arrow Bottom and Top variants centre it (210:3898). The 3 arrow positions (left / middle / right) are shown in 578:34660; the design review of 12.10.2026 asked for them to be followed."
         },
         {
           "target": "mud-tooltip .arrow",

@@ -102,6 +102,16 @@
   text-align: start;
 }
 
+/* An arrow at the bubble's left or right edge left-aligns the text; only the
+   centred arrow centres it (Figma 210:3941 Bottom Left, 210:3925 Bottom Right,
+   210:3898 Bottom). */
+:host(.position-top-left) .bubble,
+:host(.position-top-right) .bubble,
+:host(.position-bottom-left) .bubble,
+:host(.position-bottom-right) .bubble {
+  text-align: start;
+}
+
 .content {
   overflow-wrap: break-word;
 }
