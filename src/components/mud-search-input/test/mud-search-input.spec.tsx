@@ -92,7 +92,8 @@ describe('mud-search-input', () => {
       const { root } = await render(<mud-search-input label="x" required></mud-search-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('renders the default leading search icon in shadow DOM', async () => {
