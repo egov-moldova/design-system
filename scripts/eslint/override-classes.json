@@ -44,7 +44,10 @@
     "supportedFormatsText": "caption"
   },
   "mud-file-item": {
-    "removeLabel": "name"
+    "errorLabel": "name",
+    "removeLabel": "name",
+    "successLabel": "name",
+    "uploadingLabel": "name"
   },
   "mud-info-box": {
     "closeLabel": "name"
