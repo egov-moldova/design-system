@@ -379,7 +379,8 @@ describe('mud-phone-input', () => {
     it('adds a required mark when `required` is set', async () => {
       const { root } = await render(<mud-phone-input label="x" required></mud-phone-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('renders a helper assistive row when `helper-text` is set', async () => {
