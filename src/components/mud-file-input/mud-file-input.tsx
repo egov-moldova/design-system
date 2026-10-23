@@ -55,6 +55,8 @@ export class MudFileInput {
   /**
    * Visual size rung. Drives drop-zone min-height + label / icon scale.
    * @default 'md'
+   * @deprecated The Figma file input has one size (262:6718): `md` and `lg`
+   * already draw the same drop zone. Still accepted; it goes away in the next major.
    */
   @Prop({ reflect: true }) size: FileInputSize = 'md';
 
@@ -72,7 +74,12 @@ export class MudFileInput {
   /** Marks the field as mandatory. Adds the red asterisk + `aria-required`. */
   @Prop({ reflect: true }) required: boolean = false;
 
-  /** Renders the red-border error treatment + wires `aria-invalid`. */
+  /**
+   * Renders the red-border error treatment + wires `aria-invalid`.
+   * @deprecated The Figma file input has no field-level error (262:6718): a
+   * rejected file shows its own error on its `mud-file-item` row. Still honoured;
+   * it goes away in the next major, together with `errorText`.
+   */
   @Prop({ reflect: true }) invalid: boolean = false;
 
   /** Allow selecting more than one file. */
@@ -96,7 +103,11 @@ export class MudFileInput {
   /** Plain-text helper / hint shown below the drop zone. */
   @Prop({ attribute: 'helper-text' }) helperText?: string;
 
-  /** Plain-text error message shown below the drop zone when `invalid` is set. */
+  /**
+   * Plain-text error message shown below the drop zone when `invalid` is set.
+   * @deprecated See `invalid`: errors belong on the file rows. Still shown; it
+   * goes away in the next major.
+   */
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
@@ -197,6 +208,8 @@ export class MudFileInput {
   private dragDepth: number = 0;
   /** Object URLs created for image-preview thumbnails, keyed by File for revocation. */
   private previewUrls = new Map<File, string>();
+  private warnedSize = false;
+  private warnedFieldError = false;
   private stopAriaLabel?: () => void;
   private stopLang?: () => void;
 
@@ -247,6 +260,26 @@ export class MudFileInput {
 
   componentWillRender() {
     this.syncPreviewUrls();
+  }
+
+  componentDidRender() {
+    this.warnDeprecated();
+  }
+
+  /** Warns once per instance about each deprecated API in use. */
+  private warnDeprecated(): void {
+    if (this.size === 'lg' && !this.warnedSize) {
+      this.warnedSize = true;
+      console.warn(
+        '[mud-file-input] `size` is deprecated: the file input has one size. It goes away in the next major.',
+      );
+    }
+    if ((this.invalid || (this.errorText ?? '').trim() !== '') && !this.warnedFieldError) {
+      this.warnedFieldError = true;
+      console.warn(
+        "[mud-file-input] `invalid` / `errorText` are deprecated: show the error on the rejected file's mud-file-item. They go away in the next major.",
+      );
+    }
   }
 
   disconnectedCallback() {
