@@ -22,7 +22,7 @@
         "target": "mud-table thead th:nth-child(1)",
         "node": "787:36552",
         "styles": {
-          "boxHeight": "48px",
+          "boxHeight": "36px",
           "paddingLeft": "24px",
           "paddingRight": "24px",
           "fontFamily": "Onest",
@@ -41,7 +41,7 @@
         "target": "mud-table tbody tr:nth-child(1) td:nth-child(1)",
         "node": "649:4297",
         "styles": {
-          "boxHeight": "48px",
+          "boxHeight": "40px",
           "paddingLeft": "24px",
           "paddingRight": "24px",
           "color": "#383838",
@@ -292,7 +292,7 @@
           "target": "mud-table thead th:nth-child(1)",
           "node": "787:36563",
           "styles": {
-            "boxHeight": "48px",
+            "boxHeight": "36px",
             "paddingLeft": "16px",
             "paddingRight": "16px",
             "fontSize": "14px",
@@ -308,7 +308,7 @@
           "target": "mud-table tbody tr:nth-child(1) td:nth-child(1)",
           "node": "649:4302",
           "styles": {
-            "boxHeight": "48px",
+            "boxHeight": "40px",
             "paddingLeft": "16px",
             "paddingRight": "16px",
             "color": "#383838",
@@ -418,7 +418,7 @@
           "target": "mud-table thead th:nth-child(1)",
           "node": "647:3532",
           "styles": {
-            "boxHeight": "48px",
+            "boxHeight": "36px",
             "paddingLeft": "24px",
             "paddingRight": "24px",
             "fontFamily": "Onest",
@@ -534,7 +534,7 @@
           "target": "mud-table thead th:nth-child(1)",
           "node": "647:3542",
           "styles": {
-            "boxHeight": "48px",
+            "boxHeight": "36px",
             "paddingLeft": "24px",
             "paddingRight": "24px",
             "fontFamily": "Onest",
@@ -725,6 +725,8 @@
     {
       "name": "trailing-icon",
       "node": "4946:24431",
+      "pixel": false,
+      "pixelNote": "Design question: this documentation frame overrides its third row (4946:24435) to 48px, while every other row here and the table-row set (4928:11857) are 40px — the frame is 8px taller than the component can be. Style parity still checks the header and the sort icon.",
       "html": "<div style=\"width:860px\"><mud-table header-style=\"default\" row-style=\"zebra\"></mud-table></div>",
       "props": {
         "mud-table": {
@@ -1066,7 +1068,7 @@
           "styles": {
             "paddingLeft": "24px",
             "paddingRight": "24px",
-            "boxHeight": "48px",
+            "boxHeight": "40px",
             "borderBottomWidth": "0px",
             "boxShadow": "inset 0px -0.5px 0px 0px #D9D9D9",
             "boxWidth": "68px"
@@ -1151,7 +1153,7 @@
             "paddingLeft": "16px",
             "paddingRight": "16px",
             "boxWidth": "52px",
-            "boxHeight": "48px"
+            "boxHeight": "40px"
           },
           "note": "Cell container padding 0 16, checkbox Small 20x20 (649:4347) → column 16 + 20 + 16."
         },

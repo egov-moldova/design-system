@@ -13,7 +13,11 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" }
     },
     "header": {
-      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "minHeight": {
+        "$value": "36px",
+        "$type": "dimension",
+        "$comment": "Figma table-header (647:3531) is 36px tall at both breakpoints; 36 is not on the spacing scale."
+      },
       "paddingInline": {
         "desktop": {
           "$value": "{spacing.24}",
@@ -50,7 +54,11 @@
       }
     },
     "cell": {
-      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "minHeight": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "Figma table-cell (649:4296) and table-row (4928:11857) are 40px tall at both breakpoints."
+      },
       "paddingInline": {
         "desktop": {
           "$value": "{spacing.24}",

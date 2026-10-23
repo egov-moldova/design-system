@@ -255,8 +255,13 @@
   text-align: center;
 }
 
+/* An inline-block with overflow other than visible sits on the baseline by its
+   bottom edge, so the line box kept room for descenders under it: the cell
+   grew past its 40px (Figma 649:4296) and the text sat off the cell's centre.
+   Top-aligned, the line box is exactly the text's line height. */
 .cell-text {
   display: inline-block;
+  vertical-align: top;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
