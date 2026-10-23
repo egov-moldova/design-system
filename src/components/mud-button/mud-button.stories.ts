@@ -98,13 +98,6 @@ const docsSourceSlotVariations = /*html*/ /*html*/ `<!-- text-only -->
   <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
 </mud-button>
 
-<!-- icon-start + icon-end -->
-<mud-button>
-  Leading + Trailing icon
-  <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
-  <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
-</mud-button>
-
 <!-- icon-only (requires \`aria-label\` for screen readers) -->
 <mud-button icon-only aria-label="Navigate forward">
   <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
@@ -121,21 +114,10 @@ const docsSourceAsLink = /*html*/ `<mud-button href="https://example.com" target
 <mud-button href="/disabled" disabled>Disabled link</mud-button>`;
 
 const docsSourceFormSubmit = /*html*/ `<form>
-  <input name="email" type="email" placeholder="Email" required />
-  <mud-button type="submit">Submit</mud-button>
-  <mud-button variant="neutral" type="reset">Reset</mud-button>
+  <mud-text-input size="lg" name="email" type="email" label="E-mail" required></mud-text-input>
+  <mud-button size="lg" type="submit">Submit</mud-button>
+  <mud-button size="lg" variant="neutral" type="reset">Reset</mud-button>
 </form>`;
-
-const docsSourceReducedMotion = /*html*/ `<!-- Honor the user's reduce-motion preference, or force it locally. -->
-<style>
-  .reduced-motion-wrapper {
-    --button-container-transition-duration: 0ms;
-  }
-</style>
-
-<div class="reduced-motion-wrapper">
-  <mud-button loading>Loading</mud-button>
-</div>`;
 
 const cellLabelStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center; margin-top: var(--spacing-4);';
@@ -348,14 +330,6 @@ const renderSlotVariations = () => /*html*/ `
       <span style="${cellLabelStyle}">icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
-      <mud-button variant="primary" size="md">
-        Leading + Trailing icon
-        <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
-        <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
-      </mud-button>
-      <span style="${cellLabelStyle}">icon-start + icon-end</span>
-    </div>
-    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <mud-button variant="primary" size="md" icon-only aria-label="Navigate forward">
         <mud-icon slot="icon" name="arrow-right" size="20"></mud-icon>
       </mud-button>
@@ -396,6 +370,11 @@ const renderWidthBoundaries = () => {
         <mud-button variant="primary" size="md">${longLabel}</mud-button>
         <mud-button variant="primary" size="lg">${longLabel}</mud-button>
       </div>
+      <p style="${sectionLabelStyle} max-width: 560px; margin-block-start: var(--spacing-12);">
+        The long labels shown here are for demonstration purposes only. In actual interfaces, button labels should be
+        short, clear, and action-oriented. This example illustrates how text truncation behaves when a label exceeds
+        the maximum width.
+      </p>
     </div>
 
     <div>
@@ -406,11 +385,6 @@ const renderWidthBoundaries = () => {
           ${longLabel}
         </mud-button>
         <mud-button variant="primary" size="md">
-          ${longLabel}
-          <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
-        </mud-button>
-        <mud-button variant="primary" size="md">
-          <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
           ${longLabel}
           <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
         </mud-button>
@@ -433,7 +407,6 @@ const docsSourceWidthBoundaries = /*html*/ `<!-- Min-width — short labels held
 <mud-button>
   <mud-icon slot="icon-start" name="arrow-left" size="20"></mud-icon>
   Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore
-  <mud-icon slot="icon-end" name="arrow-right" size="20"></mud-icon>
 </mud-button>`;
 
 const renderTouchTarget = () => {
@@ -559,33 +532,13 @@ const renderAsLink = () => /*html*/ `
 const renderFormSubmit = () => /*html*/ `
   <form id="example-form" style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); max-width: 360px;"
         onsubmit="event.preventDefault(); document.getElementById('form-status').textContent = 'submitted at ' + new Date().toLocaleTimeString();">
-    <input name="email" type="email" placeholder="Email" required style="padding: var(--spacing-8); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-6);" />
+    <mud-text-input size="lg" name="email" type="email" label="E-mail" required></mud-text-input>
     <div style="display: flex; gap: var(--spacing-8);">
-      <mud-button variant="primary" type="submit">Submit</mud-button>
-      <mud-button variant="neutral" type="reset">Reset</mud-button>
+      <mud-button variant="primary" size="lg" type="submit">Submit</mud-button>
+      <mud-button variant="neutral" size="lg" type="reset">Reset</mud-button>
     </div>
     <p id="form-status" style="font-size: var(--font-size-12); color: var(--color-text-base-tertiary); margin: 0;"></p>
   </form>
-`;
-
-const renderReducedMotion = () => /*html*/ `
-  <style>
-    .reduced-motion-wrapper {
-      --button-container-transition-duration: 0ms;
-      --spinner-transition-duration: 0ms;
-      display: flex;
-      gap: var(--spacing-16);
-      padding: var(--spacing-24);
-      align-items: center;
-    }
-  </style>
-  <div class="reduced-motion-wrapper">
-    ${BUTTON_VARIANTS.map(v => `<mud-button variant="${v}" size="md" loading>${v}</mud-button>`).join('')}
-  </div>
-  <p style="${cellLabelStyle}; max-width: 540px; padding: 0 var(--spacing-24); text-align: left; font-style: italic;">
-    This story overrides <code>--button-container-transition-duration</code> to demonstrate the
-    static state shown when the user enables OS-level "reduce motion".
-  </p>
 `;
 
 const meta: Meta<ButtonArgs> = {
@@ -858,14 +811,15 @@ export const SlotVariations: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// WithBadge — service buttons: a logomark in the `badge` slot (Figma 2925:4606)
+// WithBadge — service buttons: a logomark in the `badge` slot (Figma 2925:4606),
+// labelled in Romanian as on the Figma badge page (2925:3568)
 // ---------------------------------------------------------------------------
 const BADGE_SERVICES: Array<[string, string]> = [
-  ['mpay', 'Pay with mpay'],
-  ['mpass', 'Sign in with mpass'],
-  ['msign', 'Sign with msign'],
-  ['mpower', 'Delegate with mpower'],
-  ['mdelivery', 'Deliver through mdelivery'],
+  ['mpay', 'Plătește cu mpay'],
+  ['mpass', 'Autentifică-te prin mpass'],
+  ['msign', 'Semnează prin msign'],
+  ['mpower', 'Împuternicește cu mpower'],
+  ['mdelivery', 'Livrează prin mdelivery'],
 ];
 
 const badgeButton = (service: string, label: string, attrs = '') =>
@@ -882,15 +836,15 @@ export const WithBadge: Story = {
       ${badgeRow('variant="primary"')}
       ${badgeRow('variant="neutral"')}
       <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-16);">
-        ${badgeButton('mpay', 'Pay with mpay', 'disabled')}
-        ${badgeButton('mpay', 'Pay with mpay', 'variant="neutral" disabled')}
-        ${badgeButton('mpay', 'Pay with mpay', 'loading')}
-        ${badgeButton('mpay', 'Pay with mpay', 'variant="neutral" loading')}
+        ${badgeButton('mpay', 'Plătește cu mpay', 'disabled')}
+        ${badgeButton('mpay', 'Plătește cu mpay', 'variant="neutral" disabled')}
+        ${badgeButton('mpay', 'Plătește cu mpay', 'loading')}
+        ${badgeButton('mpay', 'Plătește cu mpay', 'variant="neutral" loading')}
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-16);">
         <mud-button size="lg" variant="neutral">
           <mud-logo slot="badge" name="mconnect-logo-logomark-only"></mud-logo>
-          Any logo through the badge slot
+          Conectează-te prin mconnect
         </mud-button>
       </div>
     </div>
@@ -904,12 +858,12 @@ export const WithBadge: Story = {
       },
       source: {
         code: [
-          badgeButton('mpay', 'Pay with mpay'),
-          badgeButton('mpass', 'Sign in with mpass', 'variant="neutral"'),
-          badgeButton('msign', 'Sign with msign', 'disabled'),
+          badgeButton('mpay', 'Plătește cu mpay'),
+          badgeButton('mpass', 'Autentifică-te prin mpass', 'variant="neutral"'),
+          badgeButton('msign', 'Semnează prin msign', 'disabled'),
           `<mud-button size="lg" variant="neutral">
   <mud-logo slot="badge" name="mconnect-logo-logomark-only"></mud-logo>
-  Any logo through the badge slot
+  Conectează-te prin mconnect
 </mud-button>`,
         ].join('\n'),
       },
@@ -946,7 +900,14 @@ export const LoadingPlayground: Story = {
   render: renderLoadingPlayground,
   parameters: {
     controls: { disable: true },
-    docs: { source: { code: docsSourceLoading } },
+    docs: {
+      description: {
+        story:
+          'When the visitor has turned on "reduce motion" in their operating system, the button follows it on its own: ' +
+          'hover and press transitions are switched off and the loading spinner stops turning. Nothing needs to be set.',
+      },
+      source: { code: docsSourceLoading },
+    },
   },
 };
 
@@ -1027,16 +988,5 @@ export const CoverageGuard: Story = {
     if (!Ctor) throw new Error('mud-button constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('instance not constructed');
-  },
-};
-
-// ---------------------------------------------------------------------------
-// ReducedMotion — spinner static when prefers-reduced-motion: reduce
-// ---------------------------------------------------------------------------
-export const ReducedMotion: Story = {
-  render: renderReducedMotion,
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: docsSourceReducedMotion } },
   },
 };
