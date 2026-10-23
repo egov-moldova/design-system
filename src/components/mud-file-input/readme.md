@@ -96,15 +96,15 @@ State model (no style axis — Figma is state-only):
 
 ### Depends on
 
-- [mud-button](../mud-button)
 - [mud-icon](../mud-icon)
+- [mud-button](../mud-button)
 - [mud-file-item](../mud-file-item)
 
 ### Graph
 ```mermaid
 graph TD;
-  mud-file-input --> mud-button
   mud-file-input --> mud-icon
+  mud-file-input --> mud-button
   mud-file-input --> mud-file-item
   mud-button --> mud-logo
   mud-button --> mud-spinner
