@@ -1,4 +1,4 @@
-import { Component, Element, Event, Host, Listen, Prop, State, forceUpdate, h } from '@stencil/core';
+import { Component, Element, Event, Host, Listen, Method, Prop, State, forceUpdate, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { hasIconVariant, type IconName } from '../mud-icon/mud-icon.types';
@@ -17,8 +17,9 @@ import type { ToastVariant } from './mud-toast.types';
  * an optional inline link/action group (`actions` slot) and a trailing close
  * button (shown by default — `closable` defaults to `true`).
  *
- * Placement, vertical stacking and auto-dismiss are the consumer's
- * responsibility — this atom is just the surface. Its entrance animation
+ * Placement, vertical stacking and auto-dismiss belong to `mud-toast-region`
+ * (or to the consumer, for a toast placed by hand) — this atom is just the
+ * surface. Its entrance animation
  * (slide-down + fade-in) plays once on mount; closing it fades it out in
  * place before `mudClose` fires (Figma Behavior › dismissal).
  *
@@ -133,6 +134,15 @@ export class MudToast {
   }
 
   /**
+   * Closes the toast the way its close button does: the fade-out plays, then
+   * `mudClose` fires. `mud-toast-region` calls it to auto-dismiss a toast.
+   */
+  @Method()
+  async dismiss(): Promise<void> {
+    this.startDismiss();
+  }
+
+  /**
    * Built-in strings in the resolved locale, with the override props on top.
    */
   private messages(): ToastMessages {
@@ -169,19 +179,19 @@ export class MudToast {
 
   private handleCloseClick = (ev: MouseEvent) => {
     ev.stopPropagation();
-    this.dismiss();
+    this.startDismiss();
   };
 
   private handleCloseKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === 'Enter' || ev.key === ' ') {
       ev.preventDefault();
       ev.stopPropagation();
-      this.dismiss();
+      this.startDismiss();
     }
   };
 
   /** Fades the toast out, then emits `mudClose`; a second close is ignored. */
-  private dismiss(): void {
+  private startDismiss(): void {
     if (this.dismissing) return;
     const reduceMotion =
       typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
