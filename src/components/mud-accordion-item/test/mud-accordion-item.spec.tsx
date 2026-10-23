@@ -1,12 +1,19 @@
-import { render, h, describe, it, expect, vi } from '@stencil/vitest';
+import { render, h, describe, it, expect, vi, onTestFinished } from '@stencil/vitest';
 
 import '../mud-accordion-item';
 import '../../mud-badge/mud-badge';
+
+/** Silences the deprecation warning of a test that exercises the deprecated API on purpose: `disabled` is deprecated; its warning is asserted once, under "deprecated APIs". */
+const silenceDeprecation = () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  onTestFinished(() => warn.mockRestore());
+};
 
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
 describe('mud-accordion-item', () => {
   it('reflects open and disabled to the host', async () => {
+    silenceDeprecation();
     const { root } = await render(<mud-accordion-item heading="A" open disabled></mud-accordion-item>);
     expect(root?.hasAttribute('open')).toBe(true);
     expect(root?.hasAttribute('disabled')).toBe(true);
@@ -63,6 +70,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('does not toggle when disabled', async () => {
+    silenceDeprecation();
     const { root } = await render(<mud-accordion-item heading="A" disabled></mud-accordion-item>);
     const header = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.header');
     header?.click();
@@ -100,6 +108,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('auto-collapses when transitioned to disabled while open', async () => {
+    silenceDeprecation();
     const { root } = await render(<mud-accordion-item heading="A" open></mud-accordion-item>);
     expect(root?.hasAttribute('open')).toBe(true);
     (root as HTMLElement).setAttribute('disabled', '');
@@ -133,6 +142,7 @@ describe('mud-accordion-item', () => {
     expect(instance).toBeTruthy();
   });
   it('takes back only the `disabled` it wrote (issue #17)', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <button slot="trailing" id="authored" disabled>
@@ -184,6 +194,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('writes `disabled` only on the control slot, never on the text slots', async () => {
+    silenceDeprecation();
     const { root } = await render(
       <mud-accordion-item disabled>
         <h3 slot="heading" id="head">
@@ -211,6 +222,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('suppresses and restores `tabindex` on slotted content (WCAG 4.1.2)', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <a slot="trailing" id="link" href="#go">
@@ -239,6 +251,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('does not claim a control whose `disabled` is a property, not an attribute', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment">
         <button slot="trailing" id="prop">
@@ -268,6 +281,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('re-suppresses a `tabindex` written by anyone else during the disabled window', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <button slot="trailing" id="ctl">
@@ -295,6 +309,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('re-applies its writes when the item is reconnected while disabled', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <button slot="trailing" id="ctl">
@@ -323,6 +338,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('disables a control slotted in while the item is already disabled', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment" disabled></mud-accordion-item>);
     const late = document.createElement('button');
     late.setAttribute('slot', 'trailing');
@@ -340,6 +356,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('does not claim a control slotted in already disabled while the item is disabled', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment" disabled></mud-accordion-item>);
     const late = document.createElement('button');
     late.setAttribute('slot', 'trailing');
@@ -356,6 +373,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('claims a `mud-*` control whose `disabled="false"` attribute reads as not disabled', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment">
         <mud-badge slot="trailing" count={2}></mud-badge>
@@ -379,6 +397,7 @@ describe('mud-accordion-item', () => {
   });
 
   it('does not claim a native control carrying `disabled="false"`, which HTML reads as disabled', async () => {
+    silenceDeprecation();
     const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment"></mud-accordion-item>);
     const button = document.createElement('button');
     button.setAttribute('slot', 'trailing');
@@ -391,5 +410,33 @@ describe('mud-accordion-item', () => {
     (root as HTMLElement).removeAttribute('disabled');
     await waitForChanges();
     expect(button.getAttribute('disabled')).toBe('false');
+  });
+
+  describe('deprecated APIs', () => {
+    it('warns once that `disabled` is deprecated, and only when it is set', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(<mud-accordion-item heading="A" disabled></mud-accordion-item>);
+      (root as HTMLElement & { open: boolean }).open = true;
+      await waitForChanges();
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('`disabled` is deprecated'))).toHaveLength(1);
+      await render(<mud-accordion-item heading="B"></mud-accordion-item>);
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('`disabled` is deprecated'))).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it('warns once that the icon-start slot is deprecated when it is filled', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const { root, waitForChanges } = await render(
+        <mud-accordion-item heading="A">
+          <span slot="icon-start">i</span>
+        </mud-accordion-item>,
+      );
+      root?.shadowRoot?.querySelector('slot[name="icon-start"]')?.dispatchEvent(new Event('slotchange'));
+      await waitForChanges();
+      (root as HTMLElement & { open: boolean }).open = true;
+      await waitForChanges();
+      expect(warn.mock.calls.filter(([m]) => String(m).includes('"icon-start" slot is deprecated'))).toHaveLength(1);
+      warn.mockRestore();
+    });
   });
 });
