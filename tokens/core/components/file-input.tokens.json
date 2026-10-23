@@ -127,6 +127,17 @@
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
     },
+    "uploadButton": {
+      "$comment": "The button variant's composition (Figma 616:6918): a 16/24 Medium title and the caption 6px apart (616:6919), then the button 16px below.",
+      "label": {
+        "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+      },
+      "labelGap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" }
+    },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },

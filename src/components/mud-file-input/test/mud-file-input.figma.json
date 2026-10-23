@@ -268,6 +268,12 @@
           "note": "Figma 616:6922 is button-filled-rectangular Style=Primary Size=Medium — 40px tall. The fill, padding and radius belong to mud-button's own manifest; only the rung the file input picks is asserted here."
         },
         {
+          "target": "mud-file-input .label",
+          "node": "616:6920",
+          "styles": { "fontSize": "16px", "lineHeight": "24px", "fontWeight": "500", "color": "#121212" },
+          "note": "Figma 616:6920 titles the button composition in Desktop/Body/Default 500 #121212 — larger than the 14px input label the drop zone keeps (design review 12.10.2026)."
+        },
+        {
           "target": "mud-file-input .captions",
           "node": "616:6921",
           "styles": {

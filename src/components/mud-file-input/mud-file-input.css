@@ -369,6 +369,27 @@
   align-self: flex-start;
 }
 
+/* Figma 616:6918 titles the button composition in Desktop/Body/Default 500
+   (616:6920), sets the caption 6px under it (616:6919) and the button 16px
+   under that, where the drop zone keeps the 14px input label (design review
+   12.10.2026). The gaps are reached from the field's own gap, so whatever
+   follows the button keeps its spacing. */
+:host(.variant-button) .label {
+  font-size: var(--file-input-upload-button-label-font-size);
+  line-height: var(--file-input-upload-button-label-line-height);
+  font-weight: var(--file-input-upload-button-label-font-weight);
+  color: var(--file-input-upload-button-label-color);
+}
+
+:host(.variant-button.has-label) .captions--inline {
+  margin-block-start: calc(var(--file-input-upload-button-label-gap) - var(--file-input-field-gap));
+}
+
+:host(.variant-button.has-label) .upload-button,
+.captions--inline + .upload-button {
+  margin-block-start: calc(var(--file-input-upload-button-gap) - var(--file-input-field-gap));
+}
+
 /* In button mode the captions sit above the button as one left-aligned line
    (wrapping rather than truncating, since there's no fixed dropzone width). */
 .captions--inline {
