@@ -184,6 +184,40 @@
       ]
     },
     {
+      "name": "large-mandatory",
+      "node": "933:29100",
+      "pixel": false,
+      "html": "<div style=\"width: 282px\"><mud-search-input label=\"Label\" placeholder=\"Placeholder\" size=\"lg\" required></mud-search-input></div>",
+      "expect": [
+        {
+          "target": "mud-search-input .label",
+          "node": "933:29101",
+          "styles": {
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-search-input .required-mark",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "#D92D20"
+          },
+          "note": "Every input's mandatory star is an instance of the 12/asterisk icon (2975:10179), 12×12, fill #D92D20."
+        },
+        {
+          "target": "mud-search-input .required-mark mud-icon",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma draws the mark as the 12/asterisk icon, not a text glyph — a text '*' at the 14px label font rendered smaller and sat high (design review 12.10.2026)."
+        }
+      ]
+    },
+    {
       "name": "rect-medium-default",
       "node": "933:29613",
       "html": "<div style=\"width: 282px\"><mud-search-input aria-label=\"Caută\" placeholder=\"Placeholder\" size=\"md\" shape=\"rectangular\"></mud-search-input></div>",

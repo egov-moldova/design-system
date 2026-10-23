@@ -44,7 +44,7 @@ const renderNumericInput = (args: NumericInputArgs) => /*html*/ `
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
     ${args.loading ? 'loading' : ''}
-    ${args.showSteppers ? '' : 'show-steppers="false"'}
+    ${args.showSteppers ? 'show-steppers' : ''}
     ${args.locale ? `locale="${args.locale}"` : ''}
   ></mud-numeric-input>
 `;
@@ -67,7 +67,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
     args.loading ? 'loading' : '',
-    args.showSteppers ? '' : 'show-steppers="false"',
+    args.showSteppers ? 'show-steppers' : '',
     args.locale ? `locale="${args.locale}"` : '',
   ]
     .filter(Boolean)
@@ -139,7 +139,7 @@ export const Default: Story = {
     readonly: false,
     invalid: false,
     loading: false,
-    showSteppers: true,
+    showSteppers: false,
     locale: '',
   },
   parameters: {
@@ -623,14 +623,6 @@ export const WithPrefix: Story = {
             <span slot="suffix">USD</span>
           </mud-numeric-input>`,
         ),
-        cell(
-          'icon-start + prefix + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2">
-            <mud-icon slot="icon-start" name="wallet" size="24"></mud-icon>
-            <span slot="prefix">€</span>
-            <span slot="suffix">MDL</span>
-          </mud-numeric-input>`,
-        ),
       ].join(''),
     ),
   parameters: {
@@ -641,7 +633,6 @@ export const WithPrefix: Story = {
           '<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2"><span slot="prefix">€</span></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="Amount" value="1250" step="10" precision="2"><span slot="prefix">MDL</span></mud-numeric-input>',
           '<mud-numeric-input size="lg" label="Price" value="99" step="1" precision="2"><span slot="prefix">$</span><span slot="suffix">USD</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="prefix">€</span><span slot="suffix">MDL</span></mud-numeric-input>',
         ].join('\n'),
       },
     },
@@ -694,16 +685,16 @@ export const WithCurrencyIcon: Story = {
     wrap2col(
       [
         cell(
-          'icon-start + suffix',
-          /*html*/ `<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2">
-            <mud-icon slot="icon-start" name="wallet" size="24"></mud-icon>
+          'coins icon + suffix',
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="1250" step="10" precision="2">
+            <mud-icon slot="icon-start" name="coins" size="24"></mud-icon>
             <span slot="suffix">MDL</span>
           </mud-numeric-input>`,
         ),
         cell(
-          'icon-start only',
-          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="3">
-            <mud-icon slot="icon-start" name="group" size="24"></mud-icon>
+          'coins icon only',
+          /*html*/ `<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2">
+            <mud-icon slot="icon-start" name="coins" size="24"></mud-icon>
           </mud-numeric-input>`,
         ),
       ].join(''),
@@ -713,36 +704,43 @@ export const WithCurrencyIcon: Story = {
     docs: {
       source: {
         code: [
-          '<mud-numeric-input size="lg" label="Payment" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="suffix">MDL</span></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="Quantity" value="3"><mud-icon slot="icon-start" name="group" size="24"></mud-icon></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="coins" size="24"></mud-icon><span slot="suffix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Amount" value="50" step="1" precision="2"><mud-icon slot="icon-start" name="coins" size="24"></mud-icon></mud-numeric-input>',
         ].join('\n'),
       },
     },
   },
 };
 
-export const WithoutSteppers: Story = {
-  name: 'Without Steppers',
+export const WithSteppers: Story = {
+  name: 'With Stepper Buttons',
   render: () =>
     wrap2col(
       [
         cell(
-          'compact filter (no steppers)',
-          /*html*/ `<mud-numeric-input size="md" label="Postal code" value="2001" show-steppers="false"></mud-numeric-input>`,
+          'default (no stepper buttons)',
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="3" min="1" max="10"></mud-numeric-input>`,
         ),
         cell(
-          'identifier (no steppers)',
-          /*html*/ `<mud-numeric-input size="lg" label="IDNP" value="2001005000000" show-steppers="false" helper-text="13 digits"></mud-numeric-input>`,
+          'show-steppers',
+          /*html*/ `<mud-numeric-input size="lg" label="Quantity" value="3" min="1" max="10" show-steppers></mud-numeric-input>`,
         ),
       ].join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          'Stepper buttons are the small up / down arrows at the end of the field: each press adds or subtracts `step`, ' +
+          'and they stop at `min` / `max`. They are off by default and are not part of the Figma design — turn them on with ' +
+          '`show-steppers` only where small increments are the usual way to edit, such as a quantity. The arrow keys step ' +
+          'the value either way.',
+      },
       source: {
         code: [
-          '<mud-numeric-input size="md" label="Postal code" value="2001" show-steppers="false"></mud-numeric-input>',
-          '<mud-numeric-input size="lg" label="IDNP" value="2001005000000" show-steppers="false"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="3" min="1" max="10"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Quantity" value="3" min="1" max="10" show-steppers></mud-numeric-input>',
         ].join('\n'),
       },
     },

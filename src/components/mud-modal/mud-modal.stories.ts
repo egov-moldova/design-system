@@ -610,9 +610,11 @@ const renderMobile = () => /*html*/ `
 `;
 export const Mobile: Story = {
   render: renderMobile,
+  // Storybook 10 reads the starting viewport from `globals`
+  // (`parameters.viewport.defaultViewport` is a no-op).
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
   parameters: {
     controls: { disable: true },
-    viewport: { defaultViewport: 'mobile1' },
     docs: {
       description: {
         story:
@@ -670,9 +672,11 @@ const renderMobileWithImage = () => /*html*/ `
 `;
 export const MobileWithImage: Story = {
   render: renderMobileWithImage,
+  // Storybook 10 reads the starting viewport from `globals`
+  // (`parameters.viewport.defaultViewport` is a no-op).
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
   parameters: {
     controls: { disable: true },
-    viewport: { defaultViewport: 'mobile1' },
     docs: {
       description: {
         story:

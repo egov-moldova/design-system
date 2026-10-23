@@ -84,8 +84,9 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  *
  * @slot heading - Optional rich heading content. Overrides the `heading` prop.
  * @slot supporting - Optional supporting text. Overrides the `supportingText` prop.
- * @slot icon-start - Optional leading icon (`mud-icon` recommended).
- * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
+ * @slot icon-start - Deprecated: the Figma accordion item has no leading icon
+ *                     (659:10906). Still rendered; it goes away in the next major.
+ * @slot trailing - Optional trailing content (`mud-tag`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
  *                   Rendered beside the header button, not inside it: a control
  *                   here is its own tab stop after the header, is not part of the
@@ -112,6 +113,9 @@ export class MudAccordionItem {
   /**
    * Marks the item non-interactive. Header receives `aria-disabled`.
    * @default false
+   * @deprecated The Figma accordion item has no disabled state (659:10906), and a
+   * question a visitor cannot open is better left out of the list. Still honoured;
+   * it goes away in the next major.
    */
   @Prop({ reflect: true }) disabled: boolean = false;
 
@@ -206,6 +210,8 @@ export class MudAccordionItem {
   @State() private panelId: string = '';
 
   @State() private hasIconStart: boolean = false;
+  private warnedDisabled = false;
+  private warnedIconStart = false;
 
   @State() private hasTrailing: boolean = false;
 
@@ -261,6 +267,26 @@ export class MudAccordionItem {
   componentDidLoad() {
     // An item that renders with `disabled` already set fires no @Watch.
     this.syncSlottedDisabled();
+  }
+
+  componentDidRender() {
+    this.warnDeprecated();
+  }
+
+  /** Warns once per instance about each deprecated API in use. */
+  private warnDeprecated(): void {
+    if (this.disabled && !this.warnedDisabled) {
+      this.warnedDisabled = true;
+      console.warn(
+        '[mud-accordion-item] `disabled` is deprecated: leave the item out instead. It goes away in the next major.',
+      );
+    }
+    if (this.hasIconStart && !this.warnedIconStart) {
+      this.warnedIconStart = true;
+      console.warn(
+        '[mud-accordion-item] The "icon-start" slot is deprecated: the design has no leading icon. It goes away in the next major.',
+      );
+    }
   }
 
   disconnectedCallback() {

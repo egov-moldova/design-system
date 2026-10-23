@@ -277,36 +277,6 @@ export const WithSubmitButton: Story = {
   },
 };
 
-export const WithCustomIcon: Story = {
-  name: 'With Custom Icon',
-  render: () =>
-    wrap(
-      [
-        cell(
-          'icon-start slot override',
-          /*html*/ `<mud-search-input aria-label="Search the list" placeholder="Filter…">
-            <mud-icon slot="icon-start" name="filter" size="20"></mud-icon>
-          </mud-search-input>`,
-        ),
-        cell(
-          'iconName prop override',
-          /*html*/ `<mud-search-input aria-label="Search the list" icon-name="document" placeholder="Search documents"></mud-search-input>`,
-        ),
-      ].join(''),
-    ),
-  parameters: {
-    controls: { disable: true },
-    docs: {
-      source: {
-        code: [
-          '<mud-search-input aria-label="Search the list" placeholder="Filter…"><mud-icon slot="icon-start" name="filter" size="20"></mud-icon></mud-search-input>',
-          '<mud-search-input aria-label="Search the list" icon-name="document" placeholder="Search documents"></mud-search-input>',
-        ].join('\n'),
-      },
-    },
-  },
-};
-
 export const WithoutClearButton: Story = {
   name: 'Without Clear Button',
   render: () =>

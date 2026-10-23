@@ -22,7 +22,14 @@ import {
   segmentIndexAt,
 } from '../../utils/segment-mask';
 import type { MaskSegment, SegmentMask } from '../../utils/segment-mask';
-import { childLocale, formatMessage, localeMessages, watchDocumentLang, hostLang } from '../../utils/locale';
+import {
+  childLocale,
+  formatMessage,
+  localeMessages,
+  resolveLocale,
+  watchDocumentLang,
+  hostLang,
+} from '../../utils/locale';
 import type { LocaleProp } from '../../utils/locale';
 import type {
   DatePickerChangeDetail,
@@ -35,6 +42,7 @@ import type { DateInputMessages } from './mud-date-input.messages';
 import {
   DATE_INPUT_BREAKPOINTS,
   DATE_INPUT_FORMATS,
+  DATE_INPUT_LOCALE_FORMATS,
   DATE_INPUT_TYPES,
   DATE_INPUT_SIZES,
   DATE_INPUT_VARIANTS,
@@ -128,10 +136,11 @@ export class MudDateInput {
 
   /**
    * Display format. The component accepts only the digits the format permits
-   * and rewrites the value with the separator inline as the user types.
-   * @default 'DD/MM/YYYY'
+   * and rewrites the value with the separator inline as the user types. `value`,
+   * `min` and `max` are read in this format. Unset, it follows the resolved
+   * locale: `MM/DD/YYYY` for `en-US`, `DD/MM/YYYY` for `ro-MD` and `ru-MD`.
    */
-  @Prop({ reflect: true }) format: DateInputFormat = 'DD/MM/YYYY';
+  @Prop({ reflect: true }) format?: DateInputFormat;
 
   /**
    * The date-input type of the Figma Date Picker page (Types, 470:32035):
@@ -232,8 +241,9 @@ export class MudDateInput {
 
   /**
    * Language of the built-in labels and error messages, and of the calendar's month and
-   * weekday names, which `mud-date-picker` takes from `Intl`. The typed value itself follows
-   * `format`, not the locale. Unset, the component follows the closest ancestor `lang`
+   * weekday names, which `mud-date-picker` takes from `Intl`. When `format` is unset, it also
+   * sets the order of the typed date (month first in `en-US`). Unset, the component follows
+   * the closest ancestor `lang`
    * (`<html lang>` included), else `ro-MD`.
    */
   @Prop({ reflect: true }) locale?: LocaleProp;
@@ -397,14 +407,14 @@ export class MudDateInput {
   }
 
   @Watch('format')
-  validateFormat(next: DateInputFormat) {
-    if (!DATE_INPUT_FORMATS.includes(next)) {
+  validateFormat(next: DateInputFormat | undefined) {
+    if (next !== undefined && !DATE_INPUT_FORMATS.includes(next)) {
       console.warn(
         `[mud-date-input] format="${String(next)}" is not supported. Supported: ${DATE_INPUT_FORMATS.join(
           ', ',
-        )}. Falling back to "DD/MM/YYYY".`,
+        )}. Falling back to the locale's format.`,
       );
-      this.format = 'DD/MM/YYYY';
+      this.format = undefined;
     }
   }
 
@@ -614,14 +624,22 @@ export class MudDateInput {
     return this.type === 'date-range';
   }
 
+  /**
+   * The display format in use: `format` when set, else the resolved locale's
+   * order, so an `en-US` page types month first (design review 12.10.2026).
+   */
+  private resolvedFormat(): DateInputFormat {
+    return this.format ?? DATE_INPUT_LOCALE_FORMATS[resolveLocale('mud-date-input', this.host, this.locale)];
+  }
+
   /** The field's mask: one date, or two for `type="date-range"`. */
   private mask(): SegmentMask<DateSegmentKind> {
-    return MASKS[this.format][this.isRange() ? 'range' : 'single'];
+    return MASKS[this.resolvedFormat()][this.isRange() ? 'range' : 'single'];
   }
 
   /** The mask of one date in the configured format. */
   private dateMask(): SegmentMask<DateSegmentKind> {
-    return MASKS[this.format].single;
+    return MASKS[this.resolvedFormat()].single;
   }
 
   /**
@@ -1171,22 +1189,34 @@ export class MudDateInput {
             </button>
           ) : null}
 
-          <button
-            type="button"
-            class="trailing-icon"
-            part="trailing-icon"
-            aria-label={messages.openPickerLabel}
-            aria-haspopup="dialog"
-            aria-expanded={this.pickerOpen ? 'true' : 'false'}
-            /* `aria-controls` references the popover ID — only emit it while the
-               popover is actually mounted so axe's `aria-valid-attr-value` rule
-               doesn't see a dangling id. */
-            aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
-            disabled={effectivelyDisabled || this.readonly}
-            onClick={this.togglePicker}
-          >
-            <mud-icon name="calendar" size={iconSize} />
-          </button>
+          {this.readonly ? (
+            this.value !== '' && !this.isInvalid() ? (
+              <mud-icon
+                class="valid-icon"
+                part="valid-icon"
+                name="checkmark-small"
+                size={24}
+                color="icon-positive-default"
+              />
+            ) : null
+          ) : (
+            <button
+              type="button"
+              class="trailing-icon"
+              part="trailing-icon"
+              aria-label={messages.openPickerLabel}
+              aria-haspopup="dialog"
+              aria-expanded={this.pickerOpen ? 'true' : 'false'}
+              /* `aria-controls` references the popover ID — only emit it while the
+                 popover is actually mounted so axe's `aria-valid-attr-value` rule
+                 doesn't see a dangling id. */
+              aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
+              disabled={effectivelyDisabled}
+              onClick={this.togglePicker}
+            >
+              <mud-icon name="calendar" size={iconSize} />
+            </button>
+          )}
 
           {/* The popover lives inside `.control` so it anchors under the field,
               not under the helper / error text below it. */}

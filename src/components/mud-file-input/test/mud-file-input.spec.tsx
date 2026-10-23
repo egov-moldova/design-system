@@ -1,4 +1,4 @@
-import { describe, expect, h, it, render, vi } from '@stencil/vitest';
+import { describe, expect, h, it, render, vi, onTestFinished } from '@stencil/vitest';
 
 import '../mud-file-input';
 import '../../mud-file-item/mud-file-item';
@@ -7,6 +7,12 @@ import { describeLocales, propsToAttrs } from '../../../utils/locale.test-helper
 import { FILE_INPUT_MESSAGES } from '../mud-file-input.messages';
 import type { FileInputMessages } from '../mud-file-input.messages';
 import { FILE_INPUT_SIZES } from '../mud-file-input.types';
+
+/** Silences the deprecation warning of a test that exercises the deprecated API on purpose: `size`, `invalid` and `errorText` are deprecated; their warnings are asserted once, under "deprecated APIs". */
+const silenceDeprecation = () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  onTestFinished(() => warn.mockRestore());
+};
 
 const queryDropzone = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.dropzone') ?? null) as HTMLElement | null;
@@ -86,11 +92,13 @@ describe('mud-file-input', () => {
     });
 
     it.each(FILE_INPUT_SIZES)('reflects size="%s" to host', async size => {
+      silenceDeprecation();
       const { root } = await render(<mud-file-input size={size} label="x"></mud-file-input>);
       expect(root?.getAttribute('size')).toBe(size);
     });
 
     it('reflects invalid attribute to host', async () => {
+      silenceDeprecation();
       const { root } = await render(<mud-file-input label="x" invalid></mud-file-input>);
       expect(root?.hasAttribute('invalid')).toBe(true);
     });
@@ -219,7 +227,8 @@ describe('mud-file-input', () => {
       const { root } = await render(<mud-file-input label="x" required></mud-file-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('renders a hidden native input', async () => {
@@ -238,6 +247,7 @@ describe('mud-file-input', () => {
     });
 
     it('renders an error assistive row when invalid + error-text', async () => {
+      silenceDeprecation();
       const { root } = await render(<mud-file-input label="x" invalid error-text="Trebuie"></mud-file-input>);
       const assistive = queryAssistive(root);
       expect(assistive?.classList.contains('assistive-error')).toBe(true);
@@ -245,6 +255,7 @@ describe('mud-file-input', () => {
     });
 
     it('error takes priority over helper', async () => {
+      silenceDeprecation();
       const { root } = await render(
         <mud-file-input label="x" invalid helper-text="Hint" error-text="Required"></mud-file-input>,
       );
@@ -598,6 +609,7 @@ describe('mud-file-input', () => {
     });
 
     it('exposes aria-invalid on the inner button when invalid', async () => {
+      silenceDeprecation();
       const { root } = await render(<mud-file-input label="x" invalid></mud-file-input>);
       expect(innerBtn(root)?.getAttribute('aria-invalid')).toBe('true');
     });
@@ -611,6 +623,7 @@ describe('mud-file-input', () => {
     });
 
     it('wires aria-describedby on the inner button to the error id when invalid + error-text present', async () => {
+      silenceDeprecation();
       const { root } = await render(<mud-file-input label="x" invalid error-text="Required"></mud-file-input>);
       const describedBy = innerBtn(root)?.getAttribute('aria-describedby');
       const error = root?.shadowRoot?.querySelector('.assistive-error');
@@ -655,6 +668,26 @@ describe('mud-file-input', () => {
       (root as unknown as { formResetCallback: () => void }).formResetCallback();
       await flush();
       expect((root as unknown as { files: File[] }).files).toEqual([]);
+    });
+  });
+
+  describe('deprecated APIs', () => {
+    const count = (warn: { mock: { calls: unknown[][] } }, text: string) =>
+      warn.mock.calls.filter(([m]) => String(m).includes(text)).length;
+
+    it('warns once about size="lg" and about a field-level error, and not otherwise', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      await render(<mud-file-input label="x"></mud-file-input>);
+      expect(count(warn, '`size` is deprecated')).toBe(0);
+      expect(count(warn, '`invalid` / `errorText` are deprecated')).toBe(0);
+      const { root, waitForChanges } = await render(
+        <mud-file-input label="x" size="lg" invalid error-text="Lipsește documentul"></mud-file-input>,
+      );
+      root?.setAttribute('label', 'y');
+      await waitForChanges();
+      expect(count(warn, '`size` is deprecated')).toBe(1);
+      expect(count(warn, '`invalid` / `errorText` are deprecated')).toBe(1);
+      warn.mockRestore();
     });
   });
 });

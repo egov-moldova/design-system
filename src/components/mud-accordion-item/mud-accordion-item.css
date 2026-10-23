@@ -281,9 +281,9 @@
   font-size: var(--accordion-item-supporting-font-size);
   font-weight: var(--accordion-item-supporting-font-weight);
   line-height: var(--accordion-item-supporting-line-height);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Figma hugs the supporting text in every state (659:10911, 659:10923):
+     it wraps, it is never truncated (design review 12.10.2026). */
+  overflow-wrap: anywhere;
 }
 
 .supporting.has-content {

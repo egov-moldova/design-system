@@ -35,7 +35,8 @@ describe('mud-date-input', () => {
       const { root } = await render(<mud-date-input locale="ro-MD" label="Birthday"></mud-date-input>);
       expect(root?.getAttribute('variant')).toBe('default');
       expect(root?.getAttribute('size')).toBe('md');
-      expect(root?.getAttribute('format')).toBe('DD/MM/YYYY');
+      // Unset: the format follows the locale instead of a fixed default.
+      expect(root?.getAttribute('format')).toBeNull();
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
       expect(root?.getAttribute('readonly')).toBeNull();
@@ -83,8 +84,31 @@ describe('mud-date-input', () => {
       (root as unknown as { format: string }).format = 'bogus';
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('format="bogus"'));
-      expect(root?.getAttribute('format')).toBe('DD/MM/YYYY');
       warn.mockRestore();
+      expect((root as unknown as { format?: string }).format).toBeUndefined();
+      expect(queryNative(root)?.getAttribute('placeholder')).toBe('DD/MM/YYYY');
+    });
+
+    it.each([
+      ['en-US', 'MM/DD/YYYY'],
+      ['ro-MD', 'DD/MM/YYYY'],
+      ['ru-MD', 'DD/MM/YYYY'],
+    ])('follows the %s order when format is unset', async (locale, pattern) => {
+      const { root } = await render(<mud-date-input locale={locale} label="x"></mud-date-input>);
+      expect(queryNative(root)?.getAttribute('placeholder')).toBe(pattern);
+    });
+
+    it('reads the value month first on an en-US page with no format', async () => {
+      const { root } = await render(<mud-date-input label="x" value="04/15/2025"></mud-date-input>, {
+        stageAttrs: { lang: 'en-US' },
+      });
+      await flush();
+      expect(root?.classList.contains('is-invalid')).toBe(false);
+    });
+
+    it('keeps an explicit format over the locale order', async () => {
+      const { root } = await render(<mud-date-input locale="en-US" format="DD/MM/YYYY" label="x"></mud-date-input>);
+      expect(queryNative(root)?.getAttribute('placeholder')).toBe('DD/MM/YYYY');
     });
 
     it('renders ro-MD copy silently — no warning — when locale is unset', async () => {
@@ -473,7 +497,9 @@ describe('mud-date-input', () => {
     });
 
     it('translates the built-in message via `locale`', async () => {
-      const { root } = await render(<mud-date-input locale="en-US" label="x" value="45/"></mud-date-input>);
+      const { root } = await render(
+        <mud-date-input locale="en-US" format="DD/MM/YYYY" label="x" value="45/"></mud-date-input>,
+      );
       expect(queryAssistive(root)?.textContent).toContain('Day must be between 01 and 31');
     });
 
@@ -526,11 +552,37 @@ describe('mud-date-input', () => {
       const { root } = await render(
         <mud-date-input locale="ro-MD" label="x" readonly value="15/04/2025"></mud-date-input>,
       );
-      const trigger = root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
-      expect(trigger?.hasAttribute('disabled')).toBe(true);
-      trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      // Read-only drops the calendar button (457:26191): nothing to open it with.
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')).toBeNull();
+      root?.shadowRoot
+        ?.querySelector<HTMLElement>('.control')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await flush();
       expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+
+    it('shows the read-only check in place of the calendar button when the value is valid', async () => {
+      const { root } = await render(
+        <mud-date-input locale="ro-MD" label="x" readonly value="15/04/2025"></mud-date-input>,
+      );
+      const check = root?.shadowRoot?.querySelector('.valid-icon');
+      expect(check?.getAttribute('name')).toBe('checkmark-small');
+      expect(check?.getAttribute('part')).toBe('valid-icon');
+    });
+
+    it('shows no read-only check when the field is empty or invalid', async () => {
+      const { root: empty } = await render(<mud-date-input locale="ro-MD" label="x" readonly></mud-date-input>);
+      expect(empty?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
+      const { root: invalid } = await render(
+        <mud-date-input locale="ro-MD" label="x" readonly invalid value="15/04/2025"></mud-date-input>,
+      );
+      expect(invalid?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
+    });
+
+    it('keeps the calendar button when not read-only', async () => {
+      const { root } = await render(<mud-date-input locale="ro-MD" label="x" value="15/04/2025"></mud-date-input>);
+      expect(root?.shadowRoot?.querySelector('.trailing-icon')).not.toBeNull();
+      expect(root?.shadowRoot?.querySelector('.valid-icon')).toBeNull();
     });
 
     it('responds to fieldset disabled via formDisabledCallback', async () => {
@@ -1029,7 +1081,13 @@ describe('mud-date-input', () => {
 
     it('translates the order error with the locale', async () => {
       const { root } = await render(
-        <mud-date-input locale="en-US" label="x" type="date-range" value="22/01/2025 - 18/01/2025"></mud-date-input>,
+        <mud-date-input
+          locale="en-US"
+          format="DD/MM/YYYY"
+          label="x"
+          type="date-range"
+          value="22/01/2025 - 18/01/2025"
+        ></mud-date-input>,
       );
       await flush();
       expect(queryAssistive(root)?.textContent).toContain('The end date must be after the start date');
@@ -1277,7 +1335,9 @@ describe('mud-date-input', () => {
 /** Renders a date input in the state that reports one validity message (each case names its own attributes). */
 function renderDateInput(attrs: Record<string, string>): DescribeLocalesRender {
   return async (props, ancestorLang) => {
-    const all = { label: 'x', ...attrs, ...propsToAttrs(props) };
+    // The values below are written day first: pin the format so every locale reads
+    // them the same way (en-US would otherwise read them month first).
+    const all = { label: 'x', format: 'DD/MM/YYYY' as const, ...attrs, ...propsToAttrs(props) };
     const { root } = await render(
       <mud-date-input {...all}></mud-date-input>,
       ancestorLang ? { stageAttrs: { lang: ancestorLang } } : undefined,
@@ -1288,7 +1348,7 @@ function renderDateInput(attrs: Record<string, string>): DescribeLocalesRender {
 
 describeLocales<DateInputMessages>('mud-date-input', DATE_INPUT_MESSAGES, {
   render: async (props, ancestorLang) => {
-    const attrs: Record<string, string> = { label: 'x', value: '15/04/2025', clearable: 'true' };
+    const attrs: Record<string, string> = { label: 'x', format: 'DD/MM/YYYY', value: '15/04/2025', clearable: 'true' };
     if (props.locale !== undefined) attrs.locale = String(props.locale);
     if (props.clearLabel !== undefined) attrs['clear-label'] = String(props.clearLabel);
     if (props.pickerLabel !== undefined) attrs['picker-label'] = String(props.pickerLabel);

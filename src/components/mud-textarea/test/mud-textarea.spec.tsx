@@ -112,7 +112,8 @@ describe('mud-textarea', () => {
       const { root } = await render(<mud-textarea label="x" required></mud-textarea>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('omits the required mark when `required` is unset', async () => {

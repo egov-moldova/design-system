@@ -1,0 +1,19 @@
+{
+  "dropdown": {
+    "gap": {
+      "$value": "{spacing.4}",
+      "$type": "dimension",
+      "$comment": "Figma Menu › Dismissal (430:25769): the trigger and the contextual menu stack 4px apart."
+    },
+    "viewportMargin": {
+      "$value": "{spacing.8}",
+      "$type": "dimension",
+      "$comment": "Smallest distance the menu keeps from the viewport edges when it is moved to fit."
+    },
+    "zIndex": {
+      "$value": "1000",
+      "$type": "number",
+      "$comment": "Above page content, below mud-toast-region (9000) and mud-tooltip (9999)."
+    }
+  }
+}

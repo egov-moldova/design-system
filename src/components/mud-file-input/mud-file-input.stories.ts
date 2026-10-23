@@ -1,15 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { MUD_LOCALES } from '../../utils/locale';
-import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
-import type { FileInputSize, FileInputVariant } from './mud-file-input.types';
+import { FILE_INPUT_VARIANTS } from './mud-file-input.types';
+import type { FileInputVariant } from './mud-file-input.types';
 
 type FileInputArgs = {
-  size: FileInputSize;
   variant: FileInputVariant;
   label: string;
   helperText: string;
-  errorText: string;
   ctaText: string;
   chooseFilesText: string;
   dropzoneActiveText: string;
@@ -19,7 +17,6 @@ type FileInputArgs = {
   multiple: boolean;
   required: boolean;
   disabled: boolean;
-  invalid: boolean;
   accept: string;
   maxSize: number;
   maxFiles: number;
@@ -29,11 +26,9 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 const renderFileInput = (args: FileInputArgs) => /*html*/ `
   <mud-file-input
-    size="${args.size}"
     variant="${args.variant}"
     label="${args.label}"
     helper-text="${args.helperText}"
-    error-text="${args.errorText}"
     cta-text="${args.ctaText}"
     choose-files-text="${args.chooseFilesText}"
     dropzone-active-text="${args.dropzoneActiveText}"
@@ -46,17 +41,14 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
     ${args.multiple ? 'multiple' : ''}
     ${args.required ? 'required' : ''}
     ${args.disabled ? 'disabled' : ''}
-    ${args.invalid ? 'invalid' : ''}
   ></mud-file-input>
 `;
 
 const docsSourceDefault = (args: FileInputArgs) => {
   const attrs = [
-    args.size !== 'md' ? `size="${args.size}"` : '',
     args.variant !== 'dropzone' ? `variant="${args.variant}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
-    args.errorText ? `error-text="${args.errorText}"` : '',
     args.ctaText && args.ctaText !== 'Trage și plasează sau ' ? `cta-text="${args.ctaText}"` : '',
     args.chooseFilesText && args.chooseFilesText !== 'Alege fișiere'
       ? `choose-files-text="${args.chooseFilesText}"`
@@ -73,7 +65,6 @@ const docsSourceDefault = (args: FileInputArgs) => {
     args.multiple ? 'multiple' : '',
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
-    args.invalid ? 'invalid' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -84,12 +75,6 @@ const meta: Meta<FileInputArgs> = {
   title: 'Components/Input/File',
   component: 'mud-file-input',
   argTypes: {
-    size: {
-      control: 'select',
-      options: FILE_INPUT_SIZES,
-      description: 'Visual size rung.',
-      table: { defaultValue: { summary: 'md' } },
-    },
     variant: {
       control: 'inline-radio',
       options: FILE_INPUT_VARIANTS,
@@ -98,7 +83,6 @@ const meta: Meta<FileInputArgs> = {
     },
     label: { control: 'text' },
     helperText: { control: 'text' },
-    errorText: { control: 'text' },
     ctaText: { control: 'text', description: 'Lead-in CTA text before the inline link.' },
     chooseFilesText: { control: 'text', description: 'Label for the inline brand-blue "choose files" link.' },
     dropzoneActiveText: { control: 'text', description: 'Body text shown while a drag is over the drop zone.' },
@@ -121,7 +105,6 @@ const meta: Meta<FileInputArgs> = {
     multiple: { control: 'boolean' },
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    invalid: { control: 'boolean' },
   },
 };
 
@@ -132,11 +115,9 @@ type Story = StoryObj<FileInputArgs>;
 export const Default: Story = {
   render: renderFileInput,
   args: {
-    size: 'lg',
     variant: 'dropzone',
     label: '',
     helperText: '',
-    errorText: '',
     ctaText: '',
     chooseFilesText: '',
     dropzoneActiveText: '',
@@ -149,7 +130,6 @@ export const Default: Story = {
     multiple: false,
     required: false,
     disabled: false,
-    invalid: false,
   },
   parameters: {
     docs: {
@@ -175,7 +155,7 @@ const cell = (caption: string, body: string) => /*html*/ `
 `;
 
 // Figma model: 5 state-only symbols (default, hover, focus, active, disabled)
-// + invalid as a recolor flag. No style axis.
+// No style axis.
 // Hover/focus/active each need a real pointer/keyboard/drag interaction to be
 // captured live — see the dedicated `Active` story and the `:focus-visible` /
 // `:hover` browser interactions for the other two.
@@ -190,7 +170,6 @@ export const AllStates: Story = {
           ['focus', { class: 'is-focus-demo' }],
           ['active', { class: 'is-active-demo' }],
           ['disabled', { disabled: '' }],
-          ['invalid + error', { 'invalid': '', 'error-text': 'Attach at least one document' }],
         ] as [string, Record<string, string>][]
       ).map(([caption, attrs]) =>
         filesCell(
@@ -218,32 +197,7 @@ export const AllStates: Story = {
           '<!-- focus: Tab onto dropzone (blue solid border + ring) -->',
           '<!-- active: drag a file over the dropzone (blue fill + "Drop files to upload") -->',
           '<mud-file-input disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
-          '<mud-file-input invalid error-text="…"></mud-file-input>',
         ].join('\n'),
-      },
-    },
-  },
-};
-
-export const AllSizes: Story = {
-  name: 'All Sizes',
-  render: () =>
-    wrap(
-      FILE_INPUT_SIZES.map(size =>
-        cell(
-          size,
-          /*html*/ `<mud-file-input size="${size}" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>`,
-        ),
-      ).join(''),
-    ),
-  parameters: {
-    controls: { disable: true },
-    docs: {
-      source: {
-        code: FILE_INPUT_SIZES.map(
-          s =>
-            `<mud-file-input size="${s}" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>`,
-        ).join('\n'),
       },
     },
   },
@@ -270,7 +224,7 @@ export const Active: Story = {
           'Drag-over presentation, painted statically by the `is-active-demo` class (a real dragenter cannot be scripted from a story). When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, and the icon-circle and CTA collapse to a single line of `dropzone-active-text`. The captions stay, as in Figma 262:6719.',
       },
       source: {
-        code: '<mud-file-input size="lg"></mud-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
+        code: '<mud-file-input></mud-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
       },
     },
   },
@@ -286,17 +240,17 @@ export const WithAcceptedTypes: Story = {
       [
         cell(
           'accept=".jpg,.png,.pdf" + max-size=5 MB',
-          /*html*/ `<mud-file-input size="lg" accept=".jpg,.png,.pdf" max-size="5242880"></mud-file-input>`,
+          /*html*/ `<mud-file-input accept=".jpg,.png,.pdf" max-size="5242880"></mud-file-input>`,
         ),
         cell(
           'accept="image/*" + max-size=10 MB',
-          /*html*/ `<mud-file-input size="lg" accept="image/*" max-size="10485760"></mud-file-input>`,
+          /*html*/ `<mud-file-input accept="image/*" max-size="10485760"></mud-file-input>`,
         ),
         cell(
           'accept="application/pdf,image/jpeg,image/png"',
-          /*html*/ `<mud-file-input size="lg" accept="application/pdf,image/jpeg,image/png" max-size="104857600"></mud-file-input>`,
+          /*html*/ `<mud-file-input accept="application/pdf,image/jpeg,image/png" max-size="104857600"></mud-file-input>`,
         ),
-        cell('no derivation (no accept / max-size)', /*html*/ `<mud-file-input size="lg"></mud-file-input>`),
+        cell('no derivation (no accept / max-size)', /*html*/ `<mud-file-input></mud-file-input>`),
       ].join(''),
     ),
   parameters: {
@@ -307,13 +261,13 @@ export const WithAcceptedTypes: Story = {
           'When `supported-formats-text` / `max-size-text` are unset, the component derives them from `accept` (MIME-type / extension list) and `max-size` (bytes). Explicit text props always win.',
       },
       source: {
-        code: '<mud-file-input size="lg" accept=".jpg,.png,.pdf" max-size="5242880"></mud-file-input>',
+        code: '<mud-file-input accept=".jpg,.png,.pdf" max-size="5242880"></mud-file-input>',
       },
     },
   },
 };
 
-const docsSourceWithCustomCopy = /*html*/ `<mud-file-input size="lg" cta-text="Drag files here or " choose-files-text="select files" dropzone-active-text="Drop here to upload" supported-formats-text="Accepted formats: jpg, png, pdf" max-size-text="Max file size: 100 MB"></mud-file-input>`;
+const docsSourceWithCustomCopy = /*html*/ `<mud-file-input cta-text="Drag files here or " choose-files-text="select files" dropzone-active-text="Drop here to upload" supported-formats-text="Accepted formats: jpg, png, pdf" max-size-text="Max file size: 100 MB"></mud-file-input>`;
 
 // Override the Romanian defaults with English copy for international consumers.
 export const WithCustomCopy: Story = {
@@ -321,7 +275,6 @@ export const WithCustomCopy: Story = {
   render: () => /*html*/ `
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <mud-file-input
-        size="lg"
         cta-text="Drag files here or "
         choose-files-text="select files"
         dropzone-active-text="Drop here to upload"
@@ -417,7 +370,7 @@ const preloadedHtml = (
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
       <span style="${cellLabelStyle}">${caption}</span>
-      <mud-file-input id="${id}" size="lg" label="Documents" multiple ${extraAttrs}></mud-file-input>
+      <mud-file-input id="${id}" label="Documents" multiple ${extraAttrs}></mud-file-input>
       <div style="display: flex; flex-direction: column; gap: var(--spacing-8); margin-block-start: var(--spacing-12);">
         ${files
           .map(
@@ -448,7 +401,7 @@ export const SingleFile: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-file-input size="lg" label="Identity card" max-size="5242880" accept=".pdf"></mud-file-input>',
+        code: '<mud-file-input label="Identity card" max-size="5242880" accept=".pdf"></mud-file-input>',
       },
     },
   },
@@ -482,14 +435,14 @@ export const MultipleFiles: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-file-input size="lg" label="Documents" multiple max-files="5"></mud-file-input>',
+        code: '<mud-file-input label="Documents" multiple max-files="5"></mud-file-input>',
       },
     },
   },
 };
 
-const docsSourceWithMaxSize = /*html*/ `<mud-file-input size="lg" label="Documents" max-size="5242880"></mud-file-input>
-<mud-file-input size="lg" label="Documents" multiple max-size="5242880" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>
+const docsSourceWithMaxSize = /*html*/ `<mud-file-input label="Documents" max-size="5242880"></mud-file-input>
+<mud-file-input label="Documents" multiple max-size="5242880" supported-formats-text="Allowed extensions: jpg, png, pdf" max-size-text="Upload limit: 100 MB"></mud-file-input>
 <mud-file-item state="error" filename="declaratie-foarte-mare.pdf" size="14000000" error-text="The file exceeds the 5 MB limit"></mud-file-item>`;
 
 export const WithMaxSize: Story = {
@@ -499,7 +452,7 @@ export const WithMaxSize: Story = {
       [
         cell(
           '5 MB limit (auto-derived caption)',
-          /*html*/ `<mud-file-input size="lg" label="Documents" max-size="5242880"></mud-file-input>`,
+          /*html*/ `<mud-file-input label="Documents" max-size="5242880"></mud-file-input>`,
         ),
         preloadedHtml(
           'rejected oversize',
@@ -518,22 +471,22 @@ export const WithMaxSize: Story = {
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithMaxSize } } },
 };
 
-const docsSourceWithAcceptFilter = /*html*/ `<mud-file-input size="lg" label="Documents" accept=".pdf"></mud-file-input>
-<mud-file-input size="lg" label="Fotografii" accept="image/*"></mud-file-input>`;
+const docsSourceWithAcceptFilter = /*html*/ `<mud-file-input label="Documents" accept=".pdf"></mud-file-input>
+<mud-file-input label="Fotografii" accept="image/*"></mud-file-input>`;
 
 export const WithAcceptFilter: Story = {
   name: 'With Accept Filter',
   render: () =>
     wrap(
       [
-        cell('PDF only', /*html*/ `<mud-file-input size="lg" label="Documents" accept=".pdf"></mud-file-input>`),
-        cell('images only', /*html*/ `<mud-file-input size="lg" label="Fotografii" accept="image/*"></mud-file-input>`),
+        cell('PDF only', /*html*/ `<mud-file-input label="Documents" accept=".pdf"></mud-file-input>`),
+        cell('images only', /*html*/ `<mud-file-input label="Fotografii" accept="image/*"></mud-file-input>`),
       ].join(''),
     ),
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithAcceptFilter } } },
 };
 
-const docsSourceWithMaxCount = /*html*/ `<mud-file-input size="lg" label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`;
+const docsSourceWithMaxCount = /*html*/ `<mud-file-input label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`;
 
 export const WithMaxCount: Story = {
   name: 'With Max Count',
@@ -542,15 +495,15 @@ export const WithMaxCount: Story = {
       [
         cell(
           '3 files limit',
-          /*html*/ `<mud-file-input size="lg" label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`,
+          /*html*/ `<mud-file-input label="Documents" multiple max-files="3" supported-formats-text="At most 3 files"></mud-file-input>`,
         ),
       ].join(''),
     ),
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithMaxCount } } },
 };
 
-const docsSourceWithHelperText = /*html*/ `<mud-file-input size="lg" label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>
-<mud-file-input size="lg" label="Documents" required helper-text="This field is required"></mud-file-input>`;
+const docsSourceWithHelperText = /*html*/ `<mud-file-input label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>
+<mud-file-input label="Documents" required helper-text="This field is required"></mud-file-input>`;
 
 export const WithHelperText: Story = {
   name: 'With Helper Text',
@@ -559,33 +512,15 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<mud-file-input size="lg" label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>`,
+          /*html*/ `<mud-file-input label="Documents" helper-text="PDF, JPG and PNG accepted"></mud-file-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<mud-file-input size="lg" label="Documents" required helper-text="This field is required"></mud-file-input>`,
+          /*html*/ `<mud-file-input label="Documents" required helper-text="This field is required"></mud-file-input>`,
         ),
       ].join(''),
     ),
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithHelperText } } },
-};
-
-const docsSourceWithError = /*html*/ `<mud-file-input size="lg" label="Documents" invalid></mud-file-input>
-<mud-file-input size="lg" label="Documents" invalid error-text="Attach at least one document"></mud-file-input>`;
-
-export const WithError: Story = {
-  name: 'With Error',
-  render: () =>
-    wrap(
-      [
-        cell('invalid (no message)', /*html*/ `<mud-file-input size="lg" label="Documents" invalid></mud-file-input>`),
-        cell(
-          'invalid + error message',
-          /*html*/ `<mud-file-input size="lg" label="Documents" invalid error-text="Attach at least one document"></mud-file-input>`,
-        ),
-      ].join(''),
-    ),
-  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithError } } },
 };
 
 /** `files` is a `File[]` property, so the snippet assigns it in a script on the element's `id`. */

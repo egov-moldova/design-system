@@ -98,37 +98,6 @@ const docsSourceMultiple = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Payment methods">...</mud-accordion-item>
 </mud-accordion>`;
 
-const renderWithIcons = () => /*html*/ `
-  <div style="${sectionStyle}">
-    <p style="${sectionLabelStyle}">Leading icons (mud-icon) for content categories.</p>
-    <mud-accordion mode="multiple">
-      <mud-accordion-item heading="Digital identity" supporting-text="Identity verification through MPass" open>
-        <mud-icon slot="icon-start" name="id-card"></mud-icon>
-        MPass sign-in uses the mobile signature, eToken or biometrics to confirm the citizen's identity.
-      </mud-accordion-item>
-      <mud-accordion-item heading="Electronic payments" supporting-text="Secure transactions through MPay">
-        <mud-icon slot="icon-start" name="credit-card"></mud-icon>
-        All payments are protected by the 3-D Secure protocol and audited by the National Bank of Moldova.
-      </mud-accordion-item>
-      <mud-accordion-item heading="Electronic signature" supporting-text="Signed document with legal value">
-        <mud-icon slot="icon-start" name="checklist"></mud-icon>
-        Apply the qualified electronic signature to contracts, declarations and other official documents.
-      </mud-accordion-item>
-    </mud-accordion>
-  </div>
-`;
-
-const docsSourceWithIcons = /*html*/ `<mud-accordion mode="multiple">
-  <mud-accordion-item heading="Digital identity" supporting-text="..." open>
-    <mud-icon slot="icon-start" name="id-card"></mud-icon>
-    MPass sign-in uses the mobile signature, eToken or biometrics.
-  </mud-accordion-item>
-  <mud-accordion-item heading="Electronic payments" supporting-text="...">
-    <mud-icon slot="icon-start" name="credit-card"></mud-icon>
-    All payments are protected by the 3-D Secure protocol.
-  </mud-accordion-item>
-</mud-accordion>`;
-
 const renderWithSupportingText = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${sectionLabelStyle}">Heading + supporting text (short description, one per row).</p>
@@ -180,29 +149,29 @@ const docsSourceWithSupportingText = /*html*/ `<!-- With supporting text -->
 
 const renderWithTrailingContent = () => /*html*/ `
   <div style="${sectionStyle}">
-    <p style="${sectionLabelStyle}">Slot "trailing" — tags, counters or quick actions.</p>
+    <p style="${sectionLabelStyle}">Slot "trailing" — a tag that marks an item, such as a new service. Items without one keep the bar plain.</p>
     <mud-accordion mode="multiple">
-      <mud-accordion-item heading="Pending requests" supporting-text="Requests that need your attention">
-        <mud-badge slot="trailing" variant="warning">3 noi</mud-badge>
-        Three requests are waiting for identity confirmation. Open the dashboard to finish the process.
+      <mud-accordion-item heading="Online appointment booking" supporting-text="Book a visit to a public service centre">
+        <mud-tag slot="trailing" type="subtle" semantic="success">Nou</mud-tag>
+        Choose the service, the centre and a free time slot; the confirmation arrives by e-mail and SMS.
       </mud-accordion-item>
       <mud-accordion-item heading="Expired documents" supporting-text="Documents that must be renewed">
-        <mud-badge slot="trailing" variant="danger">2</mud-badge>
         The identity card and driving licence expire within the next 30 days. Book an appointment to renew them.
       </mud-accordion-item>
-      <mud-accordion-item heading="Recent notifications" supporting-text="Messages from government agencies">
-        <mud-badge slot="trailing">12</mud-badge>
-        New messages about submitted requests, payment status and updates from partner institutions.
+      <mud-accordion-item heading="Electronic payment receipts" supporting-text="Download receipts for paid services">
+        <mud-tag slot="trailing" type="subtle" semantic="success">Nou</mud-tag>
+        Every payment made through MPay now has a receipt you can download as PDF.
       </mud-accordion-item>
     </mud-accordion>
   </div>
 `;
 
 const docsSourceWithTrailingContent = /*html*/ `<mud-accordion mode="multiple">
-  <mud-accordion-item heading="Pending requests" supporting-text="...">
-    <mud-badge slot="trailing" variant="warning">3 noi</mud-badge>
+  <mud-accordion-item heading="Online appointment booking" supporting-text="...">
+    <mud-tag slot="trailing" type="subtle" semantic="success">Nou</mud-tag>
     ...
   </mud-accordion-item>
+  <mud-accordion-item heading="Expired documents" supporting-text="...">...</mud-accordion-item>
 </mud-accordion>`;
 
 // ---------------------------------------------------------------------------
@@ -341,99 +310,6 @@ const docsSourceTrailSites = /*html*/ `<mud-accordion mode="single" appearance="
   <mud-accordion-item heading="MSign electronic signature" supporting-text="...">...</mud-accordion-item>
 </mud-accordion>`;
 
-const renderDisabled = () => /*html*/ `
-  <div style="${sectionStyle}">
-    <p style="${sectionLabelStyle}">Disabled item — non-interactive, focus skips it.</p>
-    <mud-accordion mode="multiple">
-      <mud-accordion-item heading="Available" supporting-text="Active item, can be opened" open>
-        Content available to all signed-in citizens.
-      </mud-accordion-item>
-      <mud-accordion-item heading="Temporarily unavailable" supporting-text="Service suspended for maintenance" disabled>
-        <mud-badge slot="trailing" variant="warning" count="2"></mud-badge>
-        This content cannot be accessed right now.
-      </mud-accordion-item>
-      <mud-accordion-item heading="Authorised representatives only" supporting-text="Requires MPower sign-in" disabled>
-        Access restricted to citizens signed in through MPower.
-      </mud-accordion-item>
-    </mud-accordion>
-
-    <p style="${sectionLabelStyle}">
-      Content slotted under a disabled item. The item disables the buttons you
-      put directly in the slot, but on re-enabling it restores exactly the ones it disabled itself.
-      Press the button below: the one you disabled yourself stays disabled,
-      the one you left enabled becomes enabled again.
-    </p>
-    <button
-      id="disabled-slot-toggle"
-      type="button"
-      style="align-self: flex-start; margin-block-end: var(--spacing-16); padding: var(--spacing-8) var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-4); background: var(--color-background-base-default); color: var(--color-text-base-default); font: inherit; font-size: var(--font-size-14); cursor: pointer;"
-    >
-      Toggle the state of both items
-    </button>
-    <mud-accordion mode="multiple">
-      <mud-accordion-item
-        id="slot-consumer-disabled"
-        heading="Overdue payment"
-        supporting-text="The button was disabled by you"
-        disabled
-      >
-        <mud-button slot="trailing" variant="secondary" size="sm" disabled>Resume payment</mud-button>
-        Resuming the payment is unavailable until the file is unlocked.
-      </mud-accordion-item>
-      <mud-accordion-item
-        id="slot-consumer-enabled"
-        heading="Delivery"
-        supporting-text="The button was left enabled by you"
-        disabled
-      >
-        <mud-button slot="trailing" variant="secondary" size="sm">Track</mud-button>
-        Parcel tracking becomes available together with the item.
-      </mud-accordion-item>
-    </mud-accordion>
-
-    <script>
-      // Shows the contract as a TRANSITION, which is what issue #17 broke and a static
-      // frame cannot render: the disabled attribute the consumer authored has to survive
-      // the item going enabled and back. A toggle is the only way a reader sees that here.
-      // No backticks in this block: it lives inside a template literal, which they close.
-      (() => {
-        const ids = ['slot-consumer-disabled', 'slot-consumer-enabled'];
-        document.getElementById('disabled-slot-toggle')?.addEventListener('click', () => {
-          for (const id of ids) {
-            const el = document.getElementById(id);
-            if (el) el.toggleAttribute('disabled');
-          }
-        });
-      })();
-    </script>
-  </div>
-`;
-
-const docsSourceDisabled = /*html*/ `<mud-accordion mode="multiple">
-  <mud-accordion-item heading="Available" supporting-text="..." open>...</mud-accordion-item>
-  <mud-accordion-item heading="Temporarily unavailable" supporting-text="..." disabled>
-    <!-- The item disables what you slot into trailing, so the badge renders its disabled
-         design and regains its colors on re-enable. Do not set disabled on it yourself:
-         the item leaves an attribute it did not write in place. -->
-    <mud-badge slot="trailing" variant="warning" count="2"></mud-badge>
-    ...
-  </mud-accordion-item>
-</mud-accordion>
-
-<!-- The item sets \`disabled\` on what you slot in directly, and on re-enable removes it
-     only from the elements it set it on — a control you shipped disabled stays disabled.
-     A control nested inside a slotted wrapper gets no attribute: put controls in the slot. -->
-<mud-accordion mode="multiple">
-  <mud-accordion-item heading="Overdue payment" disabled>
-    <mud-button slot="trailing" variant="secondary" size="sm" disabled>Resume payment</mud-button>
-    ...
-  </mud-accordion-item>
-  <mud-accordion-item heading="Delivery" disabled>
-    <mud-button slot="trailing" variant="secondary" size="sm">Track</mud-button>
-    ...
-  </mud-accordion-item>
-</mud-accordion>`;
-
 const renderEdgeCases = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${sectionLabelStyle}">A single item (no vertical separator between bars).</p>
@@ -443,11 +319,24 @@ const renderEdgeCases = () => /*html*/ `
       </mud-accordion-item>
     </mud-accordion>
 
-    <p style="${sectionLabelStyle}">Long heading — truncated at the line end, no visible overflow.</p>
+    <p style="${sectionLabelStyle}">Supporting text is optional — items with and without it sit in the same accordion.</p>
+    <mud-accordion mode="multiple">
+      <mud-accordion-item heading="How do I sign in with MPass?" supporting-text="Mobile signature, eToken or biometrics">
+        Choose a sign-in method on the MPass page and follow the steps for it.
+      </mud-accordion-item>
+      <mud-accordion-item heading="Is there a fee for the service?">
+        No — requesting the certificate online is free of charge.
+      </mud-accordion-item>
+      <mud-accordion-item heading="How long does processing take?" supporting-text="Up to 5 working days">
+        Most requests are processed within 3 working days; you get an e-mail when the document is ready.
+      </mud-accordion-item>
+    </mud-accordion>
+
+    <p style="${sectionLabelStyle}">Long heading and supporting text — both wrap over several lines; nothing is truncated.</p>
     <mud-accordion mode="multiple">
       <mud-accordion-item
         heading="Question with a very long title that exceeds the normal width of the accordion and has to wrap over several lines without breaking the visual layout"
-        supporting-text="The supporting text stays on a single line and is truncated with an ellipsis when it exceeds the space available in the container"
+        supporting-text="The supporting text wraps over as many lines as it needs, so an open question always shows its whole description"
       >
         The panel content renders normally regardless of the heading length.
       </mud-accordion-item>
@@ -468,6 +357,12 @@ const renderEdgeCases = () => /*html*/ `
 const docsSourceEdgeCases = /*html*/ `<!-- Single item -->
 <mud-accordion mode="multiple">
   <mud-accordion-item heading="Single item" supporting-text="...">...</mud-accordion-item>
+</mud-accordion>
+
+<!-- With and without supporting text -->
+<mud-accordion mode="multiple">
+  <mud-accordion-item heading="How do I sign in with MPass?" supporting-text="...">...</mud-accordion-item>
+  <mud-accordion-item heading="Is there a fee for the service?">...</mud-accordion-item>
 </mud-accordion>
 
 <!-- Long heading -->
@@ -552,14 +447,6 @@ export const Multiple: Story = {
   },
 };
 
-export const WithIcons: Story = {
-  render: renderWithIcons,
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: docsSourceWithIcons } },
-  },
-};
-
 export const WithSupportingText: Story = {
   render: renderWithSupportingText,
   parameters: {
@@ -589,14 +476,6 @@ export const TrailSites: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: docsSourceTrailSites } },
-  },
-};
-
-export const Disabled: Story = {
-  render: renderDisabled,
-  parameters: {
-    controls: { disable: true },
-    docs: { source: { code: docsSourceDisabled } },
   },
 };
 

@@ -69,7 +69,6 @@ const docsSourceAllSizes = /*html*/ `<mud-accordion mode="multiple" size="sm">
 const docsSourceStates = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Closed">Panel body.</mud-accordion-item>
   <mud-accordion-item heading="Open" open>Panel body.</mud-accordion-item>
-  <mud-accordion-item heading="Disabled" disabled>Panel body.</mud-accordion-item>
 </mud-accordion>`;
 
 // The panel adds no padding (Figma Content Slot): the content spaces itself, and
@@ -91,7 +90,8 @@ const meta: Meta<AccordionItemArgs> = {
     heading: { control: 'text' },
     supportingText: { control: 'text' },
     open: { control: 'boolean' },
-    disabled: { control: 'boolean' },
+    // Deprecated (no design behind it) — still honoured, no longer offered as a control.
+    disabled: { table: { disable: true } },
     size: { control: 'select', options: ACCORDION_SIZES },
     iconPosition: { control: 'select', options: ACCORDION_ICON_POSITIONS },
   },
@@ -146,7 +146,6 @@ export const States: Story = {
       <mud-accordion mode="multiple">
         <mud-accordion-item heading="Closed">Panel body.</mud-accordion-item>
         <mud-accordion-item heading="Open" open>Panel body.</mud-accordion-item>
-        <mud-accordion-item heading="Disabled" disabled>Panel body.</mud-accordion-item>
       </mud-accordion>
     </div>
   `,

@@ -35,8 +35,7 @@
       "lineHeight": {
         "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
         "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
-      },
-      "loadingOpacity": { "$value": "0.6", "$type": "number" }
+      }
     },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
@@ -110,7 +109,11 @@
         "default": { "$value": "{color.border.base.default}", "$type": "color" },
         "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
         "focus": { "$value": "{color.border.brand.default}", "$type": "color" },
-        "readOnly": { "$value": "{color.border.base.default}", "$type": "color" },
+        "readOnly": {
+          "$value": "transparent",
+          "$type": "color",
+          "$comment": "Figma 132:3467 (text-input Read Only): a #F5F5F5 fill and no stroke, as on the phone and date inputs. The text-area set has no read-only state and shares this look."
+        },
         "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
       },
       "text": {

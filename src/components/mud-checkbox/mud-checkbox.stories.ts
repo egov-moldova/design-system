@@ -263,7 +263,7 @@ const docsSourceWithLabel = docsCode(
   }),
   docsCb({
     flags: 'checked',
-    rawSlots: /*html*/ `<span slot="label">I want to receive <a href="#">updates</a> by email</span>`,
+    rawSlots: /*html*/ `<span slot="label">I want to receive <mud-link href="#" size="md">updates</mud-link> by email</span>`,
   }),
 );
 
@@ -284,7 +284,7 @@ export const WithLabel: Story = {
           'rich slot (checked)',
           cb({
             flags: 'checked',
-            rawSlots: /*html*/ `<span slot="label">I want to receive <a href="#">updates</a> by email</span>`,
+            rawSlots: /*html*/ `<span slot="label">I want to receive <mud-link href="#" size="md">updates</mud-link> by email</span>`,
           }),
         ),
       ].join(''),
@@ -408,47 +408,86 @@ export const Disabled: Story = {
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceDisabled } } },
 };
 
+const LONG_LABEL =
+  'I want to receive periodic email updates about new features, promotions and events organised by Corlab and its partners';
+const LONG_SUPPORTING =
+  'Please read the full documents carefully before continuing. Your consent applies to all Corlab services and can be withdrawn at any time from the account settings page.';
+
+const dontCaptionStyle =
+  'font-size: var(--font-size-12); font-weight: var(--font-weight-medium); color: var(--color-text-danger-default);';
+const doCaptionStyle =
+  'font-size: var(--font-size-12); font-weight: var(--font-weight-medium); color: var(--color-text-positive-default);';
+const guideCell = (kind: 'do' | 'dont', caption: string, body: string) => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
+    <span style="${kind === 'do' ? doCaptionStyle : dontCaptionStyle}">${kind === 'do' ? 'Do' : 'Don’t'} — ${caption}</span>
+    ${body}
+  </div>
+`;
+
 const docsSourceEdgeCases = docsCode(
+  '<!-- Don’t: a label that runs over several lines -->',
+  docsCb({ label: LONG_LABEL }),
+  '<!-- Do: a short label; the detail goes in the supporting text -->',
   docsCb({
-    label:
-      'I want to receive periodic email updates about new features, promotions and events organised by Corlab and its partners',
+    label: 'Email updates',
+    supporting: 'News about features, promotions and events. You can stop them at any time.',
   }),
-  docsCb({
-    label: 'I agree to the Terms and conditions and the Privacy policy',
-    supporting:
-      'Please read the full documents carefully before continuing. Your consent applies to all Corlab services and can be withdrawn at any time from the account settings page.',
-    flags: 'checked',
-  }),
+  '<!-- Special cases -->',
   docsCb({ ariaLabel: 'Select row' }),
   docsCb({ label: 'Verified by the system', flags: 'readonly checked' }),
 );
 
 export const EdgeCases: Story = {
-  name: 'Edge Cases',
+  name: 'Label Length — Do and Don’t',
   render: () =>
     wrapNarrow(
       [
-        cell(
-          'long label wraps',
+        guideCell('dont', 'a label that runs over several lines', cb({ label: LONG_LABEL })),
+        guideCell(
+          'do',
+          'a short label; the detail goes in the supporting text',
           cb({
-            label:
-              'I want to receive periodic email updates about new features, promotions and events organised by Corlab and its partners',
+            label: 'Email updates',
+            supporting: 'News about features, promotions and events. You can stop them at any time.',
           }),
         ),
-        cell(
-          'long label + supporting',
+        guideCell(
+          'dont',
+          'a long label and a paragraph of supporting text',
           cb({
             label: 'I agree to the Terms and conditions and the Privacy policy',
-            supporting:
-              'Please read the full documents carefully before continuing. Your consent applies to all Corlab services and can be withdrawn at any time from the account settings page.',
+            supporting: LONG_SUPPORTING,
             flags: 'checked',
           }),
         ),
-        cell('no label (aria-only)', cb({ ariaLabel: 'Select row' })),
-        cell('readonly checked', cb({ label: 'Verified by the system', flags: 'readonly checked' })),
+        guideCell(
+          'do',
+          'link to the full document instead of quoting it',
+          cb({
+            rawSlots: /*html*/ `<span slot="label">I agree to the <mud-link href="#" size="md">Terms and conditions</mud-link></span>`,
+            flags: 'checked',
+          }),
+        ),
+        cell('special case — no visible label (aria-label), e.g. a table row', cb({ ariaLabel: 'Select row' })),
+        cell(
+          'special case — read-only, set by the system',
+          cb({ label: 'Verified by the system', flags: 'readonly checked' }),
+        ),
       ].join(''),
     ),
-  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Long labels are not an edge case to design for — they are a pattern to avoid. A checkbox label is read at a ' +
+          'glance, so keep it to one short line; put the detail in the supporting text, and link to a document rather ' +
+          'than quoting it. The last two cells are valid special cases: a checkbox named only by `aria-label` (where the ' +
+          'surrounding row is its label) and a read-only one set by the system.',
+      },
+      source: { code: docsSourceEdgeCases },
+    },
+  },
 };
 
 export const ReducedMotion: Story = {

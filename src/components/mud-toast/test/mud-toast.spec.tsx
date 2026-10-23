@@ -214,6 +214,21 @@ describe('mud-toast', () => {
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
+    it('dismiss() closes the toast like the close button, even when it is not closable', async () => {
+      const handler = vi.fn();
+      const { root, waitForChanges } = await render(
+        <mud-toast closable={false} onMudClose={handler}>
+          Mesaj
+        </mud-toast>,
+      );
+
+      await (root as HTMLMudToastElement).dismiss();
+      await waitForChanges();
+      expect(root?.classList.contains('is-dismissing')).toBe(true);
+      await new Promise<void>(resolve => setTimeout(resolve, TOAST_DISMISS_FALLBACK_MS + 50));
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
     it('emits mudClose at once under prefers-reduced-motion', async () => {
       const original = window.matchMedia;
       window.matchMedia = ((query: string) => ({

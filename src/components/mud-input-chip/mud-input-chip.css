@@ -85,13 +85,18 @@
 
 .required-mark {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
   inline-size: var(--input-chip-label-required-mark-size);
   block-size: var(--input-chip-label-required-mark-size);
   color: var(--input-chip-label-required-mark-color);
-  font-weight: var(--input-chip-control-font-weight);
-  line-height: 1;
+}
+
+/* Figma draws the mandatory mark as the 12/asterisk icon (2975:10179), not a
+   text glyph. The mark (12px) sits below mud-icon's smallest `size` (16), so the
+   icon's own box is overridden here; without it the 16px icon overflows. */
+.required-mark mud-icon {
+  inline-size: var(--input-chip-label-required-mark-size);
+  block-size: var(--input-chip-label-required-mark-size);
 }
 
 :host(.is-disabled) .label,

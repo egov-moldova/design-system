@@ -75,12 +75,24 @@ const renderStatusSlot = (rowId: string, statusKey: string) => {
   return /*html*/ `<mud-tag slot="cell-status-${rowId}" semantic="${tag.semantic}" size="sm">${tag.label}</mud-tag>`;
 };
 
-const renderRowActionsSlot = (rowId: string) => /*html*/ `
-  <span slot="cell-actions-${rowId}" style="display:inline-flex; gap: var(--spacing-4);">
-    <mud-button appearance="text" size="sm">View</mud-button>
-    <mud-button appearance="text" size="sm" variant="destructive">Delete</mud-button>
-  </span>
-`;
+// Row actions behind one "more" trigger (design review 12.10.2026): a mud-dropdown
+// at the end of the row opens its menu inwards, and its fixed-position menu is not
+// clipped by the table's horizontal scroll.
+const rowActionsMenu = (
+  rowId: string,
+  name: string,
+) => /*html*/ `<mud-dropdown slot="cell-actions-${rowId}" align="end">
+    <mud-button slot="trigger" appearance="text" variant="neutral" size="sm" icon-only aria-label="Actions for ${name}">
+      <mud-icon slot="icon" name="more-vertical" size="20"></mud-icon>
+    </mud-button>
+    <mud-menu type="contextual" aria-label="Actions for ${name}">
+      <mud-menu-item value="view" leading="icon" icon="eye-open">View</mud-menu-item>
+      <mud-menu-item value="edit" leading="icon" icon="edit">Edit</mud-menu-item>
+      <mud-menu-item value="delete" leading="icon" icon="delete">Delete</mud-menu-item>
+    </mud-menu>
+  </mud-dropdown>`;
+
+const renderRowActionsSlot = (row: TableRowData) => rowActionsMenu(String(row.id), String(row.name));
 
 // Serialize for inlining into a <script> tag. JSON.stringify already produces
 // valid JS literal syntax; we only need to defuse any literal "</script>"
@@ -409,14 +421,7 @@ export const WithStatusBadges: Story = {
 };
 
 const docsSourceWithActions = /*html*/ `<mud-table id="table-actions">
-${baseRows
-  .map(
-    row => `  <span slot="cell-actions-${row.id}">
-    <mud-button appearance="text" size="sm">View</mud-button>
-    <mud-button appearance="text" size="sm" variant="destructive">Delete</mud-button>
-  </span>`,
-  )
-  .join('\n')}
+${baseRows.map(row => `  ${rowActionsMenu(String(row.id), String(row.name))}`).join('\n')}
 </mud-table>
 ${docsSourceScript('table-actions', [...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }], baseRows)}`;
 
@@ -424,10 +429,10 @@ export const WithActions: Story = {
   name: 'WithActions',
   render: () => {
     const columnsWithActions: TableColumn[] = [...demoColumns, { key: 'actions', label: 'Actions', align: 'end' }];
-    const slots = baseRows.map(row => renderRowActionsSlot(String(row.id))).join('');
+    const slots = baseRows.map(row => renderRowActionsSlot(row)).join('');
     return wrap(
       group(
-        'Action cells composed with `mud-button appearance="text"`',
+        'Row actions behind a "more" menu: `mud-dropdown` with an icon-only trigger and `align="end"`',
         renderTable('tbl-actions', columnsWithActions, baseRows, { rowStyle: 'divided' }, slots),
       ),
     );

@@ -125,6 +125,40 @@
       ]
     },
     {
+      "name": "large-mandatory",
+      "node": "159:1113",
+      "pixel": false,
+      "html": "<div style=\"width:282px\"><mud-select size=\"large\" label=\"Label\" placeholder=\"Placeholder\" required><option value=\"a\">Option A</option></mud-select></div>",
+      "expect": [
+        {
+          "target": "mud-select .label",
+          "node": "159:1114",
+          "styles": {
+            "columnGap": "4px"
+          }
+        },
+        {
+          "target": "mud-select .required-mark",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "#D92D20"
+          },
+          "note": "Every input's mandatory star is an instance of the 12/asterisk icon (2975:10179), 12×12, fill #D92D20."
+        },
+        {
+          "target": "mud-select .required-mark mud-icon",
+          "node": "2975:10179",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma draws the mark as the 12/asterisk icon, not a text glyph — a text '*' at the 14px label font rendered smaller and sat high (design review 12.10.2026)."
+        }
+      ]
+    },
+    {
       "name": "default-medium",
       "node": "6173:5579",
       "html": "<div style=\"width:282px\"><mud-select size=\"medium\" label=\"Label\" placeholder=\"Placeholder\"><option value=\"a\">Option A</option></mud-select></div>",

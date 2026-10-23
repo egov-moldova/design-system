@@ -108,7 +108,8 @@ describe('mud-input-chip', () => {
       const { root } = await render(<mud-input-chip label="x" required></mud-input-chip>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
       expect(mark).toBeTruthy();
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('renders a helper assistive row when `helper-text` is set', async () => {

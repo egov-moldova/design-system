@@ -36,8 +36,9 @@ import { observeAriaLabel } from '../../utils/aria-label';
  * @slot - (default) The label text. Falls back to the `label` prop.
  * @slot icon-start - Optional leading 16 × 16 visual (`mud-icon`).
  *                    Inherits text color via `currentColor`.
- * @slot icon-end - Optional trailing 16 × 16 visual. Same contract
- *                  as `icon-start`.
+ * @slot icon-end - Deprecated: Figma's tag has a leading icon only (22:80),
+ *                  and a trailing or second icon reads as an action the tag
+ *                  does not have. Still rendered; it goes away in the next major.
  */
 @Component({
   tag: 'mud-tag',
@@ -92,6 +93,7 @@ export class MudTag {
   @State() private hasLabelSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
   @State() private hasIconEnd: boolean = false;
+  private warnedIconEnd = false;
 
   /**
    * The host's `aria-label` (attribute or native `ariaLabel` property). When
@@ -116,6 +118,15 @@ export class MudTag {
 
   componentWillLoad() {
     this.detectSlots();
+  }
+
+  componentDidRender() {
+    if (this.hasIconEnd && !this.warnedIconEnd) {
+      this.warnedIconEnd = true;
+      console.warn(
+        '[mud-tag] The "icon-end" slot is deprecated: the design has a leading icon only. It goes away in the next major.',
+      );
+    }
   }
 
   private detectSlots(): void {

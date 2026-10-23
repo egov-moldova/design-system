@@ -40,8 +40,7 @@
         "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
         "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
       },
-      "textAlign": { "$value": "start", "$type": "string" },
-      "loadingOpacity": { "$value": "0.6", "$type": "number" }
+      "textAlign": { "$value": "start", "$type": "string" }
     },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },

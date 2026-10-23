@@ -1,0 +1,31 @@
+{
+  "toastRegion": {
+    "inset": {
+      "desktop": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Figma 14830:13798 (Placement › desktop): the toast sits 32px from the top and the right edge of the viewport."
+      },
+      "mobileInline": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma 14830:13869 (Placement › mobile): a 359px toast in a 375px viewport, 8px from each side."
+      },
+      "mobileBlockEnd": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma 14830:13869: 12px above the bottom of the viewport (there, the browser's toolbar)."
+      }
+    },
+    "gap": {
+      "$value": "{spacing.12}",
+      "$type": "dimension",
+      "$comment": "Figma 14830:13873 (vertical-stack): toasts repeat every 92px and an 80px toast leaves 12px between them."
+    },
+    "zIndex": {
+      "$value": "9000",
+      "$type": "number",
+      "$comment": "Above page content, below mud-tooltip (9999). A modal <dialog> sits in the top layer above both."
+    }
+  }
+}

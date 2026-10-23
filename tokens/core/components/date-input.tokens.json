@@ -216,6 +216,17 @@
         "$comment": "Per Figma 16/cross-small inside the clear button (142:4307): #757575."
       }
     },
+    "validIcon": {
+      "size": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "The read-only check is 24/checkmark-small at 24x24 in both sizes (457:26191), as on the phone input."
+      },
+      "color": {
+        "$value": "{color.icon.positive.default}",
+        "$type": "color"
+      }
+    },
     "icon": {
       "size": {
         "md": {
@@ -244,6 +255,11 @@
           "$value": "{color.background.base.default}",
           "$type": "color"
         },
+        "readOnly": {
+          "$value": "{color.background.base.secondary}",
+          "$type": "color",
+          "$comment": "Read-only inputs share one look (text input 457:26191, phone input 3318:18224): a #F5F5F5 fill, no stroke and a trailing check. The date-input set has no read-only variant; the design review of 12.10.2026 asked for the shared one."
+        },
         "disabled": {
           "$value": "{color.background.disabled.default}",
           "$type": "color"
@@ -261,6 +277,11 @@
         "focus": {
           "$value": "{color.border.brand.default}",
           "$type": "color"
+        },
+        "readOnly": {
+          "$value": "transparent",
+          "$type": "color",
+          "$comment": "No stroke: the read-only field is told apart from an editable one by its surface alone (457:26191)."
         },
         "disabled": {
           "$value": "{color.border.disabled.default}",

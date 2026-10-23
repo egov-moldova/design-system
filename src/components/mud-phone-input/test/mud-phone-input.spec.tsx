@@ -379,7 +379,8 @@ describe('mud-phone-input', () => {
     it('adds a required mark when `required` is set', async () => {
       const { root } = await render(<mud-phone-input label="x" required></mud-phone-input>);
       const mark = root?.shadowRoot?.querySelector('.required-mark');
-      expect(mark?.textContent?.trim()).toBe('*');
+      // Figma draws the mark as the 12/asterisk icon (2975:10179), not a text glyph.
+      expect(mark?.querySelector('mud-icon')?.getAttribute('name')).toBe('asterisk');
     });
 
     it('renders a helper assistive row when `helper-text` is set', async () => {
@@ -950,10 +951,13 @@ describe('mud-phone-input', () => {
       expect(querySpinner(lg)?.querySelector('mud-spinner')?.getAttribute('size')).toBe('sm');
     });
 
-    it('loading disables the native input', async () => {
+    it('loading freezes the native input without disabling it', async () => {
+      // Figma 3340:6613 keeps the value legible (#121212); a disabled input
+      // would paint the disabled text colour instead.
       const { root } = await render(<mud-phone-input label="x" loading></mud-phone-input>);
       const native = queryNative(root);
-      expect(native?.disabled).toBe(true);
+      expect(native?.disabled).toBe(false);
+      expect(native?.readOnly).toBe(true);
       expect(native?.getAttribute('aria-busy')).toBe('true');
     });
 

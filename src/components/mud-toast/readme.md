@@ -14,8 +14,9 @@ a leading icon, an optional bold heading, the message body (default slot),
 an optional inline link/action group (`actions` slot) and a trailing close
 button (shown by default — `closable` defaults to `true`).
 
-Placement, vertical stacking and auto-dismiss are the consumer's
-responsibility — this atom is just the surface. Its entrance animation
+Placement, vertical stacking and auto-dismiss belong to `mud-toast-region`
+(or to the consumer, for a toast placed by hand) — this atom is just the
+surface. Its entrance animation
 (slide-down + fade-in) plays once on mount; closing it fades it out in
 place before `mudClose` fires (Figma Behavior › dismissal).
 
@@ -52,6 +53,20 @@ name when the body content alone is not descriptive enough.
 | `mudClose` | Fires once the close fade-out has finished (at once under `prefers-reduced-motion`). Payload is `void` — the consumer removes the toast from the DOM. | `CustomEvent<void>` |
 
 
+## Methods
+
+### `dismiss() => Promise<void>`
+
+Closes the toast the way its close button does: the fade-out plays, then
+`mudClose` fires. `mud-toast-region` calls it to auto-dismiss a toast.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Slots
 
 | Slot           | Description                                                                                                                                                                               |
@@ -63,6 +78,10 @@ name when the body content alone is not descriptive enough.
 
 ## Dependencies
 
+### Used by
+
+ - [mud-toast-region](../mud-toast-region)
+
 ### Depends on
 
 - [mud-icon](../mud-icon)
@@ -71,6 +90,7 @@ name when the body content alone is not descriptive enough.
 ```mermaid
 graph TD;
   mud-toast --> mud-icon
+  mud-toast-region --> mud-toast
   style mud-toast fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

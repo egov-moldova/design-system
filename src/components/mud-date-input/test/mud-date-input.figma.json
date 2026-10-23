@@ -869,18 +869,35 @@
       ]
     },
     {
-      "name": "readonly-no-picker",
-      "node": "184:854",
+      "name": "readonly",
+      "node": "457:26191",
       "pixel": false,
+      "pixelNote": "The date-input set has no read-only variant; 457:26191 is the shared read-only text input the design review of 12.10.2026 pointed to, with different content.",
       "html": "<div style=\"width:282px\"><mud-date-input size=\"lg\" label=\"Label\" value=\"15/04/2025\" readonly></mud-date-input></div>",
       "expect": [
         {
+          "target": "mud-date-input .control",
+          "node": "457:26191",
+          "styles": { "backgroundColor": "#F5F5F5", "borderTopColor": "#00000000", "boxHeight": "48px" },
+          "note": "Read-only Input frame I457:26191;132:3471: a #F5F5F5 fill, no stroke, 48px tall."
+        },
+        {
+          "target": "mud-date-input .native",
+          "node": "457:26191",
+          "styles": { "color": "#121212" },
+          "note": "The value keeps the default text colour (I457:26191;132:3474)."
+        },
+        {
+          "target": "mud-date-input .valid-icon",
+          "node": "457:26191",
+          "styles": { "boxWidth": "24px", "boxHeight": "24px" },
+          "note": "24/checkmark-small (I457:26191;132:3476) trails the value in place of the calendar button."
+        },
+        {
           "target": "mud-date-input .trailing-icon",
-          "node": "184:854",
-          "styles": {
-            "cursor": "not-allowed"
-          },
-          "note": "Not in Figma: a read-only field must not let the calendar change its value, so the trigger is disabled (unit test covers the click)."
+          "node": "457:26191",
+          "absent": true,
+          "note": "A read-only field must not let the calendar change its value, and 457:26191 has no second trailing icon."
         }
       ]
     },

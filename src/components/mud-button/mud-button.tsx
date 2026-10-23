@@ -1,6 +1,6 @@
 import { AttachInternals, Component, Element, Host, Prop, State, h } from '@stencil/core';
 
-import { observeAriaLabel } from '../../utils/aria-label';
+import { moveHostAria, observeAriaLabel } from '../../utils/aria-label';
 import type { SpinnerSize, SpinnerVariant } from '../mud-spinner/mud-spinner.types';
 import { BUTTON_BADGES } from './mud-button.types';
 import type {
@@ -161,21 +161,28 @@ export class MudButton {
   @State() private fieldsetDisabled: boolean = false;
   /** The host's native `aria-label`, moved onto the internal control. */
   @State() private resolvedAriaLabel?: string;
+  /** `aria-expanded` / `aria-haspopup` written on the host (e.g. by `mud-dropdown`), moved onto the control. */
+  @State() private popupAria: Readonly<Record<string, string | undefined>> = {};
 
   @Element() host!: HTMLMudButtonElement;
 
   @AttachInternals() internals!: ElementInternals;
 
   private stopAriaLabel?: () => void;
+  private stopPopupAria?: () => void;
   private warnedBadge = false;
   private warnedLabelDeprecated = false;
 
   connectedCallback() {
     this.stopAriaLabel = observeAriaLabel(this.host, label => (this.resolvedAriaLabel = label));
+    this.stopPopupAria = moveHostAria(this.host, ['aria-expanded', 'aria-haspopup'], values => {
+      this.popupAria = values;
+    });
   }
 
   disconnectedCallback() {
     this.stopAriaLabel?.();
+    this.stopPopupAria?.();
   }
 
   componentDidRender() {
@@ -366,6 +373,8 @@ export class MudButton {
             aria-label={labelAttr}
             aria-disabled={ariaDisabled}
             aria-busy={ariaBusy}
+            aria-expanded={this.popupAria['aria-expanded']}
+            aria-haspopup={this.popupAria['aria-haspopup']}
             tabindex={tabIndexAttr}
           >
             {slots}
@@ -385,6 +394,8 @@ export class MudButton {
           aria-label={labelAttr}
           aria-disabled={ariaDisabled}
           aria-busy={ariaBusy}
+          aria-expanded={this.popupAria['aria-expanded']}
+          aria-haspopup={this.popupAria['aria-haspopup']}
         >
           {slots}
         </button>

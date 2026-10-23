@@ -1067,7 +1067,7 @@ export class MudPhoneInput {
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
-              *
+              <mud-icon name="asterisk" size={16} />
             </span>
           ) : null}
         </label>
@@ -1115,8 +1115,8 @@ export class MudPhoneInput {
               name={this.name}
               value={localDisplay}
               placeholder={placeholder}
-              disabled={effectivelyDisabled || this.loading}
-              readonly={this.readonly}
+              disabled={effectivelyDisabled}
+              readonly={this.readonly || this.loading}
               required={this.required}
               autocomplete="tel-national"
               inputMode="tel"

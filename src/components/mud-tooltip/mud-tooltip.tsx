@@ -261,6 +261,7 @@ export class MudTooltip {
   private bubbleEl: HTMLElement | null = null;
   private scrollHandler: (() => void) | null = null;
   private resizeHandler: (() => void) | null = null;
+  private bubbleResizeObserver: ResizeObserver | null = null;
   private documentClickHandler: ((event: MouseEvent) => void) | null = null;
   private documentKeydownHandler: ((event: KeyboardEvent) => void) | null = null;
   private stopAriaLabel?: () => void;
@@ -313,6 +314,16 @@ export class MudTooltip {
       window.addEventListener('resize', this.resizeHandler, { passive: true });
     }
 
+    // The bubble can change size after it was placed: the web font finishes
+    // loading and re-wraps a long label, or the slotted content changes.
+    // Re-place it then, or the arrow and edges point at the old box.
+    if (typeof ResizeObserver !== 'undefined' && this.bubbleEl) {
+      this.bubbleResizeObserver = new ResizeObserver(() => {
+        if (this.open) this.updateGeometry();
+      });
+      this.bubbleResizeObserver.observe(this.bubbleEl);
+    }
+
     this.applyAriaToTrigger();
 
     if (this.open && !this.disabled) {
@@ -333,6 +344,8 @@ export class MudTooltip {
       if (this.scrollHandler) window.removeEventListener('scroll', this.scrollHandler, true);
       if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
     }
+    this.bubbleResizeObserver?.disconnect();
+    this.bubbleResizeObserver = null;
   }
 
   // ---------- ARIA wiring ----------
@@ -662,6 +675,11 @@ export class MudTooltip {
     const bubble = this.bubbleEl;
     if (!wrapper || !bubble) return;
 
+    // Apply the width cap before measuring: measured under the token's fallback
+    // cap, a long bubble came out narrower and taller than it renders, so its
+    // left edge and arrow were placed for a different box and the arrow ended
+    // up off-centre on first open (design review 12.10.2026).
+    this.host.style.setProperty('--_bubble-max-width', `${this.maxWidth}px`);
     const triggerRect = wrapper.getBoundingClientRect();
     const bubbleRect = bubble.getBoundingClientRect();
     const preferred: TooltipResolvedPosition =
@@ -674,7 +692,6 @@ export class MudTooltip {
     // (CSP-friendly, suppresses ANTIPATTERN-001-INLINE-STYLE).
     this.host.style.setProperty('--_bubble-top', `${computed.top}px`);
     this.host.style.setProperty('--_bubble-left', `${computed.left}px`);
-    this.host.style.setProperty('--_bubble-max-width', `${this.maxWidth}px`);
     this.host.style.setProperty('--_arrow-offset', `${computed.arrowOffset}px`);
   }
 

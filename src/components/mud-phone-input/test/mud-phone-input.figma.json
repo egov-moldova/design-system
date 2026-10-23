@@ -458,6 +458,38 @@
       ]
     },
     {
+      "name": "large-mandatory",
+      "node": "3340:6623",
+      "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"local\" required></mud-phone-input></div>",
+      "expect": [
+        {
+          "target": "mud-phone-input .label",
+          "styles": {
+            "columnGap": "4px",
+            "alignItems": "center"
+          },
+          "note": "The label row gaps the label and its star by 4px and centres them. Instance node I3340:6623;3318:18168."
+        },
+        {
+          "target": "mud-phone-input .required-mark",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px",
+            "color": "#D92D20"
+          },
+          "note": "The documentation's mandatory state (3340:6623) shows the 12/asterisk icon (2975:10179), 12×12, fill #D92D20. Instance node I3340:6623;3318:18170."
+        },
+        {
+          "target": "mud-phone-input .required-mark mud-icon",
+          "styles": {
+            "boxWidth": "12px",
+            "boxHeight": "12px"
+          },
+          "note": "Figma draws the mark as the 12/asterisk icon, not a text glyph — a text '*' at the 14px label font rendered smaller and sat high (design review 12.10.2026). Instance node I3340:6623;3318:18170."
+        }
+      ]
+    },
+    {
       "name": "default-large-international",
       "node": "7854:6657",
       "html": "<div style=\"width: 282px\"><mud-phone-input label=\"Label\" placeholder=\"XX  XXX  XXX\" size=\"lg\" type=\"international\"></mud-phone-input></div>",

@@ -1,0 +1,34 @@
+/* Figma 14830:13653 — Placement › desktop (14830:13798): top-right, 32px in.
+   The newest toast is the last child and shows on top (vertical-stack,
+   14830:13873), so the column runs bottom-up. */
+:host {
+  position: fixed;
+  z-index: var(--toast-region-z-index);
+  inset-block-start: var(--toast-region-inset-desktop);
+  inset-inline-end: var(--toast-region-inset-desktop);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--toast-region-gap);
+  /* The region is as tall as its toasts but must not block clicks around them. */
+  pointer-events: none;
+}
+
+::slotted(mud-toast) {
+  pointer-events: auto;
+}
+
+/* Placement › mobile (14830:13869): along the bottom, 8px from the sides and
+   12px from the bottom; the newest toast is nearest the bottom and pushes the
+   older ones up. */
+@media (max-width: 640px) {
+  :host {
+    inset-block-start: auto;
+    inset-block-end: var(--toast-region-inset-mobile-block-end);
+    inset-inline: var(--toast-region-inset-mobile-inline);
+    flex-direction: column;
+  }
+
+  ::slotted(mud-toast) {
+    inline-size: 100%;
+  }
+}
