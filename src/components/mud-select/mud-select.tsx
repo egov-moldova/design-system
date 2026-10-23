@@ -861,7 +861,7 @@ export class MudSelect {
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
-              *
+              <mud-icon name="asterisk" size={16} />
             </span>
           ) : null}
         </label>
